@@ -87,7 +87,7 @@ export interface unPrintedReceiptsDTO {
   };
 }
 export interface cancelReceiptDTO{
-  no: number;
+  receiptNumber: number;
   remarks:string;
   isChargeRaised: string;
   cancellationDate: string;

@@ -2283,7 +2283,7 @@
       "send_sms_alerts": "Tuma Tahadhari za SMS"
     },
     "receipt-management": {
-"pageReport": "Inaonyesha {first} hadi {last} kati ya {totalRecords} rekodi",
+      "pageReport": "Inaonyesha {first} hadi {last} kati ya {totalRecords} rekodi",
       "cancellation": "kufutwa",
       "printing": "uchapishaji",
       "receiptNumber": "Nambari ya risiti",
@@ -2294,22 +2294,22 @@
       "cancel": "ghairi",
       "share": "sambaza",
       "print": "chapisha",
-      "receipt cancellation": "kufutwa kwahati",
-      "Cancellation Date": "Tarehe ya kufutwa",
-      "Remarks": "Maoni",
-      "Raise bank charge": "Toza malipo ya benki",
+      "receiptCancellation": "kufutwa kwahati",
+      "cancellationDate": "Tarehe ya kufutwa",
+      "remarks": "Maoni",
+      "ariseBankCharge": "Toza malipo ya benki",
       "yes": "ndiyo",
       "no": "hapana",
-      "account charged": "akaunti iliyolipishwa",
-      "gl account": "akaunti ya g",
-      "share Receipt": "sambaza risiti",
+      "accountCharged": "akaunti iliyolipishwa",
+      "glAccount": "akaunti ya g",
+      "shareReceipt": "sambaza risiti",
       "email": "barua pepe",
       "whatsapp": "WhatsApp",
-      "client name": "jina la mteja",
-      "phone number": "nambari ya simu",
+      "clientName": "jina la mteja",
+      "phoneNumber": "nambari ya simu",
       "send": "tuma",
       "filter": "kichujio",
-      "receipt management": "usimamizi wa risiti"
+      "receiptManagement": "usimamizi wa risiti"
     }
   },
   "campaignMngmt": {

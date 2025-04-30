@@ -249,30 +249,7 @@ export class ReceiptManagementComponent {
       this.paymentMethodFilter?.trim()
     );
   }
-  //   filterReceipts(): void {
-  //     if(
-  //       !this.receiptNumberFilter?.trim() && !this.receiptDateFilter?.trim() && !this.receivedFromFilter?.trim() && !this.amountFilter && !this.paymentMethodFilter?.trim()
-  //     ){
-  //       this.filteredtabledata = [...this.unPrintedReceiptContent]; // Reset to original receipts
-  // return
-  //     }
-  //     this.filteredtabledata = this.filteredtabledata.filter((item) => {
-  //       return (
-  //         (!this.receiptNumberFilter ||
-  //           item.branchReceiptCode.includes(this.receiptNumberFilter)) &&
-  //         (!this.receiptDateFilter ||
-  //           item.receiptDate.includes(this.receiptDateFilter)) &&
-  //         (!this.receivedFromFilter ||
-  //           item.receivedFrom.includes(this.receivedFromFilter)) &&
-  //         (!this.amountFilter  || item.amount === this.amountFilter) &&
-  //         (!this.paymentMethodFilter ||
-  //           item.paymentMode.includes(this.paymentMethodFilter))
-  //       );
-  //     })
-  //     // After filtering, you might need to reset pagination if desired
-  //     // this.first = 0;
-  //     this.totalRecords = this.filteredtabledata.length; // Update total records for pagination display if using custom template
-  //   }
+  
   /**
    * @method printReceipt
    * @description Stores the selected receipt number in session storage and navigates
@@ -291,7 +268,7 @@ export class ReceiptManagementComponent {
   //cancellation section
   cancelReceipt() {
     const body = {
-      no: 123456,
+      receiptNumber: 123456,
       remarks: 'Duplicate entry',
       isChargeRaised: 'Y',
       cancellationDate: '2025-04-25T08:22:30.836Z',
