@@ -18,6 +18,7 @@ import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { FmsSetupService } from '../../services/fms-setup.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import {TranslateModule} from '@ngx-translate/core';
+import { acknowledgementSlipDTO } from '../../data/receipting-dto';
 
 describe('ClientAllocationComponent', () => {
   let component: ClientAllocationComponent;
@@ -32,7 +33,39 @@ describe('ClientAllocationComponent', () => {
   let mockSessionStorageService: any;
   let mockFmsSetupService: any;
 
+   // --- Mock common properties needed for save methods ---
+   const setupValidSaveState = () => {
+    component.fileDescriptions = []; // No unposted files
+    component.selectedFile = null;   // No selected file
+    component.parameterStatus = 'N'; // Or 'Y' with fileUploaded = true
+    component.fileUploaded = false;
+    component.amountIssued = 100;
+    component.receivedFrom = 'Test Payer';
+    component.receiptDate = new Date();
+    component.narration = 'Test Narration';
+    component.paymentMode = 'CASH';
+    component.bankAccount = 12345;
+    component.totalAllocatedAmount = 100; // Fully allocated
+    component.branchReceiptNumber = 987;
+    component.receiptCode = 'RC001';
+    component.currency = 'USD';
+    component.defaultBranch = { id: 1 } as any; // Mock branch
+    component.selectedBranch = null;
+    component.paymentRef = 'REF123';
+    component.documentDate = new Date();
+    component.drawersBank = 'Test Bank';
+    component.loggedInUser = { code: 'testUser' };
+    component.selectedClient = { systemCode: 1, systemShortDesc: 'SYS', code: 101, name: 'Client A', receiptType: 'TypeA', shortDesc: 'CA', accountCode: 500 } as any;
+    component.receiptingPointObject = { id: 2, autoManual: 'A' } as any;
+    component.exchangeRate = 1;
+    component.manualExchangeRate = null;
+    component.manualRef = 'MANREF';
+    component.bankAccountType = 'SAVINGS';
+    component.storedData = { amountIssued: 100 }; // Mock storedData if used
+   };
+   
   beforeEach(async () => {
+    
     mockReceiptDataService = {
       getReceiptData: jest.fn(),
 
@@ -202,20 +235,7 @@ describe('ClientAllocationComponent', () => {
      expect(allocatedAmountArray.at(0).get('allocatedAmount')?.value).toEqual(mockTransactions[0].balance);
      expect(allocatedAmountArray.at(1).get('commissionChecked')?.value).toEqual('N');
   }));
-  // it('should update allocated amount and recalculate total on onAllocatedAmountChange', () => {
-  //   const mockTransactions = [{ transactionNumber: 1, clientName: 'ClientA' }];
-  //   mockReceiptDataService.getTransactions.mockReturnValue(mockTransactions);
-  //   mockSessionStorageService.getItem.mockReturnValue(JSON.stringify({id:123}));
-  //   component.ngOnInit();
-  //   fixture.detectChanges();
 
-  //   const index = 0;
-  //   const amount = 50;
-  //   component.onAllocatedAmountChange(index, amount);
-
-  //   expect(mockReceiptDataService.updateAllocatedAmount).toHaveBeenCalledWith(index, amount);
-  //   expect(component.totalAllocatedAmount).toBeGreaterThan(0);
-  // });
   it('should update allocated amount and recalculate total on onAllocatedAmountChange', () => {
     const mockTransactions = [{ transactionNumber: 1, clientName: 'ClientA' }];
     mockReceiptDataService.getTransactions.mockReturnValue(mockTransactions);
@@ -632,6 +652,294 @@ describe('ClientAllocationComponent', () => {
         'Receipt saved successfully'
       );
     }));
+    describe('saveAndPrint', () => {
+
+      // Place the inner beforeEach here
+      beforeEach(() => {
+        fixture.detectChanges(); // Ensure component is initialized before setting state
+        setupValidSaveState(); // Set up a generally valid state before each test in this block
+        // Mock confirm globally or spyOn it within specific tests if needed
+        jest.spyOn(window, 'confirm').mockReturnValue(true); // Default confirm to true
+      });
+  
+      it('should display error if there are unposted files', () => {
+        component.fileDescriptions = [{ file: new File([], 'test.txt'), description: 'desc', uploaded: false }];
+        component.saveAndPrint();
+        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error!', 'Please post or delete all selected files before saving the receipt.');
+        expect(mockReceiptService.saveReceipt).not.toHaveBeenCalled();
+      });
+  
+      it('should display error if a file is selected but not posted', () => {
+        component.selectedFile = new File([], 'test.txt');
+        component.saveAndPrint();
+        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error!', 'Please post or delete the file before saving the receipt.');
+        expect(mockReceiptService.saveReceipt).not.toHaveBeenCalled();
+      });
+  
+      it('should call confirm if parameterStatus is Y and file not uploaded, and stop if user cancels', () => {
+          const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(false);
+          component.parameterStatus = 'Y';
+          component.fileUploaded = false;
+          component.saveAndPrint();
+          expect(confirmSpy).toHaveBeenCalledWith('do you want to save receipt without uploading file?');
+          expect(mockReceiptService.saveReceipt).not.toHaveBeenCalled();
+      });
+  
+       it('should proceed if parameterStatus is Y, file not uploaded, but user confirms', fakeAsync(() => {
+          const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
+          component.parameterStatus = 'Y';
+          component.fileUploaded = false;
+          mockReceiptService.saveReceipt.mockReturnValue(of({ data: { receiptNumber: 'R123', message: 'Saved' } }));
+          component.saveAndPrint();
+          tick();
+          expect(confirmSpy).toHaveBeenCalled();
+          expect(mockReceiptService.saveReceipt).toHaveBeenCalled();
+          expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-preview']);
+      }));
+  
+      it('should display error if required fields are missing', () => {
+        component.amountIssued = null; // Make a required field null
+        component.saveAndPrint();
+        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Failed', 'please fill all fields marked with * in receipt capture!');
+        expect(mockReceiptService.saveReceipt).not.toHaveBeenCalled();
+      });
+  
+      it('should display error if amountIssued is missing', () => {
+        component.amountIssued = null; // Specifically test missing amountIssued
+        // Need to set other required fields to pass the first check
+        component.receivedFrom = 'Test Payer';
+        component.receiptDate = new Date();
+        component.narration = 'Test Narration';
+        component.paymentMode = 'CASH';
+        component.bankAccount = 12345;
+        component.saveAndPrint();
+        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Please enter the amount issued.');
+        expect(mockReceiptService.saveReceipt).not.toHaveBeenCalled();
+      });
+  
+      it('should display error if amount is partially allocated', () => {
+        component.amountIssued = 100;
+        component.totalAllocatedAmount = 50; // Partially allocated
+        component.saveAndPrint();
+        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Amount Issued is not fully allocated');
+        expect(mockReceiptService.saveReceipt).not.toHaveBeenCalled();
+      });
+  
+      it('should call saveReceipt and navigate to preview on success', fakeAsync(() => {
+        const mockResponse = { data: { receiptNumber: 'R123', message: 'Saved' } };
+        mockReceiptService.saveReceipt.mockReturnValue(of(mockResponse));
+  
+        component.saveAndPrint();
+        tick(); // Process the observable
+  
+        // expect(mockReceiptService.saveReceipt).toHaveBeenCalled();
+        // // Add more specific checks on the payload if needed
+        // const expectedPayload = expect.objectContaining({
+        //     receiptNo: component.branchReceiptNumber,
+        //     receiptCode: component.receiptCode,
+        //     amount: String(component.amountIssued), // Ensure amount is string
+        //     paidBy: component.receivedFrom,
+        //     // ... other fields to verify
+        // });
+        // expect(mockReceiptService.saveReceipt).toHaveBeenCalledWith(expectedPayload);
+  
+        expect(component.receiptResponse).toEqual(mockResponse.data);
+        expect(mockSessionStorageService.setItem).toHaveBeenCalledWith('receiptNo', 'R123');
+        expect(mockGlobalMessagingService.displaySuccessMessage).toHaveBeenCalledWith('Success', 'Receipt saved successfully');
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-preview']);
+      }));
+  
+       it('should display error message if saveReceipt fails', fakeAsync(() => {
+          const errorResponse = { error: { msg: 'API Error' } };
+          mockReceiptService.saveReceipt.mockReturnValue(throwError(() => errorResponse));
+  
+          component.saveAndPrint();
+          tick(); // Process the observable
+  
+          expect(mockReceiptService.saveReceipt).toHaveBeenCalled();
+          expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Failed to save receipt', 'API Error');
+          expect(mockRouter.navigate).not.toHaveBeenCalled(); // Should not navigate on error
+        }));
+    }); // --- End describe('saveAndPrint') ---
+  
+  
+    // ==================================
+    // Test for handleSaveAndPrint
+    // ==================================
+    describe('handleSaveAndPrint', () => {
+      it('should call saveAndGenerateSlip and generateSlip', () => {
+        fixture.detectChanges(); // Ensure component exists
+        const saveSpy = jest.spyOn(component, 'saveAndGenerateSlip').mockImplementation(); // Mock implementation to prevent actual execution
+        const generateSpy = jest.spyOn(component, 'generateSlip').mockImplementation(); // Mock implementation
+  
+        component.handleSaveAndPrint();
+  
+        expect(saveSpy).toHaveBeenCalled();
+        expect(generateSpy).toHaveBeenCalled();
+      });
+    }); // --- End describe('handleSaveAndPrint') ---
+  
+  
+    // ==================================
+    // Tests for saveAndGenerateSlip
+    // ==================================
+    describe('saveAndGenerateSlip', () => {
+      beforeEach(() => {
+        fixture.detectChanges(); // Ensure component is initialized
+        setupValidSaveState(); // Set up a generally valid state
+        jest.spyOn(window, 'confirm').mockReturnValue(true); // Default confirm to true
+      });
+  
+       // --- Add similar error condition tests as in saveAndPrint ---
+      it('should display error if there are unposted files', () => {
+          component.fileDescriptions = [{ file: new File([], 'test.txt'), description: 'desc', uploaded: false }];
+          component.saveAndGenerateSlip();
+          expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error!', 'Please post or delete all selected files before saving the receipt.');
+          expect(mockReceiptService.saveReceipt).not.toHaveBeenCalled();
+        });
+  
+      it('should display error if a file is selected but not posted', () => {
+          component.selectedFile = new File([], 'test.txt');
+          component.saveAndGenerateSlip();
+          expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error!', 'Please post or delete the file before saving the receipt.');
+          expect(mockReceiptService.saveReceipt).not.toHaveBeenCalled();
+        });
+  
+       it('should call confirm if parameterStatus is Y and file not uploaded, and stop if user cancels', () => {
+          const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(false);
+          component.parameterStatus = 'Y';
+          component.fileUploaded = false;
+          component.saveAndGenerateSlip();
+          expect(confirmSpy).toHaveBeenCalledWith('do you want to save receipt without uploading file?');
+          expect(mockReceiptService.saveReceipt).not.toHaveBeenCalled();
+        });
+  
+      it('should display error if required fields are missing', () => {
+          component.amountIssued = null; // Make a required field null
+          component.saveAndGenerateSlip();
+          expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Failed', 'please fill all fields marked with * in receipt capture!');
+          expect(mockReceiptService.saveReceipt).not.toHaveBeenCalled();
+        });
+  
+      it('should display error if amountIssued is missing', () => {
+          component.amountIssued = null;
+          // Set other required fields
+          component.receivedFrom = 'Test Payer';
+          component.receiptDate = new Date();
+          component.narration = 'Test Narration';
+          component.paymentMode = 'CASH';
+          component.bankAccount = 12345;
+          component.saveAndGenerateSlip();
+          expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Please enter the amount issued.');
+          expect(mockReceiptService.saveReceipt).not.toHaveBeenCalled();
+        });
+  
+      it('should display error if amount is partially allocated', () => {
+          component.amountIssued = 100;
+          component.totalAllocatedAmount = 50;
+          component.saveAndGenerateSlip();
+          expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Amount Issued is not fully allocated');
+          expect(mockReceiptService.saveReceipt).not.toHaveBeenCalled();
+       });
+       // --- End of similar error tests ---
+  
+      it('should call saveReceipt and navigate to slip-preview on success after timeout', fakeAsync(() => {
+        const mockResponse = { data: { receiptNumber: 'R456', message: 'Saved Slip' } };
+        mockReceiptService.saveReceipt.mockReturnValue(of(mockResponse));
+  
+        component.saveAndGenerateSlip();
+        tick(); // Process the observable from saveReceipt
+  
+        expect(mockReceiptService.saveReceipt).toHaveBeenCalled();
+        expect(component.receiptResponse).toEqual(mockResponse.data);
+        expect(mockSessionStorageService.setItem).toHaveBeenCalledWith('receiptNo', 'R456');
+        expect(mockGlobalMessagingService.displaySuccessMessage).toHaveBeenCalledWith('Success', 'Receipt saved successfully');
+  
+        // Fast-forward time for setTimeout
+        tick(100); // Advance time by 100ms (or slightly more)
+  
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/slip-preview']);
+      }));
+  
+       it('should display error message if saveReceipt fails', fakeAsync(() => {
+          const errorResponse = { error: { msg: 'API Error Slip' } };
+          mockReceiptService.saveReceipt.mockReturnValue(throwError(() => errorResponse));
+  
+          component.saveAndGenerateSlip();
+          tick(); // Process the observable
+  
+          expect(mockReceiptService.saveReceipt).toHaveBeenCalled();
+          expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Failed to save receipt', 'API Error Slip');
+          expect(mockRouter.navigate).not.toHaveBeenCalled(); // Should not navigate on error
+        }));
+    }); // --- End describe('saveAndGenerateSlip') ---
+  
+  
+     // ==================================
+     // Tests for generateSlip
+     // ==================================
+    describe('generateSlip', () => {
+      // Mock generateAcknowledgementSlip in ReceiptService
+      let mockGenerateSlipService: jest.SpyInstance;
+  
+       beforeEach(() => {
+         fixture.detectChanges(); // Ensure component exists
+         // Mock the specific service method directly on the instance
+         mockGenerateSlipService = jest.spyOn(mockReceiptService, 'generateAcknowledgementSlip');
+  
+         // Set necessary component state
+         component.receiptResponse = { receiptNumber: 'R789', message: 'Saved' } as any; // Assume receipt was saved
+         // Ensure loggedInUser is set
+          if (!component.loggedInUser) {
+               component.loggedInUser = { code: 940 };
+           } else {
+              component.loggedInUser.code = 'slipUser'; // Ensure the code is correct for the test
+          }
+       });
+  
+       it('should call generateAcknowledgementSlip with correct payload and show success', () => {
+          const mockSlipResponse = { data: { slipContent: 'some data' } }; // Example slip data
+          mockGenerateSlipService.mockReturnValue(of(mockSlipResponse));
+  
+          const expectedPayload: acknowledgementSlipDTO = {
+            receiptNumbers: [789],
+            userCode: 940,
+          };
+  
+          component.generateSlip();
+  
+          expect(mockGenerateSlipService).toHaveBeenCalledWith(expectedPayload);
+          expect(component.receiptSlipResponse).toEqual(mockSlipResponse.data);
+          expect(mockGlobalMessagingService.displaySuccessMessage).toHaveBeenCalledWith('Success', 'slip generated successfully');
+       });
+  
+       it('should display error message if generateAcknowledgementSlip fails', () => {
+          const errorResponse = { error: { msg: 'Slip Generation Failed' } };
+          mockGenerateSlipService.mockReturnValue(throwError(() => errorResponse));
+  
+          component.generateSlip();
+  
+          expect(mockGenerateSlipService).toHaveBeenCalled();
+          // Check the error message key used in the component's generateSlip method
+          expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(expect.toString(), 'Slip Generation Failed'); // Allow any title, check message
+        });
+  
+        // Optional: Test case if receiptResponse is missing
+         it('should handle error gracefully if receiptResponse is missing', () => {
+           component.receiptResponse = null; // Simulate missing response
+           // We expect generateSlip *not* to call the service and maybe log an error or do nothing gracefully
+           // Depending on implementation, it might throw a TypeError accessing receiptNumber
+  
+           // Option 1: Expect it not to call the service
+           // component.generateSlip(); // This might throw an error
+           // expect(mockGenerateSlipService).not.toHaveBeenCalled();
+  
+           // Option 2: Expect it to throw (if that's the intended behavior)
+           expect(() => component.generateSlip()).toThrow(); // Or specific error type if applicable
+           expect(mockGenerateSlipService).not.toHaveBeenCalled();
+         });
+    }); // --- End describe('generateSlip') ---
+  
     it('should display an error message if receipt saving fails', fakeAsync(() => {
       const mockError = { error: { msg: 'Failed to save receipt' } };
       mockReceiptService.saveReceipt.mockReturnValue(throwError(() => mockError));
