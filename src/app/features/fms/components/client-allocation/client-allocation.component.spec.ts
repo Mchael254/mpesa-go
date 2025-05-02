@@ -850,15 +850,10 @@ describe('ClientAllocationComponent', () => {
           expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(expect.toString(), 'Slip Generation Failed'); // Allow any title, check message
         });
   
-        // Optional: Test case if receiptResponse is missing
+        
          it('should handle error gracefully if receiptResponse is missing', () => {
            component.receiptResponse = null; // Simulate missing response
-           // We expect generateSlip *not* to call the service and maybe log an error or do nothing gracefully
-           // Depending on implementation, it might throw a TypeError accessing receiptNumber
-  
-           // Option 1: Expect it not to call the service
-           // component.generateSlip(); // This might throw an error
-           // expect(mockGenerateSlipService).not.toHaveBeenCalled();
+         
   
            // Option 2: Expect it to throw (if that's the intended behavior)
            expect(() => component.generateSlip()).toThrow(); // Or specific error type if applicable
