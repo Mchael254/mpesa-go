@@ -2824,6 +2824,7 @@
       "cancel": "annuler",
       "share": "partager",
       "print": "imprimer",
+      "reprint":"Réimprimer",
       "receiptCancellation": "annulation de reçu",
       "cancellationDate": "Date d'annulation",
       "remarks": "Remarques",

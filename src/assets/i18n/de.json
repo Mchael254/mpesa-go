@@ -2299,6 +2299,7 @@
       "cancel": "abbrechen",
       "share": "teilen",
       "print": "drucken",
+      "reprint":"Nachdruck",
       "receiptCancellation": "Quittungsstornierung",
       "cancellationDate": "Stornierungsdatum",
       "remarks": "Bemerkungen",

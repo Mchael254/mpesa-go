@@ -2883,6 +2883,7 @@
       "cancel": "Cancel",
       "share": "Share",
       "print": "print",
+      "reprint":"Reprint",
       "receiptCancellation": "Receipt cancellation",
       "cancellationDate": "Cancellation date",
       "remarks": "Remarks",
