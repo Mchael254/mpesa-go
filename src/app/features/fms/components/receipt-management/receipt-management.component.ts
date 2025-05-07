@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import {
+  ReceiptsToCancelContentDTO,
+  ReceiptToCancelDTO,
   unPrintedReceiptContentDTO,
   unPrintedReceiptsDTO,
 } from '../../data/receipt-management-dto';
@@ -14,12 +16,17 @@ import { SessionStorageService } from '../../../../shared/services/session-stora
 import { Router } from '@angular/router';
 import { BranchDTO } from '../../data/receipting-dto';
 import { TranslateService } from '@ngx-translate/core';
+import { FormBuilder, FormGroup, Validators,ReactiveFormsModule } from '@angular/forms';
+import { TimeScale } from 'chart.js';
+import { AuthService } from 'src/app/shared/services/auth.service';
 @Component({
   selector: 'app-receipt-management',
   templateUrl: './receipt-management.component.html',
   styleUrls: ['./receipt-management.component.css'],
 })
 export class ReceiptManagementComponent {
+  cancelForm:FormGroup;
+   users:any;
   /**
    * @property {BranchDTO} defaultBranch - The default branch context derived from session, used if no specific branch is selected.
    */
@@ -41,7 +48,10 @@ export class ReceiptManagementComponent {
   /** @property {unPrintedReceiptContentDTO[]} filteredtabledata - Holds the data currently displayed in the table after filtering. Should be typed correctly. */
   tabledata: unPrintedReceiptContentDTO[] = [];
   filteredtabledata: unPrintedReceiptContentDTO[] = [];
+  unPrintedReceiptsdata:unPrintedReceiptContentDTO[] = [];
+  printedReceiptsdata:unPrintedReceiptContentDTO[] = [];
   // --- Filtering Properties ---
+
   /** @property {string} paymentMethodFilter - Filter value for the 'Payment Method' column. */
   paymentMethodFilter: string = '';
   /** @property {string} receivedFromFilter - Filter value for the 'Received From' column. */
@@ -62,17 +72,26 @@ export class ReceiptManagementComponent {
   isPrinting: boolean = false;
   /** @property {boolean} isCancellation - Flag used for styling the 'Cancellation' button as active/inactive. */
   isCancellation: boolean = true; // Default view is Cancellation
-
+printed:boolean=false;
+unprinted:boolean=false;
   /** @property {number | null} receiptNumber - Stores the specific receipt number selected for printing before navigation. */
   receiptNumber: number | null = null; // Initialize as null
   receiptData: unPrintedReceiptContentDTO[] = [];
-
+//cancellation section
+receiptsToCancel:ReceiptToCancelDTO;
+receiptsToCancelList:ReceiptsToCancelContentDTO[]=[];
+unCancelledReceipts:ReceiptsToCancelContentDTO[]=[];
+selectedReceipt: any = null;
+loggedInUser:any;
+//raiseBankCharge: string = 'no';
   constructor(
     private receiptManagementService: ReceiptManagementService,
     private globalMessagingService: GlobalMessagingService,
     private sessionStorage: SessionStorageService,
     private translate: TranslateService,
-    private router: Router
+    private router: Router,
+    private fb:FormBuilder,
+    private authService:AuthService
   ) {}
   /**
    * @ngOnInit Lifecycle hook.
@@ -80,6 +99,7 @@ export class ReceiptManagementComponent {
    * and fetching the initial list of unprinted receipts for that branch.
    */
   ngOnInit(): void {
+    this.initializeForm();
     // Retrieve branch from localStorage or receiptDataService
 
     let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
@@ -91,7 +111,8 @@ export class ReceiptManagementComponent {
     this.defaultBranch = storedDefaultBranch
       ? JSON.parse(storedDefaultBranch)
       : null;
-
+      this.loggedInUser = this.authService.getCurrentUser();
+   
     // Ensure only one branch is active at a time
     if (this.selectedBranch) {
       this.defaultBranch = null;
@@ -101,11 +122,44 @@ export class ReceiptManagementComponent {
     this.fetchUnprintedReceipts(
       this.defaultBranch?.id || this.selectedBranch?.id
     );
+    this.fetchReceiptsToCancel(this.defaultBranch?.id || this.selectedBranch?.id);
+   
+    //this.fetchGlAccounts(this.defaultBranch?.id || this.selectedBranch?.id);
+    
   }
+initializeForm(){
+this.cancelForm = this.fb.group({
+  accountCharged:['',Validators.required],
+  glAccount:['',Validators.required],
+  remarks:['',Validators.required],
+  cancellationDate:['',Validators.required],
+  raiseBankCharge:['no',Validators.required] // 'no' is the default value
 
+});
+ // Add conditional validation
+ this.cancelForm.get('raiseBankCharge')?.valueChanges.subscribe(value => {
+  const accountChargedControl = this.cancelForm.get('accountCharged');
+  const glAccountControl = this.cancelForm.get('glAccount');
+  
+  if (value === 'yes') {
+    accountChargedControl?.setValidators([Validators.required]);
+    glAccountControl?.setValidators([Validators.required]);
+  } else {
+    accountChargedControl?.clearValidators();
+    glAccountControl?.clearValidators();
+  }
+  accountChargedControl?.updateValueAndValidity();
+  glAccountControl?.updateValueAndValidity();
+});
+}
+// Helper getter for easy access in template
+get raiseBankCharge() {
+  return this.cancelForm.get('raiseBankCharge')?.value;
+}
   get currentPageReportTemplate(): string {
     return this.translate.instant('fms.receipt-management.pageReport');
   }
+
 
   // --- UI Mode Switching ---
 
@@ -147,12 +201,14 @@ export class ReceiptManagementComponent {
         this.unPrintedReceiptData = response;
         this.unPrintedReceiptContent = response.data.content; // Stores just the content array
         this.filteredtabledata = this.unPrintedReceiptContent;
+        this.filteredtabledata = this.unPrintedReceiptContent;
+       
       },
 
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          err.error.msg || 'failed to load data'
+          err.error.status || 'failed to load data'
         );
       },
     });
@@ -266,33 +322,29 @@ export class ReceiptManagementComponent {
     this.router.navigate(['/home/fms/receipt-print-preview']);
   }
   //cancellation section
-  cancelReceipt() {
-    const body = {
-      receiptNumber: 123456,
-      remarks: 'Duplicate entry',
-      isChargeRaised: 'Y',
-      cancellationDate: '2025-04-25T08:22:30.836Z',
-      bankAmount: 100,
-      clientAmount: 500,
-      userCode: 1094,
-      branchCode: 342,
-      bankChargesGlAcc: 101899,
-      otherChargesGlAcc: 101899,
-    };
-    this.receiptManagementService.cancelReceipt(body).subscribe({
-      next: (response) => {
-        this.globalMessagingService.displaySuccessMessage(
-          'success',
-          'receipt successfully cancelled'
-        );
-      },
-      error: (err) => {
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.msg || 'failed to cancel the receipt'
-        );
-      },
-    });
+  fetchReceiptsToCancel(branchCode:number){
+    this.receiptManagementService.getReceiptsToCancel(branchCode).subscribe(
+      {
+        next:(response)=>{
+          this.receiptsToCancel = response;
+          
+          this.receiptsToCancelList = response.data.content;
+         
+          //this.globalMessagingService.displaySuccessMessage('success','successfully retrieved reeipts to cancel');
+          this.unCancelledReceipts= this.receiptsToCancelList.filter((list)=>{
+            return (list.cancelled=="N");
+              
+            
+            
+          });
+          
+        },
+        error:(err)=>{
+this.globalMessagingService.displayErrorMessage('Error',err.error.status || 'failed to load receipts');
+        },
+      }
+    )
+
   }
   // --- Modal Interactions (Using Bootstrap JS ) ---
   /**
@@ -300,11 +352,105 @@ export class ReceiptManagementComponent {
    * @description Opens the Bootstrap modal for receipt cancellation using direct Bootstrap JS API.
    * Consider using an Angular-friendly modal solution.
    */
-  openCancelModal(): void {
+  openCancelModal(receipt: any): void {
+    this.selectedReceipt = receipt;
+    this.resetForm(); // Reset form when opening modal
     const modalElement = new bootstrap.Modal(
       document.getElementById('staticBackdrop')
     );
     modalElement.show();
+  }
+  // Add form reset method
+resetForm(): void {
+  this.cancelForm.reset({
+    remarks: '',
+    cancellationDate: '',
+    raiseBankCharge: 'N',
+    accountCharged: '',
+    glAccount: ''
+  });
+}
+  validateFields(){
+    const remarks =  this.cancelForm.get('remarks')?.value;
+    const cancellationDate = this.cancelForm.get('cancellationDate')?.value;
+    
+    // if(this.raiseBankCharge === 'yes' && !remarks && !cancellationDate){
+    //   this.globalMessagingService.displayErrorMessage('Error','Please fill all the required fields marked with asterisk');
+    //   return;
+    // }else{
+    //   this.cancelReceipt();
+    // }
+    // if( !remarks && !cancellationDate){
+    //   this.globalMessagingService.displayErrorMessage('Error','Please fill all the required fields marked with asterisk');
+    //   return;
+    // }else{
+    //   this.cancelReceipt();
+    // }
+    if (this.cancelForm.invalid) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Please fill all the required fields'
+      );
+      return;
+    }
+    
+    this.cancelReceipt();
+
+  }
+  cancelReceipt() {
+    if (!this.selectedReceipt) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No receipt selected for cancellation'
+      );
+      return;
+    }
+    const formValues = this.cancelForm.value;
+    const remarks =  this.cancelForm.get('remarks')?.value;
+    const cancellationDate = this.cancelForm.get('cancellationDate')?.value;
+    const glAccount =  this.cancelForm.get('glAccount')?.value;
+    const accountCharged = this.cancelForm.get('accountCharged')?.value;
+   
+    const body = {
+      no: this.selectedReceipt.no,
+      remarks:formValues.remarks,
+      isChargeRaised: formValues.raiseBankCharge,
+      cancellationDate:formValues.cancellationDate,
+      bankAmount:  null,
+      clientAmount: null,
+      userCode: this.loggedInUser.code,
+      branchCode: this.defaultBranch?.id || this.selectedBranch?.id,
+      bankChargesGlAcc:  null,
+      otherChargesGlAcc: null,
+    };
+    
+    this.receiptManagementService.cancelReceipt(body).subscribe({
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'success',
+          response.msg || 'receipt successfully cancelled'
+        );
+        this.closeModal();
+        this.fetchReceiptsToCancel(this.defaultBranch?.id || this.selectedBranch?.id); // Refresh list
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          err.error.status || 'failed to cancel the receipt'
+        );
+      },
+    });
+  }
+  
+  fetchGlAccounts(branchCode:number){
+    this.receiptManagementService.getGlAccount(branchCode).subscribe({
+      next:(response)=>{
+        this.globalMessagingService.displaySuccessMessage('success','successfully retrieve gl accounts');
+      },
+      error:(err)=>{
+        this.globalMessagingService.displayErrorMessage('error',err.error.status || 'failed to fetch gl accounts');
+      }
+    })
   }
   /**
    * @method closeModal - Deprecated if using Angular modals
