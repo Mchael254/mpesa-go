@@ -1,7 +1,7 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { cancelReceiptDTO, unPrintedReceiptsDTO } from '../data/receipt-management-dto';
+import { cancelReceiptDTO, glAccountDTO, ReceiptToCancelDTO, unPrintedReceiptsDTO } from '../data/receipt-management-dto';
 
 import { ApiService } from '../../../shared/services/api/api.service';
 
@@ -21,6 +21,20 @@ export class ReceiptManagementService {
       params
     );
   }
+  getReceiptsToCancel(branchCode:number):Observable<ReceiptToCancelDTO>{
+    const params = new HttpParams().set('branchCode',`${branchCode}`);
+   return this.api.GET<ReceiptToCancelDTO>(
+    `receipts/receipts-to-cancel`,
+    
+    API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
+    params
+
+
+   )
+
+    
+
+  }
   cancelReceipt(body:cancelReceiptDTO):Observable<any>{
     
     return this.api.POST<any>(
@@ -30,6 +44,17 @@ export class ReceiptManagementService {
       
 
     );
+
+  }
+  getGlAccount(branchCode:number):Observable<glAccountDTO>{
+    const params = new HttpParams().set('branchCode',`${branchCode}`);
+    return this.api.GET<glAccountDTO>(
+        `gl-accounts/branch/${params}`,
+        API_CONFIG.FMS_GENERAL_LEDGER_SERVICE_BASE_URL
+
+
+      );
+    
 
   }
 }
