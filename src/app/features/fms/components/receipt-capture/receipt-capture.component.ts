@@ -582,7 +582,7 @@ export class ReceiptCaptureComponent {
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          'Failed to fetch currencies'
+          err.error.status || 'Failed to fetch currencies'
         );
       },
     });
