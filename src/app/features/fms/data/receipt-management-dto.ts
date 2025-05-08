@@ -55,9 +55,10 @@ export interface unPrintedReceiptContentDTO {
 
 // Interface for the sort object within pageable (can be simple if not used)
 export interface PageableSortDTO {
-  
+  sorted?:boolean;
+  empty?:boolean;
+  unsorted?:boolean;
 }
-
 
 export interface PageableDTO {
   pageNumber: number;
@@ -86,9 +87,9 @@ export interface unPrintedReceiptsDTO {
     empty: boolean; // Already existed
   };
 }
-export interface cancelReceiptDTO{
-  receiptNumber: number;
-  remarks:string;
+export interface cancelReceiptDTO {
+  no: number;
+  remarks: string;
   isChargeRaised: string;
   cancellationDate: string;
   bankAmount: number;
@@ -97,4 +98,99 @@ export interface cancelReceiptDTO{
   branchCode: number;
   bankChargesGlAcc: number;
   otherChargesGlAcc: number;
+}
+export interface ReceiptToCancelDTO {
+  msg: string;
+  success: boolean;
+  data: {
+    content: ReceiptsToCancelContentDTO[];
+    pageable: PageableDTO;
+
+    last: boolean;
+    totalElements: number;
+    totalPages: number;
+    first: boolean;
+    size: number;
+    number: number;
+    sort: any[];
+    numberOfElements: number;
+    empty: boolean;
+  };
+}
+
+export interface ReceiptsToCancelContentDTO {
+  receiptNumber: number;
+  receiptDate: string;
+  captureDate: string;
+  capturedBy: number;
+  amount: number;
+  paymentMode: string;
+  paymentMemo: string;
+  paidBy: string;
+  documentDate: string;
+  description: string;
+  printed: string;
+  applicationSource: number;
+  accountCode: number;
+  accountType: string;
+  branchCode: number;
+  accountShortDescription: string;
+  currencyCode: number;
+  bankAccCode: number;
+  cancelled: string;
+  commission: number;
+  batchCode: string;
+  branchReceiptNumber: number;
+  branchReceiptCode: string;
+  drawersBank: string;
+  accountTypeId: string;
+  bankBranchCode: number;
+  receiptType: string;
+  cancelledBy: string;
+  reference: string;
+  cbPosted: string;
+  sourcePosted: string;
+  netGrossFlag: string;
+  glAccount: string;
+  parentNumber: string;
+  cancelledDate: string;
+  voucherNumber: number;
+  reverseVoucherNumber: string;
+  errorMessage: string;
+  bankChargeAmount: string;
+  clientChargeAmount: string;
+  vatcertificateNumber: string;
+  policyType: string;
+  remarks: string;
+  agentCode: number;
+  receivedFrom: string;
+  collectionAccountCode: number;
+  manualReference: string;
+  banked: string;
+  allocation: string;
+  totalAllocation: number;
+  totalAllocation2: number;
+}
+export interface glContentDTO{
+  accountNumber: string;
+        accountName: string;
+        branchCode:number;
+        organizationCode: string;
+}
+export interface glAccountDTO{
+  msg:string;
+  success:boolean;
+  data:{
+    totalPages: number;
+    totalElements: number;
+    pageable:PageableDTO;
+    first: boolean;
+    last: boolean;
+    size: number;
+    content:glContentDTO;
+    number:number;
+    sort:PageableSortDTO;
+    numberOfElements:number;
+    empty:boolean
+  }
 }
