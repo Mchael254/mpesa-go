@@ -55,9 +55,9 @@ export interface unPrintedReceiptContentDTO {
 
 // Interface for the sort object within pageable (can be simple if not used)
 export interface PageableSortDTO {
-  sorted?:boolean;
-  empty?:boolean;
-  unsorted?:boolean;
+  sorted?: boolean;
+  empty?: boolean;
+  unsorted?: boolean;
 }
 
 export interface PageableDTO {
@@ -171,26 +171,26 @@ export interface ReceiptsToCancelContentDTO {
   totalAllocation: number;
   totalAllocation2: number;
 }
-export interface glContentDTO{
-  accountNumber: string;
-        accountName: string;
-        branchCode:number;
-        organizationCode: string;
+export interface glContentDTO {
+  account_number: string;
+  account_name: string;
+  branch_code: number;
+  organization_code: string;
 }
-export interface glAccountDTO{
-  msg:string;
-  success:boolean;
-  data:{
+export interface glAccountDTO {
+  msg: string;
+  success: boolean;
+  data: {
     totalPages: number;
     totalElements: number;
-    pageable:PageableDTO;
+    pageable: PageableDTO;
     first: boolean;
     last: boolean;
     size: number;
-    content:glContentDTO;
-    number:number;
-    sort:PageableSortDTO;
-    numberOfElements:number;
-    empty:boolean
-  }
+    content: glContentDTO;
+    number: number;
+    sort: PageableSortDTO;
+    numberOfElements: number;
+    empty: boolean;
+  };
 }
