@@ -2304,6 +2304,7 @@
       "cancellationDate": "Stornierungsdatum",
       "remarks": "Bemerkungen",
       "raiseBankCharge": "Bankgebühr erheben",
+      "clientCharges":"Kundengebühren",
       "yes": "ja",
       "no": "nein",
       "accountCharged": "belastetes Konto",

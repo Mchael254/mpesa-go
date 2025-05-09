@@ -2299,6 +2299,7 @@
       "cancellationDate": "Tarehe ya kufutwa",
       "remarks": "Maoni",
       "ariseBankCharge": "Toza malipo ya benki",
+      "clientCharges":"Malipo ya mteja",
       "yes": "ndiyo",
       "no": "hapana",
       "accountCharged": "akaunti iliyolipishwa",

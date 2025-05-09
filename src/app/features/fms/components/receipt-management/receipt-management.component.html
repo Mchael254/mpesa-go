@@ -47,8 +47,8 @@
                     type="text"
                     class="form-control form-control-sm"
                     style="width: 90px"
-                    (keyup.enter)="applyFilter($event, 'receiptNumber')"
-                    (input)="applyFilter($event, 'receiptNumber')"
+                    (keyup.enter)="filter($event, 'receiptNumber')"
+                    (input)="filter($event, 'receiptNumber')"
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
@@ -58,8 +58,8 @@
                     type="text"
                     class="form-control form-control-sm"
                     style="width: 90px"
-                    (keyup.enter)="applyFilter($event, 'receiptDate')"
-                    (input)="applyFilter($event, 'receiptDate')"
+                    (keyup.enter)="filter($event, 'receiptDate')"
+                    (input)="filter($event, 'receiptDate')"
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
@@ -69,8 +69,8 @@
                     type="text"
                     class="form-control form-control-sm"
                     style="width: 90px"
-                    (keyup.enter)="applyFilter($event, 'receivedFrom')"
-                    (input)="applyFilter($event, 'receivedFrom')"
+                    (keyup.enter)="filter($event, 'receivedFrom')"
+                    (input)="filter($event, 'receivedFrom')"
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
@@ -80,8 +80,8 @@
                     type="number"
                     class="form-control form-control-sm"
                     style="width: 90px"
-                    (keyup.enter)="applyFilter($event, 'amount')"
-                    (input)="applyFilter($event, 'amount')"
+                    (keyup.enter)="filter($event, 'amount')"
+                    (input)="filter($event, 'amount')"
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
@@ -91,8 +91,8 @@
                     type="text"
                     class="form-control form-control-sm"
                     style="width: 90px"
-                    (keyup.enter)="applyFilter($event, 'paymentMethod')"
-                    (input)="applyFilter($event, 'paymentMethod')"
+                    (keyup.enter)="filter($event, 'paymentMethod')"
+                    (input)="filter($event, 'paymentMethod')"
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
@@ -105,7 +105,7 @@
               disabled
             /> -->
                 <th class="header-bg">
-                  <button class="btn btn-primary-outline">clear filters</button>
+                  <!-- <button class="btn btn-primary-outline">clear filters</button> -->
                 </th>
               </tr>
             </ng-template>
@@ -166,7 +166,8 @@
                 <div class="col">
                   <label for="cancelDate" style="color: #000">{{
                     "fms.receipt-management.cancellationDate" | translate
-                  }}</label>
+                  }}</label
+                  ><span class="required"></span>
                   <input
                     type="date"
                     class="form-control"
@@ -177,7 +178,8 @@
                 <div class="col">
                   <label for="remarks" style="color: #000">{{
                     "fms.receipt-management.remarks" | translate
-                  }}</label>
+                  }}</label
+                  ><span class="required"></span>
                   <input
                     type="text"
                     class="form-control"
@@ -226,30 +228,77 @@
                       </label>
                     </div>
                   </div>
+
                   <!-- Show this row only when 'yes' is selected -->
-                  <div
-                    class="row customstyle"
-                    *ngIf="raiseBankCharge === 'yes'"
-                  >
+                  <div class="row" *ngIf="raiseBankCharge === 'Y'">
                     <div class="col">
                       <label for="accountCharged" style="color: #000">{{
                         "fms.receipt-management.accountCharged" | translate
-                      }}</label>
+                      }}</label
+                      ><span class="required"></span>
                       <select
                         class="form-select"
                         id="accountCharged"
                         formControlName="accountCharged"
-                      ></select>
+                      >
+                        <option
+                          *ngFor="let accounts of glAccountContent"
+                          [value]="accounts.account_number"
+                        >
+                          {{ accounts.account_name }},{{
+                            accounts.account_number
+                          }}
+                        </option>
+                      </select>
                     </div>
                     <div class="col">
                       <label for="glAccount" style="color: #000">{{
                         "fms.receipt-management.glAccount" | translate
-                      }}</label>
+                      }}</label
+                      ><span class="required"></span>
                       <select
                         class="form-select"
                         id="glAccount"
                         formControlName="glAccount"
-                      ></select>
+                      >
+                        <option
+                          *ngFor="let accounts of glAccountContent"
+                          [value]="accounts.account_number"
+                          style="color: red"
+                        >
+                          {{ accounts.account_name }},{{
+                            accounts.account_number
+                          }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div
+                    class="row"
+                    *ngIf="raiseBankCharge === 'Y'"
+                    style="margin-top: 20px"
+                  >
+                    <div class="col col-lg-6">
+                      <label for="bankCharges" style="color: #000">{{
+                        "fms.receipt-management.bankCharges" | translate
+                      }}</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="bankCharges"
+                        formControlName="bankCharges"
+                      />
+                    </div>
+                    <div class="col col-lg-6">
+                      <label for="clientCharges" style="color: #000">{{
+                        "fms.receipt-management.clientCharges" | translate
+                      }}</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="clientCharges"
+                        formControlName="clientCharges"
+                      />
                     </div>
                   </div>
                 </div>
@@ -342,13 +391,13 @@
                   />
                 </th>
                 <th class="header-bg">
-                  {{ "fms.receipting.actions" | translate }}
+                  <!-- {{ "fms.receipting.actions" | translate }}
                   <input
                     type="text"
                     class="form-control form-control-sm"
                     style="width: 90px"
                     disabled
-                  />
+                  /> -->
                 </th>
               </tr>
             </ng-template>

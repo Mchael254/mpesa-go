@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import {
+  glAccountDTO,
+  glContentDTO,
   ReceiptsToCancelContentDTO,
   ReceiptToCancelDTO,
   unPrintedReceiptContentDTO,
@@ -14,19 +16,25 @@ import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { Router } from '@angular/router';
-import { BranchDTO } from '../../data/receipting-dto';
+import { BranchDTO, GenericResponse } from '../../data/receipting-dto';
 import { TranslateService } from '@ngx-translate/core';
-import { FormBuilder, FormGroup, Validators,ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { TimeScale } from 'chart.js';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { Pagination } from 'src/app/shared/data/common/pagination';
 @Component({
   selector: 'app-receipt-management',
   templateUrl: './receipt-management.component.html',
   styleUrls: ['./receipt-management.component.css'],
 })
 export class ReceiptManagementComponent {
-  cancelForm:FormGroup;
-   users:any;
+  cancelForm: FormGroup;
+  users: any;
   /**
    * @property {BranchDTO} defaultBranch - The default branch context derived from session, used if no specific branch is selected.
    */
@@ -41,15 +49,16 @@ export class ReceiptManagementComponent {
   // --- Data Holding Properties ---
   /** @property {unPrintedReceiptsDTO | null} unPrintedReceiptData - Holds the complete API response for unprinted receipts. */
 
-  unPrintedReceiptData: unPrintedReceiptsDTO;
+  unPrintedReceiptData: Pagination<unPrintedReceiptContentDTO> =
+  {} as Pagination<unPrintedReceiptContentDTO>; 
   /** @property {unPrintedReceiptContentDTO[]} unPrintedReceiptContent - Holds the actual list/array of receipt details extracted from the API response. This should be the source for filtering. */
 
   unPrintedReceiptContent: unPrintedReceiptContentDTO[] = []; // Stores just the content array
   /** @property {unPrintedReceiptContentDTO[]} filteredtabledata - Holds the data currently displayed in the table after filtering. Should be typed correctly. */
-  tabledata: unPrintedReceiptContentDTO[] = [];
+ // tabledata: unPrintedReceiptContentDTO[] = [];
   filteredtabledata: unPrintedReceiptContentDTO[] = [];
-  unPrintedReceiptsdata:unPrintedReceiptContentDTO[] = [];
-  printedReceiptsdata:unPrintedReceiptContentDTO[] = [];
+  unPrintedReceiptsdata: unPrintedReceiptContentDTO[] = [];
+  printedReceiptsdata: unPrintedReceiptContentDTO[] = [];
   // --- Filtering Properties ---
 
   /** @property {string} paymentMethodFilter - Filter value for the 'Payment Method' column. */
@@ -72,26 +81,33 @@ export class ReceiptManagementComponent {
   isPrinting: boolean = false;
   /** @property {boolean} isCancellation - Flag used for styling the 'Cancellation' button as active/inactive. */
   isCancellation: boolean = true; // Default view is Cancellation
-printed:boolean=false;
-unprinted:boolean=false;
+  printed: boolean = false;
+  unprinted: boolean = false;
   /** @property {number | null} receiptNumber - Stores the specific receipt number selected for printing before navigation. */
   receiptNumber: number | null = null; // Initialize as null
   receiptData: unPrintedReceiptContentDTO[] = [];
-//cancellation section
-receiptsToCancel:ReceiptToCancelDTO;
-receiptsToCancelList:ReceiptsToCancelContentDTO[]=[];
-unCancelledReceipts:ReceiptsToCancelContentDTO[]=[];
-selectedReceipt: any = null;
-loggedInUser:any;
-//raiseBankCharge: string = 'no';
+  //cancellation section
+ // receiptsToCancel: ReceiptToCancelDTO;
+  receiptsToCancelPagination:Pagination<ReceiptsToCancelContentDTO> =
+  {} as Pagination<ReceiptsToCancelContentDTO>; // This holds full pagination data
+  receiptsToCancelList: ReceiptsToCancelContentDTO[] = [];
+  unCancelledReceipts: ReceiptsToCancelContentDTO[] = [];
+  selectedReceipt: any = null;
+  glAccountPagination: Pagination<glContentDTO> =
+    {} as Pagination<glContentDTO>; // This holds full pagination data
+    filteredReceipts:ReceiptsToCancelContentDTO[] = [];
+  glAccountContent: glContentDTO[] = []; // This will hold just the content array
+
+  loggedInUser: any;
+  //raiseBankCharge: string = 'no';
   constructor(
     private receiptManagementService: ReceiptManagementService,
     private globalMessagingService: GlobalMessagingService,
     private sessionStorage: SessionStorageService,
     private translate: TranslateService,
     private router: Router,
-    private fb:FormBuilder,
-    private authService:AuthService
+    private fb: FormBuilder,
+    private authService: AuthService
   ) {}
   /**
    * @ngOnInit Lifecycle hook.
@@ -111,8 +127,8 @@ loggedInUser:any;
     this.defaultBranch = storedDefaultBranch
       ? JSON.parse(storedDefaultBranch)
       : null;
-      this.loggedInUser = this.authService.getCurrentUser();
-   
+    this.loggedInUser = this.authService.getCurrentUser();
+
     // Ensure only one branch is active at a time
     if (this.selectedBranch) {
       this.defaultBranch = null;
@@ -122,44 +138,45 @@ loggedInUser:any;
     this.fetchUnprintedReceipts(
       this.defaultBranch?.id || this.selectedBranch?.id
     );
-    this.fetchReceiptsToCancel(this.defaultBranch?.id || this.selectedBranch?.id);
-   
-    //this.fetchGlAccounts(this.defaultBranch?.id || this.selectedBranch?.id);
-    
-  }
-initializeForm(){
-this.cancelForm = this.fb.group({
-  accountCharged:['',Validators.required],
-  glAccount:['',Validators.required],
-  remarks:['',Validators.required],
-  cancellationDate:['',Validators.required],
-  raiseBankCharge:['no',Validators.required] // 'no' is the default value
+    this.fetchReceiptsToCancel(
+      this.defaultBranch?.id || this.selectedBranch?.id
+    );
 
-});
- // Add conditional validation
- this.cancelForm.get('raiseBankCharge')?.valueChanges.subscribe(value => {
-  const accountChargedControl = this.cancelForm.get('accountCharged');
-  const glAccountControl = this.cancelForm.get('glAccount');
-  
-  if (value === 'yes') {
-    accountChargedControl?.setValidators([Validators.required]);
-    glAccountControl?.setValidators([Validators.required]);
-  } else {
-    accountChargedControl?.clearValidators();
-    glAccountControl?.clearValidators();
+    this.fetchGlAccounts(this.defaultBranch?.id || this.selectedBranch?.id);
   }
-  accountChargedControl?.updateValueAndValidity();
-  glAccountControl?.updateValueAndValidity();
-});
-}
-// Helper getter for easy access in template
-get raiseBankCharge() {
-  return this.cancelForm.get('raiseBankCharge')?.value;
-}
+  initializeForm() {
+    this.cancelForm = this.fb.group({
+      accountCharged: ['', Validators.required],
+      glAccount: ['', Validators.required],
+      remarks: ['', Validators.required],
+      cancellationDate: ['', Validators.required],
+      raiseBankCharge: ['N', Validators.required], // 'no' is the default value
+      bankCharges:[''],
+      clientCharges:['']
+    });
+    //Add conditional validation
+    this.cancelForm.get('raiseBankCharge')?.valueChanges.subscribe((value) => {
+      const accountChargedControl = this.cancelForm.get('accountCharged');
+      const glAccountControl = this.cancelForm.get('glAccount');
+
+      if (value === 'Y') {
+        accountChargedControl?.setValidators([Validators.required]);
+        glAccountControl?.setValidators([Validators.required]);
+      } else {
+        accountChargedControl?.clearValidators();
+        glAccountControl?.clearValidators();
+      }
+      accountChargedControl?.updateValueAndValidity();
+      glAccountControl?.updateValueAndValidity();
+    });
+  }
+  // Helper getter for easy access in template
+  get raiseBankCharge() {
+    return this.cancelForm.get('raiseBankCharge')?.value;
+  }
   get currentPageReportTemplate(): string {
     return this.translate.instant('fms.receipt-management.pageReport');
   }
-
 
   // --- UI Mode Switching ---
 
@@ -197,12 +214,13 @@ get raiseBankCharge() {
    */
   fetchUnprintedReceipts(branchCode: number) {
     this.receiptManagementService.getUnprintedReceipts(branchCode).subscribe({
-      next: (response) => {
-        this.unPrintedReceiptData = response;
+      next: (response: GenericResponse<Pagination<unPrintedReceiptContentDTO>>) => {
+        this.unPrintedReceiptData = response.data;
         this.unPrintedReceiptContent = response.data.content; // Stores just the content array
         this.filteredtabledata = this.unPrintedReceiptContent;
-        this.filteredtabledata = this.unPrintedReceiptContent;
        
+        
+        
       },
 
       error: (err) => {
@@ -221,6 +239,80 @@ get raiseBankCharge() {
    * @param {Event} event - The input event object.
    * @param {'receiptNumber' | 'receiptDate' | 'receivedFrom' | 'amount' | 'paymentMethod'} field - The data field being filtered.
    */
+  filter(event:Event,field:string):void{
+const inputElement = event.target as HTMLInputElement;
+const filterValue =  inputElement.value;
+switch(field){
+  case "receiptNumber":
+    this.receiptNumberFilter  = filterValue;
+    break;
+    case "receiptDate":
+      this.receiptDateFilter = filterValue;
+      break;
+      case "receivedFrom":
+        this.receivedFromFilter = filterValue;
+        break;
+      case 'amount':
+        this.amountFilter = filterValue ? Number(filterValue) : null;
+        break;
+      case 'paymentMethod':
+        this.paymentMethodFilter = filterValue;
+        break; 
+}
+
+this.filterAllReceipts(); // Ensure this is called
+
+  }
+  filterAllReceipts():void{
+    if (!this.receiptsToCancelList) return;
+    console.log('Filtering with:', {
+      receiptNumber: this.receiptNumberFilter,
+      date: this.receiptDateFilter,
+      from: this.receivedFromFilter,
+      amount: this.amountFilter,
+      method: this.paymentMethodFilter
+    });
+    // Always start with the full dataset
+    let filteredData = [...this.receiptsToCancelList];
+     // Apply filters only if they have values
+    if(this.receiptNumberFilter.trim()){
+      const searchTerm = this.receiptNumberFilter.toLowerCase();
+      filteredData = filteredData.filter((item) =>
+        item.branchReceiptCode?.toLowerCase().includes(searchTerm)
+      );
+
+    }
+    
+    if (this.receiptDateFilter?.trim()) {
+      const searchTerm = this.receiptDateFilter.toLowerCase();
+      filteredData = filteredData.filter((item) =>
+        item.receiptDate?.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    if (this.receivedFromFilter?.trim()) {
+      const searchTerm = this.receivedFromFilter.toLowerCase();
+      filteredData = filteredData.filter((item) =>
+        item.receivedFrom?.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    if (this.amountFilter) {
+      filteredData = filteredData.filter(
+        (item) => Number(item.amount) === this.amountFilter
+      );
+    }
+
+    if (this.paymentMethodFilter?.trim()) {
+      const searchTerm = this.paymentMethodFilter.toLowerCase();
+      filteredData = filteredData.filter((item) =>
+        item.paymentMode?.toLowerCase().includes(searchTerm)
+      );
+    }
+   // console.log('Filtered results:', this.filteredReceipts);
+    this.filteredReceipts = filteredData;
+    this.totalRecords = this.filteredReceipts.length;
+      }
   applyFilter(event: Event, field: string): void {
     const inputElement = event.target as HTMLInputElement;
     const filterValue = inputElement.value;
@@ -245,6 +337,7 @@ get raiseBankCharge() {
 
     this.filterReceipts(); // Ensure this is called
   }
+  
   /**
    * @method filterReceipts
    * @description Filters the main `unPrintedReceiptContent` array based on the current
@@ -305,7 +398,7 @@ get raiseBankCharge() {
       this.paymentMethodFilter?.trim()
     );
   }
-  
+
   /**
    * @method printReceipt
    * @description Stores the selected receipt number in session storage and navigates
@@ -322,29 +415,31 @@ get raiseBankCharge() {
     this.router.navigate(['/home/fms/receipt-print-preview']);
   }
   //cancellation section
-  fetchReceiptsToCancel(branchCode:number){
-    this.receiptManagementService.getReceiptsToCancel(branchCode).subscribe(
-      {
-        next:(response)=>{
-          this.receiptsToCancel = response;
-          
-          this.receiptsToCancelList = response.data.content;
-         
-          //this.globalMessagingService.displaySuccessMessage('success','successfully retrieved reeipts to cancel');
-          this.unCancelledReceipts= this.receiptsToCancelList.filter((list)=>{
-            return (list.cancelled=="N");
-              
-            
-            
-          });
-          
-        },
-        error:(err)=>{
-this.globalMessagingService.displayErrorMessage('Error',err.error.status || 'failed to load receipts');
-        },
-      }
-    )
+  fetchReceiptsToCancel(branchCode: number) {
+    this.receiptManagementService.getReceiptsToCancel(branchCode).subscribe({
+      next: (response: GenericResponse<Pagination<ReceiptsToCancelContentDTO>>) => {
+        this.receiptsToCancelPagination = response.data;
 
+
+        this.receiptsToCancelList = response.data.content;
+      
+   
+      
+      this.filteredReceipts = [...this.receiptsToCancelList]; // Make a copy
+      this.totalRecords = this.filteredReceipts.length;
+        //this.globalMessagingService.displaySuccessMessage('success','successfully retrieved reeipts to cancel');
+        this.unCancelledReceipts = this.receiptsToCancelList.filter((list) => {
+          return list.cancelled == 'N';
+        });
+        this.filteredReceipts = [...this.unCancelledReceipts]; // Make a copy
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          err.error.status || 'failed to load receipts'
+        );
+      },
+    });
   }
   // --- Modal Interactions (Using Bootstrap JS ) ---
   /**
@@ -361,30 +456,23 @@ this.globalMessagingService.displayErrorMessage('Error',err.error.status || 'fai
     modalElement.show();
   }
   // Add form reset method
-resetForm(): void {
-  this.cancelForm.reset({
-    remarks: '',
-    cancellationDate: '',
-    raiseBankCharge: 'N',
-    accountCharged: '',
-    glAccount: ''
-  });
-}
-  validateFields(){
-    const remarks =  this.cancelForm.get('remarks')?.value;
+  resetForm(): void {
+    this.cancelForm.reset({
+      remarks: '',
+      cancellationDate: '',
+      raiseBankCharge: 'N',
+      accountCharged: '',
+      glAccount: '',
+    });
+  }
+  validateFields() {
+    const remarks = this.cancelForm.get('remarks')?.value;
     const cancellationDate = this.cancelForm.get('cancellationDate')?.value;
-    
-    // if(this.raiseBankCharge === 'yes' && !remarks && !cancellationDate){
-    //   this.globalMessagingService.displayErrorMessage('Error','Please fill all the required fields marked with asterisk');
-    //   return;
-    // }else{
-    //   this.cancelReceipt();
-    // }
-    // if( !remarks && !cancellationDate){
-    //   this.globalMessagingService.displayErrorMessage('Error','Please fill all the required fields marked with asterisk');
-    //   return;
-    // }else{
-    //   this.cancelReceipt();
+    const formValues = this.cancelForm.value;
+    // if(this.raiseBankCharge==='N' && !remarks && !cancellationDate){
+    //   this.globalMessagingService.displayErrorMessage('Warning!','please fill all fields marked with asterisk');
+    //     return;
+
     // }
     if (this.cancelForm.invalid) {
       this.globalMessagingService.displayErrorMessage(
@@ -393,9 +481,8 @@ resetForm(): void {
       );
       return;
     }
-    
-    this.cancelReceipt();
 
+    this.cancelReceipt();
   }
   cancelReceipt() {
     if (!this.selectedReceipt) {
@@ -406,24 +493,20 @@ resetForm(): void {
       return;
     }
     const formValues = this.cancelForm.value;
-    const remarks =  this.cancelForm.get('remarks')?.value;
-    const cancellationDate = this.cancelForm.get('cancellationDate')?.value;
-    const glAccount =  this.cancelForm.get('glAccount')?.value;
-    const accountCharged = this.cancelForm.get('accountCharged')?.value;
-   
+
     const body = {
       no: this.selectedReceipt.no,
-      remarks:formValues.remarks,
+      remarks: formValues.remarks,
       isChargeRaised: formValues.raiseBankCharge,
-      cancellationDate:formValues.cancellationDate,
-      bankAmount:  null,
-      clientAmount: null,
+      cancellationDate: formValues.cancellationDate,
+      bankAmount: formValues.bankCharges || null,
+      clientAmount: formValues?.clientCharges || null,
       userCode: this.loggedInUser.code,
       branchCode: this.defaultBranch?.id || this.selectedBranch?.id,
-      bankChargesGlAcc:  null,
-      otherChargesGlAcc: null,
+      bankChargesGlAcc: formValues?.accountCharged || null,
+      otherChargesGlAcc: formValues?.glAccount || null,
     };
-    
+//console.log('account number>',formValues.accountCharged);
     this.receiptManagementService.cancelReceipt(body).subscribe({
       next: (response) => {
         this.globalMessagingService.displaySuccessMessage(
@@ -431,7 +514,9 @@ resetForm(): void {
           response.msg || 'receipt successfully cancelled'
         );
         this.closeModal();
-        this.fetchReceiptsToCancel(this.defaultBranch?.id || this.selectedBranch?.id); // Refresh list
+        this.fetchReceiptsToCancel(
+          this.defaultBranch?.id || this.selectedBranch?.id
+        ); // Refresh list
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
@@ -441,16 +526,22 @@ resetForm(): void {
       },
     });
   }
-  
-  fetchGlAccounts(branchCode:number){
+
+  fetchGlAccounts(branchCode: number) {
     this.receiptManagementService.getGlAccount(branchCode).subscribe({
-      next:(response)=>{
-        this.globalMessagingService.displaySuccessMessage('success','successfully retrieve gl accounts');
+      next: (response: GenericResponse<Pagination<glContentDTO>>) => {
+        this.glAccountPagination = response.data;
+        this.glAccountContent = response.data.content;
+        // console.log('gl accounts>',this.glAccountContent);
+        // this.globalMessagingService.displaySuccessMessage('success','successfully retrieve gl accounts');
       },
-      error:(err)=>{
-        this.globalMessagingService.displayErrorMessage('error',err.error.status || 'failed to fetch gl accounts');
-      }
-    })
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'error',
+          err.error.status || 'failed to fetch gl accounts'
+        );
+      },
+    });
   }
   /**
    * @method closeModal - Deprecated if using Angular modals

@@ -2829,6 +2829,7 @@
       "cancellationDate": "Date d'annulation",
       "remarks": "Remarques",
       "raiseBankCharge": "Appliquer des frais bancaires",
+      "clientCharges":"Frais clients",
       "yes": "oui",
       "no": "non",
       "accountCharged": "cuenta cargada",

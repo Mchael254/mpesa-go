@@ -2888,6 +2888,8 @@
       "cancellationDate": "Cancellation date",
       "remarks": "Remarks",
       "raiseBankCharge": "Raise bank charge",
+      "bankCharges":"Bank charges",
+      "clientCharges":"Client charges",
       "yes": "Yes",
       "no": "No",
       "accountCharged": "Account charged",
