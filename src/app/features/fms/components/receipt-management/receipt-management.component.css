@@ -135,10 +135,11 @@
     height: 19px;
     margin: 4px 202px 20px 0;
     font-family: Roboto;
-  
+  color:#00529b  !important;
    
    
   }
+  
   .Receipt-cancellation,.Raise-bank-charge {
     font-size: 16px;
     font-weight: normal;
@@ -161,7 +162,10 @@
  
  
   }
-
+/* Make sure dropdown text is visible */
+select.form-select, select.form-select option {
+  color: #000 !important; /* Or your preferred text color */
+}
  .customcss{
   margin: 0px 0px 10px 0px;
   

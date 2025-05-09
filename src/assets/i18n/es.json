@@ -2836,6 +2836,7 @@
       "cancellationDate": "Fecha de cancelación",
       "remarks": "Observaciones",
       "raiseBankCharge": "Aplicar cargo bancario",
+      "clientCharges":"Cargos al cliente",
       "yes": "sí",
       "no": "no",
       "accountCharged": "cuenta cargada",
