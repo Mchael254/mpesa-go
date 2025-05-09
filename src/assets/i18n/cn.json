@@ -2278,6 +2278,7 @@
       "cancellationDate": "取消日期",
       "remarks": "备注",
       "raiseBankCharge": "收取银行手续费",
+      "clientCharges":"客户费用",
       "yes": "是",
       "no": "否",
       "accountCharged": "已收费账户",
