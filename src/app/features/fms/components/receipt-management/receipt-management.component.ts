@@ -273,7 +273,8 @@ this.filterAllReceipts(); // Ensure this is called
       method: this.paymentMethodFilter
     });
     // Always start with the full dataset
-    let filteredData = [...this.receiptsToCancelList];
+    let filteredData = [...this.unCancelledReceipts];
+  
      // Apply filters only if they have values
     if(this.receiptNumberFilter.trim()){
       const searchTerm = this.receiptNumberFilter.toLowerCase();
@@ -312,6 +313,7 @@ this.filterAllReceipts(); // Ensure this is called
    // console.log('Filtered results:', this.filteredReceipts);
     this.filteredReceipts = filteredData;
     this.totalRecords = this.filteredReceipts.length;
+   
       }
   applyFilter(event: Event, field: string): void {
     const inputElement = event.target as HTMLInputElement;
@@ -425,13 +427,15 @@ this.filterAllReceipts(); // Ensure this is called
       
    
       
-      this.filteredReceipts = [...this.receiptsToCancelList]; // Make a copy
-      this.totalRecords = this.filteredReceipts.length;
+      
         //this.globalMessagingService.displaySuccessMessage('success','successfully retrieved reeipts to cancel');
         this.unCancelledReceipts = this.receiptsToCancelList.filter((list) => {
           return list.cancelled == 'N';
         });
+       // this.filteredReceipts = [...this.receiptsToCancelList]; // Make a copy
+     
         this.filteredReceipts = [...this.unCancelledReceipts]; // Make a copy
+         this.totalRecords = this.filteredReceipts.length;
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
