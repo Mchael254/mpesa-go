@@ -95,7 +95,7 @@
                   }"
                 >
                   <div *ngIf="f['assign_role']?.errors['required']">
-                    Role is required
+                    {{ "entities.roleRequired" | translate }}
                   </div>
                 </div>
               </div>
@@ -184,6 +184,7 @@
                   id="mode_of_identity"
                   class="form-select"
                   formControlName="mode_of_identity"
+                  (change)="modeOfIdentityClick()"
                   [ngClass]="{
                     'is-invalid':
                       f['mode_of_identity']?.invalid &&
@@ -255,8 +256,7 @@
                     {{ "entities.required" | translate }}
                   </div>
                   <div *ngIf="f['identity_number'].errors['pattern']">
-                    {{ "entities.id_number" | translate }}
-                    {{ "entities.format" | translate }} 12345678
+                    {{ currentIdentityFormatError || ("entities.format" | translate) }} {{ currentIdentityFormatHint }}
                   </div>
                 </div>
               </div>
@@ -293,7 +293,7 @@
                   </div>
                   <div *ngIf="f['pin_number'].errors['pattern']">
                     {{ "entities.pin_number" | translate }}
-                    {{ "entities.format" | translate }} A123456789R
+                    {{ "entities.format" | translate }} {{ pinNumberFormatHint }}
                   </div>
                 </div>
               </div>
@@ -301,7 +301,7 @@
             <ng-container *ngIf="visibleStatus['date_of_birth'] === 'Y'">
               <div class="col-md-4 col-6 md-col-4 pad-1">
                 <label for="date_of_birth">{{
-                    "entities.dob" | translate | titlecase
+                    selectedCategory === 'I' ? ("entities.dob" | translate) : ("entities.dateOfIncorporation" | translate)
                   }}</label>
                 <input
                   type="text"

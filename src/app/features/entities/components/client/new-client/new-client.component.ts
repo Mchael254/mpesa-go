@@ -2,7 +2,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import {EMPTY, from, Observable, of, ReplaySubject, tap} from 'rxjs';
+import {EMPTY, forkJoin, from, Observable, of, ReplaySubject, tap} from 'rxjs';
 import {catchError, concatMap, finalize, map, takeUntil} from 'rxjs/operators';
 import { EntityService } from '../../../services/entity/entity.service';
 import { ClientService } from '../../../services/client/client.service';
@@ -28,7 +28,6 @@ import { SetupsParametersService } from "../../../../../shared/services/setups-p
 import { DmsDocument } from "../../../../../shared/data/common/dmsDocument";
 import { AuthService } from "../../../../../shared/services/auth.service";
 import { DmsService } from "../../../../../shared/services/dms/dms.service";
-import { AppConfigService } from "../../../../../core/config/app-config-service";
 import { PassedClientDto } from '../../../data/PassedClientDTO';
 import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
 import { QuotationList } from '../../../../gis/components/quotation/data/quotationsDTO';
@@ -38,6 +37,8 @@ import {RequiredDocumentDTO} from "../../../../crm/data/required-document";
 import {SessionStorageService} from "../../../../../shared/services/session-storage/session-storage.service";
 import {MaritalStatusService} from "../../../../../shared/services/setups/marital-status/marital-status.service";
 import {NgxSpinnerService} from "ngx-spinner";
+import {SetupsParametersDTO} from "../../../../../shared/data/common/setups-parametersDTO";
+import {TranslateService} from "@ngx-translate/core";
 
 const log = new Logger("CreateClientComponent")
 
@@ -105,6 +106,8 @@ export class NewClientComponent implements OnInit {
     idNumber: 'Y',
     pinNumber: 'Y',
     gender: 'Y',
+    withEffectFrom: 'Y',
+    withEffectTo: 'Y',
     clientTypeId: 'Y',
     clientBranch: 'Y',
     clientTitle: 'Y',
@@ -214,6 +217,8 @@ export class NewClientComponent implements OnInit {
   selectedOwnershipStructureDetails: any;
   branchDetailsData: any[] = [];
   selectedBranchDetails: any;
+  individualAmlDetailsData: any[] = [];
+  selectedIndividualAmlDetails: any;
 
   selectedContactPersonIndex: number | null = null;
   selectedBranchIndex: number | null = null;
@@ -221,6 +226,7 @@ export class NewClientComponent implements OnInit {
   selectedCr12Index: number | null = null;
   selectedOwnershipIndex: number | null = null;
   selectedAmlIndex: number | null = null;
+  selectedIndividualAmlIndex: number | null = null;
 
   editMode: boolean = false;
   contactPersonDetailsForm: FormGroup;
@@ -229,10 +235,15 @@ export class NewClientComponent implements OnInit {
   amlDetailsForm: FormGroup;
   cr12DetailsForm: FormGroup;
   ownershipDetailsForm: FormGroup;
+  individualAmlDetailsForm: FormGroup;
   requiredDocumentsData: RequiredDocumentDTO[];
   selectedType: string = 'IN';
   maritalStatusData: any[];
   clientSaveResponse: any;
+  privacyStatementParam: SetupsParametersDTO[] = [];
+  termsOfUseParam: SetupsParametersDTO[] = [];
+  currentLanguage: any;
+  lastSelectedEntity: any;
 
   constructor(
     private clientService: ClientService,
@@ -254,15 +265,13 @@ export class NewClientComponent implements OnInit {
     private setupsParameterService: SetupsParametersService,
     private authService: AuthService,
     private dmsService: DmsService,
-    private appConfig: AppConfigService,
     private http: HttpClient,
     private requiredDocumentsService: RequiredDocumentsService,
     private sessionStorageService: SessionStorageService,
     private maritalStatusService: MaritalStatusService,
     private spinner: NgxSpinnerService,
-  ) {
-    this.pinNumberRegex = this.appConfig.config.organization.pin_regex;
-  }
+    private translate: TranslateService,
+  ) {}
   /**
    * Initializes the New Client Component.
    * - Retrieves entity details from session storage.
@@ -310,10 +319,12 @@ export class NewClientComponent implements OnInit {
     this.createAMLDetailsForm();
     this.createCR12DetailsForm();
     this.createOwnershipDetailsForm();
+    this.createIndividualAMLDetailsForm();
 
     this.fetchRequiredDocuments();
     this.fetchFundSource();
     this.fetchMaritalStatus();
+    this.fetchParamDetails();
 
     this.contactPersonDetailsData = this.sessionStorageService.getItem('contactPersonDetailsData') ? JSON.parse(this.sessionStorageService.getItem('contactPersonDetailsData')) : [];
     log.info('error here', this.contactPersonDetailsData)
@@ -321,6 +332,15 @@ export class NewClientComponent implements OnInit {
     this.payeeDetailsData = this.sessionStorageService.getItem('payeeDetailsData') ? JSON.parse(this.sessionStorageService.getItem('payeeDetailsData')) : [];
     this.amlDetailsData = this.sessionStorageService.getItem('amlDetailsData') ? JSON.parse(this.sessionStorageService.getItem('amlDetailsData')) : [];
     this.ownershipStructureData = this.sessionStorageService.getItem('ownershipDetailsData') ? JSON.parse(this.sessionStorageService.getItem('ownershipDetailsData')) : [];
+    this.individualAmlDetailsData = this.sessionStorageService.getItem('individualAmlDetailsData') ? JSON.parse(this.sessionStorageService.getItem('individualAmlDetailsData')) : [];
+
+    this.utilService.currentLanguage.subscribe(language => {
+      this.currentLanguage = language;
+      log.info('Language changed:', this.currentLanguage);
+      if (this.lastSelectedEntity) {
+        this.updateFieldLabelsOnLanguageChange(this.lastSelectedEntity);
+      }
+    });
   }
 
   /**
@@ -474,7 +494,9 @@ export class NewClientComponent implements OnInit {
       gender: [''],
       clientTypeId: [''],
       marital_status: [''],
-      newOrExistingClient: [''],
+      newOrExistingClient: ['NEW_CLIENT'],
+      withEffectFrom: [''],
+      withEffectTo: [''],
 
       contact_details: this.fb.group(
         {
@@ -533,7 +555,7 @@ export class NewClientComponent implements OnInit {
         },
       ),
 
-      wealth_details: this.fb.group(
+      /*wealth_details: this.fb.group(
         {
           wealth_citizenship: [''],
           funds_source: [''],
@@ -544,7 +566,7 @@ export class NewClientComponent implements OnInit {
           premiumFrequency: [''],
           distributeChannel: [''],
         },
-      ),
+      ),*/
     });
     // this.defineSmsNumberFormat();
     // this.defineDisabledFormInputs();
@@ -553,10 +575,15 @@ export class NewClientComponent implements OnInit {
 
     const fieldPath = '/assets/data/fields.json';
 
-    this.http.get(fieldPath).subscribe((data) => {
-      log.info('Fields JSON content:', data);
-      this.formFields = data;
-
+    this.mandatoryFieldsService.getMockFormFields().subscribe({
+      next: (data) => {
+        log.info('Fields JSON content:', data);
+        this.formFields = data;
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error);
+        log.error('Error loading fields.json:', err);
+      }
       // this.categorySubscription?.unsubscribe();
 
       /*this.categorySubscription = this.entityRegistrationForm.get('category')?.valueChanges.subscribe((value) => {
@@ -569,14 +596,13 @@ export class NewClientComponent implements OnInit {
       // this.selectedCategory = 'C';
 
       // this.processFields(this.formFields, this.selectedCategory);
-    }, (error) => {
-      log.error('Error loading fields.json:', error);
     });
   }
 
   private processFields(data: any, selectedEntityType: string) {
     const category= selectedEntityType === 'I'? 'individual' : 'corporate';
     const selectedClient = data.newClient[category];
+    this.lastSelectedEntity = selectedClient;
 
     if (!selectedClient) {
       console.warn("No entity found for:", selectedEntityType, category);
@@ -604,7 +630,7 @@ export class NewClientComponent implements OnInit {
 
         // Handle required validation
         if (field.fieldVisibilityStatus === 'Y' && field.fieldMandatoryStatus === 'Y') {
-          control.setValidators(Validators.required);
+          control.addValidators(Validators.required);
         } else {
           control.clearValidators();
         }
@@ -618,8 +644,12 @@ export class NewClientComponent implements OnInit {
         }
 
         const label = document.querySelector(`label[for=${fieldId}]`);
+
+        const languages = this.currentLanguage;
+        const lang = languages == null ? '' :  languages;
         if (label) {
-          label.textContent = field.fieldLabel;
+
+          label.textContent = field["fieldLabel_" + lang] || field.fieldLabel;
 
           let asterisk = label.querySelector('.required-asterisk');
           if (!asterisk && field.fieldMandatoryStatus === 'Y') {
@@ -636,6 +666,30 @@ export class NewClientComponent implements OnInit {
     });
 
     this.cdr.detectChanges();
+  }
+
+  private updateFieldLabelsOnLanguageChange(selectedEntity: any[]) {
+    selectedEntity.forEach((entity: any) => {
+      Object.values(entity).forEach((field: any) => {
+        const fieldId = field.fieldId;
+        const label = document.querySelector(`label[for=${fieldId}]`);
+
+        if (label) {
+          label.textContent = field[`fieldLabel_${this.currentLanguage}`] || field.fieldLabel;
+
+          let asterisk = label.querySelector('.required-asterisk');
+          if (!asterisk && field.fieldMandatoryStatus === 'Y') {
+            asterisk = document.createElement('span');
+            asterisk.className = 'required-asterisk';
+            asterisk.innerHTML = ' *';
+            (asterisk as HTMLElement).style.color = 'red';
+            label.appendChild(asterisk);
+          }
+
+          label.setAttribute('title', field.fieldLabel);
+        }
+      });
+    });
   }
 
   /**
@@ -803,6 +857,18 @@ export class NewClientComponent implements OnInit {
       docIdNo: [''],
       contact: [''],
       percentOwnership: ['']
+    })
+  }
+
+  createIndividualAMLDetailsForm(): void {
+    this.individualAmlDetailsForm = this.fb.group({
+      funds_source: [''],
+      typeOfEmployment: [''],
+      economic_sector: [''],
+      occupation: [''],
+      purposeinInsurance: [''],
+      premiumFrequency: [''],
+      distributeChannel: [''],
     })
   }
 
@@ -1004,15 +1070,15 @@ export class NewClientComponent implements OnInit {
           }
         }
 
-        this.globalMessagingService.displayErrorMessage('Failed', 'Form is Invalid, Fill all required fields');
+        this.globalMessagingService.displayErrorMessage('Failed', '{{ entities.formIsInvalid | translate }}');
         return;
       }
 
       const clientFormValues = this.clientRegistrationForm.getRawValue();
       log.debug("Contact details->", clientFormValues)
 
-      if (clientFormValues.newOrExistingClient === 'NEW_CLIENT' && Object.keys(this.documentPayloadMap).length === 0) {
-        this.globalMessagingService.displayErrorMessage('Error', 'Select document(s) to upload.');
+      if (clientFormValues.newOrExistingClient !== 'EXISTING_CLIENT' && Object.keys(this.documentPayloadMap).length === 0) {
+        this.globalMessagingService.displayErrorMessage('Error', this.translate.instant('entities.selectDocumentToUpload'));
         return;
       }
       // Preparing address dto
@@ -1102,7 +1168,7 @@ export class NewClientComponent implements OnInit {
 
       }]
 
-      const wealthAml: any = this.selectedCategory === 'I' ? wealth : this.amlDetailsData;
+      const wealthAml: any = this.selectedCategory === 'I' ? this.individualAmlDetailsData : this.amlDetailsData;
       const ownership: any = this.ownershipStructureData;
 
       //preparing Client Dto
@@ -1113,8 +1179,8 @@ export class NewClientComponent implements OnInit {
         contactPersons: this.contactPersonDetailsData,
         payee: this.payeeDetailsData,
         ownershipDetails: ownership,
-        withEffectFromDate: null,
-        withEffectToDate: null,
+        withEffectFromDate: clientFormValues?.withEffectFrom,
+        withEffectToDate: clientFormValues?.withEffectTo,
         // id: this.selectedMainUser ? this.selectedMainUser.id : null, // Set ID for existing client
         // createdBy: null,
         partyId: this.entityDetails?.id,
@@ -1241,7 +1307,7 @@ export class NewClientComponent implements OnInit {
           takeUntil(this.destroyed$),
           concatMap((clientData: any) => {
             this.globalMessagingService.clearMessages();
-            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Client');
+            this.globalMessagingService.displaySuccessMessage('Success', this.translate.instant('entities.successfullyCreatedClient'));
             this.onClickSaveClient.emit(clientData);
             log.debug("client data", clientData);
             this.clientSaveResponse = clientData;
@@ -1252,6 +1318,7 @@ export class NewClientComponent implements OnInit {
             this.sessionStorageService.removeItem('amlDetailsData');
             this.sessionStorageService.removeItem('ownershipDetailsData');
             this.sessionStorageService.removeItem('contactPersonDetailsData');
+            this.sessionStorageService.removeItem('individualAmlDetailsData');
 
             return this.uploadFile().pipe(
               map(() => clientData) // Pass clientData forward after upload
@@ -1270,7 +1337,7 @@ export class NewClientComponent implements OnInit {
             }
           },
           error: (err) => {
-            this.globalMessagingService.displayErrorMessage('Error', err?.error?.errors[0]);
+            this.globalMessagingService.displayErrorMessage('Error', err?.error?.errors[0] || err?.message);
           }
         });
       }
@@ -1678,27 +1745,14 @@ export class NewClientComponent implements OnInit {
   getSelectedUser(event: any) {
     this.selectedMainUser = event;
     log.info(this.selectedMainUser)
+    this.selectedCategory = this.selectedMainUser?.clientType?.category == "Individual" ? "I" : "C";
+    this.processFields(this.formFields, this.selectedCategory);
     this.patchClientFormValues(this.selectedMainUser);
   }
 
   openAllUsersModal() {
     this.zIndex = -1;
     this.toggleAllUsersModal(true);
-  }
-
-  formatDate(date: string | Date): string {
-    if (typeof date === 'string' && date.includes('T')) {
-      date = new Date(date); // Convert ISO string to Date object
-    }
-
-    if (date instanceof Date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
-
-    return date as string; // If already a formatted string, return as is
   }
 
   patchClientFormValues(client: any) {
@@ -1716,7 +1770,7 @@ export class NewClientComponent implements OnInit {
 
     this.clientRegistrationForm.patchValue({
       assignedTo: client?.id,
-      surname: client?.lastName,
+      surname: client?.clientType?.category == "Individual" ? client?.lastName : client?.firstName + " " + client?.lastName ,
       otherName: client?.firstName,
       identity_type: matchingIdentityType?.id,
       citizenship: client?.country,
@@ -1952,7 +2006,7 @@ export class NewClientComponent implements OnInit {
           } else {
             this.globalMessagingService.displayErrorMessage(
               'Error',
-              'Something went wrong. Please try Again'
+              this.translate.instant('entities.somethingWentWrong')
             );
           }
         },
@@ -2029,7 +2083,7 @@ export class NewClientComponent implements OnInit {
     else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No AML is selected.'
+        this.translate.instant('entities.noAMLSelected')
       )
     }
   }
@@ -2044,6 +2098,14 @@ export class NewClientComponent implements OnInit {
 
   openBranchDetailsModal() {
     const modal = document.getElementById('branchDetailsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+  openIndividualAMLDetailsModal() {
+    const modal = document.getElementById('individualAmlDetailsModal');
     if (modal) {
       modal.classList.add('show');
       modal.style.display = 'block';
@@ -2104,6 +2166,15 @@ export class NewClientComponent implements OnInit {
     }
   }
 
+  closeIndividualAMLDetailsModal() {
+    this.editMode = false;
+    const modal = document.getElementById('individualAmlDetailsModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
   editContactPersonDetails() {
     this.editMode = !this.editMode;
     log.info('selected contact person', this.selectedContactPersonDetails);
@@ -2121,7 +2192,7 @@ export class NewClientComponent implements OnInit {
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No contact person details is selected!'
+        this.translate.instant('entities.noContactPersonDetailsSelected')
       );
     }
   }
@@ -2147,7 +2218,7 @@ export class NewClientComponent implements OnInit {
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No branch details is selected!'
+        this.translate.instant('entities.noBranchDetailsSelected')
       );
     }
   }
@@ -2169,7 +2240,7 @@ export class NewClientComponent implements OnInit {
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No payee details is selected!'
+        this.translate.instant('entities.noPayeeDetailsSelected')
       );
     }
   }
@@ -2199,7 +2270,7 @@ export class NewClientComponent implements OnInit {
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No AML details is selected!'
+        this.translate.instant('entities.noAMLDetailsSelected')
       );
     }
   }
@@ -2221,7 +2292,7 @@ export class NewClientComponent implements OnInit {
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No CR12 details is selected!'
+        this.translate.instant('entities.noCR12DetailsSelected')
       );
     }
   }
@@ -2246,7 +2317,35 @@ export class NewClientComponent implements OnInit {
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No ownership details is selected!'
+        this.translate.instant('entities.noOwnershipDetailsSelected')
+      );
+    }
+  }
+
+  editIndividualAMLDetails() {
+    this.editMode = !this.editMode;
+    log.info('selected individual aml', this.selectedIndividualAmlDetails);
+    if (
+      this.selectedIndividualAmlIndex !== null &&
+      this.selectedIndividualAmlDetails
+    ) {
+      const selected = this.selectedIndividualAmlDetails;
+
+      this.individualAmlDetailsForm.patchValue({
+        funds_source: selected.fundsSource,
+        typeOfEmployment: selected.employmentStatus,
+        economic_sector: selected.sectorId,
+        occupation: selected.occupationId,
+        purposeinInsurance: selected.insurancePurpose,
+        premiumFrequency: selected.premiumFrequency,
+        distributeChannel: selected.distributeChannel,
+      });
+
+      this.openIndividualAMLDetailsModal();
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        this.translate.instant('entities.noWealthAmlDetailsSelected')
       );
     }
   }
@@ -2270,12 +2369,12 @@ export class NewClientComponent implements OnInit {
 
       this.globalMessagingService.displaySuccessMessage(
         'Success',
-        'Contact Person details deleted successfully!'
+        this.translate.instant('entities.contactPersonDetailsDeletedSuccessfully')
       );
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No Contact Person details is selected!'
+        this.translate.instant('entities.noContactPersonDetailsSelected')
       );
     }
   }
@@ -2299,12 +2398,12 @@ export class NewClientComponent implements OnInit {
 
       this.globalMessagingService.displaySuccessMessage(
         'Success',
-        'Payee details deleted successfully!'
+        this.translate.instant('entities.payeeDetailsDeletedSuccessfully')
       );
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No Payee details is selected!'
+        this.translate.instant('entities.noPayeeDetailsSelected')
       );
     }
   }
@@ -2328,12 +2427,12 @@ export class NewClientComponent implements OnInit {
 
       this.globalMessagingService.displaySuccessMessage(
         'Success',
-        'AML details deleted successfully!'
+        this.translate.instant('entities.amlDetailsDeletedSuccessfully')
       );
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No AML details is selected!'
+        this.translate.instant('entities.noAMLDetailsSelected')
       );
     }
   }
@@ -2357,12 +2456,12 @@ export class NewClientComponent implements OnInit {
 
       this.globalMessagingService.displaySuccessMessage(
         'Success',
-        'CR12 details deleted successfully!'
+        this.translate.instant('entities.cr12DetailsDeletedSuccessfully')
       );
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No CR12 details is selected!'
+        this.translate.instant('entities.noCR12DetailsSelected')
       );
     }
   }
@@ -2386,12 +2485,12 @@ export class NewClientComponent implements OnInit {
 
       this.globalMessagingService.displaySuccessMessage(
         'Success',
-        'Ownership details deleted successfully!'
+        this.translate.instant('entities.ownershipDetailsDeletedSuccessfully')
       );
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No ownership details is selected!'
+        this.translate.instant('entities.noOwnershipDetailsSelected')
       );
     }
 
@@ -2416,12 +2515,41 @@ export class NewClientComponent implements OnInit {
 
       this.globalMessagingService.displaySuccessMessage(
         'Success',
-        'Branch details deleted successfully!'
+        this.translate.instant('entities.branchDetailsDeletedSuccessfully')
       );
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No Branch details is selected!'
+        this.translate.instant('entities.noBranchDetailsSelected')
+      );
+    }
+  }
+
+  deleteIndividualAMLDetails() {
+    if (
+      this.selectedIndividualAmlIndex !== null &&
+      this.selectedIndividualAmlDetails
+    ) {
+
+      // Remove the item at selected index
+      this.individualAmlDetailsData.splice(this.selectedIndividualAmlIndex, 1);
+
+      this.sessionStorageService.setItem(
+        'individualAmlDetailsData',
+        JSON.stringify(this.individualAmlDetailsData)
+      );
+
+      this.selectedIndividualAmlIndex = null;
+      this.selectedIndividualAmlDetails = null;
+
+      this.globalMessagingService.displaySuccessMessage(
+        'Success',
+         this.translate.instant('entities.wealthAmlDetailsDeletedSuccessfully')
+      );
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+         this.translate.instant('entities.noWealthAmlDetailsSelected')
       );
     }
   }
@@ -2613,7 +2741,7 @@ export class NewClientComponent implements OnInit {
     log.info('cr12 details', cr12Payload);
     // Update the cr12Details for the selected AML record
     if (selectedAml.cr12Details) {
-      const index = selectedAml.cr12Details.findIndex((cr12) => cr12 === this.selectedCr12Details);
+      const index = selectedAml.cr12Details.findIndex((cr12: any) => cr12 === this.selectedCr12Details);
       if (index !== -1) {
         selectedAml.cr12Details[index] = cr12Payload;
       } else {
@@ -2682,6 +2810,42 @@ export class NewClientComponent implements OnInit {
     this.closeOwnershipDetailsModal();
   }
 
+  saveIndividualAMLDetails() {
+    const individualAmlFormValues = this.individualAmlDetailsForm.getRawValue();
+    const individualAmlPayload: any = {
+      fundsSource: individualAmlFormValues.funds_source,
+      employmentStatus: individualAmlFormValues.typeOfEmployment,
+      sectorId: individualAmlFormValues.economic_sector,
+      occupationId: individualAmlFormValues.occupation,
+      insurancePurpose: individualAmlFormValues.purposeinInsurance,
+      premiumFrequency: individualAmlFormValues.premiumFrequency,
+      distributeChannel: individualAmlFormValues.distributeChannel,
+    }
+    log.info('individual aml details', individualAmlPayload);
+
+    if (!Array.isArray(this.individualAmlDetailsData)) {
+      this.individualAmlDetailsData = [];
+    }
+
+    if (this.editMode && this.selectedIndividualAmlIndex !== null) {
+      this.individualAmlDetailsData[this.selectedIndividualAmlIndex] = individualAmlPayload;
+    } else {
+      this.individualAmlDetailsData.push(individualAmlPayload);
+    }
+
+    this.sessionStorageService.setItem(
+      'individualAmlDetailsData',
+      JSON.stringify(this.individualAmlDetailsData)
+    );
+
+    this.globalMessagingService.displaySuccessMessage('Success', `Successfully ${this.editMode ? 'updated' : 'created'} AML detail`);
+    this.editMode = false;
+    this.selectedIndividualAmlIndex = null;
+    this.selectedIndividualAmlDetails = null;
+    this.individualAmlDetailsForm.reset();
+    this.closeIndividualAMLDetailsModal();
+  }
+
   onTypeSelect(event: any) {
     this.selectedType = event.target.value;
   }
@@ -2728,18 +2892,47 @@ export class NewClientComponent implements OnInit {
     const selectedAml = event.data;
     this.selectedAmlIndex = this.amlDetailsData.findIndex(
       item =>
-        item.category === selectedAml.category
-        // item.modeOfIdentity === selectedAml.modeOfIdentity
+        item.tradingName === selectedAml.tradingName &&
+        item.certificateRegistrationNumber === selectedAml.certificateRegistrationNumber
     );
   }
 
   onSelectCr12(event: any) {
     const selectedCr12 = event.data;
-    log.info('trs', selectedCr12);
+    log.info('selected cr12', selectedCr12);
     this.selectedCr12Index = this.cr12DetailsData.findIndex(
       item =>
         item.category === selectedCr12.category &&
         item.directorName === selectedCr12.directorName
     );
+  }
+
+  onSelectIndividualAml(event: any) {
+    const selectedIndAml = event.data;
+    this.selectedIndividualAmlIndex = this.individualAmlDetailsData.findIndex(
+      item =>
+        item.fundsSource === selectedIndAml.fundsSource &&
+        item.employmentStatus === selectedIndAml.employmentStatus &&
+        item.sectorId === selectedIndAml.sectorId &&
+        item.occupationId === selectedIndAml.occupationId &&
+        item.insurancePurpose === selectedIndAml.insurancePurpose
+    );
+  }
+
+  fetchParamDetails(): void {
+    forkJoin({
+      privacyStatement: this.setupsParameterService.getParameters('PRIVACY_STATEMENT_URL'),
+      termsOfUse: this.setupsParameterService.getParameters('TERMS_OF_USE_URL'),
+      pinNoFormat: this.setupsParameterService.getParameters('PIN_NO_FORMAT')
+    }).subscribe({
+      next: ({ privacyStatement, termsOfUse, pinNoFormat }) => {
+        this.privacyStatementParam = privacyStatement;
+        this.termsOfUseParam = termsOfUse;
+        this.pinNumberRegex = pinNoFormat[0].value;
+      },
+      error: (err) => {
+        log.error('Error', err.error.status);
+      }
+    });
   }
 }
