@@ -1,32 +1,21 @@
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild,} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import { DynamicFormButtons } from '../../../../../shared/utils/dynamic.form.button';
-import { DynamicFormFields } from '../../../../../shared/utils/dynamic.form.fields';
-import { EntityService } from '../../../services/entity/entity.service';
-import { BreadCrumbItem } from '../../../../../shared/data/common/BreadCrumbItem';
-import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
-import { MandatoryFieldsService } from '../../../../../shared/services/mandatory-fields/mandatory-fields.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AppConfigService } from '../../../../../core/config/app-config-service';
-import { UtilService } from '../../../../../shared/services/util/util.service';
-import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
-import { PartyTypeDto } from '../../../data/partyTypeDto';
+import {DynamicFormButtons} from '../../../../../shared/utils/dynamic.form.button';
+import {DynamicFormFields} from '../../../../../shared/utils/dynamic.form.fields';
+import {EntityService} from '../../../services/entity/entity.service';
+import {BreadCrumbItem} from '../../../../../shared/data/common/BreadCrumbItem';
+import {GlobalMessagingService} from '../../../../../shared/services/messaging/global-messaging.service';
+import {MandatoryFieldsService} from '../../../../../shared/services/mandatory-fields/mandatory-fields.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Logger, UtilService} from '../../../../../shared/services';
+import {untilDestroyed} from '../../../../../shared/services/until-destroyed';
+import {PartyTypeDto} from '../../../data/partyTypeDto';
+import {EntityDto, EntityResDTO, IdentityModeDTO,} from '../../../data/entityDto';
+import {Pagination} from '../../../../../shared/data/common/pagination';
 import {
-  EntityDto,
-  EntityResDTO,
-  IdentityModeDTO,
-} from '../../../data/entityDto';
-import { Logger } from '../../../../../shared/services/logger/logger.service';
-import { Pagination } from '../../../../../shared/data/common/pagination';
-import { TranslateService } from "@ngx-translate/core";
-import { HttpClient } from '@angular/common/http';
-import { Subscription } from "rxjs";
+  LanguageSelectorComponent
+} from "../../../../../shared/components/language-selector/language-selector.component";
+import {SetupsParametersService} from "../../../../../shared/services/setups-parameters.service";
 
 const log = new Logger('NewEntityComponent');
 
@@ -79,15 +68,7 @@ export class NewEntityComponent implements OnInit {
   selectedFile: File;
   public imageSrc: string | Uint8Array;
   public savedEntity: EntityDto;
-  passportRegex: string;
   pinNumberRegex: string;
-  birthCertRegex: string;
-  nationalIDRegex: string;
-  alienNumberRegex: string;
-  hudumaNumberRegex: string;
-  registrationNumberRegex: string;
-  driversLicenseNumberRegex: string;
-  certOfIncorporationNumberRegex: string;
   groupId: string = 'entityTab';
   submitted = false;
   errorsMessages = [
@@ -118,12 +99,16 @@ export class NewEntityComponent implements OnInit {
   progressBarWidth: number = 30;
 
   selectedCategory = 'I';
-  individualFields: any[] = [];
-  corporateFields: any[] = [];
   visibleStatus: { [key: string]: string } = {};
   mandatoryStatus: { [key: string]: boolean } = {};
-  private categorySubscription: Subscription | null = null;
   private formFields: any;
+  currentLanguage: any;
+
+  @ViewChild(LanguageSelectorComponent) languageSelectorComp: LanguageSelectorComponent;
+  lastSelectedEntity: any;
+  currentIdentityFormatError: string | null = null;
+  currentIdentityFormatHint: string | null = null;
+  pinNumberFormatHint: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -133,26 +118,10 @@ export class NewEntityComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-    private appConfig: AppConfigService,
-    private utilService: UtilService,
-    private translate: TranslateService,
-    private http: HttpClient
+    protected utilService: UtilService,
+    private setupsParameterService: SetupsParametersService,
   ) {
     this.selectedRole = {};
-    this.passportRegex = this.appConfig.config.organization.passport_regex;
-    this.pinNumberRegex = this.appConfig.config.organization.pin_regex;
-    this.birthCertRegex = this.appConfig.config.organization.birth_cert_regex;
-    this.nationalIDRegex = this.appConfig.config.organization.national_ID_regex;
-    this.alienNumberRegex =
-      this.appConfig.config.organization.alien_number_regex;
-    this.hudumaNumberRegex =
-      this.appConfig.config.organization.huduma_number_regex;
-    this.registrationNumberRegex =
-      this.appConfig.config.organization.registration_number_regex;
-    this.driversLicenseNumberRegex =
-      this.appConfig.config.organization.drivers_license_number_regex;
-    this.certOfIncorporationNumberRegex =
-      this.appConfig.config.organization.cert_of_incorporation_number_regex;
   }
   /**
    * The ngOnInit function initializes the component by creating forms, setting the role name based on a
@@ -165,6 +134,15 @@ export class NewEntityComponent implements OnInit {
     this.getPartiesType();
     this.getIdentityType();
     this.createEntityForm();
+    this.fetchPinRegex();
+
+    this.utilService.currentLanguage.subscribe(language => {
+      this.currentLanguage = language;
+      log.info('Language changed:', this.currentLanguage);
+      if (this.lastSelectedEntity) {
+        this.updateFieldLabelsOnLanguageChange(this.lastSelectedEntity);
+      }
+    });
   }
 
   ngOnDestroy(): void {}
@@ -179,7 +157,7 @@ export class NewEntityComponent implements OnInit {
       date_of_birth: [''],
       mode_of_identity: [''],
       entity_name: [''],
-      identity_number: ['', Validators.pattern(this.nationalIDRegex)],
+      identity_number: [''],
       pin_number: ['', Validators.pattern(this.pinNumberRegex)],
       assign_role: [''],
       profilePiture: [''],
@@ -223,7 +201,7 @@ export class NewEntityComponent implements OnInit {
       date_of_birth: [''],
       mode_of_identity: [''],
       entity_name: [''],
-      identity_number: ['', Validators.pattern(this.nationalIDRegex)],
+      identity_number: [''],
       pin_number: ['', Validators.pattern(this.pinNumberRegex)],
       assign_role: [''],
       profilePiture: ['']
@@ -236,7 +214,9 @@ export class NewEntityComponent implements OnInit {
         this.formFields = data;
 
         this.entityRegistrationForm.get('category')?.valueChanges.subscribe((value) => {
-          this.selectedCategory = value;
+          if (value) {
+            this.selectedCategory = value;
+          }
         });
 
         this.processFields(this.formFields, this.selectedCategory);
@@ -246,20 +226,6 @@ export class NewEntityComponent implements OnInit {
         log.error('Error loading fields.json:', err);
       }
     })
-    /*this.http.get(fieldPath).subscribe((data) => {
-      log.info('Fields JSON content:', data);
-      this.formFields = data;
-
-      this.categorySubscription?.unsubscribe();
-
-      this.categorySubscription = this.entityRegistrationForm.get('category')?.valueChanges.subscribe((value) => {
-        this.selectedCategory = value;
-      });
-
-      this.processFields(this.formFields, this.selectedCategory);
-    }, (error) => {
-      log.error('Error loading fields.json:', error);
-    });*/
   }
 
   onCategorySelect() {
@@ -269,6 +235,7 @@ export class NewEntityComponent implements OnInit {
   private processFields(data: any, selectedEntityType: string) {
     const category= selectedEntityType === 'I'? 'individual' : 'corporate';
     const selectedEntity = data.newEntity[category];
+    this.lastSelectedEntity = selectedEntity;
 
     if (!selectedEntity) {
       console.warn("No entity found for:", selectedEntityType, category);
@@ -280,6 +247,7 @@ export class NewEntityComponent implements OnInit {
     this.entityRegistrationForm.clearValidators();
     this.visibleStatus = {};
     this.entityRegistrationForm.get('category').setValue(selectedCategoryValue);
+    this.setRolesType(this.roleType);
 
     selectedEntity.forEach((entity: any) => {
       Object.values(entity).forEach((field: any) => {
@@ -297,7 +265,7 @@ export class NewEntityComponent implements OnInit {
 
         // Handle required validation
         if (field.fieldVisibilityStatus === 'Y' && field.fieldMandatoryStatus === 'Y') {
-          control.setValidators(Validators.required);
+          control.addValidators(Validators.required);
         } else {
           control.clearValidators();
         }
@@ -311,9 +279,13 @@ export class NewEntityComponent implements OnInit {
         }
 
         const label = document.querySelector(`label[for=${fieldId}]`);
-        if (label) {
-          label.textContent = field.fieldLabel;
 
+        const languages = this.currentLanguage;
+
+        const lang = languages == null ? '' :  languages;
+        if (label) {
+          label.textContent = field["fieldLabel_" + lang] || field.fieldLabel;
+          log.info('content', label.textContent);
           let asterisk = label.querySelector('.required-asterisk');
           if (!asterisk && field.fieldMandatoryStatus === 'Y') {
             asterisk = document.createElement('span');
@@ -329,6 +301,30 @@ export class NewEntityComponent implements OnInit {
     });
 
     this.cdr.detectChanges();
+  }
+
+  private updateFieldLabelsOnLanguageChange(selectedEntity: any[]) {
+    selectedEntity.forEach((entity: any) => {
+      Object.values(entity).forEach((field: any) => {
+        const fieldId = field.fieldId;
+        const label = document.querySelector(`label[for=${fieldId}]`);
+
+        if (label) {
+          label.textContent = field[`fieldLabel_${this.currentLanguage}`] || field.fieldLabel;
+
+          let asterisk = label.querySelector('.required-asterisk');
+          if (!asterisk && field.fieldMandatoryStatus === 'Y') {
+            asterisk = document.createElement('span');
+            asterisk.className = 'required-asterisk';
+            asterisk.innerHTML = ' *';
+            (asterisk as HTMLElement).style.color = 'red';
+            label.appendChild(asterisk);
+          }
+
+          label.setAttribute('title', field.fieldLabel);
+        }
+      });
+    });
   }
 
   /**
@@ -671,4 +667,49 @@ export class NewEntityComponent implements OnInit {
     this.entityService.setCurrentEntity(this.savedEntity);
     this.router.navigate([url], { queryParams: { id: id } });
   }
+
+  modeOfIdentityClick() {
+    const selectedId = +this.entityRegistrationForm.get('mode_of_identity')?.value;
+    const selectedType = this.modeIdentityType.find(type => type.id === selectedId);
+
+    const identityNumberControl = this.entityRegistrationForm.get('identity_number');
+
+    if (selectedType?.identityFormat) {
+      identityNumberControl?.setValidators([
+        Validators.required,
+        Validators.pattern(selectedType.identityFormat)
+      ]);
+      this.currentIdentityFormatHint = this.utilService.generateHintFromRegex(selectedType.identityFormat)
+    } else {
+      identityNumberControl?.setValidators([Validators.required]);
+      this.currentIdentityFormatHint = null;
+    }
+
+    identityNumberControl?.updateValueAndValidity();
+
+    this.currentIdentityFormatError = selectedType?.identityFormatError || null;
+  }
+
+  fetchPinRegex() {
+    this.setupsParameterService.getParameters('PIN_NO_FORMAT')
+      .subscribe({
+        next: (data) => {
+          this.pinNumberRegex = data[0].value;
+          if (this.pinNumberRegex) {
+            this.entityRegistrationForm.get('pin_number')
+              .addValidators([
+                Validators.required,
+                Validators.pattern(this.pinNumberRegex)
+              ])
+            this.entityRegistrationForm.updateValueAndValidity();
+            this.pinNumberFormatHint = this.utilService.generateHintFromRegex(this.pinNumberRegex);
+          }
+          },
+        error: (err) => {
+          log.error('Error', err.error.status);
+        }
+      });
+    this.cdr.detectChanges();
+  }
+
 }
