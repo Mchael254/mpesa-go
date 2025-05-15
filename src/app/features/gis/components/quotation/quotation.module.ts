@@ -39,6 +39,7 @@ import { QuotationManagementComponent } from './components/quotation-management/
 import { TagModule } from 'primeng/tag';
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
+import { QuotationReportComponent } from './components/quotation-report/quotation-report/quotation-report.component';
 @NgModule({
   declarations: [
     ListQuotationsComponent,
@@ -60,6 +61,10 @@ import { RiskCentreComponent } from './components/risk-centre/risk-centre.compon
     QuotationManagementComponent,
     RiskDetailsComponent,
     RiskCentreComponent,
+    QuotationReportComponent
+    
+  
+  
 
 
   ],
