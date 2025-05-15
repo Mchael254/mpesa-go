@@ -69,6 +69,7 @@ import {MenuService} from 'src/app/features/base/services/menu.service';
 import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
 import {debounceTime} from "rxjs/internal/operators/debounceTime";
 import {catchError, distinctUntilChanged, map} from "rxjs/operators";
+import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -82,6 +83,21 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
 
+
+  breadCrumbItems: BreadCrumbItem[] = [
+      {
+        label: 'Home',
+        url: '/home/dashboard',
+      },
+      {
+        label: 'Quotation',
+        url: '/home/lms/quotation/list',
+      },
+      {
+        label: 'New quote',
+        url: '/home/gis/quotation/quick-quote',
+      },
+    ];
   public currencyObj: NgxCurrencyConfig;
   productList: Products[];
   ProductDescriptionArray: any = [];
