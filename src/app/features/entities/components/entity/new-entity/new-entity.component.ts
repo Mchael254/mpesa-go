@@ -134,6 +134,7 @@ export class NewEntityComponent implements OnInit {
     this.getPartiesType();
     this.getIdentityType();
     this.createEntityForm();
+    this.fetchFormFields();
     this.fetchPinRegex();
 
     this.utilService.currentLanguage.subscribe(language => {
@@ -206,29 +207,29 @@ export class NewEntityComponent implements OnInit {
       assign_role: [''],
       profilePiture: ['']
     });
+  }
 
-    const fieldPath = '/assets/data/fields.json';
-
+  fetchFormFields() {
     this.mandatoryFieldsService.getMockFormFields().subscribe({
       next: (data) => {
         this.formFields = data;
 
-        this.entityRegistrationForm.get('category')?.valueChanges.subscribe((value) => {
-          if (value) {
-            this.selectedCategory = value;
-          }
-        });
+        setTimeout(() => {
+          this.processFields(this.formFields, this.selectedCategory);
+        },3000)
 
-        this.processFields(this.formFields, this.selectedCategory);
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage('Error', err.error);
         log.error('Error loading fields.json:', err);
       }
     })
+    this.cdr.detectChanges();
   }
 
   onCategorySelect() {
+    this.selectedCategory = this.entityRegistrationForm.get('category')?.value;
+
     this.processFields(this.formFields, this.selectedCategory);
   }
 
@@ -247,7 +248,6 @@ export class NewEntityComponent implements OnInit {
     this.entityRegistrationForm.clearValidators();
     this.visibleStatus = {};
     this.entityRegistrationForm.get('category').setValue(selectedCategoryValue);
-    this.setRolesType(this.roleType);
 
     selectedEntity.forEach((entity: any) => {
       Object.values(entity).forEach((field: any) => {
@@ -277,6 +277,7 @@ export class NewEntityComponent implements OnInit {
         } else {
           control.enable();
         }
+        this.cdr.detectChanges();
 
         const label = document.querySelector(`label[for=${fieldId}]`);
 
@@ -299,7 +300,7 @@ export class NewEntityComponent implements OnInit {
         }
       });
     });
-
+    this.setRolesType(this.roleType);
     this.cdr.detectChanges();
   }
 
@@ -464,7 +465,7 @@ export class NewEntityComponent implements OnInit {
       reader.onload = (event: any) => {
         this.url = event.target.result;
         this.cdr.detectChanges();
-        log.info(this.url);
+        log.info('url', this.url);
       };
     }
   }

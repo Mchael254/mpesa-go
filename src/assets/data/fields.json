@@ -477,6 +477,18 @@
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
       },
+      "townResidential": {
+        "fieldId": "townResidential",
+        "fieldLabel": "City/Town",
+        "fieldLabel_ke": "Jiji/Mji",
+        "fieldLabel_cn": "城市/城镇",
+        "fieldLabel_de": "Stadt/Ort",
+        "fieldLabel_es": "Ciudad/Pueblo",
+        "fieldLabel_fr": "Ville",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
       "road": {
         "fieldId": "road",
         "fieldLabel": "Road",
@@ -861,7 +873,7 @@
         "fieldLabel_es": "Número de PIN",
         "fieldLabel_fr": "Numéro PI",
         "fieldVisibilityStatus": "Y",
-        "fieldMandatoryStatus": "N",
+        "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
       },
       "withEffectFrom": {

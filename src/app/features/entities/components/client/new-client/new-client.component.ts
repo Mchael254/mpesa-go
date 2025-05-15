@@ -283,6 +283,7 @@ export class NewClientComponent implements OnInit {
   ngOnInit(): void {
     // this.createClientRegistrationForm();
     this.createClientForm();
+    this.fetchFormFields();
     const partyId = parseInt(this.activatedRoute.snapshot.queryParamMap.get('id'));
     this.getPartyDetails(partyId)
 
@@ -525,6 +526,7 @@ export class NewClientComponent implements OnInit {
           utilityBill: [''],
           uploadUtilityBill: [''],
           postalCode: [''],
+          townResidential: ['']
         },
       ),
 
@@ -572,31 +574,18 @@ export class NewClientComponent implements OnInit {
     // this.defineDisabledFormInputs();
     this.updateRegex();
     this.patchGISClientFormValues();
+  }
 
-    const fieldPath = '/assets/data/fields.json';
-
+  fetchFormFields() {
     this.mandatoryFieldsService.getMockFormFields().subscribe({
       next: (data) => {
-        log.info('Fields JSON content:', data);
         this.formFields = data;
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage('Error', err.error);
         log.error('Error loading fields.json:', err);
       }
-      // this.categorySubscription?.unsubscribe();
-
-      /*this.categorySubscription = this.entityRegistrationForm.get('category')?.valueChanges.subscribe((value) => {
-        this.selectedCategory = value;
-      });*/
-      /*if (this.entityDetails){
-        this.selectedCategory = this.entityDetails?.categoryName === 'Individual' ? 'I' : 'C';
-        log.info('Category from entity', this.selectedCategory);
-      }*/
-      // this.selectedCategory = 'C';
-
-      // this.processFields(this.formFields, this.selectedCategory);
-    });
+    })
   }
 
   private processFields(data: any, selectedEntityType: string) {
@@ -642,6 +631,7 @@ export class NewClientComponent implements OnInit {
         } else {
           control.enable();
         }
+        this.cdr.detectChanges();
 
         const label = document.querySelector(`label[for=${fieldId}]`);
 
@@ -735,7 +725,7 @@ export class NewClientComponent implements OnInit {
       this.selectedOption = this.identityTypeData.find(option => option.id == selectedId);
 
       const identityControl = this.clientRegistrationForm.get('idNumber');
-      log.info(this.clientRegistrationForm.get('identity_type').getRawValue(), this.selectedOption)
+      log.info('ID type selected', this.clientRegistrationForm.get('identity_type').getRawValue(), this.selectedOption)
       if (this.selectedOption) {
         identityControl?.setValidators([
           Validators.required,
