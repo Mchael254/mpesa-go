@@ -17,6 +17,7 @@ import { QuotationInquiryComponent } from './components/quotation-inquiry/quotat
 import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
 import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
 import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
+import { QuotationReportComponent } from './components/quotation-report/quotation-report/quotation-report.component';
 
 const routes: Routes = [
   {
@@ -72,6 +73,9 @@ const routes: Routes = [
   },
   {
     path:'i',component:QuotationInquiryComponent
+  },
+  {
+    path:'quotation-report',component:QuotationReportComponent
   },
 ];
 
