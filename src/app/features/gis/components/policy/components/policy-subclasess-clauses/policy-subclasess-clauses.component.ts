@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
 import { Logger } from 'src/app/shared/services';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { PolicyResponseDTO, PolicyContent, SubclassesClauses, SelectedSubclassClause } from '../../data/policy-dto';
 import { PolicyService } from '../../services/policy.service';
 import { untilDestroyed } from 'src/app/shared/shared.module';
+import { QuotationsService } from '../../../quotation/services/quotations/quotations.service';
 
 const log = new Logger("PolicySubclasessClausesComponent");
 

@@ -6,7 +6,6 @@ import { ListQuotationsComponent } from './components/list-quotations/list-quota
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { SharedModule } from '../../../../shared/shared.module';
-import { QuickQuoteDetailsComponent } from './components/quick-quote-details/quick-quote-details.component';
 import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
 import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
@@ -42,7 +41,6 @@ import { RiskCentreComponent } from './components/risk-centre/risk-centre.compon
 @NgModule({
   declarations: [
     ListQuotationsComponent,
-    QuickQuoteDetailsComponent,
     QuickQuoteFormComponent,
     QuoteSummaryComponent,
     QuotationsClientDetailsComponent,

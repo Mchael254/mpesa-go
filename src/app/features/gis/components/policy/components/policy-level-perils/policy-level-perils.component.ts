@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 
 import { FormBuilder } from '@angular/forms';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { Logger, untilDestroyed } from 'src/app/shared/shared.module';
 import { PolicyService } from '../../services/policy.service';
 import { Table } from 'primeng/table';
+import { QuotationsService } from '../../../quotation/services/quotations/quotations.service';
 
 
 
