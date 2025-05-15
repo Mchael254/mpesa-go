@@ -56,13 +56,11 @@
             </div>
           </div>
         </ng-container>
-        <form [formGroup]="entityRegistrationForm">
+        <form *ngIf="entityRegistrationForm" [formGroup]="entityRegistrationForm">
           <div class="row">
             <ng-container *ngIf="visibleStatus['assign_role'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
-                <label for="assign_role">{{
-                  "entities.select_role" | translate | titlecase
-                }}</label>
+                <label for="assign_role"></label>
                 <p-dropdown
                   [options]="roleType"
                   [(ngModel)]="selectedRole"
@@ -102,9 +100,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus['category'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
-                <label for="category">{{
-                  "entities.party_type" | translate | titlecase
-                }}</label>
+                <label for="category"></label>
                 <select
                   id="category"
                   class="form-select"
@@ -142,10 +138,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus['entity_name'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
-                <label for="entity_name"
-                  >{{ "entities.entity" | translate | titlecase }}
-                  {{ "entities.name" | translate | titlecase }}</label
-                >
+                <label for="entity_name"></label>
                 <input
                   type="text"
                   class="form-control"
@@ -176,10 +169,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus['mode_of_identity'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
-                <label for="mode_of_identity">
-                  {{ "entities.primary" | translate | titlecase }}
-                  {{ "entities.id_type" | translate }}
-                </label>
+                <label for="mode_of_identity"></label>
                 <select
                   id="mode_of_identity"
                   class="form-select"
@@ -225,9 +215,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus['identity_number'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
-                <label for="identity_number">{{
-                  "entities.id_number" | translate
-                }}</label>
+                <label for="identity_number"></label>
                 <input
                   type="text"
                   class="form-control"
@@ -263,9 +251,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus['pin_number'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
-                <label for="pin_number">{{
-                  "entities.pin_number" | translate
-                }}</label>
+                <label for="pin_number"></label>
                 <input
                   type="text"
                   class="form-control"
@@ -300,9 +286,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus['date_of_birth'] === 'Y'">
               <div class="col-md-4 col-6 md-col-4 pad-1">
-                <label for="date_of_birth">{{
-                    selectedCategory === 'I' ? ("entities.dob" | translate) : ("entities.dateOfIncorporation" | translate)
-                  }}</label>
+                <label for="date_of_birth"></label>
                 <input
                   type="text"
                   class="form-control"
@@ -337,9 +321,7 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus['profilePiture'] === 'Y'">
               <div class="col-md-4 col-6 pad-1">
-                <label for="profilePiture">{{
-                  "entities.profile_photo" | translate | titlecase
-                }}</label>
+                <label for="profilePiture"></label>
 
                 <div style="display: flex; align-items: center">
                   <div
