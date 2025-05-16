@@ -311,7 +311,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         }else{
           /*ToDo: Implement password expired here*/
           this.errorOccurred = true;
-          this.errorMessage = 'Error Occured, please try again';
+          this.errorMessage = 'Error Occurred, please try again';
           this.cdr.detectChanges()
         }
       } else {

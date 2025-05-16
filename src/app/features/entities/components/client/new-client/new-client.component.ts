@@ -89,7 +89,6 @@ export class NewClientComponent implements OnInit {
   selectedBank: number;
   selectedPayeeBank: number;
   utilityBill: string = 'N';
-  // visibleStatus: ClientFormFieldsDTO = {};
   visibleStatus: any = {
     identity_type: 'Y',
     citizenship: 'Y',
@@ -1234,7 +1233,8 @@ export class NewClientComponent implements OnInit {
 
       if (clientFormValues.newOrExistingClient === 'EXISTING_CLIENT') {
         log.debug("BACK TO GIS-policy product:");
-        this.router.navigate(['/home/gis/policy/policy-product']);
+        this.router.navigate(['/home/gis/quotation/quotation-details']);
+       // this.router.navigate(['/home/gis/policy/policy-product']);
       }
       else {
         this.clientsService.saveClientDetails(saveClient).pipe(
@@ -1242,7 +1242,6 @@ export class NewClientComponent implements OnInit {
           concatMap((clientData: any) => {
             this.globalMessagingService.clearMessages();
             this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Client');
-            this.onClickSaveClient.emit(clientData);
             log.debug("client data", clientData);
             this.clientSaveResponse = clientData;
             this.clientRegistrationForm.reset();
@@ -1677,6 +1676,7 @@ export class NewClientComponent implements OnInit {
 
   getSelectedUser(event: any) {
     this.selectedMainUser = event;
+    this.onClickSaveClient.emit(this.selectedMainUser)
     log.info(this.selectedMainUser)
     this.patchClientFormValues(this.selectedMainUser);
   }
