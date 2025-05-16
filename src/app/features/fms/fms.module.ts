@@ -20,6 +20,7 @@ import { PdSlipPreviewComponent } from './components/pd-slip-preview/pd-slip-pre
 import { ReceiptManagementComponent } from './components/receipt-management/receipt-management.component';
 import { DynamicBreadcrumbComponent } from 'src/app/shared/components/dynamic-breadcrumb/dynamic-breadcrumb.component';
 import { StepperComponent } from './components/shared/stepper/stepper.component';
+import { ReceiptPrintPreviewComponent } from './components/receipt-print-preview/receipt-print-preview.component';
 
 
 
@@ -38,7 +39,8 @@ import { StepperComponent } from './components/shared/stepper/stepper.component'
     ReceiptPreviewComponent,
     PdSlipPreviewComponent,
     ReceiptManagementComponent,
-    StepperComponent
+    StepperComponent,
+    ReceiptPrintPreviewComponent
 
    
   ],

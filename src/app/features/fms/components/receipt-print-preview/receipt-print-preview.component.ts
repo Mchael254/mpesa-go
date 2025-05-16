@@ -1,0 +1,161 @@
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
+import { ReportsDto } from 'src/app/shared/data/common/reports-dto';
+
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
+
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
+import { ReceiptService } from '../../services/receipt.service';
+import { ReportsService } from '../../../../shared/services/reports/reports.service';
+/**
+ * @Component ReceiptPrintPreviewComponent
+ * @description
+ * This component is responsible for displaying a preview of a generated receipt PDF.
+ * It fetches the receipt data based on information stored in session storage,
+ * generates a PDF report using the ReportsService, displays it using ngx-doc-viewer,
+ * and provides options to mark the receipt as 'Printed' (updating its status via ReceiptService)
+ * or navigate back to the main receipt management screen.
+ */
+@Component({
+  selector: 'app-receipt-print-preview',
+  templateUrl: './receipt-print-preview.component.html',
+  styleUrls: ['./receipt-print-preview.component.css'],
+})
+export class ReceiptPrintPreviewComponent {
+  /**
+   * @property {any} receiptNumber - The identifier of the receipt to be previewed.
+   * Retrieved from session storage.
+   * @remark Consider using a more specific type like `number` or `string` if possible.
+   */
+  receiptNumber: any;
+  /**
+   * @property {OrganizationDTO | null} selectedOrg - The currently selected organization details,
+   * retrieved from session storage. Used if defaultOrg is not available.
+   */
+  selectedOrg: OrganizationDTO;
+  /**
+   * @property {OrganizationDTO | null} defaultOrg - The default organization details,
+   * retrieved from session storage. Takes precedence over selectedOrg for report generation.
+   */
+  defaultOrg: OrganizationDTO;
+  /**
+   * @property {string} filePath - The object URL generated for the receipt PDF Blob.
+   * This URL is used as the source for the `ngx-doc-viewer`.
+   */
+  filePath: string = '';
+
+  /**
+   * @property {any} documentData - intended to hold metadata about the document,
+   * like the filename. Currently, only its `fileName` property might be implicitly used
+   * by the template binding `[fileName]="documentData?.fileName ?? ''"`, though it's not explicitly set in this component.
+   */
+  documentData: any;
+  /**
+   * @constructor
+   * @param {SessionStorageService} sessionStorage - Service to interact with browser session storage. Used to retrieve receipt number and organization details.
+   * @param {GlobalMessagingService} globalMessagingService - Service to display global success or error messages to the user.
+   * @param {ReportsService} reportService - Service to generate reports, specifically the receipt PDF in this case.
+   * @param {Router} router - Angular Router service for navigating between views.
+   * @param {ReceiptService} receiptService - Service to interact with the receipt backend, primarily for updating the print status.
+   */
+  constructor(
+    private sessionStorage: SessionStorageService,
+    private globalMessagingService: GlobalMessagingService,
+    private reportService: ReportsService,
+    private router: Router,
+    private receiptService: ReceiptService
+  ) {}
+  /**
+   * @method ngOnInit
+   * @description Lifecycle hook called after component initialization.
+   * Retrieves necessary data (receipt number, organization details) from session storage
+   * and initiates the process to fetch and display the receipt PDF by calling `getReceiptToPrint()`.
+   */
+  ngOnInit() {
+    const receiptNumber = this.sessionStorage.getItem('receiptNumber');
+    this.receiptNumber = JSON.parse(receiptNumber);
+    let defaultOrg = this.sessionStorage.getItem('defaultOrg');
+    let selectedOrg = this.sessionStorage.getItem('selectedOrg');
+    this.defaultOrg = defaultOrg ? JSON.parse(defaultOrg) : null;
+    this.selectedOrg = selectedOrg ? JSON.parse(selectedOrg) : null;
+    this.getReceiptToPrint();
+  }
+  /**
+   * @method getReceiptToPrint
+   * @description Constructs the payload and calls the ReportsService to generate the receipt PDF.
+   * On success, it creates a Blob URL from the response and assigns it to `filePath` for display.
+   * On error, it displays an error message using the GlobalMessagingService.
+   */
+  getReceiptToPrint() {
+    const reportPayload: ReportsDto = {
+      encodeFormat: 'RAW', // Requesting raw byte data for the PDF
+      params: [
+        {
+          name: 'UP_RCT_NO', // Parameter name for Receipt Number
+          value: String(this.receiptNumber),
+        },
+        {
+          name: 'UP_ORG_CODE', // Parameter name for Organization Code/ID
+          value: String(this.defaultOrg.id || this.selectedOrg.id),
+        },
+      ],
+      reportFormat: 'PDF',
+      rptCode: 300,
+      system: 'CRM',
+    };
+    this.reportService.generateReport(reportPayload).subscribe({
+      next: (response) => {
+        // Create a Blob from the response
+        const blob = new Blob([response], { type: 'application/pdf' });
+        // Create an object URL that the browser can use to display the Blob
+        // Revoke previous URL if it exists to prevent memory leaks
+        this.filePath = window.URL.createObjectURL(blob);
+        //you can call the download() automatically here
+        //this.downlaod(this.filePath,'receiptpdf');
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          err.error.status || 'failed to fetch receipt details for printing'
+        );
+      },
+    });
+  }
+  /**
+   * @method navigateToReceiptCapture
+   * @description Navigates the user back to the main receipt management view.
+   * Typically used when the user clicks the 'Unprinted' button or cancels the operation.
+   */
+  navigateToReceiptCapture(): void {
+    this.router.navigate(['/home/fms/receipt-management']);
+  }
+  /**
+   * @method updatePrintStatus
+   * @description Sends a request to the ReceiptService to mark the current receipt as printed.
+   * The payload is an array containing the receipt number.
+   * On success, displays a success message and navigates back to the receipt management view.
+   * On error, displays an error message.
+   */
+  updatePrintStatus() {
+    // Construct the payload as an array of numbers
+    const payload: number[] = [this.receiptNumber];
+    this.receiptService.updateReceiptStatus(payload).subscribe({
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'success:',
+          response.message
+        );
+
+        this.router.navigate(['/home/fms/receipt-management']);
+      },
+
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'failed',
+          err.error.msg
+        );
+      },
+    });
+  }
+}

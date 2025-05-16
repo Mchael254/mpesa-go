@@ -1,0 +1,34 @@
+<!-- Main container for the component -->
+<div class="container-fluid">
+  <!-- Title section using translation pipe -->
+
+  <h5 class="text-primary" style="padding-top: 10px">
+    <!-- Displays the translated string for the key 'fms.receipting.receiptSummary' -->
+    {{ "fms.receipting.receiptSummary" | translate }}
+  </h5>
+  <!-- Section dedicated to displaying the receipt document -->
+  <div class="receipt-section">
+    <!-- ngx-doc-viewer component to render the PDF -->
+    <ngx-doc-viewer
+      [fileName]="documentData?.fileName ?? ''"
+      [srcUrl]="filePath ?? ''"
+      style="margin: 20px; margin-top: 10px; width: 70%"
+    >
+    </ngx-doc-viewer>
+  </div>
+  <!-- Container for action buttons, centered using Flexbox -->
+  <div class="btn-actions d-flex justify-content-center gap-3 mt-3">
+    <!-- Button to mark the receipt as 'Printed' -->
+    <button type="button" class="btn btn-primary" (click)="updatePrintStatus()">
+      Printed
+    </button>
+    <!-- Button to navigate back without changing status -->
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="navigateToReceiptCapture()"
+    >
+      Unprinted
+    </button>
+  </div>
+</div>

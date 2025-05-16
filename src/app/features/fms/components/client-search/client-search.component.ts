@@ -224,7 +224,9 @@ export class ClientSearchComponent implements OnInit {
       allocatedAmount: this.fb.array([]), // FormArray for allocated amounts
     });
   }
-
+  get currentPageReportTemplate(): string {
+    return this.translate.instant('fms.receipt-management.pageReport');
+  }
   /**
    * Fetches account types from the `ReceiptService` and populates the `accountTypes` and `accountTypeArray` properties.
    * It also handles setting the 'defaultOrg' in localStorage.

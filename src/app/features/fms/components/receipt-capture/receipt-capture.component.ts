@@ -582,7 +582,7 @@ export class ReceiptCaptureComponent {
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
           'Error',
-          'Failed to fetch currencies'
+          err.error.status || 'Failed to fetch currencies'
         );
       },
     });
@@ -1034,10 +1034,10 @@ export class ReceiptCaptureComponent {
           });
         }
       } else {
-        // If documentDate is empty (initial load), set to tomorrow
-        // this.receiptingDetailsForm.patchValue({
-        //   documentDate: this.formatDates(today),
-        // });
+        //If documentDate is empty (initial load), set to tomorrow
+        this.receiptingDetailsForm.patchValue({
+          documentDate: this.formatDates(today),
+        });
         this.receiptingDetailsForm.patchValue({
           documentDate: null,
         });
