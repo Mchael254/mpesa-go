@@ -1,22 +1,175 @@
 <div class="container  mx-2 ">
- <div  class="mt-4"  style="display: flex; justify-content: start">
+  <div class="mt-4" style="display: flex; justify-content: start">
     <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
     </app-dynamic-breadcrumb>
-  </div>  
+  </div>
   <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
-  
-    <div class="card mb-3" style=" position: relative; border: none; border-radius: 5px;">
+  <form [formGroup]="quickQuoteForm">
+
+    <div class="card mb-2"  style=" position: relative; border: none; border-radius: 5px;">
       <div class="card-body">
-        <p class="subtitle ">Quotation</p>
+        <p class="subtitle ">Quick quote</p>
+
+        <div class="row mb-4">
+
+          <ng-container *ngIf="formData">
+            <ng-container *ngFor="let field of formData; let i = index">
+              <div class="col-sm-4 col-6 dynamic-field">
+                <div class="form-group form-group-sm">
+                  <br>
+                  <label for="{{i}}{{field.name}}" class="quote-label">{{ field.label | translate }}</label>
+                  <br>
+                  <ng-container [ngSwitch]="field.type">
+                    <ng-container *ngSwitchCase="'select'">
+                      <!-- <ng-container *ngIf="field.name === 'product'">
+                      <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="ProductDescriptionArray"
+                        optionLabel="description" dataKey="code" [filterBy]="'description'"
+                        [filter]="true"></p-dropdown>
+                    </ng-container> -->
+                      <ng-container *ngIf="field.name === 'product'">
+                        <p-multiSelect [formControlName]="field.name" [name]="field.name"
+                          [options]="ProductDescriptionArray" optionLabel="description" [filterBy]="'description'"
+                          [filter]="true" display="chip" (onChange)="getSelectedProducts($event)">
+                        </p-multiSelect>
+                      </ng-container>
+
+
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'date'">
+                      <ng-container *ngIf="field.name === 'effectiveDate'">
+                        <p-calendar [formControlName]="field.name" [name]="field.name" [dateFormat]="dateFormat"
+                          inputStyleClass='form-control' [showButtonBar]='true' [minDate]="selectedEffectiveDate"
+                          [dataType]="'string'" [style]="{ width: '100%' }" [showIcon]="true"></p-calendar>
+                      </ng-container>
+
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'textarea'">
+                      <ng-container *ngIf="field.name === 'quotComment'">
+                        <textarea id="quote-textarea" class="form-control form-control-sm quote-input"
+                          [formControlName]="field.name" rows="3" [placeholder]="field.placeholder"></textarea>
+                      </ng-container>
+
+                    </ng-container>
 
 
 
-      
+                  </ng-container>
+                </div>
+
+              </div>
+
+            </ng-container>
+          </ng-container>
+        </div>
+
       </div>
     </div>
-  
+    <!-- <div *ngFor="let product of selectedProducts">
+    <div class="card mb-2" style="position: relative; border: none; border-radius: 5px;">
+      <div class="card-body">
+        <p class="subtitle mb-3 m-0 d-flex align-items-center">
+          {{ product.description }}
+          <i class="fas fa-plus"
+            style="font-size:15px;border: 2px solid #00529B; border-radius: 100px; padding: 2px; margin-left:20px; margin-right: 8px; color: #00529B; cursor: pointer;"
+            title="Add"></i>
+          <i class="fa-solid fa-trash-can" style="font-size:17px;color:#EE3945; cursor: pointer; margin-left: 5px;"
+            title="Delete"></i>
+        </p>
+        <p class="riskTitle mb-0" >Risk 1</p>
+        <div class="row ">
+          <div class="col-sm-4 col-6">
+            <div class="form-group form-group-sm">
+              <label for="" class="quote-label">Use of property</label>
+              <p-dropdown formControlName="subClass" name="subclassCode" [options]="allMatchingSubclasses"
+                optionLabel="description" dataKey="code" (onChange)="onSubclassSelected($event.value)" placeholder=" "
+                [filterBy]="'description'" [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
+
+
+
+            </div>
+          </div>
+          <div class="col-sm-4 col-6">
+            <div class="form-group form-group-sm">
+              <label for="" class="quote-label">Value</label>
+              <input type="text" id="quote-input" class="form-control form-control-sm" formControlName="value"
+                currencyMask [options]='currencyObj'>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+    <div formArrayName="products" *ngIf="selectedProducts && selectedProducts.length > 0">
+      <div class="card mb-2" style="position: relative; border: none; border-radius: 5px;">
+        <div class="card-body">
+          <div *ngFor="let productGroup of productsFormArray.controls; let i = index" [formGroupName]="i">
+
+            <p class="subtitle mb-3 m-0 d-flex align-items-center">
+              {{ productGroup.value.description }}
+              <i class="fas fa-plus" style="font-size:15px;border: 2px solid #00529B; border-radius: 100px; padding: 2px;padding-right: 3px;
+    padding-left: 3px; margin-left:20px; margin-right: 8px; color: #00529B; cursor: pointer;" title="Add"
+                (click)="addRisk(i)">
+              </i>
+              <i class="fa-solid fa-trash-can" style="font-size:17px;color:#EE3945; cursor: pointer; margin-left: 5px;"
+                title="Delete" (click)="deleteProduct(i)">
+              </i>
+            </p>
+
+            <div formArrayName="risks">
+              <div *ngFor="let riskGroup of getRisks(i).controls; let j = index" [formGroupName]="j">
+                <p class="riskTitle mb-0">Risk {{ j + 1 }}</p>
+                <div class="row ">
+                  <div class="col-sm-4 col-6">
+                    <div class="form-group form-group-sm">
+                      <label class="quote-label">Use of property</label>
+                      <p-dropdown formControlName="subclass"
+                        [options]="productSubclassesMap[productGroup.value.code] || []" optionLabel="description"
+                        dataKey="code" [filterBy]="'description'" [filter]="true">
+                      </p-dropdown>
+                    </div>
+                  </div>
+
+                  <div class="col-sm-4 col-6">
+                    <div class="form-group form-group-sm">
+                      <label class="quote-label">Value</label>
+                      <div style="display: flex; align-items: center;">
+                        <input type="text" class="form-control form-control-sm" formControlName="value" currencyMask
+                          [options]="currencyObj">
+                        <i class="fa-solid fa-trash-can text-danger ms-2" style="cursor: pointer;" title="Delete Risk"
+                          (click)="deleteRisk(i, j)"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <br>
+              </div>
+              
+            </div>
+
+          </div>
+          <div class="row" *ngIf="selectedProducts && selectedProducts.length > 0">
+                <div class="col-6"></div>
+                <div class="col-6 d-flex justify-content-end">
+                  <button type="button" class="btn btn-outline-primary btn-lg" id="compute" (click)="onSubmit()">
+                    Save
+                  </button>
+                </div>
+              </div>
+        </div>
+      </div>
+
+    </div>
+
+
+  </form>
+  <div class="row " style="display:none;">
+    <div class="col-6"></div>
+    <div class="col-6 d-flex justify-content-end">
+      <button type="button" class="btn btn-outline-primary btn-lg" id="compute">
+        {{ 'gis.quotation.next' | translate }}
+      </button>
+    </div>
+  </div>
 </div>
-
-
-
-

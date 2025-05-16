@@ -1,21 +1,22 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   AsyncValidatorFn,
+  FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import {LazyLoadEvent} from 'primeng/api';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {Logger, UtilService} from '../../../../../../shared/services';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { LazyLoadEvent } from 'primeng/api';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { Logger, UtilService } from '../../../../../../shared/services';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
-import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
-import {ClientService} from '../../../../../entities/services/client/client.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { ClientService } from '../../../../../entities/services/client/client.service';
 import stepData from '../../data/steps.json';
 import {
   Binders,
@@ -27,22 +28,22 @@ import {
   Subclasses,
   VesselType,
 } from '../../../setups/data/gisDTO';
-import {AuthService} from '../../../../../../shared/services/auth.service';
-import {SubClassCoverTypesService} from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {Calendar} from 'primeng/calendar';
-import {SectionsService} from '../../../setups/services/sections/sections.service';
-import {CountryService} from '../../../../../../shared/services/setups/country/country.service';
-import {CountryDto} from '../../../../../../shared/data/common/countryDto';
-import {Table, TableLazyLoadEvent} from 'primeng/table';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { Calendar } from 'primeng/calendar';
+import { SectionsService } from '../../../setups/services/sections/sections.service';
+import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
+import { CountryDto } from '../../../../../../shared/data/common/countryDto';
+import { Table, TableLazyLoadEvent } from 'primeng/table';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import {ClientDTO,} from '../../../../../entities/data/ClientDTO';
-import {BranchService} from '../../../../../../shared/services/setups/branch/branch.service';
-import {OrganizationBranchDto} from '../../../../../../shared/data/common/organization-branch-dto';
+import { ClientDTO, } from '../../../../../entities/data/ClientDTO';
+import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
+import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
 
-import {NgxSpinnerService} from 'ngx-spinner';
+import { NgxSpinnerService } from 'ngx-spinner';
 import {
   Limit,
   PremiumComputationRequest,
@@ -51,24 +52,24 @@ import {
   Tax,
   UserDetail,
 } from '../../data/quotationsDTO';
-import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
-import {HttpErrorResponse} from '@angular/common/http';
-import {Router} from '@angular/router';
-import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
-import {firstValueFrom, forkJoin, mergeMap, Observable, of, tap} from 'rxjs';
-import {NgxCurrencyConfig} from 'ngx-currency';
-import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
-import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
-import {OccupationDTO} from '../../../../../../shared/data/common/occupation-dto';
-import {VesselTypesService} from '../../../setups/services/vessel-types/vessel-types.service';
-import {Pagination} from '../../../../../../shared/data/common/pagination';
-import {TableDetail} from '../../../../../../shared/data/table-detail';
-import {MenuService} from 'src/app/features/base/services/menu.service';
-import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
-import {debounceTime} from "rxjs/internal/operators/debounceTime";
-import {catchError, distinctUntilChanged, map} from "rxjs/operators";
+import { firstValueFrom, forkJoin, mergeMap, Observable, of, tap } from 'rxjs';
+import { NgxCurrencyConfig } from 'ngx-currency';
+import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
+import { OccupationService } from '../../../../../../shared/services/setups/occupation/occupation.service';
+import { OccupationDTO } from '../../../../../../shared/data/common/occupation-dto';
+import { VesselTypesService } from '../../../setups/services/vessel-types/vessel-types.service';
+import { Pagination } from '../../../../../../shared/data/common/pagination';
+import { TableDetail } from '../../../../../../shared/data/table-detail';
+import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
+import { debounceTime } from "rxjs/internal/operators/debounceTime";
+import { catchError, distinctUntilChanged, map } from "rxjs/operators";
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 
 const log = new Logger('QuickQuoteFormComponent');
@@ -79,50 +80,43 @@ const log = new Logger('QuickQuoteFormComponent');
   styleUrls: ['./quick-quote-form.component.css'],
 })
 export class QuickQuoteFormComponent implements OnInit, OnDestroy {
-  @ViewChild('calendar', {static: true}) calendar: Calendar;
+  @ViewChild('calendar', { static: true }) calendar: Calendar;
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
 
 
   breadCrumbItems: BreadCrumbItem[] = [
-      {
-        label: 'Home',
-        url: '/home/dashboard',
-      },
-      {
-        label: 'Quotation',
-        url: '/home/lms/quotation/list',
-      },
-      {
-        label: 'New quote',
-        url: '/home/gis/quotation/quick-quote',
-      },
-    ];
+    {
+      label: 'Home',
+      url: '/home/dashboard',
+    },
+    {
+      label: 'Quotation',
+      url: '/home/lms/quotation/list',
+    },
+    {
+      label: 'New quote',
+      url: '/home/gis/quotation/quick-quote',
+    },
+  ];
   public currencyObj: NgxCurrencyConfig;
   productList: Products[];
   ProductDescriptionArray: any = [];
-  selectedProduct: Products[];
+  // selectedProduct: Products[];
   selectedProductCode: any;
+  selectedProducts: { code: number; description: string }[] = [];
 
   allSubclassList: Subclasses[];
   selectedSubclassCode: any;
-  allMatchingSubclasses = [];
+  productSubclassesMap: { [productCode: number]: Subclasses[] } = {};
   subclassSectionCoverList: any;
   mandatorySections: subclassCoverTypeSection[];
   binderList: any;
   binderListDetails: any;
   selectedBinderCode: any;
   selectedBinder: Binders;
-  newClient: boolean = true;
-  isNewClient: boolean = true;
-  existingClientSelected = false;
-  readonlyClient: boolean = false;
-  isFieldsDisabled: boolean = false;
 
-  sourceList: any;
-  sourceDetail: any;
-  selectedSourceCode: any;
-  selectedSource: any;
+
 
   currencyList: any;
   currencyCode: any;
@@ -148,20 +142,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   clientForm: FormGroup;
   sectionDetailsForm: FormGroup;
 
-  clientList: any;
-  clientDetails: ClientDTO;
-  clientData: any;
-  clientCode: any;
-  clientType: any;
-  clientName: any;
-  clientEmail: any;
-  clientPhone: any;
-  newClientData = {
-    inputClientName: '',
-    inputClientZipCode: '',
-    inputClientPhone: '',
-    inputClientEmail: '',
-  };
+
   countryList: CountryDto[];
   selectedCountry: any;
   filteredCountry: any;
@@ -284,21 +265,21 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     name: string;
     idNumber: string;
   } = {
-    name: '',
-    idNumber: '',
-  };
+      name: '',
+      idNumber: '',
+    };
   public clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
   tableDetails: TableDetail;
   public pageSize: 5;
   isSearching = false;
   searchTerm = '';
   cols = [
-    {field: 'clientFullName', header: 'Name'},
-    {field: 'emailAddress', header: 'Email'},
-    {field: 'phoneNumber', header: 'Phone number'},
-    {field: 'idNumber', header: 'ID number'},
-    {field: 'pinNumber', header: 'Pin'},
-    {field: 'id', header: 'ID'},
+    { field: 'clientFullName', header: 'Name' },
+    { field: 'emailAddress', header: 'Email' },
+    { field: 'phoneNumber', header: 'Phone number' },
+    { field: 'idNumber', header: 'ID number' },
+    { field: 'pinNumber', header: 'Pin' },
+    { field: 'id', header: 'ID' },
   ];
   globalFilterFields = ['idNumber', 'firstName', 'lastName', 'emailAddress'];
   emailValue: string;
@@ -352,147 +333,45 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       showFilter: false,
       showSorting: false,
     };
-    this.storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'));
-    this.quoteAction = sessionStorage.getItem('quoteAction');
-    this.isReturnToQuickQuote = JSON.parse(
-      sessionStorage.getItem('isReturnToQuickQuote')
-    );
-    this.PassedClientDetails = this.storedData?.selectedClient;
-    log.debug("Passed Client DETAILS:", this.PassedClientDetails)
-    this.passedQuotation = JSON.parse(
-      sessionStorage.getItem('passedQuotationDetails')
-    );
-    this.clientDetails = this.storedData?.selectedClient
+
   }
 
   ngOnInit(): void {
-
-
-    this.minDate = new Date();
-    this.loadAllproducts();
-    this.getCountries();
-
-    this.loadAllQoutationSources();
-    this.getuser();
-    this.populateYears();
-    this.loadAllCurrencies();
-
-    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
-    this.dynamicSideBarMenu(this.quotationSubMenuList[1]);
-
-    const passedIsEditRiskString = sessionStorage.getItem('isEditRisk');
-    this.isEditRisk = JSON.parse(passedIsEditRiskString);
-    log.debug('isEditRisk Details:', this.isEditRisk);
-
-    const passedIsAddRiskString = sessionStorage.getItem('isAddRisk');
-    this.isAddRisk = JSON.parse(passedIsAddRiskString);
-    log.debug('isAddRiskk Details:', this.isAddRisk);
-    this.premiumComputationRequest;
-    const organizationId = undefined;
-    this.getOccupation(organizationId);
-    this.getVesselTypes(organizationId);
-
-    this.tableDetails = {
-      cols: this.cols,
-      rows: this.clientsData?.content,
-      globalFilterFields: this.globalFilterFields,
-      showFilter: false,
-      showSorting: true,
-      paginator: true,
-      urlIdentifier: 'id',
-      viewDetailsOnView: true,
-      isLazyLoaded: true,
-    };
-
-    log.debug('isReturnToQuickQuote Details:', this.isReturnToQuickQuote);
-    sessionStorage.removeItem('navigationSource');
-    this.createQuickQuiteForm();
-
-    if (this.storedData) {
-      log.debug('Existing data>>>>', this.storedData);
-      this.selectedProductCode = this.storedData.product.code;
-      this.selectedSubclassCode = this.storedData.subClass.code;
-      this.LoadAllFormFields(this.selectedProductCode);
-      this.getProductSubclass(this.selectedProductCode);
-      this.getProductExpiryPeriod();
-      this.getCoverToDate();
-      this.fetchComputationData(
-        this.selectedProductCode,
-        this.selectedSubclassCode
-      );
-      this.fetchRegexPattern();
-      this.existingClientSelected = this.storedData.existingClientSelected;
-      if (this.existingClientSelected) {
-        this.newClient = false;
-      }
-      this.quickQuoteForm.patchValue({
-        clientName: this.storedData.clientName,
-        emailAddress: this.storedData.clientEmail,
-        phoneNumber: this.storedData.clientPhoneNumber,
-        effectiveDate: new Date(this.storedData.effectiveDateFrom),
-      });
-      if (this.quoteAction == 'A') {
-        this.quickQuoteForm?.get('effectiveDate')?.disable()
-      }
-    }
-    log.debug('Quotation Action:', this.quoteAction);
-    log.debug('Quotation Details:', this.passedQuotation);
-    this.passedQuotationNo = this.passedQuotation?.quotationNo ?? null;
-    if (this.passedQuotation) {
-      this.existingPropertyIds = this.passedQuotation.quotationProducts?.flatMap(product =>
-        product.riskInformation?.map(risk => risk.propertyId) || []
-      ) || [];
-      log.debug('existing property id', this.existingPropertyIds);
-    }
-
-    this.passedQuotationCode = this.passedQuotation?.quotationProducts?.[0]?.quotCode ?? null;
-
-    sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
-    sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
-  }
-
-  emailOrPhoneNumberExistsValidator(field: 'emailAddress' | 'phoneNumber'): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      if (!control.value || this.existingClientSelected) {
-        return of(null);
-      }
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      const phonePattern = /^\d{10}$/;
-      const emailValid = emailPattern.test(control.value)
-      const phoneNumberValid = phonePattern.test(control.value)
-      if (field === 'emailAddress' && !emailValid) {
-        return of(null);
-      }
-      if (field === 'phoneNumber' && !phoneNumberValid) {
-        return of(null);
-      }
-      log.debug("Testing email validity", emailValid)
-      log.debug("Testing phone validity", phoneNumberValid)
-      return this.quotationService.searchClients(field, control.value, 0, 5, '').pipe(
-        debounceTime(300),
-        map(response => (response.numberOfElements > 0 ? {alreadyUsed: true} : null)),
-        catchError(() => of(null))
-      );
-    };
-  }
-
-  createQuickQuiteForm() {
+    this.LoadAllFormFields();
+    // this.quickQuoteForm = this.fb.group({
+    //   effectiveDate: [''],
+    //   quotComment: [''],
+    //   products: this.fb.array([])
+    // });
     this.quickQuoteForm = this.fb.group({
-      clientName: [''],
-      emailAddress: ['', {
-        validators: [Validators.email],
-        asyncValidators: [this.emailOrPhoneNumberExistsValidator('emailAddress')]
-      }],
-      phoneNumber: ['', {
-        validator: [],
-        asyncValidators: [this.emailOrPhoneNumberExistsValidator('phoneNumber')]
-      }],
-      product: ['', [Validators.required]],
-      subClass: ['', [Validators.required]],
-      effectiveDate: ['', [Validators.required]],
-      currency: ['', [Validators.required]],
+      product: [[]],
+      effectiveDate: [''],
+      quotComment: [''],
+      products: this.fb.array([])  // important!
     });
+
+
+
+
   }
+
+  // createQuickQuiteForm() {
+  //   this.quickQuoteForm = this.fb.group({
+  //     clientName: [''],
+  //     emailAddress: ['', {
+  //       validators: [Validators.email],
+  //       // asyncValidators: [this.emailOrPhoneNumberExistsValidator('emailAddress')]
+  //     }],
+  //     phoneNumber: ['', {
+  //       validator: [],
+  //       // asyncValidators: [this.emailOrPhoneNumberExistsValidator('phoneNumber')]
+  //     }],
+  //     product: ['', [Validators.required]],
+  //     subClass: ['', [Validators.required]],
+  //     effectiveDate: ['', [Validators.required]],
+  //     currency: ['', [Validators.required]],
+  //   });
+  // }
 
   isFieldRequired(controlName: string): boolean {
     const control = this.quickQuoteForm.get(controlName);
@@ -508,6 +387,63 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     }
     this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
   }
+  /**
+   * Loads form fields dynamically based on the selected product code.
+   * - Subscribes to 'getFormFields' observable from QuotationService.
+   * - Populates 'formContent' with received data.
+   * - Assigns 'formData' from 'formContent.fields'.
+   * - Clears existing form controls and adds new controls for each product-specific field.
+   * - Applies custom validators and logs control details for debugging.
+   * @method LoadAllFormFields
+   * @param {Number} selectedProductCode - The selected product code for dynamic form loading.
+   * @return {void}
+   */
+  LoadAllFormFields() {
+    const formFieldDescription = 'product-quick-quote';
+
+    this.quotationService
+      .getFormFields(formFieldDescription)
+      .subscribe((data) => {
+        this.formData = [];
+        this.formContent = data;
+        log.debug(this.formContent, 'Form-content');
+        this.formData = this.formContent[0]?.fields;
+        log.debug(this.formData, 'formData is defined here');
+        this.formData && this.loadAllproducts();
+
+        Object.keys(this.quickQuoteForm.controls).forEach((controlName) => {
+          const control = this.quickQuoteForm.get(controlName) as any;
+          if (control?.metadata?.dynamic) {
+            this.quickQuoteForm.removeControl(controlName);
+            log.debug(`Removed dynamic control: ${controlName}`);
+          }
+        });
+        this.formData.forEach((field) => {
+          const validators = [];
+          if (field.isMandatory === 'Y') {
+            validators.push(Validators.required);
+          }
+          this.quickQuoteForm.addControl(
+            field.name,
+            new FormControl('', validators)
+          );
+          (this.quickQuoteForm.get(field.name) as any).metadata = {
+            dynamic: true,
+          };
+        });
+
+
+
+      });
+    // Object.keys(this.quickQuoteForm.controls).forEach((controlName) => {
+    //   const control = this.quickQuoteForm.get(controlName);
+    //   log.debug(
+    //     `Control: ${controlName}, Value: ${control?.value
+    //     }, Validators: ${this.getValidatorNames(control)}`
+    //   );
+    // });
+  }
+
 
 
   /**
@@ -540,100 +476,144 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       });
   }
 
-  // Method to check and set fields disable state from session storage
-  checkFieldsDisableState() {
-    const disableState = sessionStorage.getItem('fieldsDisableState');
-    this.isFieldsDisabled = disableState === 'true';
+  //  getSelectedProducts(event: any){
+  //   this.selectedProducts = event.value;
+  //  log.debug("Selected Products:",this.selectedProducts)
+
+  // }
+
+  get productsFormArray(): FormArray {
+    return this.quickQuoteForm.get('products') as FormArray;
   }
 
-  /**
-   * Resets client data by clearing the values of clientName, clientEmail, clientPhone, and filteredCountry.
-   * This method is typically used to reset form fields or client-related data in the component.
-   * @method resetClientData
-   * @return {void}
-   */
-  resetClientData() {
-    this.clientName = '';
-    this.clientEmail = '';
-    this.clientPhone = '';
-    this.filteredCountry = '';
+  getRisks(productIndex: number): FormArray {
+    return this.productsFormArray.at(productIndex).get('risks') as FormArray;
   }
 
-  /* Toggles between a new and existing client */
+  // Called when product is selected via multi-select
+  getSelectedProducts(event: any) {
+    this.selectedProducts = event.value;
+
+    this.productsFormArray.clear();
+    this.selectedProducts.forEach(product => {
+      this.productsFormArray.push(
+        this.fb.group({
+          code: [product.code],
+          description: [product.description],
+          risks: this.fb.array([this.createRiskGroup()])
+        })
+      );
+    });
+      for (let product of this.selectedProducts) {
+    this.getProductSubclass(product.code);
+  }
+  this.loadAllCurrencies();
+  this.getuser();
+    log.debug("productsFormArray", this.productsFormArray)
+  }
+
+  createRiskGroup(): FormGroup {
+    return this.fb.group({
+      subclass: [''],
+      value: ['']
+    });
+  }
+
+  addRisk(productIndex: number) {
+    this.getRisks(productIndex).push(this.createRiskGroup());
+  }
+
+  deleteRisk(productIndex: number, riskIndex: number) {
+    this.getRisks(productIndex).removeAt(riskIndex);
+  }
+
+  deleteProduct(productIndex: number) {
+    this.productsFormArray.removeAt(productIndex);
+    this.selectedProducts.splice(productIndex, 1);
+  }
+
+  onSubmit() {
+    console.log(this.quickQuoteForm.value);
+  }
   /**
-   * Toggles the 'new' state to true.
-   * This method is typically used to toggle between a new and existing client.
-   * @method toggleButton
+     * Retrieves and matches product subclasses for a given product code.
+     * - Makes an HTTP GET request to GISService for product subclasses.
+     * - Matches and combines subclasses with the existing 'allSubclassList'.
+     * - Logs the final list of matching subclasses.
+     * - Forces change detection to reflect updates.
+     * @method getProductSubclass
+     * @param {number} code - The product code to fetch subclasses.
+     * @return {void}
+     */
+ 
+ getProductSubclass(code: number) {
+  this.subclassService.getProductSubclasses(code).pipe(
+    untilDestroyed(this)
+  ).subscribe((subclasses: Subclasses[]) => {
+    this.productSubclassesMap[code] = subclasses.map(value => ({
+      ...value, // keep all original properties
+      description: this.capitalizeWord(value.description), // update description only
+    }));
+    log.debug("SUBCLASS LIST:",this.productSubclassesMap)
+  });
+}
+  /**
+   * Loads all currencies and selects based on the currency code.
+   * - Subscribes to 'getAllCurrencies' from CurrencyService.
+   * - Populates 'currencyList' and filters for the selected currency.
+   * - Assigns name and code from the filtered currency.
+   * - Logs the selected currency details and triggers change detection.
+   * @method loadAllCurrencies
    * @return {void}
    */
-  toggleExistingClient() {
-    this.newClient = false;
-    this.existingClientSelected = true;
-    this.quickQuoteForm?.get('emailAddress').disable();
-    this.quickQuoteForm?.get('phoneNumber').disable();
-    this.quickQuoteForm?.get('clientName').setValidators(Validators.required);
-    if (this.quickQuoteForm) {
-      this.quickQuoteForm.updateValueAndValidity();
-    }
-    if (this.storedData) {
-      this.quickQuoteForm.patchValue({
-        clientName: this.storedData.clientName,
-        emailAddress: this.storedData.clientEmail,
-        phoneNumber: this.storedData.clientPhoneNumber,
+  loadAllCurrencies() {
+    this.currencyService
+      .getAllCurrencies()
+      .pipe(untilDestroyed(this))
+      .subscribe((data) => {
+        this.currencyList = data.map((value) => {
+          let capitalizedDescription =
+            value.name.charAt(0).toUpperCase() +
+            value.name.slice(1).toLowerCase();
+          return {
+            ...value,
+            name: capitalizedDescription,
+          };
+        });
+        log.info(this.currencyList, 'this is a currency list');
+        const defaultCurrency = this.currencyList.find(
+          (currency) => currency.currencyDefault == 'Y'
+        );
+        if (defaultCurrency) {
+          log.debug('DEFAULT CURRENCY', defaultCurrency);
+          this.defaultCurrencyName = defaultCurrency.name;
+          log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+          this.defaultCurrencySymbol = defaultCurrency.symbol;
+          log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+                    this.setCurrencySymbol(this.defaultCurrencySymbol);
+
+        }
+    
       });
-    }
+  }
+   setCurrencySymbol(currencySymbol: string) {
+    this.selectedCurrencySymbol = currencySymbol + ' ';
+    this.currencyObj = {
+      prefix: this.selectedCurrencySymbol,
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: this.currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
+    log.debug("Currency object:",this.currencyObj)
   }
 
-  toggleToNewClient() {
-    this.newClient = true;
-    this.existingClientSelected = false;
-    this.quickQuoteForm?.get('emailAddress').enable();
-    this.quickQuoteForm?.get('phoneNumber').enable();
-    this.quickQuoteForm?.get('clientName').setValue('');
-    this.quickQuoteForm?.get('emailAddress').setValue('');
-    this.quickQuoteForm?.get('phoneNumber').setValue('');
-    this.quickQuoteForm?.get('clientName').clearValidators();
-    if (this.quickQuoteForm) {
-      this.quickQuoteForm.updateValueAndValidity();
-    }
-    this.clientDetails = null;
-  }
 
-  /**
-   * Toggles the 'new' state to false and resets client-related data.
-   * This method is commonly used to switch from a 'new' client state to a default state and clear client input fields.
-   * @method toggleNewClient
-   * @return {void}
-   */
-
-  toggleNewClient() {
-    if (!this.isFieldDisabled('radio')) {
-      this.newClient = false;
-      this.isNewClient = true;
-      this.readonlyClient = false;
-      this.checkFieldsDisableState();
-      this.resetClientData();
-      sessionStorage.removeItem('clientDetails');
-    }
-  }
-
-  // Helper method to determine if email field should be disabled
-  isFieldDisabled(fieldType: 'email' | 'other' | 'radio'): boolean {
-    if (this.isFieldsDisabled) {
-      // When fieldsDisableState is true, disable all fields
-      return true;
-    } else {
-      // When fieldsDisableState is false, handle specific field types
-      switch (fieldType) {
-        case 'email':
-          return !this.isNewClient; // Disable email for existing client
-        case 'radio':
-          return this.readonlyClient || this.isFieldsDisabled; // Disable radio when readonly or fields are disabled
-        default:
-          return false; // Don't disable other fields
-      }
-    }
-  }
+  /** OLD QUICK QUOTE TS CODE*/
 
   /**
    * Retrieves user information from the authentication service.
@@ -671,7 +651,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
     // Extract the day, month, and year
     const day = todaysDate.getDate();
-    const month = todaysDate.toLocaleString('default', {month: 'long'}); // 'long' gives the full month name
+    const month = todaysDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
     const year = todaysDate.getFullYear();
 
     // Format the date in 'dd-Month-yyyy' format
@@ -720,23 +700,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       });
   }
 
-  /**
-   * Fetches client data via HTTP GET from ClientService.
-   * - Populates 'clientList' and extracts data from 'content'.
-   * - Logs client data for debugging using 'log.debug'.
-   * @method loadAllClients
-   * @return {void}
-   */
-  loadAllClients() {
-    this.clientService.getClients(0, 100)
-      .pipe(
-        untilDestroyed(this)
-      )
-      .subscribe((data) => {
-        this.clientList = data;
-        this.clientData = this.clientList.content;
-      });
-  }
 
   /**
    * Fetches and filters country data from CountryService.
@@ -765,47 +728,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   }
 
 
-  /**
-   * - Get A specific client's details on select.
-   * - populate the relevant fields with the client details.
-   * - Retrieves and logs client type and country.
-   * - Invokes 'getCountries()' to fetch countries data.
-   * - Calls 'saveClient()' and closes the modal.
-   * @method loadClientDetails
-   * @param {number} id - ID of the client to load.
-   * @return {void}
-   */
-  loadClientDetails(client: ClientDTO) {
-    this.clientDetails = client;
-    this.clientType = this.clientDetails.clientType.clientTypeName;
-    this.selectedCountry = this.clientDetails.country;
-    this.saveclient();
 
-    let fullName = this.utilService.getFullName(this.clientDetails);
-    log.debug('Selected Client fullname::::', this.clientDetails, fullName);
-    this.quickQuoteForm.get('clientName').setValue(fullName);
-    this.quickQuoteForm
-      .get('emailAddress')
-      .setValue(this.clientDetails.emailAddress);
-    this.quickQuoteForm
-      .get('phoneNumber')
-      .setValue(this.clientDetails.mobileNumber);
-    this.closebutton.nativeElement.click();
-  }
 
-  /**
-   * Saves essential client details for further processing.
-   * - Assigns client ID, name, email, and phone from 'clientDetails'.
-   * @method saveClient
-   * @return {void}
-   */
-  saveclient() {
-    this.clientCode = this.clientDetails.id;
-    this.clientName = this.utilService.getFullName(this.clientDetails);
-    this.clientEmail = this.clientDetails.emailAddress;
-    this.clientPhone = this.clientDetails.phoneNumber;
-    sessionStorage.setItem('clientCode', this.clientCode);
-  }
 
   /**
    * Handles the selection of a product.
@@ -826,12 +750,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.quickQuoteForm.get('currency').setValue(defaultCurrency);
     this.selectedEffectiveDate = new Date();
     this.quickQuoteForm.get('effectiveDate').setValue(this.selectedEffectiveDate);
-    this.setCurrencySymbol(defaultCurrency.symbol);
-    this.getProductSubclass(this.selectedProductCode);
+    // this.setCurrencySymbol(defaultCurrency.symbol);
+    // this.getProductSubclass(this.selectedProductCode);
 
     // Load the dynamic form fields based on the selected product
-    this.LoadAllFormFields(this.selectedProductCode);
-    this.getProductExpiryPeriod();
+    // this.getProductExpiryPeriod();
     this.getCoverToDate();
   }
 
@@ -886,54 +809,26 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     return `${year}-${month}-${day}`;
   }
 
-  getProductExpiryPeriod() {
-    log.debug('SELECTED PRODUCTC CODE', this.selectedProductCode);
-    if (!this.selectedProductCode || !this.productList) {
-      this.expiryPeriod = 'N';
-      return;
-    }
+  // getProductExpiryPeriod() {
+  //   log.debug('SELECTED PRODUCTC CODE', this.selectedProductCode);
+  //   if (!this.selectedProductCode || !this.productList) {
+  //     this.expiryPeriod = 'N';
+  //     return;
+  //   }
 
-    this.selectedProduct = this.productList.filter(
-      (product) => product.code === this.selectedProductCode
-    );
+  //   this.selectedProduct = this.productList.filter(
+  //     (product) => product.code === this.selectedProductCode
+  //   );
 
-    if (this.selectedProduct.length > 0) {
-      this.expiryPeriod = this.selectedProduct[0].expires;
-    } else {
-      this.expiryPeriod = 'N';
-    }
-  }
+  //   if (this.selectedProduct.length > 0) {
+  //     this.expiryPeriod = this.selectedProduct[0].expires;
+  //   } else {
+  //     this.expiryPeriod = 'N';
+  //   }
+  // }
 
 
-  /**
-   * Retrieves and matches product subclasses for a given product code.
-   * - Makes an HTTP GET request to GISService for product subclasses.
-   * - Matches and combines subclasses with the existing 'allSubclassList'.
-   * - Logs the final list of matching subclasses.
-   * - Forces change detection to reflect updates.
-   * @method getProductSubclass
-   * @param {number} code - The product code to fetch subclasses.
-   * @return {void}
-   */
-  getProductSubclass(code: number) {
-    this.subclassService.getProductSubclasses(code).pipe(
-      untilDestroyed(this)
-    ).subscribe((subclasses) => {
-      this.allMatchingSubclasses = subclasses.map((value) => {
-        return {
-          ...value,
-          description: this.capitalizeWord(value.description),
-        }
-      })
-      if (this.storedData && this.quoteAction === 'E') {
-        this.quickQuoteForm.patchValue({
-          subClass: this.allMatchingSubclasses.find(
-            (value) => value.code === this.storedData.subClass.code
-          ),
-        });
-      }
-    })
-  }
+
 
   capitalizeWord(value: String): string {
     return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
@@ -1042,50 +937,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug('Selected Currency Code:', this.currencyCode);
   }
 
-  /**
-   * Loads all currencies and selects based on the currency code.
-   * - Subscribes to 'getAllCurrencies' from CurrencyService.
-   * - Populates 'currencyList' and filters for the selected currency.
-   * - Assigns name and code from the filtered currency.
-   * - Logs the selected currency details and triggers change detection.
-   * @method loadAllCurrencies
-   * @return {void}
-   */
-  loadAllCurrencies() {
-    this.currencyService
-      .getAllCurrencies()
-      .pipe(untilDestroyed(this))
-      .subscribe((data) => {
-        this.currencyList = data.map((value) => {
-          let capitalizedDescription =
-            value.name.charAt(0).toUpperCase() +
-            value.name.slice(1).toLowerCase();
-          return {
-            ...value,
-            name: capitalizedDescription,
-          };
-        });
-        log.info(this.currencyList, 'this is a currency list');
-        const defaultCurrency = this.currencyList.find(
-          (currency) => currency.currencyDefault == 'Y'
-        );
-        if (defaultCurrency) {
-          log.debug('DEFAULT CURRENCY', defaultCurrency);
-          this.defaultCurrencyName = defaultCurrency.name;
-          log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
-          this.defaultCurrencySymbol = defaultCurrency.symbol;
-          log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
-        }
-        if (this.storedData) {
-          this.quickQuoteForm.patchValue({
-            currency: this.currencyList.find(
-              (value: { id: any }) => value.id === this.storedData.currency.id
-            ),
-          });
-          this.setCurrencySymbol(this.defaultCurrencySymbol);
-        }
-      });
-  }
 
   onCurrencySelected(selectedValue: any) {
     this.selectedCurrencyCode = selectedValue.id;
@@ -1100,20 +951,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.setCurrencySymbol(selectedCurrency.symbol);
   }
 
-  setCurrencySymbol(currencySymbol: string) {
-    this.selectedCurrencySymbol = currencySymbol + ' ';
-    this.currencyObj = {
-      prefix: this.selectedCurrencySymbol,
-      allowNegative: false,
-      allowZero: false,
-      decimal: '.',
-      precision: 0,
-      thousands: this.currencyDelimiter,
-      suffix: ' ',
-      nullable: true,
-      align: 'left',
-    };
-  }
+ 
 
   /**
    * Loads cover types for the provided subclass code.
@@ -1137,103 +975,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       });
   }
 
-  /**
-   * Loads all quotation sources.
-   * - Subscribes to 'getAllQuotationSources' from QuotationService.
-   * - Populates 'sourceList' and assigns 'sourceDetail'.
-   * - Logs source details.
-   * @method loadAllQuotationSources
-   * @return {void}
-   */
-  loadAllQoutationSources() {
-    this.quotationService.getAllQuotationSources().subscribe((data) => {
-      this.sourceList = data;
-      this.sourceDetail = data.content;
-      log.debug(this.sourceDetail, 'Source list');
-    });
-  }
 
-  onSourceSelected(event: any) {
-    this.selectedSourceCode = event.target.value;
-    log.debug('Selected Source Code:', this.selectedSourceCode);
-    this.selectedSource = this.sourceDetail.filter(
-      (source) => source.code == this.selectedSourceCode
-    );
-    log.debug('Selected Source :', this.selectedSource);
-    // this.sharedService.setQuotationSource(this.selectedSource)
-    const quotationSourceString = JSON.stringify(this.selectedSource);
-    sessionStorage.setItem('quotationSource', quotationSourceString);
-  }
-
-  /**
-   * Loads form fields dynamically based on the selected product code.
-   * - Subscribes to 'getFormFields' observable from QuotationService.
-   * - Populates 'formContent' with received data.
-   * - Assigns 'formData' from 'formContent.fields'.
-   * - Clears existing form controls and adds new controls for each product-specific field.
-   * - Applies custom validators and logs control details for debugging.
-   * @method LoadAllFormFields
-   * @param {Number} selectedProductCode - The selected product code for dynamic form loading.
-   * @return {void}
-   */
-  LoadAllFormFields(selectedProductCode: Number) {
-    if (selectedProductCode) {
-      const formFieldDescription = 'product-quick-quote-'.concat(
-        selectedProductCode.toString()
-      );
-      this.quotationService
-        .getFormFields(formFieldDescription)
-        .subscribe((data) => {
-          this.formData = [];
-          this.formContent = data;
-          log.debug(this.formContent, 'Form-content');
-          this.formData = this.formContent[0]?.fields;
-          log.debug(this.formData, 'formData is defined here');
-          Object.keys(this.quickQuoteForm.controls).forEach((controlName) => {
-            const control = this.quickQuoteForm.get(controlName) as any;
-            if (control?.metadata?.dynamic) {
-              this.quickQuoteForm.removeControl(controlName);
-              log.debug(`Removed dynamic control: ${controlName}`);
-            }
-          });
-          this.formData.forEach((field) => {
-            const validators = [];
-            if (field.isMandatory === 'Y') {
-              validators.push(Validators.required);
-            }
-            if (field.regexPattern) {
-              validators.push(Validators.pattern(field.regexPattern));
-            }
-            log.debug(`Validators about to be added ${field.name}`, validators);
-            this.quickQuoteForm.addControl(
-              field.name,
-              new FormControl(
-                this.storedData &&
-                this.storedData[field.name] &&
-                this.quoteAction == 'E'
-                  ? this.storedData[field.name]
-                  : '',
-                validators
-              )
-            );
-            (this.quickQuoteForm.get(field.name) as any).metadata = {
-              dynamic: true,
-            };
-          });
-          if (this.quoteAction === 'A') {
-            this.quickQuoteForm?.get('coverTo')?.disable()
-          }
-
-        });
-      Object.keys(this.quickQuoteForm.controls).forEach((controlName) => {
-        const control = this.quickQuoteForm.get(controlName);
-        log.debug(
-          `Control: ${controlName}, Value: ${control?.value
-          }, Validators: ${this.getValidatorNames(control)}`
-        );
-      });
-    }
-  }
 
   getValidatorNames(control: AbstractControl | null): string[] {
     if (!control || !control.validator) return [];
@@ -1280,13 +1022,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         } else {
           control.removeValidators([this.uniqueValidator]);
         }
-        control.updateValueAndValidity({emitEvent: false});
+        control.updateValueAndValidity({ emitEvent: false });
       }
     })
   }
 
   uniqueValidator(control: AbstractControl) {
-    return {unique: true};
+    return { unique: true };
   }
 
   /**
@@ -1611,9 +1353,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         riskId: quickQuoteDataModel?.riskId,
         value: quickQuoteDataModel?.value,
         modeOfTransport: quickQuoteDataModel?.modeOfTransport,
-        existingClientSelected: this.existingClientSelected,
+        existingClientSelected: null,
         selectedBinderCode: this.selectedBinderCode,
-        selectedClient: this.clientDetails ? this.clientDetails : null
+        selectedClient: null
 
       }
 
@@ -1738,7 +1480,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     const upperCaseValue = input.value.toUpperCase();
     this.quickQuoteForm
       .get('carRegNo')
-      ?.setValue(upperCaseValue, {emitEvent: false});
+      ?.setValue(upperCaseValue, { emitEvent: false });
   }
 
   /**
@@ -1839,7 +1581,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
     if (this.isSearching) {
       const searchEvent = {
-        target: {value: this.searchTerm},
+        target: { value: this.searchTerm },
       };
       this.filter(searchEvent, pageIndex, pageSize);
     } else {
