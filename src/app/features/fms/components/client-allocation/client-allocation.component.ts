@@ -335,13 +335,8 @@ export class ClientAllocationComponent {
    */
   isAmount: boolean = false;
   /**
-   * @description first row index
-   */
-  first: number = 0;
-  /**
-   * @description rows per page
-   */
-  rows: number = 5;
+  
+  
   /**
    * @description total number of records
    */
@@ -613,6 +608,9 @@ export class ClientAllocationComponent {
       description: ['', Validators.required],
     });
   }
+  get currentPageReportTemplate(): string {
+    return this.translate.instant('fms.receipt-management.pageReport');
+  }
   /**
    * Sets the receipt preview path based on the payment mode and cheque type.
    * If the payment mode is CHEQUE and the cheque type is post_dated_cheque,
@@ -731,42 +729,6 @@ export class ClientAllocationComponent {
       .sort((a, b) => b.score - a.score); // Sort by relevance
   }
 
-  /**
-   * Moves to the first page of the table.
-   * @param state The state of the paginator.
-  /**
-   *@description These are pagination method to calculates rows and provide entries
-   *
-   * @param {*} state
-   * @memberof ClientAllocationComponent
-   */
-  moveFirst(state: any) {
-    state.first = 0;
-  }
-  /**
-   * Moves to the previous page of the table.
-   * @param state The state of the paginator.
-   */
-  movePrev(state: any) {
-    state.first = Math.max(state.first - state.rows, 0);
-  }
-  /**
-   * Moves to the next page of the table.
-   * @param state The state of the paginator.
-   */
-  moveNext(state: any) {
-    state.first = Math.min(
-      state.first + state.rows,
-      state.totalRecords - state.rows
-    );
-  }
-  /**
-   * Moves to the last page of the table.
-   * @param state The state of the paginator.
-   */
-  moveLast(state: any) {
-    state.first = state.totalRecords - state.rows;
-  }
   /**
    * Updates the allocated amount for a specific transaction and recalculates the total allocated amount.
    * @param index The index of the transaction in the list
@@ -958,7 +920,7 @@ export class ClientAllocationComponent {
       );
       return;
     }
-    
+
     if (!this.amountIssued) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -966,7 +928,7 @@ export class ClientAllocationComponent {
       );
       return false; // Stop further execution
     }
-   
+
     //round off the allocated amounts and unallocated amounts to 2 decimal places
     const issued = Number(this.amountIssued.toFixed(2));
     const allocated = Number(this.totalAllocatedAmount.toFixed(2));
@@ -980,7 +942,7 @@ export class ClientAllocationComponent {
 
     //   return false;
     // }
-    
+
     if (allocated > issued) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1228,10 +1190,11 @@ export class ClientAllocationComponent {
           this.getAllocation = this.getAllocation.filter(
             (allocation) => allocation.receiptParticularDetails.length > 0
           );
-  //  Remove from flattened list to update UI table
-  this.flattenedAllocationDetails = this.flattenedAllocationDetails.filter(
-    (detail) => detail.code !== receiptDetailCode
-  );
+          //  Remove from flattened list to update UI table
+          this.flattenedAllocationDetails =
+            this.flattenedAllocationDetails.filter(
+              (detail) => detail.code !== receiptDetailCode
+            );
           // Update total allocated amount
           this.totalAllocatedAmount = Math.max(
             0,
@@ -1676,19 +1639,18 @@ export class ClientAllocationComponent {
       );
       return false; // Stop further execution
     }
- // Step 2: Validate the total allocated amount against the issued amount
-  //round off the allocated amounts and unallocated amounts to 2 decimal places
-  const issued = Number(this.amountIssued.toFixed(2));
-  const allocated = Number(this.totalAllocatedAmount.toFixed(2));
-  if (allocated > 0 && allocated < issued){
-    this.globalMessagingService.displayErrorMessage(
-          'Error',
-          'Amount Issued is not fully allocated'
-        );
-  
-        return false;
-      
-  }
+    // Step 2: Validate the total allocated amount against the issued amount
+    //round off the allocated amounts and unallocated amounts to 2 decimal places
+    const issued = Number(this.amountIssued.toFixed(2));
+    const allocated = Number(this.totalAllocatedAmount.toFixed(2));
+    if (allocated > 0 && allocated < issued) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Amount Issued is not fully allocated'
+      );
+
+      return false;
+    }
     if (this.parameterStatus == 'Y' && !this.fileUploaded) {
       const userConfirmed = confirm(
         'do you want to save receipt without uploading file?'
@@ -1806,9 +1768,9 @@ export class ClientAllocationComponent {
         );
         //this.sessionStorage.clear();
         this.router.navigate(['/home/fms/receipt-capture']);
-            this.receiptDataService.clearFormState();
+        this.receiptDataService.clearFormState();
         this.receiptDataService.clearReceiptData();
-        this.sessionStorage.clear();
+        //this.sessionStorage.clear();
 
         //prepare receipt upload payload
       },
@@ -1878,18 +1840,17 @@ export class ClientAllocationComponent {
     }
 
     // Step 2: Validate the total allocated amount against the issued amount
-  //round off the allocated amounts and unallocated amounts to 2 decimal places
-  const issued = Number(this.amountIssued.toFixed(2));
-  const allocated = Number(this.totalAllocatedAmount.toFixed(2));
-  if (allocated > 0 && allocated < issued){
-    this.globalMessagingService.displayErrorMessage(
-          'Error',
-          'Amount Issued is not fully allocated'
-        );
-  
-        return false;
-      
-  }
+    //round off the allocated amounts and unallocated amounts to 2 decimal places
+    const issued = Number(this.amountIssued.toFixed(2));
+    const allocated = Number(this.totalAllocatedAmount.toFixed(2));
+    if (allocated > 0 && allocated < issued) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Amount Issued is not fully allocated'
+      );
+
+      return false;
+    }
     const receiptData: ReceiptSaveDTO = {
       //this is the branch receiptNumber that is used via out receipting process
       receiptNo: this.branchReceiptNumber,
@@ -2027,19 +1988,18 @@ export class ClientAllocationComponent {
       );
       return false; // Stop further execution
     }
-     // Step 2: Validate the total allocated amount against the issued amount
-  //round off the allocated amounts and unallocated amounts to 2 decimal places
-  const issued = Number(this.amountIssued.toFixed(2));
-  const allocated = Number(this.totalAllocatedAmount.toFixed(2));
-  if (allocated > 0 && allocated < issued){
-    this.globalMessagingService.displayErrorMessage(
-          'Error',
-          'Amount Issued is not fully allocated'
-        );
-  
-        return false;
-      
-  }
+    // Step 2: Validate the total allocated amount against the issued amount
+    //round off the allocated amounts and unallocated amounts to 2 decimal places
+    const issued = Number(this.amountIssued.toFixed(2));
+    const allocated = Number(this.totalAllocatedAmount.toFixed(2));
+    if (allocated > 0 && allocated < issued) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Amount Issued is not fully allocated'
+      );
+
+      return false;
+    }
 
     const receiptData: ReceiptSaveDTO = {
       //this is the branch receiptNumber that is used via out receipting process
