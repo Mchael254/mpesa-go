@@ -38,6 +38,7 @@ import { QuotationManagementComponent } from './components/quotation-management/
 import { TagModule } from 'primeng/tag';
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
+import { MultiSelectModule } from 'primeng/multiselect';
 @NgModule({
   declarations: [
     ListQuotationsComponent,
@@ -83,7 +84,8 @@ import { RiskCentreComponent } from './components/risk-centre/risk-centre.compon
         NgxIntlTelInputModule,
         EntitiesModule,
         CheckboxModule,
-        TagModule 
+        TagModule,
+        MultiSelectModule
     ],
   providers: [DatePipe],
 
