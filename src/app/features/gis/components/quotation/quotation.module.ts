@@ -20,7 +20,6 @@ import { RiskSectionDetailsComponent } from './components/risk-section-details/r
 import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
 import { TreeModule } from 'primeng/tree';
 import { InputTextModule } from 'primeng/inputtext';
-import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
 import { FileUploadModule } from 'primeng/fileupload';
 import { BadgeModule } from 'primeng/badge';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -38,12 +37,12 @@ import { QuotationManagementComponent } from './components/quotation-management/
 import { TagModule } from 'primeng/tag';
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
-import { MultiSelectModule } from 'primeng/multiselect';
+import { QuouteSummaryComponent } from './components/quoute-summary/quoute-summary.component';
 @NgModule({
   declarations: [
     ListQuotationsComponent,
     QuickQuoteFormComponent,
-    QuoteSummaryComponent,
+    QuotationSummaryComponent,
     QuotationsClientDetailsComponent,
     QuotationDetailsComponent,
     ImportRisksComponent,
@@ -59,6 +58,10 @@ import { MultiSelectModule } from 'primeng/multiselect';
     QuotationManagementComponent,
     RiskDetailsComponent,
     RiskCentreComponent,
+  
+    
+  
+  
 
 
   ],
@@ -84,8 +87,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
         NgxIntlTelInputModule,
         EntitiesModule,
         CheckboxModule,
-        TagModule,
-        MultiSelectModule
+        TagModule 
     ],
   providers: [DatePipe],
 

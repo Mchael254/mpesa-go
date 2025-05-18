@@ -899,6 +899,83 @@ export interface TaxComputation {
 
 
 
+// src/app/models/quotation.dto.ts
 
+export interface ProductDTO {
+  product: string;
+  risk: string;
+  coverType: string;
+  effectiveDate: string;
+  sumInsured: number;
+  premium: number;
+}
+
+export interface QuotationDTO {
+  number: string;
+  status: string;
+  reference: string;
+  ticket: string;
+  notes: string;
+  currency: string;
+  products: ProductDTO[];
+}
+
+export interface ShareQuoteDTO {
+  selectedMethod: 'email' | 'sms' | 'whatsapp';
+  email?: string;
+  smsNumber?: string;
+  whatsappNumber?: string;
+  clientName?: string;
+}
+
+
+// src/app/models/payment-advice.dto.ts
+export interface PaymentMethodDTO {
+  title: string;
+  details: string[];
+}
+
+export interface PaymentAdviceDTO {
+  paymentMethods: PaymentMethodDTO[];
+  footerInfo: string[];
+}
+
+// quote-report.dto.ts
+
+export interface CoverageDTO {
+premium: string;            // renamed from 'premium' to 'amount' for clarity
+clauses: string[];
+limitsOfLiability: string[];
+excess: string[];
+benefits: string[];
+}
+
+export interface MotorPrivateDTO {
+useOfProperty: string;
+value: string;
+comprehensive: CoverageDTO;   // comprehensive coverage details
+thirdParty: CoverageDTO;      // third party coverage details
+}
+
+export interface DomesticDTO {
+useOfProperty: string;
+value: string;
+premium: CoverageDTO;         // single coverage details for domestic
+}
+
+export interface QuotationHeaderDTO {
+quotationStatus: string;
+proposalIssued: string;
+period: string;
+quoteTime: string;
+agencyName: string;
+logo: string;
+}
+
+export interface QuoteReportDTO {
+header: QuotationHeaderDTO;
+motorPrivateList: MotorPrivateDTO[];
+domesticList: DomesticDTO[];
+}
 
 

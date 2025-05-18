@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ListQuotationsComponent } from './components/list-quotations/list-quotations.component';
 import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
-import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
+
 import { QuotationsClientDetailsComponent } from './components/quotations-client-details/quotations-client-details.component';
 import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
 import { QuotationDetailsComponent } from './components/quotation-details/quotation-details.component';
@@ -17,6 +17,7 @@ import { QuotationInquiryComponent } from './components/quotation-inquiry/quotat
 import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
 import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
 import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
+import { QuoutationReportComponent } from './components/quoutation-report/quoutation-report.component';
 
 const routes: Routes = [
   {
@@ -27,9 +28,6 @@ const routes: Routes = [
   },
   {
     path: 'cover-type-details', component:CoverTypesComparisonComponent
-  },
-  {
-    path: 'quote-summary', component:QuoteSummaryComponent
   },
 {
     path:'quotations-client-details',component:QuotationsClientDetailsComponent
@@ -72,6 +70,9 @@ const routes: Routes = [
   },
   {
     path:'i',component:QuotationInquiryComponent
+  },
+  {
+    path:'quotation-report',component:QuoutationReportComponent
   },
 ];
 
