@@ -67,8 +67,8 @@ getTotalPremium(): number {
 
 getShortNotes(notes: string): string {
   if (!notes) return '';
-  const words = notes.trim().split(/\s+/); // handles extra spaces
-  return words.length > 5 ? words.slice(0, 5).join(' ') + '...' : notes;
+  const maxChars = 10; // <-- change this number to what you want
+  return notes.length > maxChars ? notes.slice(0, maxChars) + '...' : notes;
 }
 
 
