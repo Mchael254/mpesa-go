@@ -174,7 +174,6 @@ export interface productDocument {
 }
 
 export interface Products {
-
   code: number;
   shortDescription: string;
   description: string;

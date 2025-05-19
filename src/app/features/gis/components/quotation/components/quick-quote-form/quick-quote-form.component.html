@@ -21,14 +21,9 @@
                   <br>
                   <ng-container [ngSwitch]="field.type">
                     <ng-container *ngSwitchCase="'select'">
-                      <!-- <ng-container *ngIf="field.name === 'product'">
-                      <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="ProductDescriptionArray"
-                        optionLabel="description" dataKey="code" [filterBy]="'description'"
-                        [filter]="true"></p-dropdown>
-                    </ng-container> -->
                       <ng-container *ngIf="field.name === 'product'">
                         <p-multiSelect [formControlName]="field.name" [name]="field.name"
-                          [options]="ProductDescriptionArray" optionLabel="description" [filterBy]="'description'"
+                          [options]="products" optionLabel="description" [filterBy]="'description'"
                           [filter]="true" display="chip" (onChange)="getSelectedProducts($event)">
                         </p-multiSelect>
                       </ng-container>
@@ -145,7 +140,7 @@
                 </div>
                 <br>
               </div>
-              
+
             </div>
 
           </div>
