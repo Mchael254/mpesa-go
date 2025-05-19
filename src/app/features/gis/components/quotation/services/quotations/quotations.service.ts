@@ -29,6 +29,7 @@ import {ClientDTO} from '../../../../../entities/data/ClientDTO';
 import {UtilService} from '../../../../../../shared/services/util/util.service';
 import {map} from "rxjs/operators";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
+import {ProductLevelPremium} from "../../data/premium-computation";
 
 @Injectable({
   providedIn: 'root'
@@ -577,10 +578,8 @@ export class QuotationsService {
     )
   }
 
-  premiumComputationEngine(payload: PremiumComputationRequest): Observable<any> {
-    return this.api.POST<any[]>(`api/v1/premium-computation`, JSON.stringify(payload), API_CONFIG.PREMIUM_COMPUTATION,);
-
-    console.log("Premium Payload after", payload)
+  premiumComputationEngine(payload: PremiumComputationRequest): Observable<ProductLevelPremium[]> {
+    return this.api.POST<ProductLevelPremium[]>(`api/v1/premium-computation`, JSON.stringify(payload), API_CONFIG.PREMIUM_COMPUTATION);
 
   }
 

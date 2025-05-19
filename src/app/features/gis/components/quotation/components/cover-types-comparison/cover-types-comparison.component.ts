@@ -869,7 +869,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       next: (([payloadUpdate, computationResponse]) => {
         this.premiumResponse = computationResponse
         this.premiumComputationPayload = payloadUpdate._embedded
-        this.riskLevelPremiums = computationResponse.riskLevelPremiums
+        //this.riskLevelPremiums = computationResponse.riskLevelPremiums
         sessionStorage.setItem('premiumResponse', JSON.stringify(computationResponse));
       }),
       error: (error) => {
