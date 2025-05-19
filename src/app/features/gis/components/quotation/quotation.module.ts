@@ -38,6 +38,9 @@ import { TagModule } from 'primeng/tag';
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
 import { QuouteSummaryComponent } from './components/quoute-summary/quoute-summary.component';
+import { QuoutationReportComponent } from './components/quoutation-report/quoutation-report.component';
+import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
+import { ShareQuotesComponent } from './components/share-quotes/share-quotes.component';
 @NgModule({
   declarations: [
     ListQuotationsComponent,
@@ -58,7 +61,11 @@ import { QuouteSummaryComponent } from './components/quoute-summary/quoute-summa
     QuotationManagementComponent,
     RiskDetailsComponent,
     RiskCentreComponent,
+    QuoutationReportComponent,
+    QuoteSummaryComponent,
+    ShareQuotesComponent,
   
+    
     
   
   
@@ -88,6 +95,7 @@ import { QuouteSummaryComponent } from './components/quoute-summary/quoute-summa
         EntitiesModule,
         CheckboxModule,
         TagModule 
+        
     ],
   providers: [DatePipe],
 
