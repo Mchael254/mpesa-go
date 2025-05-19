@@ -1,0 +1,58 @@
+<div class="share-quote-page">
+    <h2 class="page-title">Share quote</h2>
+  
+    <!-- Share method -->
+    <div class="method-group">
+      <div class="method-options">
+        <div *ngFor="let method of shareMethods" class="method-option">
+          <p-radioButton
+            name="method"
+            [value]="method.value"
+            [(ngModel)]="selectedMethod"
+            [inputId]="'method-' + method.value"
+          ></p-radioButton>
+          <label [for]="'method-' + method.value">{{ method.label }}</label>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Download -->
+    <div class="download-section" (click)="onDownload()" role="button" tabindex="0">
+      <i class="pi pi-download"></i>
+      <span style="font-weight: 500;">Download</span>
+    </div>
+  
+  <!-- Client name -->
+<div class="p-field p-mb-3">
+    <label for="clientName" style="font-weight: 500;font-size: large;">Client name</label>
+    <input
+      pInputText
+      id="clientName"
+      [(ngModel)]="clientName"
+      class="p-inputtext"
+      placeholder=""
+    />
+  </div>
+  
+  <!-- Email address -->
+  <div class="p-field p-mb-3">
+    <label for="email" style="font-weight: 500;font-size: large;">Email address <span class="required">*</span></label>
+    <input
+      pInputText
+      id="email"
+      [(ngModel)]="email"
+      type="email"
+      class="p-inputtext"
+      placeholder=""
+    />
+  </div>
+  
+  
+    <!-- Actions -->
+<div class="action-buttons">
+    <button pButton type="button" label="Cancel" class="p-button-secondary" (click)="cancel()" style="font-size: larger;font-weight: 600;"></button>
+    <button pButton type="button" label="Send" class="p-button-primary" (click)="send()" style="font-size: larger;font-weight: 600;"></button>
+  </div>
+  
+  </div>
+  

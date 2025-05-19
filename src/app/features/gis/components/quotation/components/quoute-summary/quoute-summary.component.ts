@@ -7,6 +7,9 @@ import { DialogModule } from 'primeng/dialog';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { TableModule } from 'primeng/table';
 
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { CardModule } from 'primeng/card';
+
 
 @Component({
   selector: 'app-quoute-summary',
