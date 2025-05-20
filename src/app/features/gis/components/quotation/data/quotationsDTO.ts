@@ -837,6 +837,18 @@ export interface SubclassSectionPeril {
   dependLossType: string;
   benefitPerPeriod: number | null;
 }
+export interface DynamicRiskField {
+  type: string;
+  name: string;
+  max: number;
+  min: number;
+  isMandatory: string;
+  disabled: boolean;
+  readonly: boolean;
+  regexPattern: string;
+  placeholder: string;
+  label: string;
+}
 
 
 

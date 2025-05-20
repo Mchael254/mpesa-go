@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -7,14 +7,14 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import {LazyLoadEvent} from 'primeng/api';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {Logger, UtilService} from '../../../../../../shared/services';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { LazyLoadEvent } from 'primeng/api';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { Logger, UtilService } from '../../../../../../shared/services';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
-import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
-import {ClientService} from '../../../../../entities/services/client/client.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { ClientService } from '../../../../../entities/services/client/client.service';
 import stepData from '../../data/steps.json';
 import {
   Binders,
@@ -26,23 +26,24 @@ import {
   Subclasses,
   VesselType,
 } from '../../../setups/data/gisDTO';
-import {AuthService} from '../../../../../../shared/services/auth.service';
-import {SubClassCoverTypesService} from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {Calendar} from 'primeng/calendar';
-import {SectionsService} from '../../../setups/services/sections/sections.service';
-import {CountryService} from '../../../../../../shared/services/setups/country/country.service';
-import {CountryDto} from '../../../../../../shared/data/common/countryDto';
-import {Table, TableLazyLoadEvent} from 'primeng/table';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { Calendar } from 'primeng/calendar';
+import { SectionsService } from '../../../setups/services/sections/sections.service';
+import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
+import { CountryDto } from '../../../../../../shared/data/common/countryDto';
+import { Table, TableLazyLoadEvent } from 'primeng/table';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import {ClientDTO,} from '../../../../../entities/data/ClientDTO';
-import {BranchService} from '../../../../../../shared/services/setups/branch/branch.service';
-import {OrganizationBranchDto} from '../../../../../../shared/data/common/organization-branch-dto';
+import { ClientDTO, } from '../../../../../entities/data/ClientDTO';
+import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
+import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
 
-import {NgxSpinnerService} from 'ngx-spinner';
+import { NgxSpinnerService } from 'ngx-spinner';
 import {
+  DynamicRiskField,
   Limit,
   PremiumComputationRequest,
   QuickQuoteData,
@@ -50,24 +51,24 @@ import {
   Tax,
   UserDetail,
 } from '../../data/quotationsDTO';
-import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
-import {HttpErrorResponse} from '@angular/common/http';
-import {Router} from '@angular/router';
-import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
-import {firstValueFrom, forkJoin, mergeMap, Observable, of, tap} from 'rxjs';
-import {NgxCurrencyConfig} from 'ngx-currency';
-import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
-import {OccupationDTO} from '../../../../../../shared/data/common/occupation-dto';
-import {VesselTypesService} from '../../../setups/services/vessel-types/vessel-types.service';
-import {Pagination} from '../../../../../../shared/data/common/pagination';
-import {TableDetail} from '../../../../../../shared/data/table-detail';
-import {MenuService} from 'src/app/features/base/services/menu.service';
-import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
-import {debounceTime} from "rxjs/internal/operators/debounceTime";
-import {distinctUntilChanged, map} from "rxjs/operators";
-import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
+import { firstValueFrom, forkJoin, mergeMap, Observable, of, tap } from 'rxjs';
+import { NgxCurrencyConfig } from 'ngx-currency';
+import { OccupationService } from '../../../../../../shared/services/setups/occupation/occupation.service';
+import { OccupationDTO } from '../../../../../../shared/data/common/occupation-dto';
+import { VesselTypesService } from '../../../setups/services/vessel-types/vessel-types.service';
+import { Pagination } from '../../../../../../shared/data/common/pagination';
+import { TableDetail } from '../../../../../../shared/data/table-detail';
+import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
+import { debounceTime } from "rxjs/internal/operators/debounceTime";
+import { distinctUntilChanged, map } from "rxjs/operators";
+import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -77,7 +78,7 @@ const log = new Logger('QuickQuoteFormComponent');
   styleUrls: ['./quick-quote-form.component.css'],
 })
 export class QuickQuoteFormComponent implements OnInit, OnDestroy {
-  @ViewChild('calendar', {static: true}) calendar: Calendar;
+  @ViewChild('calendar', { static: true }) calendar: Calendar;
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
 
@@ -102,6 +103,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   selectedProductCode: any;
   selectedProducts: Products[] = []
   previousSelected: Products[] = [];
+
+  productRiskFields: DynamicRiskField[][] = [];
+  expandedStates: boolean[] = [];
+
 
   allSubclassList: Subclasses[];
   selectedSubclassCode: any;
@@ -251,21 +256,21 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     name: string;
     idNumber: string;
   } = {
-    name: '',
-    idNumber: '',
-  };
+      name: '',
+      idNumber: '',
+    };
   public clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
   tableDetails: TableDetail;
   public pageSize: 5;
   isSearching = false;
   searchTerm = '';
   cols = [
-    {field: 'clientFullName', header: 'Name'},
-    {field: 'emailAddress', header: 'Email'},
-    {field: 'phoneNumber', header: 'Phone number'},
-    {field: 'idNumber', header: 'ID number'},
-    {field: 'pinNumber', header: 'Pin'},
-    {field: 'id', header: 'ID'},
+    { field: 'clientFullName', header: 'Name' },
+    { field: 'emailAddress', header: 'Email' },
+    { field: 'phoneNumber', header: 'Phone number' },
+    { field: 'idNumber', header: 'ID number' },
+    { field: 'pinNumber', header: 'Pin' },
+    { field: 'id', header: 'ID' },
   ];
   globalFilterFields = ['idNumber', 'firstName', 'lastName', 'emailAddress'];
   emailValue: string;
@@ -329,10 +334,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       product: [[]],
       effectiveDate: [''],
       quotComment: [''],
-      products: this.fb.array([])  // important!
+      products: this.fb.array([])
     });
     this.loadAllCurrencies()
     this.getuser()
+    this.expandedStates = this.productsFormArray.controls.map((_, index) => index === 0);
+
   }
 
 
@@ -406,7 +413,17 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     //   );
     // });
   }
-
+  // getRiskFieldsForProduct(productCode: number): Observable<string[]> {
+  //   const formFieldDescription = 'product-quick-quote-' + productCode;
+  //   return this.quotationService.getFormFields(formFieldDescription).pipe(
+  //     map(data => {
+  //       // Defensive: data[0]?.fields might not exist, so default to empty array
+  //       const fields = data[0]?.fields || [];
+  //       // Extract the field names into a string array
+  //       return fields.map(field => field.name);
+  //     })
+  //   );
+  // }
 
   /**
    * Loads all products by making an HTTP GET request to the ProductService.
@@ -441,60 +458,179 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     return this.productsFormArray.at(productIndex).get('risks') as FormArray;
   }
 
-  // Called when product is selected via multi-select
-  getSelectedProducts(event: any) {
-    this.selectedProducts = event.value as Products[];
-    const added = this.selectedProducts.find(p => !this.previousSelected.some(prev => prev.code === p.code));
-    const removed = this.previousSelected.find(p => !this.selectedProducts.some(curr => curr.code === p.code));
-    this.previousSelected = [...this.selectedProducts];
-    log.debug("Added product >>>>", added)
-    log.debug("Removed product >>>>", removed)
-    this.selectedProducts.forEach(product => {
-      this.productsFormArray.push(
-        this.fb.group({
-          code: [product.code],
-          description: [product.description],
-          risks: this.fb.array([this.createRiskGroup()])
-        })
+  // Fetches dynamic risk fields based on product code
+  // getRiskFieldsForProduct(productCode: number): Observable<string[]> {
+  //   const formFieldDescription = `product-risk-quick-quote-${productCode}`;
+  //   return this.quotationService.getFormFields(formFieldDescription).pipe(
+  //     map(response => (response?.[0]?.fields || []).map(field => field.name))
+  //   );
+  // }
+  getRiskFieldsForProduct(productCode: number): Observable<DynamicRiskField[]> {
+    const formFieldDescription = `product-quick-quote-${productCode}`;
+    return this.quotationService.getFormFields(formFieldDescription).pipe(
+      map(response => {
+        const fields = response?.[0]?.fields || [];
+        return fields.map(field => ({
+          type: field.type,
+          name: field.name,
+          max: field.max,
+          min: field.min,
+          isMandatory: field.isMandatory,
+          disabled: field.isEnabled === "N",
+          readonly: field.isReadOnly === "Y",
+          regexPattern: field.regexPattern,
+          placeholder: field.placeholder,
+          label: field.label
+        }));
+      })
+    );
+  }
+
+
+  // Dynamically creates a FormGroup for a risk using provided fields
+  createRiskGroup(riskFields: DynamicRiskField[]): FormGroup {
+    const group: { [key: string]: FormControl } = {};
+
+    riskFields.forEach(field => {
+      group[field.name] = new FormControl(
+        { value: '', disabled: field.disabled },
+        field.isMandatory === 'Y' ? Validators.required : []
       );
     });
-    for (let product of this.selectedProducts) {
-      this.getProductSubclass(product.code);
-    }
-    log.debug("productsFormArray", this.productsFormArray)
+
+    return new FormGroup(group);
   }
 
-  createRiskGroup(): FormGroup {
-    return this.fb.group({
-      subclass: [''],
-      value: ['']
+
+  // When products are selected from multi-select
+  getSelectedProducts(event: any) {
+    const currentSelection = event.value as Products[];
+    const currentCodes = currentSelection.map(p => p.code);
+    const previousCodes = this.previousSelected.map(p => p.code);
+
+    // Find added and removed products
+    const added = currentSelection.filter(p => !previousCodes.includes(p.code));
+    const removed = this.previousSelected.filter(p => !currentCodes.includes(p.code));
+
+    // Remove unselected products from FormArray
+    removed.forEach(removedProduct => {
+      const index = this.productsFormArray.controls.findIndex(
+        ctrl => ctrl.get('code')?.value === removedProduct.code
+      );
+      if (index !== -1) {
+        this.productsFormArray.removeAt(index);
+      }
+    });
+
+    // Add newly selected products
+    added.forEach(product => {
+      const productGroup = this.fb.group({
+        code: [product.code],
+        description: [product.description],
+        risks: this.fb.array([])
+      });
+
+      this.productsFormArray.push(productGroup);
+      this.expandedStates = this.productsFormArray.controls.map((_, index) => index === 0);
+
+      this.getProductSubclass(product.code);
+      if(product.code === 8293){
+        log.debug("years endpoint called for motor product")
+        this.populateYears();
+      }
+
+      // Add first empty risk group
+      this.getRiskFieldsForProduct(product.code).subscribe((riskFields: DynamicRiskField[]) => {
+        const risksArray = productGroup.get('risks') as FormArray;
+        risksArray.push(this.createRiskGroup(riskFields));
+        this.productRiskFields[this.productsFormArray.length - 1] = riskFields;
+        // this.cdr.detectChanges();
+      });
+
+    });
+
+    // 🔁 Load all product risk field metadata AFTER loop
+    // this.loadProductRiskFields();
+
+    this.selectedProducts = [...currentSelection];
+    this.previousSelected = [...currentSelection];
+
+    log.debug("FormArray now >>>>", this.productsFormArray);
+  }
+
+  // Add risk row dynamically
+  addRisk(productIndex: number) {
+    const productGroup = this.productsFormArray.at(productIndex);
+    const risksArray = productGroup.get('risks') as FormArray;
+    const productCode = productGroup.get('code')?.value;
+
+    this.getRiskFieldsForProduct(productCode).subscribe((riskFields: DynamicRiskField[]) => {
+      const newRiskGroup = this.createRiskGroup(riskFields);
+      risksArray.push(newRiskGroup);
     });
   }
 
-  addRisk(productIndex: number) {
-    this.getRisks(productIndex).push(this.createRiskGroup());
+  loadProductRiskFields() {
+    const observables = this.selectedProducts.map((product, index) =>
+      this.getRiskFieldsForProduct(product.code).pipe(
+        map((fields: DynamicRiskField[]) => ({ index, fields }))
+      )
+    );
+
+    forkJoin(observables).subscribe(results => {
+      results.forEach(({ index, fields }) => {
+        this.productRiskFields[index] = fields;
+      });
+    });
   }
 
+
+
+  // Remove a risk row
   deleteRisk(productIndex: number, riskIndex: number) {
     this.getRisks(productIndex).removeAt(riskIndex);
   }
 
+  // Remove product
   deleteProduct(productIndex: number) {
     this.productsFormArray.removeAt(productIndex);
     this.selectedProducts.splice(productIndex, 1);
   }
+markAllFieldsAsTouched(formGroup: FormGroup | FormArray) {
+  Object.keys(formGroup.controls).forEach(field => {
+    const control = formGroup.get(field);
 
-  onSubmit() {
-    log.debug("Selected products >>>", this.selectedProducts)
-    let computationRequest = this.computationPayload();
-    this.quotationService.premiumComputationEngine(computationRequest).pipe(
-      untilDestroyed(this)
-    ).subscribe((response) => {
+    if (control instanceof FormControl) {
+      control.markAsTouched({ onlySelf: true });
+    } else if (control instanceof FormGroup || control instanceof FormArray) {
+      this.markAllFieldsAsTouched(control);
+    }
+  });
+}
 
-    })
-    console.log(this.quickQuoteForm.value);
+  // Submit
+onSubmit() {
+  if (this.quickQuoteForm.invalid) {
+    this.markAllFieldsAsTouched(this.quickQuoteForm);
+    return; // Prevent submission if form is invalid
   }
 
+  log.debug("Form submission payload >>>>", this.quickQuoteForm.value);
+
+  const computationRequest = this.computationPayload();
+  this.quotationService.premiumComputationEngine(computationRequest).pipe(
+    untilDestroyed(this)
+  ).subscribe(response => {
+    // Handle response
+  });
+}
+
+
+  toggleExpand(index: number) {
+    this.expandedStates[index] = !this.expandedStates[index];
+  }
+
+  
   computationPayload(): PremiumComputationRequest {
 
     return
@@ -536,13 +672,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.currencyService
       .getAllCurrencies()
       .pipe(
-        map((currency) =>{
-          let capitalizedDescription = currency.name.charAt(0).toUpperCase() + currency.name.slice(1).toLowerCase();
-          return {
-            ...currency,
-            name: capitalizedDescription
-          }
-        }),
+
         untilDestroyed(this))
       .subscribe((data) => {
         this.currencyList = data
@@ -615,7 +745,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
     // Extract the day, month, and year
     const day = todaysDate.getDate();
-    const month = todaysDate.toLocaleString('default', {month: 'long'}); // 'long' gives the full month name
+    const month = todaysDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
     const year = todaysDate.getFullYear();
 
     // Format the date in 'dd-Month-yyyy' format
@@ -801,7 +931,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
    * @param {any} event - The event triggered by subclass selection.
    * @return {void}
    */
-  onSubclassSelected(event: any) {
+  onSubclassSelected(event: any,productIndex: number, riskIndex: number) {
     log.debug(`Selected value: ${JSON.stringify(event)}`);
     this.selectedSubclassCode = event.code;
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
@@ -814,7 +944,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     );
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
     sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
-    this.fetchRegexPattern();
+    this.fetchRegexPattern(productIndex,riskIndex);
   }
 
   onDateInputChange(date: any) {
@@ -930,44 +1060,94 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
    * @method validateCarRegNo
    * @return {void}
    */
-  validateCarRegNo() {
-    const control = this.quickQuoteForm.get('carRegNo');
-    control.removeValidators([this.uniqueValidator]);
-    const value = control.value
-    log.debug("Keyed In value>>>", value)
-    if (!control || this.quickQuoteForm?.get('carRegNo')?.hasError('pattern') || !value) return;
-    this.quotationService.validateRiskExistence({
-      propertyId: value,
-      subClassCode: this.selectedSubclassCode,
-      withEffectFrom: this.formatDate(this.selectedEffectiveDate),
-      withEffectTo: this.selectedCoverToDate,
-      addOrEdit: 'A'
-    }).pipe(
-      debounceTime(500),
-      distinctUntilChanged(),
-      untilDestroyed(this)
-    ).subscribe((response) => {
-      const canProceed = response?._embedded?.duplicateAllowed
-      log.debug("Risk allowed>>>", canProceed)
-      if (this.existingPropertyIds) {
-        log.debug('Doing validation of ', value, this.existingPropertyIds);
-        const isDuplicate = this.existingPropertyIds.some(
-          (existingValue) =>
-            existingValue.replace(/\s+/g, '').toUpperCase() === value.replace(/\s+/g, '').toUpperCase()
-        );
-        log.debug("Existing risk>>>", isDuplicate)
-        if (isDuplicate || !canProceed) {
-          control.addValidators([this.uniqueValidator]);
-        } else {
-          control.removeValidators([this.uniqueValidator]);
-        }
-        control.updateValueAndValidity({emitEvent: false});
-      }
-    })
-  }
+//  validateCarRegNo(productIndex: number, riskIndex: number) {
+//   const control = this.quickQuoteForm.get(['products', productIndex, 'risks', riskIndex, 'carRegNo']) as FormControl;
+  
+
+//     control.removeValidators([this.uniqueValidator]);
+//     const value = control.value;
+//     log.debug("Keyed In value>>>", value);
+  
+//     if (!control || this.quickQuoteForm?.get('carRegNo')?.hasError('pattern') || !value) return;
+//     this.quotationService.validateRiskExistence({
+//       propertyId: value,
+//       subClassCode: this.selectedSubclassCode,
+//       withEffectFrom: this.formatDate(this.selectedEffectiveDate),
+//       withEffectTo: this.selectedCoverToDate,
+//       addOrEdit: 'A'
+//     }).pipe(
+//       debounceTime(500),
+//       distinctUntilChanged(),
+//       untilDestroyed(this)
+//     ).subscribe((response) => {
+//       const canProceed = response?._embedded?.duplicateAllowed
+//       log.debug("Risk allowed>>>", canProceed)
+//       if (this.existingPropertyIds) {
+//         log.debug('Doing validation of ', value, this.existingPropertyIds);
+//         const isDuplicate = this.existingPropertyIds.some(
+//           (existingValue) =>
+//             existingValue.replace(/\s+/g, '').toUpperCase() === value.replace(/\s+/g, '').toUpperCase()
+//         );
+//         log.debug("Existing risk>>>", isDuplicate)
+//         if (isDuplicate || !canProceed) {
+//           control.addValidators([this.uniqueValidator]);
+//         } else {
+//           control.removeValidators([this.uniqueValidator]);
+//         }
+//         control.updateValueAndValidity({ emitEvent: false });
+//       }
+//     })
+//   }
+validateCarRegNo(productIndex: number, riskIndex: number) {
+  const control = this.quickQuoteForm.get(['products', productIndex, 'risks', riskIndex, 'carRegNo']) as FormControl;
+  log.debug("Keyed In value>>>", control);
+
+  if (!control) return;
+
+  const value = control.value;
+  log.debug("Keyed In value>>>", value);
+
+  // Exit early if there's a pattern error or no value
+  if (control.hasError('pattern') || !value) return;
+
+  // Remove validator before making the service call
+  control.removeValidators([this.uniqueValidator]);
+  control.updateValueAndValidity({ emitEvent: false });
+
+  this.quotationService.validateRiskExistence({
+    propertyId: value,
+    subClassCode: this.selectedSubclassCode,
+    withEffectFrom: this.formatDate(this.selectedEffectiveDate),
+    withEffectTo: this.selectedCoverToDate,
+    addOrEdit: 'A'
+  }).pipe(
+    debounceTime(500),
+    distinctUntilChanged(),
+    untilDestroyed(this)
+  ).subscribe((response) => {
+    const canProceed = response?._embedded?.duplicateAllowed;
+    log.debug("Risk allowed>>>", canProceed);
+
+    const isDuplicate = this.existingPropertyIds?.some(
+      (existingValue) =>
+        existingValue.replace(/\s+/g, '').toUpperCase() === value.replace(/\s+/g, '').toUpperCase()
+    );
+
+    log.debug("Existing risk>>>", isDuplicate);
+
+    if (isDuplicate || !canProceed) {
+      control.addValidators([this.uniqueValidator]);
+    } else {
+      control.removeValidators([this.uniqueValidator]);
+    }
+
+    control.updateValueAndValidity({ emitEvent: false });
+  });
+}
+
 
   uniqueValidator(control: AbstractControl) {
-    return {unique: true};
+    return { unique: true };
   }
 
   /**
@@ -1378,28 +1558,49 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  fetchRegexPattern() {
-    this.quotationService
-      .getRegexPatterns(this.selectedSubclassCode)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          this.regexPattern = response._embedded?.riskIdFormat;
-          log.debug('New Regex Pattern', this.regexPattern);
-          this.dynamicRegexPattern = this.regexPattern;
-          this.quickQuoteForm
-            ?.get('carRegNo')
-            ?.addValidators(Validators.pattern(this.dynamicRegexPattern));
-          this.quickQuoteForm?.get('carRegNo')?.updateValueAndValidity();
-        },
-        error: (error) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
-        },
-      });
-  }
+  
+ fetchRegexPattern(productIndex: number, riskIndex: number) {
+  this.quotationService
+    .getRegexPatterns(this.selectedSubclassCode)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        this.regexPattern = response._embedded?.riskIdFormat;
+        log.debug('New Regex Pattern', this.regexPattern);
+
+        this.dynamicRegexPattern = this.regexPattern;
+
+        const controlPath = ['products', productIndex, 'risks', riskIndex, 'carRegNo'];
+        const control = this.quickQuoteForm.get(controlPath) as FormControl;
+
+        if (control) {
+          // Add your required validators here
+          control.setValidators([
+            Validators.required,
+            Validators.pattern(this.dynamicRegexPattern)
+          ]);
+
+          control.updateValueAndValidity();
+        }
+      },
+      error: (error) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          error.error.message
+        );
+      },
+    });
+}
+getCarRegNoControl(productIndex: number, riskIndex: number): FormControl {
+  return this.quickQuoteForm.get([
+    'products',
+    productIndex,
+    'risks',
+    riskIndex,
+    'carRegNo'
+  ]) as FormControl;
+}
+
 
   isEmailOrPhoneValid(): boolean {
     if (
@@ -1419,7 +1620,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     const upperCaseValue = input.value.toUpperCase();
     this.quickQuoteForm
       .get('carRegNo')
-      ?.setValue(upperCaseValue, {emitEvent: false});
+      ?.setValue(upperCaseValue, { emitEvent: false });
   }
 
   /**
@@ -1520,7 +1721,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
     if (this.isSearching) {
       const searchEvent = {
-        target: {value: this.searchTerm},
+        target: { value: this.searchTerm },
       };
       this.filter(searchEvent, pageIndex, pageSize);
     } else {
@@ -1685,8 +1886,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   fetchExchangeRate() {
     const quickQuoteDataModel = this.quickQuoteForm.getRawValue();
-    const formCurrencyCode = quickQuoteDataModel.currency.id;
-    const currencyCode = this.currencyCode || formCurrencyCode;
+    // const formCurrencyCode = quickQuoteDataModel.currency.id;
+    const currencyCode = this.currencyCode ;
     log.debug("Currency Code", currencyCode)
     this.quotationService
       .getExchangeRates(currencyCode, this.organizationId)
