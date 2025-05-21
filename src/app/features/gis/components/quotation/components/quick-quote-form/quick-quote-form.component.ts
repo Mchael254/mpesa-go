@@ -646,14 +646,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         withEffectTo: risk.withEffectFrom,
         prorata: risk.withEffectTo,
         subclassSection: {
-          code: 460
+          code: risk?.useOfProperty?.code
         },
         itemDescription: risk.description,
         noClaimDiscountLevel: null,
         enforceCovertypeMinimumPremium: null,
         binderDto: {
-          code: null,
-          currencyCode: null,
+          code: risk?.applicableBinder?.code,
+          currencyCode: risk?.applicableBinder?.currency_code,
           maxExposure: null,
           currencyRate: null
         },
