@@ -862,7 +862,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   performComputation() {
     forkJoin(([
       this.quotationService.updatePremiumComputationPayload(this.computationPayloadCode, this.premiumComputationPayload),
-      this.quotationService.premiumComputationEngine(this.premiumComputationPayload)
+      null
     ])).pipe(
       untilDestroyed(this)
     ).subscribe({

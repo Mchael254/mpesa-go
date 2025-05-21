@@ -17,7 +17,6 @@ import {CurrencyService} from '../../../../../../shared/services/setups/currency
 import {ClientService} from '../../../../../entities/services/client/client.service';
 import stepData from '../../data/steps.json';
 import {
-  Binder,
   Binders,
   Premiums,
   Products,
@@ -45,20 +44,16 @@ import {OrganizationBranchDto} from '../../../../../../shared/data/common/organi
 import {NgxSpinnerService} from 'ngx-spinner';
 import {
   DynamicRiskField,
-  Limit,
-  PremiumComputationRequest,
   QuickQuoteData,
-  Risk,
   Tax,
   UserDetail,
 } from '../../data/quotationsDTO';
 import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
 import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
-import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
 
-import {firstValueFrom, forkJoin, mergeMap, Observable, of, tap} from 'rxjs';
+import {firstValueFrom, forkJoin, mergeMap, Observable, tap} from 'rxjs';
 import {NgxCurrencyConfig} from 'ngx-currency';
 import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
 import {OccupationDTO} from '../../../../../../shared/data/common/occupation-dto';
@@ -70,6 +65,7 @@ import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
 import {debounceTime} from "rxjs/internal/operators/debounceTime";
 import {distinctUntilChanged, map} from "rxjs/operators";
 import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
+import {CoverType, Limit, PremiumComputationRequest, Product, Risk} from "../../data/premium-computation";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -182,7 +178,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   isAddRisk: boolean;
 
-  premiumComputationRequest: PremiumComputationRequest;
+  //premiumComputationRequest: PremiumComputationRequest;
   expiryPeriod: any;
   propertyId: any;
   premiumList: Premiums[] = [];
@@ -610,11 +606,112 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   computationPayload(): PremiumComputationRequest {
     const formValues = this.quickQuoteForm.getRawValue();
-    for(let product of formValues.products){
-      log.debug("Form values captured by the user>>>" , product)
+    return {
+      transactionStatus: "NB",
+      quotationStatus: "Draft",
+      frequencyOfPayment: "A",
+      interfaceType: null,
+      entityUniqueCode: null,
+      coinsurancePercentage: null,
+      coinsuranceLeader: null,
+      age: null,
+      underwritingYear: 2025,
+      dateWithEffectTo: new Date().toString(),
+      dateWithEffectFrom: new Date().toString(),
+      products: this.getProductPayload(formValues.products),
+      currency: null
     }
-    return
   }
+
+  getProductPayload(products: any): Product[] {
+    let productPayload: Product[] = []
+    for (let product of products) {
+      productPayload.push({
+        code: product.code,
+        expiryPeriod: product.expiry,
+        withEffectFrom: product.withEffectFrom,
+        withEffectTo: product.withEffectFrom,
+        taxes: null,
+        risks: this.getRiskPayload(product.risks)
+      })
+    }
+    return productPayload
+  }
+
+  getRiskPayload(risks): Risk[] {
+    let riskPayload: Risk[] = []
+    for (let risk of risks) {
+      riskPayload.push({
+        withEffectFrom: risk.withEffectFrom,
+        withEffectTo: risk.withEffectFrom,
+        prorata: risk.withEffectTo,
+        subclassSection: {
+          code: 460
+        },
+        itemDescription: risk.description,
+        noClaimDiscountLevel: null,
+        enforceCovertypeMinimumPremium: null,
+        binderDto: {
+          code: null,
+          currencyCode: null,
+          maxExposure: null,
+          currencyRate: null
+        },
+        subclassCoverTypeDto: this.getCoverTypePayload(risk.applicableCoverTypes)
+      })
+    }
+    return riskPayload;
+  }
+
+
+
+  getCoverTypePayload(riskapplicableCoverTypes): CoverType[]{
+    let coverTypes: CoverType[] = []
+    for(let coverType of riskapplicableCoverTypes){
+      coverTypes.push({
+        subclassCode: coverType?.subClassCode,
+        coverTypeCode: coverType?.coverTypeCode,
+        minimumAnnualPremium: null,
+        minimumPremium: coverType?.minimumPremium,
+        coverTypeShortDescription: coverType?.coverTypeShortDescription,
+        coverTypeDescription: coverType?.description,
+        limits: this.getLimitsPayload(coverType.applicableRates)
+      })
+    }
+     return coverTypes;
+  }
+
+  getLimitsPayload(applicableLimits: any): Limit[]{
+    let limitsPayload: Limit[] = []
+    for(let limit of applicableLimits){
+      limitsPayload.push({
+        calculationGroup: null,
+        declarationSection: null,
+        rowNumber:null,
+        rateDivisionFactor: null,
+        premiumRate: null,
+        rateType: null,
+        minimumPremium: null,
+        annualPremium: null,
+        multiplierRate: null,
+        section:{
+          limitAmount:null,
+          description: null,
+          code: null,
+          isMandatory: null
+        },
+        sectionType: null,
+        multiplierDivisionFactor: null,
+        riskCode: null,
+        limitAmount: null,
+        description: null,
+        compute: "Y",
+        dualBasis: null,
+      })
+    }
+    return limitsPayload
+  }
+
 
   /**
    * Retrieves and matches product subclasses for a given product code.
@@ -1197,7 +1294,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   }
 
 
-  setRiskPremiumDto(): Risk[] {
+  /*setRiskPremiumDto(): Risk[] {
     log.debug("All available premium items>>>", this.applicablePremiumRates)
     log.debug("subclass cover type", this.subclassCoverType)
     log.debug("Car Reg no:", this.carRegNoValue)
@@ -1271,7 +1368,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       risks.push(risk)
     }
     return risks
-  }
+  }*/
+/*
 
   setLimitPremiumDto(coverTypeCode: number): Limit[] {
     log.debug("Current form structure:", this.quickQuoteForm.controls);
@@ -1379,17 +1477,20 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug('limit items', response);
     return response;
   }
+*/
 
   fetchComputationData(productCode: number, subClassCode: number, riskIndex: number, productIndex: number
   ) {
     let productFormArray = this.productsFormArray.at(productIndex);
-    let riskFormGroup  = (this.productsFormArray.at(productIndex).get('risks') as FormArray).at(riskIndex) as FormGroup
-    log.debug("Current  productFormArray for risks>>>", riskFormGroup )
+    let riskFormGroup = (this.productsFormArray.at(productIndex).get('risks') as FormArray).at(riskIndex) as FormGroup
+    log.debug("Current  productFormArray for risks>>>", riskFormGroup)
     this.binderService.getAllBindersQuick(subClassCode).pipe(
       mergeMap((binders) => {
         this.binderList = binders._embedded.binder_dto_list;
-        const defaultBinder = this.binderList.find((value: { is_default: string; }) => value?.is_default === 'Y') as Binders;
-        riskFormGroup .get('applicableBinder')?.setValue(defaultBinder)
+        const defaultBinder = this.binderList.find((value: {
+          is_default: string;
+        }) => value?.is_default === 'Y') as Binders;
+        riskFormGroup.get('applicableBinder')?.setValue(defaultBinder)
         this.selectedBinderCode = this.selectedBinder?.code;
         log.debug("Selected Binder code", this.selectedBinderCode)
         this.currencyCode = defaultBinder?.currency_code
@@ -1412,129 +1513,124 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   }
 
-  computePremiumV2() {
-    log.info('Submitted form {}', this.quickQuoteForm);
-    if (!this.isEmailOrPhoneValid()) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Provide either a valid phone number or email to proceed.'
-      );
-      return;
-    }
-    if (this.quickQuoteForm.valid) {
-      this.ngxSpinner.show();
-      sessionStorage.setItem('product', this.selectedProductCode);
-      const quickQuoteDataModel = this.quickQuoteForm.getRawValue();
-      log.debug('Form is valid, proceeding with premium computation...', quickQuoteDataModel);
-      log.debug(
-        'Mandatory sections: ',
-        this.subclassSectionCoverList,
-        this.mandatorySections
-      );
-      log.debug('Subclass Cover Types', this.subclassCoverType);
-      log.debug('Selected binder ', this.binderList, this.selectedBinder);
-      this.currencyCode = quickQuoteDataModel.currency.id;
-      let quickQuoteData: QuickQuoteData = {
-        effectiveDateFrom: quickQuoteDataModel.effectiveDate,
-        carRegNo: quickQuoteDataModel?.carRegNo || quickQuoteDataModel?.riskId,
-        yearOfManufacture: quickQuoteDataModel.yearOfManufacture,
-        clientName: quickQuoteDataModel.clientName,
-        clientEmail: quickQuoteDataModel.emailAddress,
-        product: quickQuoteDataModel.product,
-        subClass: quickQuoteDataModel.subClass,
-        currency: quickQuoteDataModel.currency,
-        selfDeclaredValue: quickQuoteDataModel.selfDeclaredValue,
-        clientPhoneNumber: quickQuoteDataModel.phoneNumber?.number,
-        coverTo: quickQuoteDataModel?.coverTo,
-        riskId: quickQuoteDataModel?.riskId,
-        value: quickQuoteDataModel?.value,
-        modeOfTransport: quickQuoteDataModel?.modeOfTransport,
-        existingClientSelected: null,
-        selectedBinderCode: this.selectedBinderCode,
-        selectedClient: null
+  /* computePremiumV2() {
+     log.info('Submitted form {}', this.quickQuoteForm);
+     if (!this.isEmailOrPhoneValid()) {
+       this.globalMessagingService.displayErrorMessage(
+         'Error',
+         'Provide either a valid phone number or email to proceed.'
+       );
+       return;
+     }
+     if (this.quickQuoteForm.valid) {
+       this.ngxSpinner.show();
+       sessionStorage.setItem('product', this.selectedProductCode);
+       const quickQuoteDataModel = this.quickQuoteForm.getRawValue();
+       log.debug('Form is valid, proceeding with premium computation...', quickQuoteDataModel);
+       log.debug(
+         'Mandatory sections: ',
+         this.subclassSectionCoverList,
+         this.mandatorySections
+       );
+       log.debug('Subclass Cover Types', this.subclassCoverType);
+       log.debug('Selected binder ', this.binderList, this.selectedBinder);
+       this.currencyCode = quickQuoteDataModel.currency.id;
+       let quickQuoteData: QuickQuoteData = {
+         effectiveDateFrom: quickQuoteDataModel.effectiveDate,
+         carRegNo: quickQuoteDataModel?.carRegNo || quickQuoteDataModel?.riskId,
+         yearOfManufacture: quickQuoteDataModel.yearOfManufacture,
+         clientName: quickQuoteDataModel.clientName,
+         clientEmail: quickQuoteDataModel.emailAddress,
+         product: quickQuoteDataModel.product,
+         subClass: quickQuoteDataModel.subClass,
+         currency: quickQuoteDataModel.currency,
+         selfDeclaredValue: quickQuoteDataModel.selfDeclaredValue,
+         clientPhoneNumber: quickQuoteDataModel.phoneNumber?.number,
+         coverTo: quickQuoteDataModel?.coverTo,
+         riskId: quickQuoteDataModel?.riskId,
+         value: quickQuoteDataModel?.value,
+         modeOfTransport: quickQuoteDataModel?.modeOfTransport,
+         existingClientSelected: null,
+         selectedBinderCode: this.selectedBinderCode,
+         selectedClient: null
 
-      }
-
-
-      this.mandatorySections = this.applicablePremiumRates.map(value => value.applicableRates)
-      sessionStorage.setItem('mandatorySections', JSON.stringify(this.mandatorySections));
-      this.premiumComputationRequest = {
-        dateWithEffectFrom: this.selectedEffectiveDate,
-        dateWithEffectTo: this.passedCoverToDate,
-        underwritingYear: new Date().getFullYear(),
-        age: null,
-        coinsuranceLeader: null,
-        coinsurancePercentage: null,
-        entityUniqueCode: null,
-        interfaceType: null,
-        frequencyOfPayment: "A",
-        quotationStatus: "Draft",
-        transactionStatus: "NB",
-        /**Setting Product Details**/
-        product: {
-          code: this.selectedProductCode,
-          expiryPeriod: this.expiryPeriod,
-        },
-        /**Setting Tax Details**/
-        taxes: this.setTax(),
-
-        currency: {
-          rate: this.exchangeRate,
-        },
-        risks: this.setRiskPremiumDto(),
-      };
-      sessionStorage.setItem(
-        'premiumComputationRequest',
-        JSON.stringify(this.premiumComputationRequest)
-      );
-      log.debug("Aggregated payload", this.premiumComputationRequest)
+       }
 
 
-      return forkJoin([
-        this.quotationService.premiumComputationEngine(this.premiumComputationRequest),
-        this.quotationService.savePremiumComputationPayload(this.premiumComputationRequest)
-      ])
-        .subscribe({
-          next: ([premiumResponse, payloadResponse]) => {
-            log.debug('Data', premiumResponse);
-            sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
-            const premiumResponseString = JSON.stringify(premiumResponse);
-            sessionStorage.setItem('premiumResponse', premiumResponseString);
+       this.mandatorySections = this.applicablePremiumRates.map(value => value.applicableRates)
+       sessionStorage.setItem('mandatorySections', JSON.stringify(this.mandatorySections));
+      /!* this.premiumComputationRequest = {
+         dateWithEffectFrom: this.selectedEffectiveDate,
+         dateWithEffectTo: this.passedCoverToDate,
+         underwritingYear: new Date().getFullYear(),
+         age: null,
+         coinsuranceLeader: null,
+         coinsurancePercentage: null,
+         entityUniqueCode: null,
+         interfaceType: null,
+         frequencyOfPayment: "A",
+         quotationStatus: "Draft",
+         transactionStatus: "NB",
+         /!**Setting Product Details**!/
+         product: {
+           code: this.selectedProductCode,
+           expiryPeriod: this.expiryPeriod,
+         },
+         /!**Setting Tax Details**!/
+         taxes: this.setTax(),
 
-            this.computationPayloadCode = payloadResponse._embedded
-            log.debug("Code returned after saving premium computation payload ", this.computationPayloadCode);
+         currency: {
+           rate: this.exchangeRate,
+         },
+         risks: this.setRiskPremiumDto(),
+       };*!/
 
 
-            quickQuoteData.computationPayloadCode = this.computationPayloadCode
-            sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
-            this.router.navigate(['/home/gis/quotation/cover-type-details']);
-          },
-          error: (error: HttpErrorResponse) => {
-            log.info(error);
-            this.ngxSpinner.hide();
+       return forkJoin([
+         null,
+         null
+       ])
+         .subscribe({
+           next: ([premiumResponse, payloadResponse]) => {
+             log.debug('Data', premiumResponse);
+             sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
+             const premiumResponseString = JSON.stringify(premiumResponse);
+             sessionStorage.setItem('premiumResponse', premiumResponseString);
 
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              error.error.message
-            );
-          },
-        });
+             this.computationPayloadCode = payloadResponse._embedded
+             log.debug("Code returned after saving premium computation payload ", this.computationPayloadCode);
 
-    } else {
-      // Mark all fields as touched and validate the form
-      this.quickQuoteForm.markAllAsTouched();
-      this.quickQuoteForm.updateValueAndValidity();
-      for (let controlsKey in this.quickQuoteForm.controls) {
-        if (this.quickQuoteForm.get(controlsKey).invalid) {
-          log.debug(
-            `${controlsKey} is invalid`,
-            this.quickQuoteForm.get(controlsKey).errors
-          );
-        }
-      }
-    }
-  }
 
+             quickQuoteData.computationPayloadCode = this.computationPayloadCode
+             sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
+             this.router.navigate(['/home/gis/quotation/cover-type-details']);
+           },
+           error: (error: HttpErrorResponse) => {
+             log.info(error);
+             this.ngxSpinner.hide();
+
+             this.globalMessagingService.displayErrorMessage(
+               'Error',
+               error.error.message
+             );
+           },
+         });
+
+     } else {
+       // Mark all fields as touched and validate the form
+       this.quickQuoteForm.markAllAsTouched();
+       this.quickQuoteForm.updateValueAndValidity();
+       for (let controlsKey in this.quickQuoteForm.controls) {
+         if (this.quickQuoteForm.get(controlsKey).invalid) {
+           log.debug(
+             `${controlsKey} is invalid`,
+             this.quickQuoteForm.get(controlsKey).errors
+           );
+         }
+       }
+     }
+   }
+ */
 
   fetchRegexPattern(productIndex: number, riskIndex: number) {
     this.quotationService
