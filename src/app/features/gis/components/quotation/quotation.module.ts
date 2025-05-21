@@ -41,6 +41,9 @@ import { QuouteSummaryComponent } from './components/quoute-summary/quoute-summa
 import { QuoutationReportComponent } from './components/quoutation-report/quoutation-report.component';
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
 import { ShareQuotesComponent } from './components/share-quotes/share-quotes.component';
+import { PaymentAdviceComponent } from './components/payment-advice/payment-advice.component';
+
+
 @NgModule({
   declarations: [
     ListQuotationsComponent,
@@ -64,6 +67,7 @@ import { ShareQuotesComponent } from './components/share-quotes/share-quotes.com
     QuoutationReportComponent,
     QuoteSummaryComponent,
     ShareQuotesComponent,
+    PaymentAdviceComponent,
   
     
     

@@ -20,6 +20,7 @@ import { RiskCentreComponent } from './components/risk-centre/risk-centre.compon
 import { QuoutationReportComponent } from './components/quoutation-report/quoutation-report.component';
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
 import { ShareQuotesComponent } from './components/share-quotes/share-quotes.component';
+import { PaymentAdviceComponent } from './components/payment-advice/payment-advice.component';
 
 
 const routes: Routes = [
@@ -82,6 +83,9 @@ const routes: Routes = [
   },
   {
     path:'share-quoute',component:ShareQuotesComponent
+  },
+  {
+    path:'payment-advice',component:PaymentAdviceComponent
   },
 ];
 

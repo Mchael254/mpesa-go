@@ -113,7 +113,7 @@ export class QuoutationReportComponent {
      method: 'M-pesa',
      details: [
        { label: 'PayBill Number', value: '123456' },
-       { label: 'Your Name', value: '' }  // You can update this dynamically
+       { label: 'Your Name', value: '' }
      ]
    },
    {
