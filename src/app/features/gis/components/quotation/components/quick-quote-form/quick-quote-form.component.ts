@@ -17,6 +17,7 @@ import {CurrencyService} from '../../../../../../shared/services/setups/currency
 import {ClientService} from '../../../../../entities/services/client/client.service';
 import stepData from '../../data/steps.json';
 import {
+  Binder,
   Binders,
   Premiums,
   Products,
@@ -197,7 +198,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   passedSections: any[] = [];
   existingPropertyIds: string[] = [];
-  parsedProductDesc: any;
   regexPattern: any;
   defaultCurrencyName: any;
   minDate: Date | undefined;
@@ -273,7 +273,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   phoneValue: string;
   pinValue: string;
   idValue: string;
-  taxList: any;
+  taxList: Tax[] = [];
   formattedCoverToDate: string;
 
   isReturnToQuickQuote: boolean;
@@ -459,7 +459,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   // Dynamically creates a FormGroup for a risk using provided fields
   createRiskGroup(riskFields: DynamicRiskField[]): FormGroup {
-    const group: { [key: string]: FormControl } = {};
+    const group: { [key: string]: AbstractControl } = {};
 
     riskFields.forEach(field => {
       group[field.name] = new FormControl(
@@ -467,7 +467,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         field.isMandatory === 'Y' ? Validators.required : []
       );
     });
-
+    group['applicableTaxes'] = new FormControl(null)
+    group['applicableBinder'] = new FormControl(null)
+    group['applicableCoverTypes'] = new FormControl(null)
     return new FormGroup(group);
   }
 
@@ -493,12 +495,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     }
 
     if (addedProduct) {
-      const productGroup = this.fb.group({
-        code: [addedProduct.code],
-        description: [addedProduct.description],
-        risks: this.fb.array([])
-      });
-      this.productsFormArray.push(productGroup);
       this.expandedStates = this.productsFormArray.controls.map((_, index) => index === 0);
       const effectiveDate = this.quickQuoteForm.get('effectiveDate')?.value || new Date();
       forkJoin(([
@@ -507,10 +503,17 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         this.productService.getCoverToDate(this.formatDate(new Date(effectiveDate)), addedProduct.code)
       ])).pipe(untilDestroyed(this))
         .subscribe(([subclasses, riskFields, coverTo]) => {
+          const productGroup = this.fb.group({
+            code: [addedProduct.code],
+            effectiveTo: coverTo._embedded[0].coverToDate,
+            description: [addedProduct.description],
+            risks: this.fb.array([])
+          });
           this.productSubclassesMap[addedProduct.code] = subclasses.map(value => ({
             ...value,
             description: this.capitalizeWord(value.description),
           }));
+          this.productsFormArray.push(productGroup);
           log.debug("SUBCLASS LIST:", this.productSubclassesMap)
           const risksArray = productGroup.get('risks') as FormArray;
           risksArray.push(this.createRiskGroup(riskFields));
@@ -542,19 +545,19 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     });
   }
 
-/*  loadProductRiskFields() {
-    const observables = this.selectedProducts.map((product, index) =>
-      this.getRiskFieldsForProduct(product.code).pipe(
-        map((fields: DynamicRiskField[]) => ({index, fields}))
-      )
-    );
+  /*  loadProductRiskFields() {
+      const observables = this.selectedProducts.map((product, index) =>
+        this.getRiskFieldsForProduct(product.code).pipe(
+          map((fields: DynamicRiskField[]) => ({index, fields}))
+        )
+      );
 
-    forkJoin(observables).subscribe(results => {
-      results.forEach(({index, fields}) => {
-        this.productRiskFields[index] = fields;
+      forkJoin(observables).subscribe(results => {
+        results.forEach(({index, fields}) => {
+          this.productRiskFields[index] = fields;
+        });
       });
-    });
-  }*/
+    }*/
 
 
   // Remove a risk row
@@ -590,6 +593,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug("Form submission payload >>>>", this.quickQuoteForm.value);
 
     const computationRequest = this.computationPayload();
+    log.debug("premium computation payload >>>>", computationRequest);
+    return
     this.quotationService.premiumComputationEngine(computationRequest).pipe(
       untilDestroyed(this)
     ).subscribe(response => {
@@ -604,7 +609,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
 
   computationPayload(): PremiumComputationRequest {
-
+    const formValues = this.quickQuoteForm.getRawValue();
+    for(let product of formValues.products){
+      log.debug("Form values captured by the user>>>" , product)
+    }
     return
   }
 
@@ -902,19 +910,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
    * @param {any} event - The event triggered by subclass selection.
    * @return {void}
    */
-  onSubclassSelected(event: any, productIndex: number, riskIndex: number) {
-    log.debug(`Selected value: ${JSON.stringify(event)}`);
+  onSubclassSelected(event: any, productIndex: number, riskIndex: number, productCode: number) {
+    log.debug(`Selected value: ${JSON.stringify(event)}`, productCode, riskIndex);
     this.selectedSubclassCode = event.code;
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
-    const selectedSubclassCodeString = JSON.stringify(
-      this.selectedSubclassCode
-    );
-    this.fetchComputationData(
-      this.selectedProductCode,
-      this.selectedSubclassCode
-    );
+    this.fetchComputationData(productCode, event.code, riskIndex, productIndex);
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
-    sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
     this.fetchRegexPattern(productIndex, riskIndex);
   }
 
@@ -1379,30 +1380,35 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     return response;
   }
 
-  fetchComputationData(productCode: number, subClassCode: number
+  fetchComputationData(productCode: number, subClassCode: number, riskIndex: number, productIndex: number
   ) {
+    let productFormArray = this.productsFormArray.at(productIndex);
+    let riskFormGroup  = (this.productsFormArray.at(productIndex).get('risks') as FormArray).at(riskIndex) as FormGroup
+    log.debug("Current  productFormArray for risks>>>", riskFormGroup )
     this.binderService.getAllBindersQuick(subClassCode).pipe(
       mergeMap((binders) => {
         this.binderList = binders._embedded.binder_dto_list;
-        this.selectedBinder = this.binderList.find((value: { is_default: string; }) => value?.is_default === 'Y');
+        const defaultBinder = this.binderList.find((value: { is_default: string; }) => value?.is_default === 'Y') as Binders;
+        riskFormGroup .get('applicableBinder')?.setValue(defaultBinder)
         this.selectedBinderCode = this.selectedBinder?.code;
         log.debug("Selected Binder code", this.selectedBinderCode)
-        this.currencyCode = this.selectedBinder.currency_code
-
+        this.currencyCode = defaultBinder?.currency_code
         if (this.currencyCode) {
           this.fetchExchangeRate()
         }
         return forkJoin([
           this.quotationService.getTaxes(productCode, subClassCode),
-          this.subclassCoverTypesService.getCoverTypeSections(subClassCode, this.selectedBinderCode)
+          this.subclassCoverTypesService.getCoverTypeSections(subClassCode, defaultBinder.code)
         ])
       }),
       untilDestroyed(this)
     ).subscribe(([taxes, coverTypeSections]) => {
-      this.taxList = taxes._embedded
-      this.applicablePremiumRates = coverTypeSections._embedded
+      this.taxList = taxes._embedded as Tax[]
+      riskFormGroup.get('applicableTaxes')?.setValue(taxes._embedded)
+      riskFormGroup.get('applicableCoverTypes')?.setValue(coverTypeSections._embedded)
       log.debug("Taxes:::", taxes, this.applicablePremiumRates)
     })
+    log.debug("Current after form changes >>>", riskFormGroup)
 
   }
 

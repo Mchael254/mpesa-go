@@ -18,7 +18,7 @@ import {catchError, Observable, retry, tap, throwError} from 'rxjs';
 import {introducersDTO} from '../../data/introducersDTO';
 import {AgentDTO} from '../../../../../entities/data/AgentDTO';
 import {Pagination} from '../../../../../../shared/data/common/pagination';
-import {riskClauses} from '../../../setups/data/gisDTO';
+import {riskClauses, Tax} from '../../../setups/data/gisDTO';
 import {SESSION_KEY} from '../../../../../../features/lms/util/session_storage_enum';
 import {StringManipulation} from '../../../../../../features/lms/util/string_manipulation';
 import {SessionStorageService} from '../../../../../../shared/services/session-storage/session-storage.service';
