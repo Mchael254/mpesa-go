@@ -4,7 +4,6 @@ import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/c
 import {
   CreateLimitsOfLiability,
   EditRisk,
-  PremiumComputationRequest,
   premiumPayloadData,
   quotationDTO,
   QuotationPayload,
@@ -29,7 +28,7 @@ import {ClientDTO} from '../../../../../entities/data/ClientDTO';
 import {UtilService} from '../../../../../../shared/services/util/util.service';
 import {map} from "rxjs/operators";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
-import {ProductLevelPremium} from "../../data/premium-computation";
+import {PremiumComputationRequest, ProductLevelPremium} from "../../data/premium-computation";
 
 @Injectable({
   providedIn: 'root'
