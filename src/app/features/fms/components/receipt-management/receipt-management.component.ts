@@ -265,13 +265,7 @@ this.filterAllReceipts(); // Ensure this is called
   }
   filterAllReceipts():void{
     if (!this.receiptsToCancelList) return;
-    console.log('Filtering with:', {
-      receiptNumber: this.receiptNumberFilter,
-      date: this.receiptDateFilter,
-      from: this.receivedFromFilter,
-      amount: this.amountFilter,
-      method: this.paymentMethodFilter
-    });
+   
     // Always start with the full dataset
     let filteredData = [...this.unCancelledReceipts];
   
@@ -315,6 +309,17 @@ this.filterAllReceipts(); // Ensure this is called
     this.totalRecords = this.filteredReceipts.length;
    
       }
+      clearFilters() {
+        let filteredData = [...this.unCancelledReceipts];
+  this.receiptNumberFilter = '';
+  this.receiptDateFilter = '';
+  this.receivedFromFilter = '';
+  this.amountFilter = null;
+  this.paymentMethodFilter = '';
+this.filteredReceipts = filteredData;
+    this.totalRecords = this.filteredReceipts.length;
+ 
+}
   applyFilter(event: Event, field: string): void {
     const inputElement = event.target as HTMLInputElement;
     const filterValue = inputElement.value;
@@ -400,7 +405,17 @@ this.filterAllReceipts(); // Ensure this is called
       this.paymentMethodFilter?.trim()
     );
   }
-
+   clearFilter() {
+         let filteredData = [...this.unPrintedReceiptContent];
+  this.receiptNumberFilter = '';
+  this.receiptDateFilter = '';
+  this.receivedFromFilter = '';
+  this.amountFilter = null;
+  this.paymentMethodFilter = '';
+this.filteredtabledata = filteredData;
+    this.totalRecords = this.filteredtabledata.length;
+ 
+}
   /**
    * @method printReceipt
    * @description Stores the selected receipt number in session storage and navigates
