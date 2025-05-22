@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { UtilService } from "../../services";
 
 @Component({
   selector: 'app-language-selector',
@@ -11,13 +12,16 @@ export class LanguageSelectorComponent {
 
   defaultLanguage: string = 'fi fi-gb fis';
 
-  constructor(private translate: TranslateService) {
+  constructor(private translate: TranslateService,
+              private utilService: UtilService) {
 
   }
 
   selectLanguage(value){
     this.translate.use(value.code)
     this.defaultLanguage = value.class
+
+    this.utilService.setLanguage(value.code);
   }
 
   languages = [

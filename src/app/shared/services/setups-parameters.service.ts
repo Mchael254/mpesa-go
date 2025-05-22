@@ -1,18 +1,17 @@
 import { Injectable } from '@angular/core';
-import {AppConfigService} from "../../core/config/app-config-service";
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SetupsParametersDTO} from "../data/common/setups-parametersDTO";
+import {API_CONFIG} from "../../../environments/api_service_config";
+import {ApiService} from "./api/api.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SetupsParametersService {
-  baseUrlSetups = this.appConfig.config.contextPath.setup_services;
 
   constructor(
-    private appConfig: AppConfigService,
-    private http: HttpClient
+    private api: ApiService,
   ) { }
 
 
@@ -22,13 +21,13 @@ export class SetupsParametersService {
    * @returns an Observable of type 'any'.
    */
   getParameters(name:string): Observable<SetupsParametersDTO[]> {
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    });
     const params = new HttpParams()
       .set('name', `${name}`);
 
-    return this.http.get<SetupsParametersDTO[]>(`/${this.baseUrlSetups}/setups/parameters`, {headers:header, params:params})
+    return this.api.GET<SetupsParametersDTO[]>(
+      `parameters`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
+    );
   }
 }
