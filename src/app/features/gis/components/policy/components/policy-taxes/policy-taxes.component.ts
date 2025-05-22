@@ -1,12 +1,12 @@
 import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Table } from 'primeng/table';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
 import { Logger } from 'src/app/shared/services';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { untilDestroyed } from 'src/app/shared/shared.module';
 import { PolicyService } from '../../services/policy.service';
 import { PolicyResponseDTO, PolicyContent } from '../../data/policy-dto';
+import { QuotationsService } from '../../../quotation/services/quotations/quotations.service';
 const log = new Logger("PolicyTaxesComponent");
 
 @Component({

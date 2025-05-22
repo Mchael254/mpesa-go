@@ -1,17 +1,12 @@
 [
   {
     "number": 1,
-    "title": "Quick quotation details",
+    "title": "Quote information",
     "link": "/home/gis/quotation/quick-quote"
-  },
-  {
-    "number": 2,
-    "title": "Cover types",
-    "link": "/home/gis/quotation/cover-type-details"
   },
 
   {
-    "number": 3,
+    "number": 2,
     "title": "Quote summary",
     "link": "/home/gis/quotation/quote-summary"
   }

@@ -23,168 +23,166 @@ const SESSION_DOMAIN = 'SESSION_DOMAIN';
 const SESSION_ORG_CODE = 'SESSION_ORG_CODE';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
 export class JwtService {
-        constructor(
-        private browserStorage: BrowserStorage,
-        // private cookieService: CookieService,
-        private utilService: UtilService,
-        private sessionStorage: SessionStorageService,
-        @Inject(APP_BASE_HREF) private baseHref: string
-    ) {
+  constructor(
+    private browserStorage: BrowserStorage,
+    // private cookieService: CookieService,
+    private utilService: UtilService,
+    private sessionStorage: SessionStorageService,
+    @Inject(APP_BASE_HREF) private baseHref: string
+  ) {
+  }
+
+  /**
+   * Gets the refresh token
+   * @returns string - the refresh token
+   */
+  getRefreshToken(): string | null {
+    let refreshToken = null;
+    // if (this.cookieService.check(REFRESH_TOKEN)) {
+    //     refreshToken = this.cookieService.get(REFRESH_TOKEN);
+    // }
+
+    refreshToken = this.sessionStorage.getItem(REFRESH_TOKEN);
+    return refreshToken;
+  }
+
+  /**
+   * Gets the refresh token expiry
+   * @returns string - the refresh token expiry
+   */
+  getTokenExpiry(): string | null {
+    let expiry!: string;
+    // if (this.cookieService.check(SESSION_TOKEN_EXPIRES_AT)) {
+    //     expiry = this.cookieService.get(SESSION_TOKEN_EXPIRES_AT);
+    // }
+    return this.sessionStorage.getItem(SESSION_TOKEN_EXPIRES_AT);
+  }
+
+  /**
+   * Gets the session token
+   * @returns string - the session token
+   */
+  getToken(): string | null {
+    return this.sessionStorage.getItem(SESSION_TOKEN);
+  }
+
+  /*TODO: Work on this later*/
+
+  /**
+   * Save the session token
+   * @param token OauthToken - the token to be saved
+   */
+  saveToken(token: OauthToken) {
+    if (this.utilService.isEmpty(token)) {
+      this.destroyToken();
+    } else {
+
+      const path = this.tokenPath;
+      const expiryInDays = token.expires_in / 60;
+      log.info(
+        `EXPIRES IN ${token.expires_in}, EXXPIRY ${expiryInDays}`
+      );
+      const domain = this.utilService.isIE() ? null : location.hostname;
+      const isHttps = location?.protocol?.startsWith("https") || false
+      const refreshTokenExpiry = token.refresh_expires_in ? token.refresh_expires_in / 60 : 30; // 30 days
+
+      const dateExpires: Date = new Date(
+        new Date().getTime() + token.expires_in * 1000
+      );
+
+      this.sessionStorage.setItem(SESSION_TOKEN, token.access_token);
+      this.sessionStorage.setItem(REFRESH_TOKEN, token.refresh_token);
+      this.sessionStorage.setItem(SESSION_TOKEN_EXPIRES_AT, dateExpires.toISOString());
+      this.sessionStorage.setItem(REFRESH_TOKEN_EXPIRY, refreshTokenExpiry);
+      this.sessionStorage.setItem(SESSION_IS_HTTPS_SECURED, isHttps);
+      this.sessionStorage.setItem(SESSION_DOMAIN, domain);
+      this.sessionStorage.setItem(SESSION_ORG_CODE, token.organizationId)
+
+      const userAssignedRoles = this.getUserAssignedRoles(token.access_token);
+      sessionStorage.setItem('account_roles', JSON.stringify(userAssignedRoles));
+
+    }
+  }
+
+  private decodeAccessToken(token: string): any {
+    if (!token) return null;
+    const parts = token.split(".")
+    if (parts.length !== 3) return null
+    try {
+      const payload = parts[1]
+      const decodedPayload = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      const jsonPayload = decodeURIComponent(
+        decodedPayload.split('').map(c =>
+          '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join('')
+      );
+      const parsedPayload = JSON.parse(jsonPayload);
+      const currentTime = Math.floor(Date.now() / 1000);
+      if (parsedPayload.exp && parsedPayload.exp < currentTime) {
+        log.error("Token has expired")
+        return null;
+      }
+      return parsedPayload;
+    } catch (error) {
+      return null
+    }
+  }
+
+  getUserAssignedRoles(token: string): string[] {
+    const decoded = this.decodeAccessToken(token);
+    if (!decoded) return [];
+    const accountRoles = decoded.resource_access?.account?.roles;
+    return Array.isArray(accountRoles) ? accountRoles : [];
+  }
+
+  /**
+   * Destroys the session token
+   */
+  destroyToken() {
+    this.browserStorage.clearObj('SESSION_TOKEN');
+    this.sessionStorage.removeItem(SESSION_TOKEN);
+    this.sessionStorage.removeItem(SESSION_ORG_CODE);
+
+    const path = this.tokenPath;
+
+    const domain = this.utilService.isIE() ? null : location.hostname;
+    // this.cookieService.delete(SESSION_TOKEN, path, domain);
+    // this.cookieService.delete(SESSION_TOKEN_EXPIRES_AT, path, domain);
+  }
+
+  /**
+   * Destroys the refresh token
+   */
+  destroyRefreshToken() {
+    const domain = this.utilService.isIE() ? null : location.hostname;
+    const path = this.tokenPath;
+
+    this.sessionStorage.removeItem(REFRESH_TOKEN);
+
+    // this.cookieService.delete(REFRESH_TOKEN, path, domain);
+  }
+
+  /**
+   * Gets the token path
+   * @returns string - the token path
+   */
+  get tokenPath(): string {
+    let path = this.baseHref.length < 1 ? '/' : '/';
+    if (this.baseHref.length === 1 && this.baseHref.startsWith('/')) {
+      path = this.baseHref;
+    } else if (this.baseHref.startsWith('/') && this.baseHref.endsWith('/')) {
+      path = this.baseHref;
+    } else if (this.baseHref.startsWith('/') && !this.baseHref.endsWith('/')) {
+      path = this.baseHref + '/';
+    } else if (!this.baseHref.startsWith('/') && this.baseHref.endsWith('/')) {
+      path = '/' + this.baseHref;
+    } else {
+      path = '/' + this.baseHref + '/';
     }
 
-    /**
-     * Gets the refresh token
-     * @returns string - the refresh token
-     */
-    getRefreshToken(): string | null {
-        let refreshToken = null;
-        // if (this.cookieService.check(REFRESH_TOKEN)) {
-        //     refreshToken = this.cookieService.get(REFRESH_TOKEN);
-        // }
-
-        refreshToken = this.sessionStorage.getItem(REFRESH_TOKEN);
-        return refreshToken;
-    }
-
-    /**
-     * Gets the refresh token expiry
-     * @returns string - the refresh token expiry
-     */
-    getTokenExpiry(): string | null {
-        let expiry!: string;
-        // if (this.cookieService.check(SESSION_TOKEN_EXPIRES_AT)) {
-        //     expiry = this.cookieService.get(SESSION_TOKEN_EXPIRES_AT);
-        // }
-        return this.sessionStorage.getItem(SESSION_TOKEN_EXPIRES_AT);
-    }
-
-    /**
-     * Gets the session token
-     * @returns string - the session token
-     */
-    getToken(): string | null {
-        let myToken = null;
-        // if (this.cookieService.check(SESSION_TOKEN)) {
-        //     myToken = this.cookieService.get(SESSION_TOKEN);
-        // }
-        return this.sessionStorage.getItem(SESSION_TOKEN);
-    }
-/*TODO: Work on this later*/
-
-    /**
-     * Save the session token
-     * @param token OauthToken - the token to be saved
-     */
-    saveToken(token: OauthToken) {
-        if (this.utilService.isEmpty(token)) {
-            this.destroyToken();
-        } else {
-
-            const path = this.tokenPath;
-            const expiryInDays = token.expires_in / 60;
-            log.info(
-                `EXPIRES IN ${token.expires_in}, EXXPIRY ${expiryInDays}`
-            );
-            const domain = this.utilService.isIE() ? null : location.hostname;
-            const isHttps = location?.protocol?.startsWith("https") || false
-            const refreshTokenExpiry = token.refresh_expires_in ? token.refresh_expires_in / 60 : 30; // 30 days
-
-            const dateExpires: Date = new Date(
-            new Date().getTime() + token.expires_in * 1000
-            );
-
-            this.sessionStorage.setItem(SESSION_TOKEN,token.access_token );
-            this.sessionStorage.setItem(REFRESH_TOKEN, token.refresh_token);
-            this.sessionStorage.setItem(SESSION_TOKEN_EXPIRES_AT, dateExpires.toISOString());
-            this.sessionStorage.setItem(REFRESH_TOKEN_EXPIRY, refreshTokenExpiry);
-            this.sessionStorage.setItem(SESSION_IS_HTTPS_SECURED, isHttps);
-            this.sessionStorage.setItem(SESSION_DOMAIN, domain);
-            this.sessionStorage.setItem(SESSION_ORG_CODE, token.organizationId)
-
-
-            // this.cookieService.set(
-            //     SESSION_TOKEN,
-            //     token.access_token,
-            //     expiryInDays,
-            //     path,
-            //     domain,
-            //     isHttps,
-            //     'Strict'
-            // );
-
-            // this.cookieService.set(
-            //     REFRESH_TOKEN,
-            //     token.refresh_token,
-            //     refreshTokenExpiry,
-            //     path,
-            //     domain,
-            //     isHttps,
-            //     'Strict'
-            // );
-
-
-
-            // this.cookieService.set(
-            //     SESSION_TOKEN_EXPIRES_AT,
-            //     dateExpires.toISOString(),
-            //     expiryInDays,
-            //     path,
-            //     domain,
-            //     isHttps,
-            //     'Strict'
-            // );
-            // log.info('SET token session expiry cookie', format(parseISO(this.getTokenExpiry()), "dd-MM-yyyy HH:mm:ss"));
-        }
-    }
-
-    /**
-     * Destroys the session token
-     */
-    destroyToken() {
-        this.browserStorage.clearObj('SESSION_TOKEN');
-        this.sessionStorage.removeItem(SESSION_TOKEN);
-        this.sessionStorage.removeItem(SESSION_ORG_CODE);
-
-        const path = this.tokenPath;
-
-        const domain = this.utilService.isIE() ? null : location.hostname;
-        // this.cookieService.delete(SESSION_TOKEN, path, domain);
-        // this.cookieService.delete(SESSION_TOKEN_EXPIRES_AT, path, domain);
-    }
-
-    /**
-     * Destroys the refresh token
-     */
-    destroyRefreshToken() {
-        const domain = this.utilService.isIE() ? null : location.hostname;
-        const path = this.tokenPath;
-
-        this.sessionStorage.removeItem(REFRESH_TOKEN);
-
-        // this.cookieService.delete(REFRESH_TOKEN, path, domain);
-    }
-
-    /**
-     * Gets the token path
-     * @returns string - the token path
-     */
-    get tokenPath(): string {
-        let path = this.baseHref.length < 1 ? '/' : '/';
-        if (this.baseHref.length === 1 && this.baseHref.startsWith('/')) {
-            path = this.baseHref;
-        } else if (this.baseHref.startsWith('/') && this.baseHref.endsWith('/')) {
-            path = this.baseHref;
-        } else if (this.baseHref.startsWith('/') && !this.baseHref.endsWith('/')) {
-            path = this.baseHref + '/';
-        } else if (!this.baseHref.startsWith('/') && this.baseHref.endsWith('/')) {
-            path = '/' + this.baseHref;
-        } else {
-            path = '/' + this.baseHref + '/';
-        }
-
-        return path;
-    }
+    return path;
+  }
 }

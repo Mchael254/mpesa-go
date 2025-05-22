@@ -24,7 +24,7 @@ export class CurrencyService {
    * Get all currencies
    * @returns all currencies
    */
-  getAllCurrencies() {
+  getAllCurrencies():Observable<any> {
     return this.api
       .GET<any>(`currencies`, API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL)
       .pipe(retry(1));

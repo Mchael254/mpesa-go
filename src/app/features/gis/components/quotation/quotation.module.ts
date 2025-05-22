@@ -6,7 +6,6 @@ import { ListQuotationsComponent } from './components/list-quotations/list-quota
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { SharedModule } from '../../../../shared/shared.module';
-import { QuickQuoteDetailsComponent } from './components/quick-quote-details/quick-quote-details.component';
 import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
 import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
@@ -39,10 +38,10 @@ import { QuotationManagementComponent } from './components/quotation-management/
 import { TagModule } from 'primeng/tag';
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
+import { MultiSelectModule } from 'primeng/multiselect';
 @NgModule({
   declarations: [
     ListQuotationsComponent,
-    QuickQuoteDetailsComponent,
     QuickQuoteFormComponent,
     QuoteSummaryComponent,
     QuotationsClientDetailsComponent,
@@ -85,7 +84,8 @@ import { RiskCentreComponent } from './components/risk-centre/risk-centre.compon
         NgxIntlTelInputModule,
         EntitiesModule,
         CheckboxModule,
-        TagModule 
+        TagModule,
+        MultiSelectModule
     ],
   providers: [DatePipe],
 
