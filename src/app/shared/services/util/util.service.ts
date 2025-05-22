@@ -12,8 +12,7 @@ import {WebAdmin} from "../../data/web-admin";
 import {HttpParams} from "@angular/common/http";
 import {DatePipe} from "@angular/common";
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import {Observable, distinctUntilChanged} from "rxjs";
-import {catchError, map} from "rxjs/operators";
+import {BehaviorSubject} from "rxjs";
 
 // import { format, subYears } from 'date-fns';
 
@@ -32,6 +31,8 @@ export interface FullName {
 export class UtilService {
   constructor() {
   }
+  private languageSource = new BehaviorSubject<any>('en');
+  currentLanguage = this.languageSource.asObservable();
 
   purgeFormArray(form: FormArray) {
     while (0 !== form.length) {
@@ -686,5 +687,38 @@ export class UtilService {
 
 
 
+  }
+
+  /**
+   * Sets the language for translation
+   * @param language {string} - language to be set
+   */
+  setLanguage(language: any) {
+    this.languageSource.next(language);
+  }
+
+  /**
+   * Generates a hint string from a given regex pattern.
+   * The method cleans the regex pattern by removing any leading or trailing anchors
+   * and replaces common regex patterns with sample values to create a hint string.
+   *
+   * @param regex {string} - The regex pattern to generate a hint from
+   * @returns {string} - A string representing a hint based on the regex pattern
+   */
+  generateHintFromRegex(regex: string): string {
+    if (!regex) return '';
+
+    // Clean regex from extra slashes or anchors
+    regex = regex.replace(/^(\^)?/, '').replace(/(\$)?$/, '');
+    // Replace common regex patterns with sample values
+    return regex
+      .replace(/\\d\{(\d+)\}/g, (_, n) => '1'.repeat(+n))                  // \d{9} → 111111111
+      .replace(/\[0-9\]\{(\d+)\}/g, (_, n) => '1'.repeat(+n))              // [0-9]{5} → 11111
+      .replace(/\[A-Z\]\{(\d+)\}/g, (_, n) => 'A'.repeat(+n))              // [A-Z]{1} → A
+      .replace(/\\\//g, '/')                                               // escaped slash
+      .replace(/\\-/g, '-')                                                // escaped dash
+      .replace(/\[a-zA-Z0-9_\]\{(\d+)\}/g, (_, n) => 'X'.repeat(+n))       // generic alphanum
+      .replace(/A/g, 'A')                                                  // literal A
+      .replace(/\^?A/, 'A');                                               // leading A if not captured above
   }
 }

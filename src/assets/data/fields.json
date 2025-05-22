@@ -4,6 +4,11 @@
       "assign_role": {
         "fieldId": "assign_role",
         "fieldLabel": "Select a role",
+        "fieldLabel_ke": "Chagua Jukumu",
+        "fieldLabel_cn": "选择角色",
+        "fieldLabel_de": "Rolle auswählenh",
+        "fieldLabel_es": "Seleccionar un rolh",
+        "fieldLabel_fr": "Sélectionner un rôle",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -11,6 +16,11 @@
       "category": {
         "fieldId": "category",
         "fieldLabel": "Party type",
+        "fieldLabel_ke": "Aina ya Chama",
+        "fieldLabel_cn": "当事人类型",
+        "fieldLabel_de": "Parteityp",
+        "fieldLabel_es": "Tipo de parte",
+        "fieldLabel_fr": "Type de partie",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -18,6 +28,11 @@
       "entity_name": {
         "fieldId": "entity_name",
         "fieldLabel": "Entity name",
+        "fieldLabel_ke": "Jina la Kiumbe",
+        "fieldLabel_cn": "实体名称",
+        "fieldLabel_de": "Entitätsname",
+        "fieldLabel_es": "Nombre de la entidad",
+        "fieldLabel_fr": "Nom de l'entité",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -25,6 +40,11 @@
       "mode_of_identity": {
         "fieldId": "mode_of_identity",
         "fieldLabel": "Primary ID type",
+        "fieldLabel_ke": "Aina ya Kitambulisho Msingi",
+        "fieldLabel_cn": "主要 ID 类型",
+        "fieldLabel_de": "Primärer ID-Typ",
+        "fieldLabel_es": "Tipo de ID primario",
+        "fieldLabel_fr": "Type d'ID primaire",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -32,6 +52,11 @@
       "identity_number": {
         "fieldId": "identity_number",
         "fieldLabel": "ID Number",
+        "fieldLabel_ke": "Nambari ya Kitambulisho",
+        "fieldLabel_cn": "身份证号",
+        "fieldLabel_de": "Ausweisnummer",
+        "fieldLabel_es": "Número de identificación",
+        "fieldLabel_fr": "Numéro d'identité",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -39,6 +64,11 @@
       "pin_number": {
         "fieldId": "pin_number",
         "fieldLabel": "Pin Number",
+        "fieldLabel_ke": "Nambari ya PIN",
+        "fieldLabel_cn": "PIN 号码",
+        "fieldLabel_de": "PIN-Nummer",
+        "fieldLabel_es": "Número de PIN",
+        "fieldLabel_fr": "Numéro PI",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -46,6 +76,11 @@
       "date_of_birth": {
         "fieldId": "date_of_birth",
         "fieldLabel": "Date of birth",
+        "fieldLabel_ke": "Tarehe ya Kuzaliwa",
+        "fieldLabel_cn": "出生日期",
+        "fieldLabel_de": "Geburtsdatum",
+        "fieldLabel_es": "Fecha de nacimiento",
+        "fieldLabel_fr": "Date de naissance",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -53,6 +88,11 @@
       "profilePiture": {
         "fieldId": "profilePiture",
         "fieldLabel": "Profile photo",
+        "fieldLabel_ke": "Picha ya Profaili",
+        "fieldLabel_cn": "个人照片",
+        "fieldLabel_de": "Profilfoto",
+        "fieldLabel_es": "Foto de perfil",
+        "fieldLabel_fr": "Photo de profil",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -63,6 +103,11 @@
       "assign_role": {
         "fieldId": "assign_role",
         "fieldLabel": "Select a role",
+        "fieldLabel_ke": "Chagua Jukumu",
+        "fieldLabel_cn": "选择角色",
+        "fieldLabel_de": "Rolle auswählenh",
+        "fieldLabel_es": "Seleccionar un rolh",
+        "fieldLabel_fr": "Sélectionner un rôle",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -70,6 +115,11 @@
       "category": {
         "fieldId": "category",
         "fieldLabel": "Party type",
+        "fieldLabel_ke": "Aina ya Chama",
+        "fieldLabel_cn": "当事人类型",
+        "fieldLabel_de": "Parteityp",
+        "fieldLabel_es": "Tipo de parte",
+        "fieldLabel_fr": "Type de partie",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -77,6 +127,11 @@
       "entity_name": {
         "fieldId": "entity_name",
         "fieldLabel": "Entity name",
+        "fieldLabel_ke": "Jina la Kiumbe",
+        "fieldLabel_cn": "实体名称",
+        "fieldLabel_de": "Entitätsname",
+        "fieldLabel_es": "Nombre de la entidad",
+        "fieldLabel_fr": "Nom de l'entité",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -84,6 +139,11 @@
       "identity_number": {
         "fieldId": "identity_number",
         "fieldLabel": "Business registration number",
+        "fieldLabel_ke": "Nambari ya usajili wa biashara",
+        "fieldLabel_cn": "商业注册号",
+        "fieldLabel_de": "Handelsregisternummer",
+        "fieldLabel_es": "Número de registro comercial",
+        "fieldLabel_fr": "Numéro d'enregistrement de l'entreprise",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -91,13 +151,23 @@
       "mode_of_identity": {
         "fieldId": "mode_of_identity",
         "fieldLabel": "Primary ID type",
-        "fieldVisibilityStatus": "N",
-        "fieldMandatoryStatus": "N",
+        "fieldLabel_ke": "Aina ya Kitambulisho Msingi",
+        "fieldLabel_cn": "主要 ID 类型",
+        "fieldLabel_de": "Primärer ID-Typ",
+        "fieldLabel_es": "Tipo de ID primario",
+        "fieldLabel_fr": "Type d'ID primaire",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
       },
       "pin_number": {
         "fieldId": "pin_number",
         "fieldLabel": "Pin Number",
+        "fieldLabel_ke": "Nambari ya PIN",
+        "fieldLabel_cn": "PIN 号码",
+        "fieldLabel_de": "PIN-Nummer",
+        "fieldLabel_es": "Número de PIN",
+        "fieldLabel_fr": "Numéro PI",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -105,6 +175,11 @@
       "date_of_birth": {
         "fieldId": "date_of_birth",
         "fieldLabel": "Date of incorporation",
+        "fieldLabel_ke": "Tarehe ya kusajiliwa",
+        "fieldLabel_cn": "成立日期",
+        "fieldLabel_de": "Gründungsdatum",
+        "fieldLabel_es": "Fecha de constitución",
+        "fieldLabel_fr": "Date de constitution",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -112,6 +187,11 @@
       "profilePiture": {
         "fieldId": "profilePiture",
         "fieldLabel": "Logo photo",
+        "fieldLabel_ke": "Picha ya Profaili",
+        "fieldLabel_cn": "个人照片",
+        "fieldLabel_de": "Profilfoto",
+        "fieldLabel_es": "Foto de perfil",
+        "fieldLabel_fr": "Photo de profil",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -124,6 +204,11 @@
       "clientTypeId": {
         "fieldId": "clientTypeId",
         "fieldLabel": "Client Type",
+        "fieldLabel_ke": "Aina ya Mteja",
+        "fieldLabel_cn": "客户类型",
+        "fieldLabel_de": "Klanttype",
+        "fieldLabel_es": "Tipo de cliente",
+        "fieldLabel_fr": "Type de client",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -131,6 +216,11 @@
       "identity_type": {
         "fieldId": "identity_type",
         "fieldLabel": "Prime identity type",
+        "fieldLabel_ke": "Utambulisho Mkuu",
+        "fieldLabel_cn": "主要身份",
+        "fieldLabel_de": "Primäre Identität",
+        "fieldLabel_es": "Identidad principal",
+        "fieldLabel_fr": "Identité principale",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
@@ -138,6 +228,11 @@
       "citizenship": {
         "fieldId": "citizenship",
         "fieldLabel": "Citizenship",
+        "fieldLabel_ke": "Uraia",
+        "fieldLabel_cn": "国籍",
+        "fieldLabel_de": "Staatsangehörigkeit",
+        "fieldLabel_es": "Ciudadanía",
+        "fieldLabel_fr": "Citoyenneté",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "N"
@@ -145,6 +240,11 @@
       "surname": {
         "fieldId": "surname",
         "fieldLabel": "Surname",
+        "fieldLabel_ke": "Jina la ukoo",
+        "fieldLabel_cn": "姓",
+        "fieldLabel_de": "Nachname",
+        "fieldLabel_es": "Apellido",
+        "fieldLabel_fr": "Nom de famille",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
@@ -152,6 +252,11 @@
       "otherName": {
         "fieldId": "otherName",
         "fieldLabel": "Other name",
+        "fieldLabel_ke": "Majina mengine",
+        "fieldLabel_cn": "其他名字",
+        "fieldLabel_de": "Weitere Namen",
+        "fieldLabel_es": "",
+        "fieldLabel_fr": "",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
@@ -159,6 +264,11 @@
       "dateOfBirth": {
         "fieldId": "dateOfBirth",
         "fieldLabel": "Date of birth",
+        "fieldLabel_ke": "Tarehe ya Kuzaliwa",
+        "fieldLabel_cn": "出生日期",
+        "fieldLabel_de": "Geburtsdatum",
+        "fieldLabel_es": "Fecha de nacimiento",
+        "fieldLabel_fr": "Date de naissance",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
@@ -166,6 +276,11 @@
       "idNumber": {
         "fieldId": "idNumber",
         "fieldLabel": "ID Number",
+        "fieldLabel_ke": "Nambari ya Kitambulisho",
+        "fieldLabel_cn": "身份证号",
+        "fieldLabel_de": "Ausweisnummer",
+        "fieldLabel_es": "Número de identificación",
+        "fieldLabel_fr": "Numéro d'identité",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
@@ -173,6 +288,11 @@
       "gender": {
         "fieldId": "gender",
         "fieldLabel": "Gender",
+        "fieldLabel_ke": "Jinsia",
+        "fieldLabel_cn": "性别",
+        "fieldLabel_de": "Geschlecht",
+        "fieldLabel_es": "Género",
+        "fieldLabel_fr": "Genre",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -180,13 +300,47 @@
       "pinNumber": {
         "fieldId": "pinNumber",
         "fieldLabel": "PIN Number",
+        "fieldLabel_ke": "Nambari ya PIN",
+        "fieldLabel_cn": "PIN 号码",
+        "fieldLabel_de": "PIN-Nummer",
+        "fieldLabel_es": "Número de PIN",
+        "fieldLabel_fr": "Numéro PI",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
       },
+      "withEffectFrom": {
+        "fieldId": "withEffectFrom",
+        "fieldLabel": "With effect from",
+        "fieldLabel_ke": "Kuanzia Tarehe",
+        "fieldLabel_cn": "生效日期",
+        "fieldLabel_de": "Mit Wirkung vom",
+        "fieldLabel_es": "Con Efecto Desd",
+        "fieldLabel_fr": "En vigueur à partir du",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
+      "withEffectTo": {
+        "fieldId": "withEffectTo",
+        "fieldLabel": "With effect to",
+        "fieldLabel_ke": "Hadi Tarehe",
+        "fieldLabel_cn": "截止日期",
+        "fieldLabel_de": "Mit Wirkung bis",
+        "fieldLabel_es": "Con Efecto Hasta",
+        "fieldLabel_fr": "En vigueur jusqu'au",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
+      },
       "clientBranch": {
         "fieldId": "clientBranch",
         "fieldLabel": "Branch",
+        "fieldLabel_ke": "Tawi",
+        "fieldLabel_cn": "分行",
+        "fieldLabel_de": "Filiale",
+        "fieldLabel_es": "Sucursal",
+        "fieldLabel_fr": "Agence",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
@@ -194,6 +348,11 @@
       "clientTitle": {
         "fieldId": "clientTitle",
         "fieldLabel": "Title",
+        "fieldLabel_ke": "Cheo",
+        "fieldLabel_cn": "称谓",
+        "fieldLabel_de": "Anrede",
+        "fieldLabel_es": "Título",
+        "fieldLabel_fr": "Titre",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -201,6 +360,11 @@
       "smsNumber": {
         "fieldId": "smsNumber",
         "fieldLabel": "SMS Number",
+        "fieldLabel_ke": "Nambari ya SMS",
+        "fieldLabel_cn": "短信号码",
+        "fieldLabel_de": "SMS-Nummer",
+        "fieldLabel_es": "Número de SMS",
+        "fieldLabel_fr": "Numéro de SMS",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -208,6 +372,11 @@
       "phoneNumber": {
         "fieldId": "phoneNumber",
         "fieldLabel": "Telephone number",
+        "fieldLabel_ke": "Namba ya Simu",
+        "fieldLabel_cn": "电话号码",
+        "fieldLabel_de": "Telefonnummer",
+        "fieldLabel_es": "Número de Teléfono",
+        "fieldLabel_fr": "Numéro de téléphone",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -215,6 +384,11 @@
       "email": {
         "fieldId": "email",
         "fieldLabel": "Email address",
+        "fieldLabel_ke": "Anwani ya Barua pepe",
+        "fieldLabel_cn": "电子邮件地址",
+        "fieldLabel_de": "E-Mail-Adresse",
+        "fieldLabel_es": "Dirección de correo electrónico",
+        "fieldLabel_fr": "Adresse e-maill",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -222,6 +396,11 @@
       "channel": {
         "fieldId": "channel",
         "fieldLabel": "Preferred contact channel",
+        "fieldLabel_ke": "Kipengele cha Mawasiliano Kinachopendekezwa",
+        "fieldLabel_cn": "首选联系渠道",
+        "fieldLabel_de": "Bevorzugter Kontaktkanal",
+        "fieldLabel_es": "Canal de contacto preferido",
+        "fieldLabel_fr": "Canal de contact préféré",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -229,6 +408,11 @@
       "country": {
         "fieldId": "country",
         "fieldLabel": "Country",
+        "fieldLabel_ke": "Nchi",
+        "fieldLabel_cn": "国家",
+        "fieldLabel_de": "Land",
+        "fieldLabel_es": "País",
+        "fieldLabel_fr": "Pays",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -236,6 +420,11 @@
       "county": {
         "fieldId": "county",
         "fieldLabel": "County/State",
+        "fieldLabel_ke": "Kaunti/Mkoa",
+        "fieldLabel_cn": "县/州",
+        "fieldLabel_de": "Bezirk/Bundesland",
+        "fieldLabel_es": "Condado/Estado",
+        "fieldLabel_fr": "Département/État",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -243,6 +432,11 @@
       "town": {
         "fieldId": "town",
         "fieldLabel": "City/Town",
+        "fieldLabel_ke": "Jiji/Mji",
+        "fieldLabel_cn": "城市/城镇",
+        "fieldLabel_de": "Stadt/Ort",
+        "fieldLabel_es": "Ciudad/Pueblo",
+        "fieldLabel_fr": "Ville",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -250,6 +444,11 @@
       "physical_address": {
         "fieldId": "physical_address",
         "fieldLabel": "Physical Address",
+        "fieldLabel_ke": "Anwani ya Makazi",
+        "fieldLabel_cn": "物理地址",
+        "fieldLabel_de": "Physische Adresse",
+        "fieldLabel_es": "Dirección física",
+        "fieldLabel_fr": "Adresse physique",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -257,6 +456,11 @@
       "box_number": {
         "fieldId": "box_number",
         "fieldLabel": "Postal address",
+        "fieldLabel_ke": "Anwani ya Posta",
+        "fieldLabel_cn": "邮政地址",
+        "fieldLabel_de": "Postadres",
+        "fieldLabel_es": "Dirección Postal",
+        "fieldLabel_fr": "Adresse postale",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -264,13 +468,35 @@
       "postalCode": {
         "fieldId": "postalCode",
         "fieldLabel": "Postal Code",
+        "fieldLabel_ke": "Anwani ya Posta",
+        "fieldLabel_cn": "邮政编码",
+        "fieldLabel_de": "Postcode",
+        "fieldLabel_es": "Código Postall",
+        "fieldLabel_fr": "Code postal",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
       },
+      "townResidential": {
+        "fieldId": "townResidential",
+        "fieldLabel": "City/Town",
+        "fieldLabel_ke": "Jiji/Mji",
+        "fieldLabel_cn": "城市/城镇",
+        "fieldLabel_de": "Stadt/Ort",
+        "fieldLabel_es": "Ciudad/Pueblo",
+        "fieldLabel_fr": "Ville",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "Y"
+      },
       "road": {
         "fieldId": "road",
         "fieldLabel": "Road",
+        "fieldLabel_ke": "Barabara",
+        "fieldLabel_cn": "道路",
+        "fieldLabel_de": "Straße",
+        "fieldLabel_es": "Calle",
+        "fieldLabel_fr": "Rue",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -278,6 +504,11 @@
       "house_number": {
         "fieldId": "house_number",
         "fieldLabel": "House Name/No",
+        "fieldLabel_ke": "Jina la Nyumba/Namba",
+        "fieldLabel_cn": "门牌号码",
+        "fieldLabel_de": "Hausname/Nummer",
+        "fieldLabel_es": "Nombre/Número de la casa",
+        "fieldLabel_fr": "Nom/Numéro de la maison",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -285,6 +516,11 @@
       "utilityBill": {
         "fieldId": "utilityBill",
         "fieldLabel": "Utility Bill",
+        "fieldLabel_ke": "Bili ya Huduma",
+        "fieldLabel_cn": "水电费账单",
+        "fieldLabel_de": "Nebenkostenabrechnung",
+        "fieldLabel_es": "Factura de Servicios Públicos",
+        "fieldLabel_fr": "Facture d'eau et d'électricité",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -292,6 +528,11 @@
       "uploadUtilityBill": {
         "fieldId": "uploadUtilityBill",
         "fieldLabel": "Upload Utility Bill",
+        "fieldLabel_ke": "Pakia Bili ya Huduma",
+        "fieldLabel_cn": "上传水电费账单",
+        "fieldLabel_de": "Nebenkostenabrechnung hochladen",
+        "fieldLabel_es": "Subir Factura de Servicios Públicos",
+        "fieldLabel_fr": "Télécharger la facture d'eau et d'électricité",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -299,6 +540,11 @@
       "bank": {
         "fieldId": "bank",
         "fieldLabel": "Bank name",
+        "fieldLabel_ke": "Benki",
+        "fieldLabel_cn": "银行",
+        "fieldLabel_de": "Bank",
+        "fieldLabel_es": "Banco",
+        "fieldLabel_fr": "Banque",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -306,6 +552,11 @@
       "branch": {
         "fieldId": "branch",
         "fieldLabel": "Branch name",
+        "fieldLabel_ke": "Tawi",
+        "fieldLabel_cn": "分行",
+        "fieldLabel_de": "Filiale",
+        "fieldLabel_es": "Sucursal",
+        "fieldLabel_fr": "Agence",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -313,6 +564,11 @@
       "account_number": {
         "fieldId": "account_number",
         "fieldLabel": "Account Number",
+        "fieldLabel_ke": "Nambari ya Akaunti",
+        "fieldLabel_cn": "帐号",
+        "fieldLabel_de": "Kontonummer",
+        "fieldLabel_es": "Número de cuenta",
+        "fieldLabel_fr": "Numéro de compte",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -320,6 +576,11 @@
       "currency": {
         "fieldId": "currency",
         "fieldLabel": "Currency",
+        "fieldLabel_ke": "Sarafu",
+        "fieldLabel_cn": "货币",
+        "fieldLabel_de": "Währung",
+        "fieldLabel_es": "Moneda",
+        "fieldLabel_fr": "Devise",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -327,6 +588,11 @@
       "effective_from_date": {
         "fieldId": "effective_from_date",
         "fieldLabel": "With Effect From",
+        "fieldLabel_ke": "Kuanzia Tarehe",
+        "fieldLabel_cn": "生效日期",
+        "fieldLabel_de": "Mit Wirkung vom",
+        "fieldLabel_es": "Con Efecto Desd",
+        "fieldLabel_fr": "En vigueur à partir du",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -334,6 +600,11 @@
       "effective_to_date": {
         "fieldId": "effective_to_date",
         "fieldLabel": "With Effect To",
+        "fieldLabel_ke": "Hadi Tarehe",
+        "fieldLabel_cn": "截止日期",
+        "fieldLabel_de": "Mit Wirkung bis",
+        "fieldLabel_es": "Con Efecto Hasta",
+        "fieldLabel_fr": "En vigueur jusqu'au",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -341,6 +612,11 @@
       "mpayNo": {
         "fieldId": "mpayNo",
         "fieldLabel": "Mobile money number",
+        "fieldLabel_ke": "Nambari ya MPay",
+        "fieldLabel_cn": "MPay 号",
+        "fieldLabel_de": "MPay Nr.",
+        "fieldLabel_es": "Número de MPay",
+        "fieldLabel_fr": "Numéro MPay",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -348,6 +624,11 @@
       "Iban": {
         "fieldId": "Iban",
         "fieldLabel": "International bank account number",
+        "fieldLabel_ke": "IBAN",
+        "fieldLabel_cn": "国际银行账号",
+        "fieldLabel_de": "IBAN",
+        "fieldLabel_es": "IBAN",
+        "fieldLabel_fr": "IBAN",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -355,6 +636,11 @@
       "swiftCode": {
         "fieldId": "swiftCode",
         "fieldLabel": "Swift Code",
+        "fieldLabel_ke": "Msimbo wa SWIFT",
+        "fieldLabel_cn": "SWIFT代码",
+        "fieldLabel_de": "SWIFT-Code",
+        "fieldLabel_es": "Código SWIFT",
+        "fieldLabel_fr": "Code SWIFT",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -362,6 +648,11 @@
       "preferredChannel": {
         "fieldId": "preferredChannel",
         "fieldLabel": "Preferred channel",
+        "fieldLabel_ke": "Njia Inayopendelewa",
+        "fieldLabel_cn": "首选渠道",
+        "fieldLabel_de": "Bevorzugter Kanal",
+        "fieldLabel_es": "Canal preferido",
+        "fieldLabel_fr": "Canal préféré",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -369,6 +660,11 @@
       "wealth_citizenship": {
         "fieldId": "wealth_citizenship",
         "fieldLabel": "Citizenship",
+        "fieldLabel_ke": "Uraia",
+        "fieldLabel_cn": "国籍",
+        "fieldLabel_de": "Staatsangehörigkeit",
+        "fieldLabel_es": "Ciudadanía",
+        "fieldLabel_fr": "Citoyenneté",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -376,6 +672,11 @@
       "marital_status": {
         "fieldId": "marital_status",
         "fieldLabel": "Marital Status",
+        "fieldLabel_ke": "Hali ya Ndoa",
+        "fieldLabel_cn": "婚姻状况",
+        "fieldLabel_de": "Familienstand",
+        "fieldLabel_es": "Estado civil",
+        "fieldLabel_fr": "État civil",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -383,6 +684,11 @@
       "funds_source": {
         "fieldId": "funds_source",
         "fieldLabel": "Source of Funds",
+        "fieldLabel_ke": "Chanzo cha Fedha",
+        "fieldLabel_cn": "资金来源",
+        "fieldLabel_de": "Quelle der Mittel",
+        "fieldLabel_es": "Fuente de fondos",
+        "fieldLabel_fr": "Source de fonds",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -390,6 +696,11 @@
       "typeOfEmployment": {
         "fieldId": "typeOfEmployment",
         "fieldLabel": "Type of Employment",
+        "fieldLabel_ke": "Aina ya Ajira",
+        "fieldLabel_cn": "雇佣类型",
+        "fieldLabel_de": "Beschäftigungsart",
+        "fieldLabel_es": "Tipo de Empleo",
+        "fieldLabel_fr": "Type d'emploi",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -397,6 +708,11 @@
       "economic_sector": {
         "fieldId": "economic_sector",
         "fieldLabel": "Economic Sector",
+        "fieldLabel_ke": "Sekta ya Uchumi",
+        "fieldLabel_cn": "经济部门",
+        "fieldLabel_de": "Wirtschaftssektor",
+        "fieldLabel_es": "Sector económico",
+        "fieldLabel_fr": "Secteur économique",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -404,6 +720,11 @@
       "occupation": {
         "fieldId": "occupation",
         "fieldLabel": "Occupation",
+        "fieldLabel_ke": "Shughuli",
+        "fieldLabel_cn": "职业",
+        "fieldLabel_de": "Beschäftigung",
+        "fieldLabel_es": "Ocupación",
+        "fieldLabel_fr": "Occupation",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -411,6 +732,11 @@
       "purposeinInsurance": {
         "fieldId": "purposeinInsurance",
         "fieldLabel": "Purpose in Insurance",
+        "fieldLabel_ke": "Lengo la Bima",
+        "fieldLabel_cn": "保险目的",
+        "fieldLabel_de": "Zweck der Versicherung",
+        "fieldLabel_es": "Propósito del seguro",
+        "fieldLabel_fr": "Objectif de l'assurance",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -418,6 +744,11 @@
       "premiumFrequency": {
         "fieldId": "premiumFrequency",
         "fieldLabel": "Premium Frequency",
+        "fieldLabel_ke": "Marudio ya Ada",
+        "fieldLabel_cn": "保费频率",
+        "fieldLabel_de": "Prämienfrequenz",
+        "fieldLabel_es": "Frecuencia de prima",
+        "fieldLabel_fr": "Fréquence de prime",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -425,6 +756,11 @@
       "distributeChannel": {
         "fieldId": "distributeChannel",
         "fieldLabel": "Distribution Channel",
+        "fieldLabel_ke": "Njia ya Usambazaji",
+        "fieldLabel_cn": "分销渠道",
+        "fieldLabel_de": "Vertriebskanal",
+        "fieldLabel_es": "Canal de distribución",
+        "fieldLabel_fr": "Canal de distribution",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -435,6 +771,11 @@
       "clientTypeId": {
         "fieldId": "clientTypeId",
         "fieldLabel": "Organization Type",
+        "fieldLabel_ke": "Shirika",
+        "fieldLabel_cn": "组织",
+        "fieldLabel_de": "Organisation",
+        "fieldLabel_es": "Organización",
+        "fieldLabel_fr": "Organisation",
         "fieldVisibilityStatus": "N",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -442,6 +783,11 @@
       "identity_type": {
         "fieldId": "identity_type",
         "fieldLabel": "Identity type",
+        "fieldLabel_ke": "Aina ya Utambulisho",
+        "fieldLabel_cn": "身份类型",
+        "fieldLabel_de": "Identitätstyp",
+        "fieldLabel_es": "Tipo de identidad",
+        "fieldLabel_fr": "Type d'identité",
         "fieldVisibilityStatus": "N",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -449,6 +795,11 @@
       "citizenship": {
         "fieldId": "citizenship",
         "fieldLabel": "Citizenship",
+        "fieldLabel_ke": "Uraia",
+        "fieldLabel_cn": "国籍",
+        "fieldLabel_de": "Staatsangehörigkeit",
+        "fieldLabel_es": "Ciudadanía",
+        "fieldLabel_fr": "Citoyenneté",
         "fieldVisibilityStatus": "N",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -456,6 +807,11 @@
       "surname": {
         "fieldId": "surname",
         "fieldLabel": "Entity name",
+        "fieldLabel_ke": "Jina la Kiumbe",
+        "fieldLabel_cn": "实体名称",
+        "fieldLabel_de": "Entitätsname",
+        "fieldLabel_es": "Nombre de la entidad",
+        "fieldLabel_fr": "Nom de l'entité",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
@@ -463,6 +819,11 @@
       "otherName": {
         "fieldId": "otherName",
         "fieldLabel": "Other name",
+        "fieldLabel_ke": "Majina mengine",
+        "fieldLabel_cn": "其他名字",
+        "fieldLabel_de": "Weitere Namen",
+        "fieldLabel_es": "",
+        "fieldLabel_fr": "",
         "fieldVisibilityStatus": "N",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -470,6 +831,11 @@
       "dateOfBirth": {
         "fieldId": "dateOfBirth",
         "fieldLabel": "Date of incorporation",
+        "fieldLabel_ke": "Tarehe ya kusajiliwa",
+        "fieldLabel_cn": "成立日期",
+        "fieldLabel_de": "Gründungsdatum",
+        "fieldLabel_es": "Fecha de constitución",
+        "fieldLabel_fr": "Date de constitution",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
@@ -477,6 +843,11 @@
       "idNumber": {
         "fieldId": "idNumber",
         "fieldLabel": "Business registration number",
+        "fieldLabel_ke": "Nambari ya usajili wa biashara",
+        "fieldLabel_cn": "商业注册号",
+        "fieldLabel_de": "Handelsregisternummer",
+        "fieldLabel_es": "Número de registro comercial",
+        "fieldLabel_fr": "Numéro d'enregistrement de l'entreprise",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "Y",
         "fieldDisabledStatus": "Y"
@@ -484,6 +855,11 @@
       "gender": {
         "fieldId": "gender",
         "fieldLabel": "Gender",
+        "fieldLabel_ke": "Jinsia",
+        "fieldLabel_cn": "性别",
+        "fieldLabel_de": "Geschlecht",
+        "fieldLabel_es": "Género",
+        "fieldLabel_fr": "Genre",
         "fieldVisibilityStatus": "N",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -491,13 +867,47 @@
       "pinNumber": {
         "fieldId": "pinNumber",
         "fieldLabel": "PIN Number",
+        "fieldLabel_ke": "Nambari ya PIN",
+        "fieldLabel_cn": "PIN 号码",
+        "fieldLabel_de": "PIN-Nummer",
+        "fieldLabel_es": "Número de PIN",
+        "fieldLabel_fr": "Numéro PI",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "Y",
+        "fieldDisabledStatus": "Y"
+      },
+      "withEffectFrom": {
+        "fieldId": "withEffectFrom",
+        "fieldLabel": "With effect from",
+        "fieldLabel_ke": "Kuanzia Tarehe",
+        "fieldLabel_cn": "生效日期",
+        "fieldLabel_de": "Mit Wirkung vom",
+        "fieldLabel_es": "Con Efecto Desd",
+        "fieldLabel_fr": "En vigueur à partir du",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
-        "fieldDisabledStatus": "Y"
+        "fieldDisabledStatus": "N"
+      },
+      "withEffectTo": {
+        "fieldId": "withEffectTo",
+        "fieldLabel": "With effect to",
+        "fieldLabel_ke": "Hadi Tarehe",
+        "fieldLabel_cn": "截止日期",
+        "fieldLabel_de": "Mit Wirkung bis",
+        "fieldLabel_es": "Con Efecto Hasta",
+        "fieldLabel_fr": "En vigueur jusqu'au",
+        "fieldVisibilityStatus": "Y",
+        "fieldMandatoryStatus": "N",
+        "fieldDisabledStatus": "N"
       },
       "smsNumber": {
         "fieldId": "smsNumber",
         "fieldLabel": "Telephone Number",
+        "fieldLabel_ke": "Namba ya Simu",
+        "fieldLabel_cn": "电话号码",
+        "fieldLabel_de": "Telefonnummer",
+        "fieldLabel_es": "Número de Teléfono",
+        "fieldLabel_fr": "Numéro de téléphone",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -505,6 +915,11 @@
       "email": {
         "fieldId": "email",
         "fieldLabel": "Email address",
+        "fieldLabel_ke": "Anwani ya Barua pepe",
+        "fieldLabel_cn": "电子邮件地址",
+        "fieldLabel_de": "E-Mail-Adresse",
+        "fieldLabel_es": "Dirección de correo electrónico",
+        "fieldLabel_fr": "Adresse e-maill",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -512,6 +927,11 @@
       "channel": {
         "fieldId": "channel",
         "fieldLabel": "Preferred contact channel",
+        "fieldLabel_ke": "Kipengele cha Mawasiliano Kinachopendekezwa",
+        "fieldLabel_cn": "首选联系渠道",
+        "fieldLabel_de": "Bevorzugter Kontaktkanal",
+        "fieldLabel_es": "Canal de contacto preferido",
+        "fieldLabel_fr": "Canal de contact préféré",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -519,6 +939,11 @@
       "websiteURL": {
         "fieldId": "websiteURL",
         "fieldLabel": "Website URL",
+        "fieldLabel_ke": "URL ya Tovuti",
+        "fieldLabel_cn": "网站网址",
+        "fieldLabel_de": "Website-URL",
+        "fieldLabel_es": "URL del sitio web",
+        "fieldLabel_fr": "URL du site Web",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -526,6 +951,11 @@
       "socialMediaURL": {
         "fieldId": "socialMediaURL",
         "fieldLabel": "Preferred social media link",
+        "fieldLabel_ke": "Kiungo cha mitandao ya kijamii kinachopendekezwa",
+        "fieldLabel_cn": "首选社交媒体链接",
+        "fieldLabel_de": "Bevorzugter Social-Media-Link",
+        "fieldLabel_es": "Enlace de redes sociales preferido",
+        "fieldLabel_fr": "Lien vers les réseaux sociaux préférés",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -533,20 +963,35 @@
       "country": {
         "fieldId": "country",
         "fieldLabel": "Country",
+        "fieldLabel_ke": "Nchi",
+        "fieldLabel_cn": "国家",
+        "fieldLabel_de": "Land",
+        "fieldLabel_es": "País",
+        "fieldLabel_fr": "Pays",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
       },
       "county": {
         "fieldId": "county",
-        "fieldLabel": "County",
+        "fieldLabel": "County/State",
+        "fieldLabel_ke": "Kaunti/Mkoa",
+        "fieldLabel_cn": "县/州",
+        "fieldLabel_de": "Bezirk/Bundesland",
+        "fieldLabel_es": "Condado/Estado",
+        "fieldLabel_fr": "Département/État",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
       },
       "town": {
         "fieldId": "town",
-        "fieldLabel": "Town",
+        "fieldLabel": "City/Town",
+        "fieldLabel_ke": "Jiji/Mji",
+        "fieldLabel_cn": "城市/城镇",
+        "fieldLabel_de": "Stadt/Ort",
+        "fieldLabel_es": "Ciudad/Pueblo",
+        "fieldLabel_fr": "Ville",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "Y"
@@ -554,6 +999,11 @@
       "physical_address": {
         "fieldId": "physical_address",
         "fieldLabel": "Physical Address",
+        "fieldLabel_ke": "Anwani ya Makazi",
+        "fieldLabel_cn": "物理地址",
+        "fieldLabel_de": "Physische Adresse",
+        "fieldLabel_es": "Dirección física",
+        "fieldLabel_fr": "Adresse physique",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -561,6 +1011,11 @@
       "box_number": {
         "fieldId": "box_number",
         "fieldLabel": "Postal address",
+        "fieldLabel_ke": "Anwani ya Posta",
+        "fieldLabel_cn": "邮政地址",
+        "fieldLabel_de": "Postadres",
+        "fieldLabel_es": "Dirección Postal",
+        "fieldLabel_fr": "Adresse postale",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -568,6 +1023,11 @@
       "postalCode": {
         "fieldId": "postalCode",
         "fieldLabel": "Postal Code",
+        "fieldLabel_ke": "Anwani ya Posta",
+        "fieldLabel_cn": "邮政编码",
+        "fieldLabel_de": "Postcode",
+        "fieldLabel_es": "Código Postall",
+        "fieldLabel_fr": "Code postal",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -575,6 +1035,11 @@
       "bank": {
         "fieldId": "bank",
         "fieldLabel": "Bank",
+        "fieldLabel_ke": "Benki",
+        "fieldLabel_cn": "银行",
+        "fieldLabel_de": "Bank",
+        "fieldLabel_es": "Banco",
+        "fieldLabel_fr": "Banque",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -582,6 +1047,11 @@
       "branch": {
         "fieldId": "branch",
         "fieldLabel": "Branch",
+        "fieldLabel_ke": "Tawi",
+        "fieldLabel_cn": "分行",
+        "fieldLabel_de": "Filiale",
+        "fieldLabel_es": "Sucursal",
+        "fieldLabel_fr": "Agence",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -589,6 +1059,11 @@
       "account_number": {
         "fieldId": "account_number",
         "fieldLabel": "Account Number",
+        "fieldLabel_ke": "Nambari ya Akaunti",
+        "fieldLabel_cn": "帐号",
+        "fieldLabel_de": "Kontonummer",
+        "fieldLabel_es": "Número de cuenta",
+        "fieldLabel_fr": "Numéro de compte",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -596,6 +1071,11 @@
       "Iban": {
         "fieldId": "Iban",
         "fieldLabel": "International bank account number",
+        "fieldLabel_ke": "IBAN",
+        "fieldLabel_cn": "国际银行账号",
+        "fieldLabel_de": "IBAN",
+        "fieldLabel_es": "IBAN",
+        "fieldLabel_fr": "IBAN",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -603,6 +1083,11 @@
       "swiftCode": {
         "fieldId": "swiftCode",
         "fieldLabel": "Swift Code",
+        "fieldLabel_ke": "Msimbo wa SWIFT",
+        "fieldLabel_cn": "SWIFT代码",
+        "fieldLabel_de": "SWIFT-Code",
+        "fieldLabel_es": "Código SWIFT",
+        "fieldLabel_fr": "Code SWIFT",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
@@ -610,6 +1095,11 @@
       "preferredChannel": {
         "fieldId": "preferredChannel",
         "fieldLabel": "Preferred payment channel",
+        "fieldLabel_ke": "Njia Inayopendelewa",
+        "fieldLabel_cn": "首选渠道",
+        "fieldLabel_de": "Bevorzugter Kanal",
+        "fieldLabel_es": "Canal preferido",
+        "fieldLabel_fr": "Canal préféré",
         "fieldVisibilityStatus": "Y",
         "fieldMandatoryStatus": "N",
         "fieldDisabledStatus": "N"
