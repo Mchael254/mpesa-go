@@ -3,27 +3,27 @@ import {BehaviorSubject, Observable, ReplaySubject, throwError} from 'rxjs';
 import {concatMap, distinctUntilChanged, take} from 'rxjs/operators';
 import {untilDestroyed} from './until-destroyed';
 import {BrowserStorage} from "./storage";
-import { AccountContact } from '../data/account-contact';
-import { ClientAccountContact } from '../data/client-account-contact';
-import { WebAdmin } from '../data/web-admin';
-import { JwtService } from './jwt/jwt.service';
-import { AppConfigService } from '../../core/config/app-config-service';
-import { Router } from '@angular/router';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Message } from 'primeng/api';
-import { UserCredential, AuthenticationResponse } from 'src/app/features/base/util';
+import {AccountContact} from '../data/account-contact';
+import {ClientAccountContact} from '../data/client-account-contact';
+import {WebAdmin} from '../data/web-admin';
+import {JwtService} from './jwt/jwt.service';
+import {AppConfigService} from '../../core/config/app-config-service';
+import {Router} from '@angular/router';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {Message} from 'primeng/api';
+import {UserCredential, AuthenticationResponse} from 'src/app/features/base/util';
 // import "./http/http.service";
-import { OauthToken } from '../data/auth';
+import {OauthToken} from '../data/auth';
 import {AccountVerifiedResponse} from "../../core/auth/auth-verification";
 import {UserDetailsDTO} from 'src/app/features/administration/data/user-details';
 import {LocalStorageService} from './local-storage/local-storage.service';
 import {Logger} from "./logger/logger.service";
 import {UtilService} from "./util/util.service";
-import { SessionStorageService } from './session-storage/session-storage.service';
+import {SessionStorageService} from './session-storage/session-storage.service';
 import {StringManipulation} from "../../features/lms/util/string_manipulation";
-import { GlobalMessagingService } from './messaging/global-messaging.service';
-import { ApiService } from './api/api.service';
-import { Profile } from '../data/auth/profile';
+import {GlobalMessagingService} from './messaging/global-messaging.service';
+import {ApiService} from './api/api.service';
+import {Profile} from '../data/auth/profile';
 import {SESSION_KEY} from "../../features/lms/util/session_storage_enum";
 
 
@@ -67,7 +67,7 @@ export class AuthService implements OnDestroy {
     });
   }
 
- private _redirectUrl: string;
+  private _redirectUrl: string;
 
   /**
    * Gets the redirect URL from the browser storage
@@ -84,7 +84,7 @@ export class AuthService implements OnDestroy {
   set redirectUrl(value: string) {
     this._redirectUrl = value;
 
-    const url: string = value ||  this.defaultRedirectUrl;
+    const url: string = value || this.defaultRedirectUrl;
     this.browserStorage.storeObj('auth_redirect_uri', url);
   }
 
@@ -108,7 +108,7 @@ export class AuthService implements OnDestroy {
       this.http
         .get<Profile>(
           `/${baseUrl}/administration/users/entity-profile`,
-          { headers: headers },
+          {headers: headers},
         )
         .subscribe(
           (data: Profile) =>
@@ -159,7 +159,7 @@ export class AuthService implements OnDestroy {
       this.destroyUser();
       const baseUrl = this.appConfigService.config.contextPath.auth_services;
       this.http
-        .get(`/${baseUrl}/revoke-token`, { headers: headers })
+        .get(`/${baseUrl}/revoke-token`, {headers: headers})
         .subscribe(
           (_) => {
             this.jwtService.destroyRefreshToken();
@@ -167,8 +167,8 @@ export class AuthService implements OnDestroy {
             if (expiredSession) {
               this.sessionExpiredSubject.next(true);
               this.router.navigate(['/auth'],
-              //   { queryParams: { 'userType': this.browserStorage.getObj('activeUser') } }).then(r => {
-              // }
+                //   { queryParams: { 'userType': this.browserStorage.getObj('activeUser') } }).then(r => {
+                // }
               );
               // location.reload();
             }
@@ -197,11 +197,11 @@ export class AuthService implements OnDestroy {
   attemptRefreshToken() {
     this.isLoadingUserSubject.next(true);
     let headers: HttpHeaders;
-      headers = new HttpHeaders({
-        Accept: 'application/json',
-        entityType: this.session_storage.get(SESSION_KEY.ENTITY_TYPE),
-        'X-TenantId': this.session_storage.get(SESSION_KEY.API_TENANT_ID)
-      });
+    headers = new HttpHeaders({
+      Accept: 'application/json',
+      entityType: this.session_storage.get(SESSION_KEY.ENTITY_TYPE),
+      'X-TenantId': this.session_storage.get(SESSION_KEY.API_TENANT_ID)
+    });
 
     let refresh_token: string = this.jwtService.getRefreshToken();
     // formData.append('grant_type', 'refresh_token');
@@ -256,7 +256,7 @@ export class AuthService implements OnDestroy {
    */
   authenticateUser(
     credentials: UserCredential,
-    AuthenticationResponse?: (data)  =>void,
+    AuthenticationResponse?: (data) => void,
     errorCallback?: (msg: Message) => void,
   ) {
     let headers: HttpHeaders;
@@ -272,7 +272,7 @@ export class AuthService implements OnDestroy {
       if (AuthenticationResponse) {
         AuthenticationResponse(data);
       }
-    },(errMsg) => {
+    }, (errMsg) => {
       log.info(`authenticateUser Error Message: ${errMsg}`);
 
       const _msg = <Message>{
@@ -305,36 +305,22 @@ export class AuthService implements OnDestroy {
       Accept: 'application/json',
     });
 
-    this.http.post(`/${baseUrl}/fetch-user-tenants`, JSON.stringify(userCredential),{
+    this.http.post(`/${baseUrl}/fetch-user-tenants`, JSON.stringify(userCredential), {
       headers: headers,
       withCredentials: true
     })
-    .pipe(take(1))
-    .subscribe({
-      next: (data: AuthenticationResponse) => {
-        return AuthenticationResponse(data);
-      },
-      error: (err) => {
-        log.info(`error >>>`, err)
-      }
-    })
+      .pipe(take(1))
+      .subscribe({
+        next: (data: AuthenticationResponse) => {
+          return AuthenticationResponse(data);
+        },
+        error: (err) => {
+          log.info(`error >>>`, err)
+        }
+      })
 
   }
 
-
-  // authenticateUser(authenticationData: UserCredential): Observable<AuthenticationResponse> {
-  //   const headers = new HttpHeaders({
-  //     Accept: 'application/json',
-  //     'Content-Type': 'application/json;charset=utf8',
-  //   });
-  //   console.log('AUTHENTICATION DATA', authenticationData);
-  //   const baseUrl = this.appConfigService.config.contextPath.auth_services;
-  //   return this.http
-  //     .post<AuthenticationResponse>(`/${baseUrl}/authenticate-user`,
-  //       JSON.stringify(authenticationData), {
-  //         headers: headers,
-  //       });
-  // }
 
   /**
    * Generates OTP for user verification
@@ -350,8 +336,8 @@ export class AuthService implements OnDestroy {
     const baseUrl = this.appConfigService.config.contextPath.auth_services;
     return this.http
       .post<boolean>(`/${baseUrl}/generate-otp?username=${username}&channel=${channel}`, {
-          headers: headers,
-        });
+        headers: headers,
+      });
   }
 
   /**
@@ -360,7 +346,7 @@ export class AuthService implements OnDestroy {
    * @param phoneNo {string} The user's phone number
    * @return {Observable<AccountVerifiedResponse>} The response
    */
-  verifyAccount(username:string, phoneNo:string): Observable<AccountVerifiedResponse>{
+  verifyAccount(username: string, phoneNo: string): Observable<AccountVerifiedResponse> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -371,7 +357,7 @@ export class AuthService implements OnDestroy {
       email: username,
       phoneNo: phoneNo
     }
-    return this.http.post<AccountVerifiedResponse>(`/${(baseUrl)}/verify-account`, JSON.stringify(body),{headers:headers})
+    return this.http.post<AccountVerifiedResponse>(`/${(baseUrl)}/verify-account`, JSON.stringify(body), {headers: headers})
   }
 
   /**
@@ -396,10 +382,10 @@ export class AuthService implements OnDestroy {
     //
     // let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
 
-    if(username)
+    if (username)
       url = `/${baseUrl}/verify-reset-otp?username=${username}&otp=${otp}`;
 
-    if(email)
+    if (email)
       url = `/${baseUrl}/verify-reset-otp?email=${email}&otp=${otp}`;
 
     return this.http
@@ -444,7 +430,7 @@ export class AuthService implements OnDestroy {
    */
   getCurrentUser(): Profile {
     let user = StringManipulation.returnNullIfEmpty(this.localStorageService.getItem('loginUserProfile'));
-    if(null === user){
+    if (null === user) {
       this.session_storage.clear();
       this.router.navigate(['/auth']);
     }
@@ -487,7 +473,7 @@ export class AuthService implements OnDestroy {
     const baseUrl = this.appConfigService.config.contextPath.auth_services;
     const userBaseUrl = this.appConfigService.config.contextPath.users_services;
     this.http
-      .post(`/${baseUrl}/login`, JSON.stringify(userCredential),{
+      .post(`/${baseUrl}/login`, JSON.stringify(userCredential), {
         headers: headers,
         withCredentials: true,
       })
@@ -496,7 +482,7 @@ export class AuthService implements OnDestroy {
           // save the token
 
           this.jwtService.saveToken(data);
-          return this.http.get<Profile>(`/${userBaseUrl}/administration/users/entity-profile`, { headers });
+          return this.http.get<Profile>(`/${userBaseUrl}/administration/users/entity-profile`, {headers});
         }),
       )
       .subscribe(
@@ -529,15 +515,15 @@ export class AuthService implements OnDestroy {
   }
 
   gotToDashboard(entityType: string, entityCode?: number, entityIdNo?: string): void {
-    switch(entityType) {
+    switch (entityType) {
       case 'MEMBER':
-        this.router.navigate(['/home/lms/grp/dashboard/dashboard-screen'], { queryParams: { entityCode }});
+        this.router.navigate(['/home/lms/grp/dashboard/dashboard-screen'], {queryParams: {entityCode}});
         break;
       case 'ADMIN':
-        this.router.navigate(['/home/lms/grp/dashboard/admin'], { queryParams: {  }});
+        this.router.navigate(['/home/lms/grp/dashboard/admin'], {queryParams: {}});
         break;
       case 'AGENT':
-        this.router.navigate(['/home/lms/grp/dashboard/agent'], { queryParams: {  }});
+        this.router.navigate(['/home/lms/grp/dashboard/agent'], {queryParams: {}});
         break;
       default:
         this.router
@@ -549,11 +535,11 @@ export class AuthService implements OnDestroy {
 
   /**
    * User Authentication
-  */
- private getAuthVerification(
+   */
+  private getAuthVerification(
     userCredential: UserCredential,
     headers: HttpHeaders,
-    AuthenticationResponse?: (data)  =>void,
+    AuthenticationResponse?: (data) => void,
     errorCallback?: (errMsg) => void,
   ) {
     const baseUrl = this.appConfigService.config.contextPath.auth_services;
@@ -579,6 +565,7 @@ export class AuthService implements OnDestroy {
         },
       );
   }
+
   /**
    * Destroy the user logged in
    */
@@ -598,6 +585,7 @@ export class AuthService implements OnDestroy {
   /**
    * VALIDATE ACCOUNT EXISTS
    */
+
   /*getAccountVerification(emailAddress: string): Observable<AccountVerification[]> {
     const baseUrl = this.appConfigService.config.context_path.uaa;
     const headers = new HttpHeaders({
@@ -629,7 +617,7 @@ export class AuthService implements OnDestroy {
    * @param email {string} The user's email
    * @return {Observable<boolean>} The response
    */
-  resetPassword(username: string, newPassword: string, validateOldPassword: string, email: string = null){
+  resetPassword(username: string, newPassword: string, validateOldPassword: string, email: string = null) {
     const baseUrl = this.appConfigService.config.contextPath.auth_services;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -642,7 +630,7 @@ export class AuthService implements OnDestroy {
       newPassword: newPassword,
       validateOldPassword: validateOldPassword
     }
-    return this.http.post<boolean>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers:headers});
+    return this.http.post<boolean>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers: headers});
   }
 
   /**
@@ -652,7 +640,7 @@ export class AuthService implements OnDestroy {
    * @param newPassword
    * @param confirmPassword
    */
-  changePassword(username: string, validateOldPassword: string, newPassword: string, confirmPassword: string){
+  changePassword(username: string, validateOldPassword: string, newPassword: string, confirmPassword: string) {
     const baseUrl = this.appConfigService.config.contextPath.auth_services;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -664,7 +652,7 @@ export class AuthService implements OnDestroy {
       username: username,
       validateOldPassword: validateOldPassword
     }
-    return this.http.post<string>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers:headers});
+    return this.http.post<string>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers: headers});
   }
 
   /**
@@ -672,13 +660,13 @@ export class AuthService implements OnDestroy {
    * @param userData {UserDetailsDTO} The user's profile data
    * @return {Observable<string>} The response
    */
-  updateUserProfile(userData:UserDetailsDTO){
+  updateUserProfile(userData: UserDetailsDTO) {
     const baseUrl = this.appConfigService.config.contextPath.users_services;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     });
-    return this.http.post<string>(`/${(baseUrl)}/administration/users/entity-profile`, JSON.stringify(userData), {headers:headers});
+    return this.http.post<string>(`/${(baseUrl)}/administration/users/entity-profile`, JSON.stringify(userData), {headers: headers});
   }
 
   /**
@@ -689,9 +677,9 @@ export class AuthService implements OnDestroy {
    * @private
    */
   private refreshAuthToken(
-      refresh_token: string,
-      headers: HttpHeaders,
-      errorCallback?: (errMsg) => void,
+    refresh_token: string,
+    headers: HttpHeaders,
+    errorCallback?: (errMsg) => void,
   ) {
     const baseUrl = this.appConfigService.config.contextPath.auth_services;
     const userBaseUrl = this.appConfigService.config.contextPath.users_services;
@@ -700,39 +688,46 @@ export class AuthService implements OnDestroy {
     };
 
     this.http
-        .post(`/${baseUrl}/refresh`, refreshToken, {
-          headers: headers,
-          withCredentials: true,
-        })
-        .pipe(
-            concatMap((data: OauthToken) => {
-              // save the token
-              this.jwtService.saveToken(data);
-              return this.http.get<Profile>(`/${userBaseUrl}/administration/users/entity-profile`, { headers });
-            }),
-        )
-        .subscribe(
-            (data: Profile) => {
-              this.setAuth(data);
+      .post(`/${baseUrl}/refresh`, refreshToken, {
+        headers: headers,
+        withCredentials: true,
+      })
+      .pipe(
+        concatMap((data: OauthToken) => {
+          // save the token
+          this.jwtService.saveToken(data);
+          return this.http.get<Profile>(`/${userBaseUrl}/administration/users/entity-profile`, {headers});
+        }),
+      )
+      .subscribe(
+        (data: Profile) => {
+          this.setAuth(data);
 
-              this.router
-                  .navigateByUrl(this.redirectUrl || this.defaultRedirectUrl)
-                  .then((_) => (this.redirectUrl = this.defaultRedirectUrl))
-                  .catch((error) => log.error(error));
-            },
-            (error) => {
-              this.destroyUser();
-              log.debug('Login error response:', error)
+          this.router
+            .navigateByUrl(this.redirectUrl || this.defaultRedirectUrl)
+            .then((_) => (this.redirectUrl = this.defaultRedirectUrl))
+            .catch((error) => log.error(error));
+        },
+        (error) => {
+          this.destroyUser();
+          log.debug('Login error response:', error)
 
-              if (errorCallback && error instanceof HttpErrorResponse) {
-                errorCallback(
-                    error.error['error_description'] || error.error['message'],
-                );
-              } else {
-                errorCallback(error);
-              }
-            },
-        );
+          if (errorCallback && error instanceof HttpErrorResponse) {
+            errorCallback(
+              error.error['error_description'] || error.error['message'],
+            );
+          } else {
+            errorCallback(error);
+          }
+        },
+      );
+  }
+
+
+  getUserAssignedRoles() {
+    const roles = JSON.parse(sessionStorage.getItem('account_roles') || '[]');
+    log.error("Current user Roles", roles);
+
   }
 
 }

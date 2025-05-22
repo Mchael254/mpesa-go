@@ -1,38 +1,36 @@
-
-.body-container{
-    /* width: 1216px;
+.body-container {
+  /* width: 1216px;
     height: 532px;
     margin: 32px 32px 422px; */
-    padding: 40px 0 96px;
-    border-radius: 5px;
-    background-color: #fff;
+  padding: 40px 0 96px;
+  border-radius: 5px;
+  background-color: #fff;
 }
 
-.main{
+.main {
   margin-left: 10px;
 }
 .Receipt-management {
-    width: 191px;
-    height: 20px;
-    /* margin: 0 983px 44px 0px; */
-    margin: 0px 0px 20px 0px;
-    font-family: Roboto;
- 
-    font-size: 20px;
-    font-weight: 500;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 0.99;
-    letter-spacing: normal;
-    text-align: left;
-    color: #00529b !important;
-  
-  }
-  
+  width: 191px;
+  height: 20px;
+  /* margin: 0 983px 44px 0px; */
+  margin: 0px 0px 20px 0px;
+  font-family: Roboto;
+
+  font-size: 20px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 0.99;
+  letter-spacing: normal;
+  text-align: left;
+  color: #00529b !important;
+}
+
 /* Styles for the Receipt management buttons */
 .receipt-buttons .btn-link {
   text-decoration: none;
-  color: #00529b ; /* Default color for unselected tabs */
+  color: #00529b; /* Default color for unselected tabs */
   margin-left: 0; /* Remove default button margin */
   padding-left: 0; /* Remove default button padding */
   font-family: Roboto; /* Ensure font matches design */
@@ -44,7 +42,7 @@
   text-decoration: underline;
   color: #00529b; /* Color for the selected tab */
 }
-.inactive{
+.inactive {
   color: #000 !important;
 }
 /* General styles for other .btn-link buttons (if needed) */
@@ -58,120 +56,97 @@
   cursor: pointer; /* Ensure pointer cursor for buttons */
 }
 
-.cancelbtn{
-  color:#00529b  !important;
-   
+.cancelbtn {
+  color: #00529b !important;
 }
-.printbtn{
-  color:#00529b  !important;
+.printbtn {
+  color: #00529b !important;
 }
-.sharebtn{
-  color:#00529b  !important;
+.sharebtn {
+  color: #00529b !important;
 }
 .btn-link:hover {
   text-decoration: underline; /* Add underline on hover if needed */
   color: #00529b; /* Ensure color remains consistent on hover */
 }
-  .underline {
-    display: flex;
-    margin-left: 0; /* Ensure no extra margin */
-    padding-left: 0; /* Ensure no extra padding */
+.underline {
+  display: flex;
+  margin-left: 0; /* Ensure no extra margin */
+  padding-left: 0; /* Ensure no extra padding */
 }
-  .Printing {
-   width: 57px;
-   margin: 0 56px 2px 42px;
- color: #000;
-  }
-  .Cancellation {
-    width: 90px;
-    margin: 0 971px 2px 56px;
-    color: #00529b;
-  }
-  .table-row{
-    width: 1071px;
-    margin-top: 20px;
-    
-  }
-  
-  .d-flex{
-    gap:56px;
-  }
-  .btns{
-    gap:22px !important;
-   
-  }
-  .btn-link {
-    text-decoration: underline;
-    color: #007bff; /* Bootstrap's default link color */
-  }
-  .even-row {
-    background-color: #f9f9f9;
-  }
-  .odd-row {
-    background-color: #ffffff;
-  }
-  .header-bg {
-    background-color:#bad0e4;
-    white-space: nowrap;
-  }
-  .Line-195 {
-    width: 1216px;
-    height: 2px;
-    flex-grow: 0;
-   
-    
-    background-color: rgba(0, 0, 0, 0.3);
-  }
+.Printing {
+  width: 57px;
+  margin: 0 56px 2px 42px;
+  color: #000;
+}
+.Cancellation {
+  width: 90px;
+  margin: 0 971px 2px 56px;
+  color: #00529b;
+}
 
-  .shaded-Table-row {
-    width: 1104px;
-    height: 40px;
-    flex-grow: 0;
-    padding: 10px 247px 11px 32px;
-    background-color: #bad0e4;
-  }
-  .Receipt-cancellation {
-    width: 144px;
-    height: 19px;
-    margin: 4px 202px 20px 0;
-    font-family: Roboto;
-  color:#00529b  !important;
-   
-   
-  }
-  
-  .Receipt-cancellation,.Raise-bank-charge {
-    font-size: 16px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    font-family: Roboto;
-    text-align: left;
-    color: #000;
-    
-    
-    
-  }
-  .Raise-bank-charge {
-    width: 131px;
+.d-flex {
+  gap: 56px;
+}
+.btns {
+  gap: 22px !important;
+}
+.btn-link {
+  text-decoration: underline;
+  color: #007bff; /* Bootstrap's default link color */
+}
+.even-row {
+  background-color: #f9f9f9;
+}
+.odd-row {
+  background-color: #ffffff;
+}
+.header-bg {
+  background-color: #bad0e4;
+  white-space: nowrap;
+}
+.Line-195 {
+  width: 1216px;
+  height: 2px;
+  flex-grow: 0;
+
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.shaded-Table-row {
+  width: 1104px;
+  height: 40px;
+  flex-grow: 0;
+  padding: 10px 247px 11px 32px;
+  background-color: #bad0e4;
+}
+
+.Receipt-cancellation,
+.Raise-bank-charge {
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  font-family: Roboto;
+  text-align: left;
+  color: #000;
+}
+.Raise-bank-charge {
+  width: 131px;
   height: 19px;
   flex-grow: 0;
   margin: 15px 21px 9.8px 0px;
- 
- 
-  }
+}
 /* Make sure dropdown text is visible */
-select.form-select, select.form-select option {
+select.form-select,
+select.form-select option {
   color: #000 !important; /* Or your preferred text color */
 }
- .customcss{
+.customcss {
   margin: 0px 0px 10px 0px;
-  
-
- }
- .clientcss{
+}
+.clientcss {
   margin-bottom: 10px;
-
- }
+}

@@ -25,7 +25,7 @@
       <div class="Line-195"></div>
 
       <!-- Cancellation Table -->
-      <div class="row table-row" *ngIf="cancellationDeactivated">
+      <div class="row mt-3" *ngIf="cancellationDeactivated">
         <div class="col-md-10">
           <p-table
             responsiveLayout="scroll"
@@ -43,6 +43,26 @@
               <tr>
                 <th class="header-bg">
                   {{ "fms.receipt-management.receiptNumber" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipt-management.receiptDate" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipt-management.receivedFrom" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipt-management.amount" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipt-management.paymentMethod" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipting.actions" | translate }}
+                </th>
+              </tr>
+              <!-- Filter Inputs Row -->
+              <tr>
+                <th>
                   <input
                     type="text"
                     class="form-control form-control-sm"
@@ -52,8 +72,7 @@
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
-                <th class="header-bg">
-                  {{ "fms.receipt-management.receiptDate" | translate }}
+                <th>
                   <input
                     type="text"
                     class="form-control form-control-sm"
@@ -63,8 +82,7 @@
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
-                <th class="header-bg">
-                  {{ "fms.receipt-management.receivedFrom" | translate }}
+                <th>
                   <input
                     type="text"
                     class="form-control form-control-sm"
@@ -74,8 +92,7 @@
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
-                <th class="header-bg">
-                  {{ "fms.receipt-management.amount" | translate }}
+                <th>
                   <input
                     type="number"
                     class="form-control form-control-sm"
@@ -85,8 +102,7 @@
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
-                <th class="header-bg">
-                  {{ "fms.receipt-management.paymentMethod" | translate }}
+                <th>
                   <input
                     type="text"
                     class="form-control form-control-sm"
@@ -96,19 +112,18 @@
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
-                <!-- {{ "fms.receipting.actions" | translate }}
-               
-              <input
-              type="text"
-              class="form-control form-control-sm"
-              style="width: 90px"
-              disabled
-            /> -->
-                <th class="header-bg">
-                  <!-- <button class="btn btn-primary-outline">clear filters</button> -->
+                <th>
+                  <button
+                    class="btn btn-outline-primary btn-sm"
+                    (click)="clearFilters()"
+                  >
+                    clear filters
+                  </button>
+                  <!-- Optional clear button or placeholder -->
                 </th>
               </tr>
             </ng-template>
+
             <ng-template pTemplate="body" let-receipt let-i="rowIndex">
               <tr
                 [ngClass]="{ 'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0 }"
@@ -147,6 +162,11 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
+              <!-- <div class="text"> -->
+              <h5 class="text-start">
+                {{ "fms.receipt-management.receiptCancellation" | translate }}
+              </h5>
+              <!-- </div> -->
               <!-- <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5> -->
               <button
                 type="button"
@@ -156,12 +176,6 @@
               ></button>
             </div>
             <div class="modal-body">
-              <div class="text">
-                <h5 class="Receipt-cancellation">
-                  {{ "fms.receipt-management.receiptCancellation" | translate }}
-                </h5>
-              </div>
-
               <div class="row mystyles">
                 <div class="col">
                   <label for="cancelDate" style="color: #000">{{
@@ -230,7 +244,7 @@
                   </div>
 
                   <!-- Show this row only when 'yes' is selected -->
-                  <div class="row" *ngIf="raiseBankCharge === 'Y'">
+                  <div class="row mt-3" *ngIf="raiseBankCharge === 'Y'">
                     <div class="col">
                       <label for="accountCharged" style="color: #000">{{
                         "fms.receipt-management.accountCharged" | translate
@@ -319,7 +333,7 @@
       </div>
       <!-- END OF RECEIPT CANCELLATION MODAL -->
       <!-- start of printing table data -->
-      <div class="row table-row" *ngIf="printingEnabled">
+      <div class="row mt-3" *ngIf="printingEnabled">
         <div class="col-md-10">
           <p-table
             responsiveLayout="scroll"
@@ -337,6 +351,26 @@
               <tr>
                 <th class="header-bg">
                   {{ "fms.receipt-management.receiptNumber" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipt-management.receiptDate" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipt-management.receivedFrom" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipt-management.amount" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipt-management.paymentMethod" | translate }}
+                </th>
+                <th class="header-bg">
+                  {{ "fms.receipting.actions" | translate }}
+                </th>
+              </tr>
+              <!-- Filter Inputs Row -->
+              <tr>
+                <th>
                   <input
                     type="text"
                     class="form-control form-control-sm"
@@ -346,8 +380,7 @@
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
-                <th class="header-bg">
-                  {{ "fms.receipt-management.receiptDate" | translate }}
+                <th>
                   <input
                     type="text"
                     class="form-control form-control-sm"
@@ -357,8 +390,7 @@
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
-                <th class="header-bg">
-                  {{ "fms.receipt-management.receivedFrom" | translate }}
+                <th>
                   <input
                     type="text"
                     class="form-control form-control-sm"
@@ -368,8 +400,7 @@
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
-                <th class="header-bg">
-                  {{ "fms.receipt-management.amount" | translate }}
+                <th>
                   <input
                     type="number"
                     class="form-control form-control-sm"
@@ -379,8 +410,7 @@
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
-                <th class="header-bg">
-                  {{ "fms.receipt-management.paymentMethod" | translate }}
+                <th>
                   <input
                     type="text"
                     class="form-control form-control-sm"
@@ -390,14 +420,13 @@
                     placeholder="{{ 'fms.receipting.filter' | translate }}"
                   />
                 </th>
-                <th class="header-bg">
-                  <!-- {{ "fms.receipting.actions" | translate }}
-                  <input
-                    type="text"
-                    class="form-control form-control-sm"
-                    style="width: 90px"
-                    disabled
-                  /> -->
+                <th>
+                  <button
+                    class="btn btn-outline-primary btn-sm"
+                    (click)="clearFilter()"
+                  >
+                    clear filters
+                  </button>
                 </th>
               </tr>
             </ng-template>
