@@ -17,10 +17,10 @@ export interface PremiumComputationRequest {
 }
 export interface Product {
   code: number;
+  description: string
   expiryPeriod: string;
   withEffectFrom: string;
   withEffectTo: string;
-  taxes: Tax[];
   risks: Risk[];
 }
 export interface Tax {
@@ -32,6 +32,7 @@ export interface Tax {
   taxRateType: string;
 }
 export interface Risk {
+  taxes: Tax[];
   withEffectFrom: string;
   withEffectTo: string;
   prorata: string;

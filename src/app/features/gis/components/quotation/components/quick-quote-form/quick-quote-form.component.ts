@@ -501,6 +501,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         .subscribe(([subclasses, riskFields, coverTo]) => {
           const productGroup = this.fb.group({
             code: [addedProduct.code],
+            expiry: [addedProduct?.expires],
             effectiveTo: coverTo._embedded[0].coverToDate,
             description: [addedProduct.description],
             risks: this.fb.array([])
@@ -541,20 +542,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  /*  loadProductRiskFields() {
-      const observables = this.selectedProducts.map((product, index) =>
-        this.getRiskFieldsForProduct(product.code).pipe(
-          map((fields: DynamicRiskField[]) => ({index, fields}))
-        )
-      );
-
-      forkJoin(observables).subscribe(results => {
-        results.forEach(({index, fields}) => {
-          this.productRiskFields[index] = fields;
-        });
-      });
-    }*/
-
 
   // Remove a risk row
   deleteRisk(productIndex: number, riskIndex: number) {
@@ -585,16 +572,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.markAllFieldsAsTouched(this.quickQuoteForm);
       return;
     }
-
     log.debug("Form submission payload >>>>", this.quickQuoteForm.value);
-
     const computationRequest = this.computationPayload();
     log.debug("premium computation payload >>>>", computationRequest);
-    return
+    //  return
     this.quotationService.premiumComputationEngine(computationRequest).pipe(
       untilDestroyed(this)
     ).subscribe(response => {
-      // Handle response
+      log.debug("Computation response >>>>", response)
     });
   }
 
@@ -606,6 +591,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   computationPayload(): PremiumComputationRequest {
     const formValues = this.quickQuoteForm.getRawValue();
+    const withEffectFrom = new Date(formValues.effectiveDate);
     return {
       transactionStatus: "NB",
       quotationStatus: "Draft",
@@ -615,59 +601,70 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       coinsurancePercentage: null,
       coinsuranceLeader: null,
       age: null,
-      underwritingYear: 2025,
+      underwritingYear: withEffectFrom.getFullYear(),
       dateWithEffectTo: new Date().toString(),
-      dateWithEffectFrom: new Date().toString(),
-      products: this.getProductPayload(formValues.products),
-      currency: null
+      dateWithEffectFrom: withEffectFrom.toString(),
+      products: this.getProductPayload(formValues),
+      currency: {
+        rate: this.exchangeRate
+      }
     }
   }
 
-  getProductPayload(products: any): Product[] {
+  getProductPayload(formValues: any): Product[] {
     let productPayload: Product[] = []
-    for (let product of products) {
+    for (let product of formValues.products) {
       productPayload.push({
         code: product.code,
+        description: product.description,
         expiryPeriod: product.expiry,
-        withEffectFrom: product.withEffectFrom,
-        withEffectTo: product.withEffectFrom,
-        taxes: null,
-        risks: this.getRiskPayload(product.risks)
+        withEffectFrom: new Date(formValues.effectiveDate).toString(),
+        withEffectTo: new Date(product.effectiveTo).toString(),
+        risks: this.getRiskPayload(product, formValues.effectiveDate)
       })
     }
     return productPayload
   }
 
-  getRiskPayload(risks): Risk[] {
+  getRiskPayload(product: any, effectiveDate): Risk[] {
     let riskPayload: Risk[] = []
-    for (let risk of risks) {
+    for (let risk of product.risks) {
       riskPayload.push({
-        withEffectFrom: risk.withEffectFrom,
-        withEffectTo: risk.withEffectFrom,
-        prorata: risk.withEffectTo,
+        withEffectFrom: effectiveDate.toString(),
+        withEffectTo: new Date(product.effectiveTo).toString(),
+        prorata: "F",
         subclassSection: {
           code: risk?.useOfProperty?.code
         },
+        taxes: risk.applicableTaxes.map((tax) => {
+          return {
+            taxRate: tax.taxRate,
+            code: tax.code,
+            taxCode: tax.taxCode,
+            divisionFactor: tax.divisionFactor,
+            applicationLevel: tax.applicationLevel,
+            taxRateType: tax.taxRateType
+          }
+        }),
         itemDescription: risk.description,
-        noClaimDiscountLevel: null,
-        enforceCovertypeMinimumPremium: null,
+        noClaimDiscountLevel: 0,
+        enforceCovertypeMinimumPremium: "N",
         binderDto: {
           code: risk?.applicableBinder?.code,
           currencyCode: risk?.applicableBinder?.currency_code,
-          maxExposure: null,
-          currencyRate: null
+          maxExposure: risk?.applicableBinder?.maximum_exposure,
+          currencyRate: this.exchangeRate
         },
-        subclassCoverTypeDto: this.getCoverTypePayload(risk.applicableCoverTypes)
+        subclassCoverTypeDto: this.getCoverTypePayload(risk)
       })
     }
     return riskPayload;
   }
 
 
-
-  getCoverTypePayload(riskapplicableCoverTypes): CoverType[]{
+  getCoverTypePayload(risk): CoverType[] {
     let coverTypes: CoverType[] = []
-    for(let coverType of riskapplicableCoverTypes){
+    for (let coverType of risk.applicableCoverTypes) {
       coverTypes.push({
         subclassCode: coverType?.subClassCode,
         coverTypeCode: coverType?.coverTypeCode,
@@ -675,38 +672,39 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         minimumPremium: coverType?.minimumPremium,
         coverTypeShortDescription: coverType?.coverTypeShortDescription,
         coverTypeDescription: coverType?.description,
-        limits: this.getLimitsPayload(coverType.applicableRates)
+        limits: this.getLimitsPayload(coverType.applicableRates, risk)
       })
     }
-     return coverTypes;
+    return coverTypes;
   }
 
-  getLimitsPayload(applicableLimits: any): Limit[]{
+  getLimitsPayload(applicableLimits: any, risk: any): Limit[] {
+    log.debug("Processing risk >>.", risk)
     let limitsPayload: Limit[] = []
-    for(let limit of applicableLimits){
+    for (let limit of applicableLimits) {
       limitsPayload.push({
-        calculationGroup: null,
-        declarationSection: null,
-        rowNumber:null,
+        calculationGroup: 1,
+        declarationSection: "N",
+        rowNumber: 1,
         rateDivisionFactor: limit?.divisionFactor,
         premiumRate: limit?.rate,
         rateType: limit?.rateType,
-        minimumPremium: null,
-        annualPremium: null,
+        minimumPremium: limit.premiumMinimumAmount,
+        annualPremium: 0,
         multiplierRate: limit?.multiplierRate,
-        section:{
-          limitAmount:null,
+        section: {
+          limitAmount: risk?.selfDeclaredValue || risk?.value,
           description: limit?.sectionDescription,
           code: limit?.sectionCode,
-          isMandatory: null
+          isMandatory: "Y"
         },
         sectionType: limit?.sectionType,
         multiplierDivisionFactor: limit?.multiplierDivisionFactor,
         riskCode: null,
-        limitAmount: null,
+        limitAmount: risk?.selfDeclaredValue || risk?.value,
         description: limit?.sectionDescription,
         compute: "Y",
-        dualBasis: null,
+        dualBasis: "N",
       })
     }
     return limitsPayload
@@ -1121,52 +1119,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     return Object.keys(validatorFns || {});
   }
 
-  /**
-   * Validates a car registration number using a dynamic regex pattern.
-   * - Logs the entered value and dynamic regex pattern.
-   * - Tests the car registration number against the regex pattern.
-   * - Updates 'carRegNoHasError' based on the test result.
-   * @method validateCarRegNo
-   * @return {void}
-   */
-//  validateCarRegNo(productIndex: number, riskIndex: number) {
-//   const control = this.quickQuoteForm.get(['products', productIndex, 'risks', riskIndex, 'carRegNo']) as FormControl;
-
-
-//     control.removeValidators([this.uniqueValidator]);
-//     const value = control.value;
-//     log.debug("Keyed In value>>>", value);
-
-//     if (!control || this.quickQuoteForm?.get('carRegNo')?.hasError('pattern') || !value) return;
-//     this.quotationService.validateRiskExistence({
-//       propertyId: value,
-//       subClassCode: this.selectedSubclassCode,
-//       withEffectFrom: this.formatDate(this.selectedEffectiveDate),
-//       withEffectTo: this.selectedCoverToDate,
-//       addOrEdit: 'A'
-//     }).pipe(
-//       debounceTime(500),
-//       distinctUntilChanged(),
-//       untilDestroyed(this)
-//     ).subscribe((response) => {
-//       const canProceed = response?._embedded?.duplicateAllowed
-//       log.debug("Risk allowed>>>", canProceed)
-//       if (this.existingPropertyIds) {
-//         log.debug('Doing validation of ', value, this.existingPropertyIds);
-//         const isDuplicate = this.existingPropertyIds.some(
-//           (existingValue) =>
-//             existingValue.replace(/\s+/g, '').toUpperCase() === value.replace(/\s+/g, '').toUpperCase()
-//         );
-//         log.debug("Existing risk>>>", isDuplicate)
-//         if (isDuplicate || !canProceed) {
-//           control.addValidators([this.uniqueValidator]);
-//         } else {
-//           control.removeValidators([this.uniqueValidator]);
-//         }
-//         control.updateValueAndValidity({ emitEvent: false });
-//       }
-//     })
-//   }
   validateCarRegNo(productIndex: number, riskIndex: number) {
     const control = this.quickQuoteForm.get(['products', productIndex, 'risks', riskIndex, 'carRegNo']) as FormControl;
     log.debug("Keyed In value>>>", control);
@@ -1369,115 +1321,116 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     }
     return risks
   }*/
-/*
 
-  setLimitPremiumDto(coverTypeCode: number): Limit[] {
-    log.debug("Current form structure:", this.quickQuoteForm.controls);
+  /*
 
-    const value = this.quickQuoteForm.get('value')?.value;
-    log.debug("Value", value)
-    const sumInsured = this.quickQuoteForm.get('selfDeclaredValue')?.value;
-    log.debug('SUM INSURED', sumInsured);
+    setLimitPremiumDto(coverTypeCode: number): Limit[] {
+      log.debug("Current form structure:", this.quickQuoteForm.controls);
 
-    const finalValue = value ?? sumInsured;
-    log.debug('Final Value', finalValue);
-    sessionStorage.setItem('sumInsuredValue', finalValue);
+      const value = this.quickQuoteForm.get('value')?.value;
+      log.debug("Value", value)
+      const sumInsured = this.quickQuoteForm.get('selfDeclaredValue')?.value;
+      log.debug('SUM INSURED', sumInsured);
 
-    const coverTypeSections = this.mandatorySections.filter(
-      (value) => value.coverTypeCode === coverTypeCode
-    );
-    log.debug(
-      'Mandatory Sections for covertype',
-      coverTypeCode,
-      coverTypeSections
-    );
-    log.debug('Found cover type sections ', coverTypeSections);
-    log.debug('Premium rates ', this.allPremiumRate);
-    let response: Limit[] = coverTypeSections
-      .map((it) =>
-        this.allPremiumRate
-          .filter((rate) => {
-            log.debug(
-              'In limit: ' + rate.sectionCode + ' vs ' + it.sectionCode
-            );
-            return rate.sectionCode == it.sectionCode;
-          })
-          .map((rate) => {
-            return {
-              calculationGroup: 1,
-              declarationSection: 'N',
-              rowNumber: 1,
-              rateDivisionFactor: rate.divisionFactor,
-              premiumRate: rate.rate,
-              rateType: rate.rateType,
-              minimumPremium: rate.premiumMinimumAmount,
-              annualPremium: 0,
-              multiplierDivisionFactor: 1,
-              multiplierRate: rate.multiplierRate,
-              description: rate.sectionShortDescription,
-              section: {
-                code: it.sectionCode,
-              },
-              sectionType: rate.sectionType,
-              riskCode: null,
-              limitAmount: sumInsured || value,
-              compute: 'Y',
-              dualBasis: 'N',
-            };
-          })
-      )
-      .flatMap((item) => item);
-    log.debug('Added Limit', this.additionalLimit);
+      const finalValue = value ?? sumInsured;
+      log.debug('Final Value', finalValue);
+      sessionStorage.setItem('sumInsuredValue', finalValue);
 
-    if (this.additionalLimit.length > 0) {
-      log.debug('Added Limit', this.additionalLimit);
-      // Adjust the existing response to include the additional risk
-      this.additionalLimit.forEach((item) => coverTypeSections.push(item));
-      log.debug('section for CoverType:', coverTypeSections);
-      response = response.concat(
-        coverTypeSections
-          .map((it) =>
-            this.allPremiumRate
-              .filter((rate) => {
-                log.debug(
-                  'In limit: ' + rate.sectionCode + ' vs ' + it.sectionCode
-                );
-                return rate.sectionCode == it.sectionCode;
-              })
-              .map((rate) => {
-                return {
-                  calculationGroup: 2, // Adjust the calculationGroup for the additional risk
-                  declarationSection: 'N',
-                  rowNumber: 1,
-                  rateDivisionFactor: rate.divisionFactor,
-                  premiumRate: rate.rate,
-                  rateType: rate.rateType,
-                  minimumPremium: rate.premiumMinimumAmount,
-                  annualPremium: 0,
-                  multiplierDivisionFactor: 1,
-                  multiplierRate: rate.multiplierRate,
-                  description: rate.sectionShortDescription,
-                  section: {
-                    code: it.sectionCode,
-                  },
-                  sectionType: rate.sectionType,
-                  riskCode: null,
-                  limitAmount: sumInsured || value,
-                  compute: 'Y',
-                  dualBasis: 'N',
-                };
-              })
-          )
-          .flatMap((item) => item)
+      const coverTypeSections = this.mandatorySections.filter(
+        (value) => value.coverTypeCode === coverTypeCode
       );
-    }
+      log.debug(
+        'Mandatory Sections for covertype',
+        coverTypeCode,
+        coverTypeSections
+      );
+      log.debug('Found cover type sections ', coverTypeSections);
+      log.debug('Premium rates ', this.allPremiumRate);
+      let response: Limit[] = coverTypeSections
+        .map((it) =>
+          this.allPremiumRate
+            .filter((rate) => {
+              log.debug(
+                'In limit: ' + rate.sectionCode + ' vs ' + it.sectionCode
+              );
+              return rate.sectionCode == it.sectionCode;
+            })
+            .map((rate) => {
+              return {
+                calculationGroup: 1,
+                declarationSection: 'N',
+                rowNumber: 1,
+                rateDivisionFactor: rate.divisionFactor,
+                premiumRate: rate.rate,
+                rateType: rate.rateType,
+                minimumPremium: rate.premiumMinimumAmount,
+                annualPremium: 0,
+                multiplierDivisionFactor: 1,
+                multiplierRate: rate.multiplierRate,
+                description: rate.sectionShortDescription,
+                section: {
+                  code: it.sectionCode,
+                },
+                sectionType: rate.sectionType,
+                riskCode: null,
+                limitAmount: sumInsured || value,
+                compute: 'Y',
+                dualBasis: 'N',
+              };
+            })
+        )
+        .flatMap((item) => item);
+      log.debug('Added Limit', this.additionalLimit);
 
-    log.debug('Covertype', coverTypeCode);
-    log.debug('Section items', coverTypeSections);
-    log.debug('limit items', response);
-    return response;
-  }
-*/
+      if (this.additionalLimit.length > 0) {
+        log.debug('Added Limit', this.additionalLimit);
+        // Adjust the existing response to include the additional risk
+        this.additionalLimit.forEach((item) => coverTypeSections.push(item));
+        log.debug('section for CoverType:', coverTypeSections);
+        response = response.concat(
+          coverTypeSections
+            .map((it) =>
+              this.allPremiumRate
+                .filter((rate) => {
+                  log.debug(
+                    'In limit: ' + rate.sectionCode + ' vs ' + it.sectionCode
+                  );
+                  return rate.sectionCode == it.sectionCode;
+                })
+                .map((rate) => {
+                  return {
+                    calculationGroup: 2, // Adjust the calculationGroup for the additional risk
+                    declarationSection: 'N',
+                    rowNumber: 1,
+                    rateDivisionFactor: rate.divisionFactor,
+                    premiumRate: rate.rate,
+                    rateType: rate.rateType,
+                    minimumPremium: rate.premiumMinimumAmount,
+                    annualPremium: 0,
+                    multiplierDivisionFactor: 1,
+                    multiplierRate: rate.multiplierRate,
+                    description: rate.sectionShortDescription,
+                    section: {
+                      code: it.sectionCode,
+                    },
+                    sectionType: rate.sectionType,
+                    riskCode: null,
+                    limitAmount: sumInsured || value,
+                    compute: 'Y',
+                    dualBasis: 'N',
+                  };
+                })
+            )
+            .flatMap((item) => item)
+        );
+      }
+
+      log.debug('Covertype', coverTypeCode);
+      log.debug('Section items', coverTypeSections);
+      log.debug('limit items', response);
+      return response;
+    }
+  */
 
   fetchComputationData(productCode: number, subClassCode: number, riskIndex: number, productIndex: number
   ) {
