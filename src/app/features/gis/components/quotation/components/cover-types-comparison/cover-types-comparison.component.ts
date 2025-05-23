@@ -1,30 +1,32 @@
-import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import stepData from '../../data/steps.json'
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../../../../../../shared/services/auth.service';
-import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
-import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
-import {forkJoin, mergeMap, of, switchMap} from 'rxjs';
+import { forkJoin, mergeMap, of, switchMap } from 'rxjs';
 import {
   Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
-  premiumPayloadData, QuotationDetails, UserDetail, QuickQuoteData, Limit
+  premiumPayloadData, QuotationDetails, UserDetail, QuickQuoteData, Limit,
+  RiskLevelPremium
 } from '../../data/quotationsDTO'
-import {Premiums} from '../../../setups/data/gisDTO';
-import {ClientDTO} from '../../../../../entities/data/ClientDTO';
-import {NgxSpinnerService} from 'ngx-spinner';
+import { Premiums } from '../../../setups/data/gisDTO';
+import { ClientDTO } from '../../../../../entities/data/ClientDTO';
+import { NgxSpinnerService } from 'ngx-spinner';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service'
-import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
-import {Router} from '@angular/router';
-import {NgxCurrencyConfig} from "ngx-currency";
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { Router } from '@angular/router';
+import { NgxCurrencyConfig } from "ngx-currency";
+import { DUMMY_COVERAGE_DATA, dummyPremiums, dummyQuickQuoteData } from '../../data/dummyData';
 
 const log = new Logger('CoverTypesComparisonComponent');
 declare var bootstrap: any; // Ensure Bootstrap is available
@@ -36,6 +38,34 @@ declare var $: any;
   styleUrls: ['./cover-types-comparison.component.css']
 })
 export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
+  @Input() productTitle: string = 'product title';
+  @Input() sumInsured: number = 0;
+  selectedClientCode: number;
+  temporaryPremiumLists: any[];
+
+  private _riskLevelPremiums: RiskLevelPremium[] = [];
+  @Input()
+  set riskLevelPremiums(value: any[]) {
+    this._riskLevelPremiums = value;
+    if (!value || value.length === 0) {
+      this._riskLevelPremiums = DUMMY_COVERAGE_DATA.productLevelPremiums[0].riskLevelPremiums;
+    }
+
+    this.selectedSubclassCode = this._riskLevelPremiums[0]?.coverTypeDetails[0]?.subclassCode;
+
+    log.debug(this.selectedSubclassCode);
+    this.selectedCoverType = this._riskLevelPremiums[0]?.coverTypeDetails[0]?.coverTypeCode;
+
+    log.debug(this.selectedCoverType);
+
+    if (this.selectedCoverType && this.selectedSubclassCode) {
+      this.fetchCoverTypeRelatedData(this.selectedCoverType);
+    }
+  }
+  get riskLevelPremiums(): any[] {
+    return this._riskLevelPremiums;
+  }
+
   selectedOption: string = 'email';
   // checked: boolean = false;
   clientName: string = '';
@@ -72,7 +102,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   isChecked: boolean = false;
   premiumPayload: PremiumComputationRequest;
   premiumResponse: any;
-  riskLevelPremiums: any;
+  // riskLevelPremiums: any;
   passedCovertypes: any;
 
   user: any;
@@ -97,7 +127,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   passedClientCode: any;
   computationDetails: any;
 
-  selectedSubclassCode: any;
+  // selectedSubclassCode: any;
+  selectedSubclassCode: number | null = null;
   allMatchingSubclasses = [];
   subclassSectionCoverList: any;
   covertypeSectionList: any;
@@ -118,7 +149,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
 
   // @ViewChild('openModalButton') openModalButton!: ElementRef;
-  @ViewChild('openModalButton', {static: false}) openModalButton!: ElementRef;
+  @ViewChild('openModalButton', { static: false }) openModalButton!: ElementRef;
   @ViewChild('addMoreBenefits') addMoreBenefitsModal!: ElementRef;
   isModalOpen: boolean = false;
 
@@ -159,7 +190,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   };
   quoteAction: string = null
   premiumComputationPayload: PremiumComputationRequest;
-  storedData: QuickQuoteData = null;
+  // storedData: QuickQuoteData = null;
+  storedData: QuickQuoteData = dummyQuickQuoteData;
   computationPayloadCode: number;
 
   public currencyObj: NgxCurrencyConfig;
@@ -191,9 +223,16 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   public isLimitsDetailsOpen = false;
   public isExcessDetailsOpen = false;
   public isBenefitsDetailsOpen = false;
+  public isSelectCoverOpen = true;
+  public isSelectRiskOpen = true
 
 
   ngOnInit(): void {
+    this.storedData = dummyQuickQuoteData;
+    this.temporaryPremiumLists = dummyPremiums;
+    log.debug("temporary premium list", this.temporaryPremiumList);
+    console.log('dummyPremiums:', dummyPremiums);
+
 
     this.passedNumber = sessionStorage.getItem('passedQuotationNumber');
     log.debug("Passed Quotation Number:", this.passedNumber);
@@ -224,10 +263,10 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
     log.debug("Quick Quote Quotation SUM INSURED VALUE:", this.sumInsuredValue);
     // this.selectedSectionCode = this.premiumPayload?.risks[0].limits[0].section.code
-    this.selectedSubclassCode = this.riskLevelPremiums?.[0]?.coverTypeDetails?.subclassCode
+    this.selectedSubclassCode = this.riskLevelPremiums?.[0]?.coverTypeDetails?.[0]?.subclassCode;
 
     // this.selectedCoverType = this.riskLevelPremiums[0].coverTypeDetails?.coverTypeCode;
-    this.selectedCoverType = this.riskLevelPremiums?.[0]?.coverTypeDetails?.coverTypeCode;
+    this.selectedCoverType = this.riskLevelPremiums?.[0]?.coverTypeDetails?.[0]?.coverTypeCode;
 
     log.info("selectedCovertype when the page loads:", this.selectedCoverType) //TODO check this out with HOPE
     if (this.selectedCoverType && this.selectedSubclassCode) {
@@ -316,7 +355,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
 
     log.debug("Stored Data", this.storedData)
-    // this.selectedClientCode= this.storedData.selectedClient.id
+    this.selectedClientCode = this.storedData.selectedClient.id
     this.computationPayloadCode = this.storedData.computationPayloadCode
     this.fetchPremiumComputationPyload(this.computationPayloadCode);
     const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
@@ -360,21 +399,31 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         this.excessesList = excesses._embedded ?? []
         this.limitsOfLiabilityList = limitOfLiabilities._embedded ?? []
         const coverTypeSections = this.riskLevelPremiums
-          .filter(value => value.coverTypeDetails.coverTypeCode === coverTypeCode)
-          .map(section => section.limitPremiumDtos).flat()
-        log.debug("Comparing against >>>", coverTypeSections)
+          .filter(value =>
+            value.coverTypeDetails.some(cover => cover.coverTypeCode === coverTypeCode)
+          )
+
+          .flatMap(section =>
+            section.coverTypeDetails
+              .filter(cover => cover.coverTypeCode === coverTypeCode)
+              .map(cover => cover.limitPremium)
+          ).flat()
+
+        // log.debug("Comparing against >>>", coverTypeSections)
         this.coverTypePremiumItems = applicablePremiumRates;
         this.temporaryPremiumList = applicablePremiumRates.filter(value => value.isMandatory !== 'Y')
           .map((value) => {
             let matchingSection = coverTypeSections.find(section => section.sectCode === value.sectionCode);
-            log.debug("Found a matching >>>", matchingSection, value)
+            // log.debug("Found a matching >>>", matchingSection, value)
             return {
               ...value,
               isChecked: !!matchingSection,
               limitAmount: matchingSection?.limitAmount ?? null
             }
           })
-        log.debug("Changed rates>>>>>>>", this.riskLevelPremiums)
+
+          // log.debug("Changed rates>>>>>>>", this.riskLevelPremiums)
+
       })
   }
 
@@ -449,7 +498,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)?.limits;
     const coverTypeSections = this.riskLevelPremiums
       .filter(value => value.coverTypeDetails.coverTypeCode === this.selectedCoverType)
-      .map(section => section.limitPremiumDtos).flat()
+      .map(section => section.limitPremium).flat()
 
 
     let assignedRows = selectedLimits.map(value => value.rowNumber);
@@ -466,25 +515,25 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       const databaseLimit = this.coverTypePremiumItems.find(value => value.sectionCode === premiumRate.section?.code)
       log.debug("Matching Database limit >>", databaseLimit)
       limitsToSave.push({
-          calcGroup: 1,
-          code: databaseLimit?.code,
-          compute: "Y",
-          description: matchingSection?.description,
-          freeLimit: databaseLimit?.freeLimit || 0,
-          multiplierDivisionFactor: databaseLimit?.multiplierDivisionFactor,
-          multiplierRate: databaseLimit?.multiplierRate || 1,
-          premiumAmount: matchingSection?.premium,
-          premiumRate: premiumRate?.premiumRate || 0,
-          rateDivisionFactor: premiumRate?.rateDivisionFactor || 1,
-          rateType: premiumRate?.rateType || "FXD",
-          rowNumber: premiumRate?.rowNumber,
-          sectionType: premiumRate?.sectionType,
-          sumInsuredLimitType: premiumRate?.sectionType || null,
-          sumInsuredRate: databaseLimit?.sumInsuredRate,
-          sectionShortDescription: premiumRate.sectionType,
-          sectionCode: databaseLimit?.sectionCode,
-          limitAmount: matchingSection?.limitAmount,
-        }
+        calcGroup: 1,
+        code: databaseLimit?.code,
+        compute: "Y",
+        description: matchingSection?.description,
+        freeLimit: databaseLimit?.freeLimit || 0,
+        multiplierDivisionFactor: databaseLimit?.multiplierDivisionFactor,
+        multiplierRate: databaseLimit?.multiplierRate || 1,
+        premiumAmount: matchingSection?.premium,
+        premiumRate: premiumRate?.premiumRate || 0,
+        rateDivisionFactor: premiumRate?.rateDivisionFactor || 1,
+        rateType: premiumRate?.rateType || "FXD",
+        rowNumber: premiumRate?.rowNumber,
+        sectionType: premiumRate?.sectionType,
+        sumInsuredLimitType: premiumRate?.sectionType || null,
+        sumInsuredRate: databaseLimit?.sumInsuredRate,
+        sectionShortDescription: premiumRate.sectionType,
+        sectionCode: databaseLimit?.sectionCode,
+        limitAmount: matchingSection?.limitAmount,
+      }
       )
     }
     return limitsToSave;
@@ -586,7 +635,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("Selected Risk", selectedRisk)
     const coverTypeSections = this.riskLevelPremiums
       .filter(value => value.coverTypeDetails.coverTypeCode === this.selectedCoverType)
-      .map(section => section.limitPremiumDtos).flat()
+      .map(section => section.limitPremium).flat()
     let risk = {
       coverTypeCode: this.selectedCoverType,
       action: this.quoteAction ? this.quoteAction : "A",
@@ -631,7 +680,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("Excesses to save >>>", this.excessesList)
     log.debug("Clauses to save>>>", this.clauseList)
     const processQuotation$ = this.storedQuotationCode && this.storedQuotationNo
-      ? of({_embedded: {quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo}})
+      ? of({ _embedded: { quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo } })
       : this.quotationService.processQuotation(quotation);
     this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
     this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber
@@ -878,7 +927,12 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     })
   }
 
-
+  toggleSelectProduct() {
+    this.isSelectCoverOpen = !this.isSelectCoverOpen;
+  }
+  toggleSelectRisk() {
+    this.isSelectRiskOpen = !this.isSelectRiskOpen
+  }
   toggleClauseDetails() {
     this.isClauseDetailsOpen = !this.isClauseDetailsOpen;
   }
@@ -906,12 +960,24 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
   onCoverTypeChange(coverTypeCode: number) {
-    this.selectedCoverType = coverTypeCode
-    log.debug("Selected cover type code:", this.selectedCoverType)
-    log.info("On cover type change called")
-    if (this.selectedCoverType) {
-      this.fetchCoverTypeRelatedData(coverTypeCode)
+    const foundCover = this.riskLevelPremiums
+      .flatMap(risk => risk.coverTypeDetails)
+      .find(cover => cover.coverTypeCode === coverTypeCode);
+
+    if (!foundCover) {
+      log.error("Cover type not found for code:", coverTypeCode);
+      return;
     }
+
+    this.selectedCoverType = coverTypeCode;
+    this.selectedSubclassCode = foundCover.subclassCode;
+
+    if (this.selectedCoverType && this.selectedSubclassCode) {
+      this.fetchCoverTypeRelatedData(coverTypeCode);
+    } else {
+      log.error('Cannot fetch cover type data: selectedSubclassCode is undefined');
+    }
+
     // Collapse all expanded sections
     this.isClauseDetailsOpen = false;
     this.isLimitsDetailsOpen = false;
@@ -1013,7 +1079,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       .getUserOrgId(this.userCode)
       .pipe(
         mergeMap((organization) => {
-          this.userOrgDetails =organization
+          this.userOrgDetails = organization
           log.debug("User Organization Details  ", this.userOrgDetails);
           this.organizationId = this.userOrgDetails.organizationId
           const currencyCode = this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode;
@@ -1067,8 +1133,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       branchCode: this.userBranchId || 1,
       quotationProducts: [
         {
-          wef:this.premiumPayload?.dateWithEffectFrom,
-          wet:this.premiumPayload?.dateWithEffectTo,
+          wef: this.premiumPayload?.dateWithEffectFrom,
+          wet: this.premiumPayload?.dateWithEffectTo,
           productCode: this.premiumPayload?.product?.code,
         }
       ]
