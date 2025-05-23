@@ -33,6 +33,7 @@ export interface Tax {
 }
 export interface Risk {
   taxes: Tax[];
+  code: string
   binderCode: number
   sumInsured: number
   withEffectFrom: string;
