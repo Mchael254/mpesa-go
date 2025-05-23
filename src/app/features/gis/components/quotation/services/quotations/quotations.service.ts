@@ -577,8 +577,8 @@ export class QuotationsService {
     )
   }
 
-  premiumComputationEngine(payload: PremiumComputationRequest): Observable<ProductLevelPremium[]> {
-    return this.api.POST<ProductLevelPremium[]>(`api/v1/premium-computation`, JSON.stringify(payload), API_CONFIG.PREMIUM_COMPUTATION);
+  premiumComputationEngine(payload: PremiumComputationRequest): Observable<ProductLevelPremium> {
+    return this.api.POST<ProductLevelPremium>(`api/v1/premium-computation`, JSON.stringify(payload), API_CONFIG.PREMIUM_COMPUTATION);
 
   }
 
