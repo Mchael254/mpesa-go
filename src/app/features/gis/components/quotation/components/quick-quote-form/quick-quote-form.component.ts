@@ -547,7 +547,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   }
 
   // Remove product
-  deleteProduct(productIndex: number) {
+  deleteProduct(product, productIndex: number) {
+    log.debug("Selected product>>>", product)
     this.productsFormArray.removeAt(productIndex);
     this.selectedProducts.splice(productIndex, 1);
   }
