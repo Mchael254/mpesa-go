@@ -123,6 +123,7 @@ tr.ng-star-inserted {
   display: flex !important;
   border-radius: 0 !important;
   height: 2.4rem !important;
+  width: 100%;
 }
 
 .p-button.p-button-icon-only {

@@ -39,7 +39,7 @@ export const environment = {
     [API_CONFIG.CHART_SERVICE_BASE_URL, '/crm/chart'],
     [API_CONFIG.CRM_SERVICE_REQUEST, '/crm/requests/api/v1'],
     [API_CONFIG.PREMIUM_COMPUTATION, '/premium/computation'],
-    [API_CONFIG.NONE_BASE_URL, '/assets'],
+    [API_CONFIG.NONE_BASE_URL, 'assets'],
 
   ]),
   // PAYSTACK_BASE_URL: process.env['PAYSTACK_BASE_URL'],

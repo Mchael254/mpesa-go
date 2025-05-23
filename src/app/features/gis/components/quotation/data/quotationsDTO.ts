@@ -1,4 +1,4 @@
-import { ClientDTO } from "src/app/features/entities/data/ClientDTO";
+import {ClientDTO} from "src/app/features/entities/data/ClientDTO";
 
 export interface quotationDTO {
   actionType: string,
@@ -26,6 +26,7 @@ export interface quotationDTO {
   withEffectiveFromDate: string,
   withEffectiveToDate: string
 }
+
 export interface quotationRisk {
 
   insuredCode: number;
@@ -68,6 +69,7 @@ export interface taxComputation {
   code: number,
   premium: number
 }
+
 export interface riskSection {
   sectionCode: number;
   sectionShortDescription: string;
@@ -90,6 +92,7 @@ export interface riskSection {
   code: number;
   quotationCode: number;
 }
+
 export interface QuotationDetails {
   code: number;
   clientCode: number;
@@ -326,6 +329,7 @@ export interface subclassCovertypeSection {
   sub_class_code: number;
   sub_class_cover_type_code: number;
 }
+
 export interface scheduleDetails {
   details: {
     level1: {
@@ -486,6 +490,7 @@ export interface SubclassCoverTypeDto {
   coverTypeDescription: string
 
 }
+
 export interface PremiumRate {
   sectionCode: number
   sectionShortDescription: string | null;
@@ -498,9 +503,11 @@ export interface PremiumRate {
   sumInsuredRate: string | null; // Change to string since it's coming as a string
   limitAmount: number | string | null; // Allow limitAmount to be string or number
 }
+
 export interface RegexPattern {
   riskIdFormat: string
 }
+
 export interface Clause {
   code: number;
   coverTypeCode: number;
@@ -509,6 +516,7 @@ export interface Clause {
   heading: string;
   isMandatory: string;
 }
+
 export interface LimitsOfLiability {
   code: number;
   narration: string | null;
@@ -516,6 +524,7 @@ export interface LimitsOfLiability {
   subclassCode: number;
   quotationValueCode: number;
 }
+
 export interface CreateLimitsOfLiability {
   code?: number;
   scheduleValueCode: number;
@@ -524,6 +533,7 @@ export interface CreateLimitsOfLiability {
   narration: string | null;
   type: string;
 }
+
 export interface Excesses {
   code?: number;
   narration: string | null;
@@ -531,6 +541,7 @@ export interface Excesses {
   subclassCode: number;
   quotationValueCode: number;
 }
+
 export interface EditRisk {
   code: number;
   covertypeShortDescription: string;
@@ -540,6 +551,7 @@ export interface EditRisk {
   quotationRiskNo: string;
   value: number;
 }
+
 export interface Tax {
   taxRate: string;
   code: string;
@@ -593,9 +605,16 @@ export enum StatusEnum {
   Accepted = 'Accepted'
 }
 
+export enum SystemEnum {
+  GIS = 'GIS',
+  LMS = 'LMS',
+  CRM = 'CRM'
+}
+
 export interface Status {
   status: StatusEnum;
 }
+
 export interface QuotationList {
   quotationCode: number;
   quotationNumber: string;
@@ -607,6 +626,7 @@ export interface QuotationList {
   status: string;
   quotDate: string;
 }
+
 export interface UserDetails {
   code: number;
   idNo: string;
@@ -618,46 +638,14 @@ export interface UserDetails {
   orgDateFormat: string;
 
 }
+
 export interface Sources {
   code: number;
   description: string;
   applicableModule: string;
 }
-// export interface QuotationPayload {
-//   quotationCode: number;
-//   quotationNumber: string;
-//   source: string;
-//   user: string;
-//   clientCode: number;
-//   productCode: number;
-//   currencyCode: number;
-//   currencyRate: number;
-//   agentCode: number;
-//   agentShortDescription: string;
-//   gisPolicyNumber: string;
-//   multiUser: string;
-//   unitCode: number;
-//   locationCode: number;
-//   wefDate: string; // ISO date format (YYYY-MM-DD)
-//   wetDate: string; // ISO date format (YYYY-MM-DD)
-//   bindCode: number;
-//   binderPolicy: string;
-//   divisionCode: number;
-//   subAgentCode: number;
-//   clientType: string;
-//   prospectCode: number;
-//   branchCode: number;
-//   marketerAgentCode: number;
-//   comments: string;
-//   polPipPfCode: number;
-//   endorsementStatus: string;
-//   polEnforceSfParam: string;
-//   creditDateNotified: string; // ISO date format (YYYY-MM-DD)
-//   introducerCode: number;
-//   internalComments: string;
-//   polPropHoldingCoPrpCode: number;
-//   chequeRequisition: boolean;
-// }
+
+
 export interface QuotationPayload {
   quotationNumber: string;
   source: string;
@@ -671,7 +659,7 @@ export interface QuotationPayload {
   multiUser: string;
   unitCode: number;
   locationCode: number;
-  wefDate: string; // format: YYYY-MM-DD
+  wefDate: string;
   wetDate: string;
   bindCode: number;
   binderPolicy: string;
@@ -752,6 +740,7 @@ export interface UserDetail {
   pinNumber: string | null;
   idNumber: string | null;
 }
+
 export interface QuickQuoteData {
   yearOfManufacture: number;
   clientName: string;
@@ -773,11 +762,13 @@ export interface QuickQuoteData {
   computationPayloadCode?: number
 
 }
+
 export interface QuotationSource {
   code: number;
   description: string;
   applicableModule: string;
 }
+
 export interface ScheduleDetailsDto {
   code: number;
   riskCode: number;
@@ -803,8 +794,6 @@ export interface ScheduleDetailsDto {
   version: number;
 }
 
-
-
 export interface RiskValidationDto {
   riskId?: string
   batchNumber?: number
@@ -814,6 +803,7 @@ export interface RiskValidationDto {
   addOrEdit: string
   propertyId: string
 }
+
 export interface SubclassSectionPeril {
   code: number;
   subclassCode: number;
@@ -844,6 +834,18 @@ export interface SubclassSectionPeril {
   claimExcessMax: number | null;
   dependLossType: string;
   benefitPerPeriod: number | null;
+}
+export interface DynamicRiskField {
+  type: string;
+  name: string;
+  max: number;
+  min: number;
+  isMandatory: string;
+  disabled: boolean;
+  readonly: boolean;
+  regexPattern: string;
+  placeholder: string;
+  label: string;
 }
 
 export interface PremiumComputationResponse {

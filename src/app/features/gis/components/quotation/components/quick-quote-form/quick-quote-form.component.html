@@ -1,370 +1,247 @@
-<div class="container">
-  <p class="titleMain mt-3">{{ 'gis.quotation.quotation_data_entry' | translate }}</p>
+<div class="container  mx-2 ">
+  <div class="mt-4" style="display: flex; justify-content: start">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
   <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
-  <div class="container mx-2 mt-n1">
-    <div class="card mb-3" style=" position: relative;">
+  <form [formGroup]="quickQuoteForm">
+
+    <div class="card mb-2" style=" position: relative; border: none; border-radius: 5px;">
       <div class="card-body">
-        <div class="d-inline me-4">
-          <input class="form-check-input me-2 mt-2"
-                 (click)="toggleToNewClient()"
-                 type="radio"
-                 name="flexRadioDefault"
-                 id="newClient"
-                 [checked]="isNewClient">
-          <label class="form-check-label mb-4 mt-2" for="newClient">
-            {{ 'gis.quotation.new_client' | translate }}
-          </label>
-        </div>
-        <div class="d-inline ms-4">
-          <input class="form-check-input me-2 ms-4 mt-2"
-                 (click)="toggleExistingClient()"
-                 type="radio"
-                 name="flexRadioDefault"
-                 [checked]="existingClientSelected"
-                 id="existingClient">
-          <label class="form-check-label mb-4 mt-2" for="existingClient">
-            {{ 'gis.quotation.existing_client' | translate }}
-          </label>
-        </div>
+        <p class="subtitle ">Quick quote</p>
 
+        <div class="row mb-4">
 
-        <div class="row mb-4" [formGroup]='quickQuoteForm'>
-          <div class="col-sm-4 col-6" *ngIf="newClient;else existingClient">
-            <label for="name" class=" quote-label" id="name">{{
-                'gis.quotation.name' |
-                  translate
-              }}</label>
-            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                   formControlName="clientName"
-            >
-          </div>
-          <ng-template #existingClient>
-            <div class=" col-sm-4 col-6">
-              <label for="Client" class="required quote-label" id="Client"> {{
-                  'gis.quotation.client' |
-                    translate
-                }}</label>
-              <input type="text" formControlName="clientName" id="quote-input"
-                     class="form-select form-control form-control-sm mb-1"
-                     data-bs-toggle="modal"
-                     data-bs-target="#clientModal"
-                     readonly
-              >
-              <div
-                *ngIf="quickQuoteForm?.get('clientName')?.hasError('email') && quickQuoteForm?.get('clientName').touched && !newClient"
-                class="form-text text-danger">
-                {{ 'gis.quotation.client_is_required' | translate }}
-              </div>
-
-            </div>
-          </ng-template>
-          <div class=" col-sm-4 col-6">
-            <label for="Email" class="quote-label" id="Email"> {{
-                'gis.quotation.email_address' |
-                  translate
-              }}</label>
-            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                   formControlName="emailAddress"
-            >
-            <div
-              *ngIf="quickQuoteForm?.get('emailAddress')?.hasError('email') && quickQuoteForm?.get('emailAddress').touched"
-              class="form-text text-danger">
-              {{ 'gis.quotation.invalid_email_address' | translate }}
-            </div>
-            <div *ngIf="quickQuoteForm?.get('emailAddress')?.hasError('alreadyUsed') && newClient"  class="form-text text-danger">
-              {{ 'gis.quotation.invalid_email_address_used' | translate }}
-            </div>
-          </div>
-          <div class="col-sm-4 col-6">
-            <label for="Phone" class="quote-label" id="Phone"> {{
-                'gis.quotation.phone_number' |
-                  translate
-              }}</label>
-            <ngx-intl-tel-input id="phoneNumber" [cssClass]="'form-control form-control-sm mb-1'"
-                                [preferredCountries]="preferredCountries"
-                                [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
-                                [searchCountryFlag]="true"
-                                [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                                [selectFirstCountry]="false"
-                                [style]="{ width: '100%' }"
-                                [selectedCountryISO]="CountryISO.Kenya"
-                                [phoneValidation]="true"
-                                [numberFormat]="PhoneNumberFormat.National" formControlName="phoneNumber">
-            </ngx-intl-tel-input>
-            <div
-              *ngIf="quickQuoteForm?.get('phoneNumber')?.hasError('validatePhoneNumber') && quickQuoteForm?.get('phoneNumber').touched"
-              class="form-text text-danger">
-              {{ 'gis.quotation.invalid_phone_format' | translate }}
-            </div>
-            <div *ngIf="quickQuoteForm?.get('phoneNumber')?.hasError('alreadyUsed')"  class="form-text text-danger">
-              {{ 'gis.quotation.invalid_phone_number_used' | translate }}
-            </div>
-          </div>
-          <div class="col-sm-4 col-6">
-            <div class="form-group form-group-sm">
-              <br>
-              <label for="product" class="quote-label required" id="product">{{
-                  'gis.quotation.product' |
-                    translate
-                }}</label><br>
-              <p-dropdown formControlName="product" name="product"
-                          [options]="ProductDescriptionArray" optionLabel="description" dataKey="code"
-                          (onChange)="onProductSelected($event.value)"
-                          placeholder=" " [filterBy]="'description'"
-                          [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
-              <div
-                *ngIf="quickQuoteForm?.get('product')?.hasError('required') && quickQuoteForm?.get('product').touched"
-                class="form-text text-danger">
-                {{ 'gis.quotation.product_is_required' | translate }}
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-4 col-6">
-            <div class="form-group form-group-sm">
-              <br>
-              <label for="use-of-property" class="quote-label required" id="use-of-property">{{
-                  'gis.quotation.use_of_property' | translate
-                }}</label><br>
-              <p-dropdown formControlName="subClass" name="subclassCode"
-                          [options]="allMatchingSubclasses" optionLabel="description" dataKey="code"
-                          (onChange)="onSubclassSelected($event.value)"
-                          placeholder=" " [filterBy]="'description'"
-                          [placeholder]="parsedProductDesc" [filter]="true"></p-dropdown>
-              <div
-                *ngIf="quickQuoteForm?.get('subClass')?.hasError('required') && quickQuoteForm?.get('subClass').touched"
-                class="form-text text-danger">
-                {{ 'gis.policy.subclass_is_required' | translate }}
-              </div>
-            </div>
-          </div>
-
-          <div class="col-sm-4 col-6">
-            <div class="form-group form-group-sm">
-              <br>
-              <label for="currency" class="required quote-label" id="currency">{{
-                  'gis.quotation.currency'
-                    | translate
-                }}</label><br>
-              <p-dropdown formControlName="currency" name="currency" [options]="currencyList"
-                          optionLabel="name" [dataKey]="'id'"
-                          (onChange)="onCurrencySelected($event.value)"
-                          [filterBy]="'name'" [filter]="true"></p-dropdown>
-              <div
-                *ngIf="quickQuoteForm?.get('currency')?.hasError('required') && quickQuoteForm?.get('currency').touched"
-                class="form-text text-danger">
-                {{ 'gis.policy.currency_is_required' | translate }}
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-4 col-6">
-            <div class="form-group form-group-sm">
-              <br>
-              <label for="cover-From" class="quote-label required" id="cover-From">
-                {{ 'gis.quotation.effective_date' | translate }}</label><br>
-              <p-calendar formControlName="effectiveDate" name="effectiveDate"
-                          [dateFormat]="dateFormat"
-                          inputStyleClass='form-control'
-                          [showButtonBar]='true'
-                          [style]="{ width: '100%' }"
-                          [dataType]="'string'"
-                          (onSelect)="onDateInputChange($event)"
-                          [placeholder]="" [minDate]="minDate">
-              </p-calendar>
-              <div
-                *ngIf="quickQuoteForm?.get('effectiveDate')?.hasError('required') && quickQuoteForm?.get('effectiveDate').touched"
-                class="form-text text-danger">
-                {{ 'gis.quotation.effective_date_is_required' | translate }}
-              </div>
-            </div>
-          </div>
-
-          <ng-container *ngIf="formData && selectedProductCode">
+          <ng-container *ngIf="formData">
             <ng-container *ngFor="let field of formData; let i = index">
               <div class="col-sm-4 col-6 dynamic-field">
                 <div class="form-group form-group-sm">
-                  <br>
-                  <label for="{{i}}{{field.name}}" class="quote-label"
-                         [ngClass]="{'required': isFieldRequired(field.name)}">{{ field.label | translate }}</label>
-                  <br>
+
+                  <label for="{{i}}{{field.name}}" class="quote-label">{{ field.label | translate }}</label>
+
                   <ng-container [ngSwitch]="field.type">
-                    <ng-container *ngSwitchCase="'text'">
-                      <ng-container *ngIf="field.name==='carRegNo';else inputField">
-                        <input type="text" id="quote-input" class="form-control form-control-sm"
-                               (input)="validateCarRegNo(); transformToUpperCase($event)"
-                               [formControlName]="field.name">
-                      </ng-container>
-                      <ng-template #inputField>
-                        <input type="text" id="quote-input" class="form-control form-control-sm"
-                               [formControlName]="field.name">
-                      </ng-template>
-                    </ng-container>
-                    <input *ngSwitchCase="'currency'" type="text" id="quote-input" class="form-control form-control-sm"
-                           [formControlName]="field.name" currencyMask
-                           [options]='currencyObj'>
-                    <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [name]="field.name"
-                                [dateFormat]="dateFormat" inputStyleClass='form-control' [showButtonBar]='true'
-                                [minDate]="selectedEffectiveDate"
-                                [dataType]="'string'" [style]="{ width: '100%' }"
-                                [placeholder]="field.placeholder"></p-calendar>
                     <ng-container *ngSwitchCase="'select'">
-                      <ng-container *ngIf="field.name === 'yearOfManufacture'">
-                        <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="years"
-                                    [filter]="true"></p-dropdown>
+                      <ng-container *ngIf="field.name === 'product'">
+                        <p-multiSelect [formControlName]="field.name" [name]="field.name" [options]="products"
+                                       optionLabel="description" [filterBy]="'description'" [filter]="true"
+                                       display="comma"
+                                       (onChange)="getSelectedProducts($event)">
+                        </p-multiSelect>
                       </ng-container>
-                      <ng-container *ngSwitchCase="'number'">
-                        <input type="number" id="quote-input" class="form-control form-control-sm"
-                               [max]="field?.max"
-                               [min]="field?.min"
-                               [formControlName]="field.name">
-                      </ng-container>
-                      <ng-container *ngIf="field.name === 'vesselType'">
-                        <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="vesselTypeList"
-                                    optionLabel="name" dataKey="code"
-                                    [filter]="true"></p-dropdown>
-                      </ng-container>
-                      <ng-container *ngIf="field.name === 'modeOfTransport'">
-                        <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="modeOfTransport"
-                                    optionLabel="description" dataKey="code"
-                                    [filterBy]="'description'"
-                                    [filter]="true"></p-dropdown>
-                      </ng-container>
-                      <ng-container *ngIf="field.name === 'occupation'">
-                        <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="occupationData"
-                                    optionLabel="name" dataKey="id"
-                                    [filterBy]="'name'"
-                                    [filter]="true"></p-dropdown>
-                      </ng-container>
+
+
                     </ng-container>
+                    <ng-container *ngSwitchCase="'date'">
+                      <ng-container *ngIf="field.name === 'effectiveDate'">
+                        <p-calendar [formControlName]="field.name" [name]="field.name" [dateFormat]="dateFormat"
+                                    inputStyleClass='form-control' [showButtonBar]='true'
+                                    [minDate]="selectedEffectiveDate"
+                                    [dataType]="'string'" [style]="{ width: '100%' }" [showIcon]="true"></p-calendar>
+                      </ng-container>
+
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'textarea'">
+                      <ng-container *ngIf="field.name === 'quotComment'">
+                        <textarea id="quote-textarea" class="form-control form-control-sm quote-input"
+                                  [formControlName]="field.name" rows="3" [placeholder]="field.placeholder"></textarea>
+                      </ng-container>
+
+                    </ng-container>
+
+
                   </ng-container>
                 </div>
-                <div
-                  *ngIf="quickQuoteForm?.get(field.name)?.hasError('required') && quickQuoteForm?.get(field.name).touched"
-                  class="form-text text-danger">
-                  {{ field.label }} is required
-                </div>
-                <div
-                  *ngIf="quickQuoteForm?.get(field.name)?.hasError('pattern') && quickQuoteForm?.get(field.name).touched"
-                  class="form-text text-danger">
-                  {{ field.label }} is invalid
-                </div>
-                <div
-                  *ngIf="field.name === 'carRegNo' && quickQuoteForm?.get(field.name)?.hasError('unique') && quickQuoteForm?.get(field.name).touched"
-                  class="form-text text-danger">
-                  {{ 'gis.quotation.this_property_id_is_duplicated' | translate }}
-                </div>
+
               </div>
 
             </ng-container>
           </ng-container>
-
         </div>
-        <div class="row ">
-          <div class="col-6"></div>
-          <div class="col-6 d-flex justify-content-end">
-            <button type="button" class="btn btn-outline-primary btn-lg" id="compute"
-                    (click)="computePremiumV2()">
-              {{ 'gis.quotation.compute' | translate }}
-            </button>
+
+      </div>
+    </div>
+    <div>
+      <div formArrayName="products">
+        <div *ngFor="let productGroup of productsFormArray.controls; let i = index" [formGroupName]="i" class="mb-2">
+
+          <!-- Collapsible Header -->
+          <div class="card-header d-flex justify-content-between align-items-center"
+               style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;"
+               (click)="toggleExpand(i)">
+
+            <!-- ONLY show title when collapsed -->
+            <span *ngIf="!expandedStates[i]" style="font-size: 20px;">
+              {{ productGroup.value.description }}
+            </span>
+            <i class="fa" [ngClass]="expandedStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'"
+               style="margin-left: auto;">
+            </i>
           </div>
+
+          <!-- Expanded Content -->
+          <div class="card-body collapsible-body" *ngIf="expandedStates[i]">
+            <!-- Title + Icons -->
+            <p class="subtitle mb-3 m-0 d-flex align-items-center">
+              {{ productGroup.value.description }}
+              <i class="fas fa-plus" style="font-size:15px;border: 2px solid #00529B; border-radius: 100px; padding: 2px;padding-right: 3px;
+    padding-left: 3px; margin-left:20px; margin-right: 8px; color: #00529B; cursor: pointer;" title="Add risk"
+                 (click)="addRisk(i)">
+              </i>
+
+              <i *ngIf="productsFormArray.length > 1" class="fa-solid fa-trash-can"
+                 style="font-size:17px; color:#EE3945; cursor: pointer; margin-left: 5px;" title="Delete product"
+                 (click)="deleteProduct(productGroup, i)">
+              </i>
+
+
+            </p>
+
+            <!-- Risk Fields -->
+            <div formArrayName="risks">
+              <div *ngFor="let riskGroup of getRisks(i).controls; let j = index" [formGroupName]="j">
+                <p class="riskTitle">Risk {{ j + 1 }}
+                  <i *ngIf="getRisks(i).length > 1"
+                     class="fa-solid fa-trash-can text-danger ms-2"
+                     style="color:#EE3945;"
+                     (click)="deleteRisk(i, j)">
+                  </i>
+                </p>
+                <div class="row">
+                  <!-- Loop over risk fields -->
+                  <ng-container *ngFor="let field of productRiskFields[i]">
+                    <div class="col-sm-4 col-6 dynamic-field mb-3">
+                      <div class="form-group form-group-sm">
+                        <label [for]="field.name" class="quote-label">{{ field.label | translate }}</label>
+
+                        <ng-container [ngSwitch]="field.type">
+
+                          <!-- Text input -->
+                          <ng-container *ngSwitchCase="'text'">
+                            <ng-container *ngIf="field.name==='carRegNo';else inputField">
+                              <input type="text" id="quote-input" class="form-control form-control-sm"
+                                     (input)="validateCarRegNo(i, j); transformToUpperCase($event)"
+                                     [formControlName]="field.name">
+
+                              <!-- Error message -->
+                              <div class="form-text text-danger" style="font-size: 14px;"
+                                   *ngIf="getCarRegNoControl(i, j)?.invalid && (getCarRegNoControl(i, j)?.touched || getCarRegNoControl(i, j)?.dirty)">
+
+                                <div *ngIf="getCarRegNoControl(i, j)?.errors?.['pattern']">
+                                  Invalid registration number format.
+                                </div>
+                                <div *ngIf="getCarRegNoControl(i, j)?.errors?.['unique']">
+                                  {{ 'gis.quotation.this_property_id_is_duplicated' | translate }}
+                                </div>
+
+                              </div>
+                            </ng-container>
+                            <ng-template #inputField>
+                              <input type="text" id="quote-input" class="form-control form-control-sm"
+                                     [formControlName]="field.name">
+                            </ng-template>
+                          </ng-container>
+                          <!-- Number input -->
+                          <ng-container *ngSwitchCase="'number'">
+                            <input type="number" id="quote-input" class="form-control form-control-sm"
+                                   [max]="field?.max" [min]="field?.min" [formControlName]="field.name">
+                          </ng-container>
+
+                          <!-- Currency input -->
+                          <input *ngSwitchCase="'currency'" type="text" class="form-control form-control-sm"
+                                 [formControlName]="field.name" currencyMask [options]="currencyObj">
+
+                          <!-- Date picker -->
+                          <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [dateFormat]="dateFormat"
+                                      inputStyleClass="form-control" [showButtonBar]="true"
+                                      [dataType]="'string'"></p-calendar>
+
+                          <!-- Years -->
+                          <ng-container *ngIf="field.name === 'yearOfManufacture'">
+                            <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="years"
+                                        [filter]="true"></p-dropdown>
+                          </ng-container>
+                          <!-- Years -->
+                          <ng-container *ngIf="field.name === 'useOfProperty'">
+                            <p-dropdown formControlName="useOfProperty"
+                                        [options]="productSubclassesMap[productGroup.value.code] || []"
+                                        (onChange)="onSubclassSelected($event.value,i, j, productGroup.value.code)"
+                                        optionLabel="description"
+                                        dataKey="code" [filterBy]="'description'" [filter]="true"></p-dropdown>
+
+                          </ng-container>
+                          <!-- Add other field types as needed -->
+                          <ng-container *ngIf="field.name === 'vesselType'">
+                            <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="vesselTypeList"
+                                        optionLabel="name" dataKey="code" [filter]="true"></p-dropdown>
+                          </ng-container>
+                          <ng-container *ngIf="field.name === 'modeOfTransport'">
+                            <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="modeOfTransport"
+                                        optionLabel="description" dataKey="code" [filterBy]="'description'"
+                                        [filter]="true"></p-dropdown>
+                          </ng-container>
+                          <ng-container *ngIf="field.name === 'occupation'">
+                            <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="occupationData"
+                                        optionLabel="name" dataKey="id" [filterBy]="'name'"
+                                        [filter]="true"></p-dropdown>
+                          </ng-container>
+
+                        </ng-container>
+
+                        <!-- Validation error -->
+                        <div
+                          *ngIf="riskGroup.get(field.name)?.hasError('required') && riskGroup.get(field.name).touched"
+                          class="form-text text-danger">
+                          {{ field.label }} is required
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
-        <br>
+
       </div>
+      <div class="row" *ngIf="selectedProducts && selectedProducts.length > 0">
+        <div class="col-6"></div>
+        <div class="col-6 d-flex justify-content-end">
+          <button type="button" class="btn btn-outline-primary btn-lg" id="compute" (click)="onSubmit()">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <ng-container *ngIf="premiumComputationResponse">
+    <div *ngFor="let product of premiumComputationResponse.productLevelPremiums; let i = index" class="mb-2">
+      <div class="card-header d-flex justify-content-between align-items-center"
+           style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;"
+           (click)="toggleExpand(i)">
+        {{ product.description }}
+        <!-- <span *ngIf="!expandedStates[i]" style="font-size: 20px;">
+               {{ productGroup.value.description }}
+             </span>-->
+        <i class="fa" [ngClass]="expandedStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'"
+           style="margin-left: auto;">
+        </i>
+        <div *ngFor="let risk of product.riskLevelPremiums" class="card-body collapsible-body" >
+          <p class="subtitle mb-3 m-0 d-flex align-items-center">
+            {{ risk?.propertyDescription }}
+          </p>
+         <app-cover-types-comparison></app-cover-types-comparison>
+        </div>
+      </div>
+    </div>
+   <!-- {{ premiumComputationResponse | json }}-->
+  </ng-container>
+  <div class="row " style="display:none;">
+    <div class="col-6"></div>
+    <div class="col-6 d-flex justify-content-end">
+      <button type="button" class="btn btn-outline-primary btn-lg" id="compute">
+        {{ 'gis.quotation.next' | translate }}
+      </button>
     </div>
   </div>
 </div>
-
-
-<div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg  modal-fade">
-    <div class="modal-content">
-
-      <div class="modal-body">
-        <button type="button" #closebutton class="float-end btn-close"
-                data-bs-dismiss="modal" aria-label="Close"></button>
-        <p class="text-start" id="selectClient"> {{
-            'gis.quotation.select_a_client' |
-              translate
-          }}</p>
-        <p-table
-          #dt1
-          (onLazyLoad)="lazyLoadClients($event)"
-          [autoLayout]="true"
-          [lazy]="true"
-          [paginator]="true"
-          [rowHover]="true"
-          [resizableColumns]="true"
-          [showCurrentPageReport]="true"
-          [rows]="pageSize || 5"
-          [totalRecords]="clientsData?.totalElements"
-          [value]="clientsData?.content"
-          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-          responsiveLayout="stack"
-          [scrollable]="true"
-          scrollHeight="400px"
-          currentPageReportTemplate="{first} - {last} of {totalRecords}"
-          [globalFilterFields]=globalFilterFields
-          styleClass="p-datatable-sm">
-
-
-          <ng-template pTemplate="header">
-            <tr>
-              <th pSortableColumn="name" class="flexible-header">{{ 'gis.quotation.name' | translate }}</th>
-              <th pSortableColumn="emailAddress"
-                  class="flexible-header">{{ 'gis.quotation.email' | translate }}
-              </th>
-              <th pSortableColumn="phoneNumber"
-                  class="flexible-header">{{ 'gis.quotation.phone_number' | translate }}
-              </th>
-              <th pSortableColumn="idNumber" class="flexible-header">{{ 'gis.quotation.id_no' | translate }}
-              </th>
-              <th pSortableColumn="pinNumber" class="flexible-header">{{ 'gis.quotation.pin' | translate }}
-              </th>
-              <th pSortableColumn="id" class="flexible-header">{{ 'gis.quotation.internal_id' | translate }}
-              </th>
-
-            </tr>
-            <tr>
-              <th><input type="text" class="form-control" (keyup.enter)="filter($event);"
-                         (input)="inputName($event)"></th>
-              <th><input type="text" class="form-control" (keyup.enter)="filter($event);"
-                         (input)="inputEmail($event)"></th>
-              <th><input type="text" class="form-control " (keyup.enter)="filter($event);"
-                         (input)="inputPhone($event)"></th>
-              <th><input type="text" class="form-control" (keyup.enter)="filter($event);"
-                         (input)="inputIdNumber($event)"></th>
-              <th><input type="text" class="form-control " (keyup.enter)="filter($event);"
-                         (input)="inputPin($event)"></th>
-              <th><input type="text" class="form-control" (keyup.enter)="filter($event);"
-                         (input)="inputInternalId($event)"></th>
-
-            </tr>
-          </ng-template>
-
-          <ng-template pTemplate="body" let-clientData>
-            <tr [pSelectableRow]="true" (click)="loadClientDetails(clientData)">
-              <td>{{ utilService.getFullName(clientData) }}</td>
-              <td>{{ clientData.emailAddress }}</td>
-              <td>{{ clientData.phoneNumber }}</td>
-              <td>{{ clientData.idNumber }}</td>
-              <td>{{ clientData.pinNumber }}</td>
-              <td>{{ clientData.id }}</td>
-            </tr>
-          </ng-template>
-
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="4">{{ 'gis.quotation.no_client_found' | translate }}</td>
-            </tr>
-          </ng-template>
-        </p-table>
-
-
-        <br>
-      </div>
-
-
-    </div>
-  </div>
-</div>
-

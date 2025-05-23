@@ -20,7 +20,7 @@
               <div class="col-md-4">
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" value="NEW_CLIENT" formControlName="newOrExistingClient"
-                    id="inlineRadio1" checked (click)="clearClientForm()"/>
+                    id="inlineRadio1" (click)="clearClientForm()"/>
                   <label class="form-check-label" for="inlineRadio1">{{ "entities.new_client" | translate }}</label>
                 </div>
                 <div class="form-check form-check-inline" (click)="openAllUsersModal()">
@@ -35,9 +35,7 @@
 
               <!-- client type section -->
               <div class="col-sm-4 mb-3">
-                <label for="clientTypeId" class="label col-form-label">
-                  {{ 'entities.client' | translate | titlecase }} {{ 'entities.type' | translate | titlecase }}
-                </label>
+                <label for="clientTypeId" class="form-label"></label>
                 <select
                   class="form-select"
                   formControlName="clientTypeId"
@@ -56,7 +54,7 @@
               <!-- surname field -->
               <ng-container *ngIf="visibleStatus.surname === 'Y'">
                 <div class="col-sm-4 mb-3">
-                  <label for="surname" class="label col-form-label">{{ 'entities.surname' | translate | titlecase }}</label>
+                  <label for="surname" class="form-label"></label>
                   <input type="text" id="surname" name="surname" class="form-control" formControlName="surname"
                          [ngClass]="{ 'is-invalid': f['surname']?.invalid && (f['surname']?.dirty || f['surname']?.touched) }">
                   <div *ngIf="f['surname']?.invalid && (f['surname']?.dirty || f['surname']?.touched)" class="form-text text-danger">
@@ -70,7 +68,7 @@
               <!-- other name field -->
               <ng-container *ngIf="visibleStatus.otherName === 'Y'">
                 <div class="col-sm-4 mb-3">
-                  <label for="otherName" class="label col-form-label">{{ 'entities.other_name' | translate | titlecase }}</label>
+                  <label for="otherName" class="form-label"></label>
                   <input type="text" id="otherName" name="otherName" class="form-control" formControlName="otherName"
                          [ngClass]="{ 'is-invalid': f['otherName']?.invalid && (f['otherName']?.dirty || f['otherName']?.touched) }">
                   <div *ngIf="f['otherName']?.invalid && (f['otherName']?.dirty || f['otherName']?.touched)" class="form-text text-danger">
@@ -82,9 +80,7 @@
               <!-- identity type section -->
               <ng-container *ngIf="visibleStatus.identity_type === 'Y'">
                 <div class="col-sm-4 mb-3">
-                  <label for="identity_type" class="label col-form-label">
-                    {{ 'entities.identity_type' | translate | titlecase }}
-                  </label>
+                  <label for="identity_type" class="form-label"></label>
                   <select id="identity_type" class="form-select" formControlName="identity_type"
                           [ngClass]="{'is-invalid': f['identity_type']?.invalid && (f['identity_type']?.dirty || f['identity_type']?.touched)}"
                   >
@@ -107,7 +103,7 @@
               <!-- id number field -->
               <ng-container *ngIf="visibleStatus.idNumber === 'Y'">
                 <div class="col-sm-4 mb-3">
-                  <label for="idNumber" class="label col-form-label">{{ 'entities.id_number' | translate }}</label>
+                  <label for="idNumber" class="form-label"></label>
                   <input type="text" id="idNumber" name="idNumber" class="form-control" formControlName="idNumber"
                          [ngClass]="{ 'is-invalid': f['idNumber']?.invalid && (f['idNumber']?.dirty || f['idNumber']?.touched) }">
 
@@ -123,7 +119,7 @@
               <!-- pin number field -->
               <ng-container *ngIf="visibleStatus?.pinNumber === 'Y'">
                 <div class="col-sm-4 mb-3">
-                  <label for="pinNumber" class="label col-form-label">{{ 'entities.pin_number' | translate }}</label>
+                  <label for="pinNumber" class="form-label"></label>
                   <input type="text" id="pinNumber" name="pinNumber" class="form-control" formControlName="pinNumber"
                          [ngClass]="{ 'is-invalid': f['pinNumber']?.invalid && (f['pinNumber']?.dirty || f['pinNumber']?.touched) }">
                   <div *ngIf="f['pinNumber']?.invalid && (f['pinNumber']?.dirty || f['pinNumber']?.touched)" class="form-text text-danger">
@@ -140,7 +136,7 @@
               <!-- DOB field -->
               <ng-container *ngIf="visibleStatus.dateOfBirth === 'Y'">
                 <div class="col-sm-4 mb-3">
-                  <label for="dateOfBirth" class="label col-form-label">{{ 'entities.dob' | translate | titlecase }}</label>
+                  <label for="dateOfBirth" class="form-label"></label>
                   <p-calendar
                     id="dateOfBirth"
                     name="dateOfBirth"
@@ -169,7 +165,7 @@
               <ng-container *ngIf="clientType === 'I'">
                 <ng-container *ngIf="visibleStatus.citizenship === 'Y'">
                   <div class="col-sm-4 mb-3">
-                    <label for="citizenship" class="label col-form-label">{{ 'entities.citizenship' | translate | titlecase }}</label>
+                    <label for="citizenship" class="form-label"></label>
                     <p-dropdown
                       [options]="countryData"
                       optionLabel="name"
@@ -206,7 +202,7 @@
                 <!-- gender field -->
                 <ng-container *ngIf="visibleStatus.gender === 'Y'">
                   <div class="col-sm-4 mb-3">
-                    <label for="gender" class="label col-form-label">{{ 'entities.gender' | translate | titlecase }}</label>
+                    <label for="gender" class="form-label"></label>
                     <select id="gender" class="form-select" formControlName="gender"
                             [ngClass]="{ 'is-invalid': f['gender']?.invalid && (f['gender']?.dirty || f['gender']?.touched) }">
                       <option value="" disabled selected>{{ 'entities.select' | translate | titlecase }} {{ 'entities.gender' | translate | titlecase }}</option>
@@ -222,7 +218,7 @@
                 <!-- marital status field -->
                 <ng-container *ngIf="visibleStatus?.marital_status === 'Y'">
                   <div class="col-sm-4 mb-3">
-                    <label for="marital_status" class="label col-form-label">{{ 'entities.marital_status' | translate }}</label>
+                    <label for="marital_status" class="form-label"></label>
                     <select id="marital_status" class="form-select" formControlName="marital_status"
                             [ngClass]="{ 'form-control': true, 'is-invalid': f['marital_status']['invalid']
                   && (f['marital_status']['dirty'] || f['marital_status']['touched']) }">
@@ -240,6 +236,35 @@
                   </div>
                 </ng-container>
               </ng-container>
+              <ng-container *ngIf="visibleStatus?.withEffectFrom === 'Y'">
+                <div class="col-sm-4 mb-3">
+                  <label for="withEffectFrom" class="form-label"></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="withEffectFrom"
+                    placeholder="With effect from"
+                    formControlName="withEffectFrom"
+                    onfocus="(this.type='date')"
+                    onblur="(this.type='text')"
+                  />
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="visibleStatus?.withEffectTo === 'Y'">
+                <div class="col-sm-4 mb-3">
+                  <label for="withEffectTo" class="form-label"></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="withEffectTo"
+                    placeholder="With effect to"
+                    formControlName="withEffectTo"
+                    onfocus="(this.type='date')"
+                    onblur="(this.type='text')"
+                  />
+                </div>
+              </ng-container>
 
             </div>
           </div>
@@ -256,12 +281,12 @@
             <div id="flush-collapseContact" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
               <div class="accordion-body mx-2" formGroupName="contact_details">
                 <div class="form-group row">
-                  <h5 *ngIf="selectedCategory === 'C'">Company contacts</h5>
+                  <h5 *ngIf="selectedCategory === 'C'">{{ 'entities.companyContacts' | translate }}</h5>
 
                   <!-- branch section -->
                   <ng-container *ngIf="visibleStatus?.clientBranch === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="clientBranch" class="label col-form-label">{{ 'entities.branch' | translate }}</label>
+                      <label for="clientBranch" class="form-label"></label>
                       <p-dropdown
                         id="clientBranch"
                         formControlName="clientBranch"
@@ -278,7 +303,16 @@
                           'is-invalid': f['contact_details']['controls']['clientBranch']['invalid'] &&
                           (f['contact_details']['controls']['clientBranch']['dirty'] || f['contact_details']['controls']['clientBranch']['touched'])
                         }"
-                      ></p-dropdown>
+                      >
+                        <ng-template let-selected pTemplate="selectedItem">
+                          <div >{{ selected?.name | titlecase }}</div>
+                        </ng-template>
+                        <ng-template let-branch pTemplate="item">
+                          <div class="flex align-items-center gap-2 text-sm py-1">
+                            <div class="text-sm">{{ branch?.name | titlecase }}</div>
+                          </div>
+                        </ng-template>
+                      </p-dropdown>
                       <div *ngIf="f['contact_details']['controls']['clientBranch']['invalid'] && (f['contact_details']['controls']['clientBranch']['dirty'] || f['contact_details']['controls']['clientBranch']['touched'])" class="form-text text-danger">
                         <div *ngIf="f['contact_details']['controls']['clientBranch']['errors']['required']">
                           {{ 'entities.branch' | translate }} {{ 'entities.required' | translate }}
@@ -290,7 +324,7 @@
                   <!-- title section -->
                   <ng-container *ngIf="visibleStatus?.clientTitle === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="clientTitle" class="label col-form-label">{{ 'entities.title' | translate }}</label>
+                      <label for="clientTitle" class="form-label"></label>
                       <p-dropdown
                         id="clientTitle"
                         formControlName="clientTitle"
@@ -306,7 +340,16 @@
                           'ng-invalid ng-dirty': f['contact_details']['controls']['clientTitle']['invalid'] &&
                             (f['contact_details']['controls']['clientTitle']['dirty'] || f['contact_details']['controls']['clientTitle']['touched'])
                         }"
-                      ></p-dropdown>
+                      >
+                        <ng-template let-selected pTemplate="selectedItem">
+                          <div >{{ selected?.description | titlecase }}</div>
+                        </ng-template>
+                        <ng-template let-title pTemplate="item">
+                          <div class="flex align-items-center gap-2 text-sm py-1">
+                            <div class="text-sm">{{ title?.description | titlecase }}</div>
+                          </div>
+                        </ng-template>
+                      </p-dropdown>
                       <div
                         *ngIf="f['contact_details']['controls']['clientTitle']['invalid'] &&
                           (f['contact_details']['controls']['clientTitle']['dirty'] || f['contact_details']['controls']['clientTitle']['touched'])"
@@ -321,7 +364,7 @@
 
                   <!-- <ng-container *ngIf="visibleStatus?.smsNumber === 'Y'">
                     <div class="col-sm-4">
-                      <label for="smsNumber" class="label col-form-label">{{ 'entities.sms_number' | translate }}</label>
+                      <label for="smsNumber" class="form-label">{{ 'entities.sms_number' | translate }}</label>
                       <div class="input-group">
                         <select class="form-select" id="countryCodeSms" formControlName="countryCodeSms" style="max-width:25%"
                                 [ngClass]="{ 'is-invalid': f['contact_details']['controls']['countryCodeSms']['invalid'] && (f['contact_details']['controls']['countryCodeSms']['dirty'] || f['contact_details']['controls']['countryCodeSms']['touched']) }">
@@ -351,7 +394,7 @@
                   </ng-container>
                   <ng-container *ngIf="visibleStatus?.phoneNumber === 'Y'">
                     <div class="col-sm-4">
-                      <label for="phoneNumber" class="label col-form-label">{{ 'entities.tel_number' | translate }}</label>
+                      <label for="phoneNumber" class="form-label">{{ 'entities.tel_number' | translate }}</label>
                       <div class="input-group">
                         <select class="form-select" id="countryCodeTel" formControlName="countryCodeTel" style="max-width:25%"
                                 [ngClass]="{ 'is-invalid': f['contact_details']['controls']['countryCodeTel']['invalid'] && (f['contact_details']['controls']['countryCodeTel']['dirty'] || f['contact_details']['controls']['countryCodeTel']['touched']) }">
@@ -379,9 +422,7 @@
                   <!-- SMS Phone Number Field -->
                   <ng-container *ngIf="visibleStatus?.smsNumber === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="smsNumber" class="label col-form-label">
-                        {{ 'entities.sms_number' | translate }}
-                      </label>
+                      <label for="smsNumber" class="form-label"></label>
 
                       <ngx-intl-tel-input
                         [cssClass]="'form-control form-control-md mb-1'"
@@ -431,9 +472,7 @@
                   <!-- Phone Number Field -->
                   <ng-container *ngIf="visibleStatus?.phoneNumber === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="phoneNumber" class="label col-form-label">
-                        {{ 'entities.phone_number' | translate }}
-                      </label>
+                      <label for="phoneNumber" class="form-label"></label>
 
                       <ngx-intl-tel-input
                         [cssClass]="'form-control form-control-md mb-1'"
@@ -482,7 +521,7 @@
                   <!-- email field -->
                   <ng-container *ngIf="visibleStatus?.email === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="email" class="label col-form-label">{{ 'entities.email_address' | translate |titlecase }}</label>
+                      <label for="email" class="form-label"></label>
                       <input type="email" id="email" name="email" class="form-control" formControlName="email"
                              [ngClass]="{ 'is-invalid': f['contact_details']['controls']['email']['invalid'] && (f['contact_details']['controls']['email']['dirty'] || f['contact_details']['controls']['email']['touched']) }">
                       <div *ngIf="f['contact_details']['controls']['email']['invalid'] && (f['contact_details']['controls']['email']['dirty'] || f['contact_details']['controls']['email']['touched'])" class="form-text text-danger">
@@ -496,7 +535,7 @@
                   <!-- website url field -->
                   <ng-container *ngIf="visibleStatus?.websiteURL === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="websiteURL" class="label col-form-label">{{ 'entities.websiteURL' | translate }}</label>
+                      <label for="websiteURL" class="form-label"></label>
                       <input type="url" id="websiteURL" name="websiteURL" class="form-control" formControlName="websiteURL"
                              [ngClass]="{ 'is-invalid': f['contact_details']['controls']['websiteURL']['invalid'] && (f['contact_details']['controls']['websiteURL']['dirty'] || f['contact_details']['controls']['websiteURL']['touched']) }">
                       <div *ngIf="f['contact_details']['controls']['websiteURL']['invalid'] && (f['contact_details']['controls']['websiteURL']['dirty'] || f['contact_details']['controls']['websiteURL']['touched'])" class="form-text text-danger">
@@ -510,7 +549,7 @@
                   <!-- contact channel -->
                   <ng-container *ngIf="visibleStatus?.channel === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="channel" class="label col-form-label">{{ 'entities.preferred_contact_channel' | translate }}</label>
+                      <label for="channel" class="form-label"></label>
                       <select id="channel" class="form-select" formControlName="channel"
                               [ngClass]="{ 'is-invalid': f['contact_details']['controls']['channel']['invalid']
                   && (f['contact_details']['controls']['channel']['dirty']
@@ -530,7 +569,7 @@
                   <!-- preferred social media link field -->
                   <ng-container *ngIf="visibleStatus?.socialMediaURL === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="socialMediaURL" class="label col-form-label">{{ 'entities.socialMediaURL' | translate |titlecase }}</label>
+                      <label for="socialMediaURL" class="form-label"></label>
                       <input type="url" id="socialMediaURL" name="socialMediaURL" class="form-control" formControlName="socialMediaURL"
                              [ngClass]="{ 'is-invalid': f['contact_details']['controls']['socialMediaURL']['invalid'] && (f['contact_details']['controls']['socialMediaURL']['dirty'] || f['contact_details']['controls']['socialMediaURL']['touched']) }">
                       <div *ngIf="f['contact_details']['controls']['socialMediaURL']['invalid'] && (f['contact_details']['controls']['socialMediaURL']['dirty'] || f['contact_details']['controls']['socialMediaURL']['touched'])" class="form-text text-danger">
@@ -631,11 +670,11 @@
             <div id="flush-collapsePostal" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
               <div class="accordion-body mx-2" formGroupName="address">
                 <div class="form-group row">
-                  <h5 *ngIf="selectedCategory === 'C'">Head office address</h5>
+                  <h5 *ngIf="selectedCategory === 'C'">{{ 'entities.headOfficeAddress' | translate }}</h5>
                   <!-- country field -->
                   <ng-container *ngIf="visibleStatus?.country === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="country" class="label col-form-label">{{ 'entities.country' | translate | titlecase}}</label>
+                      <label for="country" class="form-label"></label>
                       <p-dropdown
                         [options]="countryData"
                         optionLabel="name"
@@ -674,7 +713,7 @@
                   <!-- county field -->
                   <ng-container *ngIf="visibleStatus?.county === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="county" class="label col-form-label">{{ 'entities.countyOrState' | translate  | titlecase }}</label>
+                      <label for="county" class="form-label"></label>
                       <p-dropdown [options]="citiesData" [(ngModel)]="selectedCityState"
                         optionLabel="name" optionValue="id" formControlName="county"
                         [style]="{ width: '100%', height: '38px' }"
@@ -703,7 +742,7 @@
                   <!-- town field -->
                   <ng-container *ngIf="visibleStatus?.town === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="town" class="label col-form-label">{{ 'entities.cityOrTown' | translate }}</label>
+                      <label for="town" class="form-label"></label>
                       <p-dropdown [options]="townData" [(ngModel)]="selectedTown" optionLabel="name"
                         optionValue="id" formControlName="town"
                         [style]="{ width: '100%', height: '38px' }"
@@ -732,7 +771,7 @@
                   <!-- physical address field -->
                   <ng-container *ngIf="visibleStatus?.physical_address === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="physical_address" class="label col-form-label">{{ 'entities.physical_address' | translate }}</label>
+                      <label for="physical_address" class="form-label"></label>
                       <input type="text" class="form-control" id="physical_address" name="phyAddress" placeholder="Physical address" formControlName="physical_address"
                              [ngClass]="{ 'is-invalid': f['address']['controls']['physical_address']['invalid'] && (f['address']['controls']['physical_address']['dirty'] || f['address']['controls']['physical_address']['touched']) }">
                       <div *ngIf="f['address']['controls']['physical_address']['invalid'] && (f['address']['controls']['physical_address']['dirty'] || f['address']['controls']['physical_address']['touched'])" class="form-text text-danger">
@@ -746,7 +785,7 @@
                   <!-- postal address  field -->
                   <ng-container *ngIf="visibleStatus?.box_number === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="box_number" class="label col-form-label">{{ 'entities.postal_address' | translate }}</label>
+                      <label for="box_number" class="form-label"></label>
                       <input type="text" class="form-control" id="box_number" name="postal" placeholder="Postal Address" formControlName="box_number"
                              [ngClass]="{ 'is-invalid': f['address']['controls']['box_number']['invalid']
                   && (f['address']['controls']['box_number']['dirty'] || f['address']['controls']['box_number']['touched']) }">
@@ -761,7 +800,7 @@
                   <!-- postal code field -->
                   <ng-container *ngIf="visibleStatus?.postalCode === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="postalCode" class="label col-form-label">{{ 'entities.postal_code' | translate }}</label>
+                      <label for="postalCode" class="form-label"></label>
                       <p-dropdown [options]="postalCodeData" optionLabel="name"
                                   optionValue="id" formControlName="postalCode"
                                   [style]="{ width: '100%', height: '38px' }"
@@ -890,15 +929,15 @@
                     <!-- town field -->
                     <ng-container *ngIf="visibleStatus?.town === 'Y'">
                       <div class="col-sm-4 mb-3">
-                        <label for="town" class="label col-form-label">{{ 'entities.town' | translate }}</label>
+                        <label for="townResidential" class="form-label"></label>
                         <p-dropdown [options]="townData" optionLabel="name"
-                                    optionValue="id" formControlName="town"
+                                    optionValue="id" formControlName="townResidential"
                                     [style]="{ width: '100%', height: '38px' }"
                                     [panelStyle]="{ width: '400px' }"
                                     class="small-dropdown"
                                     placeholder="Town" name="townCode" id="town" appendTo="body"
                                     [filter]="true" filterBy="name" [showClear]="true"
-                                    [ngClass]="{ 'is-invalid': f['address']['controls']['town']['invalid'] && (f['address']['controls']['town']['dirty'] || f['address']['controls']['town']['touched']) }">
+                                    [ngClass]="{ 'is-invalid': f['address']['controls']['townResidential']['invalid'] && (f['address']['controls']['townResidential']['dirty'] || f['address']['controls']['townResidential']['touched']) }">
                           <ng-template let-selected pTemplate="selectedItem">
                             <div>{{ selected?.name | titlecase }}</div>
                           </ng-template>
@@ -908,8 +947,8 @@
                             </div>
                           </ng-template>
                         </p-dropdown>
-                        <div *ngIf="f['address']['controls']['town']['invalid'] && (f['address']['controls']['town']['dirty'] || f['address']['controls']['town']['touched'])" class="form-text text-danger">
-                          <div *ngIf="f['address']['controls']['town']['errors']['required']">
+                        <div *ngIf="f['address']['controls']['townResidential']['invalid'] && (f['address']['controls']['townResidential']['dirty'] || f['address']['controls']['townResidential']['touched'])" class="form-text text-danger">
+                          <div *ngIf="f['address']['controls']['townResidential']['errors']['required']">
                             {{ 'entities.town' | translate }} {{ 'entities.required' | translate }}
                           </div>
                         </div>
@@ -919,7 +958,7 @@
                     <!-- road field -->
                     <ng-container *ngIf="visibleStatus?.road === 'Y'">
                       <div class="col-sm-4 mb-3">
-                        <label for="road" class="label col-form-label">{{ 'entities.road' | translate }}</label>
+                        <label for="road" class="form-label"></label>
                         <input type="text"  class="form-control" id="road" name="road" placeholder="Road" formControlName="road"
                                [ngClass]="{ 'is-invalid': f['address']['controls']['road']['invalid'] && (f['address']['controls']['road']['dirty'] || f['address']['controls']['road']['touched']) }">
                         <div *ngIf="f['address']['controls']['road']['invalid'] && (f['address']['controls']['road']['dirty'] || f['address']['controls']['road']['touched'])" class="form-text text-danger">
@@ -931,7 +970,7 @@
                     </ng-container>
                     <ng-container *ngIf="visibleStatus?.house_number === 'Y'">
                       <div class="col-sm-4 mb-3">
-                        <label for="house_number" class="label col-form-label">{{ 'entities.house_name' | translate }}</label>
+                        <label for="house_number" class="form-label"></label>
                         <input type="text"  class="form-control" id="house_number" name="hseName" placeholder="House Name/No" formControlName="house_number"
                                [ngClass]="{ 'is-invalid': f['address']['controls']['house_number']['invalid'] && (f['address']['controls']['house_number']['dirty'] || f['address']['controls']['house_number']['touched']) }">
                         <div *ngIf="f['address']['controls']['house_number']['invalid'] && (f['address']['controls']['house_number']['dirty'] || f['address']['controls']['house_number']['touched'])" class="form-text text-danger">
@@ -946,7 +985,7 @@
                     <!-- utility address proof field -->
                     <ng-container *ngIf="visibleStatus?.utilityBill === 'Y'">
                       <div class="col-sm-4 mb-3">
-                        <label for="utilityBill" class="label col-form-label">{{ 'entities.utility_bill' | translate }}</label>
+                        <label for="utilityBill" class="form-label"></label>
                         <input type="text"  class="form-control" id="utilityBill" formControlName="utilityBill" placeholder="Utility Bill"
                                [ngClass]="{ 'is-invalid': f['address']?.['controls']?.['utilityBill']?.invalid && (f['address']?.['controls']?.['utilityBill']?.dirty || f['address']?.['controls']?.['utilityBill']?.touched) }">
                         <div *ngIf="f['address']?.['controls']?.['utilityBill']?.invalid && (f['address']?.['controls']?.['utilityBill']?.dirty || f['address']?.['controls']?.['utilityBill']?.touched)" class="form-text text-danger">
@@ -961,7 +1000,7 @@
                     <!-- utilty address field -->
                     <ng-container *ngIf="visibleStatus?.uploadUtilityBill === 'Y'">
                       <div class="col-sm-4 mb-3">
-                        <label for="uploadUtilityBill" class="label col-form-label">{{ 'entities.upload_utility_bill' | translate }}</label>
+                        <label for="uploadUtilityBill" class="form-label"></label>
                         <select id="uploadUtilityBill" class="form-select" formControlName="uploadUtilityBill"
                                 (click)="selectUtilityBill($event)"
                                 [ngClass]="{ 'is-invalid': f['address']['controls']['uploadUtilityBill']['invalid'] && (f['address']['controls']['uploadUtilityBill']['dirty'] || f['address']['controls']['uploadUtilityBill']['touched']) }">
@@ -985,7 +1024,7 @@
                     <div class="form-group row">
                       <div class="col-sm-4 mb-3">
                         <div class="form-group">
-                          <label for="imageUpload" class="label">{{ 'entities.upload_utility_bill' | translate }}</label>
+                          <label for="imageUpload" class="label"></label>
                           <div (change)="onUpload($event)">
                             <img *ngIf="url !== '' && url" [src]="url" alt="" id="profile-photo"/>
                             <input type="file" class="form-control" id="imageUpload" hidden/>
@@ -1014,11 +1053,11 @@
             <div id="flush-collapseBanking" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
               <div class="accordion-body mx-2" formGroupName="payment_details">
                 <div class="form-group row">
-                  <h5 *ngIf="selectedCategory === 'C'">Banking information</h5>
+                  <h5 *ngIf="selectedCategory === 'C'">{{ 'entities.bankingInfo' | translate }}</h5>
                   <!-- bank field -->
                   <ng-container *ngIf="visibleStatus?.bank === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="bank" class="label col-form-label">{{ 'entities.bank' | translate }}</label>
+                      <label for="bank" class="form-label"></label>
                       <p-dropdown [options]="banksData" optionLabel="name"
                         optionValue="id" formControlName="bank"
                         [style]="{ width: '100%', height: '38px' }"
@@ -1050,7 +1089,7 @@
                   <!-- branch field -->
                   <ng-container *ngIf="visibleStatus?.branch === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="branch" class="label col-form-label">{{ 'entities.branch' | translate }}</label>
+                      <label for="branch" class="form-label"></label>
                       <p-dropdown
                         [options]="bankBranchData" optionLabel="name"
                         optionValue="id" formControlName="branch"
@@ -1081,7 +1120,7 @@
                   <!-- account number field -->
                   <ng-container *ngIf="visibleStatus?.account_number === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="account_number" class="label col-form-label">{{ 'entities.account_number' | translate }}</label>
+                      <label for="account_number" class="form-label"></label>
                       <input type="text" id="account_number" name="acNumber" placeholder="Account Number" class="form-control" formControlName="account_number"
                              [ngClass]="{ 'is-invalid': f['payment_details']['controls']['account_number']['invalid']
                         && (f['payment_details']['controls']['account_number']['dirty'] || f['payment_details']['controls']['account_number']['touched']) }">
@@ -1097,7 +1136,7 @@
                 <div class="form-group row">
                   <ng-container *ngIf="visibleStatus?.currency === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="currency" class="label col-form-label">{{ 'entities.currency' | translate }}</label>
+                      <label for="currency" class="form-label"></label>
                       <p-dropdown
                         id="currency"
                         formControlName="currency"
@@ -1114,7 +1153,16 @@
                           'is-invalid': f['payment_details']['controls']['currency']['invalid'] &&
                           (f['payment_details']['controls']['currency']['dirty'] || f['payment_details']['controls']['currency']['touched'])
                         }"
-                      ></p-dropdown>
+                      >
+                        <ng-template let-selected pTemplate="selectedItem">
+                          <div >{{ selected?.nameAndSymbol | titlecase }}</div>
+                        </ng-template>
+                        <ng-template let-currency pTemplate="item">
+                          <div class="flex align-items-center gap-2 text-sm py-1">
+                            <div class="text-sm">{{ currency?.nameAndSymbol | titlecase }}</div>
+                          </div>
+                        </ng-template>
+                      </p-dropdown>
                       <div
                         *ngIf="f['payment_details']['controls']['currency']['invalid'] &&
                         (f['payment_details']['controls']['currency']['dirty'] || f['payment_details']['controls']['currency']['touched'])"
@@ -1130,9 +1178,7 @@
                   <!-- effective date from field -->
                   <ng-container *ngIf="visibleStatus?.effective_from_date === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="effective_from_date" class="label col-form-label">
-                        {{ 'entities.with_effect_from' | translate }}
-                      </label>
+                      <label for="effective_from_date" class="form-label"></label>
                       <p-calendar
                         id="effective_from_date"
                         formControlName="effective_from_date"
@@ -1160,9 +1206,7 @@
                   <!-- effective date to field -->
                   <ng-container *ngIf="visibleStatus?.effective_to_date === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="effective_to_date" class="label col-form-label">
-                        {{ 'entities.with_effect_to' | translate }}
-                      </label>
+                      <label for="effective_to_date" class="form-label"></label>
                       <p-calendar
                         id="effective_to_date"
                         formControlName="effective_to_date"
@@ -1194,7 +1238,7 @@
                   <!-- mpay number field -->
                   <ng-container *ngIf="visibleStatus?.mpayNo === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="mpayNo" class="label col-form-label">{{ 'entities.mpay_no' | translate }}</label>
+                      <label for="mpayNo" class="form-label"></label>
                       <input type="text" id="mpayNo" name="mpayNo" placeholder="Mpay No" class="form-control" formControlName="mpayNo"
                              [ngClass]="{ 'form-control': true, 'is-invalid': f['payment_details']['controls']['mpayNo']['invalid']
                         && (f['payment_details']['controls']['mpayNo']['dirty'] || f['payment_details']['controls']['mpayNo']['touched']) }">
@@ -1210,7 +1254,7 @@
                   <!-- iban field -->
                   <ng-container *ngIf="visibleStatus?.Iban === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="Iban" class="label col-form-label">{{ 'entities.iban' | translate }}</label>
+                      <label for="Iban" class="form-label"></label>
                       <input type="text" id="Iban" name="IBan" placeholder="IBAN" class="form-control" formControlName="Iban"
                              [ngClass]="{ 'form-control': true, 'is-invalid': f['payment_details']['controls']['Iban']['invalid']
                         && (f['payment_details']['controls']['Iban']['dirty'] || f['payment_details']['controls']['Iban']['touched']) }">
@@ -1226,7 +1270,7 @@
                   <!-- swift code field -->
                   <ng-container *ngIf="visibleStatus?.swiftCode === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="swiftCode" class="label col-form-label">{{ 'entities.swiftCode' | translate }}</label>
+                      <label for="swiftCode" class="form-label"></label>
                       <input type="text" id="swiftCode" name="swiftCode" placeholder="Swift Code" class="form-control" formControlName="swiftCode"
                              [ngClass]="{ 'form-control': true, 'is-invalid': f['payment_details']['controls']['Iban']['invalid']
                         && (f['payment_details']['controls']['swiftCode']['dirty'] || f['payment_details']['controls']['swiftCode']['touched']) }">
@@ -1242,7 +1286,7 @@
                   <!-- is default channell field -->
                   <ng-container *ngIf="visibleStatus?.preferredChannel === 'Y'">
                     <div class="col-sm-4 mb-3">
-                      <label for="preferredChannel" class="label col-form-label">{{ 'entities.preferred_channel' | translate }}</label>
+                      <label for="preferredChannel" class="form-label"></label>
                       <select id="preferredChannel" class="form-select" formControlName="preferredChannel"
                               [ngClass]="{ 'form-control': true, 'is-invalid': f['payment_details']['controls']['preferredChannel']['invalid']
                   && (f['payment_details']['controls']['preferredChannel']['dirty'] || f['payment_details']['controls']['preferredChannel']['touched']) }">
@@ -1345,183 +1389,85 @@
               </span>
             </h2>
             <div id="flush-collapseWealth" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-              <div class="accordion-body mx-2" formGroupName="wealth_details">
-                <div class="form-group row">
-                  <!-- funds source field -->
-                  <ng-container *ngIf="visibleStatus?.funds_source === 'Y'">
-                    <div class="col-sm-4 mb-3">
-                      <label for="funds_source" class="label col-form-label">{{ 'entities.source_of_funds' | translate }}</label>
-                      <!--<input type="text" id="funds_source" name="sourceOfFunds" placeholder="Source of Funds" class="form-control" formControlName="funds_source"
-                             [ngClass]="{ 'form-control': true, 'is-invalid': f['wealth_details']['controls']['funds_source']['invalid']
-                  && (f['wealth_details']['controls']['funds_source']['dirty'] || f['wealth_details']['controls']['funds_source']['touched']) }">-->
-                      <select id="funds_source" class="form-select" formControlName="funds_source"
-                              [ngClass]="{ 'form-control': true, 'is-invalid': f['wealth_details']['controls']['funds_source']['invalid']
-                  && (f['wealth_details']['controls']['funds_source']['dirty'] || f['wealth_details']['controls']['funds_source']['touched']) }">
-                        <option *ngFor="let source of fundSource" [value]="source.code">
-                          {{ source.name | titlecase }}
-                        </option>
-                      </select>
-                      <div *ngIf="f['wealth_details']['controls']['funds_source']['invalid']
-                         && (f['wealth_details']['controls']['funds_source']['dirty'] || f['wealth_details']['controls']['funds_source']['touched'])" class="form-text text-danger">
-                      <div *ngIf="f['wealth_details']['controls']['funds_source']['errors']['required']">
-                        {{ 'entities.source_of_funds' | translate }} {{ 'entities.required' | translate }}
-                      </div>
-                    </div>
-                    </div>
-                  </ng-container>
+              <div class="accordion-body mx-2">
 
-                  <!-- type of employmemnt field -->
-                  <ng-container *ngIf="visibleStatus?.typeOfEmployment === 'Y'">
-                    <div class="col-sm-4 mb-3">
-                      <label for="typeOfEmployment" class="label col-form-label">{{ 'entities.type_of_employment' | translate }}</label>
-                      <select id="typeOfEmployment" class="form-select" formControlName="typeOfEmployment"
-                              [ngClass]="{ 'is-invalid': f['wealth_details']['controls']['typeOfEmployment']['invalid']
-                  && (f['wealth_details']['controls']['typeOfEmployment']['dirty'] || f['wealth_details']['controls']['typeOfEmployment']['touched']) }">
-                        <!--<option value="" disabled selected>{{ 'entities.select_employment' | translate }}</option>
-                        <option value="N">{{ 'entities.employed' | translate }}</option>
-                        <option value="N">{{ 'entities.self_employed' | translate }}</option>-->
-                        <option value="SELF_EMPLOYED" selected>Self Employed</option>
-                        <option value="EMPLOYED">Employed</option>
-                        <option value="NOT_EMPLOYED">Not Employed</option>
-                      </select>
-                      <div *ngIf="f['wealth_details']['controls']['typeOfEmployment']['invalid'] && (f['wealth_details']['controls']['typeOfEmployment']['dirty']
-                  || f['wealth_details']['controls']['typeOfEmployment']['touched'])" class="form-text text-danger">
-                        <div *ngIf="f['wealth_details']['controls']['typeOfEmployment']['errors']['required']">
-                          {{ 'entities.type_of_employment' | translate }} {{ 'entities.required' | translate }}
+                <ng-container *ngIf="selectedCategory === 'I'">
+                  <div class="card border-0 mt-3">
+                    <div class="card-header bg-transparent float-start border-bottom-0">
+                      <div class="row mb-3">
+                        <!--<div class="col-sm-12 col-md-6">
+                          <h5 class="my-3 text-primary text-start">{{'entities.aml_details' | translate}}</h5>
+                        </div>-->
+                        <div class="col-sm-12 col-md-12 d-flex justify-content-lg-end">
+                          <div class="float-end">
+                          <span class="icon-circle">
+                            <i class="fa-solid fa-plus" (click)="openIndividualAMLDetailsModal()"></i>
+                          </span>
+                            <span class="icon-circle"><i class="pi pi-pencil" (click)="editIndividualAMLDetails()"></i>
+                            </span>
+                            <span class="icon-circle">
+                              <i class="fa-regular fa-trash-can" (click)="deleteIndividualAMLDetails()"></i>
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </ng-container>
+                    <div class="card-body p-0">
 
-                  <!-- economic sector field -->
-                  <ng-container *ngIf="visibleStatus?.economic_sector === 'Y'">
-                    <div class="col-sm-4 mb-3">
-                      <label for="economic_sector" class="label col-form-label">{{ 'entities.economic_sector' | translate }}</label>
-                      <p-dropdown
-                        id="economic_sector"
-                        formControlName="economic_sector"
-                        [options]="sectorData"
-                        optionLabel="name"
-                        placeholder="{{ 'entities.select_sector' | translate }}"
-                        [filter]="true"
-                        [showClear]="true"
-                        [filterBy]="'name'"
-                        [style]="{ width: '100%', height: '38px' }"
-                        [panelStyle]="{ width: '400px' }"
-                        class="small-dropdown"
-                        [ngClass]="{
-                          'is-invalid': f['wealth_details']['controls']['economic_sector']['invalid'] &&
-                          (f['wealth_details']['controls']['economic_sector']['dirty'] || f['wealth_details']['controls']['economic_sector']['touched'])
-                        }"
-                      ></p-dropdown>
-                      <!-- Error messages -->
-                      <div
-                        *ngIf="f['wealth_details']['controls']['economic_sector']['invalid'] &&
-                        (f['wealth_details']['controls']['economic_sector']['dirty'] || f['wealth_details']['controls']['economic_sector']['touched'])"
-                        class="form-text text-danger"
+                      <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+                      <p-table
+                        #individualAmlDetailsTable
+                        [autoLayout]="true"
+                        [paginator]="true"
+                        [rowHover]="true"
+                        [resizableColumns]="true"
+                        [showCurrentPageReport]="true"
+                        [rows]="pageSize || 10"
+                        [totalRecords]="individualAmlDetailsData?.length"
+                        [value]="individualAmlDetailsData"
+                        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                        responsiveLayout="stack"
+                        [scrollable]="true"
+                        [(selection)]= "selectedIndividualAmlDetails"
+                        selectionMode="single"
+                        (onRowSelect)="onSelectIndividualAml($event)"
+                        scrollHeight="400px"
+                        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                        [globalFilterFields]="['fundsSource', 'employmentStatus', 'sectorId', 'occupationId', 'insurancePurpose', 'premiumFrequency', 'distributeChannel']"
                       >
-                        <div *ngIf="f['wealth_details']['controls']['economic_sector']['errors']['required']">
-                          {{ 'entities.economic_sector' | translate }} {{ 'entities.required' | translate }}
-                        </div>
-                      </div>
-                    </div>
-                  </ng-container>
-                </div>
-                <div class="form-group row">
-                  <!-- occupation field -->
-                  <ng-container *ngIf="visibleStatus?.occupation === 'Y'">
-                    <div class="col-sm-4 mb-3">
-                      <label for="occupation" class="label col-form-label">{{ 'entities.occupation' | translate }}</label>
-                      <p-dropdown
-                        id="occupation"
-                        formControlName="occupation"
-                        [options]="occupationData"
-                        optionLabel="name"
-                        placeholder="{{ 'entities.select_occupation' | translate }}"
-                        [filter]="true"
-                        [showClear]="true"
-                        [filterBy]="'name'"
-                        [style]="{ width: '100%', height: '38px' }"
-                        [panelStyle]="{ width: '400px' }"
-                        class="small-dropdown"
-                        [ngClass]="{
-                          'is-invalid': f['wealth_details']['controls']['occupation']['invalid'] &&
-                          (f['wealth_details']['controls']['occupation']['dirty'] || f['wealth_details']['controls']['occupation']['touched'])
-                        }"
-                      ></p-dropdown>
-                      <!-- Error messages -->
-                      <div
-                        *ngIf="f['wealth_details']['controls']['occupation']['invalid'] &&
-                        (f['wealth_details']['controls']['occupation']['dirty'] || f['wealth_details']['controls']['occupation']['touched'])"
-                        class="form-text text-danger"
-                      >
-                        <div *ngIf="f['wealth_details']['controls']['occupation']['errors']['required']">
-                          {{ 'entities.occupation' | translate }} {{ 'entities.occupation' | translate }}
-                        </div>
-                      </div>
-                    </div>
-                  </ng-container>
 
-                  <!-- purpose of insurance field -->
-                  <ng-container *ngIf="visibleStatus?.purposeinInsurance === 'Y'">
-                    <div class="col-sm-4 mb-3">
-                      <label for="purposeinInsurance" class="label col-form-label">{{ 'entities.purpose_of_insurance' | translate }}</label>
-                      <input type="text" id="purposeinInsurance" name="purposeinInsurance" placeholder="Purpose in Insurance" class="form-control" formControlName="purposeinInsurance"
-                             [ngClass]="{ 'form-control': true, 'is-invalid': f['wealth_details']['controls']['purposeinInsurance']['invalid']
-                  && (f['wealth_details']['controls']['purposeinInsurance']['dirty']
-                  || f['wealth_details']['controls']['purposeinInsurance']['touched']) }">
-                      <div *ngIf="f['wealth_details']['controls']['purposeinInsurance']['invalid'] && (f['wealth_details']['controls']['purposeinInsurance']['dirty']
-                         || f['wealth_details']['controls']['purposeinInsurance']['touched'])" class="form-text text-danger">
-                        <div *ngIf="f['wealth_details']['controls']['purposeinInsurance']['errors']['required']">
-                          {{ 'entities.purpose_of_insrance' | translate }} {{ 'entities.required' | translate }}
-                        </div>
-                      </div>
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th pSortableColumn="fundsSource">{{'entities.source_of_funds'| translate }} <p-sortIcon field="fundsSource"></p-sortIcon></th>
+                            <th pSortableColumn="employmentStatus">{{'entities.type_of_employment'| translate }} <p-sortIcon field="employmentStatus"></p-sortIcon></th>
+                            <th pSortableColumn="sectorId">{{'entities.economic_sector'| translate }} <p-sortIcon field="sectorId"></p-sortIcon></th>
+                            <th pSortableColumn="occupationId">{{'entities.occupation'| translate }} <p-sortIcon field="occupationId"></p-sortIcon></th>
+                            <th pSortableColumn="insurancePurpose">{{'entities.purpose_of_insurance'| translate }} <p-sortIcon field="insurancePurpose"></p-sortIcon></th>
+                            <th pSortableColumn="premiumFrequency">{{'entities.premium_frequency'| translate }} <p-sortIcon field="premiumFrequency"></p-sortIcon></th>
+                            <th pSortableColumn="distributeChannel">{{'entities.distribute_channel'| translate }} <p-sortIcon field="distributeChannel"></p-sortIcon></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-amlDetail>
+                          <tr [pSelectableRow]="amlDetail">
+                            <td>{{amlDetail?.fundsSource }}</td>
+                            <td>{{amlDetail?.employmentStatus }}</td>
+                            <td>{{amlDetail?.sectorId }}</td>
+                            <td>{{amlDetail?.occupationId }}</td>
+                            <td>{{amlDetail?.insurancePurpose | titlecase}}</td>
+                            <td>{{amlDetail?.premiumFrequency | titlecase }}</td>
+                            <td>{{amlDetail?.distributeChannel | titlecase}}</td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td colspan="7">No Wealth Detail(s) Found.</td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
                     </div>
-                  </ng-container>
+                  </div>
+                </ng-container>
 
-                  <!-- premium frequency field -->
-                  <ng-container *ngIf="visibleStatus?.premiumFrequency === 'Y'">
-                    <div class="col-sm-4 mb-3">
-                      <label for="premiumFrequency" class="label col-form-label">{{ 'entities.premium_frequency' | translate }}</label>
-                      <select id="premiumFrequency" class="form-select" formControlName="premiumFrequency"
-                              [ngClass]="{ 'is-invalid': f['wealth_details']['controls']['premiumFrequency']['invalid']
-                  && (f['wealth_details']['controls']['premiumFrequency']['dirty'] || f['wealth_details']['controls']['premiumFrequency']['touched']) }">
-                        <!--<option value="" disabled selected>Select Frequency</option>
-                        <option value="1">{{ 'entities.weekly' | translate }}</option>
-                        <option value="2">{{ 'entities.monthly' | translate }}</option>-->
-                        <option value="ad-hoc" selected>Ad-hoc</option>
-                        <option value="Annual">Annual</option>
-                        <option value="Monthly">Monthly</option>
-                      </select>
-                      <div *ngIf="f['wealth_details']['controls']['premiumFrequency']['invalid'] && (f['wealth_details']['controls']['premiumFrequency']['dirty']
-                  || f['wealth_details']['controls']['premiumFrequency']['touched'])" class="form-text text-danger">
-                        <div *ngIf="f['wealth_details']['controls']['premiumFrequency']['errors']['required']">
-                          {{ 'entities.premium_frequency' | translate }} {{ 'entities.required' | translate }}
-                        </div>
-                      </div>
-                    </div>
-                  </ng-container>
-                </div>
-
-                <div class="form-group row">
-                  <!-- distribute channel field -->
-                  <ng-container *ngIf="visibleStatus?.distributeChannel === 'Y'">
-                    <div class="col-sm-4 mb-3">
-                      <label for="distributeChannel" class="label col-form-label">{{ 'entities.distribute_channel' | translate }}</label>
-                      <input type="text" id="distributeChannel"
-                             name="distributeChannel" placeholder="Distribute Channel"
-                             class="form-control" formControlName="distributeChannel"
-                             [ngClass]="{ 'is-invalid': f['wealth_details']['controls']['distributeChannel']['invalid']
-                         && (f['wealth_details']['controls']['distributeChannel']['dirty'] || f['wealth_details']['controls']['distributeChannel']['touched']) }">
-                      <div *ngIf="f['wealth_details']['controls']['distributeChannel']['invalid'] && (f['wealth_details']['controls']['distributeChannel']['dirty']
-                                    || f['wealth_details']['controls']['distributeChannel']['touched'])" class="form-text text-danger">
-                        <div *ngIf="f['wealth_details']['controls']['distributeChannel']['errors']['required']">
-                          {{ 'entities.distribute_channel' | translate }} {{ 'entities.required' | translate }}
-                        </div>
-                      </div>
-                    </div>
-                  </ng-container>
-                </div>
 
                 <ng-container *ngIf="selectedCategory === 'C'">
                   <div class="card border-0 mt-3">
@@ -1572,7 +1518,6 @@
 
                         <ng-template pTemplate="header">
                           <tr>
-                            <th pSortableColumn="category">{{'entities.type'| translate }} <p-sortIcon field="category"></p-sortIcon></th>
                             <ng-container *ngIf="selectedCategory === 'I'">
                               <th pSortableColumn="modeOfIdentity">{{'entities.id_type'| translate }} <p-sortIcon field="modeOfIdentity"></p-sortIcon></th>
                               <th pSortableColumn="idNumber">{{'serviceDesk.IDNo'| translate }} <p-sortIcon field="idNumber"></p-sortIcon></th>
@@ -1598,15 +1543,14 @@
                         </ng-template>
                         <ng-template pTemplate="body" let-amlDetail>
                           <tr [pSelectableRow]="amlDetail">
-                            <td>{{amlDetail?.category | titlecase}}</td>
-                            <ng-container *ngIf="selectedCategory === 'I'">
+                            <!--<ng-container *ngIf="selectedCategory === 'I'">
                               <td>{{amlDetail?.modeOfIdentity }}</td>
                               <td>{{amlDetail?.idNumber }}</td>
                               <td>{{amlDetail?.citizenshipCountryId }}</td>
                               <td>{{amlDetail?.nationalityCountryId }}</td>
                               <td>{{amlDetail?.maritalStatus | titlecase}}</td>
                               <td>{{amlDetail?.employmentStatus | titlecase}}</td>
-                            </ng-container>
+                            </ng-container>-->
                             <ng-container *ngIf="selectedCategory === 'C'">
                               <td>{{amlDetail?.tradingName | titlecase}}</td>
                               <td>{{amlDetail?.registeredName | titlecase}}</td>
@@ -1616,7 +1560,7 @@
                               <td>{{amlDetail?.parentCountryId}}</td>
                             </ng-container>
                             <td>{{amlDetail?.fundsSource }}</td>
-                            <td *ngIf="selectedCategory === 'I'">{{amlDetail?.premiumFrequency | titlecase}}</td>
+<!--                            <td *ngIf="selectedCategory === 'I'">{{amlDetail?.premiumFrequency | titlecase}}</td>-->
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
@@ -1843,15 +1787,17 @@
 
                   <div class="pt-4">
                     <h5 class="text-dark">
-                      Privacy policy & consent
+                      {{ 'entities.privacyPolicyConsent' | translate }}
                     </h5>
                     <div class="form-check">
                       <input class="form-check-input" type="checkbox" value="" id="checkDefault">
                       <label class="form-check-label" for="checkDefault">
                         I have read and accept the
-                        <span class="text-primary">Terms of Use</span>
+                        <a target="_blank" href="{{ termsOfUseParam[0]?.value }}" class="text-primary">Terms of Use</a>
+
                         and
-                        <span class="text-primary">Privacy statements</span>.
+                        <a target="_blank" href="{{ privacyStatementParam[0]?.value }}" class="text-primary">Privacy statements</a>
+                        .
                       </label>
                     </div>
                   </div>
@@ -2848,6 +2794,127 @@
       </div>
       <div class="modal-footer border-top-0">
         <button type="button" class="btn btn-primary" (click)="saveOwnershipDetails()">{{ 'serviceDesk.saveDetails' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal for Individual AML details-->
+<div
+  class="modal fade"
+  #individualAmlDetailsModal
+  id="individualAmlDetailsModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel">{{ editMode ? 'Edit' : 'Define' }} {{ editMode ? 'AML details' : 'new AML details' }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeIndividualAMLDetailsModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="individualAmlDetailsForm">
+          <div class="row my-3">
+            <ng-container *ngIf="visibleStatus?.funds_source === 'Y'">
+              <div class="col-sm-6 mb-3">
+                <label for="funds_source" class="form-label">{{ 'entities.source_of_funds' | translate }}</label>
+                <select id="funds_source" class="form-select" formControlName="funds_source">
+                  <option *ngFor="let source of fundSource" [value]="source.code">
+                    {{ source.name | titlecase }}
+                  </option>
+                </select>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="visibleStatus?.typeOfEmployment === 'Y'">
+              <div class="col-sm-6 mb-3">
+                <label for="typeOfEmployment" class="form-label">{{ 'entities.type_of_employment' | translate }}</label>
+                <select id="typeOfEmployment" class="form-select" formControlName="typeOfEmployment">
+                  <option value="SELF_EMPLOYED" selected>Self Employed</option>
+                  <option value="EMPLOYED">Employed</option>
+                  <option value="NOT_EMPLOYED">Not Employed</option>
+                </select>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="visibleStatus?.economic_sector === 'Y'">
+              <div class="col-sm-6 mb-3">
+                <label for="economic_sector" class="form-label">{{ 'entities.economic_sector' | translate }}</label>
+                <p-dropdown
+                  id="economic_sector"
+                  formControlName="economic_sector"
+                  [options]="sectorData"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="{{ 'entities.select_sector' | translate }}"
+                  [filter]="true"
+                  [showClear]="true"
+                  [filterBy]="'name'"
+                  [style]="{ width: '100%', height: '38px' }"
+                  [panelStyle]="{ width: '400px' }"
+                  class="small-dropdown">
+                </p-dropdown>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="visibleStatus?.occupation === 'Y'">
+              <div class="col-sm-6 mb-3">
+                <label for="occupation" class="form-label">{{ 'entities.occupation' | translate }}</label>
+                <p-dropdown
+                  id="occupation"
+                  formControlName="occupation"
+                  [options]="occupationData"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="{{ 'entities.select_occupation' | translate }}"
+                  [filter]="true"
+                  [showClear]="true"
+                  [filterBy]="'name'"
+                  [style]="{ width: '100%', height: '38px' }"
+                  [panelStyle]="{ width: '400px' }"
+                  class="small-dropdown">
+                </p-dropdown>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="visibleStatus?.purposeinInsurance === 'Y'">
+              <div class="col-sm-6 mb-3">
+                <label for="purposeinInsurance" class="form-label">{{ 'entities.purpose_of_insurance' | translate }}</label>
+                <input type="text" id="purposeinInsurance" name="purposeinInsurance" placeholder="Purpose in Insurance" class="form-control"
+                       formControlName="purposeinInsurance">
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="visibleStatus?.premiumFrequency === 'Y'">
+              <div class="col-sm-6 mb-3">
+                <label for="premiumFrequency" class="form-label">{{ 'entities.premium_frequency' | translate }}</label>
+                <select id="premiumFrequency" class="form-select" formControlName="premiumFrequency">
+                  <option value="ad-hoc" selected>Ad-hoc</option>
+                  <option value="Annual">Annual</option>
+                  <option value="Monthly">Monthly</option>
+                </select>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="visibleStatus?.distributeChannel === 'Y'">
+              <div class="col-sm-6 mb-3">
+                <label for="distributeChannel" class="form-label">{{ 'entities.distribute_channel' | translate }}</label>
+                <input type="text" id="distributeChannel"
+                       name="distributeChannel" placeholder="Distribute Channel"
+                       class="form-control" formControlName="distributeChannel">
+              </div>
+            </ng-container>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveIndividualAMLDetails()">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>

@@ -505,10 +505,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.quotationCode = this.quotationDetails?.quotationProducts[0]?.quotCode;
+    this.quotationCode = this.quotationDetails?.code;
 
     this.quotationService
-      .updateQuotationStatus(this.quotationCode, StatusEnum.Rejected, this.reasonCancelled)
+      .updateQuotationStatus(this.quotationDetails?.code, StatusEnum.Rejected, this.reasonCancelled)
       .pipe(untilDestroyed(this))
       .subscribe({
           next: (response: any) => {
