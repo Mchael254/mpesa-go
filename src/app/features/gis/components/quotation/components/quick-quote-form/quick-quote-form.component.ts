@@ -628,6 +628,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     let riskPayload: Risk[] = []
     for (let risk of product.risks) {
       riskPayload.push({
+        sumInsured:  risk?.selfDeclaredValue || risk?.value,
         withEffectFrom: this.formatDate(new Date(effectiveDate)),
         withEffectTo: this.formatDate(new Date(product.effectiveTo)),
         prorata: "F",
