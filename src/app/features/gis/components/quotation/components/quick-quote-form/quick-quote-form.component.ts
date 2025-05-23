@@ -65,7 +65,14 @@ import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
 import {debounceTime} from "rxjs/internal/operators/debounceTime";
 import {distinctUntilChanged, map} from "rxjs/operators";
 import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
-import {CoverType, Limit, PremiumComputationRequest, Product, Risk} from "../../data/premium-computation";
+import {
+  CoverType,
+  Limit,
+  PremiumComputationRequest,
+  Product,
+  ProductLevelPremium,
+  Risk
+} from "../../data/premium-computation";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -97,7 +104,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   public currencyObj: NgxCurrencyConfig;
   products: Products[];
   ProductDescriptionArray: { code: number, description: string }[] = [];
-  selectedProductCode: any;
   selectedProducts: Products[] = []
   previousSelected: Products[] = [];
 
@@ -175,15 +181,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   carRegNoHasError: boolean = false;
   passedQuotationCode: string;
   passedNewClientDetails: any;
-
-  isAddRisk: boolean;
-
-  //premiumComputationRequest: PremiumComputationRequest;
   expiryPeriod: any;
   propertyId: any;
   premiumList: Premiums[] = [];
-  allPremiumRate: Premiums[] = [];
-  additionalLimit = [];
   @ViewChild('dt1') dt1: Table | undefined;
   component: {
     code: number;
@@ -201,8 +201,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   defaultCurrencySymbol: any;
   selectedCurrencySymbol: any;
   coverFrom: any;
-
-  minCoverToDate = new Date()
 
   selectedEffectiveDate: any;
   todaysDate: string;
@@ -270,7 +268,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   pinValue: string;
   idValue: string;
   taxList: Tax[] = [];
-  formattedCoverToDate: string;
 
   isReturnToQuickQuote: boolean;
   storedData: QuickQuoteData = null
@@ -280,7 +277,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   exchangeRate: number;
 
   applicablePremiumRates: any
-  computationPayloadCode: number;
+  premiumComputationResponse: ProductLevelPremium= null
+
 
 
   constructor(
@@ -566,7 +564,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Submit
   onSubmit() {
     if (this.quickQuoteForm.invalid) {
       this.markAllFieldsAsTouched(this.quickQuoteForm);
@@ -575,10 +572,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug("Form submission payload >>>>", this.quickQuoteForm.value);
     const computationRequest = this.computationPayload();
     log.debug("premium computation payload >>>>", computationRequest);
-    //  return
     this.quotationService.premiumComputationEngine(computationRequest).pipe(
       untilDestroyed(this)
     ).subscribe(response => {
+      this.premiumComputationResponse = response
       log.debug("Computation response >>>>", response)
     });
   }
@@ -602,8 +599,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       coinsuranceLeader: null,
       age: null,
       underwritingYear: withEffectFrom.getFullYear(),
-      dateWithEffectTo: new Date().toString(),
-      dateWithEffectFrom: withEffectFrom.toString(),
+      dateWithEffectTo: this.formatDate(new Date()),
+      dateWithEffectFrom: this.formatDate(withEffectFrom),
       products: this.getProductPayload(formValues),
       currency: {
         rate: this.exchangeRate
@@ -618,8 +615,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         code: product.code,
         description: product.description,
         expiryPeriod: product.expiry,
-        withEffectFrom: new Date(formValues.effectiveDate).toString(),
-        withEffectTo: new Date(product.effectiveTo).toString(),
+        withEffectFrom: this.formatDate(new Date(formValues.effectiveDate)),
+        withEffectTo: this.formatDate(new Date(product.effectiveTo)),
         risks: this.getRiskPayload(product, formValues.effectiveDate)
       })
     }
@@ -630,8 +627,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     let riskPayload: Risk[] = []
     for (let risk of product.risks) {
       riskPayload.push({
-        withEffectFrom: effectiveDate.toString(),
-        withEffectTo: new Date(product.effectiveTo).toString(),
+        withEffectFrom: this.formatDate(new Date(effectiveDate)),
+        withEffectTo: this.formatDate(new Date(product.effectiveTo)),
         prorata: "F",
         subclassSection: {
           code: risk?.useOfProperty?.code
@@ -896,76 +893,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   }
 
 
-  /**
-   * Handles the selection of a product.
-   * - Retrieves the selected product code from the event.
-   * - Fetches and loads product subclasses.
-   * - Loads dynamic form fields based on the selected product.
-   * @method onProductSelected
-   * @param {any} event - The event triggered by product selection.
-   * @return {void}
-   */
-  onProductSelected(selectedValue: any) {
-    this.selectedProductCode = selectedValue.code;
-    log.debug('Selected Product Code:', this.selectedProductCode);
-    const defaultCurrency = this.currencyList?.find(
-      (currency) => currency.currencyDefault === 'Y'
-    );
-    log.debug('Default currency here', defaultCurrency);
-    this.quickQuoteForm.get('currency').setValue(defaultCurrency);
-    this.selectedEffectiveDate = new Date();
-    this.quickQuoteForm.get('effectiveDate').setValue(this.selectedEffectiveDate);
-    // this.setCurrencySymbol(defaultCurrency.symbol);
-    // this.getProductSubclass(this.selectedProductCode);
-
-    // Load the dynamic form fields based on the selected product
-    // this.getProductExpiryPeriod();
-    this.getCoverToDate();
-  }
-
-  /**
-   * Retrieves cover to date based on the selected product and cover from date.
-   * - Checks if 'coverFromDate' is available.
-   * - Makes an HTTP GET request to ProductService for cover to date.
-   * - Assigns the cover to date from the received data.
-   * @method getCoverToDate
-   * @return {void}
-   */
-  getCoverToDate() {
-    log.debug(
-      'Selected Product Code-coverdate method',
-      this.selectedProductCode
-    );
-    log.debug('selected Effective date', this.selectedEffectiveDate);
-
-    let dateFrom = this.formatDate(this.selectedEffectiveDate);
-    if (dateFrom) {
-      sessionStorage.setItem('selectedDate', JSON.stringify(dateFrom));
-      this.productService
-        .getCoverToDate(dateFrom, this.selectedProductCode)
-        .subscribe((data) => {
-          log.debug('DATA FROM COVERFROM:', data);
-          const dataDate = data;
-          this.passedCoverToDate = dataDate._embedded[0].coverToDate;
-          log.debug('cover date:', this.passedCoverToDate);
-          const passedCoverTo = new Date(this.passedCoverToDate);
-          // Extract the day, month, and year
-          const day = passedCoverTo.getDate();
-          const month = passedCoverTo.toLocaleString('default', {
-            month: 'long',
-          }); // 'long' gives the full month name
-          const year = passedCoverTo.getFullYear();
-          // Format the date in 'dd-Month-yyyy' format
-          const formattedDate = `${day}-${month}-${year}`;
-          this.formattedCoverToDate = formattedDate;
-          log.debug('formatted cover to  Date', this.formattedCoverToDate);
-          log.debug('DATe FROM DATA:', this.passedCoverToDate);
-          this.selectedCoverToDate = this.passedCoverToDate;
-          this.quickQuoteForm?.get('coverTo')?.setValue(new Date(this.selectedCoverToDate))
-        });
-    }
-  }
-
   formatDate(date: Date): string {
     log.debug('Date (formatDate method):', date);
     const year = date?.getFullYear();
@@ -1012,13 +939,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.fetchComputationData(productCode, event.code, riskIndex, productIndex);
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
     this.fetchRegexPattern(productIndex, riskIndex);
-  }
-
-  onDateInputChange(date: any) {
-    log.debug('selected Effective date', date.value);
-    this.selectedEffectiveDate = date;
-    this.minCoverToDate = this.selectedEffectiveDate
-    this.getCoverToDate();
   }
 
   /**
@@ -1819,75 +1739,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   inputName(event) {
     const value = (event.target as HTMLInputElement).value;
     this.filterObject['name'] = value;
-  }
-
-  inputEmail(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.emailValue = value;
-    // this.filterObject['emailAddress'] = value;
-  }
-
-  inputPhone(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.phoneValue = value;
-
-    // this.filterObject['phoneNumber'] = value;
-  }
-
-  inputIdNumber(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['idNumber'] = value;
-  }
-
-  inputPin(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.pinValue = value;
-
-    // this.filterObject['pinNumber'] = value;
-  }
-
-  inputInternalId(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.idValue = value;
-
-    // this.filterObject['id'] = value;
-  }
-
-  fetchTaxes() {
-    this.quotationService
-      .getTaxes(this.selectedProductCode, this.selectedSubclassCode)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          this.taxList = response._embedded;
-          log.debug('Tax List ', this.taxList);
-        },
-        error: (error) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
-        },
-      });
-  }
-
-  setTax(): Tax[] {
-    log.debug('Tax List when setting the payload', this.taxList);
-
-    // Map the tax list to the desired format
-    const taxList: Tax[] = this.taxList.map((item) => {
-      return {
-        taxRate: String(item.taxRate), // Convert to string to match Tax interface
-        code: String(item.code),
-        taxCode: String(item.taxCode),
-        divisionFactor: String(item.divisionFactor),
-        applicationLevel: String(item.applicationLevel),
-        taxRateType: String(item.taxRateType),
-      };
-    });
-
-    log.debug('Tax List after mapping the payload', taxList);
-    return taxList; // Explicitly returning the list
   }
 
   fetchUserOrgId() {

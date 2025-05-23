@@ -1,3 +1,5 @@
+import {SubclassesDTO} from "../../setups/data/gisDTO";
+
 export interface PremiumComputationRequest {
   dateWithEffectFrom: string;
   dateWithEffectTo: string;
@@ -93,6 +95,8 @@ export interface ProductLevelPremium {
 
 export interface ProductPremium {
   riskLevelPremiums: RiskLevelPremium[];
+  description: string
+  code: number
 }
 
 export interface RiskLevelPremium {
