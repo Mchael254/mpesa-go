@@ -174,7 +174,6 @@ export interface productDocument {
 }
 
 export interface Products {
-
   code: number;
   shortDescription: string;
   description: string;
@@ -650,6 +649,67 @@ export interface Subclasses {
   webSubclassDetails: String,
   withEffectFrom: String,
   withEffectTo: String
+  applicableTaxes: Tax[]
+  selectedBinder: Binders
+  coverTypes?: CoverType[]
+}
+
+export interface CoverType {
+  coverTypeCode?: number
+  coverTypeShortDescription?: string
+  defaultSumInsured?: string
+  description?: string
+  applicableSections?: Section[]
+}
+
+export interface Section {
+  binderCode?: number
+  cashBackLevel?: any
+  code?: number
+  currencyCode?: number
+  dateWithEffectFrom?: any
+  dateWithEffectTo?: any
+  divisionFactor?: number
+  doesCashBackApply?: string
+  freeLimit?: number
+  grpCode?: number
+  isExProtectorApplication?: string
+  isMandatory?: string
+  isNoClaimDiscountApplicable?: string
+  isSumInsuredLimitApplicable?: string
+  limitAmount?: number
+  maximumRate?: number
+  minimumRate?: number
+  multiplierDivisionFactor?: number
+  multiplierRate?: number
+  noClaimDiscountLevel?: string
+  premiumEndorsementMinimumAmount?: number
+  premiumMinimumAmount?: number
+  proratedOrFull?: string
+  rangeFrom?: number
+  rangeTo?: number
+  rangeType?: string
+  rate?: number
+  rateDescription?: string
+  rateFrequencyType?: string
+  rateType?: string
+  sectionCode?: number
+  sectionDescription?: string
+  sectionShortDescription?: string
+  sectionType?: string
+  subClassCode?: number
+  sumInsuredLimitType?: string
+  sumInsuredRate?: number
+  territoryCode?: number
+}
+
+export interface Tax {
+  applicationLevel?: string,
+  code?: number
+  divisionFactor?: number,
+  taxCode?: string
+  taxRate?: number
+  taxRateType?: string
 }
 
 export interface Classes {
@@ -995,7 +1055,6 @@ export interface specialPremiumRates {
 }
 
 
-
 export interface SubclassCoverTypes {
   code: number,
   coverTypeCode: number,
@@ -1016,7 +1075,8 @@ export interface SubclassCoverTypes {
   surveyEvaluationRequired: string,
   organizationCode: string
 }
-export interface SubclassCoverTypesResponse{
+
+export interface SubclassCoverTypesResponse {
   _embedded: any[]
   message: string;
   status: string

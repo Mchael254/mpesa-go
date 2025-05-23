@@ -911,14 +911,14 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   performComputation() {
     forkJoin(([
       this.quotationService.updatePremiumComputationPayload(this.computationPayloadCode, this.premiumComputationPayload),
-      this.quotationService.premiumComputationEngine(this.premiumComputationPayload)
+      null
     ])).pipe(
       untilDestroyed(this)
     ).subscribe({
       next: (([payloadUpdate, computationResponse]) => {
         this.premiumResponse = computationResponse
         this.premiumComputationPayload = payloadUpdate._embedded
-        this.riskLevelPremiums = computationResponse.riskLevelPremiums
+        //this.riskLevelPremiums = computationResponse.riskLevelPremiums
         sessionStorage.setItem('premiumResponse', JSON.stringify(computationResponse));
       }),
       error: (error) => {

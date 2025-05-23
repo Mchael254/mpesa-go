@@ -1,11 +1,10 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   AbstractControl,
-  AsyncValidatorFn,
+  FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
-  ValidationErrors,
   Validators,
 } from '@angular/forms';
 import {LazyLoadEvent} from 'primeng/api';
@@ -44,22 +43,18 @@ import {OrganizationBranchDto} from '../../../../../../shared/data/common/organi
 
 import {NgxSpinnerService} from 'ngx-spinner';
 import {
-  Limit,
-  PremiumComputationRequest,
+  DynamicRiskField,
   QuickQuoteData,
-  Risk,
   Tax,
   UserDetail,
 } from '../../data/quotationsDTO';
 import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
 import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
-import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
 
-import {firstValueFrom, forkJoin, mergeMap, Observable, of, tap} from 'rxjs';
+import {firstValueFrom, forkJoin, mergeMap, Observable, tap} from 'rxjs';
 import {NgxCurrencyConfig} from 'ngx-currency';
-import {CountryISO, PhoneNumberFormat, SearchCountryField,} from 'ngx-intl-tel-input';
 import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
 import {OccupationDTO} from '../../../../../../shared/data/common/occupation-dto';
 import {VesselTypesService} from '../../../setups/services/vessel-types/vessel-types.service';
@@ -68,7 +63,16 @@ import {TableDetail} from '../../../../../../shared/data/table-detail';
 import {MenuService} from 'src/app/features/base/services/menu.service';
 import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
 import {debounceTime} from "rxjs/internal/operators/debounceTime";
-import {catchError, distinctUntilChanged, map} from "rxjs/operators";
+import {distinctUntilChanged, map} from "rxjs/operators";
+import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
+import {
+  CoverType,
+  Limit,
+  PremiumComputationRequest,
+  Product,
+  ProductLevelPremium,
+  Risk
+} from "../../data/premium-computation";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -82,31 +86,41 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
 
+
+  breadCrumbItems: BreadCrumbItem[] = [
+    {
+      label: 'Home',
+      url: '/home/dashboard',
+    },
+    {
+      label: 'Quotation',
+      url: '/home/lms/quotation/list',
+    },
+    {
+      label: 'New quote',
+      url: '/home/gis/quotation/quick-quote',
+    },
+  ];
   public currencyObj: NgxCurrencyConfig;
-  productList: Products[];
-  ProductDescriptionArray: any = [];
-  selectedProduct: Products[];
-  selectedProductCode: any;
+  products: Products[];
+  ProductDescriptionArray: { code: number, description: string }[] = [];
+  selectedProducts: Products[] = []
+  previousSelected: Products[] = [];
+
+  productRiskFields: DynamicRiskField[][] = [];
+  expandedStates: boolean[] = [];
+
 
   allSubclassList: Subclasses[];
   selectedSubclassCode: any;
-  allMatchingSubclasses = [];
+  productSubclassesMap: { [productCode: number]: Subclasses[] } = {};
   subclassSectionCoverList: any;
   mandatorySections: subclassCoverTypeSection[];
   binderList: any;
   binderListDetails: any;
   selectedBinderCode: any;
   selectedBinder: Binders;
-  newClient: boolean = true;
-  isNewClient: boolean = true;
-  existingClientSelected = false;
-  readonlyClient: boolean = false;
-  isFieldsDisabled: boolean = false;
 
-  sourceList: any;
-  sourceDetail: any;
-  selectedSourceCode: any;
-  selectedSource: any;
 
   currencyList: any;
   currencyCode: any;
@@ -132,20 +146,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   clientForm: FormGroup;
   sectionDetailsForm: FormGroup;
 
-  clientList: any;
-  clientDetails: ClientDTO;
-  clientData: any;
-  clientCode: any;
-  clientType: any;
-  clientName: any;
-  clientEmail: any;
-  clientPhone: any;
-  newClientData = {
-    inputClientName: '',
-    inputClientZipCode: '',
-    inputClientPhone: '',
-    inputClientEmail: '',
-  };
+
   countryList: CountryDto[];
   selectedCountry: any;
   filteredCountry: any;
@@ -178,21 +179,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   carRegNoValue: string;
   dynamicRegexPattern: string;
   carRegNoHasError: boolean = false;
-
-  passedQuotation: any;
-  passedQuotationNo: any;
   passedQuotationCode: string;
-  PassedClientDetails: any;
   passedNewClientDetails: any;
-
-  isAddRisk: boolean;
-
-  premiumComputationRequest: PremiumComputationRequest;
   expiryPeriod: any;
   propertyId: any;
   premiumList: Premiums[] = [];
-  allPremiumRate: Premiums[] = [];
-  additionalLimit = [];
   @ViewChild('dt1') dt1: Table | undefined;
   component: {
     code: number;
@@ -203,7 +194,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   passedSections: any[] = [];
   existingPropertyIds: string[] = [];
-  parsedProductDesc: any;
   regexPattern: any;
   defaultCurrencyName: any;
   minDate: Date | undefined;
@@ -211,18 +201,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   defaultCurrencySymbol: any;
   selectedCurrencySymbol: any;
   coverFrom: any;
-
-  minCoverToDate = new Date()
-
-  SearchCountryField = SearchCountryField;
-  CountryISO = CountryISO;
-  PhoneNumberFormat = PhoneNumberFormat;
-  preferredCountries: CountryISO[] = [
-    CountryISO.Kenya,
-    CountryISO.Nigeria,
-    CountryISO.UnitedStates,
-    CountryISO.UnitedKingdom,
-  ];
 
   selectedEffectiveDate: any;
   todaysDate: string;
@@ -289,8 +267,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   phoneValue: string;
   pinValue: string;
   idValue: string;
-  taxList: any;
-  formattedCoverToDate: string;
+  taxList: Tax[] = [];
 
   isReturnToQuickQuote: boolean;
   storedData: QuickQuoteData = null
@@ -300,7 +277,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   exchangeRate: number;
 
   applicablePremiumRates: any
-  computationPayloadCode: number;
+  premiumComputationResponse: ProductLevelPremium= null
+
+
 
   constructor(
     public fb: FormBuilder,
@@ -336,147 +315,22 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       showFilter: false,
       showSorting: false,
     };
-    this.storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'));
-    this.quoteAction = sessionStorage.getItem('quoteAction');
-    this.isReturnToQuickQuote = JSON.parse(
-      sessionStorage.getItem('isReturnToQuickQuote')
-    );
-    this.PassedClientDetails = this.storedData?.selectedClient;
-    log.debug("Passed Client DETAILS:", this.PassedClientDetails)
-    this.passedQuotation = JSON.parse(
-      sessionStorage.getItem('passedQuotationDetails')
-    );
-    this.clientDetails = this.storedData?.selectedClient
+
   }
 
   ngOnInit(): void {
-
-
-    this.minDate = new Date();
-    this.loadAllproducts();
-    this.getCountries();
-
-    this.loadAllQoutationSources();
-    this.getuser();
-    this.populateYears();
-    this.loadAllCurrencies();
-
-    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
-    this.dynamicSideBarMenu(this.quotationSubMenuList[1]);
-
-    const passedIsEditRiskString = sessionStorage.getItem('isEditRisk');
-    this.isEditRisk = JSON.parse(passedIsEditRiskString);
-    log.debug('isEditRisk Details:', this.isEditRisk);
-
-    const passedIsAddRiskString = sessionStorage.getItem('isAddRisk');
-    this.isAddRisk = JSON.parse(passedIsAddRiskString);
-    log.debug('isAddRiskk Details:', this.isAddRisk);
-    this.premiumComputationRequest;
-    const organizationId = undefined;
-    this.getOccupation(organizationId);
-    this.getVesselTypes(organizationId);
-
-    this.tableDetails = {
-      cols: this.cols,
-      rows: this.clientsData?.content,
-      globalFilterFields: this.globalFilterFields,
-      showFilter: false,
-      showSorting: true,
-      paginator: true,
-      urlIdentifier: 'id',
-      viewDetailsOnView: true,
-      isLazyLoaded: true,
-    };
-
-    log.debug('isReturnToQuickQuote Details:', this.isReturnToQuickQuote);
-    sessionStorage.removeItem('navigationSource');
-    this.createQuickQuiteForm();
-
-    if (this.storedData) {
-      log.debug('Existing data>>>>', this.storedData);
-      this.selectedProductCode = this.storedData.product.code;
-      this.selectedSubclassCode = this.storedData.subClass.code;
-      this.LoadAllFormFields(this.selectedProductCode);
-      this.getProductSubclass(this.selectedProductCode);
-      this.getProductExpiryPeriod();
-      this.getCoverToDate();
-      this.fetchComputationData(
-        this.selectedProductCode,
-        this.selectedSubclassCode
-      );
-      this.fetchRegexPattern();
-      this.existingClientSelected = this.storedData.existingClientSelected;
-      if (this.existingClientSelected) {
-        this.newClient = false;
-      }
-      this.quickQuoteForm.patchValue({
-        clientName: this.storedData.clientName,
-        emailAddress: this.storedData.clientEmail,
-        phoneNumber: this.storedData.clientPhoneNumber,
-        effectiveDate: new Date(this.storedData.effectiveDateFrom),
-      });
-      if (this.quoteAction == 'A') {
-        this.quickQuoteForm?.get('effectiveDate')?.disable()
-      }
-    }
-    log.debug('Quotation Action:', this.quoteAction);
-    log.debug('Quotation Details:', this.passedQuotation);
-    this.passedQuotationNo = this.passedQuotation?.quotationNo ?? null;
-    if (this.passedQuotation) {
-      this.existingPropertyIds = this.passedQuotation.quotationProducts?.flatMap(product =>
-        product.riskInformation?.map(risk => risk.propertyId) || []
-      ) || [];
-      log.debug('existing property id', this.existingPropertyIds);
-    }
-
-    this.passedQuotationCode = this.passedQuotation?.quotationProducts?.[0]?.quotCode ?? null;
-
-    sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
-    sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
-  }
-
-  emailOrPhoneNumberExistsValidator(field: 'emailAddress' | 'phoneNumber'): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      if (!control.value || this.existingClientSelected) {
-        return of(null);
-      }
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      const phonePattern = /^\d{10}$/;
-      const emailValid = emailPattern.test(control.value)
-      const phoneNumberValid = phonePattern.test(control.value)
-      if (field === 'emailAddress' && !emailValid) {
-        return of(null);
-      }
-      if (field === 'phoneNumber' && !phoneNumberValid) {
-        return of(null);
-      }
-      log.debug("Testing email validity", emailValid)
-      log.debug("Testing phone validity", phoneNumberValid)
-      return this.quotationService.searchClients(field, control.value, 0, 5, '').pipe(
-        debounceTime(300),
-        map(response => (response.numberOfElements > 0 ? {alreadyUsed: true} : null)),
-        catchError(() => of(null))
-      );
-    };
-  }
-
-  createQuickQuiteForm() {
+    this.LoadAllFormFields();
     this.quickQuoteForm = this.fb.group({
-      clientName: [''],
-      emailAddress: ['', {
-        validators: [Validators.email],
-        asyncValidators: [this.emailOrPhoneNumberExistsValidator('emailAddress')]
-      }],
-      phoneNumber: ['', {
-        validator: [],
-        asyncValidators: [this.emailOrPhoneNumberExistsValidator('phoneNumber')]
-      }],
-      product: ['', [Validators.required]],
-      subClass: ['', [Validators.required]],
-      effectiveDate: ['', [Validators.required]],
-      currency: ['', [Validators.required]],
+      product: [[]],
+      effectiveDate: [new Date()],
+      quotComment: [''],
+      products: this.fb.array([])
     });
+    this.loadAllCurrencies()
+    this.getuser()
+    this.expandedStates = this.productsFormArray.controls.map((_, index) => index === 0);
   }
+
 
   isFieldRequired(controlName: string): boolean {
     const control = this.quickQuoteForm.get(controlName);
@@ -493,6 +347,54 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
   }
 
+  /**
+   * Loads form fields dynamically based on the selected product code.
+   * - Subscribes to 'getFormFields' observable from QuotationService.
+   * - Populates 'formContent' with received data.
+   * - Assigns 'formData' from 'formContent.fields'.
+   * - Clears existing form controls and adds new controls for each product-specific field.
+   * - Applies custom validators and logs control details for debugging.
+   * @method LoadAllFormFields
+   * @param {Number} selectedProductCode - The selected product code for dynamic form loading.
+   * @return {void}
+   */
+  LoadAllFormFields() {
+    const formFieldDescription = 'product-quick-quote';
+
+    this.quotationService
+      .getFormFields(formFieldDescription)
+      .subscribe((data) => {
+        this.formData = [];
+        this.formContent = data;
+        log.debug(this.formContent, 'Form-content');
+        this.formData = this.formContent[0]?.fields;
+        log.debug(this.formData, 'formData is defined here');
+        this.formData && this.loadAllproducts();
+
+        Object.keys(this.quickQuoteForm.controls).forEach((controlName) => {
+          const control = this.quickQuoteForm.get(controlName) as any;
+          if (control?.metadata?.dynamic) {
+            this.quickQuoteForm.removeControl(controlName);
+            log.debug(`Removed dynamic control: ${controlName}`);
+          }
+        });
+        this.formData.forEach((field) => {
+          const validators = [];
+          if (field.isMandatory === 'Y') {
+            validators.push(Validators.required);
+          }
+          this.quickQuoteForm.addControl(
+            field.name,
+            new FormControl('', validators)
+          );
+          (this.quickQuoteForm.get(field.name) as any).metadata = {
+            dynamic: true,
+          };
+        });
+
+
+      });
+  }
 
   /**
    * Loads all products by making an HTTP GET request to the ProductService.
@@ -504,120 +406,380 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   loadAllproducts() {
     this.productService
       .getAllProducts()
-      .pipe(untilDestroyed(this))
+      .pipe(
+        map(products => {
+          return products.map(product => {
+            return {
+              ...product,
+              description: this.capitalizeWord(product.description)
+            }
+          })
+        }),
+        untilDestroyed(this))
       .subscribe((data) => {
-        this.ProductDescriptionArray = data.map((product) => {
-          return {
-            code: product.code,
-            description: this.capitalizeWord(product.description),
-          }
-        })
-        if (this.storedData) {
-          this.quickQuoteForm.patchValue({
-            product: this.ProductDescriptionArray.find(
-              (value: { code: any }) =>
-                value.code === this.storedData.product.code
-            ),
+        this.products = data
+      });
+  }
+
+  get productsFormArray(): FormArray {
+    return this.quickQuoteForm.get('products') as FormArray;
+  }
+
+  getRisks(productIndex: number): FormArray {
+    return this.productsFormArray.at(productIndex).get('risks') as FormArray;
+  }
+
+  getRiskFieldsForProduct(productCode: number): Observable<DynamicRiskField[]> {
+    const formFieldDescription = `product-quick-quote-${productCode}`;
+    return this.quotationService.getFormFields(formFieldDescription).pipe(
+      map(response => {
+        const fields = response?.[0]?.fields || [];
+        return fields.map(field => ({
+          type: field.type,
+          name: field.name,
+          max: field.max,
+          min: field.min,
+          isMandatory: field.isMandatory,
+          disabled: field.isEnabled === "N",
+          readonly: field.isReadOnly === "Y",
+          regexPattern: field.regexPattern,
+          placeholder: field.placeholder,
+          label: field.label
+        }));
+      })
+    );
+  }
+
+
+  // Dynamically creates a FormGroup for a risk using provided fields
+  createRiskGroup(riskFields: DynamicRiskField[]): FormGroup {
+    const group: { [key: string]: AbstractControl } = {};
+
+    riskFields.forEach(field => {
+      group[field.name] = new FormControl(
+        {value: '', disabled: field.disabled},
+        field.isMandatory === 'Y' ? Validators.required : []
+      );
+    });
+    group['applicableTaxes'] = new FormControl(null)
+    group['applicableBinder'] = new FormControl(null)
+    group['applicableCoverTypes'] = new FormControl(null)
+    return new FormGroup(group);
+  }
+
+
+  // When products are selected from multi-select
+  getSelectedProducts(event: any) {
+    const currentSelection = event.value as Products[];
+    const currentCodes = currentSelection.map(p => p.code);
+    const previousCodes = this.previousSelected.map(p => p.code);
+
+    // Find added and removed products
+    const addedProduct = currentSelection.find(p => !previousCodes.includes(p.code));
+    const removedProduct = this.previousSelected.find(p => !currentCodes.includes(p.code));
+
+    if (removedProduct) {
+      // Remove unselected products from FormArray
+      const index = this.productsFormArray.controls.findIndex(
+        ctrl => ctrl.get('code')?.value === removedProduct.code
+      );
+      if (index !== -1) {
+        this.productsFormArray.removeAt(index);
+      }
+    }
+
+    if (addedProduct) {
+      this.expandedStates = this.productsFormArray.controls.map((_, index) => index === 0);
+      const effectiveDate = this.quickQuoteForm.get('effectiveDate')?.value || new Date();
+      forkJoin(([
+        this.subclassService.getProductSubclasses(addedProduct.code),
+        this.getRiskFieldsForProduct(addedProduct.code),
+        this.productService.getCoverToDate(this.formatDate(new Date(effectiveDate)), addedProduct.code)
+      ])).pipe(untilDestroyed(this))
+        .subscribe(([subclasses, riskFields, coverTo]) => {
+          const productGroup = this.fb.group({
+            code: [addedProduct.code],
+            expiry: [addedProduct?.expires],
+            effectiveTo: coverTo._embedded[0].coverToDate,
+            description: [addedProduct.description],
+            risks: this.fb.array([])
           });
-        }
+          this.productSubclassesMap[addedProduct.code] = subclasses.map(value => ({
+            ...value,
+            description: this.capitalizeWord(value.description),
+          }));
+          this.productsFormArray.push(productGroup);
+          log.debug("SUBCLASS LIST:", this.productSubclassesMap)
+          const risksArray = productGroup.get('risks') as FormArray;
+          risksArray.push(this.createRiskGroup(riskFields));
+          this.productRiskFields[this.productsFormArray.length - 1] = riskFields;
+        })
 
-      });
-  }
-
-  // Method to check and set fields disable state from session storage
-  checkFieldsDisableState() {
-    const disableState = sessionStorage.getItem('fieldsDisableState');
-    this.isFieldsDisabled = disableState === 'true';
-  }
-
-  /**
-   * Resets client data by clearing the values of clientName, clientEmail, clientPhone, and filteredCountry.
-   * This method is typically used to reset form fields or client-related data in the component.
-   * @method resetClientData
-   * @return {void}
-   */
-  resetClientData() {
-    this.clientName = '';
-    this.clientEmail = '';
-    this.clientPhone = '';
-    this.filteredCountry = '';
-  }
-
-  /* Toggles between a new and existing client */
-  /**
-   * Toggles the 'new' state to true.
-   * This method is typically used to toggle between a new and existing client.
-   * @method toggleButton
-   * @return {void}
-   */
-  toggleExistingClient() {
-    this.newClient = false;
-    this.existingClientSelected = true;
-    this.quickQuoteForm?.get('emailAddress').disable();
-    this.quickQuoteForm?.get('phoneNumber').disable();
-    this.quickQuoteForm?.get('clientName').setValidators(Validators.required);
-    if (this.quickQuoteForm) {
-      this.quickQuoteForm.updateValueAndValidity();
+      //this.getProductSubclass(addedProduct.code);
+      //TODO check this hardCoding
+      if (addedProduct.code === 8293) {
+        log.debug("years endpoint called for motor product")
+        this.populateYears();
+      }
     }
-    if (this.storedData) {
-      this.quickQuoteForm.patchValue({
-        clientName: this.storedData.clientName,
-        emailAddress: this.storedData.clientEmail,
-        phoneNumber: this.storedData.clientPhoneNumber,
-      });
-    }
+    this.selectedProducts = [...currentSelection];
+    this.previousSelected = [...currentSelection];
+
+    log.debug("FormArray now >>>>", this.productsFormArray);
   }
 
-  toggleToNewClient() {
-    this.newClient = true;
-    this.existingClientSelected = false;
-    this.quickQuoteForm?.get('emailAddress').enable();
-    this.quickQuoteForm?.get('phoneNumber').enable();
-    this.quickQuoteForm?.get('clientName').setValue('');
-    this.quickQuoteForm?.get('emailAddress').setValue('');
-    this.quickQuoteForm?.get('phoneNumber').setValue('');
-    this.quickQuoteForm?.get('clientName').clearValidators();
-    if (this.quickQuoteForm) {
-      this.quickQuoteForm.updateValueAndValidity();
-    }
-    this.clientDetails = null;
+  // Add risk row dynamically
+  addRisk(productIndex: number) {
+    const productGroup = this.productsFormArray.at(productIndex);
+    const risksArray = productGroup.get('risks') as FormArray;
+    const productCode = productGroup.get('code')?.value;
+
+    this.getRiskFieldsForProduct(productCode).subscribe((riskFields: DynamicRiskField[]) => {
+      const newRiskGroup = this.createRiskGroup(riskFields);
+      risksArray.push(newRiskGroup);
+    });
   }
 
-  /**
-   * Toggles the 'new' state to false and resets client-related data.
-   * This method is commonly used to switch from a 'new' client state to a default state and clear client input fields.
-   * @method toggleNewClient
-   * @return {void}
-   */
 
-  toggleNewClient() {
-    if (!this.isFieldDisabled('radio')) {
-      this.newClient = false;
-      this.isNewClient = true;
-      this.readonlyClient = false;
-      this.checkFieldsDisableState();
-      this.resetClientData();
-      sessionStorage.removeItem('clientDetails');
-    }
+  // Remove a risk row
+  deleteRisk(productIndex: number, riskIndex: number) {
+    this.getRisks(productIndex).removeAt(riskIndex);
   }
 
-  // Helper method to determine if email field should be disabled
-  isFieldDisabled(fieldType: 'email' | 'other' | 'radio'): boolean {
-    if (this.isFieldsDisabled) {
-      // When fieldsDisableState is true, disable all fields
-      return true;
-    } else {
-      // When fieldsDisableState is false, handle specific field types
-      switch (fieldType) {
-        case 'email':
-          return !this.isNewClient; // Disable email for existing client
-        case 'radio':
-          return this.readonlyClient || this.isFieldsDisabled; // Disable radio when readonly or fields are disabled
-        default:
-          return false; // Don't disable other fields
+  // Remove product
+  deleteProduct(product, productIndex: number) {
+    log.debug("Selected product>>>", product)
+    this.productsFormArray.removeAt(productIndex);
+    this.selectedProducts.splice(productIndex, 1);
+  }
+
+  markAllFieldsAsTouched(formGroup: FormGroup | FormArray) {
+    Object.keys(formGroup.controls).forEach(field => {
+      const control = formGroup.get(field);
+
+      if (control instanceof FormControl) {
+        control.markAsTouched({onlySelf: true});
+      } else if (control instanceof FormGroup || control instanceof FormArray) {
+        this.markAllFieldsAsTouched(control);
+      }
+    });
+  }
+
+  onSubmit() {
+    if (this.quickQuoteForm.invalid) {
+      this.markAllFieldsAsTouched(this.quickQuoteForm);
+      return;
+    }
+    log.debug("Form submission payload >>>>", this.quickQuoteForm.value);
+    const computationRequest = this.computationPayload();
+    log.debug("premium computation payload >>>>", computationRequest);
+    this.quotationService.premiumComputationEngine(computationRequest).pipe(
+      untilDestroyed(this)
+    ).subscribe(response => {
+      this.premiumComputationResponse = response
+      log.debug("Computation response >>>>", response)
+    });
+  }
+
+
+  toggleExpand(index: number) {
+    this.expandedStates[index] = !this.expandedStates[index];
+  }
+
+
+  computationPayload(): PremiumComputationRequest {
+    const formValues = this.quickQuoteForm.getRawValue();
+    const withEffectFrom = new Date(formValues.effectiveDate);
+    return {
+      transactionStatus: "NB",
+      quotationStatus: "Draft",
+      frequencyOfPayment: "A",
+      interfaceType: null,
+      entityUniqueCode: null,
+      coinsurancePercentage: null,
+      coinsuranceLeader: null,
+      age: null,
+      underwritingYear: withEffectFrom.getFullYear(),
+      dateWithEffectTo: this.formatDate(new Date()),
+      dateWithEffectFrom: this.formatDate(withEffectFrom),
+      products: this.getProductPayload(formValues),
+      currency: {
+        rate: this.exchangeRate
       }
     }
   }
+
+  getProductPayload(formValues: any): Product[] {
+    let productPayload: Product[] = []
+    for (let product of formValues.products) {
+      productPayload.push({
+        code: product.code,
+        description: product.description,
+        expiryPeriod: product.expiry,
+        withEffectFrom: this.formatDate(new Date(formValues.effectiveDate)),
+        withEffectTo: this.formatDate(new Date(product.effectiveTo)),
+        risks: this.getRiskPayload(product, formValues.effectiveDate)
+      })
+    }
+    return productPayload
+  }
+
+  getRiskPayload(product: any, effectiveDate): Risk[] {
+    let riskPayload: Risk[] = []
+    for (let risk of product.risks) {
+      riskPayload.push({
+        withEffectFrom: this.formatDate(new Date(effectiveDate)),
+        withEffectTo: this.formatDate(new Date(product.effectiveTo)),
+        prorata: "F",
+        subclassSection: {
+          code: risk?.useOfProperty?.code
+        },
+        taxes: risk.applicableTaxes.map((tax) => {
+          return {
+            taxRate: tax.taxRate,
+            code: tax.code,
+            taxCode: tax.taxCode,
+            divisionFactor: tax.divisionFactor,
+            applicationLevel: tax.applicationLevel,
+            taxRateType: tax.taxRateType
+          }
+        }),
+        itemDescription: risk.description,
+        noClaimDiscountLevel: 0,
+        enforceCovertypeMinimumPremium: "N",
+        binderDto: {
+          code: risk?.applicableBinder?.code,
+          currencyCode: risk?.applicableBinder?.currency_code,
+          maxExposure: risk?.applicableBinder?.maximum_exposure,
+          currencyRate: this.exchangeRate
+        },
+        subclassCoverTypeDto: this.getCoverTypePayload(risk)
+      })
+    }
+    return riskPayload;
+  }
+
+
+  getCoverTypePayload(risk): CoverType[] {
+    let coverTypes: CoverType[] = []
+    for (let coverType of risk.applicableCoverTypes) {
+      coverTypes.push({
+        subclassCode: coverType?.subClassCode,
+        coverTypeCode: coverType?.coverTypeCode,
+        minimumAnnualPremium: null,
+        minimumPremium: coverType?.minimumPremium,
+        coverTypeShortDescription: coverType?.coverTypeShortDescription,
+        coverTypeDescription: coverType?.description,
+        limits: this.getLimitsPayload(coverType.applicableRates, risk)
+      })
+    }
+    return coverTypes;
+  }
+
+  getLimitsPayload(applicableLimits: any, risk: any): Limit[] {
+    log.debug("Processing risk >>.", risk)
+    let limitsPayload: Limit[] = []
+    for (let limit of applicableLimits) {
+      limitsPayload.push({
+        calculationGroup: 1,
+        declarationSection: "N",
+        rowNumber: 1,
+        rateDivisionFactor: limit?.divisionFactor,
+        premiumRate: limit?.rate,
+        rateType: limit?.rateType,
+        minimumPremium: limit.premiumMinimumAmount,
+        annualPremium: 0,
+        multiplierRate: limit?.multiplierRate,
+        section: {
+          limitAmount: risk?.selfDeclaredValue || risk?.value,
+          description: limit?.sectionDescription,
+          code: limit?.sectionCode,
+          isMandatory: "Y"
+        },
+        sectionType: limit?.sectionType,
+        multiplierDivisionFactor: limit?.multiplierDivisionFactor,
+        riskCode: null,
+        limitAmount: risk?.selfDeclaredValue || risk?.value,
+        description: limit?.sectionDescription,
+        compute: "Y",
+        dualBasis: "N",
+      })
+    }
+    return limitsPayload
+  }
+
+
+  /**
+   * Retrieves and matches product subclasses for a given product code.
+   * - Makes an HTTP GET request to GISService for product subclasses.
+   * - Matches and combines subclasses with the existing 'allSubclassList'.
+   * - Logs the final list of matching subclasses.
+   * - Forces change detection to reflect updates.
+   * @method getProductSubclass
+   * @param {number} code - The product code to fetch subclasses.
+   * @return {void}
+   */
+
+  getProductSubclass(code: number) {
+    this.subclassService.getProductSubclasses(code).pipe(
+      untilDestroyed(this)
+    ).subscribe((subclasses: Subclasses[]) => {
+      this.productSubclassesMap[code] = subclasses.map(value => ({
+        ...value,
+        description: this.capitalizeWord(value.description),
+      }));
+      log.debug("SUBCLASS LIST:", this.productSubclassesMap)
+    });
+  }
+
+  /**
+   * Loads all currencies and selects based on the currency code.
+   * - Subscribes to 'getAllCurrencies' from CurrencyService.
+   * - Populates 'currencyList' and filters for the selected currency.
+   * - Assigns name and code from the filtered currency.
+   * - Logs the selected currency details and triggers change detection.
+   * @method loadAllCurrencies
+   * @return {void}
+   */
+  loadAllCurrencies() {
+    this.currencyService
+      .getAllCurrencies()
+      .pipe(
+        untilDestroyed(this))
+      .subscribe((data) => {
+        this.currencyList = data
+        const defaultCurrency = this.currencyList.find(
+          (currency) => currency.currencyDefault == 'Y'
+        );
+        if (defaultCurrency) {
+          log.debug('DEFAULT CURRENCY', defaultCurrency);
+          this.defaultCurrencyName = defaultCurrency.name;
+          log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+          this.defaultCurrencySymbol = defaultCurrency.symbol;
+          log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+          this.setCurrencySymbol(this.defaultCurrencySymbol);
+        }
+      });
+  }
+
+  setCurrencySymbol(currencySymbol: string) {
+    this.selectedCurrencySymbol = currencySymbol + ' ';
+    this.currencyObj = {
+      prefix: this.selectedCurrencySymbol,
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: this.currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
+    log.debug("Currency object:", this.currencyObj)
+  }
+
+
+  /** OLD QUICK QUOTE TS CODE*/
 
   /**
    * Retrieves user information from the authentication service.
@@ -704,23 +866,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       });
   }
 
-  /**
-   * Fetches client data via HTTP GET from ClientService.
-   * - Populates 'clientList' and extracts data from 'content'.
-   * - Logs client data for debugging using 'log.debug'.
-   * @method loadAllClients
-   * @return {void}
-   */
-  loadAllClients() {
-    this.clientService.getClients(0, 100)
-      .pipe(
-        untilDestroyed(this)
-      )
-      .subscribe((data) => {
-        this.clientList = data;
-        this.clientData = this.clientList.content;
-      });
-  }
 
   /**
    * Fetches and filters country data from CountryService.
@@ -749,119 +894,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   }
 
 
-  /**
-   * - Get A specific client's details on select.
-   * - populate the relevant fields with the client details.
-   * - Retrieves and logs client type and country.
-   * - Invokes 'getCountries()' to fetch countries data.
-   * - Calls 'saveClient()' and closes the modal.
-   * @method loadClientDetails
-   * @param {number} id - ID of the client to load.
-   * @return {void}
-   */
-  loadClientDetails(client: ClientDTO) {
-    this.clientDetails = client;
-    this.clientType = this.clientDetails.clientType.clientTypeName;
-    this.selectedCountry = this.clientDetails.country;
-    this.saveclient();
-
-    let fullName = this.utilService.getFullName(this.clientDetails);
-    log.debug('Selected Client fullname::::', this.clientDetails, fullName);
-    this.quickQuoteForm.get('clientName').setValue(fullName);
-    this.quickQuoteForm
-      .get('emailAddress')
-      .setValue(this.clientDetails.emailAddress);
-    this.quickQuoteForm
-      .get('phoneNumber')
-      .setValue(this.clientDetails.mobileNumber);
-    this.closebutton.nativeElement.click();
-  }
-
-  /**
-   * Saves essential client details for further processing.
-   * - Assigns client ID, name, email, and phone from 'clientDetails'.
-   * @method saveClient
-   * @return {void}
-   */
-  saveclient() {
-    this.clientCode = this.clientDetails.id;
-    this.clientName = this.utilService.getFullName(this.clientDetails);
-    this.clientEmail = this.clientDetails.emailAddress;
-    this.clientPhone = this.clientDetails.phoneNumber;
-    sessionStorage.setItem('clientCode', this.clientCode);
-  }
-
-  /**
-   * Handles the selection of a product.
-   * - Retrieves the selected product code from the event.
-   * - Fetches and loads product subclasses.
-   * - Loads dynamic form fields based on the selected product.
-   * @method onProductSelected
-   * @param {any} event - The event triggered by product selection.
-   * @return {void}
-   */
-  onProductSelected(selectedValue: any) {
-    this.selectedProductCode = selectedValue.code;
-    log.debug('Selected Product Code:', this.selectedProductCode);
-    const defaultCurrency = this.currencyList?.find(
-      (currency) => currency.currencyDefault === 'Y'
-    );
-    log.debug('Default currency here', defaultCurrency);
-    this.quickQuoteForm.get('currency').setValue(defaultCurrency);
-    this.selectedEffectiveDate = new Date();
-    this.quickQuoteForm.get('effectiveDate').setValue(this.selectedEffectiveDate);
-    this.setCurrencySymbol(defaultCurrency.symbol);
-    this.getProductSubclass(this.selectedProductCode);
-
-    // Load the dynamic form fields based on the selected product
-    this.LoadAllFormFields(this.selectedProductCode);
-    this.getProductExpiryPeriod();
-    this.getCoverToDate();
-  }
-
-  /**
-   * Retrieves cover to date based on the selected product and cover from date.
-   * - Checks if 'coverFromDate' is available.
-   * - Makes an HTTP GET request to ProductService for cover to date.
-   * - Assigns the cover to date from the received data.
-   * @method getCoverToDate
-   * @return {void}
-   */
-  getCoverToDate() {
-    log.debug(
-      'Selected Product Code-coverdate method',
-      this.selectedProductCode
-    );
-    log.debug('selected Effective date', this.selectedEffectiveDate);
-
-    let dateFrom = this.formatDate(this.selectedEffectiveDate);
-    if (dateFrom) {
-      sessionStorage.setItem('selectedDate', JSON.stringify(dateFrom));
-      this.productService
-        .getCoverToDate(dateFrom, this.selectedProductCode)
-        .subscribe((data) => {
-          log.debug('DATA FROM COVERFROM:', data);
-          const dataDate = data;
-          this.passedCoverToDate = dataDate._embedded[0].coverToDate;
-          log.debug('cover date:', this.passedCoverToDate);
-          const passedCoverTo = new Date(this.passedCoverToDate);
-          // Extract the day, month, and year
-          const day = passedCoverTo.getDate();
-          const month = passedCoverTo.toLocaleString('default', {
-            month: 'long',
-          }); // 'long' gives the full month name
-          const year = passedCoverTo.getFullYear();
-          // Format the date in 'dd-Month-yyyy' format
-          const formattedDate = `${day}-${month}-${year}`;
-          this.formattedCoverToDate = formattedDate;
-          log.debug('formatted cover to  Date', this.formattedCoverToDate);
-          log.debug('DATe FROM DATA:', this.passedCoverToDate);
-          this.selectedCoverToDate = this.passedCoverToDate;
-          this.quickQuoteForm?.get('coverTo')?.setValue(new Date(this.selectedCoverToDate))
-        });
-    }
-  }
-
   formatDate(date: Date): string {
     log.debug('Date (formatDate method):', date);
     const year = date?.getFullYear();
@@ -870,54 +902,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     return `${year}-${month}-${day}`;
   }
 
-  getProductExpiryPeriod() {
-    log.debug('SELECTED PRODUCTC CODE', this.selectedProductCode);
-    if (!this.selectedProductCode || !this.productList) {
-      this.expiryPeriod = 'N';
-      return;
-    }
-
-    this.selectedProduct = this.productList.filter(
-      (product) => product.code === this.selectedProductCode
-    );
-
-    if (this.selectedProduct.length > 0) {
-      this.expiryPeriod = this.selectedProduct[0].expires;
-    } else {
-      this.expiryPeriod = 'N';
-    }
-  }
-
-
-  /**
-   * Retrieves and matches product subclasses for a given product code.
-   * - Makes an HTTP GET request to GISService for product subclasses.
-   * - Matches and combines subclasses with the existing 'allSubclassList'.
-   * - Logs the final list of matching subclasses.
-   * - Forces change detection to reflect updates.
-   * @method getProductSubclass
-   * @param {number} code - The product code to fetch subclasses.
-   * @return {void}
-   */
-  getProductSubclass(code: number) {
-    this.subclassService.getProductSubclasses(code).pipe(
-      untilDestroyed(this)
-    ).subscribe((subclasses) => {
-      this.allMatchingSubclasses = subclasses.map((value) => {
-        return {
-          ...value,
-          description: this.capitalizeWord(value.description),
-        }
-      })
-      if (this.storedData && this.quoteAction === 'E') {
-        this.quickQuoteForm.patchValue({
-          subClass: this.allMatchingSubclasses.find(
-            (value) => value.code === this.storedData.subClass.code
-          ),
-        });
-      }
-    })
-  }
 
   capitalizeWord(value: String): string {
     return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
@@ -949,27 +933,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
    * @param {any} event - The event triggered by subclass selection.
    * @return {void}
    */
-  onSubclassSelected(event: any) {
-    log.debug(`Selected value: ${JSON.stringify(event)}`);
+  onSubclassSelected(event: any, productIndex: number, riskIndex: number, productCode: number) {
+    log.debug(`Selected value: ${JSON.stringify(event)}`, productCode, riskIndex);
     this.selectedSubclassCode = event.code;
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
-    const selectedSubclassCodeString = JSON.stringify(
-      this.selectedSubclassCode
-    );
-    this.fetchComputationData(
-      this.selectedProductCode,
-      this.selectedSubclassCode
-    );
+    this.fetchComputationData(productCode, event.code, riskIndex, productIndex);
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code');
-    sessionStorage.setItem('selectedSubclassCode', selectedSubclassCodeString);
-    this.fetchRegexPattern();
-  }
-
-  onDateInputChange(date: any) {
-    log.debug('selected Effective date', date.value);
-    this.selectedEffectiveDate = date;
-    this.minCoverToDate = this.selectedEffectiveDate
-    this.getCoverToDate();
+    this.fetchRegexPattern(productIndex, riskIndex);
   }
 
   /**
@@ -1026,50 +996,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug('Selected Currency Code:', this.currencyCode);
   }
 
-  /**
-   * Loads all currencies and selects based on the currency code.
-   * - Subscribes to 'getAllCurrencies' from CurrencyService.
-   * - Populates 'currencyList' and filters for the selected currency.
-   * - Assigns name and code from the filtered currency.
-   * - Logs the selected currency details and triggers change detection.
-   * @method loadAllCurrencies
-   * @return {void}
-   */
-  loadAllCurrencies() {
-    this.currencyService
-      .getAllCurrencies()
-      .pipe(untilDestroyed(this))
-      .subscribe((data) => {
-        this.currencyList = data.map((value) => {
-          let capitalizedDescription =
-            value.name.charAt(0).toUpperCase() +
-            value.name.slice(1).toLowerCase();
-          return {
-            ...value,
-            name: capitalizedDescription,
-          };
-        });
-        log.info(this.currencyList, 'this is a currency list');
-        const defaultCurrency = this.currencyList.find(
-          (currency) => currency.currencyDefault == 'Y'
-        );
-        if (defaultCurrency) {
-          log.debug('DEFAULT CURRENCY', defaultCurrency);
-          this.defaultCurrencyName = defaultCurrency.name;
-          log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
-          this.defaultCurrencySymbol = defaultCurrency.symbol;
-          log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
-        }
-        if (this.storedData) {
-          this.quickQuoteForm.patchValue({
-            currency: this.currencyList.find(
-              (value: { id: any }) => value.id === this.storedData.currency.id
-            ),
-          });
-          this.setCurrencySymbol(this.defaultCurrencySymbol);
-        }
-      });
-  }
 
   onCurrencySelected(selectedValue: any) {
     this.selectedCurrencyCode = selectedValue.id;
@@ -1084,20 +1010,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.setCurrencySymbol(selectedCurrency.symbol);
   }
 
-  setCurrencySymbol(currencySymbol: string) {
-    this.selectedCurrencySymbol = currencySymbol + ' ';
-    this.currencyObj = {
-      prefix: this.selectedCurrencySymbol,
-      allowNegative: false,
-      allowZero: false,
-      decimal: '.',
-      precision: 0,
-      thousands: this.currencyDelimiter,
-      suffix: ' ',
-      nullable: true,
-      align: 'left',
-    };
-  }
 
   /**
    * Loads cover types for the provided subclass code.
@@ -1121,103 +1033,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       });
   }
 
-  /**
-   * Loads all quotation sources.
-   * - Subscribes to 'getAllQuotationSources' from QuotationService.
-   * - Populates 'sourceList' and assigns 'sourceDetail'.
-   * - Logs source details.
-   * @method loadAllQuotationSources
-   * @return {void}
-   */
-  loadAllQoutationSources() {
-    this.quotationService.getAllQuotationSources().subscribe((data) => {
-      this.sourceList = data;
-      this.sourceDetail = data.content;
-      log.debug(this.sourceDetail, 'Source list');
-    });
-  }
-
-  onSourceSelected(event: any) {
-    this.selectedSourceCode = event.target.value;
-    log.debug('Selected Source Code:', this.selectedSourceCode);
-    this.selectedSource = this.sourceDetail.filter(
-      (source) => source.code == this.selectedSourceCode
-    );
-    log.debug('Selected Source :', this.selectedSource);
-    // this.sharedService.setQuotationSource(this.selectedSource)
-    const quotationSourceString = JSON.stringify(this.selectedSource);
-    sessionStorage.setItem('quotationSource', quotationSourceString);
-  }
-
-  /**
-   * Loads form fields dynamically based on the selected product code.
-   * - Subscribes to 'getFormFields' observable from QuotationService.
-   * - Populates 'formContent' with received data.
-   * - Assigns 'formData' from 'formContent.fields'.
-   * - Clears existing form controls and adds new controls for each product-specific field.
-   * - Applies custom validators and logs control details for debugging.
-   * @method LoadAllFormFields
-   * @param {Number} selectedProductCode - The selected product code for dynamic form loading.
-   * @return {void}
-   */
-  LoadAllFormFields(selectedProductCode: Number) {
-    if (selectedProductCode) {
-      const formFieldDescription = 'product-quick-quote-'.concat(
-        selectedProductCode.toString()
-      );
-      this.quotationService
-        .getFormFields(formFieldDescription)
-        .subscribe((data) => {
-          this.formData = [];
-          this.formContent = data;
-          log.debug(this.formContent, 'Form-content');
-          this.formData = this.formContent[0]?.fields;
-          log.debug(this.formData, 'formData is defined here');
-          Object.keys(this.quickQuoteForm.controls).forEach((controlName) => {
-            const control = this.quickQuoteForm.get(controlName) as any;
-            if (control?.metadata?.dynamic) {
-              this.quickQuoteForm.removeControl(controlName);
-              log.debug(`Removed dynamic control: ${controlName}`);
-            }
-          });
-          this.formData.forEach((field) => {
-            const validators = [];
-            if (field.isMandatory === 'Y') {
-              validators.push(Validators.required);
-            }
-            if (field.regexPattern) {
-              validators.push(Validators.pattern(field.regexPattern));
-            }
-            log.debug(`Validators about to be added ${field.name}`, validators);
-            this.quickQuoteForm.addControl(
-              field.name,
-              new FormControl(
-                this.storedData &&
-                this.storedData[field.name] &&
-                this.quoteAction == 'E'
-                  ? this.storedData[field.name]
-                  : '',
-                validators
-              )
-            );
-            (this.quickQuoteForm.get(field.name) as any).metadata = {
-              dynamic: true,
-            };
-          });
-          if (this.quoteAction === 'A') {
-            this.quickQuoteForm?.get('coverTo')?.disable()
-          }
-
-        });
-      Object.keys(this.quickQuoteForm.controls).forEach((controlName) => {
-        const control = this.quickQuoteForm.get(controlName);
-        log.debug(
-          `Control: ${controlName}, Value: ${control?.value
-          }, Validators: ${this.getValidatorNames(control)}`
-        );
-      });
-    }
-  }
 
   getValidatorNames(control: AbstractControl | null): string[] {
     if (!control || !control.validator) return [];
@@ -1225,20 +1040,22 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     return Object.keys(validatorFns || {});
   }
 
-  /**
-   * Validates a car registration number using a dynamic regex pattern.
-   * - Logs the entered value and dynamic regex pattern.
-   * - Tests the car registration number against the regex pattern.
-   * - Updates 'carRegNoHasError' based on the test result.
-   * @method validateCarRegNo
-   * @return {void}
-   */
-  validateCarRegNo() {
-    const control = this.quickQuoteForm.get('carRegNo');
+  validateCarRegNo(productIndex: number, riskIndex: number) {
+    const control = this.quickQuoteForm.get(['products', productIndex, 'risks', riskIndex, 'carRegNo']) as FormControl;
+    log.debug("Keyed In value>>>", control);
+
+    if (!control) return;
+
+    const value = control.value;
+    log.debug("Keyed In value>>>", value);
+
+    // Exit early if there's a pattern error or no value
+    if (control.hasError('pattern') || !value) return;
+
+    // Remove validator before making the service call
     control.removeValidators([this.uniqueValidator]);
-    const value = control.value
-    log.debug("Keyed In value>>>", value)
-    if (!control || this.quickQuoteForm?.get('carRegNo')?.hasError('pattern') || !value) return;
+    control.updateValueAndValidity({emitEvent: false});
+
     this.quotationService.validateRiskExistence({
       propertyId: value,
       subClassCode: this.selectedSubclassCode,
@@ -1250,24 +1067,26 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       distinctUntilChanged(),
       untilDestroyed(this)
     ).subscribe((response) => {
-      const canProceed = response?._embedded?.duplicateAllowed
-      log.debug("Risk allowed>>>", canProceed)
-      if (this.existingPropertyIds) {
-        log.debug('Doing validation of ', value, this.existingPropertyIds);
-        const isDuplicate = this.existingPropertyIds.some(
-          (existingValue) =>
-            existingValue.replace(/\s+/g, '').toUpperCase() === value.replace(/\s+/g, '').toUpperCase()
-        );
-        log.debug("Existing risk>>>", isDuplicate)
-        if (isDuplicate || !canProceed) {
-          control.addValidators([this.uniqueValidator]);
-        } else {
-          control.removeValidators([this.uniqueValidator]);
-        }
-        control.updateValueAndValidity({emitEvent: false});
+      const canProceed = response?._embedded?.duplicateAllowed;
+      log.debug("Risk allowed>>>", canProceed);
+
+      const isDuplicate = this.existingPropertyIds?.some(
+        (existingValue) =>
+          existingValue.replace(/\s+/g, '').toUpperCase() === value.replace(/\s+/g, '').toUpperCase()
+      );
+
+      log.debug("Existing risk>>>", isDuplicate);
+
+      if (isDuplicate || !canProceed) {
+        control.addValidators([this.uniqueValidator]);
+      } else {
+        control.removeValidators([this.uniqueValidator]);
       }
-    })
+
+      control.updateValueAndValidity({emitEvent: false});
+    });
   }
+
 
   uniqueValidator(control: AbstractControl) {
     return {unique: true};
@@ -1348,7 +1167,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   }
 
 
-  setRiskPremiumDto(): Risk[] {
+  /*setRiskPremiumDto(): Risk[] {
     log.debug("All available premium items>>>", this.applicablePremiumRates)
     log.debug("subclass cover type", this.subclassCoverType)
     log.debug("Car Reg no:", this.carRegNoValue)
@@ -1422,266 +1241,272 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       risks.push(risk)
     }
     return risks
-  }
+  }*/
 
-  setLimitPremiumDto(coverTypeCode: number): Limit[] {
-    log.debug("Current form structure:", this.quickQuoteForm.controls);
+  /*
 
-    const value = this.quickQuoteForm.get('value')?.value;
-    log.debug("Value", value)
-    const sumInsured = this.quickQuoteForm.get('selfDeclaredValue')?.value;
-    log.debug('SUM INSURED', sumInsured);
+    setLimitPremiumDto(coverTypeCode: number): Limit[] {
+      log.debug("Current form structure:", this.quickQuoteForm.controls);
 
-    const finalValue = value ?? sumInsured;
-    log.debug('Final Value', finalValue);
-    sessionStorage.setItem('sumInsuredValue', finalValue);
+      const value = this.quickQuoteForm.get('value')?.value;
+      log.debug("Value", value)
+      const sumInsured = this.quickQuoteForm.get('selfDeclaredValue')?.value;
+      log.debug('SUM INSURED', sumInsured);
 
-    const coverTypeSections = this.mandatorySections.filter(
-      (value) => value.coverTypeCode === coverTypeCode
-    );
-    log.debug(
-      'Mandatory Sections for covertype',
-      coverTypeCode,
-      coverTypeSections
-    );
-    log.debug('Found cover type sections ', coverTypeSections);
-    log.debug('Premium rates ', this.allPremiumRate);
-    let response: Limit[] = coverTypeSections
-      .map((it) =>
-        this.allPremiumRate
-          .filter((rate) => {
-            log.debug(
-              'In limit: ' + rate.sectionCode + ' vs ' + it.sectionCode
-            );
-            return rate.sectionCode == it.sectionCode;
-          })
-          .map((rate) => {
-            return {
-              calculationGroup: 1,
-              declarationSection: 'N',
-              rowNumber: 1,
-              rateDivisionFactor: rate.divisionFactor,
-              premiumRate: rate.rate,
-              rateType: rate.rateType,
-              minimumPremium: rate.premiumMinimumAmount,
-              annualPremium: 0,
-              multiplierDivisionFactor: 1,
-              multiplierRate: rate.multiplierRate,
-              description: rate.sectionShortDescription,
-              section: {
-                code: it.sectionCode,
-              },
-              sectionType: rate.sectionType,
-              riskCode: null,
-              limitAmount: sumInsured || value,
-              compute: 'Y',
-              dualBasis: 'N',
-            };
-          })
-      )
-      .flatMap((item) => item);
-    log.debug('Added Limit', this.additionalLimit);
+      const finalValue = value ?? sumInsured;
+      log.debug('Final Value', finalValue);
+      sessionStorage.setItem('sumInsuredValue', finalValue);
 
-    if (this.additionalLimit.length > 0) {
-      log.debug('Added Limit', this.additionalLimit);
-      // Adjust the existing response to include the additional risk
-      this.additionalLimit.forEach((item) => coverTypeSections.push(item));
-      log.debug('section for CoverType:', coverTypeSections);
-      response = response.concat(
-        coverTypeSections
-          .map((it) =>
-            this.allPremiumRate
-              .filter((rate) => {
-                log.debug(
-                  'In limit: ' + rate.sectionCode + ' vs ' + it.sectionCode
-                );
-                return rate.sectionCode == it.sectionCode;
-              })
-              .map((rate) => {
-                return {
-                  calculationGroup: 2, // Adjust the calculationGroup for the additional risk
-                  declarationSection: 'N',
-                  rowNumber: 1,
-                  rateDivisionFactor: rate.divisionFactor,
-                  premiumRate: rate.rate,
-                  rateType: rate.rateType,
-                  minimumPremium: rate.premiumMinimumAmount,
-                  annualPremium: 0,
-                  multiplierDivisionFactor: 1,
-                  multiplierRate: rate.multiplierRate,
-                  description: rate.sectionShortDescription,
-                  section: {
-                    code: it.sectionCode,
-                  },
-                  sectionType: rate.sectionType,
-                  riskCode: null,
-                  limitAmount: sumInsured || value,
-                  compute: 'Y',
-                  dualBasis: 'N',
-                };
-              })
-          )
-          .flatMap((item) => item)
+      const coverTypeSections = this.mandatorySections.filter(
+        (value) => value.coverTypeCode === coverTypeCode
       );
+      log.debug(
+        'Mandatory Sections for covertype',
+        coverTypeCode,
+        coverTypeSections
+      );
+      log.debug('Found cover type sections ', coverTypeSections);
+      log.debug('Premium rates ', this.allPremiumRate);
+      let response: Limit[] = coverTypeSections
+        .map((it) =>
+          this.allPremiumRate
+            .filter((rate) => {
+              log.debug(
+                'In limit: ' + rate.sectionCode + ' vs ' + it.sectionCode
+              );
+              return rate.sectionCode == it.sectionCode;
+            })
+            .map((rate) => {
+              return {
+                calculationGroup: 1,
+                declarationSection: 'N',
+                rowNumber: 1,
+                rateDivisionFactor: rate.divisionFactor,
+                premiumRate: rate.rate,
+                rateType: rate.rateType,
+                minimumPremium: rate.premiumMinimumAmount,
+                annualPremium: 0,
+                multiplierDivisionFactor: 1,
+                multiplierRate: rate.multiplierRate,
+                description: rate.sectionShortDescription,
+                section: {
+                  code: it.sectionCode,
+                },
+                sectionType: rate.sectionType,
+                riskCode: null,
+                limitAmount: sumInsured || value,
+                compute: 'Y',
+                dualBasis: 'N',
+              };
+            })
+        )
+        .flatMap((item) => item);
+      log.debug('Added Limit', this.additionalLimit);
+
+      if (this.additionalLimit.length > 0) {
+        log.debug('Added Limit', this.additionalLimit);
+        // Adjust the existing response to include the additional risk
+        this.additionalLimit.forEach((item) => coverTypeSections.push(item));
+        log.debug('section for CoverType:', coverTypeSections);
+        response = response.concat(
+          coverTypeSections
+            .map((it) =>
+              this.allPremiumRate
+                .filter((rate) => {
+                  log.debug(
+                    'In limit: ' + rate.sectionCode + ' vs ' + it.sectionCode
+                  );
+                  return rate.sectionCode == it.sectionCode;
+                })
+                .map((rate) => {
+                  return {
+                    calculationGroup: 2, // Adjust the calculationGroup for the additional risk
+                    declarationSection: 'N',
+                    rowNumber: 1,
+                    rateDivisionFactor: rate.divisionFactor,
+                    premiumRate: rate.rate,
+                    rateType: rate.rateType,
+                    minimumPremium: rate.premiumMinimumAmount,
+                    annualPremium: 0,
+                    multiplierDivisionFactor: 1,
+                    multiplierRate: rate.multiplierRate,
+                    description: rate.sectionShortDescription,
+                    section: {
+                      code: it.sectionCode,
+                    },
+                    sectionType: rate.sectionType,
+                    riskCode: null,
+                    limitAmount: sumInsured || value,
+                    compute: 'Y',
+                    dualBasis: 'N',
+                  };
+                })
+            )
+            .flatMap((item) => item)
+        );
+      }
+
+      log.debug('Covertype', coverTypeCode);
+      log.debug('Section items', coverTypeSections);
+      log.debug('limit items', response);
+      return response;
     }
+  */
 
-    log.debug('Covertype', coverTypeCode);
-    log.debug('Section items', coverTypeSections);
-    log.debug('limit items', response);
-    return response;
-  }
-
-  fetchComputationData(productCode: number, subClassCode: number
+  fetchComputationData(productCode: number, subClassCode: number, riskIndex: number, productIndex: number
   ) {
+    let productFormArray = this.productsFormArray.at(productIndex);
+    let riskFormGroup = (this.productsFormArray.at(productIndex).get('risks') as FormArray).at(riskIndex) as FormGroup
+    log.debug("Current  productFormArray for risks>>>", riskFormGroup)
     this.binderService.getAllBindersQuick(subClassCode).pipe(
       mergeMap((binders) => {
         this.binderList = binders._embedded.binder_dto_list;
-        this.selectedBinder = this.binderList.find((value: { is_default: string; }) => value?.is_default === 'Y');
+        const defaultBinder = this.binderList.find((value: {
+          is_default: string;
+        }) => value?.is_default === 'Y') as Binders;
+        riskFormGroup.get('applicableBinder')?.setValue(defaultBinder)
         this.selectedBinderCode = this.selectedBinder?.code;
         log.debug("Selected Binder code", this.selectedBinderCode)
-        this.currencyCode = this.selectedBinder.currency_code
-
+        this.currencyCode = defaultBinder?.currency_code
         if (this.currencyCode) {
           this.fetchExchangeRate()
         }
         return forkJoin([
           this.quotationService.getTaxes(productCode, subClassCode),
-          this.subclassCoverTypesService.getCoverTypeSections(subClassCode, this.selectedBinderCode)
+          this.subclassCoverTypesService.getCoverTypeSections(subClassCode, defaultBinder.code)
         ])
       }),
       untilDestroyed(this)
     ).subscribe(([taxes, coverTypeSections]) => {
-      this.taxList = taxes._embedded
-      this.applicablePremiumRates = coverTypeSections._embedded
+      this.taxList = taxes._embedded as Tax[]
+      riskFormGroup.get('applicableTaxes')?.setValue(taxes._embedded)
+      riskFormGroup.get('applicableCoverTypes')?.setValue(coverTypeSections._embedded)
       log.debug("Taxes:::", taxes, this.applicablePremiumRates)
     })
+    log.debug("Current after form changes >>>", riskFormGroup)
 
   }
 
-  computePremiumV2() {
-    log.info('Submitted form {}', this.quickQuoteForm);
-    if (!this.isEmailOrPhoneValid()) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Provide either a valid phone number or email to proceed.'
-      );
-      return;
-    }
-    if (this.quickQuoteForm.valid) {
-      this.ngxSpinner.show();
-      sessionStorage.setItem('product', this.selectedProductCode);
-      const quickQuoteDataModel = this.quickQuoteForm.getRawValue();
-      log.debug('Form is valid, proceeding with premium computation...', quickQuoteDataModel);
-      log.debug(
-        'Mandatory sections: ',
-        this.subclassSectionCoverList,
-        this.mandatorySections
-      );
-      log.debug('Subclass Cover Types', this.subclassCoverType);
-      log.debug('Selected binder ', this.binderList, this.selectedBinder);
-      this.currencyCode = quickQuoteDataModel.currency.id;
-      let quickQuoteData: QuickQuoteData = {
-        effectiveDateFrom: quickQuoteDataModel.effectiveDate,
-        carRegNo: quickQuoteDataModel?.carRegNo || quickQuoteDataModel?.riskId,
-        yearOfManufacture: quickQuoteDataModel.yearOfManufacture,
-        clientName: quickQuoteDataModel.clientName,
-        clientEmail: quickQuoteDataModel.emailAddress,
-        product: quickQuoteDataModel.product,
-        subClass: quickQuoteDataModel.subClass,
-        currency: quickQuoteDataModel.currency,
-        selfDeclaredValue: quickQuoteDataModel.selfDeclaredValue,
-        clientPhoneNumber: quickQuoteDataModel.phoneNumber?.number,
-        coverTo: quickQuoteDataModel?.coverTo,
-        riskId: quickQuoteDataModel?.riskId,
-        value: quickQuoteDataModel?.value,
-        modeOfTransport: quickQuoteDataModel?.modeOfTransport,
-        existingClientSelected: this.existingClientSelected,
-        selectedBinderCode: this.selectedBinderCode,
-        selectedClient: this.clientDetails ? this.clientDetails : null
+  /* computePremiumV2() {
+     log.info('Submitted form {}', this.quickQuoteForm);
+     if (!this.isEmailOrPhoneValid()) {
+       this.globalMessagingService.displayErrorMessage(
+         'Error',
+         'Provide either a valid phone number or email to proceed.'
+       );
+       return;
+     }
+     if (this.quickQuoteForm.valid) {
+       this.ngxSpinner.show();
+       sessionStorage.setItem('product', this.selectedProductCode);
+       const quickQuoteDataModel = this.quickQuoteForm.getRawValue();
+       log.debug('Form is valid, proceeding with premium computation...', quickQuoteDataModel);
+       log.debug(
+         'Mandatory sections: ',
+         this.subclassSectionCoverList,
+         this.mandatorySections
+       );
+       log.debug('Subclass Cover Types', this.subclassCoverType);
+       log.debug('Selected binder ', this.binderList, this.selectedBinder);
+       this.currencyCode = quickQuoteDataModel.currency.id;
+       let quickQuoteData: QuickQuoteData = {
+         effectiveDateFrom: quickQuoteDataModel.effectiveDate,
+         carRegNo: quickQuoteDataModel?.carRegNo || quickQuoteDataModel?.riskId,
+         yearOfManufacture: quickQuoteDataModel.yearOfManufacture,
+         clientName: quickQuoteDataModel.clientName,
+         clientEmail: quickQuoteDataModel.emailAddress,
+         product: quickQuoteDataModel.product,
+         subClass: quickQuoteDataModel.subClass,
+         currency: quickQuoteDataModel.currency,
+         selfDeclaredValue: quickQuoteDataModel.selfDeclaredValue,
+         clientPhoneNumber: quickQuoteDataModel.phoneNumber?.number,
+         coverTo: quickQuoteDataModel?.coverTo,
+         riskId: quickQuoteDataModel?.riskId,
+         value: quickQuoteDataModel?.value,
+         modeOfTransport: quickQuoteDataModel?.modeOfTransport,
+         existingClientSelected: null,
+         selectedBinderCode: this.selectedBinderCode,
+         selectedClient: null
 
-      }
-
-
-      this.mandatorySections = this.applicablePremiumRates.map(value => value.applicableRates)
-      sessionStorage.setItem('mandatorySections', JSON.stringify(this.mandatorySections));
-      this.premiumComputationRequest = {
-        dateWithEffectFrom: this.selectedEffectiveDate,
-        dateWithEffectTo: this.passedCoverToDate,
-        underwritingYear: new Date().getFullYear(),
-        age: null,
-        coinsuranceLeader: null,
-        coinsurancePercentage: null,
-        entityUniqueCode: null,
-        interfaceType: null,
-        frequencyOfPayment: "A",
-        quotationStatus: "Draft",
-        transactionStatus: "NB",
-        /**Setting Product Details**/
-        product: {
-          code: this.selectedProductCode,
-          expiryPeriod: this.expiryPeriod,
-        },
-        /**Setting Tax Details**/
-        taxes: this.setTax(),
-
-        currency: {
-          rate: this.exchangeRate,
-        },
-        risks: this.setRiskPremiumDto(),
-      };
-      sessionStorage.setItem(
-        'premiumComputationRequest',
-        JSON.stringify(this.premiumComputationRequest)
-      );
-      log.debug("Aggregated payload", this.premiumComputationRequest)
+       }
 
 
-      return forkJoin([
-        this.quotationService.premiumComputationEngine(this.premiumComputationRequest),
-        this.quotationService.savePremiumComputationPayload(this.premiumComputationRequest)
-      ])
-        .subscribe({
-          next: ([premiumResponse, payloadResponse]) => {
-            log.debug('Data', premiumResponse);
-            sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
-            const premiumResponseString = JSON.stringify(premiumResponse);
-            sessionStorage.setItem('premiumResponse', premiumResponseString);
+       this.mandatorySections = this.applicablePremiumRates.map(value => value.applicableRates)
+       sessionStorage.setItem('mandatorySections', JSON.stringify(this.mandatorySections));
+      /!* this.premiumComputationRequest = {
+         dateWithEffectFrom: this.selectedEffectiveDate,
+         dateWithEffectTo: this.passedCoverToDate,
+         underwritingYear: new Date().getFullYear(),
+         age: null,
+         coinsuranceLeader: null,
+         coinsurancePercentage: null,
+         entityUniqueCode: null,
+         interfaceType: null,
+         frequencyOfPayment: "A",
+         quotationStatus: "Draft",
+         transactionStatus: "NB",
+         /!**Setting Product Details**!/
+         product: {
+           code: this.selectedProductCode,
+           expiryPeriod: this.expiryPeriod,
+         },
+         /!**Setting Tax Details**!/
+         taxes: this.setTax(),
 
-            this.computationPayloadCode = payloadResponse._embedded
-            log.debug("Code returned after saving premium computation payload ", this.computationPayloadCode);
+         currency: {
+           rate: this.exchangeRate,
+         },
+         risks: this.setRiskPremiumDto(),
+       };*!/
 
 
-            quickQuoteData.computationPayloadCode = this.computationPayloadCode
-            sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
-            this.router.navigate(['/home/gis/quotation/cover-type-details']);
-          },
-          error: (error: HttpErrorResponse) => {
-            log.info(error);
-            this.ngxSpinner.hide();
+       return forkJoin([
+         null,
+         null
+       ])
+         .subscribe({
+           next: ([premiumResponse, payloadResponse]) => {
+             log.debug('Data', premiumResponse);
+             sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
+             const premiumResponseString = JSON.stringify(premiumResponse);
+             sessionStorage.setItem('premiumResponse', premiumResponseString);
 
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              error.error.message
-            );
-          },
-        });
+             this.computationPayloadCode = payloadResponse._embedded
+             log.debug("Code returned after saving premium computation payload ", this.computationPayloadCode);
 
-    } else {
-      // Mark all fields as touched and validate the form
-      this.quickQuoteForm.markAllAsTouched();
-      this.quickQuoteForm.updateValueAndValidity();
-      for (let controlsKey in this.quickQuoteForm.controls) {
-        if (this.quickQuoteForm.get(controlsKey).invalid) {
-          log.debug(
-            `${controlsKey} is invalid`,
-            this.quickQuoteForm.get(controlsKey).errors
-          );
-        }
-      }
-    }
-  }
 
-  fetchRegexPattern() {
+             quickQuoteData.computationPayloadCode = this.computationPayloadCode
+             sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
+             this.router.navigate(['/home/gis/quotation/cover-type-details']);
+           },
+           error: (error: HttpErrorResponse) => {
+             log.info(error);
+             this.ngxSpinner.hide();
+
+             this.globalMessagingService.displayErrorMessage(
+               'Error',
+               error.error.message
+             );
+           },
+         });
+
+     } else {
+       // Mark all fields as touched and validate the form
+       this.quickQuoteForm.markAllAsTouched();
+       this.quickQuoteForm.updateValueAndValidity();
+       for (let controlsKey in this.quickQuoteForm.controls) {
+         if (this.quickQuoteForm.get(controlsKey).invalid) {
+           log.debug(
+             `${controlsKey} is invalid`,
+             this.quickQuoteForm.get(controlsKey).errors
+           );
+         }
+       }
+     }
+   }
+ */
+
+  fetchRegexPattern(productIndex: number, riskIndex: number) {
     this.quotationService
       .getRegexPatterns(this.selectedSubclassCode)
       .pipe(untilDestroyed(this))
@@ -1689,11 +1514,21 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         next: (response: any) => {
           this.regexPattern = response._embedded?.riskIdFormat;
           log.debug('New Regex Pattern', this.regexPattern);
+
           this.dynamicRegexPattern = this.regexPattern;
-          this.quickQuoteForm
-            ?.get('carRegNo')
-            ?.addValidators(Validators.pattern(this.dynamicRegexPattern));
-          this.quickQuoteForm?.get('carRegNo')?.updateValueAndValidity();
+
+          const controlPath = ['products', productIndex, 'risks', riskIndex, 'carRegNo'];
+          const control = this.quickQuoteForm.get(controlPath) as FormControl;
+
+          if (control) {
+            // Add your required validators here
+            control.setValidators([
+              Validators.required,
+              Validators.pattern(this.dynamicRegexPattern)
+            ]);
+
+            control.updateValueAndValidity();
+          }
         },
         error: (error) => {
           this.globalMessagingService.displayErrorMessage(
@@ -1703,6 +1538,17 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         },
       });
   }
+
+  getCarRegNoControl(productIndex: number, riskIndex: number): FormControl {
+    return this.quickQuoteForm.get([
+      'products',
+      productIndex,
+      'risks',
+      riskIndex,
+      'carRegNo'
+    ]) as FormControl;
+  }
+
 
   isEmailOrPhoneValid(): boolean {
     if (
@@ -1896,75 +1742,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.filterObject['name'] = value;
   }
 
-  inputEmail(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.emailValue = value;
-    // this.filterObject['emailAddress'] = value;
-  }
-
-  inputPhone(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.phoneValue = value;
-
-    // this.filterObject['phoneNumber'] = value;
-  }
-
-  inputIdNumber(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['idNumber'] = value;
-  }
-
-  inputPin(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.pinValue = value;
-
-    // this.filterObject['pinNumber'] = value;
-  }
-
-  inputInternalId(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.idValue = value;
-
-    // this.filterObject['id'] = value;
-  }
-
-  fetchTaxes() {
-    this.quotationService
-      .getTaxes(this.selectedProductCode, this.selectedSubclassCode)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          this.taxList = response._embedded;
-          log.debug('Tax List ', this.taxList);
-        },
-        error: (error) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
-        },
-      });
-  }
-
-  setTax(): Tax[] {
-    log.debug('Tax List when setting the payload', this.taxList);
-
-    // Map the tax list to the desired format
-    const taxList: Tax[] = this.taxList.map((item) => {
-      return {
-        taxRate: String(item.taxRate), // Convert to string to match Tax interface
-        code: String(item.code),
-        taxCode: String(item.taxCode),
-        divisionFactor: String(item.divisionFactor),
-        applicationLevel: String(item.applicationLevel),
-        taxRateType: String(item.taxRateType),
-      };
-    });
-
-    log.debug('Tax List after mapping the payload', taxList);
-    return taxList; // Explicitly returning the list
-  }
-
   fetchUserOrgId() {
     this.quotationService
       .getUserOrgId(this.userCode)
@@ -1988,8 +1765,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   fetchExchangeRate() {
     const quickQuoteDataModel = this.quickQuoteForm.getRawValue();
-    const formCurrencyCode = quickQuoteDataModel.currency.id;
-    const currencyCode = this.currencyCode || formCurrencyCode;
+    // const formCurrencyCode = quickQuoteDataModel.currency.id;
+    const currencyCode = this.currencyCode;
     log.debug("Currency Code", currencyCode)
     this.quotationService
       .getExchangeRates(currencyCode, this.organizationId)

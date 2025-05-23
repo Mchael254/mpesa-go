@@ -1,41 +1,38 @@
-import { Component, ViewChild } from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
-import { ProductsService } from '../../../setups/services/products/products.service';
-import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
-import { Router } from '@angular/router';
-import { QuotationsService } from '../../services/quotations/quotations.service';
-// import { Modal } from 'bootstrap';
-import { introducersDTO } from '../../data/introducersDTO';
-import { ProductSubclassService } from '../../../setups/services/product-subclass/product-subclass.service';
-import { Table } from 'primeng/table';
-import { HttpErrorResponse } from '@angular/common/http';
+import {ProductsService} from '../../../setups/services/products/products.service';
+import {SharedQuotationsService} from '../../services/shared-quotations.service';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
+import {QuotationsService} from '../../services/quotations/quotations.service';
+import {introducersDTO} from '../../data/introducersDTO';
+import {ProductSubclassService} from '../../../setups/services/product-subclass/product-subclass.service';
+import {Table} from 'primeng/table';
+import {HttpErrorResponse} from '@angular/common/http';
 
-import { NgxSpinnerService } from 'ngx-spinner';
-import { OrganizationBranchDto } from "../../../../../../shared/data/common/organization-branch-dto";
-import { CurrencyDTO } from "../../../../../../shared/data/common/currency-dto";
-import { BankService } from "../../../../../../shared/services/setups/bank/bank.service";
-import { BranchService } from "../../../../../../shared/services/setups/branch/branch.service";
-import { ClauseService } from "../../../../services/clause/clause.service";
-import { ProductService } from "../../../../services/product/product.service";
-import { AuthService } from "../../../../../../shared/services/auth.service";
-import { IntermediaryService } from "../../../../../entities/services/intermediary/intermediary.service";
-import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
+import {NgxSpinnerService} from 'ngx-spinner';
+import {OrganizationBranchDto} from "../../../../../../shared/data/common/organization-branch-dto";
+import {CurrencyDTO} from "../../../../../../shared/data/common/currency-dto";
+import {BankService} from "../../../../../../shared/services/setups/bank/bank.service";
+import {BranchService} from "../../../../../../shared/services/setups/branch/branch.service";
+import {ClauseService} from "../../../../services/clause/clause.service";
+import {ProductService} from "../../../../services/product/product.service";
+import {AuthService} from "../../../../../../shared/services/auth.service";
+import {IntermediaryService} from "../../../../../entities/services/intermediary/intermediary.service";
+import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
+import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
+import {forkJoin, mergeMap} from 'rxjs';
+import {QuotationList, QuotationSource, UserDetail} from '../../data/quotationsDTO';
+import {Products} from '../../../setups/data/gisDTO';
 
-import { AccountContact } from "../../../../../../shared/data/account-contact";
-import { ClientAccountContact } from 'src/app/shared/data/client-account-contact';
-import { WebAdmin } from 'src/app/shared/data/web-admin';
-import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
-import { forkJoin, mergeMap } from 'rxjs';
-import { QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
-import { Products } from '../../../setups/data/gisDTO';
 const log = new Logger('QuotationDetails');
+
 @Component({
   selector: 'app-quotation-details',
   templateUrl: './quotation-details.component.html',
   styleUrls: ['./quotation-details.component.css']
 })
-export class QuotationDetailsComponent {
+export class QuotationDetailsComponent implements OnInit, OnDestroy {
   @ViewChild(Table) private dataTable: Table;
   steps = quoteStepsData;
   branch: OrganizationBranchDto[];
@@ -58,8 +55,6 @@ export class QuotationDetailsComponent {
   showProduct: boolean = false;
   quotationNum: string;
   introducers: introducersDTO[] = [];
-  productSubclassList: any
-  // productDetails: any
   userDetails: any;
   selected: any;
   quotationSources: QuotationSource[] = [];
@@ -73,7 +68,8 @@ export class QuotationDetailsComponent {
   productCode: any;
   @ViewChild('openModal') openModal;
   @ViewChild('dt1') dt1: Table | undefined;
-  quotationType: any;
+  quotationType: any[] = [];
+  fromCampaign: any[] = []
   showIntermediaryField: boolean = false;
   resultFromCampaign: any;
   showCampaignField: boolean = false;
@@ -93,7 +89,6 @@ export class QuotationDetailsComponent {
   exchangeRate: number;
   userOrgDetails: UserDetail;
   defaultCurrency: CurrencyDTO;
-  editConvertedQuote: string;
   quotationFormDetails: any = null
   motorClassAllowed: string;
   currencyDelimiter: any;
@@ -104,12 +99,14 @@ export class QuotationDetailsComponent {
   productDetails: any[] = [];
   paymentFrequencies: any[] = [];
   clonedProducts: { [key: string]: any } = {};
-  formattedToDate: string;
   selectedEditRow: any = null;
   selectedEditRowIndex: number | null = null;
   selectedProduct: any;
   selectedRow: any;
   quotationProductForm: FormGroup
+  existingQuotationDetails: any = undefined
+  selectedClient: any = undefined
+
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -125,7 +122,6 @@ export class QuotationDetailsComponent {
     public quotationService: QuotationsService,
     public productSubclass: ProductSubclassService,
     private globalMessagingService: GlobalMessagingService,
-
   ) {
 
     this.quotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
@@ -135,28 +131,48 @@ export class QuotationDetailsComponent {
     const clientCode = sessionStorage.getItem('clientCode');
     this.clientId = JSON.parse(clientCode)
     log.debug("Client Code- session storage", this.clientId)
+    this.existingQuotationDetails = JSON.parse(sessionStorage.getItem('passedQuotationDetails'))
     this.productDetails = JSON.parse(sessionStorage.getItem('productFormDetails'));
     this.productDetails?.forEach(product => {
       product.coverFrom = new Date(product.coverFrom);
       product.coverTo = new Date(product.coverTo);
     });
-
+    if (!this.productDetails && this.existingQuotationDetails) {
+      this.productDetails = this.existingQuotationDetails?.quotationProducts
+      this.productDetails.map((value) => {
+        return {
+          ...value,
+          coverFrom: new Date(value.wef),
+          coverTo: new Date(value.wet)
+        }
+      })
+      log.debug("Existing product details >>>", this.productDetails)
+    }
+    this.paymentFrequencies = [
+      {label: 'Annually', value: 'A'},
+      {label: 'Semi annually', value: 'S'},
+      {label: 'Quarterly', value: 'Q'},
+      {label: 'Monthly', value: 'M'},
+      {label: 'One-off', value: 'O'}
+    ];
+    this.quotationType = [
+      {label: 'Direct', value: 'D'},
+      {label: 'Intermediary', value: 'I'}
+    ]
+    this.fromCampaign = [
+      {label: 'Others', value: 'O'},
+      {label: 'Campaign', value: 'C'}
+    ]
+    this.selectedClient = JSON.parse(sessionStorage.getItem('client'))
     log.debug("product Form details", this.productDetails)
   }
 
   ngOnInit(): void {
     this.minDate = new Date();
     this.fetchQuotationRelatedData()
-
     this.getuser();
-    // this.formData = this.sharedService.getFormData();
     this.createQuotationForm();
     this.createQuotationProductForm();
-
-    // this.quickQuoteDetails()
-
-    log.debug(this.quotationForm.value)
-
     this.quoteToEditData = JSON.parse(sessionStorage.getItem("quoteToEditData"));
     log.debug("quote data to edit: ", this.quoteToEditData);
 
@@ -164,17 +180,10 @@ export class QuotationDetailsComponent {
       log.debug("load quotation details: ", this.quoteToEditData);
       this.loadClientQuotation();
     }
-    this.paymentFrequencies = [
-      { label: 'Annually', value: 'A' },
-      { label: 'Semi annually', value: 'S' },
-      { label: 'Quaterly', value: 'Q' },
-      { label: 'Monthly', value: 'M' },
-      { label: 'One-off', value: 'O' }
-    ];
-
-
   }
-  ngOnDestroy(): void { }
+
+  ngOnDestroy(): void {
+  }
 
   loadClientQuotation() {
     log.debug("passed quotation Number:", this.quoteToEditData.quotationNumber);
@@ -203,10 +212,9 @@ export class QuotationDetailsComponent {
         wefDate: new Date(this.quotationDetails.coverFrom),
         wetDate: new Date(this.quotationDetails.coverTo),
         expiryDate: new Date(this.quotationDetails.expiryDate),
-        branchCode: this.quotationDetails.branchCode,
+        branch: this.quotationDetails.branchCode,
         currencyCode: this.quotationDetails.currencyCode,
         agentCode: this.quotationDetails.agentCode,
-        agentShortDescription: this.quotationDetails.agentShortDescription,
         clientType: this.quotationDetails.clientType,
         source: this.quotationDetails.source?.code,
         clientCode: this.quotationDetails.clientCode,
@@ -237,11 +245,9 @@ export class QuotationDetailsComponent {
       const productCode = this.quotationDetails.quotationProducts[0].productCode;
       this.productService.getProductDetailsByCode(productCode).subscribe(res => {
         log.debug("response product", res);
-
-        // Find the matching product object in ProductDescriptionArray
-        const selectedProduct = this.ProductDescriptionArray.find((product: { code: number; }) => product.code === res?.code);
-
-        // Set the entire product object as the form control value
+        const selectedProduct = this.ProductDescriptionArray.find((product: {
+          code: number;
+        }) => product.code === res?.code);
         if (selectedProduct) {
           this.quotationForm.controls['productCode'].setValue(selectedProduct);
           this.getProductClause();
@@ -259,7 +265,7 @@ export class QuotationDetailsComponent {
       // set branch
       this.branch.forEach(el => {
         if (el.id === this.quotationDetails.branchCode) {
-          this.quotationForm.controls['branchCode'].setValue(el);
+          this.quotationForm.controls['branch'].setValue(el);
         }
       });
 
@@ -283,7 +289,7 @@ export class QuotationDetailsComponent {
           wefDate: new Date(this.quickQuotationDetails.coverFrom),
           wetDate: new Date(this.quickQuotationDetails.coverTo),
           expiryDate: new Date(this.quickQuotationDetails.expiryDate),
-          branchCode: this.quickQuotationDetails.branchCode,
+          branch: this.quickQuotationDetails.branchCode,
           currencyCode: this.quickQuotationDetails.currencyCode,
           agentCode: this.quickQuotationDetails.agentCode,
           agentShortDescription: this.quickQuotationDetails.agentShortDescription,
@@ -302,12 +308,9 @@ export class QuotationDetailsComponent {
         // Set product code
         const productCode = this.quickQuotationDetails.quotationProducts[0].productCode;
         this.productService.getProductDetailsByCode(productCode).subscribe(res => {
-          log.debug("response product", res);
-
-          // Find the matching product object in ProductDescriptionArray
-          const selectedProduct = this.ProductDescriptionArray.find((product: { code: number; }) => product.code === res?.code);
-
-          // Set the entire product object as the form control value
+          const selectedProduct = this.ProductDescriptionArray.find((product: {
+            code: number;
+          }) => product.code === res?.code);
           if (selectedProduct) {
             this.quotationForm.controls['productCode'].setValue(selectedProduct);
             this.getProductClause();
@@ -325,7 +328,7 @@ export class QuotationDetailsComponent {
         // set branch
         this.branch.forEach(el => {
           if (el.id === this.quickQuotationDetails.branchCode) {
-            this.quotationForm.controls['branchCode'].setValue(el);
+            this.quotationForm.controls['branch'].setValue(el);
           }
         });
 
@@ -333,8 +336,6 @@ export class QuotationDetailsComponent {
         if (this.quickQuotationDetails.source) {
           this.quotationForm.controls['source'].setValue(this.quickQuotationDetails.source.code);
         }
-
-        // Debugging
         log.debug("Form Values After Patch", this.quotationForm.value);
       });
     }
@@ -346,10 +347,10 @@ export class QuotationDetailsComponent {
   }
 
   /**
-  * Retrieves the current user and stores it in the 'user' property.
-  * @method getUser
-  * @return {void}
-  */
+   * Retrieves the current user and stores it in the 'user' property.
+   * @method getUser
+   * @return {void}
+   */
   getuser() {
     this.user = this.authService.getCurrentUserName();
     this.userDetails = this.authService.getCurrentUser();
@@ -357,9 +358,6 @@ export class QuotationDetailsComponent {
 
     this.userCode = this.userDetails.code
     log.debug('User Code ', this.userCode);
-    if (this.userCode) {
-      // this.fetchUserOrgId()
-    }
     this.dateFormat = this.userDetails?.orgDateFormat;
     log.debug('Organization Date Format:', this.dateFormat);
     sessionStorage.setItem('dateFormat', this.dateFormat);
@@ -369,7 +367,7 @@ export class QuotationDetailsComponent {
 
     // Extract the day, month, and year
     const day = todaysDate.getDate();
-    const month = todaysDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+    const month = todaysDate.toLocaleString('default', {month: 'long'}); // 'long' gives the full month name
     const year = todaysDate.getFullYear();
 
     // Format the date in 'dd-Month-yyyy' format
@@ -384,72 +382,15 @@ export class QuotationDetailsComponent {
     sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
   }
 
-  /**
-    * Creates a new quotation form using Angular Reactive Forms.
-    * @method createQuotationForm
-    * @return {void}
-    */
-  // createQuotationForm() {
-  //   this.quotationForm = this.fb.group({
-  //     quotationCode: [''],
-  //     quotationNumber: [null],
-  //     user: ['', Validators.required],
-  //     action: [''],
-  //     wefDate: [this.quotationFormDetails ?
-  //       new Date(this.quotationFormDetails?.wefDate) : this.todaysDate, Validators.required],
-  //     wetDate: [this.quotationFormDetails ?
-  //       new Date(this.quotationFormDetails?.wetDate) : this.coverToDate, Validators.required],
-  //     branchCode: [Validators.required],
-  //     currencyCode: [Validators.required],
-  //     agentCode: [null, Validators.required],
-  //     agentShortDescription: [''],
-  //     clientType: [''],
-  //     source: [null, Validators.required],
-  //     productCode: [null, Validators.required],
-  //     bindCode: [null],
-  //     binderPolicy: [null],
-  //     currencyRate: [null],
-  //     introducerCode: [null],
-  //     internalComments: [null],
-  //     clientCode: [null],
-  //     polPropHoldingCoPrpCode: [null],
-  //     chequeRequisition: [null],
-  //     divisionCode: [null],
-  //     subAgentCode: [null],
-  //     prospectCode: [null],
-  //     marketerAgentCode: [null],
-  //     comments: [null],
-  //     gisPolicyNumber: [null],
-  //     polPipPfCode: [null],
-  //     endorsementStatus: [null],
-  //     polEnforceSfParam: [null],
-  //     creditDateNotified: [null],
-  //     multiUser: [null],
-  //     unitCode: [null],
-  //     locationCode: [null],
-  //     RFQDate: [this.quotationFormDetails ?
-  //       new Date(this.quotationFormDetails?.RFQDate) : this.todaysDate],
-  //     expiryDate: [this.quotationFormDetails ?
-  //       new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate],
-  //     quotationType: [null],
-  //     quotationProducts: this.fb.array([])
-  //   });
-  // }
   createQuotationForm() {
-   
     this.quotationForm = this.fb.group({
-      quotationNumber: [''],
+      fromCampaign: [],
+      frequencyOfPayment: [],
       source: ['', Validators.required],
-      user: ['', Validators.required],
-      clientCode: [0],
+      user: [''],
       currencyCode: [0, Validators.required],
-      currencyRate: [0],
-      agentCode: [0, Validators.required],
-      agentShortDescription: [''],
-      gisPolicyNumber: [''],
+      agent: [0, Validators.required],
       multiUser: [''],
-      unitCode: [null],
-      locationCode: [null],
       wefDate: [
         this.quotationFormDetails ? new Date(this.quotationFormDetails.wefDate) : this.todaysDate,
         Validators.required
@@ -458,60 +399,20 @@ export class QuotationDetailsComponent {
         this.quotationFormDetails ? new Date(this.quotationFormDetails.wetDate) : this.coverToDate,
         Validators.required
       ],
-      bindCode: [null],
-      binderPolicy: [''],
-      divisionCode: [0],
-      subAgentCode: [0],
-      clientType: [''],
-      prospectCode: [0],
-      branchCode: [Validators.required],
+      branch: [Validators.required],
       marketerAgentCode: [0],
       comments: [''],
-      polPipPfCode: [0],
-      endorsementStatus: [''],
-      polEnforceSfParam: [''],
-      creditDateNotified: [null],
       introducerCode: [0],
       internalComments: [''],
-      polPropHoldingCoPrpCode: [0],
-      chequeRequisition: [''],
-      premium: [0],
       RFQDate: [this.quotationFormDetails ?
         new Date(this.quotationFormDetails?.RFQDate) : new Date(this.todaysDate)],
       expiryDate: [this.quotationFormDetails ?
         new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate],
-      quotationType: [null],
-      quotationProducts:
-        this.fb.group({
-          code: [0],
-          productCode: [0, Validators.required],
-          quotationCode: [0],
-          productShortDescription: [''],
-          quotationNo: [''],
-          premium: [0],
-          wef: [this.todaysDate, Validators.required],
-          wet: [this.coverToDate, Validators.required],
-          revisionNo: [0],
-          totalSumInsured: [0],
-          commission: [0],
-          binder: [''],
-          agentShortDescription: [''],
-          productName: [''],
-          converted: [''],
-          policyNumber: [''],
-          taxInformation: this.fb.array([
-            this.fb.group({
-              rateDescription: [''],
-              quotationRate: [0],
-              rateType: [''],
-              taxAmount: [0],
-              productCode: [0]
-            })
-          ])
-        })
+      quotationType: [null]
     });
 
   }
+
   createQuotationProductForm() {
     this.quotationProductForm = this.fb.group({
       code: [0],
@@ -526,88 +427,84 @@ export class QuotationDetailsComponent {
       totalSumInsured: [0],
       commission: [0],
       binder: [''],
-      agentShortDescription: [''],
       productName: [''],
       converted: [''],
       policyNumber: [''],
-      taxInformation: this.fb.array([
-        this.fb.group({
-          rateDescription: [''],
-          quotationRate: [0],
-          rateType: [''],
-          taxAmount: [0],
-          productCode: [0]
-        })
-      ])
+      /* taxInformation: this.fb.array([
+         this.fb.group({
+           rateDescription: [''],
+           quotationRate: [0],
+           rateType: [''],
+           taxAmount: [0],
+           productCode: [0]
+         })
+       ])*/
     })
-  }
-  // Method to add a product to quotationProducts
-  addQuotationProduct(productCode?: number, wefDate?: string, wetDate?: string) {
-    const productsArray = this.quotationForm.get('quotationProducts') as FormArray;
-    productsArray.push(
-      this.fb.group({
-        productCode: [productCode || null],
-        wef: [this.quotationFormDetails ?
-          new Date(this.quotationFormDetails?.wefDate) : wefDate, Validators.required],
-        wet: [this.quotationFormDetails ?
-          new Date(this.quotationFormDetails?.wetDate) : wetDate, Validators.required],
-      }
-      ));
   }
 
 
   /**
- * Saves quotation details, sets form details, and navigates based on user preferences.
- * @method saveQuotationDetails
- * @return {void}
- */
+   * Saves quotation details, sets form details, and navigates based on user preferences.
+   * @method saveQuotationDetails
+   * @return {void}
+   */
   saveQuotationDetails() {
-    const rfqDate = this.quotationForm.value.RFQDate; // Added RFQDate
-    const expiryDate = this.quotationForm.value.expiryDate; // Added expiryDate
-    const covertRfqDate = rfqDate;
-    const formattedRfqDate = this.formatDate(covertRfqDate);
-    log.debug('FORMATTED RFQ DATE:', formattedRfqDate);
-
-    const covertExpiryDate = expiryDate;
-    const formattedExpiryDate = this.formatDate(covertExpiryDate);
-    log.debug('FORMATTED EXPIRY DATE:', formattedExpiryDate);
-
-    let quotationPayload = this.quotationForm.getRawValue();
-    quotationPayload = {
-      ...quotationPayload,
-      user: this.user,
-      RFQDate: formattedRfqDate,
-      expiryDate: formattedExpiryDate,
-      currencyCode: this.quotationForm.value.currencyCode.id || this.defaultCurrency.id,
-      source: this.quotationForm.value.source.code,
-      currencyRate: this.exchangeRate,
-      clientCode: this.clientId,
-      clientType: "I",
-      wefDate: this.formatDate(this.productDetails[0].coverFrom),
-      wetDate: this.formatDate(this.productDetails[0].coverTo),
-      quotationProducts: this.productDetails.map((value) => {
-        return {
-          wef: this.formatDate(value.coverFrom),
-          wet: this.formatDate(value.coverTo),
-          productCode: value.productCode.code,
-          productName: value.productCode.description
+    log.debug("Quotation form details >>>>", this.quotationForm)
+    log.debug("Selected agent >>>>", this.agentDetails)
+    if (this.quotationForm.valid) {
+      const quotationFormValues = this.quotationForm.getRawValue();
+      const quotationPayload = {
+        user: this.user,
+        branchCode: quotationFormValues.branch.id,
+        RFQDate: this.formatDate(quotationFormValues.RFQDate),
+        expiryDate: this.formatDate(quotationFormValues.expiryDate),
+        currencyCode: quotationFormValues.currencyCode.id || this.defaultCurrency.id,
+        source: quotationFormValues.source.code,
+        currencyRate: this.exchangeRate,
+        agentShortDescription: this.agentDetails.shortDesc,
+        clientCode: this.selectedClient.id,
+        clientType: "I",
+        wefDate: this.formatDate(this.productDetails[0].coverFrom),
+        wetDate: this.formatDate(this.productDetails[0].coverTo),
+        frequencyOfPayment: quotationFormValues.frequencyOfPayment.value,
+        quotationProducts: this.productDetails.map((value) => {
+          return {
+            wef: this.formatDate(value.coverFrom),
+            wet: this.formatDate(value.coverTo),
+            productCode: value.productCode.code,
+            productName: value.productCode.description
+          }
+        })
+      }
+      log.debug("quotation payload to save", quotationPayload);
+    } else {
+      // Mark all fields as touched and validate the form
+      this.quotationForm.markAllAsTouched();
+      this.quotationForm.updateValueAndValidity();
+      for (let controlsKey in this.quotationForm.controls) {
+        if (this.quotationForm.get(controlsKey).invalid) {
+          log.debug(
+            `${controlsKey} is invalid`,
+            this.quotationForm.get(controlsKey).errors
+          );
         }
-      })
+      }
     }
-    log.debug("QUotation payload::: ", quotationPayload)
+    return
+
     this.spinner.show()
 
-    this.sharedService.setQuotationFormDetails(this.quotationForm.value);
+    /*this.sharedService.setQuotationFormDetails(this.quotationForm.value);
     sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
     const quotationFormJson = this.quotationForm.value
     log.debug("Quotation form details", quotationFormJson)
     if (this.quotationForm.value.multiUser == 'Y') {
-      /**
-   * Creates a new quotation with multi-user and navigates to quote assigning.
-   * @param {Object} this.quotationForm.value - The form value representing quotation details.
-   * @param {string} this.user - The user associated with the quotation.
-   * @return {Observable<any>} - An observable of the response containing created quotation data.
-   */
+      /!**
+       * Creates a new quotation with multi-user and navigates to quote assigning.
+       * @param {Object} this.quotationForm.value - The form value representing quotation details.
+       * @param {string} this.user - The user associated with the quotation.
+       * @return {Observable<any>} - An observable of the response containing created quotation data.
+       *!/
       if (this.quickQuotationDetails) {
         log.debug("Quick Quotation results")
         this.router.navigate(['/home/gis/quotation/quote-assigning'])
@@ -630,15 +527,14 @@ export class QuotationDetailsComponent {
       }
 
 
-
     } else {
       if (this.isChecked) {
-        /**
+        /!**
          * Creates a new quotation with import risks and navigates to import risks page.
          * @param {Object} this.quotationForm.value - The form value representing quotation details.
          * @param {string} this.user - The user associated with the quotation.
          * @return {Observable<any>} - An observable of the response containing created quotation data.
-         */
+         *!/
         if (this.quickQuotationDetails) {
           this.router.navigate(['/home/gis/quotation/import-risks']);
           this.spinner.hide();
@@ -667,12 +563,12 @@ export class QuotationDetailsComponent {
           );
         }
       } else {
-        /**
-        * Creates a new quotation and navigates to risk section details based on user preferences.
-        * @param {Object} this.quotationForm.value - The form value representing quotation details.
-        * @param {string} this.user - The user associated with the quotation.
-        * @return {Observable<any>} - An observable of the response containing created quotation data.
-        */
+        /!**
+         * Creates a new quotation and navigates to risk section details based on user preferences.
+         * @param {Object} this.quotationForm.value - The form value representing quotation details.
+         * @param {string} this.user - The user associated with the quotation.
+         * @return {Observable<any>} - An observable of the response containing created quotation data.
+         *!/
 
         if (this.quickQuotationDetails) {
           this.router.navigate(['/home/gis/quotation/risk-center']);
@@ -709,36 +605,41 @@ export class QuotationDetailsComponent {
 
 
       }
-    }
+    }*/
   }
+
   /**
-  * Applies a global filter to the DataTable.
-  * @method applyFilterGlobal
-  * @param {Event} $event - The event triggering the filter application.
-  * @param {string} stringVal - The string value representing the filter criteria.
-  * @return {void}
-  */
+   * Applies a global filter to the DataTable.
+   * @method applyFilterGlobal
+   * @param {Event} $event - The event triggering the filter application.
+   * @param {string} stringVal - The string value representing the filter criteria.
+   * @return {void}
+   */
   applyFilterGlobal($event, stringVal) {
     this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
   }
 
   /**
-    * Retrieves agents and populates the 'agents' property.
-    * @method getAgents
-    * @return {void}
-    */
+   * Retrieves agents and populates the 'agents' property.
+   * @method getAgents
+   * @return {void}
+   */
   getAgents() {
-    this.quotationService.getAgents().subscribe(data => {
-      this.agents = data.content
-      log.debug("AGENTS", data)
-    })
+    this.quotationService.getAgents().pipe(
+      untilDestroyed(this)
+    )
+      .subscribe(data => {
+        this.agents = data.content
+        log.debug("AGENTS", data)
+      })
   }
+
   /**
-  * Retrieves agent short description by ID and updates the corresponding form control.
-  * @method agentShortDesc
-  * @param {string} id - The ID of the agent for which to retrieve the short description.
-  * @return {void}
-  */
+   * Retrieves agent short description by ID and updates the corresponding form control.
+   * @method agentShortDesc
+   * @param {string} id - The ID of the agent for which to retrieve the short description.
+   * @return {void}
+   */
   agentShortDesc() {
     this.agentService.getAgentById(this.quotationForm.value.agentCode.id).subscribe(data => {
       this.agentDetails = data
@@ -747,39 +648,41 @@ export class QuotationDetailsComponent {
     })
 
   }
-  getAgentById(data) {
-    this.agentService.getAgentById(data).subscribe({
-      next: (res) => {
-        this.agentDetails = res
-        log.debug("agent selected", this.agentDetails);
-        this.agentName = this.agentDetails.name;
 
-        this.quotationForm.controls['agentShortDescription'].setValue(this.agentDetails.shortDesc);
-        this.quotationForm.controls['agentCode'].setValue(this.agentDetails.name);
+  getAgentById(data) {
+    log.debug("agent selected", data);
+    this.agentDetails = data
+    this.agentName = this.agentDetails.name;
+/*    this.quotationForm.controls['agentShortDescription'].setValue(this.agentDetails.shortDesc);
+    this.quotationForm.controls['agentCode'].setValue(this.agentDetails.name);*/
+   /* this.agentService.getAgentById(data).subscribe({
+      next: (res) => {
+
 
       }
-    })
+    })*/
   }
+
   openHelperModal(selectedClause: any) {
     // Set the showHelperModal property of the selectedClause to true
     selectedClause.showHelperModal = true;
   }
+
   onResize(event: any) {
     this.modalHeight = event.height;
   }
+
   /**
    * Retrieves existing quotations based on form values and performs further actions.
    * @method getExistingQuotations
    * @return {void}
    */
   getExistingQuotations() {
-    log.debug("quotation form being passed", this.quotationForm);
     const clientId = this.quotationForm.value.clientCode
     const fromDate = this.quotationForm.value.wefDate
     const toDate = this.quotationForm.value.wetDate
     const rawCoverTo = new Date(toDate)
     log.debug('raw cover to DATE:', toDate);
-
 
 
     const coverFromDate = fromDate;
@@ -791,33 +694,28 @@ export class QuotationDetailsComponent {
     log.debug('FORMATTED cover to DATE:', formattedCoverToDate);
 
     const productCode = this.quotationProductForm.value.productCode.code;
-    // this.addQuotationProduct(productCode, formattedCoverFromDate, formattedCoverToDate);
 
-
+    //TODO: check this out
     // Set currency code in the form
-    if (this.quotationType === "D") {
-      this.quotationForm.controls['agentCode'].setValue(0);
-      this.quotationForm.controls['agentShortDescription'].setValue("DIRECT")
+    /* if (this.quotationType === "D") {
+       this.quotationForm.controls['agentCode'].setValue(0);
+       this.quotationForm.controls['agentShortDescription'].setValue("DIRECT")
 
-    } else if (this.quotationType === "I") {
-      this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
-    }
-    // this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
-    // this.quotationForm.controls['productCode'].setValue(this.quotationProductForm.value.productCode.code);
-    this.quotationForm.controls['branchCode'].setValue(this.quotationForm.value.branchCode.id);
-    // this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
+     } else if (this.quotationType === "I") {
+       this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
+     }*/
+    this.saveQuotationDetails()
+    return
+    this.quotationForm.controls['branch'].setValue(this.quotationForm.value.branchCode.id);
     sessionStorage.setItem('coverFrom', JSON.stringify(formattedCoverFromDate));
     sessionStorage.setItem('coverTo', JSON.stringify(formattedCoverToDate));
+    //TODO check this??? client code
     this.quotationService.getQuotations(221243911, formattedCoverFromDate, formattedCoverToDate).subscribe(data => {
       this.quotationsList = data
       this.clientExistingQuotations = this.quotationsList.content
 
       if (this.clientExistingQuotations.length > 0) {
         this.openModal.nativeElement.click();
-
-        // const element = document.getElementById('exampleModal') as HTMLElement;
-        // const myModal = new Modal(element);
-        // myModal.show();
       } else {
 
         this.saveQuotationDetails()
@@ -830,22 +728,23 @@ export class QuotationDetailsComponent {
 
 
   /**
- * Edits a row by updating a clause based on details and code.
- * @method editRow
- * @param {any} details - The details for updating the clause.
- * @param {string} code - The code associated with the clause.
- * @return {void}
- */
+   * Edits a row by updating a clause based on details and code.
+   * @method editRow
+   * @param {any} details - The details for updating the clause.
+   * @param {string} code - The code associated with the clause.
+   * @return {void}
+   */
   editRow(details, code) {
     this.clauseService.updateClause(details, code).subscribe(res => {
-      this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
-    }, (error: HttpErrorResponse) => {
-      log.info(error);
-      this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+      }, (error: HttpErrorResponse) => {
+        log.info(error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
 
-    }
+      }
     )
   }
+
   formatDate(date: string | Date | null): string {
     if (!date) return '';
 
@@ -865,11 +764,11 @@ export class QuotationDetailsComponent {
   }
 
   /**
- * Updates the cover to date in the quotation form based on the selected cover from date.
- * @method updateCoverToDate
- * @param {Event} e - The event containing the target value representing the cover from date.
- * @return {void}
- */
+   * Updates the cover to date in the quotation form based on the selected cover from date.
+   * @method updateCoverToDate
+   * @param {Event} e - The event containing the target value representing the cover from date.
+   * @return {void}
+   */
   updateCoverToDate(date) {
     log.debug("Cover from date:", date)
     const coverFromDate = date;
@@ -878,11 +777,6 @@ export class QuotationDetailsComponent {
     log.debug('FORMATTED cover from DATE:', formattedCoverFromDate);
     const productCode = this.quotationProductForm.value.productCode.code || this.selectedProduct?.code
     log.debug('Product code:', productCode);
-
-    // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
-    //   this.productDetails = res
-    //   log.debug(this.productDetails)
-    // if(this.productDetails.expires === 'Y'){
     this.producSetupService.getCoverToDate(formattedCoverFromDate, productCode)
       .subscribe({
         next: (res) => {
@@ -893,7 +787,7 @@ export class QuotationDetailsComponent {
           const coverFromDate = new Date(coverFrom)
           // Extract the day, month, and year
           const day = coverFromDate.getDate();
-          const month = coverFromDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+          const month = coverFromDate.toLocaleString('default', {month: 'long'}); // 'long' gives the full month name
           const year = coverFromDate.getFullYear();
 
           // Format the date in 'dd-Month-yyyy' format
@@ -921,102 +815,50 @@ export class QuotationDetailsComponent {
 
       })
 
-    // }else {
-    //   const selectedDate = new Date(coverFromDate);
-    //   selectedDate.setFullYear(selectedDate.getFullYear() + 1);
-    //   const coverToDate = selectedDate.toISOString().split('T')[0];
-    //   this.quotationForm.controls['withEffectiveToDate'].setValue(coverToDate);
-
-
-    // }
-    // })
-
   }
-  updateCoverToDateEdit(date, product) {
-    log.debug("Cover from date:", date)
-    const coverFromDate = date;
-    const formattedCoverFromDate = this.formatDate(coverFromDate);
-    sessionStorage.setItem("selectedCoverFromDate", formattedCoverFromDate);
-    log.debug('FORMATTED cover from DATE:', formattedCoverFromDate);
-    const productCode = this.quotationForm?.value?.productCode?.code || this.selectedProduct?.code
-    log.debug('Product code:', productCode);
 
-    // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
-    //   this.productDetails = res
-    //   log.debug(this.productDetails)
-    // if(this.productDetails.expires === 'Y'){
-    this.producSetupService.getCoverToDate(formattedCoverFromDate, productCode)
-      .subscribe({
-        next: (res) => {
-          this.midnightexpiry = res;
-          log.debug("midnightexpirydate", this.midnightexpiry);
-          log.debug(this.midnightexpiry)
-          const coverFrom = this.midnightexpiry._embedded[0].coverToDate
-          const coverFromDate = new Date(coverFrom)
-          // Extract the day, month, and year
-          const day = coverFromDate.getDate();
-          const month = coverFromDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
-          const year = coverFromDate.getFullYear();
+  /*  updateCoverToDateEdit(date, product) {
+      log.debug("Cover from date:", date)
+      const coverFromDate = date;
+      const formattedCoverFromDate = this.formatDate(coverFromDate);
+      sessionStorage.setItem("selectedCoverFromDate", formattedCoverFromDate);
+      log.debug('FORMATTED cover from DATE:', formattedCoverFromDate);
+      const productCode = this.quotationForm?.value?.productCode?.code || this.selectedProduct?.code
+      log.debug('Product code:', productCode);
+      this.producSetupService.getCoverToDate(formattedCoverFromDate, productCode)
+        .subscribe({
+          next: (res) => {
+            this.midnightexpiry = res;
+            log.debug("midnightexpirydate", this.midnightexpiry);
+            log.debug(this.midnightexpiry)
+            const coverFrom = this.midnightexpiry._embedded[0].coverToDate
+            const coverFromDate = new Date(coverFrom)
+            // Extract the day, month, and year
+            const day = coverFromDate.getDate();
+            const month = coverFromDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+            const year = coverFromDate.getFullYear();
 
-          // Format the date in 'dd-Month-yyyy' format
-          const formattedDate = `${day}-${month}-${year}`;
+            // Format the date in 'dd-Month-yyyy' format
+            const formattedDate = `${day}-${month}-${year}`;
 
-          this.coverToDate = formattedDate;
-          log.debug('Cover to  Date', this.coverToDate);
-          sessionStorage.setItem("selectedCoverToDate", this.formatDate(this.coverToDate))
-          this.quotationForm.controls['wetDate'].setValue(this.coverToDate)
-          // Update the specific product's coverTo field
-          product.coverTo = this.formatDate(this.coverToDate);
-        },
-        error: (error: HttpErrorResponse) => {
-          log.debug("Error log", error.error.message);
+            this.coverToDate = formattedDate;
+            log.debug('Cover to  Date', this.coverToDate);
+            sessionStorage.setItem("selectedCoverToDate", this.formatDate(this.coverToDate))
+            this.quotationForm.controls['wetDate'].setValue(this.coverToDate)
+            // Update the specific product's coverTo field
+            product.coverTo = this.formatDate(this.coverToDate);
+          },
+          error: (error: HttpErrorResponse) => {
+            log.debug("Error log", error.error.message);
 
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error?.message
-          );
-        },
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              error.error?.message
+            );
+          },
 
-      })
-
-    // }else {
-    //   const selectedDate = new Date(coverFromDate);
-    //   selectedDate.setFullYear(selectedDate.getFullYear() + 1);
-    //   const coverToDate = selectedDate.toISOString().split('T')[0];
-    //   this.quotationForm.controls['withEffectiveToDate'].setValue(coverToDate);
-
-
-    // }
-    // })
-
-  }
-  /**
-   * Updates the quotation expiry date in the form based on the selected RFQ date.
-   * @method updateQuotationExpiryDate
-   * @param {Event} e - The event containing the target value representing the RFQ date.
-   * @return {void}
-   */
-  // updateQuotationExpiryDate(date) {
-  //   const RFQDate = date;
-  //   if (RFQDate) {
-  //     const selectedDate = new Date(RFQDate);
-  //     selectedDate.setMonth(selectedDate.getMonth() + 3);
-  //     const expiryDate = selectedDate.toISOString().split('T')[0];
-  //     // this.quotationForm.controls['expiryDate'].setValue(expiryDate);
-  //     log.debug("Quotation Expiry date", expiryDate)
-  //     // Extract the day, month, and year
-  //     const expiryDateRaw = new Date(expiryDate)
-  //     const day = expiryDateRaw.getDate();
-  //     const month = expiryDateRaw.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
-  //     const year = expiryDateRaw.getFullYear();
-
-  //     // Format the date in 'dd-Month-yyyy' format
-  //     const formattedDate = `${day}-${month}-${year}`;
-
-  //     this.expiryDate = formattedDate
-  //     log.debug("expiry date formatted", this.expiryDate)
-  //   }
-  // }
+        })
+    }*/
   updateQuotationExpiryDate(date: any) {
     if (date) {
       const selectedDate = new Date(date);
@@ -1029,7 +871,7 @@ export class QuotationDetailsComponent {
 
       // Optional: for display/debug
       const day = selectedDate.getDate();
-      const month = selectedDate.toLocaleString('default', { month: 'long' });
+      const month = selectedDate.toLocaleString('default', {month: 'long'});
       const year = selectedDate.getFullYear();
       this.expiryDate = `${day}-${month}-${year}`;
 
@@ -1044,6 +886,7 @@ export class QuotationDetailsComponent {
     sessionStorage.setItem('motorClassAllowed', (this.motorClassAllowed));
     log.debug("Is motor class:", this.motorClassAllowed)
   }
+
   /**
    * Retrieves product clauses based on the provided product code.
    * @method getProductClause
@@ -1064,6 +907,7 @@ export class QuotationDetailsComponent {
       });
     })
   }
+
   // 🔹 Function called when a checkbox is checked/unchecked
   onClauseSelectionChange(selectedClauseList: any) {
     if (selectedClauseList.checked) {
@@ -1095,26 +939,13 @@ export class QuotationDetailsComponent {
     }
   }
 
-  unselectClause(event) {
-    log.debug(this.selectedClause)
-  }
   onQuotationTypeChange(value: string): void {
     log.info('SELECTED VALUE:', value)
-    this.quotationType = value;
-    log.debug("Quotation  Type", this.quotationType)
     this.showIntermediaryField = value === 'I';
-
-
     if (!this.showIntermediaryField) {
       this.quotationForm.get('agentCode').reset();
-
     }
     this.getAgents()
-
-    // if (!this.showFacultativeFields) {
-    //   this.policyProductForm.get('agentCode').reset();
-
-    // }
   }
 
   onResultCampaignTypeChange(value: string): void {
@@ -1126,14 +957,9 @@ export class QuotationDetailsComponent {
 
     if (!this.showCampaignField) {
       this.quotationForm.get('agentCode').reset();
-
     }
-
-    // if (!this.showFacultativeFields) {
-    //   this.policyProductForm.get('agentCode').reset();
-
-    // }
   }
+
   fetchCampaigns() {
     this.quotationService
       .getCampaigns()
@@ -1201,7 +1027,7 @@ export class QuotationDetailsComponent {
         // CURRENCIES
         this.currency = currencies.map((value) => {
           let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
-          return { ...value, name: capitalizedDescription };
+          return {...value, name: capitalizedDescription};
         });
 
         log.info(this.currency, 'this is a currency list');
@@ -1222,17 +1048,17 @@ export class QuotationDetailsComponent {
         if (this.quotationFormDetails?.currencyCode) {
           const selectedCurrency = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
           if (selectedCurrency) {
-            this.quotationForm.patchValue({ currencyCode: selectedCurrency });
+            this.quotationForm.patchValue({currencyCode: selectedCurrency});
           }
         } else {
-          this.quotationForm.patchValue({ currencyCode: this.defaultCurrency });
+          this.quotationForm.patchValue({currencyCode: this.defaultCurrency});
 
         }
         // QUOTATION SOURCES
         this.quotationSources = sources?.content || [];
         this.quotationSources = this.quotationSources.map((value) => {
           let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
-          return { ...value, description: capitalizedDescription };
+          return {...value, description: capitalizedDescription};
         });
 
         log.debug("SOURCES", this.quotationSources);
@@ -1240,15 +1066,15 @@ export class QuotationDetailsComponent {
         // BRANCHES
         this.branch = branches.map((value) => {
           let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
-          return { ...value, name: capitalizedDescription };
+          return {...value, name: capitalizedDescription};
         });
 
         log.info(this.branch, 'this is a branch list');
 
-        if (this.quotationFormDetails?.branchCode) {
-          const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branchCode);
+        if (this.quotationFormDetails?.branch) {
+          const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branch);
           if (selectedBranch) {
-            this.quotationForm.patchValue({ branchCode: selectedBranch });
+            this.quotationForm.patchValue({branch: selectedBranch});
           }
         }
 
@@ -1265,7 +1091,7 @@ export class QuotationDetailsComponent {
         if (this.quotationFormDetails?.productCode) {
           const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.quotationFormDetails?.productCode);
           if (selectedProduct) {
-            this.quotationForm.patchValue({ productCode: selectedProduct });
+            this.quotationForm.patchValue({productCode: selectedProduct});
           }
         }
 
@@ -1299,46 +1125,29 @@ export class QuotationDetailsComponent {
     }
   }
 
-  // onRowEditInit(index: number, product: any) {
-  //   // this.clonedProducts[productDetails.id as string] = { ...productDetails };
-  //   this.selectedEditRowIndex = index;
-  //   this.selectedEditRow = product;
-  //   log.debug("product to be edited:", product)
-  // }
   onRowEditInit(index: number, row: any) {
-    console.log('onRowEditInit - selectedEditRowIndex before edit:', this.selectedEditRowIndex);
-    
+    log.debug('onRowEditInit - selectedEditRowIndex before edit:', this.selectedEditRowIndex);
+
     this.selectedEditRowIndex = index;
     this.selectedEditRow = row;
-  
-    console.log('onRowEditInit - selectedEditRowIndex after edit:', this.selectedEditRowIndex);
-    console.log('Editing row:', row);
-  }
-  
-  
-  
-  // onProductChange(product: any) {
-  //   console.log("Passed product:", product);
 
-  //   const selectedProduct = this.ProductDescriptionArray.find(p => p.code === product.code);
-  //   if (selectedProduct) {
-  //     this.selectedProduct = selectedProduct; // Store selected product
-  //   }
-  //   console.log("Selected product:", this.selectedProduct);
-  // }
+    log.debug('onRowEditInit - selectedEditRowIndex after edit:', this.selectedEditRowIndex);
+    log.debug('Editing row:', row);
+  }
+
   onProductChange(event: any, rowIndex: number, product: any) {
     // Get the selected product from the event
     const selectedProduct = this.ProductDescriptionArray.find(p => p.code === event.code);
-    
-    if (selectedProduct) {
-        // Manually update the product with the selected product
-        product.productCode = selectedProduct;
-        console.log("Updated product:", product);
 
-        // Ensure the row is marked as editable
-        this.selectedEditRowIndex = rowIndex;
+    if (selectedProduct) {
+      // Manually update the product with the selected product
+      product.productCode = selectedProduct;
+      console.log("Updated product:", product);
+
+      // Ensure the row is marked as editable
+      this.selectedEditRowIndex = rowIndex;
     }
-}
+  }
 
 
   onRowEditSave(product: any) {
@@ -1353,12 +1162,12 @@ export class QuotationDetailsComponent {
     product.coverTo = coverToDate; // Assign full object
 
     if (this.selectedProduct) {
-      product.productCode = { ...this.selectedProduct }; // Assign full object
+      product.productCode = {...this.selectedProduct}; // Assign full object
     }
 
     // Ensure the edited product is correctly updated in the array
     this.productDetails = this.productDetails.map(item =>
-      item.productCode.code === product.productCode.code ? { ...item, ...product } : item
+      item.productCode.code === product.productCode.code ? {...item, ...product} : item
     );
 
     log.debug("Updated Product Details:", this.productDetails);
@@ -1385,50 +1194,24 @@ export class QuotationDetailsComponent {
     this.selectedEditRowIndex = null;
     this.selectedEditRow = null;
   }
+
   submitForm() {
-    // if () {
-    // const coverFromDate = sessionStorage.getItem('selectedCoverFromDate');
-    // const coverToDate = this.quotationProductForm.get('wet')?.value
-    // const formattedCoverFromDate = new Date(coverFromDate);
-
-    // Extract the day, month, and year
-    // const day = formattedCoverFromDate.getDate();
-    // const month = formattedCoverFromDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
-    // const year = formattedCoverFromDate.getFullYear();
-
-    // // Format the date in 'dd-Month-yyyy' format
-    // const formattedFromDate = `${day}-${month}-${year}`;
-    // log.debug("From date formatted:", formattedFromDate)
-    // if (coverToDate) {
-    //   const formattedCoverToDate = new Date(coverToDate);
-
-    //   // Extract the day, month, and year
-    //   const day = formattedCoverToDate.getDate();
-    //   const month = formattedCoverToDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
-    //   const year = formattedCoverToDate.getFullYear();
-
-    //   // Format the date in 'dd-Month-yyyy' format
-    //   const formattedToDate = `${day}-${month}-${year}`;
-    //   this.formattedToDate = formattedToDate
-    //   log.debug("To date formatted:", formattedToDate)
-    // }
     const coverFromDate = new Date(sessionStorage.getItem('selectedCoverFromDate'));
     const formattedCoverFromDate = this.orgFormatDate(coverFromDate, this.dateFormat);
     log.debug("cover to date formatted:", formattedCoverFromDate)
 
     const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
-   const formattedCoverTo = this.orgFormatDate(coverToDate, this.dateFormat);
-   log.debug("cover to date formatted:", formattedCoverTo)
+    const formattedCoverTo = this.orgFormatDate(coverToDate, this.dateFormat);
+    log.debug("cover to date formatted:", formattedCoverTo)
 
     const selectedProductCode = this.quotationProductForm.value.productCode
 
     const newProductDetail = {
       productCode: selectedProductCode,
-      // coverFrom: new Date(coverFromDate),
-      // coverTo: new Date(this.quotationForm.get('wetDate')?.value)
       coverFrom: coverFromDate,
       coverTo: coverToDate
-    }; log.debug("Captured Product Details:", newProductDetail);
+    };
+    log.debug("Captured Product Details:", newProductDetail);
 
     // this.productDetails.push(newProductDetail);
     if (!this.productDetails) {
@@ -1439,44 +1222,30 @@ export class QuotationDetailsComponent {
       product.coverFrom = new Date(product.coverFrom);
       product.coverTo = new Date(product.coverTo);
     });
-    
+
     sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
 
     log.debug("Captured Product Details:", this.productDetails);
-    // } else {
-    //   log.debug("Form is invalid. Please fill in all required fields.");
-    // }
   }
-  // orgDateFormat(date: any) {
-  //   const formattedDate = new Date(date);
 
-  //   // Extract the day, month, and year
-  //   const day = formattedDate.getDate();
-  //   const month = formattedDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
-  //   const year = formattedDate.getFullYear();
-
-  //   // Format the date in 'dd-Month-yyyy' format
-  //   const finalFormatDate = `${day}-${month}-${year}`;
-  //   log.debug("Date formatted:", finalFormatDate)
-  //   return finalFormatDate;
-
-  // }
   orgFormatDate(date: Date, format: string): string {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const yearFull = String(date.getFullYear());
     const yearShort = yearFull.slice(-2);
-  
+
     return format
       .replace('dd', day)
       .replace('mm', month)
       .replace('yyyy', yearFull)
       .replace('yy', yearShort);
   }
+
   onRowSelect(product: any) {
     this.selectedRow = product;
     log.debug("selected product :", product)
   }
+
   openProductDeleteModal() {
     log.debug("Selected product to delete", this.selectedRow)
     if (!this.selectedRow) {
@@ -1485,13 +1254,14 @@ export class QuotationDetailsComponent {
       document.getElementById("openProductButtonDelete").click();
     }
   }
+
   deleteProduct() {
     log.debug("selected Product:", this.selectedRow)
     // Find the index of the product
     const productIndex = this.productDetails.findIndex(
       (product: any) => product.productCode.code === this.selectedRow?.productCode.code
     );
-    
+
     // If the product is found, remove it from the array
     if (productIndex !== -1) {
       this.productDetails.splice(productIndex, 1);
@@ -1504,73 +1274,72 @@ export class QuotationDetailsComponent {
 
     }
   }
-  updateCoverTo(product:any) {
+
+  updateCoverTo(product: any) {
     if (product.coverFrom) {
-     
+
       const formattedCoverFromDate = this.formatDate(product.coverFrom);
       this.producSetupService.getCoverToDate(formattedCoverFromDate, product.productCode.code)
-      .subscribe({
-        next: (res) => {
-          this.midnightexpiry = res;
-          log.debug("midnightexpirydate", this.midnightexpiry);
-          log.debug(this.midnightexpiry)
-          const coverFrom = this.midnightexpiry._embedded[0].coverToDate
-          const coverToDate = new Date(coverFrom)
-          product.coverTo = coverToDate
-         
-          // Update the specific product's coverTo field
-        },
-        error: (error: HttpErrorResponse) => {
-          log.debug("Error log", error.error.message);
+        .subscribe({
+          next: (res) => {
+            this.midnightexpiry = res;
+            log.debug("midnightexpirydate", this.midnightexpiry);
+            log.debug(this.midnightexpiry)
+            const coverFrom = this.midnightexpiry._embedded[0].coverToDate
+            const coverToDate = new Date(coverFrom)
+            product.coverTo = coverToDate
 
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error?.message
-          );
-        },
+            // Update the specific product's coverTo field
+          },
+          error: (error: HttpErrorResponse) => {
+            log.debug("Error log", error.error.message);
 
-      })
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              error.error?.message
+            );
+          },
+
+        })
     }
   }
 
 
-
-
   onRowEditInits(product: any) {
-    this.clonedProducts[product.productCode.code] = { ...product };
+    this.clonedProducts[product.productCode.code] = {...product};
     console.log('Editing row:', product);
   }
-  
+
   onRowEditSaves(product: any) {
     const coverFromDate = product.coverFrom;
     const coverToDate = product.coverTo;
-  
+
     if (coverFromDate && coverToDate && product.productCode?.code) {
       // Clean assignment (optional, if values are changed before save)
       product.coverFrom = new Date(coverFromDate);
       product.coverTo = new Date(coverToDate);
-  
+
       this.productDetails = this.productDetails.map(item =>
-        item.productCode.code === product.productCode.code ? { ...item, ...product } : item
+        item.productCode.code === product.productCode.code ? {...item, ...product} : item
       );
-  
+
       sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
       delete this.clonedProducts[product.productCode.code];
-  
+
       // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Row updated successfully' });
     } else {
       // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill in all required fields' });
     }
   }
-  
+
   onRowEditCancels(product: any, index: number) {
     const code = product.productCode.code;
     this.productDetails[index] = this.clonedProducts[code];
     delete this.clonedProducts[code];
-  
+
     // this.messageService.add({ severity: 'info', summary: 'Cancelled', detail: 'Edit cancelled' });
   }
-  
+
   onProductChanges(event: any, rowIndex: number, product: any) {
     const selectedProduct = this.ProductDescriptionArray.find(p => p.code === event.code);
     if (selectedProduct) {
@@ -1578,6 +1347,6 @@ export class QuotationDetailsComponent {
       console.log("Updated product after dropdown change:", product);
     }
   }
-  
-  
+
+
 }

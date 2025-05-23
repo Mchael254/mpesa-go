@@ -7,10 +7,10 @@ import {MessageService} from 'primeng/api';
 import {GroupQuotationsListDTO} from '../../../features/lms/models';
 import {MenuService} from '../../../features/base/services/menu.service';
 import {SidebarMenu} from '../../../features/base/model/sidebar.menu';
-import {QuotationsService} from '../../../features/gis/services/quotations/quotations.service';
 import {untilDestroyed, UtilService} from '../../shared.module';
 import {QuotationList} from '../../../features/gis/components/quotation/data/quotationsDTO';
 import {GlobalMessagingService} from '../../services/messaging/global-messaging.service';
+import { QuotationsService } from 'src/app/features/gis/components/quotation/services/quotations/quotations.service';
 
 // const log = new Logger('QuotationLandingScreenComponent');
 
