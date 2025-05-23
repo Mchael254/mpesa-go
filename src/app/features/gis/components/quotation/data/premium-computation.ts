@@ -1,5 +1,3 @@
-import {SubclassesDTO} from "../../setups/data/gisDTO";
-
 export interface PremiumComputationRequest {
   dateWithEffectFrom: string;
   dateWithEffectTo: string;
