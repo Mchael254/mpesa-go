@@ -546,14 +546,17 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   // Remove a risk row
   deleteRisk(riskControl: AbstractControl, productIndex: number, riskIndex: number) {
     log.debug("Removing risk>>>", riskControl.value)
-    this.premiumComputationResponse = {
-      productLevelPremiums : this.premiumComputationResponse.productLevelPremiums.map((value) =>{
-        return {
-          ...value,
-          riskLevelPremiums : value.riskLevelPremiums
-            .filter(riskPremium => riskPremium.code === riskControl.value.riskCode)
-        }
-      })
+    if (this.premiumComputationResponse) {
+      this.premiumComputationResponse = {
+        productLevelPremiums: this.premiumComputationResponse
+          .productLevelPremiums.map((value) => {
+          return {
+            ...value,
+            riskLevelPremiums: value.riskLevelPremiums
+              .filter(riskPremium => riskPremium.code !== riskControl.value.riskCode)
+          }
+        })
+      }
     }
     this.getRisks(productIndex).removeAt(riskIndex);
   }
@@ -561,10 +564,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   // Remove product
   deleteProduct(product: AbstractControl, productIndex: number) {
     log.debug("Selected product>>>", product.value)
-    this.premiumComputationResponse = {
-      productLevelPremiums: this.premiumComputationResponse
-        .productLevelPremiums.filter(value => value.code !== product.value.code)
+    if (this.premiumComputationResponse) {
+      this.premiumComputationResponse = {
+        productLevelPremiums: this.premiumComputationResponse
+          .productLevelPremiums.filter(value => value.code !== product.value.code)
+      }
     }
+
     log.debug("Current computation payload >>>", this.premiumComputationResponse)
     this.productsFormArray.removeAt(productIndex);
     this.selectedProducts.splice(productIndex, 1);
@@ -645,6 +651,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     let riskPayload: Risk[] = []
     for (let risk of product.risks) {
       riskPayload.push({
+        code: risk.riskCode,
         binderCode: risk?.applicableBinder?.code,
         sumInsured: risk?.selfDeclaredValue || risk?.value,
         withEffectFrom: this.formatDate(new Date(effectiveDate)),
