@@ -178,6 +178,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   selectedCoverTypeCode: number;
   selectedBinderCode: number;
   currencySymbol: string;
+  selectedCover: CoverTypeDetail;
 
   constructor(
     public fb: FormBuilder,
@@ -206,11 +207,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.PassedRiskedLevelPremiums.forEach((risk) => {
-      if (risk.coverTypeDetails?.length > 0) {
-        risk.selectedCoverType = risk.coverTypeDetails[0].coverTypeCode;
-      }
-    });
+   
+
     // this.getuser();
     this.createEmailForm();
     this.createSmsForm();
@@ -263,11 +261,11 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
             value.coverTypeDetails.some(cover => cover.coverTypeCode === coverTypeCode)
           )
 
-          // .flatMap(section =>
-          //   section.coverTypeDetails
-          //     .filter(cover => cover.coverTypeCode === coverTypeCode)
-          //     .map(cover => cover.limitPremium)
-          // ).flat()
+        // .flatMap(section =>
+        //   section.coverTypeDetails
+        //     .filter(cover => cover.coverTypeCode === coverTypeCode)
+        //     .map(cover => cover.limitPremium)
+        // ).flat()
 
         log.debug("Covertype sections filtered >>>", coverTypeSections)
         this.coverTypePremiumItems = applicablePremiumRates;
@@ -847,7 +845,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   onCoverTypeSelected(risk: any, selectedCover: CoverTypeDetail): void {
     log.debug('Risk selected:', risk);
     log.debug('CoverType selected:', selectedCover);
-
+    this.selectedCover = selectedCover;
     this.selectedCoverTypeCode = selectedCover.coverTypeCode;
     this.selectedSubclassCode = selectedCover.subclassCode;
     this.selectedBinderCode = risk.binderCode;
@@ -999,7 +997,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       quotationNumber: this.storedQuotationNo,
       source: 37,
       user: this.user,
-      clientCode:  null,
+      clientCode: null,
       // productCode: this.premiumPayload?.product?.code,
       currencyCode: this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode,
       currencyRate: this.exchangeRate || 1,
