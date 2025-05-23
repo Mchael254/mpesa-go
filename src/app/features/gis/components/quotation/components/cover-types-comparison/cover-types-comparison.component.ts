@@ -27,6 +27,7 @@ import { PremiumRateService } from '../../../setups/services/premium-rate/premiu
 import { Router } from '@angular/router';
 import { NgxCurrencyConfig } from "ngx-currency";
 import { DUMMY_COVERAGE_DATA, dummyPremiums, dummyQuickQuoteData } from '../../data/dummyData';
+import { CoverTypeDetail } from '../../data/premium-computation';
 
 const log = new Logger('CoverTypesComparisonComponent');
 declare var bootstrap: any; // Ensure Bootstrap is available
@@ -38,33 +39,8 @@ declare var $: any;
   styleUrls: ['./cover-types-comparison.component.css']
 })
 export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
-  @Input() productTitle: string = 'product title';
-  @Input() sumInsured: number = 0;
-  selectedClientCode: number;
-  temporaryPremiumLists: any[];
+  @Input() PassedRiskedLevelPremiums!: any;
 
-  private _riskLevelPremiums: RiskLevelPremium[] = [];
-  @Input()
-  set riskLevelPremiums(value: any[]) {
-    this._riskLevelPremiums = value;
-    if (!value || value.length === 0) {
-      this._riskLevelPremiums = DUMMY_COVERAGE_DATA.productLevelPremiums[0].riskLevelPremiums;
-    }
-
-    this.selectedSubclassCode = this._riskLevelPremiums[0]?.coverTypeDetails[0]?.subclassCode;
-
-    log.debug(this.selectedSubclassCode);
-    this.selectedCoverType = this._riskLevelPremiums[0]?.coverTypeDetails[0]?.coverTypeCode;
-
-    log.debug(this.selectedCoverType);
-
-    if (this.selectedCoverType && this.selectedSubclassCode) {
-      this.fetchCoverTypeRelatedData(this.selectedCoverType);
-    }
-  }
-  get riskLevelPremiums(): any[] {
-    return this._riskLevelPremiums;
-  }
 
   selectedOption: string = 'email';
   // checked: boolean = false;
@@ -102,7 +78,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   isChecked: boolean = false;
   premiumPayload: PremiumComputationRequest;
   premiumResponse: any;
-  // riskLevelPremiums: any;
+  riskLevelPremiums: any;
   passedCovertypes: any;
 
   user: any;
@@ -191,14 +167,17 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   quoteAction: string = null
   premiumComputationPayload: PremiumComputationRequest;
   // storedData: QuickQuoteData = null;
-  storedData: QuickQuoteData = dummyQuickQuoteData;
+  // storedData: QuickQuoteData = dummyQuickQuoteData;
   computationPayloadCode: number;
 
   public currencyObj: NgxCurrencyConfig;
   private typingTimer: any;// Timer reference
   sectionToBeRemoved: number[] = [];
   inputErrors: { [key: string]: boolean } = {};
-
+  temporaryPremiumLists: any
+  selectedCoverTypeCode: number;
+  selectedBinderCode: number;
+  currencySymbol: string;
 
   constructor(
     public fb: FormBuilder,
@@ -215,8 +194,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     public premiumRateService: PremiumRateService,
     public spinner: NgxSpinnerService,
   ) {
-    this.storedData = JSON.parse(sessionStorage.getItem('quickQuoteData'));
-    this.quoteAction = sessionStorage.getItem('quoteAction')
+
   }
 
   public isClauseDetailsOpen = false;
@@ -228,139 +206,21 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.storedData = dummyQuickQuoteData;
-    this.temporaryPremiumLists = dummyPremiums;
-    log.debug("temporary premium list", this.temporaryPremiumList);
-    console.log('dummyPremiums:', dummyPremiums);
-
-
-    this.passedNumber = sessionStorage.getItem('passedQuotationNumber');
-    log.debug("Passed Quotation Number:", this.passedNumber);
-    this.passedQuotationCode = Number(sessionStorage.getItem('passedQuotationCode'));
-
-    log.debug("Passed Quotation code:", this.passedQuotationCode);
-
-
-    const premiumComputationRequestString = sessionStorage.getItem('premiumComputationRequest');
-    this.premiumPayload = JSON.parse(premiumComputationRequestString);
-
-
-    log.debug("PREMIUM PAYLOAD on ngonit", this.premiumPayload);
-    const limits = this.premiumPayload?.risks
-    this.extractSectionCodes(limits);
-
-    const subclassCoverTypeString = sessionStorage.getItem('subclassCoverType');
-    this.passedCovertypes = JSON.parse(subclassCoverTypeString);
-    log.debug("SUBCLASS PAYLOAD", this.passedCovertypes);
-
-    const premiumResponseString = sessionStorage.getItem('premiumResponse');
-    this.premiumResponse = JSON.parse(premiumResponseString);
-
-    log.debug("PREMIUM RESPONSE", this.premiumResponse);
-    this.riskLevelPremiums = this.premiumResponse?.riskLevelPremiums;
-    // this.sumInsuredValue = this.premiumPayload?.risks[0].limits[0].limitAmount;
-    this.sumInsuredValue = sessionStorage.getItem('sumInsuredValue');
-
-    log.debug("Quick Quote Quotation SUM INSURED VALUE:", this.sumInsuredValue);
-    // this.selectedSectionCode = this.premiumPayload?.risks[0].limits[0].section.code
-    this.selectedSubclassCode = this.riskLevelPremiums?.[0]?.coverTypeDetails?.[0]?.subclassCode;
-
-    // this.selectedCoverType = this.riskLevelPremiums[0].coverTypeDetails?.coverTypeCode;
-    this.selectedCoverType = this.riskLevelPremiums?.[0]?.coverTypeDetails?.[0]?.coverTypeCode;
-
-    log.info("selectedCovertype when the page loads:", this.selectedCoverType) //TODO check this out with HOPE
-    if (this.selectedCoverType && this.selectedSubclassCode) {
-      this.fetchCoverTypeRelatedData(this.selectedCoverType)
-    }
-
-    const storedMandatorySectionsString = sessionStorage.getItem('mandatorySections');
-    this.quickQuoteSectionList = JSON.parse(storedMandatorySectionsString);
-    log.debug("Mandatory sections passed fROMm   QQ", this.quickQuoteSectionList)
-
-    log.debug("Quick Quote Quotation Sections:", this.quickQuoteSectionList);
-    const storedClientDetailsString = sessionStorage.getItem('clientDetails');
-    this.passedClientDetails = JSON.parse(storedClientDetailsString);
-
-
-    log.debug("Client details", this.passedClientDetails);
-    this.passedClientCode = this.passedClientDetails?.id;
-    this.clientcode = this.passedClientCode;
-    log.debug("Client code", this.passedClientCode);
-
-    log.debug("Selected Client Name", this.selectedClientName);
-    this.passedQuotationSource = sessionStorage.getItem('quotationSource');
-    log.debug("Source details", this.passedQuotationSource);
-
-    const newClientDetailsString = sessionStorage.getItem('newClientDetails');
-    this.passedNewClientDetails = JSON.parse(newClientDetailsString);
-    log.debug("New Client Details", this.passedNewClientDetails);
-
-    if (this.passedClientDetails) {
-      log.info("EXISTING CLIENT")
-      this.selectedClientName = this.passedClientDetails?.firstName + ' ' + this.passedClientDetails?.lastName
-      this.selectedEmail = this.passedClientDetails?.emailAddress;
-      this.selectedPhoneNo = this.passedClientDetails?.phoneNumber;
-    } else {
-      log.info("NEW CLIENT")
-      this.selectedClientName = this.passedNewClientDetails?.inputClientName;
-      log.info("Selected Name:", this.selectedClientName)
-
-      this.selectedEmail = this.passedNewClientDetails?.inputClientEmail;
-      log.info("Selected Email:", this.selectedEmail)
-
-      this.selectedPhoneNo = this.passedNewClientDetails?.inputClientPhone;
-      log.info("Selected Phone:", this.selectedPhoneNo)
-
-    }
-
-    this.getuser();
+    this.PassedRiskedLevelPremiums.forEach((risk) => {
+      if (risk.coverTypeDetails?.length > 0) {
+        risk.selectedCoverType = risk.coverTypeDetails[0].coverTypeCode;
+      }
+    });
+    // this.getuser();
     this.createEmailForm();
     this.createSmsForm();
 
-
-    const passedSelectedRiskDetailsString = sessionStorage.getItem('passedSelectedRiskDetails');
-    this.passedSelectedRisk = JSON.parse(passedSelectedRiskDetailsString);
-
-    const passedIsEditRiskString = sessionStorage.getItem('isEditRisk');
-    this.isEditRisk = JSON.parse(passedIsEditRiskString);
-    log.debug("isEditRisk Details:", this.isEditRisk);
-
-    const passedIsAddRiskString = sessionStorage.getItem('isAddRisk');
-    this.isAddRisk = JSON.parse(passedIsAddRiskString);
-    log.debug("isAddRiskk Details:", this.isAddRisk);
-
-    this.showQuoteActions = true;
-    const showQuoteActionsString = JSON.stringify(this.showQuoteActions);
-    sessionStorage.setItem('showQuoteActions', showQuoteActionsString);
-
-    const passedQuotationDetailsString = sessionStorage.getItem(
-      'passedQuotationDetails'
-    );
-    this.passedQuotationData = JSON.parse(passedQuotationDetailsString);
-    log.debug("Passed Quotation Details", this.passedQuotationData)
-    if (this.passedQuotationData) {
-      this.isEditQuotationDetail = true
-      this.storedQuotationCode = this.passedQuotationData.code
-      this.storedQuotationNo = this.passedQuotationData?.quotationNo;
-
-
-    }
-
-    if (this.quoteAction === "A") {
-      log.debug("ADDING A NEW RISK TO AN EXISTING QUOTATION", this.quoteAction)
-    } else if (this.quoteAction === "E") {
-      log.debug("EDITING AN EXISTING RISK TO AN EXISTING QUOTATION", this.quoteAction)
-
-    }
-
-
-    log.debug("Stored Data", this.storedData)
-    this.selectedClientCode = this.storedData.selectedClient.id
-    this.computationPayloadCode = this.storedData.computationPayloadCode
-    this.fetchPremiumComputationPyload(this.computationPayloadCode);
     const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
+    const currencySymbol = sessionStorage.getItem('currencySymbol');
+    this.currencySymbol = currencySymbol
+
     this.currencyObj = {
-      prefix: this.storedData.currency.symbol + ' ',
+      prefix: currencySymbol + ' ',
       allowNegative: false,
       allowZero: false,
       decimal: '.',
@@ -390,7 +250,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       this.quotationService.getClauses(coverTypeCode, this.selectedSubclassCode),
       this.quotationService.getExcesses(this.selectedSubclassCode),
       this.quotationService.getLimitsOfLiability(this.selectedSubclassCode),
-      this.premiumRateService.getCoverTypePremiums(this.selectedSubclassCode, this.storedData.selectedBinderCode, coverTypeCode)
+      this.premiumRateService.getCoverTypePremiums(this.selectedSubclassCode, this.selectedBinderCode, coverTypeCode)
     ])).pipe(
       untilDestroyed(this)
     )
@@ -398,18 +258,18 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         this.clauseList = clauses._embedded ?? []
         this.excessesList = excesses._embedded ?? []
         this.limitsOfLiabilityList = limitOfLiabilities._embedded ?? []
-        const coverTypeSections = this.riskLevelPremiums
+        const coverTypeSections = this.PassedRiskedLevelPremiums
           .filter(value =>
             value.coverTypeDetails.some(cover => cover.coverTypeCode === coverTypeCode)
           )
 
-          .flatMap(section =>
-            section.coverTypeDetails
-              .filter(cover => cover.coverTypeCode === coverTypeCode)
-              .map(cover => cover.limitPremium)
-          ).flat()
+          // .flatMap(section =>
+          //   section.coverTypeDetails
+          //     .filter(cover => cover.coverTypeCode === coverTypeCode)
+          //     .map(cover => cover.limitPremium)
+          // ).flat()
 
-        // log.debug("Comparing against >>>", coverTypeSections)
+        log.debug("Covertype sections filtered >>>", coverTypeSections)
         this.coverTypePremiumItems = applicablePremiumRates;
         this.temporaryPremiumList = applicablePremiumRates.filter(value => value.isMandatory !== 'Y')
           .map((value) => {
@@ -422,7 +282,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
             }
           })
 
-          // log.debug("Changed rates>>>>>>>", this.riskLevelPremiums)
+        // log.debug("Changed rates>>>>>>>", this.riskLevelPremiums)
 
       })
   }
@@ -959,21 +819,40 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     this.modalHeight = event.height;
   }
 
-  onCoverTypeChange(coverTypeCode: number) {
-    const foundCover = this.riskLevelPremiums
-      .flatMap(risk => risk.coverTypeDetails)
-      .find(cover => cover.coverTypeCode === coverTypeCode);
+  // onCoverTypeChange(coverTypeCode: number) {
+  //   const foundCover = this.riskLevelPremiums
+  //     .flatMap(risk => risk.coverTypeDetails)
+  //     .find(cover => cover.coverTypeCode === coverTypeCode);
 
-    if (!foundCover) {
-      log.error("Cover type not found for code:", coverTypeCode);
-      return;
-    }
+  //   if (!foundCover) {
+  //     log.error("Cover type not found for code:", coverTypeCode);
+  //     return;
+  //   }
 
-    this.selectedCoverType = coverTypeCode;
-    this.selectedSubclassCode = foundCover.subclassCode;
+  //   this.selectedCoverType = coverTypeCode;
+  //   this.selectedSubclassCode = foundCover.subclassCode;
 
-    if (this.selectedCoverType && this.selectedSubclassCode) {
-      this.fetchCoverTypeRelatedData(coverTypeCode);
+  //   if (this.selectedCoverType && this.selectedSubclassCode) {
+  //     this.fetchCoverTypeRelatedData(coverTypeCode);
+  //   } else {
+  //     log.error('Cannot fetch cover type data: selectedSubclassCode is undefined');
+  //   }
+
+  //   // Collapse all expanded sections
+  //   this.isClauseDetailsOpen = false;
+  //   this.isLimitsDetailsOpen = false;
+  //   this.isExcessDetailsOpen = false;
+  //   this.isBenefitsDetailsOpen = false;
+  // }
+  onCoverTypeSelected(risk: any, selectedCover: CoverTypeDetail): void {
+    log.debug('Risk selected:', risk);
+    log.debug('CoverType selected:', selectedCover);
+
+    this.selectedCoverTypeCode = selectedCover.coverTypeCode;
+    this.selectedSubclassCode = selectedCover.subclassCode;
+    this.selectedBinderCode = risk.binderCode;
+    if (this.selectedCoverTypeCode && this.selectedSubclassCode) {
+      this.fetchCoverTypeRelatedData(this.selectedCoverTypeCode);
     } else {
       log.error('Cannot fetch cover type data: selectedSubclassCode is undefined');
     }
@@ -983,6 +862,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     this.isLimitsDetailsOpen = false;
     this.isExcessDetailsOpen = false;
     this.isBenefitsDetailsOpen = false;
+
   }
 
   addLimitsOfLiability() {
@@ -1119,7 +999,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       quotationNumber: this.storedQuotationNo,
       source: 37,
       user: this.user,
-      clientCode: this.storedData?.selectedClient?.id || null,
+      clientCode:  null,
       // productCode: this.premiumPayload?.product?.code,
       currencyCode: this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode,
       currencyRate: this.exchangeRate || 1,
