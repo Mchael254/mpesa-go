@@ -103,7 +103,7 @@
               <div *ngFor="let riskGroup of getRisks(i).controls; let j = index" [formGroupName]="j">
                 <p class="riskTitle">Risk {{ j + 1 }}
                   <i *ngIf="getRisks(i).length > 1" class="fa-solid fa-trash-can text-danger ms-2"
-                    style="color:#EE3945;" (click)="deleteRisk(i, j)">
+                    style="color:#EE3945;" (click)="deleteRisk(riskGroup, i, j)">
                   </i>
                 </p>
                 <div class="row">
@@ -217,7 +217,9 @@
     <div *ngFor="let product of premiumComputationResponse.productLevelPremiums; let i = index" class="mb-2">
       <!-- Card Header -->
       <div class="card-header d-flex justify-content-between align-items-center"
-        style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;" (click)="toggleExpand(i)">
+        style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;"
+           (click)="toggleExpand(i)"
+           *ngIf="product.riskLevelPremiums.length > 0">
 
         <div class="product-comparison-title">
           {{ product.description }} <span>- Cover types</span>
@@ -241,12 +243,11 @@
       </div>
 
     </div>
-    <!-- {{ premiumComputationResponse | json }}-->
   </ng-container>
   <div class="row " *ngIf="premiumComputationResponse">
     <div class="col-6"></div>
     <div class="col-6 d-flex justify-content-end">
-      <button type="button" class="btn btn-outline-primary btn-lg" id="compute">
+      <button type="button" class="btn btn-outline-primary btn-lg" id="save-quotation" (click)="saveQuotationDetails()">
         {{ 'gis.quotation.next' | translate }}
       </button>
     </div>
