@@ -65,7 +65,6 @@ export interface quotationRisk {
   vehicleMake: number;
 
 }
-
 export interface taxComputation {
   code: number,
   premium: number
@@ -795,7 +794,6 @@ export interface ScheduleDetailsDto {
   version: number;
 }
 
-
 export interface RiskValidationDto {
   riskId?: string
   batchNumber?: number
@@ -849,6 +847,56 @@ export interface DynamicRiskField {
   placeholder: string;
   label: string;
 }
+
+export interface PremiumComputationResponse {
+  premiumAmount: number;
+  riskLevelPremiums: RiskLevelPremium[];
+}
+
+export interface ProductLevelPremium {
+  riskLevelPremiums: RiskLevelPremium[];
+}
+
+export interface DummyCoverageData {
+  productLevelPremiums: ProductLevelPremium[];
+}
+
+export interface RiskLevelPremium {
+  code: number | null;
+  propertyId: string | null;
+  propertyDescription: string;
+  // premium?: number; 
+  minimumPremiumUsed: number | null;
+  coverTypeDetails: CoverTypeDetails[]; 
+}
+
+export interface CoverTypeDetails {
+  subclassCode: number | null;
+  coverTypeCode: number | null;
+  minimumAnnualPremium: number | null;
+  minimumPremium: number | null;
+  coverTypeShortDescription: string | null;
+  coverTypeDescription: string | null;
+  limits: any; // update if needed
+  computedPremium: number;
+  limitPremium: LimitPremium[];
+  taxComputation: TaxComputation[];
+}
+
+
+export interface LimitPremium {
+  sectCode: number;
+  premium: number;
+  description: string | null;
+  limitAmount: number | null;
+  isMandatory: string | null;
+}
+
+export interface TaxComputation {
+  code: number;
+  premium: number;
+}
+
 
 
 
