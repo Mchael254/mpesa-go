@@ -1,43 +1,37 @@
-<div class="container">
-  <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="medium"
-    bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
+<ng-container *ngFor="let risk of PassedRiskedLevelPremiums; let riskIndex = index">
 
-  <p class="titleMain mt-3">{{ 'gis.quotation.quotation_covertypes' | translate }}</p>
-  <!-- <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper> -->
 
-  <div class="container mx-2 mt-4">
-    <ngx-spinner name="coverComparisonScreen" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B"
-      size="medium" bdColor="rgba(255, 255, 255, 0.9)"></ngx-spinner>
-    <div class="row">
-      <div class="d-flex justify-content-between mb-2">
-        <p>{{productTitle}} <span>- Cover Type</span> </p>
-        <button class="btn btn-primary" type="button" id="icon" (click)="toggleSelectProduct()"
-          style="margin-right: 2.3rem;">
-          <i class="fa-solid" [ngClass]="isSelectCoverOpen ? 'fa-chevron-up' : 'fa-chevron-down'">
-          </i>
-        </button>
-      </div>
+ 
+  
+    
+ 
 
-      <div class="collapse mb-2" [class.show]="isSelectCoverOpen">
         <div class="d-flex justify-content-start mb-2 gap-2 px-3">
           <button (click)="toggleSelectRisk()"
             style="border: none; background: transparent; padding: 0; cursor: pointer;">
             <i class="fa-solid" [ngClass]="isSelectRiskOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
           </button>
-          <p class="mb-0 text-dark small">Sum Insured {{ sumInsured | currency:'KES ' }}</p>
+          <p class="mb-0 text-dark small">Sum Insured {{ risk?.sumInsured | currency: currencySymbol || '' : 'symbol'}}</p>
         </div>
         <div class="d-flex align-items-center justify-content-around">
           <!-- Cover Section -->
           <div class="collapse col-5 rounded-3 p-3" [class.show]="isSelectRiskOpen">
             <div class="row">
               <div class="col-12 scrollable-container">
-                <ng-container *ngFor="let risk of riskLevelPremiums">
 
                   <div class="card mb-3" *ngFor="let cover of risk.coverTypeDetails; let i = index">
                     <div class="card-body cover-types-body">
                       <label>
-                        <input type="radio" name="cover" [value]="cover.coverTypeCode" [(ngModel)]="selectedCoverType"
-                          [checked]="i === 0" (change)="onCoverTypeChange(cover.coverTypeCode)" class="radio-btn" />
+                        <!-- <input type="radio" [name]="'coverType_' + riskIndex"  [value]="cover.coverTypeCode"  [(ngModel)]="risk.selectedCoverType"
+                          [checked]="i === 0" (change)="onCoverTypeChange(cover.coverTypeCode)" class="radio-btn" /> -->
+        <input
+          type="radio"
+          [name]="'coverType_' + riskIndex" 
+          [value]="cover.coverTypeCode"
+          [(ngModel)]="risk.selectedCoverType"
+          (change)="onCoverTypeSelected(risk, cover)"
+          class="radio-btn"
+        />
 
                         <span class="cover-name">
                           {{
@@ -57,7 +51,6 @@
                       </label>
                     </div>
                   </div>
-                </ng-container>
 
               </div>
             </div>
@@ -339,7 +332,7 @@
                           </button>
 
                           <div class="row ">
-                            <p-table [value]="riskLevelPremiums" responsiveLayout="scroll" dataKey="sectionCode"
+                            <p-table [value]="PassedRiskedLevelPremiums" responsiveLayout="scroll" dataKey="sectionCode"
                               selectionMode="single" responsiveLayout="scroll" [autoLayout]="true" class='ui-datatable'>
                               <ng-template pTemplate="header">
                                 <tr>
@@ -351,8 +344,8 @@
                                 </tr>
                               </ng-template>
                               <ng-template pTemplate="body" let-risk>
-                                <ng-container *ngIf="risk.coverTypeDetails.coverTypeCode === selectedCoverType">
-                                  <tr *ngFor="let limit of risk.limitPremiumDtos; let i = index">
+                                <ng-container *ngIf="risk.coverTypeDetails.coverTypeCode === selectedCoverTypeCode">
+                                  <tr *ngFor="let limit of risk.limitPremium; let i = index">
                                     <td>{{ i + 1 }}.</td>
                                     <td>{{ limit.description | sentenceCase }}</td>
                                     <td>{{ limit?.limitAmount | number }}</td>
@@ -386,26 +379,12 @@
 
 
 
-      </div>
 
 
-    </div>
-    <div class="float-start mb-4 ">
 
-      <a class="btn btn-link" (click)="navigateToQuickQuote()">
-        {{ 'gis.quotation.back' | translate }}
-      </a>
-    </div>
-
-    <div class="float-end mb-4  ">
-
-
-      <button class="btn btn-primary" type="submit" id="btnCoverTypes" (click)="selectCoverNew();">
-        {{ 'gis.quotation.select_cover' | translate }}
-      </button>
-    </div>
-  </div>
-</div>
+    
+  
+</ng-container>
 <!-- Add More Benefits Modal -->
 <div class="modal fade" id="addMoreBenefits" tabindex="-1" aria-labelledby="addMoreBenefitsLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" style="min-width: 608px;">
@@ -447,20 +426,7 @@
       </p-table>
 
 
-      <div class="row mt-3 mb-3">
-        <div class="col-6">
-          <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary rounded-3">
-            {{ 'gis.quotation.back' | translate }}
-          </button>
-        </div>
-        <div class="col-6 d-flex justify-content-end">
-          <button class="btn btn-primary" type="submit" id="btnCoverTypes" data-bs-dismiss="modal"
-            (click)="addBenefits();">
-            {{ 'gis.quotation.update_quote' | translate }}
-          </button>
-        </div>
-
-      </div>
+   
 
     </div>
   </div>
