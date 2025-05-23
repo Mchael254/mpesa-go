@@ -159,4 +159,8 @@
     color: #00529B;
   }
   
+:host ::ng-deep .custom-header-row {
+  background-color: #1c1c1c !important; /* Black */
+}
+
   
