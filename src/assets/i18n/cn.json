@@ -850,6 +850,7 @@
       "delete": "删除",
       "add_another_risk": "添加另一个风险",
       "cancel_quote": "取消报价",
+      "cancel": "取消",
       "accept_quote": "接受报价",
       "quotation_summary": "报价摘要",
       "provide_reason_for_cancellation": "请提供取消的原因",

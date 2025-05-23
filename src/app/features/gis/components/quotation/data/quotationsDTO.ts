@@ -59,14 +59,14 @@ export interface quotationRisk {
   clientType: string;
   prospectCode: number;
   coverTypeDescription: string;
-  taxComputation:taxComputation[];
-  vehicleModel:number;
-  vehicleMake:number;
+  taxComputation: taxComputation[];
+  vehicleModel: number;
+  vehicleMake: number;
 
 }
-export interface taxComputation{
-  code:number,
-  premium:number
+export interface taxComputation {
+  code: number,
+  premium: number
 }
 export interface riskSection {
   sectionCode: number;
@@ -168,14 +168,14 @@ export interface QuotationDetails {
   currency: string;
   quotationProducts: QuotationProduct[];
   branchCode: number;
-    source: {
-        code: number;
-        description: string;
-        applicableModule: string;
-    };
-    agentName: string;
-    clientName: string;
-    sumInsured: number;
+  source: {
+    code: number;
+    description: string;
+    applicableModule: string;
+  };
+  agentName: string;
+  clientName: string;
+  sumInsured: number;
 }
 
 export interface QuotationProduct {
@@ -770,13 +770,13 @@ export interface QuickQuoteData {
   existingClientSelected: boolean
   selectedClient?: ClientDTO
   selectedBinderCode?: number
-  computationPayloadCode?:number
+  computationPayloadCode?: number
 
 }
-export interface QuotationSource{
-  code:number;
-  description:string;
-  applicableModule:string;
+export interface QuotationSource {
+  code: number;
+  description: string;
+  applicableModule: string;
 }
 export interface ScheduleDetailsDto {
   code: number;
@@ -805,7 +805,7 @@ export interface ScheduleDetailsDto {
 
 
 
-export interface RiskValidationDto{
+export interface RiskValidationDto {
   riskId?: string
   batchNumber?: number
   subClassCode: number
@@ -845,6 +845,56 @@ export interface SubclassSectionPeril {
   dependLossType: string;
   benefitPerPeriod: number | null;
 }
+
+export interface PremiumComputationResponse {
+  premiumAmount: number;
+  riskLevelPremiums: RiskLevelPremium[];
+}
+
+export interface ProductLevelPremium {
+  riskLevelPremiums: RiskLevelPremium[];
+}
+
+export interface DummyCoverageData {
+  productLevelPremiums: ProductLevelPremium[];
+}
+
+export interface RiskLevelPremium {
+  code: number | null;
+  propertyId: string | null;
+  propertyDescription: string;
+  // premium?: number; 
+  minimumPremiumUsed: number | null;
+  coverTypeDetails: CoverTypeDetails[]; 
+}
+
+export interface CoverTypeDetails {
+  subclassCode: number | null;
+  coverTypeCode: number | null;
+  minimumAnnualPremium: number | null;
+  minimumPremium: number | null;
+  coverTypeShortDescription: string | null;
+  coverTypeDescription: string | null;
+  limits: any; // update if needed
+  computedPremium: number;
+  limitPremium: LimitPremium[];
+  taxComputation: TaxComputation[];
+}
+
+
+export interface LimitPremium {
+  sectCode: number;
+  premium: number;
+  description: string | null;
+  limitAmount: number | null;
+  isMandatory: string | null;
+}
+
+export interface TaxComputation {
+  code: number;
+  premium: number;
+}
+
 
 
 
