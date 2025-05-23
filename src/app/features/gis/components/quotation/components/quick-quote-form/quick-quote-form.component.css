@@ -192,6 +192,7 @@
   letter-spacing: 0%;
 
 }
+
 .card-header {
   background-color: #fff;
   font-weight: 500;
@@ -199,10 +200,28 @@
 
 .collapsible-body {
   background-color: white;
-   border-radius: 5px;
-  padding: 15px;
-  margin-top:-20px;
-}
-.card{
   border-radius: 5px;
+  padding: 15px;
+  margin-top: -20px;
+}
+
+.card {
+  border-radius: 5px;
+}
+
+.product-comparison-title {
+  font-family: Roboto;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 19.89px;
+  letter-spacing: 0%;
+
+}
+#icon-chevron {
+    background-color: #E4E7EB;
+    border-radius: 100px;
+    border: none;
+}
+#icon-chevron {
+    color: #00529B;
 }
