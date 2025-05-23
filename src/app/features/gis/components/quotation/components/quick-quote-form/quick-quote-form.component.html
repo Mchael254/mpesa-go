@@ -226,15 +226,15 @@
         <i class="fa" [ngClass]="expandedStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'"
            style="margin-left: auto;">
         </i>
-        <div *ngFor="let risk of product.riskLevelPremiums" class="card-body collapsible-body" >
+        <div *ngFor="let risk of product.riskLevelPremiums" class="card-body collapsible-body">
           <p class="subtitle mb-3 m-0 d-flex align-items-center">
             {{ risk?.propertyDescription }}
           </p>
-         <app-cover-types-comparison></app-cover-types-comparison>
+          <!--<app-cover-types-comparison></app-cover-types-comparison>-->
         </div>
       </div>
     </div>
-   <!-- {{ premiumComputationResponse | json }}-->
+    {{ premiumComputationResponse | json }}
   </ng-container>
   <div class="row " style="display:none;">
     <div class="col-6"></div>

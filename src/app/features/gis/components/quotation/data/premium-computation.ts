@@ -33,6 +33,7 @@ export interface Tax {
 }
 export interface Risk {
   taxes: Tax[];
+  sumInsured: number
   withEffectFrom: string;
   withEffectTo: string;
   prorata: string;
