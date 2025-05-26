@@ -1,20 +1,14 @@
 <ng-container *ngFor="let risk of PassedRiskedLevelPremiums; let riskIndex = index">
 
-
-
-
-
-
-
   <div class="d-flex justify-content-start mb-2 gap-2 px-3">
-    <button (click)="toggleSelectRisk()" style="border: none; background: transparent; padding: 0; cursor: pointer;">
-      <i class="fa-solid" [ngClass]="isSelectRiskOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+    <button (click)="toggleSelectRisk(riskIndex)" style="border: none; background: transparent; padding: 0; cursor: pointer;">
+      <i class="fa-solid" [ngClass]="activeRiskIndex === riskIndex ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
     </button>
-    <p class="mb-0 text-dark sum-insured-text">Sum Insured {{ risk?.sumInsured | currency: currencySymbol || '' : 'symbol'}}</p>
+    <p class="mb-0 text-dark sum-insured-text">{{'gis.quotation.risk' | translate}}  {{riskIndex + 1}} {{'gis.quotation.sum_insured' | translate}} {{ risk?.sumInsured | currency: currencySymbol || '' : 'symbol'}}</p>
   </div>
   <div class="row">
     <!-- Cover Section -->
-    <div class="collapse col-5 rounded-3 p-3" [class.show]="isSelectRiskOpen">
+    <div class="collapse col-5 rounded-3 p-3" [class.show]="activeRiskIndex === riskIndex">
       <div class="row">
         <div class="col-12 scrollable-container">
 
@@ -51,7 +45,7 @@
 
 
     <!-- Benefits Section -->
-    <div class="collapse col-7 mt-3" id="benefitsSection" [class.show]="isSelectRiskOpen">
+    <div class="collapse col-7 mt-3" id="benefitsSection" [class.show]="activeRiskIndex === riskIndex">
       <!-- <p class="card-title mb-3"> {{ 'gis.quotation.benefits' | translate }}</p> -->
       <div class="card mb-3">
         <div class="card-body">
@@ -285,7 +279,8 @@
                             <div class="col-3">
                               <button type="button" id="icon" class="btn btn-primary"
                                       (click)="toggleAdditionalBenefitsDetails()">
-                                <i class="fa-solid fa-chevron-down"></i>
+                                <i class="fa-solid"  [ngClass]="isBenefitsDetailsOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                        
                               </button>
                             </div>
                           </div>
