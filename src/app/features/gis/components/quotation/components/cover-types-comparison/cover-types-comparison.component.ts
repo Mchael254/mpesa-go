@@ -40,6 +40,7 @@ declare var $: any;
 })
 export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   @Input() PassedRiskedLevelPremiums!: any;
+  activeRiskIndex:number | null = null;
 
 
   selectedOption: string = 'email';
@@ -788,8 +789,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   toggleSelectProduct() {
     this.isSelectCoverOpen = !this.isSelectCoverOpen;
   }
-  toggleSelectRisk() {
-    this.isSelectRiskOpen = !this.isSelectRiskOpen
+  toggleSelectRisk(index:number) {
+    this.activeRiskIndex = this.activeRiskIndex === index ? null : index;
+   
   }
   toggleClauseDetails() {
     this.isClauseDetailsOpen = !this.isClauseDetailsOpen;
