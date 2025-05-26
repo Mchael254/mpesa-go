@@ -1,27 +1,10 @@
 import { Component } from '@angular/core';
 import { QuotationDTO } from '../../data/quotationsDTO';
-import { StepsModule } from 'primeng/steps';
-import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { TableModule } from 'primeng/table';
 
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { CardModule } from 'primeng/card';
 
 
 @Component({
   selector: 'app-quoute-summary',
-  standalone:true,
-  imports:[ BreadcrumbModule,
-    StepsModule,
-    CardModule,
-    TableModule,
-    ButtonModule,
-    DialogModule,
-    FormsModule,
-    OverlayPanelModule],
   templateUrl: './quoute-summary.component.html',
   styleUrls: ['./quoute-summary.component.css']
 })
