@@ -37,11 +37,15 @@ import { QuotationManagementComponent } from './components/quotation-management/
 import { TagModule } from 'primeng/tag';
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
+import { QuoteReportComponent } from './components/quote-report/quote-report.component';
 import { QuouteSummaryComponent } from './components/quoute-summary/quoute-summary.component';
-import { QuoutationReportComponent } from './components/quoutation-report/quoutation-report.component';
-import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
 import { ShareQuotesComponent } from './components/share-quotes/share-quotes.component';
 import { PaymentAdviceComponent } from './components/payment-advice/payment-advice.component';
+import { CardModule } from 'primeng/card';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
+
 
 
 @NgModule({
@@ -64,8 +68,8 @@ import { PaymentAdviceComponent } from './components/payment-advice/payment-advi
     QuotationManagementComponent,
     RiskDetailsComponent,
     RiskCentreComponent,
-    QuoutationReportComponent,
-    QuoteSummaryComponent,
+    QuoteReportComponent,
+    QuouteSummaryComponent,
     ShareQuotesComponent,
     PaymentAdviceComponent,
   
@@ -98,7 +102,11 @@ import { PaymentAdviceComponent } from './components/payment-advice/payment-advi
         NgxIntlTelInputModule,
         EntitiesModule,
         CheckboxModule,
-        TagModule 
+        TagModule,
+        CardModule,
+        BreadcrumbModule,
+        OverlayPanelModule,
+        MultiSelectModule
         
     ],
   providers: [DatePipe],
