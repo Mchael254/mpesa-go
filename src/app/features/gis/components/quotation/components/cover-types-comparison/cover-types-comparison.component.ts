@@ -134,8 +134,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   modalHeight: number = 200;
   limitsOfLiabilityList: LimitsOfLiability[] = [];
   excessesList: Excesses[] = []
-  isEditRisk: boolean;
-  isAddRisk: boolean;
   selectedRisk: any;
   premiums: any;
   updatePremiumPayload: premiumPayloadData;
@@ -147,7 +145,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   organizationId: number;
   exchangeRate: number;
   passedQuotationData: any;
-  isEditQuotationDetail: boolean = false;
   storedQuotationNo: string;
   storedQuotationCode: number;
   extraRiskCode: [] = [];
@@ -164,15 +161,12 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   };
   quoteAction: string = null
   premiumComputationPayload: PremiumComputationRequest;
-  // storedData: QuickQuoteData = null;
-  // storedData: QuickQuoteData = dummyQuickQuoteData;
   computationPayloadCode: number;
 
   public currencyObj: NgxCurrencyConfig;
   private typingTimer: any;// Timer reference
   sectionToBeRemoved: number[] = [];
   inputErrors: { [key: string]: boolean } = {};
-  temporaryPremiumLists: any
   selectedCoverTypeCode: number;
   selectedBinderCode: number;
   currencySymbol: string;
@@ -201,13 +195,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   public isExcessDetailsOpen = false;
   public isBenefitsDetailsOpen = false;
   public isSelectCoverOpen = true;
-  public isSelectRiskOpen = true
 
 
   ngOnInit(): void {
-
-
-    // this.getuser();
     this.createEmailForm();
     this.createSmsForm();
 
@@ -278,7 +268,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
             }
           })
 
-        // log.debug("Changed rates>>>>>>>", this.riskLevelPremiums)
 
       })
   }
