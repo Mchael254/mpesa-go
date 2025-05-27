@@ -20,7 +20,6 @@ import { RiskSectionDetailsComponent } from './components/risk-section-details/r
 import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
 import { TreeModule } from 'primeng/tree';
 import { InputTextModule } from 'primeng/inputtext';
-import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
 import { FileUploadModule } from 'primeng/fileupload';
 import { BadgeModule } from 'primeng/badge';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -38,12 +37,22 @@ import { QuotationManagementComponent } from './components/quotation-management/
 import { TagModule } from 'primeng/tag';
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
-import { MultiSelectModule } from 'primeng/multiselect';
+import { QuoteReportComponent } from './components/quote-report/quote-report.component';
+import { QuouteSummaryComponent } from './components/quoute-summary/quoute-summary.component';
+import { ShareQuotesComponent } from './components/share-quotes/share-quotes.component';
+import { PaymentAdviceComponent } from './components/payment-advice/payment-advice.component';
+import { CardModule } from 'primeng/card';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
+
+
+
 @NgModule({
   declarations: [
     ListQuotationsComponent,
     QuickQuoteFormComponent,
-    QuoteSummaryComponent,
+    QuotationSummaryComponent,
     QuotationsClientDetailsComponent,
     QuotationDetailsComponent,
     ImportRisksComponent,
@@ -59,6 +68,15 @@ import { MultiSelectModule } from 'primeng/multiselect';
     QuotationManagementComponent,
     RiskDetailsComponent,
     RiskCentreComponent,
+    QuoteReportComponent,
+    QuouteSummaryComponent,
+    ShareQuotesComponent,
+    PaymentAdviceComponent,
+  
+    
+    
+  
+  
 
 
   ],
@@ -85,7 +103,11 @@ import { MultiSelectModule } from 'primeng/multiselect';
         EntitiesModule,
         CheckboxModule,
         TagModule,
+        CardModule,
+        BreadcrumbModule,
+        OverlayPanelModule,
         MultiSelectModule
+        
     ],
   providers: [DatePipe],
 
