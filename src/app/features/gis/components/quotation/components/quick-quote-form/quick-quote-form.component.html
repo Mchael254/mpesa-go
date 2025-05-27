@@ -239,7 +239,9 @@
         </div>
 
         <app-cover-types-comparison
-          [PassedRiskedLevelPremiums]="product.riskLevelPremiums"></app-cover-types-comparison>
+          (selectedCoverEvent)="selectCovers(product, $event)"
+          [passedRiskedLevelPremiums]="product.riskLevelPremiums">
+        </app-cover-types-comparison>
       </div>
 
     </div>
@@ -247,7 +249,8 @@
   <div class="row " *ngIf="premiumComputationResponse">
     <div class="col-6"></div>
     <div class="col-6 d-flex justify-content-end">
-      <button type="button" class="btn btn-outline-primary btn-lg" id="save-quotation" (click)="saveQuotationDetails()">
+      <button type="button" class="btn btn-outline-primary btn-lg" id="save-quotation"
+              *ngIf="coverSelected" (click)="saveQuotationDetails()">
         {{ 'gis.quotation.next' | translate }}
       </button>
     </div>

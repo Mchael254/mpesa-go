@@ -44,7 +44,7 @@ import {OrganizationBranchDto} from '../../../../../../shared/data/common/organi
 import {NgxSpinnerService} from 'ngx-spinner';
 import {
   DynamicRiskField,
-  QuickQuoteData,
+  QuickQuoteData, QuotationProduct, RiskInformation,
   Tax,
   UserDetail,
 } from '../../data/quotationsDTO';
@@ -67,11 +67,12 @@ import {distinctUntilChanged, map} from "rxjs/operators";
 import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import {
   CoverType,
+  CoverTypeDetail,
   Limit,
   PremiumComputationRequest,
   Product,
-  ProductLevelPremium,
-  Risk
+  ProductLevelPremium, ProductPremium,
+  Risk, RiskLevelPremium
 } from "../../data/premium-computation";
 import {QuotationDetails} from "../../data/quotation-details";
 
@@ -279,6 +280,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   applicablePremiumRates: any
   premiumComputationResponse: ProductLevelPremium = null
+  selectedProductCovers: ProductPremium[] = [];
+  coverSelected = false;
 
 
   constructor(
@@ -550,12 +553,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       this.premiumComputationResponse = {
         productLevelPremiums: this.premiumComputationResponse
           .productLevelPremiums.map((value) => {
-          return {
-            ...value,
-            riskLevelPremiums: value.riskLevelPremiums
-              .filter(riskPremium => riskPremium.code !== riskControl.value.riskCode)
-          }
-        })
+            return {
+              ...value,
+              riskLevelPremiums: value.riskLevelPremiums
+                .filter(riskPremium => riskPremium.code !== riskControl.value.riskCode)
+            }
+          })
       }
     }
     this.getRisks(productIndex).removeAt(riskIndex);
@@ -1830,7 +1833,93 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       return
     }
     const formModel = this.quickQuoteForm.getRawValue();
+    log.debug("Selected products >>>>", this.selectedProductCovers)
     log.debug("Quotation details >>>", formModel)
+    return {
+      divisionCode: 0,
+      endorsementStatus: null,
+      creditDateNotified: null,
+      quotationCode: null,
+      quotationProducts: this.getQuotationProductPayload(formModel.products),
+      quotationNumber: null,
+      source: null,
+      user: null,
+      currencyCode: 0,
+      currencyRate: 1,
+      agentCode: 0,
+      agentShortDescription: null,
+      gisPolicyNumber: null,
+      multiUser: null,
+      unitCode: 0,
+      locationCode: 0,
+      wefDate: this.formatDate(new Date(formModel.effectiveDate)),
+      wetDate: null,
+      bindCode: null,
+      premium: 0,
+      internalComments: null,
+      chequeRequisition: null,
+      introducerCode: 0,
+      polPipPfCode: 0,
+      marketerAgentCode: 0,
+      branchCode: 0,
+      comments: formModel.quotComment,
+      prospectCode: 0,
+      clientCode: 0,
+      clientType: 'I',
+      polEnforceSfParam: null,
+      polPropHoldingCoPrpCode: null,
+      subAgentCode: 0,
+      binderPolicy: null
+    }
   }
 
+  getQuotationProductPayload(selectedProducts: any): QuotationProduct[] {
+    const quotationProducts: QuotationProduct[] = []
+    log.debug("User selected products>>>", selectedProducts)
+    for (let product of this.selectedProductCovers) {
+      quotationProducts.push({
+        code: null,
+        productCode: product.code,
+        quotationCode: null,
+        productName: product.description,
+        productShortDescription: product.description,
+        premium: 0,
+        wef: this.formatDate(new Date()),
+        wet: this.formatDate(new Date()),
+        revisionNo: null,
+        totalSumInsured: 0,
+        commission: 0,
+        converted: "N",
+        policyNumber: null,
+        binder: null,
+        agentShortDescription: null,
+        riskInformation: this.getProductRisksPayload(product),
+        quotationNo: null,
+        taxInformation: this.getProductTaxesPayload(product)
+      })
+    }
+    return quotationProducts
+  }
+
+  getProductTaxesPayload(product: ProductPremium): any {
+    return null
+  }
+
+  getProductRisksPayload(product: ProductPremium): RiskInformation[] {
+    const riskInformation: RiskInformation [] = []
+    for (let risk of product.riskLevelPremiums) {
+      log.debug("Processing Risk>>>", risk)
+    }
+    return riskInformation;
+  }
+
+  selectCovers(product: ProductPremium, riskDetails: RiskLevelPremium) {
+    log.debug("Selected risk >>>", riskDetails)
+    this.selectedProductCovers = this.selectedProductCovers.filter(value => value.code !== product.code);
+    this.selectedProductCovers.push(product)
+    if (this.selectedProductCovers.length === this.premiumComputationResponse.productLevelPremiums.length) {
+      this.coverSelected = true
+    }
+    log.debug("Current product >>>>", this.selectedProductCovers)
+  }
 }
