@@ -44,7 +44,7 @@ import {OrganizationBranchDto} from '../../../../../../shared/data/common/organi
 import {NgxSpinnerService} from 'ngx-spinner';
 import {
   DynamicRiskField,
-  QuickQuoteData, QuotationProduct, RiskInformation,
+  QuickQuoteData, QuotationProduct, RiskInformation, SectionDetail,
   Tax,
   UserDetail,
 } from '../../data/quotationsDTO';
@@ -66,7 +66,7 @@ import {debounceTime} from "rxjs/internal/operators/debounceTime";
 import {distinctUntilChanged, map} from "rxjs/operators";
 import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import {
-  CoverType,
+  CoverType, CoverTypeDetail,
   Limit,
   PremiumComputationRequest,
   Product,
@@ -1823,14 +1823,22 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     const formModel = this.quickQuoteForm.getRawValue();
     log.debug("Selected products >>>>", this.selectedProductCovers)
     log.debug("Quotation details >>>", formModel)
+    let coverTypes = this.selectedProductCovers
+      .map(value => value.riskLevelPremiums)
+      .map((value) => {
+        return value.map(value => value.selectCoverType)
+      });
+    //const totalPremium = coverTypes.reduce((sum, coverType) => sum + coverType., 0);
+
+    //log.debug("Quotation details map1 >>>", map1)
     return {
       quotationProducts: this.getQuotationProductPayload(),
       quotationNumber: null,
       quotationCode: null,
       source: 37,
       user: this.user,
-      currencyCode: 0,
-      currencyRate: 1,
+      currencyCode: this.currencyCode,
+      currencyRate: this.exchangeRate,
       agentCode: 0,
       agentShortDescription: "DIRECT",
       wefDate: this.formatDate(new Date(formModel.effectiveDate)),
@@ -1851,6 +1859,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     for (let product of products) {
       let selectedProductPremium = this.selectedProductCovers
         .find(value => value.code === product.code)
+      log.debug("Selected coverType", selectedProductPremium)
       selectedProductPremium.coverFrom = coverFrom
       selectedProductPremium.coverTo = product.effectiveTo
       quotationProducts.push({
@@ -1895,7 +1904,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         wet: product.coverTo,
         propertyId: `Risk ${index + 1}`,
         annualPremium: risk.selectCoverType.computedPremium,
-        sectionsDetails: this.getSectionPayload(),
+        sectionsDetails: this.getSectionPayload(formRisk, risk.selectCoverType),
         subclassCode: risk.selectCoverType.subclassCode,
         binderCode: risk.binderCode,
         subclass: {
@@ -1910,8 +1919,25 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     return riskInformation;
   }
 
-  getSectionPayload(): any {
-    return null
+  getSectionPayload(formRisk: any, riskPremium: CoverTypeDetail): SectionDetail[] {
+    log.debug("Processing risk formRisk>>>>", formRisk, riskPremium)
+    const sections: SectionDetail [] = []
+    for (let [index, section] of riskPremium.limitPremium.entries()) {
+      sections.push({
+        sectionCode: section.sectCode,
+        sectionDescription: section.description,
+        premium: section.premium,
+        limitAmount: section.limitAmount,
+        freeLimit: 0,
+        rate: section.premiumRate,
+        rateType: section.rateType,
+        rowNumber: section.rowNumber,
+        rateDivisionFactor: section.rateDivisionFactor,
+        calculationGroup: section.calculationGroup,
+        sectionShortDescription: null,
+      })
+    }
+    return sections
   }
 
   selectCovers(product: ProductPremium, riskDetails: RiskLevelPremium) {

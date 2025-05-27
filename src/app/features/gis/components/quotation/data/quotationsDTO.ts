@@ -249,7 +249,7 @@ export interface RiskInformation {
 }
 
 export interface SectionDetail {
-  code: number;
+  code?: number;
   quotationRiskCode?: number;
   sectionDescription: string;
   limitAmount: number;
