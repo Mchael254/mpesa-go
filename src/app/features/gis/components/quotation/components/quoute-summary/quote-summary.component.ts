@@ -78,7 +78,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
   saveNotes() {
     console.log('Saved notes:', this.quotation.notes);
-    // Close panel logic, etc.
   }
 
   ngOnInit(): void {
