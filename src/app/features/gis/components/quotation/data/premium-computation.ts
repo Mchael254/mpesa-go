@@ -139,6 +139,13 @@ export interface LimitPremium {
   description: string;
   limitAmount: number;
   isMandatory: string;
+  calculationGroup?: number;
+  compute?: string;
+  dualBasis?: string;
+  rateDivisionFactor?: number;
+  rateType?: string;
+  rowNumber?: number;
+  premiumRate?: number;
 }
 
 export interface TaxComputation {
