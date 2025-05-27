@@ -18,7 +18,7 @@ import { QuotationSourcesComponent } from './components/quotation-sources/quotat
 import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
 import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
 import { QuoteReportComponent } from './components/quote-report/quote-report.component';
-import { QuouteSummaryComponent } from './components/quoute-summary/quoute-summary.component';
+import { QuoteSummaryComponent } from './components/quoute-summary/quote-summary.component';
 import { ShareQuotesComponent } from './components/share-quotes/share-quotes.component';
 import { PaymentAdviceComponent } from './components/payment-advice/payment-advice.component';
 
@@ -79,7 +79,7 @@ const routes: Routes = [
     path:'quotation-report',component:QuoteReportComponent
   },
     {
-    path:'quoute-summary',component:QuouteSummaryComponent
+    path:'quote-summary',component:QuoteSummaryComponent
   },
   {
     path:'share-quoute',component:ShareQuotesComponent
