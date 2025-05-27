@@ -1813,6 +1813,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   saveQuotationDetails() {
     const quotationPayload = this.getQuotationPayload()
     log.debug("Quotation details >>>", quotationPayload)
+    this.quotationService.processQuotation(quotationPayload).pipe(
+      untilDestroyed(this)
+    ).subscribe((response) => {
+        this.router.navigate(['/home/gis/quotation/quote-summary']).then(r => {});
+      }
+    )
   }
 
   getQuotationPayload(): QuotationDetailsRequestDto {
@@ -1823,14 +1829,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     const formModel = this.quickQuoteForm.getRawValue();
     log.debug("Selected products >>>>", this.selectedProductCovers)
     log.debug("Quotation details >>>", formModel)
-    let coverTypes = this.selectedProductCovers
-      .map(value => value.riskLevelPremiums)
-      .map((value) => {
-        return value.map(value => value.selectCoverType)
-      });
-    //const totalPremium = coverTypes.reduce((sum, coverType) => sum + coverType., 0);
+    const coverTypes = this.selectedProductCovers
+      .flatMap(value => value.riskLevelPremiums.map(premium => premium.selectCoverType));
+    const totalPremium = coverTypes.reduce((sum, coverType) => sum + coverType.computedPremium, 0);
 
-    //log.debug("Quotation details map1 >>>", map1)
+    log.debug("Quotation details map1 >>>", coverTypes, totalPremium)
     return {
       quotationProducts: this.getQuotationProductPayload(),
       quotationNumber: null,
@@ -1843,8 +1846,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       agentShortDescription: "DIRECT",
       wefDate: this.formatDate(new Date(formModel.effectiveDate)),
       wetDate: formModel.products[0]?.effectiveTo,
-      premium: 0,
-      marketerAgentCode: 0,
+      premium: totalPremium,
       branchCode: this.userBranchId || 1,
       comments: formModel.quotComment,
       clientType: 'I'
@@ -1862,13 +1864,15 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       log.debug("Selected coverType", selectedProductPremium)
       selectedProductPremium.coverFrom = coverFrom
       selectedProductPremium.coverTo = product.effectiveTo
+      const productPremium = selectedProductPremium.riskLevelPremiums
+        .reduce((sum, value) => sum + value.selectCoverType.computedPremium, 0);
       quotationProducts.push({
         code: null,
         productCode: product.code,
         quotationCode: null,
         productName: product.description,
         productShortDescription: product.description,
-        premium: 0,
+        premium: productPremium,
         wef: coverFrom,
         wet: product.effectiveTo,
         totalSumInsured: 0,

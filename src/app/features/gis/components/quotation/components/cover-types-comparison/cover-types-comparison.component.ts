@@ -520,7 +520,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("Clauses to save>>>", this.clauseList)
     const processQuotation$ = this.storedQuotationCode && this.storedQuotationNo
       ? of({_embedded: {quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo}})
-      : this.quotationService.processQuotation(quotation);
+      : this.quotationService.processQuotation(null);
     this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
     this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber
     processQuotation$.pipe(
