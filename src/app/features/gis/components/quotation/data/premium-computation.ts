@@ -15,6 +15,7 @@ export interface PremiumComputationRequest {
     rate: number;
   };
 }
+
 export interface Product {
   code: number;
   description: string
@@ -23,6 +24,7 @@ export interface Product {
   withEffectTo: string;
   risks: Risk[];
 }
+
 export interface Tax {
   taxRate: string;
   code: string;
@@ -31,6 +33,7 @@ export interface Tax {
   applicationLevel: string;
   taxRateType: string;
 }
+
 export interface Risk {
   taxes: Tax[];
   code: string
@@ -53,6 +56,7 @@ export interface Risk {
   };
   subclassCoverTypeDto: CoverType[];
 }
+
 export interface CoverType {
   subclassCode: number;
   coverTypeCode: number;
@@ -62,6 +66,7 @@ export interface CoverType {
   coverTypeDescription: string;
   limits: Limit[];
 }
+
 export interface Limit {
   calculationGroup: number;
   declarationSection: string;
@@ -106,6 +111,8 @@ export interface RiskLevelPremium {
   propertyDescription: string;
   minimumPremiumUsed: number | null;
   coverTypeDetails: CoverTypeDetail[];
+  selectCoverType?: CoverTypeDetail
+  binderCode?: number
 }
 
 export interface CoverTypeDetail {
@@ -119,6 +126,9 @@ export interface CoverTypeDetail {
   computedPremium: number;
   limitPremium: LimitPremium[];
   taxComputation: TaxComputation[];
+  clauses?: any
+  excesses?: any
+  limitOfLiabilities?: any
 }
 
 export interface LimitPremium {
@@ -128,6 +138,7 @@ export interface LimitPremium {
   limitAmount: number;
   isMandatory: string;
 }
+
 export interface TaxComputation {
   code: number;
   premium: number;

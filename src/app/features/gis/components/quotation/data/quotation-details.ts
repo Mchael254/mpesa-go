@@ -1,3 +1,5 @@
+import {QuotationProduct} from "./quotationsDTO";
+
 export interface QuotationDetails {
   quotationCode: number;
   quotationNumber: string;
@@ -122,24 +124,5 @@ interface RiskInformation {
   prospectCode: number;
   coverTypeDescription: string;
 }
-interface QuotationProduct {
-  code: number;
-  productCode: number;
-  quotationCode: number;
-  productShortDescription: string;
-  quotationNo: string;
-  premium: number;
-  wef: string;
-  wet: string;
-  revisionNo: number;
-  totalSumInsured: number;
-  commission: number;
-  binder: string;
-  agentShortDescription: string;
-  productName: string;
-  converted: string;
-  policyNumber: string;
-  taxInformation: TaxInformation[];
-  riskInformation: RiskInformation[];
-}
+
 
