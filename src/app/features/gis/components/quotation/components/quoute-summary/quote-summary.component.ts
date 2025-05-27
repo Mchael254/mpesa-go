@@ -5,10 +5,10 @@ import { QuotationDTO } from '../../data/quotationsDTO';
 
 @Component({
   selector: 'app-quoute-summary',
-  templateUrl: './quoute-summary.component.html',
-  styleUrls: ['./quoute-summary.component.css']
+  templateUrl: './quote-summary.component.html',
+  styleUrls: ['./quote-summary.component.css']
 })
-export class QuouteSummaryComponent {
+export class QuoteSummaryComponent {
   steps = [
     { label: 'Quote Information' },
     { label: 'Quotation Summary' }
