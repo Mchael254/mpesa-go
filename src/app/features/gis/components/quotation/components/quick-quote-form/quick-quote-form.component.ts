@@ -45,7 +45,7 @@ import {NgxSpinnerService} from 'ngx-spinner';
 import {
   DynamicRiskField,
   QuickQuoteData, QuotationProduct, RiskInformation, SectionDetail,
-  Tax,
+  Tax, TaxComputation, TaxInformation,
   UserDetail,
 } from '../../data/quotationsDTO';
 import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
@@ -592,9 +592,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug("premium computation payload >>>>", computationRequest);
     this.quotationService.premiumComputationEngine(computationRequest).pipe(
       untilDestroyed(this)
-    ).subscribe(response => {
-      this.premiumComputationResponse = response
-      log.debug("Computation response >>>>", response)
+    ).subscribe({
+      next: (response) => {
+        this.premiumComputationResponse = response
+        this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully ')
+        log.debug("Computation response >>>>", response)
+      }, error: (error) => {
+        this.globalMessagingService.displayErrorMessage('Error', 'Error during computation');
+      }
     });
   }
 
@@ -1494,13 +1499,17 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   saveQuotationDetails() {
     const quotationPayload = this.getQuotationPayload()
     log.debug("Quotation details >>>", quotationPayload)
+    return
     this.quotationService.processQuotation(quotationPayload).pipe(
       untilDestroyed(this)
-    ).subscribe((response) => {
-        if (response) {
+    ).subscribe({
+        next: (response) => {
           sessionStorage.setItem("quotationNumber", response._embedded.quotationNumber)
           this.router.navigate(['/home/gis/quotation/quote-summary']).then(r => {
-          });
+          })
+        },
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
       }
     )
@@ -1565,13 +1574,27 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         binder: null,
         agentShortDescription: "DIRECT",
         riskInformation: this.getProductRisksPayload(product.risks, selectedProductPremium),
-        taxInformation: this.getProductTaxesPayload(selectedProductPremium)
+        taxInformation: this.getProductTaxesPayload(product)
       })
     }
     return quotationProducts
   }
 
-  getProductTaxesPayload(product: ProductPremium): any {
+  getProductTaxesPayload(productPremium: ProductPremium): TaxInformation[] {
+    const applicableTaxes = this.selectedProductCovers
+      .filter(value => value.code === productPremium.code)
+      .flatMap(value => value.riskLevelPremiums
+        .flatMap(premium => premium.selectCoverType.taxComputation));
+    const groupedMap = new Map<number, number>();
+    for (const item of applicableTaxes) {
+      const currentSum = groupedMap.get(item.code) || 0;
+      groupedMap.set(item.code, currentSum + item.premium);
+    }
+    const groupedTaxes = Array.from(groupedMap.entries()).map(([code, totalPremium]) => ({
+      code,
+      totalPremium
+    }));
+    log.debug("Grouped taxes for product >>>>", productPremium, groupedTaxes)
     return null
   }
 
