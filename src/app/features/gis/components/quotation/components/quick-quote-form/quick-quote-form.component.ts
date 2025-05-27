@@ -299,7 +299,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     public sectionService: SectionsService,
     public countryService: CountryService,
     private router: Router,
-    private ngxSpinner: NgxSpinnerService,
     public premiumRateService: PremiumRateService,
     public globalMessagingService: GlobalMessagingService,
     private occupationService: OccupationService,
@@ -1186,192 +1185,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   }
 
 
-  /*setRiskPremiumDto(): Risk[] {
-    log.debug("All available premium items>>>", this.applicablePremiumRates)
-    log.debug("subclass cover type", this.subclassCoverType)
-    log.debug("Car Reg no:", this.carRegNoValue)
-
-    const propertyId = this.quickQuoteForm.get('riskId')?.value;
-    this.carRegNoValue = this.quickQuoteForm.get('carRegNo')?.value;
-    const subClassCode = +this.quickQuoteForm.get('subClass')?.value.code;
-    const value = this.quickQuoteForm.get('value')?.value;
-    log.debug("Value", value)
-    const sumInsured = this.quickQuoteForm.get('selfDeclaredValue')?.value;
-    const finalValue = value ?? sumInsured;
-    log.debug("Final Value", finalValue);
-    sessionStorage.setItem('sumInsuredValue', finalValue);
-    log.debug("Risk Id:", propertyId)
-    let risks: Risk[] = []
-    for (let coverType of this.applicablePremiumRates) {
-      const applicableLimits = coverType.applicableRates.map(rate => {
-        return {
-          calculationGroup: 1,
-          declarationSection: "N",
-          rowNumber: 1,
-          rateDivisionFactor: rate.divisionFactor,
-          premiumRate: rate.rate,
-          rateType: rate.rateType,
-          minimumPremium: rate.premiumMinimumAmount,
-          annualPremium: 0,
-          multiplierDivisionFactor: 1,
-          multiplierRate: rate.multiplierRate,
-          description: rate.sectionDescription,
-          section: {
-            limitAmount: sumInsured || value,
-            description: rate.sectionDescription,
-            code: rate.sectionCode,
-            isMandatory: "Y"
-          },
-          sectionType: rate.sectionType,
-          riskCode: null,
-          limitAmount: sumInsured || value,
-          compute: "Y",
-          dualBasis: "N"
-        }
-      })
-
-      let risk: Risk = {
-        propertyId: propertyId,
-        withEffectFrom: this.selectedEffectiveDate,
-        withEffectTo: this.passedCoverToDate,
-        prorata: 'F',
-        subclassSection: {
-          code: this.selectedSubclassCode,
-        },
-        itemDescription: this.carRegNoValue || propertyId,
-        noClaimDiscountLevel: 0,
-        subclassCoverTypeDto: {
-          subclassCode: this.selectedSubclassCode,
-          coverTypeCode: coverType.coverTypeCode,
-          minimumAnnualPremium: 0,
-          minimumPremium: parseInt(coverType.minimumPremium, 10),
-          coverTypeShortDescription: coverType.coverTypeShortDescription,
-          coverTypeDescription: coverType.description
-        },
-        enforceCovertypeMinimumPremium: 'N',
-        binderDto: {
-          code: this.selectedBinderCode,
-          currencyCode: this.currencyCode,
-          maxExposure: this.selectedBinder?.maximum_exposure,
-          currencyRate: this.exchangeRate,
-        },
-        limits: applicableLimits,
-      };
-      risks.push(risk)
-    }
-    return risks
-  }*/
-
-  /*
-
-    setLimitPremiumDto(coverTypeCode: number): Limit[] {
-      log.debug("Current form structure:", this.quickQuoteForm.controls);
-
-      const value = this.quickQuoteForm.get('value')?.value;
-      log.debug("Value", value)
-      const sumInsured = this.quickQuoteForm.get('selfDeclaredValue')?.value;
-      log.debug('SUM INSURED', sumInsured);
-
-      const finalValue = value ?? sumInsured;
-      log.debug('Final Value', finalValue);
-      sessionStorage.setItem('sumInsuredValue', finalValue);
-
-      const coverTypeSections = this.mandatorySections.filter(
-        (value) => value.coverTypeCode === coverTypeCode
-      );
-      log.debug(
-        'Mandatory Sections for covertype',
-        coverTypeCode,
-        coverTypeSections
-      );
-      log.debug('Found cover type sections ', coverTypeSections);
-      log.debug('Premium rates ', this.allPremiumRate);
-      let response: Limit[] = coverTypeSections
-        .map((it) =>
-          this.allPremiumRate
-            .filter((rate) => {
-              log.debug(
-                'In limit: ' + rate.sectionCode + ' vs ' + it.sectionCode
-              );
-              return rate.sectionCode == it.sectionCode;
-            })
-            .map((rate) => {
-              return {
-                calculationGroup: 1,
-                declarationSection: 'N',
-                rowNumber: 1,
-                rateDivisionFactor: rate.divisionFactor,
-                premiumRate: rate.rate,
-                rateType: rate.rateType,
-                minimumPremium: rate.premiumMinimumAmount,
-                annualPremium: 0,
-                multiplierDivisionFactor: 1,
-                multiplierRate: rate.multiplierRate,
-                description: rate.sectionShortDescription,
-                section: {
-                  code: it.sectionCode,
-                },
-                sectionType: rate.sectionType,
-                riskCode: null,
-                limitAmount: sumInsured || value,
-                compute: 'Y',
-                dualBasis: 'N',
-              };
-            })
-        )
-        .flatMap((item) => item);
-      log.debug('Added Limit', this.additionalLimit);
-
-      if (this.additionalLimit.length > 0) {
-        log.debug('Added Limit', this.additionalLimit);
-        // Adjust the existing response to include the additional risk
-        this.additionalLimit.forEach((item) => coverTypeSections.push(item));
-        log.debug('section for CoverType:', coverTypeSections);
-        response = response.concat(
-          coverTypeSections
-            .map((it) =>
-              this.allPremiumRate
-                .filter((rate) => {
-                  log.debug(
-                    'In limit: ' + rate.sectionCode + ' vs ' + it.sectionCode
-                  );
-                  return rate.sectionCode == it.sectionCode;
-                })
-                .map((rate) => {
-                  return {
-                    calculationGroup: 2, // Adjust the calculationGroup for the additional risk
-                    declarationSection: 'N',
-                    rowNumber: 1,
-                    rateDivisionFactor: rate.divisionFactor,
-                    premiumRate: rate.rate,
-                    rateType: rate.rateType,
-                    minimumPremium: rate.premiumMinimumAmount,
-                    annualPremium: 0,
-                    multiplierDivisionFactor: 1,
-                    multiplierRate: rate.multiplierRate,
-                    description: rate.sectionShortDescription,
-                    section: {
-                      code: it.sectionCode,
-                    },
-                    sectionType: rate.sectionType,
-                    riskCode: null,
-                    limitAmount: sumInsured || value,
-                    compute: 'Y',
-                    dualBasis: 'N',
-                  };
-                })
-            )
-            .flatMap((item) => item)
-        );
-      }
-
-      log.debug('Covertype', coverTypeCode);
-      log.debug('Section items', coverTypeSections);
-      log.debug('limit items', response);
-      return response;
-    }
-  */
-
   fetchComputationData(productCode: number, subClassCode: number, riskIndex: number, productIndex: number
   ) {
     let productFormArray = this.productsFormArray.at(productIndex);
@@ -1406,124 +1219,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   }
 
-  /* computePremiumV2() {
-     log.info('Submitted form {}', this.quickQuoteForm);
-     if (!this.isEmailOrPhoneValid()) {
-       this.globalMessagingService.displayErrorMessage(
-         'Error',
-         'Provide either a valid phone number or email to proceed.'
-       );
-       return;
-     }
-     if (this.quickQuoteForm.valid) {
-       this.ngxSpinner.show();
-       sessionStorage.setItem('product', this.selectedProductCode);
-       const quickQuoteDataModel = this.quickQuoteForm.getRawValue();
-       log.debug('Form is valid, proceeding with premium computation...', quickQuoteDataModel);
-       log.debug(
-         'Mandatory sections: ',
-         this.subclassSectionCoverList,
-         this.mandatorySections
-       );
-       log.debug('Subclass Cover Types', this.subclassCoverType);
-       log.debug('Selected binder ', this.binderList, this.selectedBinder);
-       this.currencyCode = quickQuoteDataModel.currency.id;
-       let quickQuoteData: QuickQuoteData = {
-         effectiveDateFrom: quickQuoteDataModel.effectiveDate,
-         carRegNo: quickQuoteDataModel?.carRegNo || quickQuoteDataModel?.riskId,
-         yearOfManufacture: quickQuoteDataModel.yearOfManufacture,
-         clientName: quickQuoteDataModel.clientName,
-         clientEmail: quickQuoteDataModel.emailAddress,
-         product: quickQuoteDataModel.product,
-         subClass: quickQuoteDataModel.subClass,
-         currency: quickQuoteDataModel.currency,
-         selfDeclaredValue: quickQuoteDataModel.selfDeclaredValue,
-         clientPhoneNumber: quickQuoteDataModel.phoneNumber?.number,
-         coverTo: quickQuoteDataModel?.coverTo,
-         riskId: quickQuoteDataModel?.riskId,
-         value: quickQuoteDataModel?.value,
-         modeOfTransport: quickQuoteDataModel?.modeOfTransport,
-         existingClientSelected: null,
-         selectedBinderCode: this.selectedBinderCode,
-         selectedClient: null
-
-       }
-
-
-       this.mandatorySections = this.applicablePremiumRates.map(value => value.applicableRates)
-       sessionStorage.setItem('mandatorySections', JSON.stringify(this.mandatorySections));
-      /!* this.premiumComputationRequest = {
-         dateWithEffectFrom: this.selectedEffectiveDate,
-         dateWithEffectTo: this.passedCoverToDate,
-         underwritingYear: new Date().getFullYear(),
-         age: null,
-         coinsuranceLeader: null,
-         coinsurancePercentage: null,
-         entityUniqueCode: null,
-         interfaceType: null,
-         frequencyOfPayment: "A",
-         quotationStatus: "Draft",
-         transactionStatus: "NB",
-         /!**Setting Product Details**!/
-         product: {
-           code: this.selectedProductCode,
-           expiryPeriod: this.expiryPeriod,
-         },
-         /!**Setting Tax Details**!/
-         taxes: this.setTax(),
-
-         currency: {
-           rate: this.exchangeRate,
-         },
-         risks: this.setRiskPremiumDto(),
-       };*!/
-
-
-       return forkJoin([
-         null,
-         null
-       ])
-         .subscribe({
-           next: ([premiumResponse, payloadResponse]) => {
-             log.debug('Data', premiumResponse);
-             sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
-             const premiumResponseString = JSON.stringify(premiumResponse);
-             sessionStorage.setItem('premiumResponse', premiumResponseString);
-
-             this.computationPayloadCode = payloadResponse._embedded
-             log.debug("Code returned after saving premium computation payload ", this.computationPayloadCode);
-
-
-             quickQuoteData.computationPayloadCode = this.computationPayloadCode
-             sessionStorage.setItem('quickQuoteData', JSON.stringify(quickQuoteData))
-             this.router.navigate(['/home/gis/quotation/cover-type-details']);
-           },
-           error: (error: HttpErrorResponse) => {
-             log.info(error);
-             this.ngxSpinner.hide();
-
-             this.globalMessagingService.displayErrorMessage(
-               'Error',
-               error.error.message
-             );
-           },
-         });
-
-     } else {
-       // Mark all fields as touched and validate the form
-       this.quickQuoteForm.markAllAsTouched();
-       this.quickQuoteForm.updateValueAndValidity();
-       for (let controlsKey in this.quickQuoteForm.controls) {
-         if (this.quickQuoteForm.get(controlsKey).invalid) {
-           log.debug(
-             `${controlsKey} is invalid`,
-             this.quickQuoteForm.get(controlsKey).errors
-           );
-         }
-       }
-     }
-   }
- */
 
   fetchRegexPattern(productIndex: number, riskIndex: number) {
     this.quotationService
@@ -1566,20 +1261,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       riskIndex,
       'carRegNo'
     ]) as FormControl;
-  }
-
-
-  isEmailOrPhoneValid(): boolean {
-    if (
-      this.quickQuoteForm.get('emailAddress').invalid &&
-      this.quickQuoteForm.get('phoneNumber').invalid
-    ) {
-      return false;
-    }
-    const emailAddress = Boolean(this.quickQuoteForm.get('emailAddress').value);
-    const phoneNumber = Boolean(this.quickQuoteForm.get('phoneNumber').value);
-    log.debug('Email Address:', emailAddress, phoneNumber);
-    return !(!emailAddress && !phoneNumber);
   }
 
   transformToUpperCase(event: Event, productIndex: number, riskIndex: number): void {
@@ -1816,7 +1497,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.quotationService.processQuotation(quotationPayload).pipe(
       untilDestroyed(this)
     ).subscribe((response) => {
-        this.router.navigate(['/home/gis/quotation/quote-summary']).then(r => {});
+        if (response) {
+          sessionStorage.setItem("quotationNumber", response._embedded.quotationNumber)
+          this.router.navigate(['/home/gis/quotation/quote-summary']).then(r => {
+          });
+        }
       }
     )
   }
