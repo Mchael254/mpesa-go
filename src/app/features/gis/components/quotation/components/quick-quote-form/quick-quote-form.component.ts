@@ -67,14 +67,13 @@ import {distinctUntilChanged, map} from "rxjs/operators";
 import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import {
   CoverType,
-  CoverTypeDetail,
   Limit,
   PremiumComputationRequest,
   Product,
   ProductLevelPremium, ProductPremium,
   Risk, RiskLevelPremium
 } from "../../data/premium-computation";
-import {QuotationDetails} from "../../data/quotation-details";
+import {QuotationDetailsRequestDto} from "../../data/quotation-details";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -206,7 +205,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   selectedEffectiveDate: any;
   todaysDate: string;
-  isEditRisk: boolean;
   occupationData: OccupationDTO[];
   selectedoccupationCode: any;
   selectedCoverToDate: any;
@@ -331,12 +329,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     });
     this.loadAllCurrencies()
     this.getuser()
-  }
-
-
-  isFieldRequired(controlName: string): boolean {
-    const control = this.quickQuoteForm.get(controlName);
-    return control?.hasValidator(Validators.required) ?? false;
   }
 
   ngOnDestroy(): void {
@@ -836,9 +828,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug('Organization Date Format:', this.dateFormat);
     // Get today's date in yyyy-MM-dd format
     const today = new Date();
-    log.debug('today date raaaw', today);
-    // Format today's date to the format specified in myFormat
-    // this.coverFromDate = this.datePipe.transform(today, this.dateFormat);
     this.coverFromDate = today;
     log.debug(' Date format', this.dateFormat);
 
@@ -879,7 +868,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
    * @return {void}
    */
   fetchBranches(organizationId?: number, regionId?: number) {
-    const branchDescription = [];
     this.branchService
       .getAllBranches(organizationId, regionId)
       .pipe(untilDestroyed(this))
@@ -1827,7 +1815,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug("Quotation details >>>", quotationPayload)
   }
 
-  getQuotationPayload(): QuotationDetails {
+  getQuotationPayload(): QuotationDetailsRequestDto {
     if (this.quickQuoteForm.invalid) {
       this.markAllFieldsAsTouched(this.quickQuoteForm);
       return
@@ -1836,47 +1824,35 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug("Selected products >>>>", this.selectedProductCovers)
     log.debug("Quotation details >>>", formModel)
     return {
-      divisionCode: 0,
-      endorsementStatus: null,
-      creditDateNotified: null,
-      quotationCode: null,
-      quotationProducts: this.getQuotationProductPayload(formModel.products),
+      quotationProducts: this.getQuotationProductPayload(),
       quotationNumber: null,
-      source: null,
-      user: null,
+      quotationCode: null,
+      source: 37,
+      user: this.user,
       currencyCode: 0,
       currencyRate: 1,
       agentCode: 0,
-      agentShortDescription: null,
-      gisPolicyNumber: null,
-      multiUser: null,
-      unitCode: 0,
-      locationCode: 0,
+      agentShortDescription: "DIRECT",
       wefDate: this.formatDate(new Date(formModel.effectiveDate)),
-      wetDate: null,
-      bindCode: null,
+      wetDate: formModel.products[0]?.effectiveTo,
       premium: 0,
-      internalComments: null,
-      chequeRequisition: null,
-      introducerCode: 0,
-      polPipPfCode: 0,
       marketerAgentCode: 0,
-      branchCode: 0,
+      branchCode: this.userBranchId || 1,
       comments: formModel.quotComment,
-      prospectCode: 0,
-      clientCode: 0,
-      clientType: 'I',
-      polEnforceSfParam: null,
-      polPropHoldingCoPrpCode: null,
-      subAgentCode: 0,
-      binderPolicy: null
+      clientType: 'I'
     }
   }
 
-  getQuotationProductPayload(selectedProducts: any): QuotationProduct[] {
+  getQuotationProductPayload(): QuotationProduct[] {
     const quotationProducts: QuotationProduct[] = []
-    log.debug("User selected products>>>", selectedProducts)
-    for (let product of this.selectedProductCovers) {
+    const products = this.quickQuoteForm.getRawValue().products
+    log.debug("User selected products>>>", products)
+    let coverFrom = this.formatDate(new Date(this.quickQuoteForm.get('effectiveDate').value));
+    for (let product of products) {
+      let selectedProductPremium = this.selectedProductCovers
+        .find(value => value.code === product.code)
+      selectedProductPremium.coverFrom = coverFrom
+      selectedProductPremium.coverTo = product.effectiveTo
       quotationProducts.push({
         code: null,
         productCode: product.code,
@@ -1884,18 +1860,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         productName: product.description,
         productShortDescription: product.description,
         premium: 0,
-        wef: this.formatDate(new Date()),
-        wet: this.formatDate(new Date()),
-        revisionNo: null,
+        wef: coverFrom,
+        wet: product.effectiveTo,
         totalSumInsured: 0,
-        commission: 0,
         converted: "N",
-        policyNumber: null,
         binder: null,
-        agentShortDescription: null,
-        riskInformation: this.getProductRisksPayload(product),
-        quotationNo: null,
-        taxInformation: this.getProductTaxesPayload(product)
+        agentShortDescription: "DIRECT",
+        riskInformation: this.getProductRisksPayload(product.risks, selectedProductPremium),
+        taxInformation: this.getProductTaxesPayload(selectedProductPremium)
       })
     }
     return quotationProducts
@@ -1905,12 +1877,41 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     return null
   }
 
-  getProductRisksPayload(product: ProductPremium): RiskInformation[] {
+  getProductRisksPayload(formRisks: any, product: ProductPremium): RiskInformation[] {
     const riskInformation: RiskInformation [] = []
-    for (let risk of product.riskLevelPremiums) {
-      log.debug("Processing Risk>>>", risk)
+    for (const [index, risk] of product.riskLevelPremiums.entries()) {
+      const formRisk = formRisks.find(value => value.riskCode === risk.code)
+      log.debug("Processing Risk>>>, formRisk", risk, formRisk)
+      riskInformation.push({
+        coverTypeCode: risk.selectCoverType.coverTypeCode,
+        coverTypeShortDescription: risk.selectCoverType.coverTypeShortDescription,
+        coverTypeDescription: risk.selectCoverType.coverTypeDescription,
+        productCode: product.code,
+        premium: risk.selectCoverType.computedPremium,
+        value: formRisk?.selfDeclaredValue || formRisk?.value,
+        clientType: "I",
+        itemDesc: `Risk ${index + 1}`,
+        wef: product.coverFrom,
+        wet: product.coverTo,
+        propertyId: `Risk ${index + 1}`,
+        annualPremium: risk.selectCoverType.computedPremium,
+        sectionsDetails: this.getSectionPayload(),
+        subclassCode: risk.selectCoverType.subclassCode,
+        binderCode: risk.binderCode,
+        subclass: {
+          code: risk.selectCoverType.subclassCode,
+          description: formRisk?.useOfProperty?.description,
+          shortDescription: null,
+          productCode: product.code
+        },
+        coverDays: 0
+      })
     }
     return riskInformation;
+  }
+
+  getSectionPayload(): any {
+    return null
   }
 
   selectCovers(product: ProductPremium, riskDetails: RiskLevelPremium) {

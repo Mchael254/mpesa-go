@@ -103,6 +103,8 @@ export interface ProductPremium {
   riskLevelPremiums: RiskLevelPremium[];
   description: string
   code: number
+  coverFrom?: string,
+  coverTo?: string
 }
 
 export interface RiskLevelPremium {

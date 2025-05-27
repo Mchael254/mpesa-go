@@ -124,6 +124,7 @@ export interface QuotationDetails {
   quotFactor?: any;
   quotGspCode?: any;
   divisionCode?: any;
+  creditDateNotified?
   agentWithin: string;
   newAgent?: any;
   quotIncsCode?: any;
@@ -186,18 +187,18 @@ export interface QuotationProduct {
   productCode: number;
   quotationCode: number;
   productShortDescription: string;
-  quotationNo: string;
+  quotationNo?: string;
   premium: number;
   wef: string;
   wet: string;
-  revisionNo: number;
+  revisionNo?: number;
   totalSumInsured: number;
-  commission: number;
+  commission?: number;
   binder: string;
   agentShortDescription: string;
   productName: string;
   converted: string;
-  policyNumber: string;
+  policyNumber?: string;
   taxInformation: TaxInformation[];
   riskInformation: RiskInformation[];
 }
@@ -218,17 +219,17 @@ export interface RiskInformation {
   schedules?: any;
   coverTypeCode: number;
   addEdit?: any;
-  quotationRevisionNumber: number;
-  code: number;
-  quotationProductCode: number;
-  quotationRiskNo: string;
-  quotationCode: number;
+  quotationRevisionNumber?: number;
+  code?: number;
+  quotationProductCode?: number;
+  quotationRiskNo?: string;
+  quotationCode?: number;
   productCode?: any;
   propertyId: string;
-  value?: any;
+  value: number;
   coverTypeShortDescription: string;
   sectionsDetails: SectionDetail[];
-  scheduleDetails: ScheduleDetails;
+  scheduleDetails?: ScheduleDetails;
   premium: number;
   subclassCode: number;
   itemDesc: string;
@@ -249,7 +250,7 @@ export interface RiskInformation {
 
 export interface SectionDetail {
   code: number;
-  quotationRiskCode: number;
+  quotationRiskCode?: number;
   sectionDescription: string;
   limitAmount: number;
   freeLimit: number;
@@ -314,7 +315,7 @@ export interface SubclassDetails {
   shortDescription: string;
   sclPrgCode?: any;
   productCode: number;
-  noCertificate: string;
+  noCertificate?: string;
 }
 
 export interface subclassCovertypeSection {
@@ -865,9 +866,9 @@ export interface RiskLevelPremium {
   code: number | null;
   propertyId: string | null;
   propertyDescription: string;
-  // premium?: number; 
+  // premium?: number;
   minimumPremiumUsed: number | null;
-  coverTypeDetails: CoverTypeDetails[]; 
+  coverTypeDetails: CoverTypeDetails[];
 }
 
 export interface CoverTypeDetails {
@@ -972,7 +973,7 @@ export interface PaymentAdviceDTO {
 // quote-report.dto.ts
 
 export interface CoverageDTO {
-premium: string;            
+premium: string;
 clauses: string[];
 limitsOfLiability: string[];
 excess: string[];
