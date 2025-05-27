@@ -29,6 +29,7 @@ import {UtilService} from '../../../../../../shared/services/util/util.service';
 import {map} from "rxjs/operators";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
 import {PremiumComputationRequest, ProductLevelPremium} from "../../data/premium-computation";
+import {QuotationDetailsRequestDto} from "../../data/quotation-details";
 
 @Injectable({
   providedIn: 'root'
@@ -564,7 +565,7 @@ export class QuotationsService {
     );
   }
 
-  processQuotation(data: QuotationPayload): Observable<any> {
+  processQuotation(data: QuotationDetailsRequestDto): Observable<any> {
     return this.api.POST<any>(`v2/quotation/process-quotation`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
