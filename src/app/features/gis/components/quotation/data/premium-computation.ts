@@ -151,5 +151,11 @@ export interface LimitPremium {
 export interface TaxComputation {
   code: number;
   premium: number;
+  taxRate?: number
+  taxRateType?:string
+  description?: string
+  levelCode?: string
+  taxType?:string
+  applicationLevel?:string
 }
 

@@ -37,21 +37,6 @@ export interface QuotationDetailsRequestDto {
   quotationProducts: QuotationProduct[];
 }
 
-interface TaxInformation {
-  code: number;
-  rateDescription: string;
-  rate: number;
-  rateType: string;
-  taxAmount: number;
-  productCode: number;
-  quotationCode: number;
-  transactionCode: string;
-  renewalEndorsement: string;
-  taxRateCode: number;
-  levelCode: string;
-  taxType: string;
-  riskProductLevel: string;
-}
 interface SectionsDetail {
   code: number;
   description: string;

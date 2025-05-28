@@ -1,12 +1,5 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {
-  AbstractControl,
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
 import {LazyLoadEvent} from 'primeng/api';
 import {ProductsService} from '../../../setups/services/products/products.service';
 import {Logger, UtilService} from '../../../../../../shared/services';
@@ -44,8 +37,12 @@ import {OrganizationBranchDto} from '../../../../../../shared/data/common/organi
 import {NgxSpinnerService} from 'ngx-spinner';
 import {
   DynamicRiskField,
-  QuickQuoteData, QuotationProduct, RiskInformation, SectionDetail,
-  Tax, TaxComputation, TaxInformation,
+  QuickQuoteData,
+  QuotationProduct,
+  RiskInformation,
+  SectionDetail,
+  Tax,
+  TaxInformation,
   UserDetail,
 } from '../../data/quotationsDTO';
 import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
@@ -66,12 +63,15 @@ import {debounceTime} from "rxjs/internal/operators/debounceTime";
 import {distinctUntilChanged, map} from "rxjs/operators";
 import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import {
-  CoverType, CoverTypeDetail,
+  CoverType,
+  CoverTypeDetail,
   Limit,
   PremiumComputationRequest,
   Product,
-  ProductLevelPremium, ProductPremium,
-  Risk, RiskLevelPremium
+  ProductLevelPremium,
+  ProductPremium,
+  Risk,
+  RiskLevelPremium
 } from "../../data/premium-computation";
 import {QuotationDetailsRequestDto} from "../../data/quotation-details";
 
@@ -1580,22 +1580,38 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     return quotationProducts
   }
 
-  getProductTaxesPayload(productPremium: ProductPremium): TaxInformation[] {
-    const applicableTaxes = this.selectedProductCovers
-      .filter(value => value.code === productPremium.code)
+  getProductTaxesPayload(product: any): TaxInformation[] {
+    const applicableTaxes = product.risks.flatMap(risk => risk.applicableTaxes);
+    log.debug("All applicable taxes >>>", applicableTaxes)
+    const computedTaxes = this.selectedProductCovers
+      .filter(value => value.code === product.code)
       .flatMap(value => value.riskLevelPremiums
         .flatMap(premium => premium.selectCoverType.taxComputation));
+    log.debug("Taxes under consideration>>>", computedTaxes)
+
     const groupedMap = new Map<number, number>();
-    for (const item of applicableTaxes) {
+    for (const item of computedTaxes) {
       const currentSum = groupedMap.get(item.code) || 0;
       groupedMap.set(item.code, currentSum + item.premium);
     }
-    const groupedTaxes = Array.from(groupedMap.entries()).map(([code, totalPremium]) => ({
-      code,
-      totalPremium
-    }));
-    log.debug("Grouped taxes for product >>>>", productPremium, groupedTaxes)
-    return null
+    return Array.from(groupedMap.entries()).map(([code, taxAmount]) => {
+      const original = applicableTaxes.find(t => t.code === code);
+      return {
+        quotationRate: original?.taxRate,
+        taxAmount: taxAmount,
+        code,
+        rateDescription: original.description,
+        rateType: original?.taxRateType,
+        productCode: product.code,
+        quotationCode: null,
+        transactionCode: null,
+        renewalEndorsement: null,
+        taxRateCode: original?.taxCode,
+        levelCode: original?.levelCode,
+        taxType: original?.taxType,
+        riskProductLevel: original?.applicationLevel
+      };
+    })
   }
 
   getProductRisksPayload(formRisks: any, product: ProductPremium): RiskInformation[] {
