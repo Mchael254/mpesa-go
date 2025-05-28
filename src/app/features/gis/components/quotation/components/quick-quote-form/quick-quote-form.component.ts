@@ -1634,7 +1634,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         wet: product.coverTo,
         propertyId: `Risk ${index + 1}`,
         annualPremium: risk.selectCoverType.computedPremium,
-        sectionsDetails: this.getSectionPayload(formRisk, risk.selectCoverType),
+        sectionsDetails: null,
         subclassCode: risk.selectCoverType.subclassCode,
         binderCode: risk.binderCode,
         riskLimits: risk.selectCoverType.limitPremium.map((limit) => {
