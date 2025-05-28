@@ -38,7 +38,7 @@ import { TagModule } from 'primeng/tag';
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
 import { QuoteReportComponent } from './components/quote-report/quote-report.component';
-import { QuouteSummaryComponent } from './components/quoute-summary/quoute-summary.component';
+import { QuoteSummaryComponent } from './components/quoute-summary/quote-summary.component';
 import { ShareQuotesComponent } from './components/share-quotes/share-quotes.component';
 import { PaymentAdviceComponent } from './components/payment-advice/payment-advice.component';
 import { CardModule } from 'primeng/card';
@@ -69,14 +69,14 @@ import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
     RiskDetailsComponent,
     RiskCentreComponent,
     QuoteReportComponent,
-    QuouteSummaryComponent,
+    QuoteSummaryComponent,
     ShareQuotesComponent,
     PaymentAdviceComponent,
-  
-    
-    
-  
-  
+
+
+
+
+
 
 
   ],
@@ -107,7 +107,7 @@ import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
         BreadcrumbModule,
         OverlayPanelModule,
         MultiSelectModule
-        
+
     ],
   providers: [DatePipe],
 

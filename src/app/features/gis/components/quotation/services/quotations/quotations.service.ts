@@ -6,7 +6,6 @@ import {
   EditRisk,
   premiumPayloadData,
   quotationDTO,
-  QuotationPayload,
   quotationRisk,
   RegexPattern,
   riskSection, RiskValidationDto,
@@ -17,18 +16,19 @@ import {catchError, Observable, retry, tap, throwError} from 'rxjs';
 import {introducersDTO} from '../../data/introducersDTO';
 import {AgentDTO} from '../../../../../entities/data/AgentDTO';
 import {Pagination} from '../../../../../../shared/data/common/pagination';
-import {riskClauses, Tax} from '../../../setups/data/gisDTO';
-import {SESSION_KEY} from '../../../../../../features/lms/util/session_storage_enum';
-import {StringManipulation} from '../../../../../../features/lms/util/string_manipulation';
+import {riskClauses} from '../../../setups/data/gisDTO';
+import {SESSION_KEY} from '../../../../../lms/util/session_storage_enum';
+import {StringManipulation} from '../../../../../lms/util/string_manipulation';
 import {SessionStorageService} from '../../../../../../shared/services/session-storage/session-storage.service';
 import {API_CONFIG} from '../../../../../../../environments/api_service_config';
 import {ApiService} from '../../../../../../shared/services/api/api.service';
 import {ExternalClaimExp} from '../../../policy/data/policy-dto';
 import {ClientDTO} from '../../../../../entities/data/ClientDTO';
-import {UtilService} from '../../../../../../shared/services/util/util.service';
+import {UtilService} from '../../../../../../shared/services';
 import {map} from "rxjs/operators";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
 import {PremiumComputationRequest, ProductLevelPremium} from "../../data/premium-computation";
+import {QuotationDetailsRequestDto} from "../../data/quotation-details";
 
 @Injectable({
   providedIn: 'root'
@@ -172,18 +172,6 @@ export class QuotationsService {
     }
 
   /**
-   * Creates a new quotation risk using an HTTP POST request.
-   * @method createQuotationRisk
-   * @param {string} quotationCode - The quotation code associated with the risk.
-   * @param {quotationRisk[]} data - The data representing the quotation risk.
-   * @return {Observable<any>} - An observable of the response containing the created quotation risk data.
-   */
-  // createQuotationRisk(quotationCode, data: quotationRisk[]) {
-  //   console.log(JSON.stringify(data), "Data from the service")
-  //   return this.api.POST(`v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
-
-  // }
-  /**
    * Retrieves risk sections for a given quotation risk code using an HTTP GET request.
    * @method getRiskSection
    * @param {string} quotationRiskCode - The quotation risk code for which to retrieve risk sections.
@@ -262,9 +250,6 @@ export class QuotationsService {
    * @param {string} quotationCode - The quotation code for which to compute the premium.
    * @return {Observable<any>} - An observable of the response containing the computed premium data.
    */
-  // computePremium(quotationCode){
-  //   return this.api.POST(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium/${quotationCode}`,this.httpOptions)
-  // }
   computePremium(computationDetails): Observable<any> {
     return this.http.post<any>(`/${this.computationUrl}/api/v1/premium-computation`, computationDetails)
   }
@@ -347,19 +332,6 @@ export class QuotationsService {
     size: number | null = 10,
     sortList: string = 'createdDate',
   ): Observable<Pagination<AgentDTO>> {
-    //  const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    // const headers = new HttpHeaders({
-    //   'Content-Type': 'application/json',
-    //   'Accept': 'application/json',
-    //   'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-    // });
-    // const params = new HttpParams()
-    //   .set('page', `${page}`)
-    //   .set('size', `${size}`)
-    //   .set('organizationId', 2)
-    //   .set('sortListFields', `${sortList}`)
-
-
     return this.api.GET<Pagination<AgentDTO>>(`agents?page=${page}&size=${size}&organizationId=2&sortListFields=${sortList}`, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL)
   }
 
@@ -564,7 +536,7 @@ export class QuotationsService {
     );
   }
 
-  processQuotation(data: QuotationPayload): Observable<any> {
+  processQuotation(data: QuotationDetailsRequestDto): Observable<any> {
     return this.api.POST<any>(`v2/quotation/process-quotation`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
@@ -598,10 +570,6 @@ export class QuotationsService {
       .set('name', `${name}`)
       .set('idNumber', `${idNumber}`);
 
-    /*if (organizationId !== undefined && organizationId !== null) {
-      params['organizationId'] = organizationId.toString();
-    }*/
-
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
 
     return this.api.GET<Pagination<ClientDTO>>(
@@ -615,9 +583,7 @@ export class QuotationsService {
     productCode: number,
     subClassCode: number,
   ): Observable<any> {
-    // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
-    // Add the mandatory parameter
     paramsObj['productCode'] = productCode.toString();
     paramsObj['subClassCode'] = subClassCode.toString();
 

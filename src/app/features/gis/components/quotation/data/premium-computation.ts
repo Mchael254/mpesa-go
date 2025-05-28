@@ -79,6 +79,8 @@ export interface Limit {
   multiplierDivisionFactor: number | null;
   multiplierRate: number | null;
   description: string;
+  shortDescription: string
+  sumInsuredRate?: number
   section: {
     limitAmount: number;
     description: string;
@@ -146,10 +148,20 @@ export interface LimitPremium {
   rateType?: string;
   rowNumber?: number;
   premiumRate?: number;
+  multiplierDivisionFactor?: number
+  multiplierRate?: number
+  sectionType?: string
+  shortDescription?: string
 }
 
 export interface TaxComputation {
   code: number;
   premium: number;
+  taxRate?: number
+  taxRateType?:string
+  description?: string
+  levelCode?: string
+  taxType?:string
+  applicationLevel?:string
 }
 

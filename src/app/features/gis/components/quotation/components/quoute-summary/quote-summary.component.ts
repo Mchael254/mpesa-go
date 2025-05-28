@@ -1,17 +1,26 @@
-import { Component } from '@angular/core';
-import { QuotationDTO } from '../../data/quotationsDTO';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {QuotationDTO} from '../../data/quotationsDTO';
 
+import {QuotationsService} from "../../services/quotations/quotations.service";
+import {Logger, untilDestroyed} from "../../../../../../shared/shared.module";
 
+const log = new Logger('QuoteSummaryComponent');
 
 @Component({
   selector: 'app-quoute-summary',
-  templateUrl: './quoute-summary.component.html',
-  styleUrls: ['./quoute-summary.component.css']
+  templateUrl: './quote-summary.component.html',
+  styleUrls: ['./quote-summary.component.css']
 })
-export class QuouteSummaryComponent {
+export class QuoteSummaryComponent implements OnInit, OnDestroy {
+  constructor(
+    private quotationService: QuotationsService
+  ) {
+
+  }
+
   steps = [
-    { label: 'Quote Information' },
-    { label: 'Quotation Summary' }
+    {label: 'Quote Information'},
+    {label: 'Quotation Summary'}
   ];
 
   editNotesVisible = false;
@@ -69,7 +78,16 @@ export class QuouteSummaryComponent {
 
   saveNotes() {
     console.log('Saved notes:', this.quotation.notes);
-    // Close panel logic, etc.
+  }
+
+  ngOnInit(): void {
+    this.quotationService.getQuotationDetails(sessionStorage.getItem("quotationNumber"))
+      .pipe(untilDestroyed(this)).subscribe((response) => {
+      log.debug("Quotation details>>>", response)
+    })
+  }
+
+  ngOnDestroy(): void {
   }
 
 }

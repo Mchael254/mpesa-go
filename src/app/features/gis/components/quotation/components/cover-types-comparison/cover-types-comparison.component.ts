@@ -136,8 +136,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   modalHeight: number = 200;
   limitsOfLiabilityList: LimitsOfLiability[] = [];
   excessesList: Excesses[] = []
-  isEditRisk: boolean;
-  isAddRisk: boolean;
   selectedRisk: any;
   premiums: any;
   updatePremiumPayload: premiumPayloadData;
@@ -149,7 +147,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   organizationId: number;
   exchangeRate: number;
   passedQuotationData: any;
-  isEditQuotationDetail: boolean = false;
   storedQuotationNo: string;
   storedQuotationCode: number;
   extraRiskCode: [] = [];
@@ -166,15 +163,12 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   };
   quoteAction: string = null
   premiumComputationPayload: PremiumComputationRequest;
-  // storedData: QuickQuoteData = null;
-  // storedData: QuickQuoteData = dummyQuickQuoteData;
   computationPayloadCode: number;
 
   public currencyObj: NgxCurrencyConfig;
   private typingTimer: any;// Timer reference
   sectionToBeRemoved: number[] = [];
   inputErrors: { [key: string]: boolean } = {};
-  temporaryPremiumLists: any
   selectedCoverTypeCode: number;
   selectedBinderCode: number;
   currencySymbol: string;
@@ -203,29 +197,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   public isExcessDetailsOpen = false;
   public isBenefitsDetailsOpen = false;
   public isSelectCoverOpen = true;
-  public isSelectRiskOpen = true
-
-  trackByCoverType(index: number, coverType: CoverTypeDetail): number {
-    return coverType.coverTypeCode;
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-
-    if (changes['passedRiskedLevelPremiums'] &&
-      changes['passedRiskedLevelPremiums'].currentValue?.length > 0) {
-      const risks = changes['passedRiskedLevelPremiums'].currentValue;
-
-      this.activeRiskIndex = 0; //first risk open default
-      // this.activeRiskIndex = changes['passedRiskedLevelPremiums'].currentValue.length - 1; //latest risk open default
-    }
-
-  }
 
 
   ngOnInit(): void {
-
-
-    // this.getuser();
     this.createEmailForm();
     this.createSmsForm();
 
@@ -296,7 +270,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
             }
           })
 
-        // log.debug("Changed rates>>>>>>>", this.riskLevelPremiums)
 
       })
   }
@@ -537,8 +510,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("Excesses to save >>>", this.excessesList)
     log.debug("Clauses to save>>>", this.clauseList)
     const processQuotation$ = this.storedQuotationCode && this.storedQuotationNo
-      ? of({ _embedded: { quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo } })
-      : this.quotationService.processQuotation(quotation);
+      ? of({_embedded: {quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo}})
+      : this.quotationService.processQuotation(null);
     this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
     this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber
     processQuotation$.pipe(
