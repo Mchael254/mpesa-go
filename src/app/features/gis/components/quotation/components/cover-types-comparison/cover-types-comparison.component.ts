@@ -198,6 +198,15 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   public isBenefitsDetailsOpen = false;
   public isSelectCoverOpen = true;
 
+  ngOnChanges(changes: SimpleChanges): void {
+
+    if (changes['passedRiskedLevelPremiums'] &&
+      changes['passedRiskedLevelPremiums'].currentValue?.length > 0) {
+      this.activeRiskIndex = 0; //first risk open default
+      // this.activeRiskIndex = changes['passedRiskedLevelPremiums'].currentValue.length - 1; //latest risk open default
+    }
+
+  }
 
   ngOnInit(): void {
     this.createEmailForm();
@@ -510,7 +519,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.debug("Excesses to save >>>", this.excessesList)
     log.debug("Clauses to save>>>", this.clauseList)
     const processQuotation$ = this.storedQuotationCode && this.storedQuotationNo
-      ? of({_embedded: {quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo}})
+      ? of({ _embedded: { quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo } })
       : this.quotationService.processQuotation(null);
     this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
     this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber
