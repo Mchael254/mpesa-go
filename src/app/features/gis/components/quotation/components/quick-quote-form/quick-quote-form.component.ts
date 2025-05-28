@@ -714,7 +714,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         rateType: limit?.rateType,
         minimumPremium: limit.premiumMinimumAmount,
         annualPremium: 0,
-        multiplierRate: limit?.multiplierRate,
+        multiplierRate: limit?.multiplierRate || 1,
         section: {
           limitAmount: risk?.selfDeclaredValue || risk?.value,
           description: limit?.sectionDescription,
@@ -726,6 +726,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         riskCode: null,
         limitAmount: risk?.selfDeclaredValue || risk?.value,
         description: limit?.sectionDescription,
+        shortDescription: limit?.shortDescription,
+        sumInsuredRate: limit?.sumInsuredRate,
+        freeLimit: limit?.freeLimit || 0,
         compute: "Y",
         dualBasis: "N",
       })
@@ -1634,6 +1637,26 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         sectionsDetails: this.getSectionPayload(formRisk, risk.selectCoverType),
         subclassCode: risk.selectCoverType.subclassCode,
         binderCode: risk.binderCode,
+        riskLimits: risk.selectCoverType.limitPremium.map((limit) => {
+          return {
+            calcGroup: limit.calculationGroup,
+            code: limit.sectCode,
+            compute: "Y",
+            description: limit.description,
+            freeLimit: 0,
+            multiplierDivisionFactor: limit.multiplierDivisionFactor,
+            multiplierRate: limit.multiplierRate,
+            premiumAmount: limit.premium,
+            premiumRate: limit.premiumRate,
+            rateDivisionFactor: limit.rateDivisionFactor,
+            rateType: limit.rateType || "FXD",
+            rowNumber: limit.rowNumber,
+            sectionType: limit.sectionType,
+            sectionShortDescription: limit.shortDescription,
+            limitAmount: limit.limitAmount,
+            sumInsuredRate: null
+          }
+        }),
         subclass: {
           code: risk.selectCoverType.subclassCode,
           description: formRisk?.useOfProperty?.description,
