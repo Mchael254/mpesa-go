@@ -65,6 +65,7 @@ export interface quotationRisk {
   vehicleMake: number;
 
 }
+
 export interface taxComputation {
   code: number,
   premium: number
@@ -204,11 +205,19 @@ export interface QuotationProduct {
 }
 
 export interface TaxInformation {
-  rateDescription: string;
   quotationRate: number;
-  rateType: string;
   taxAmount?: any;
-  productCode?: any;
+  code?: number;
+  rateDescription?: string
+  rateType?: string
+  productCode?: number
+  quotationCode?: number
+  transactionCode?: number
+  renewalEndorsement?: string
+  taxRateCode?: number
+  levelCode?: string
+  taxType?: string
+  riskProductLevel?: string
 }
 
 export interface RiskInformation {
@@ -836,6 +845,7 @@ export interface SubclassSectionPeril {
   dependLossType: string;
   benefitPerPeriod: number | null;
 }
+
 export interface DynamicRiskField {
   type: string;
   name: string;
@@ -899,7 +909,6 @@ export interface TaxComputation {
 }
 
 
-
 // src/app/models/quotation.dto.ts
 
 export interface ProductDTO {
@@ -973,43 +982,40 @@ export interface PaymentAdviceDTO {
 // quote-report.dto.ts
 
 export interface CoverageDTO {
-premium: string;
-clauses: string[];
-limitsOfLiability: string[];
-excess: string[];
-benefits: string[];
+  premium: string;
+  clauses: string[];
+  limitsOfLiability: string[];
+  excess: string[];
+  benefits: string[];
 }
 
 export interface MotorPrivateDTO {
-useOfProperty: string;
-value: string;
-comprehensive: CoverageDTO;   // comprehensive coverage details
-thirdParty: CoverageDTO;      // third party coverage details
+  useOfProperty: string;
+  value: string;
+  comprehensive: CoverageDTO;   // comprehensive coverage details
+  thirdParty: CoverageDTO;      // third party coverage details
 }
 
 export interface DomesticDTO {
-useOfProperty: string;
-value: string;
-premium: CoverageDTO;         // single coverage details for domestic
+  useOfProperty: string;
+  value: string;
+  premium: CoverageDTO;         // single coverage details for domestic
 }
 
 export interface QuotationHeaderDTO {
-quotationStatus: string;
-proposalIssued: string;
-period: string;
-quoteTime: string;
-agencyName: string;
-logo: string;
+  quotationStatus: string;
+  proposalIssued: string;
+  period: string;
+  quoteTime: string;
+  agencyName: string;
+  logo: string;
 }
 
 export interface QuoteReportDTO {
-header: QuotationHeaderDTO;
-motorPrivateList: MotorPrivateDTO[];
-domesticList: DomesticDTO[];
+  header: QuotationHeaderDTO;
+  motorPrivateList: MotorPrivateDTO[];
+  domesticList: DomesticDTO[];
 }
-
-
-
 
 
 // src/app/models/payment-advice.dto.ts
@@ -1026,39 +1032,39 @@ export interface PaymentAdviceDTO {
 // quote-report.dto.ts
 
 export interface CoverageDTO {
-premium: string;            // renamed from 'premium' to 'amount' for clarity
-clauses: string[];
-limitsOfLiability: string[];
-excess: string[];
-benefits: string[];
+  premium: string;            // renamed from 'premium' to 'amount' for clarity
+  clauses: string[];
+  limitsOfLiability: string[];
+  excess: string[];
+  benefits: string[];
 }
 
 export interface MotorPrivateDTO {
-useOfProperty: string;
-value: string;
-comprehensive: CoverageDTO;   // comprehensive coverage details
-thirdParty: CoverageDTO;      // third party coverage details
+  useOfProperty: string;
+  value: string;
+  comprehensive: CoverageDTO;   // comprehensive coverage details
+  thirdParty: CoverageDTO;      // third party coverage details
 }
 
 export interface DomesticDTO {
-useOfProperty: string;
-value: string;
-premium: CoverageDTO;         // single coverage details for domestic
+  useOfProperty: string;
+  value: string;
+  premium: CoverageDTO;         // single coverage details for domestic
 }
 
 export interface QuotationHeaderDTO {
-quotationStatus: string;
-proposalIssued: string;
-period: string;
-quoteTime: string;
-agencyName: string;
-logo: string;
+  quotationStatus: string;
+  proposalIssued: string;
+  period: string;
+  quoteTime: string;
+  agencyName: string;
+  logo: string;
 }
 
 export interface QuoteReportDTO {
-header: QuotationHeaderDTO;
-motorPrivateList: MotorPrivateDTO[];
-domesticList: DomesticDTO[];
+  header: QuotationHeaderDTO;
+  motorPrivateList: MotorPrivateDTO[];
+  domesticList: DomesticDTO[];
 }
 
 
