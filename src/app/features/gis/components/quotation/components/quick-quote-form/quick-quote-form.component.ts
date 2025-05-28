@@ -1499,7 +1499,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   saveQuotationDetails() {
     const quotationPayload = this.getQuotationPayload()
     log.debug("Quotation details >>>", quotationPayload)
-    return
+    //return
     this.quotationService.processQuotation(quotationPayload).pipe(
       untilDestroyed(this)
     ).subscribe({
@@ -1587,7 +1587,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       .filter(value => value.code === product.code)
       .flatMap(value => value.riskLevelPremiums
         .flatMap(premium => premium.selectCoverType.taxComputation));
-    log.debug("Taxes under consideration>>>", computedTaxes)
 
     const groupedMap = new Map<number, number>();
     for (const item of computedTaxes) {
@@ -1607,7 +1606,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         transactionCode: null,
         renewalEndorsement: null,
         taxRateCode: original?.taxCode,
-        levelCode: original?.levelCode,
+        levelCode: original?.applicationLevel,
         taxType: original?.taxType,
         riskProductLevel: original?.applicationLevel
       };
