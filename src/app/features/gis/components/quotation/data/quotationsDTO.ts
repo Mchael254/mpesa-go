@@ -243,6 +243,7 @@ export interface RiskInformation {
   subclassCode: number;
   itemDesc: string;
   binderCode: number;
+  riskLimits: any
   wef: string;
   wet: string;
   commissionRate?: any;
