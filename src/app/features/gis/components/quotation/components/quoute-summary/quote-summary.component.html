@@ -1,0 +1,163 @@
+<div class="container">
+  <div class="page-wrapper">
+      <p-card  class="summary-card">
+        <!-- Breadcrumb -->
+        <p-breadcrumb   class="custom-breadcrumb" [model]="[
+          { label: 'Dashboard' },
+          { label: 'Quotation' },
+          { label: 'New quote' }
+        ]"></p-breadcrumb>
+    
+    <div class="custom-stepper">
+      <label class="step">
+        <input type="radio" name="step" [checked]="activeIndex === 0" (click)="setStep(0)">
+        <span class="circle">1</span>
+        <span class="label" style="color: #00529b;">Quote Information</span>
+      </label>
+    
+      <!-- Perfectly aligned connecting line -->
+      <div class="step-line"></div>
+    
+      <label class="step">
+        <input type="radio" name="step" [checked]="activeIndex === 1" (click)="setStep(1)">
+        <span class="circle">2</span>
+        <span class="label" style="color: #00529b;">Quotation Summary</span>
+      </label>
+    </div>
+    
+  
+  
+         <!-- Subcard: Quotation Details & Table -->
+      <p-card  class="subcard" >
+        <ng-template pTemplate="header">
+          <h3 style="font-weight:600; font-size:1.5rem; color:#1565c0; margin-bottom:0.2rem;">
+            Quotation summary
+          </h3>
+        </ng-template>
+        <!-- Quotation Details -->
+  <div class="details-grid">
+    <div class="column">
+      <p><strong>Quotation number:</strong> {{ quotation.number }}</p>
+      <p><strong>IPAY reference:</strong> {{ quotation.reference }}</p>
+    </div>
+  
+    <div class="column">
+      <p><strong>Quotation status:</strong> {{ quotation.status }}</p>
+      <p><strong>Ticket number:</strong> {{ quotation.ticket }}</p>
+     
+    </div>
+  
+    <div class="column notes-column">
+      <p>
+        <strong>Notes:</strong> {{getShortNotes(quotation.notes) }}
+       <!-- Trigger Button -->
+  <button
+  pButton
+  type="button"
+  label=""
+  icon="pi pi-pencil"
+  (click)="overlayPanel.toggle($event)"
+  ></button>
+  <p-overlayPanel #overlayPanel [showCloseIcon]="true" [dismissable]="true" [style]="{ width: '350px' }">
+    <p-card styleClass="notes-card">
+      <ng-template pTemplate="title" style="color: #00529B;"> Notes </ng-template>
+  
+      <div class="notes-content" style="display: flex; flex-direction: column; ">
+        <!-- Textarea -->
+        <textarea
+          [(ngModel)]="quotation.notes"
+          rows="5"
+          class="p-inputtextarea"
+          placeholder="Type your notes here..."
+          style="width: 100%; resize: none;"
+        ></textarea>
+  
+        <!-- Button Row (Bottom Right) -->
+        <div style="display: flex; justify-content: flex-end;">
+          <button
+            pButton
+            label="Cancel"
+            class="p-button-text"
+            (click)="overlayPanel.hide()"
+            style="color: #00529B; font-weight: 600;"
+  
+          ></button>
+          <button
+            pButton
+            label="Save Details"
+            class="p-button-primary"
+            (click)="saveNotes()"
+            style="font-weight: 600;"
+          ></button>
+        </div>
+      </div>
+    </p-card>
+  </p-overlayPanel>
+  
+  
+  
+  
+      <p><strong>Currency:</strong> {{ quotation.currency}}</p>
+    </div>
+    
+    
+  </div>
+  
+  
+    
+          <!-- Product Table -->
+          <p-table [value]="quotation.products" class="mt-4">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Product</th>
+                <th>Risk</th>
+                <th>Cover Type</th>
+                <th>Effective Date</th>
+                <th>Sum Insured</th>
+                <th>Premium</th>
+                
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-quote>
+              <tr>
+                <td>{{ quote.product }}</td>
+                <td>{{ quote.risk }}</td>
+                <td>{{ quote.coverType }}</td>
+                <td>{{ quote.effectiveDate }}</td>
+                <td>{{ quote.sumInsured }}</td>
+                <td>{{ quote.premium }}</td>
+                 
+                
+              </tr>
+            </ng-template>
+           
+  
+          </p-table>
+                  <!-- Total Premium Row (outside table but aligned) -->
+  <div class="total-row">
+    <div class="label">Sub Total</div>
+    <div class="value">{{ getTotalPremium() }}</div>
+  </div>
+  
+        </p-card>
+  
+        <div class="button-group mt-4">
+          <div class="left-buttons">
+            <button pButton label="Back" class="p-button-text me-2"></button>
+            <button pButton label="Re assign" class="p-button-secondary me-2"></button>
+            <button pButton label="Reject" class="p-button-danger"></button>
+          </div>
+          <div class="right-buttons">
+            <button pButton label="Share quotation" class="p-button-outlined me-2"  ></button>
+            <button pButton label="Accept quote" class="p-button-success"></button>
+          </div>
+        </div>
+        
+    
+  
+    
+    
+      
+      </p-card>
+    </div>
+  </div>
