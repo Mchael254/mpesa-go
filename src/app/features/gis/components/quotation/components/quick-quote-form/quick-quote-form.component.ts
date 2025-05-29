@@ -280,6 +280,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   premiumComputationResponse: ProductLevelPremium = null
   selectedProductCovers: ProductPremium[] = [];
   coverSelected = false;
+  currentSelectedRisk: any
 
 
   constructor(
@@ -590,7 +591,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug("Form submission payload >>>>", this.quickQuoteForm.value);
     const computationRequest = this.computationPayload();
     log.debug("premium computation payload >>>>", computationRequest);
-    this.quotationService.premiumComputationEngine(computationRequest).pipe(
+    this.performComputation(computationRequest)
+  }
+
+  performComputation(computationPayload: PremiumComputationRequest) {
+    this.quotationService.premiumComputationEngine(computationPayload).pipe(
       untilDestroyed(this)
     ).subscribe({
       next: (response) => {
@@ -1701,11 +1706,83 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   selectCovers(product: ProductPremium, riskDetails: RiskLevelPremium) {
     log.debug("Selected risk >>>", riskDetails)
+    this.currentSelectedRisk = riskDetails
     this.selectedProductCovers = this.selectedProductCovers.filter(value => value.code !== product.code);
     this.selectedProductCovers.push(product)
     if (this.selectedProductCovers.length === this.premiumComputationResponse.productLevelPremiums.length) {
       this.coverSelected = true
     }
     log.debug("Current product >>>>", this.selectedProductCovers)
+  }
+
+  listenToBenefitsAddition(benefitDto: Premiums[]) {
+    let premiumComputationRequest: PremiumComputationRequest = this.computationPayload();
+    const riskCode = this.currentSelectedRisk.code;
+    const coverTypeCode = this.currentSelectedRisk.selectCoverType.coverTypeCode;
+    const updatedProducts = premiumComputationRequest.products.map(product => ({
+      ...product,
+      risks: product.risks.map(risk => {
+        if (risk.code !== riskCode) return risk;
+        return {
+          ...risk,
+          subclassCoverTypeDto: risk.subclassCoverTypeDto.map(coverType => {
+            if (coverType.coverTypeCode !== coverTypeCode) return coverType;
+            const updatedLimits = [...coverType.limits];
+            for (let i = 0; i < updatedLimits.length; i++) {
+              const match = benefitDto.find(b => b.code === updatedLimits[i].section.code);
+              if (match) {
+                updatedLimits[i] = {
+                  ...updatedLimits[i],
+                  limitAmount: match.limitAmount
+                };
+              }
+            }
+            benefitDto.forEach(benefit => {
+              const alreadyExists = updatedLimits.some(
+                limit => limit.section.code === benefit.code
+              );
+              if (!alreadyExists) {
+                updatedLimits.push({
+                  section: {
+                    limitAmount: benefit.limitAmount,
+                    code: benefit.code,
+                    description: benefit.sectionDescription,
+                    isMandatory: "N",
+                  },
+                  multiplierDivisionFactor: benefit.multiplierDivisionFactor,
+                  riskCode: null,
+                  shortDescription: benefit.sectionDescription,
+                  limitAmount: benefit.limitAmount,
+                  premiumRate: benefit.rate ?? 1,
+                  minimumPremium: benefit.minimumRate ?? 0,
+                  rateType: benefit.rateType,
+                  calculationGroup: 1,
+                  declarationSection: "N",
+                  rowNumber: updatedLimits.length + 1,
+                  rateDivisionFactor: benefit.divisionFactor,
+                  annualPremium: 0,
+                  multiplierRate: benefit.multiplierRate || 1,
+                  sectionType: benefit.sectionType,
+                  description: benefit.sectionDescription,
+                  compute: "Y",
+                  dualBasis: "N",
+                  freeLimit: benefit.freeLimit
+                });
+              }
+            });
+            return {
+              ...coverType,
+              limits: updatedLimits
+            };
+          })
+        };
+      })
+    }));
+    premiumComputationRequest = {
+      ...premiumComputationRequest,
+      products: updatedProducts
+    };
+    log.debug("Modified Premium Computation Payload:", premiumComputationRequest);
+    this.performComputation(premiumComputationRequest)
   }
 }
