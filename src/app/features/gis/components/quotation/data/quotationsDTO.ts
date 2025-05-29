@@ -202,6 +202,7 @@ export interface QuotationProduct {
   policyNumber?: string;
   taxInformation: TaxInformation[];
   riskInformation: RiskInformation[];
+  clauses: number[]
 }
 
 export interface TaxInformation {
@@ -256,6 +257,15 @@ export interface RiskInformation {
   prospectCode?: any;
   coverTypeDescription: string;
   subclass: SubclassDetails;
+  limitsOfLiability: LimitsOfLiability[]
+}
+export  interface LimitsOfLiability{
+  scheduleValueCode: number
+  value: string
+  narration: string
+  type: string
+  quotationValueCode?:number
+  code?: number
 }
 
 export interface SectionDetail {
@@ -528,13 +538,6 @@ export interface Clause {
   isMandatory: string;
 }
 
-export interface LimitsOfLiability {
-  code: number;
-  narration: string | null;
-  value: string;
-  subclassCode: number;
-  quotationValueCode: number;
-}
 
 export interface CreateLimitsOfLiability {
   code?: number;
