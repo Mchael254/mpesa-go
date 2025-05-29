@@ -59,14 +59,30 @@
 .cancelbtn {
   color: #00529b !important;
 }
-.printbtn {
+
+.printbtn,.sharebtn {
   color: #00529b !important;
+  
+
+  line-height: 1.2 !important;
+  vertical-align: middle;
+position: static;
+  
 }
-.sharebtn {
-  color: #00529b !important;
+
+.printbtn{
+  max-width:20px;
+}
+
+.btns {
+   
+  gap: 1rem; /* Adjust spacing between buttons */
+ 
+  text-align: center;
+
 }
 .btn-link:hover {
-  text-decoration: underline; /* Add underline on hover if needed */
+  text-decoration: underline; /* Add underline on hover if needed
   color: #00529b; /* Ensure color remains consistent on hover */
 }
 .underline {
@@ -88,9 +104,7 @@
 .d-flex {
   gap: 56px;
 }
-.btns {
-  gap: 22px !important;
-}
+
 .btn-link {
   text-decoration: underline;
   color: #007bff; /* Bootstrap's default link color */
