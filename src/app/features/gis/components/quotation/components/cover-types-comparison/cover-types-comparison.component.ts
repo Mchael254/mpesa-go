@@ -6,35 +6,36 @@ import {
   Input,
   OnDestroy,
   OnInit, Output,
+  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import stepData from '../../data/steps.json'
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../../../../../../shared/services/auth.service';
-import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
-import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
-import {forkJoin, mergeMap} from 'rxjs';
+import { forkJoin, mergeMap, of, switchMap } from 'rxjs';
 import {
   Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
   premiumPayloadData, QuotationDetails, UserDetail, Limit
 } from '../../data/quotationsDTO'
-import {Premiums} from '../../../setups/data/gisDTO';
-import {ClientDTO} from '../../../../../entities/data/ClientDTO';
-import {NgxSpinnerService} from 'ngx-spinner';
+import { Premiums } from '../../../setups/data/gisDTO';
+import { ClientDTO } from '../../../../../entities/data/ClientDTO';
+import { NgxSpinnerService } from 'ngx-spinner';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service'
-import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
-import {Router} from '@angular/router';
-import {NgxCurrencyConfig} from "ngx-currency";
-import {CoverTypeDetail, RiskLevelPremium} from '../../data/premium-computation';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { Router } from '@angular/router';
+import { NgxCurrencyConfig } from "ngx-currency";
+import { CoverTypeDetail, RiskLevelPremium } from '../../data/premium-computation';
 
 const log = new Logger('CoverTypesComparisonComponent');
 declare var bootstrap: any; // Ensure Bootstrap is available
@@ -46,9 +47,10 @@ declare var $: any;
   styleUrls: ['./cover-types-comparison.component.css']
 })
 export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
-  activeRiskIndex:number | null = null;
+  activeRiskIndex: number | null = null;
   @Input() passedRiskedLevelPremiums!: any;
   @Output() selectedCoverEvent: EventEmitter<RiskLevelPremium> = new EventEmitter<RiskLevelPremium>();
+  @Output() additionalBenefitsEvent: EventEmitter<Premiums[]> = new EventEmitter<Premiums[]>();
 
 
   selectedOption: string = 'email';
@@ -123,7 +125,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   isTempPremiumListUpdated: boolean = false;
   lastUpdatedCoverTypeCode = null;
   selectedCoverType: number;
-  @ViewChild('openModalButton', {static: false}) openModalButton!: ElementRef;
+  @ViewChild('openModalButton', { static: false }) openModalButton!: ElementRef;
   @ViewChild('addMoreBenefits') addMoreBenefitsModal!: ElementRef;
   isModalOpen: boolean = false;
 
@@ -192,6 +194,15 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   public isBenefitsDetailsOpen = false;
   public isSelectCoverOpen = true;
 
+  ngOnChanges(changes: SimpleChanges): void {
+
+    if (changes['passedRiskedLevelPremiums'] &&
+      changes['passedRiskedLevelPremiums'].currentValue?.length > 0) {
+      this.activeRiskIndex = 0; //first risk open default
+      // this.activeRiskIndex = changes['passedRiskedLevelPremiums'].currentValue.length - 1; //latest risk open default
+    }
+
+  }
 
   ngOnInit(): void {
     this.createEmailForm();
@@ -334,6 +345,51 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
 
+  riskLimitPayload() {
+    let selectedLimits = this.premiumComputationPayload.risks
+      .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)?.limits;
+    const coverTypeSections = this.riskLevelPremiums
+      .filter(value => value.coverTypeDetails.coverTypeCode === this.selectedCoverType)
+      .map(section => section.limitPremium).flat()
+
+
+    let assignedRows = selectedLimits.map(value => value.rowNumber);
+
+
+    const maxAssignedValue = Math.max(...assignedRows)
+
+    log.debug('Selected Sections:', selectedLimits);
+    log.debug('Premium Rates:', coverTypeSections);
+
+    let limitsToSave: any[] = [] //TODO check how to handle hardcoded values
+    for (let premiumRate of selectedLimits) {
+      const matchingSection = coverTypeSections.find(value => value.sectCode === premiumRate.section?.code);
+      const databaseLimit = this.coverTypePremiumItems.find(value => value.sectionCode === premiumRate.section?.code)
+      log.debug("Matching Database limit >>", databaseLimit)
+      limitsToSave.push({
+        calcGroup: 1,
+        code: databaseLimit?.code,
+        compute: "Y",
+        description: matchingSection?.description,
+        freeLimit: databaseLimit?.freeLimit || 0,
+        multiplierDivisionFactor: databaseLimit?.multiplierDivisionFactor,
+        multiplierRate: databaseLimit?.multiplierRate || 1,
+        premiumAmount: matchingSection?.premium,
+        premiumRate: premiumRate?.premiumRate || 0,
+        rateDivisionFactor: premiumRate?.rateDivisionFactor || 1,
+        rateType: premiumRate?.rateType || "FXD",
+        rowNumber: premiumRate?.rowNumber,
+        sectionType: premiumRate?.sectionType,
+        sumInsuredLimitType: premiumRate?.sectionType || null,
+        sumInsuredRate: databaseLimit?.sumInsuredRate,
+        sectionShortDescription: premiumRate.sectionType,
+        sectionCode: databaseLimit?.sectionCode,
+        limitAmount: matchingSection?.limitAmount,
+      }
+      )
+    }
+    return limitsToSave;
+  }
 
 
   loadAllCurrencies() {
@@ -389,6 +445,106 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     log.info("RiskLevelPremium::::::", data);
     const riskLevelPremiumString = JSON.stringify(data);
     sessionStorage.setItem('riskLevelPremium', riskLevelPremiumString);
+  }
+
+  selectCoverNew() {
+    const quotation = this.getQuotationPayload();
+    let riskPayload = this.getQuotationRiskPayload();
+    let limitsToSave = this.riskLimitPayload();
+
+    log.debug("Quotation payload>>>", quotation)
+    log.debug("Risk payload", riskPayload);
+    log.debug("About to save these limits", limitsToSave)
+    log.debug("Limits of liabilities to save::", this.limitsOfLiabilityList)
+    log.debug("Excesses to save >>>", this.excessesList)
+    log.debug("Clauses to save>>>", this.clauseList)
+    const processQuotation$ = this.storedQuotationCode && this.storedQuotationNo
+      ? of({ _embedded: { quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo } })
+      : this.quotationService.processQuotation(null);
+    this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
+    this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber
+    processQuotation$.pipe(
+      switchMap((quotationResponse) => {
+        this.quotationCode = quotationResponse._embedded.quotationCode;
+        this.quotationNo = quotationResponse._embedded.quotationNumber;
+        sessionStorage.setItem('quotationNumber', JSON.stringify(this.quotationNo));
+        sessionStorage.setItem('quotationNumber', this.quotationNo);
+        sessionStorage.setItem('quickQuotationCode', this.quotationCode.toString());
+        log.debug('Quotation saved successfully', quotationResponse);
+        riskPayload = riskPayload.map((risk) => {
+          return {
+            ...risk,
+            quotationCode: this.quotationCode
+          }
+        })
+        return this.quotationService.createQuotationRisk(this.quotationCode, riskPayload)
+      }),
+      switchMap((riskResponse) => {
+        log.debug('Risk saved successfully', riskResponse);
+        // Add the risk ID to sectionData before saving section
+        this.quotationRiskData = riskResponse;
+        log.debug("This is the quotation risk data", riskResponse)
+        const quotationRiskDetails = this.quotationRiskData._embedded[0];
+        if (quotationRiskDetails) {
+          this.riskCode = quotationRiskDetails.riskCode
+          this.quoteProductCode = quotationRiskDetails.quotProductCode
+        }
+        const clauseCodes = this.clauseList.map((clause) => clause.code);
+        const limitsOfLiability = this.limitsOfLiabilityList.map(item => ({
+          scheduleValueCode: item.code,
+          quotationProductCode: this.quoteProductCode,
+          value: item.value,
+          narration: item.narration,
+          type: "L"
+        }));
+        const excesses = this.excessesList.map(item => ({
+          scheduleValueCode: item.code,
+          quotationProductCode: this.quoteProductCode,
+          value: item.value,
+          narration: item.narration,
+          type: "E"
+        }));
+        const limitsPayLoad = {
+          addOrEdit: 'A',
+          quotationRiskCode: this.riskCode,
+          riskSections:
+            limitsToSave.map((value) => {
+              return {
+                ...value,
+                quotationCode: this.quotationCode,
+                quotRiskCode: this.riskCode
+              }
+            })
+        }
+        return forkJoin(([
+          this.quotationService.addClauses(clauseCodes, this.premiumPayload?.product.code, this.quotationCode, this.riskCode),
+          this.quotationService.createRiskLimits(limitsPayLoad),
+          this.quotationService.addLimitsOfLiability(limitsOfLiability),
+          this.quotationService.addLimitsOfLiability(excesses)
+        ]))
+      })
+    ).subscribe({
+      next: (([clauses, riskSections, limits, excesses]) => {
+        log.debug(riskSections)
+        this.router.navigate(['/home/gis/quotation/quote-summary']);
+      }),
+      error: ((error) => log.error("Error>>>", error))
+    })
+  }
+
+  extractSectionCodes(risks: any[]): void {
+    risks?.forEach((risk) => {
+      if (risk.limits && Array.isArray(risk.limits)) {
+        risk.limits.forEach((limit) => {
+          const sectionCode = limit.section && limit.section.code;
+          if (sectionCode !== undefined && !this.sectionCodesArray.includes(sectionCode)) {
+            this.sectionCodesArray.push(sectionCode);
+          }
+        });
+      }
+    });
+
+    log.debug('Section Codes Array:', this.sectionCodesArray);
   }
 
 
@@ -533,7 +689,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   toggleSelectProduct() {
     this.isSelectCoverOpen = !this.isSelectCoverOpen;
   }
-  toggleSelectRisk(index:number) {
+  toggleSelectRisk(index: number) {
     this.activeRiskIndex = this.activeRiskIndex === index ? null : index;
 
   }
@@ -672,6 +828,12 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       document.getElementById("openAdditionalBenefitsModalButton").click();
 
     }
+  }
+
+  saveAdditionalBenefitChanges() {
+    this.additionalBenefitsEvent.emit(this.temporaryPremiumList);
+    log.debug("Temporary Premium List after saving additional benefits", this.temporaryPremiumList);
+
   }
 
   fetchUserOrgId() {

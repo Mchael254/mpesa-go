@@ -218,3 +218,16 @@ export const dummyQuickQuoteData: QuickQuoteData = {
   selectedBinderCode: 12345,
   computationPayloadCode: 5001
 };
+
+export const dummyUsers = [
+  { userId: 'U001', fullName: 'Alice Johnson' },
+  { userId: 'U002', fullName: 'Bob Smith' },
+  { userId: 'U003', fullName: 'Carol White' },
+  { userId: 'U004', fullName: 'David Brown' },
+  { userId: 'U005', fullName: 'Eva Green' },
+  { userId: 'U006', fullName: 'Frank Black' },
+  { userId: 'U007', fullName: 'Grace Lee' },
+  { userId: 'U008', fullName: 'Henry Wilson' },
+  { userId: 'U009', fullName: 'Ivy Clark' },
+  { userId: 'U010', fullName: 'Jack Turner' }
+];
