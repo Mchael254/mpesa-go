@@ -6,35 +6,38 @@ import {
   Input,
   OnDestroy,
   OnInit, Output,
+  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import stepData from '../../data/steps.json'
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../../../../../../shared/services/auth.service';
-import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
-import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
+
 
 import {forkJoin, mergeMap} from 'rxjs';
+
 import {
   Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
   premiumPayloadData, QuotationDetails, UserDetail, Limit
 } from '../../data/quotationsDTO'
-import {Premiums} from '../../../setups/data/gisDTO';
-import {ClientDTO} from '../../../../../entities/data/ClientDTO';
-import {NgxSpinnerService} from 'ngx-spinner';
+import { Premiums } from '../../../setups/data/gisDTO';
+import { ClientDTO } from '../../../../../entities/data/ClientDTO';
+import { NgxSpinnerService } from 'ngx-spinner';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service'
-import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
-import {Router} from '@angular/router';
-import {NgxCurrencyConfig} from "ngx-currency";
-import {CoverTypeDetail, RiskLevelPremium} from '../../data/premium-computation';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { Router } from '@angular/router';
+import { NgxCurrencyConfig } from "ngx-currency";
+import { CoverTypeDetail, RiskLevelPremium } from '../../data/premium-computation';
 
 const log = new Logger('CoverTypesComparisonComponent');
 declare var bootstrap: any; // Ensure Bootstrap is available
@@ -46,9 +49,10 @@ declare var $: any;
   styleUrls: ['./cover-types-comparison.component.css']
 })
 export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
-  activeRiskIndex:number | null = null;
+  activeRiskIndex: number | null = null;
   @Input() passedRiskedLevelPremiums!: any;
   @Output() selectedCoverEvent: EventEmitter<RiskLevelPremium> = new EventEmitter<RiskLevelPremium>();
+  @Output() additionalBenefitsEvent: EventEmitter<Premiums[]> = new EventEmitter<Premiums[]>();
 
 
   selectedOption: string = 'email';
@@ -123,7 +127,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   isTempPremiumListUpdated: boolean = false;
   lastUpdatedCoverTypeCode = null;
   selectedCoverType: number;
-  @ViewChild('openModalButton', {static: false}) openModalButton!: ElementRef;
+  @ViewChild('openModalButton', { static: false }) openModalButton!: ElementRef;
   @ViewChild('addMoreBenefits') addMoreBenefitsModal!: ElementRef;
   isModalOpen: boolean = false;
 
@@ -192,6 +196,15 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   public isBenefitsDetailsOpen = false;
   public isSelectCoverOpen = true;
 
+  ngOnChanges(changes: SimpleChanges): void {
+
+    if (changes['passedRiskedLevelPremiums'] &&
+      changes['passedRiskedLevelPremiums'].currentValue?.length > 0) {
+      this.activeRiskIndex = 0; //first risk open default
+      // this.activeRiskIndex = changes['passedRiskedLevelPremiums'].currentValue.length - 1; //latest risk open default
+    }
+
+  }
 
   ngOnInit(): void {
     this.createEmailForm();
@@ -334,8 +347,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
 
-
-
   loadAllCurrencies() {
     this.currencyService.getAllCurrencies()
       .pipe(
@@ -390,7 +401,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     const riskLevelPremiumString = JSON.stringify(data);
     sessionStorage.setItem('riskLevelPremium', riskLevelPremiumString);
   }
-
 
   createEmailForm() {
     this.emailForm = this.fb.group({
@@ -533,7 +543,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   toggleSelectProduct() {
     this.isSelectCoverOpen = !this.isSelectCoverOpen;
   }
-  toggleSelectRisk(index:number) {
+  toggleSelectRisk(index: number) {
     this.activeRiskIndex = this.activeRiskIndex === index ? null : index;
 
   }
@@ -672,6 +682,12 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       document.getElementById("openAdditionalBenefitsModalButton").click();
 
     }
+  }
+
+  saveAdditionalBenefitChanges() {
+    this.additionalBenefitsEvent.emit(this.temporaryPremiumList);
+    log.debug("Temporary Premium List after saving additional benefits", this.temporaryPremiumList);
+
   }
 
   fetchUserOrgId() {

@@ -1,11 +1,15 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { QuotationDetails, QuotationDTO } from '../../data/quotationsDTO';
 
 import { QuotationsService } from "../../services/quotations/quotations.service";
 import { Logger, untilDestroyed } from "../../../../../../shared/shared.module";
+import { dummyUsers } from '../../data/dummyData';
+import { Table } from 'primeng/table';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
+
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -15,9 +19,19 @@ const log = new Logger('QuoteSummaryComponent');
   styleUrls: ['./quote-summary.component.css']
 })
 export class QuoteSummaryComponent implements OnInit, OnDestroy {
+  @ViewChild('dt') table!: Table;
+  
   quotationDetails: QuotationDetails;
   batchNo: number;
   quotationCode: number;
+  rejectComment: string = ''
+  reassignComment: string = ''
+  users: any[] = [];
+  selectedUser:any;
+  searchUserId: string = '';
+  fullNameSearch: string = '';
+  globalSearch: string = '';
+
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
@@ -101,12 +115,52 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.users = dummyUsers;
+    log.debug("Users>>>", this.users);
     this.quotationService.getQuotationDetails(sessionStorage.getItem("quotationNumber"))
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
         log.debug("Quotation details>>>", response)
         this.quotationDetails = response
       })
+
   }
+
+  reassignQuotation() {
+    console.log('');
+    
+    
+
+  }
+  rejectQuotation() {
+
+  }
+
+  //search member to reassign
+  filterGlobal(event: any): void {
+    const value = event.target.value;
+    this.globalSearch = value;
+    this.table.filterGlobal(value, 'contains');
+  }
+  filterByFullName(event: any): void {
+    const value = event.target.value;
+    this.table.filter(value, 'fullName', 'contains');
+  }
+
+  onUserSelect():void{
+    if(this.selectedUser) {
+      log.debug("Selected user>>>", this.selectedUser);
+      this.globalSearch = this.selectedUser.userId;
+      this.fullNameSearch = this.selectedUser.fullName;
+      
+    }
+
+  }
+  onUserUnselect():void{
+    this.selectedUser = null;
+    this.globalSearch = '';
+    this.fullNameSearch = '';
+  }
+
 
   ngOnDestroy(): void {
   }

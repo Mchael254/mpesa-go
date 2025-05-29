@@ -1099,7 +1099,12 @@
       "policy_number": "Policy Number",
       "batch_number": "Batch No.",
       "rate": "Rate",
-      "risk":"Risk"
+      "risk":"Risk",
+      "save_changes": "Save changes",
+      "reassign": "Re-Assign",
+      "reassign_quote": "Re-Assign Quote",
+      "reject": "Reject",
+      "reject_quote": "Reject Quote"
     },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",
