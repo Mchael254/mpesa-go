@@ -1699,26 +1699,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     return limitsOfLiabilities
   }
 
-  getSectionPayload(formRisk: any, riskPremium: CoverTypeDetail): SectionDetail[] {
-    log.debug("Processing risk formRisk>>>>", formRisk, riskPremium)
-    const sections: SectionDetail [] = []
-    for (let [index, section] of riskPremium.limitPremium.entries()) {
-      sections.push({
-        sectionCode: section.sectCode,
-        sectionDescription: section.description,
-        premium: section.premium,
-        limitAmount: section.limitAmount,
-        freeLimit: 0,
-        rate: section.premiumRate,
-        rateType: section.rateType,
-        rowNumber: section.rowNumber,
-        rateDivisionFactor: section.rateDivisionFactor,
-        calculationGroup: section.calculationGroup,
-        sectionShortDescription: null,
-      })
-    }
-    return sections
-  }
 
   selectCovers(product: ProductPremium, riskDetails: RiskLevelPremium) {
     log.debug("Selected risk >>>", riskDetails)
