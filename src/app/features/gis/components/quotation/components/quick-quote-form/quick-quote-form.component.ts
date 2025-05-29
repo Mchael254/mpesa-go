@@ -40,7 +40,6 @@ import {
   QuickQuoteData,
   QuotationProduct,
   RiskInformation,
-  SectionDetail,
   Tax,
   TaxInformation,
   UserDetail,
