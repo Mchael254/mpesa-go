@@ -9,6 +9,8 @@ import { Table } from 'primeng/table';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -31,10 +33,13 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   searchUserId: string = '';
   fullNameSearch: string = '';
   globalSearch: string = '';
+  status:string = '';
+  afterRejectQuote:boolean = true;
 
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
+    public globalMessagingService:GlobalMessagingService
 
   ) {
 
@@ -121,7 +126,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
         log.debug("Quotation details>>>", response)
         this.quotationDetails = response
-      })
+      });
 
   }
 
@@ -131,7 +136,33 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     
 
   }
-  rejectQuotation() {
+  
+  rejectQuotation(code:number) {
+    const quotationCode = code;
+    const reasonCancelled = this.rejectComment;
+    const status = 'Rejected';
+
+    if(!reasonCancelled){
+      this.globalMessagingService.displayWarningMessage('Warning', 'Key in a reason');
+      return;
+    }
+
+    log.debug('reject payload>>>',quotationCode,reasonCancelled,status)
+
+    this.quotationService.updateQuotationStatus(quotationCode, status, reasonCancelled).subscribe({
+      next:(response) => {
+        this.globalMessagingService.displaySuccessMessage('success','quote rejected successfully')
+        log.debug(response);
+        this.afterRejectQuote = false;
+
+      },
+      error:(error) => {
+        this.globalMessagingService.displayErrorMessage('error','error while rejecting quote');
+        log.debug(error);
+
+      }
+      
+    })
 
   }
 
