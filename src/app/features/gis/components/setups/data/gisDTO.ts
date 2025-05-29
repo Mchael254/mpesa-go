@@ -976,6 +976,7 @@ export interface Premiums {
   rangeTo: number,
   rateDescription: string,
   divisionFactor: number,
+  minimumPremium?: number
   rateType: string,
   premiumMinimumAmount: number,
   territoryCode: number,
