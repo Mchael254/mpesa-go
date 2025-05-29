@@ -36,11 +36,10 @@ import {OrganizationBranchDto} from '../../../../../../shared/data/common/organi
 
 import {NgxSpinnerService} from 'ngx-spinner';
 import {
-  DynamicRiskField,
+  DynamicRiskField, LimitsOfLiability,
   QuickQuoteData,
   QuotationProduct,
   RiskInformation,
-  SectionDetail,
   Tax,
   TaxInformation,
   UserDetail,
@@ -74,6 +73,7 @@ import {
   RiskLevelPremium
 } from "../../data/premium-computation";
 import {QuotationDetailsRequestDto} from "../../data/quotation-details";
+import {differenceInCalendarDays, parseISO} from 'date-fns';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -1475,7 +1475,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
 
-          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          this.globalMessagingService.displayErrorMessage('Error', error?.error?.message);
         }
       });
   }
@@ -1577,7 +1577,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         binder: null,
         agentShortDescription: "DIRECT",
         riskInformation: this.getProductRisksPayload(product.risks, selectedProductPremium),
-        taxInformation: this.getProductTaxesPayload(product)
+        taxInformation: this.getProductTaxesPayload(product),
+        clauses: Array.from(new Set(
+          selectedProductPremium.riskLevelPremiums.flatMap(risk =>
+            risk.coverTypeDetails.flatMap(cover =>
+              (cover.clauses ?? []).map(clause => clause.code)
+            )
+          )
+        ))
       })
     }
     return quotationProducts
@@ -1657,38 +1664,40 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
             sumInsuredRate: null
           }
         }),
+        limitsOfLiability: this.limitsOfLiabilityPayload(risk.selectCoverType),
         subclass: {
           code: risk.selectCoverType.subclassCode,
           description: formRisk?.useOfProperty?.description,
           shortDescription: null,
           productCode: product.code
         },
-        coverDays: 0
+        coverDays: differenceInCalendarDays(parseISO(product.coverTo), parseISO(product.coverFrom)) + 1
       })
     }
     return riskInformation;
   }
 
-  getSectionPayload(formRisk: any, riskPremium: CoverTypeDetail): SectionDetail[] {
-    log.debug("Processing risk formRisk>>>>", formRisk, riskPremium)
-    const sections: SectionDetail [] = []
-    for (let [index, section] of riskPremium.limitPremium.entries()) {
-      sections.push({
-        sectionCode: section.sectCode,
-        sectionDescription: section.description,
-        premium: section.premium,
-        limitAmount: section.limitAmount,
-        freeLimit: 0,
-        rate: section.premiumRate,
-        rateType: section.rateType,
-        rowNumber: section.rowNumber,
-        rateDivisionFactor: section.rateDivisionFactor,
-        calculationGroup: section.calculationGroup,
-        sectionShortDescription: null,
+  limitsOfLiabilityPayload(selectedCoverType: CoverTypeDetail): LimitsOfLiability[] {
+    const limitsOfLiabilities: LimitsOfLiability[] = []
+    for (let excess of selectedCoverType.excesses) {
+      limitsOfLiabilities.push({
+        value: excess.value,
+        narration: excess.narration,
+        type: 'E',
+        scheduleValueCode: excess.code
       })
     }
-    return sections
+    for (let limit of selectedCoverType.limitOfLiabilities) {
+      limitsOfLiabilities.push({
+        value: limit.value,
+        narration: limit.narration,
+        type: 'L',
+        scheduleValueCode: limit.code
+      })
+    }
+    return limitsOfLiabilities
   }
+
 
   selectCovers(product: ProductPremium, riskDetails: RiskLevelPremium) {
     log.debug("Selected risk >>>", riskDetails)
