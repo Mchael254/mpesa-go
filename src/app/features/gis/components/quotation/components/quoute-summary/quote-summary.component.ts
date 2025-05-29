@@ -1,10 +1,15 @@
+
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { QuotationDTO } from '../../data/quotationsDTO';
+import { QuotationDetails, QuotationDTO } from '../../data/quotationsDTO';
 
 import { QuotationsService } from "../../services/quotations/quotations.service";
 import { Logger, untilDestroyed } from "../../../../../../shared/shared.module";
 import { dummyUsers } from '../../data/dummyData';
 import { Table } from 'primeng/table';
+import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import stepData from '../../data/steps.json';
+import { Router } from '@angular/router';
+
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -15,9 +20,10 @@ const log = new Logger('QuoteSummaryComponent');
 })
 export class QuoteSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('dt') table!: Table;
-  constructor(private quotationService: QuotationsService) {
-  }
-
+  
+  quotationDetails: QuotationDetails;
+  batchNo: number;
+  quotationCode: number;
   rejectComment: string = ''
   reassignComment: string = ''
   users: any[] = [];
@@ -26,10 +32,30 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   fullNameSearch: string = '';
   globalSearch: string = '';
 
-  steps = [
-    { label: 'Quote Information' },
-    { label: 'Quotation Summary' }
+  constructor(
+    private quotationService: QuotationsService,
+    private router: Router,
+
+  ) {
+
+  }
+
+  breadCrumbItems: BreadCrumbItem[] = [
+    {
+      label: 'Home',
+      url: '/home/dashboard',
+    },
+    {
+      label: 'Quotation',
+      url: '/home/lms/quotation/list',
+    },
+    {
+      label: 'New quote',
+      url: '/home/gis/quotation/quick-quote',
+    },
   ];
+  steps = stepData;
+
 
   editNotesVisible = false;
   activeIndex = 1;
@@ -92,9 +118,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     this.users = dummyUsers;
     log.debug("Users>>>", this.users);
     this.quotationService.getQuotationDetails(sessionStorage.getItem("quotationNumber"))
-      .pipe(untilDestroyed(this)).subscribe((response) => {
+      .pipe(untilDestroyed(this)).subscribe((response: any) => {
         log.debug("Quotation details>>>", response)
-      });
+        this.quotationDetails = response
+      })
 
   }
 
@@ -137,5 +164,49 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
   }
+  convertQuoteToPolicy() {
+    log.debug("Quotation Details", this.quotationDetails)
+    const quotationCode = this.quotationDetails?.code;
+    log.debug("Quotation Code", quotationCode);
+    log.debug("Quotation Details", this.quotationDetails);
+    const quoteProductCode = this.quotationDetails?.quotationProducts[0]?.code
 
+    const conversionFlag = true;
+    sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
+
+    this.quotationService.convertQuoteToPolicy(quotationCode, quoteProductCode).subscribe((data: any) => {
+      log.debug("Response after converting quote to a policy:", data)
+      this.batchNo = data._embedded.batchNo
+      log.debug("Batch number", this.batchNo)
+      const convertedQuoteBatchNo = JSON.stringify(this.batchNo);
+      sessionStorage.setItem('convertedQuoteBatchNo', convertedQuoteBatchNo);
+      this.router.navigate(['/home/gis/policy/policy-summary']);
+
+    })
+
+  }
+  convertQuoteToNormalQuote() {
+    log.debug("Quotation Details", this.quotationDetails);
+
+    const quotationNumber = this.quotationDetails?.quotationNo;
+    log.debug("Quotation Number", quotationNumber);
+    sessionStorage.setItem("quotationNum", quotationNumber);
+
+    const conversionFlag = true;
+    sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
+
+    // Get the quotCode
+    const quotationCode = this.quotationDetails?.code;
+    log.debug("Quotation Code", this.quotationCode);
+
+    // Call the API to convert quote to normal quote
+    this.quotationService
+      .convertToNormalQuote(quotationCode)
+      .subscribe((data: any) => {
+          log.debug("Response after converting quote to a normalQuote:", data)
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+
+        }
+      );
+  }
 }

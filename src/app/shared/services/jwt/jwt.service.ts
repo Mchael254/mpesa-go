@@ -134,7 +134,7 @@ export class JwtService {
   getUserAssignedRoles(token: string): string[] {
     const decoded = this.decodeAccessToken(token);
     if (!decoded) return [];
-    const accountRoles = decoded.resource_access?.account?.roles;
+    const accountRoles = decoded.realm_access?.roles;
     return Array.isArray(accountRoles) ? accountRoles : [];
   }
 
