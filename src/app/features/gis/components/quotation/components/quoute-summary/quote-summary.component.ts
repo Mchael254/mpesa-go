@@ -99,6 +99,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   }
 
   reassignQuotation() {
+    console.log('');
+    
     
 
   }
