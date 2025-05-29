@@ -149,18 +149,18 @@
       <button type="button" class="btn btn-text me-2 " style="border: none;">
         Back
       </button>
-      <button type="button" class="btn btn-outline-primary mx-2" (click)="reassignQuotation()"
+      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary mx-2" 
         data-bs-target="#reassignQuotation" data-bs-toggle="modal">{{'gis.quotation.reassign' | translate}}</button>
-      <button type="button" class="btn btn-outline-primary" (click)="rejectQuotation()" data-bs-target="#rejectQuote"
+      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary"  data-bs-target="#rejectQuote"
         data-bs-toggle="modal">{{'gis.quotation.reject' |
         translate}} </button>
     </div>
     <div class="right-buttons">
-      <button type="button" class="btn btn-outline-primary me-2 ">
+      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary me-2 ">
         Share quotation
       </button>
       <!-- <button pButton label="Accept quote" class="p-button-success"></button> -->
-      <button type="button" id="acceptQuote" class="btn btn-primary" data-bs-toggle="modal"
+      <button *ngIf="afterRejectQuote" type="button" id="acceptQuote" class="btn btn-primary" data-bs-toggle="modal"
         id="openAdditionalBenefitsModalButton" data-bs-target="#acceptQuote" title="open">Accept quote
       </button>
     </div>
@@ -211,7 +211,7 @@
           'gis.quotation.cancel' | translate }}
         </button>
         <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
-          data-bs-dismiss="modal" (click)="rejectQuotation()">{{ 'gis.quotation.save_changes' | translate }}
+          data-bs-dismiss="modal" (click)="rejectQuotation(quotationDetails.code)">{{ 'gis.quotation.save_changes' | translate }}
         </button>
       </div>
     </div>
