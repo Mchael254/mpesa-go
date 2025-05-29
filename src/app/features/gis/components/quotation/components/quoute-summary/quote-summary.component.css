@@ -43,6 +43,27 @@ p-breadcrumb {
   font-weight: 600;
 }
 
+textarea:focus {
+  outline: none;
+
+}
+textarea {
+  width: 100%;
+  height: 80px;
+  border-radius: 5px;
+  padding: 5px 10px;
+}
+input:focus {
+  outline: none;
+}
+input {
+  height: 30px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  border: none;
+}
+
+
 
 
 
