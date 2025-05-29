@@ -19,7 +19,7 @@ import {QuotationsService} from '../../services/quotations/quotations.service';
 
 import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
 
-import {forkJoin, mergeMap, of, switchMap} from 'rxjs';
+import {forkJoin, mergeMap} from 'rxjs';
 import {
   Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
   premiumPayloadData, QuotationDetails, UserDetail, Limit
@@ -95,7 +95,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   quotationData: any;
   quotationNo: string;
   passedQuotationSource: any;
-  quotationRiskData: any;
 
 
   currencyList: any;
@@ -112,7 +111,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   subclassSectionCoverList: any;
   covertypeSectionList: any;
   covertypeSpecificSection: any;
-  sectionCodesArray: number[] = [];
   premiumList: Premiums[] = [];
   temporaryPremiumList: Premiums[] = [];
   coverTypePremiumItems: Premiums[] = [];
@@ -144,7 +142,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   userCode: number;
   organizationId: number;
   exchangeRate: number;
-  passedQuotationData: any;
   storedQuotationNo: string;
   storedQuotationCode: number;
   extraRiskCode: [] = [];
@@ -161,7 +158,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   };
   quoteAction: string = null
   premiumComputationPayload: PremiumComputationRequest;
-  computationPayloadCode: number;
 
   public currencyObj: NgxCurrencyConfig;
   private typingTimer: any;// Timer reference
@@ -338,51 +334,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
 
-  riskLimitPayload() {
-    let selectedLimits = this.premiumComputationPayload.risks
-      .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)?.limits;
-    const coverTypeSections = this.riskLevelPremiums
-      .filter(value => value.coverTypeDetails.coverTypeCode === this.selectedCoverType)
-      .map(section => section.limitPremium).flat()
-
-
-    let assignedRows = selectedLimits.map(value => value.rowNumber);
-
-
-    const maxAssignedValue = Math.max(...assignedRows)
-
-    log.debug('Selected Sections:', selectedLimits);
-    log.debug('Premium Rates:', coverTypeSections);
-
-    let limitsToSave: any[] = [] //TODO check how to handle hardcoded values
-    for (let premiumRate of selectedLimits) {
-      const matchingSection = coverTypeSections.find(value => value.sectCode === premiumRate.section?.code);
-      const databaseLimit = this.coverTypePremiumItems.find(value => value.sectionCode === premiumRate.section?.code)
-      log.debug("Matching Database limit >>", databaseLimit)
-      limitsToSave.push({
-          calcGroup: 1,
-          code: databaseLimit?.code,
-          compute: "Y",
-          description: matchingSection?.description,
-          freeLimit: databaseLimit?.freeLimit || 0,
-          multiplierDivisionFactor: databaseLimit?.multiplierDivisionFactor,
-          multiplierRate: databaseLimit?.multiplierRate || 1,
-          premiumAmount: matchingSection?.premium,
-          premiumRate: premiumRate?.premiumRate || 0,
-          rateDivisionFactor: premiumRate?.rateDivisionFactor || 1,
-          rateType: premiumRate?.rateType || "FXD",
-          rowNumber: premiumRate?.rowNumber,
-          sectionType: premiumRate?.sectionType,
-          sumInsuredLimitType: premiumRate?.sectionType || null,
-          sumInsuredRate: databaseLimit?.sumInsuredRate,
-          sectionShortDescription: premiumRate.sectionType,
-          sectionCode: databaseLimit?.sectionCode,
-          limitAmount: matchingSection?.limitAmount,
-        }
-      )
-    }
-    return limitsToSave;
-  }
 
 
   loadAllCurrencies() {
@@ -432,168 +383,12 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     })
   }
 
-  getQuotationRiskPayload(): any[] {
-    log.debug("quotation code:", this.quotationCode)
-    log.debug("passed quotation code:", this.passedQuotationCode)
-    log.debug("stored quote code when editing quote details or 2nd stepeer clicked", this.storedQuotationCode)
-    let existingRisk = JSON.parse(sessionStorage.getItem('passedSelectedRiskDetails'));
-    let defaultCode
-    if (this.quotationCode) {
-      defaultCode = this.quotationCode;
-      log.debug("IF STATEMENT QUOTE CODE", defaultCode)
 
-    } else if (this.passedQuotationCode) {
-      defaultCode = this.passedQuotationCode
-      log.debug("IF STATEMENT PASSED QUOTE CODE", defaultCode)
-
-    } else if (this.storedQuotationCode) {
-      defaultCode = this.storedQuotationCode
-      log.debug("F STATEMENT stored QUOTE CODE(2nd stepper called):", defaultCode)
-
-    }
-    const selectedRisk = this.premiumPayload?.risks.find(
-      (risk) => risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType
-    );
-    const selectedRiskPremiumResponse = this.premiumResponse?.riskLevelPremiums.find(
-      (risk) => risk.coverTypeDetails.coverTypeCode === this.selectedCoverType
-    );
-
-    log.debug("Selected Risk premium", selectedRiskPremiumResponse)
-    log.debug("Sum Insured>>>>", this.sumInsuredValue)
-    log.debug("Selected Risk", selectedRisk)
-    const coverTypeSections = this.riskLevelPremiums
-      .filter(value => value.coverTypeDetails.coverTypeCode === this.selectedCoverType)
-      .map(section => section.limitPremium).flat()
-    let risk = {
-      coverTypeCode: this.selectedCoverType,
-      action: this.quoteAction ? this.quoteAction : "A",
-      //quotationCode: defaultCode,
-      code: existingRisk && this.quoteAction === "E" ? existingRisk.code : null,
-      productCode: this.premiumPayload?.product.code,
-      propertyId: selectedRisk?.propertyId || selectedRisk?.itemDescription,
-      value: this.sumInsuredValue,
-      coverTypeShortDescription: selectedRisk?.subclassCoverTypeDto?.coverTypeShortDescription,
-      premium: coverTypeSections.reduce((sum, section) => sum + section.premium, 0),
-      subclassCode: selectedRisk?.subclassSection.code,
-      itemDesc: selectedRisk?.itemDescription,
-      binderCode: selectedRisk?.binderDto?.code,
-      wef: selectedRisk?.withEffectFrom,
-      wet: selectedRisk?.withEffectTo,
-      prpCode: this.passedClientCode,
-      quotationProductCode: existingRisk && this.quoteAction === "E" ? existingRisk?.quotationProductCode : null,
-      coverTypeDescription: selectedRisk?.subclassCoverTypeDto?.coverTypeDescription,
-      taxComputation: selectedRiskPremiumResponse.taxComputation.map(tax => ({
-        code: tax.code,
-        premium: tax.premium
-      }))
-    }
-    return [risk]
-  }
 
   selectedRiskLevelPremium(data: any) {
     log.info("RiskLevelPremium::::::", data);
     const riskLevelPremiumString = JSON.stringify(data);
     sessionStorage.setItem('riskLevelPremium', riskLevelPremiumString);
-  }
-
-  selectCoverNew() {
-    const quotation = this.getQuotationPayload();
-    let riskPayload = this.getQuotationRiskPayload();
-    let limitsToSave = this.riskLimitPayload();
-
-    log.debug("Quotation payload>>>", quotation)
-    log.debug("Risk payload", riskPayload);
-    log.debug("About to save these limits", limitsToSave)
-    log.debug("Limits of liabilities to save::", this.limitsOfLiabilityList)
-    log.debug("Excesses to save >>>", this.excessesList)
-    log.debug("Clauses to save>>>", this.clauseList)
-    const processQuotation$ = this.storedQuotationCode && this.storedQuotationNo
-      ? of({_embedded: {quotationCode: this.storedQuotationCode, quotationNumber: this.storedQuotationNo}})
-      : this.quotationService.processQuotation(null);
-    this.storedQuotationCode = this.passedQuotationData?._embedded?.[0]?.quotationCode;
-    this.storedQuotationNo = this.passedQuotationData?._embedded?.[0]?.quotationNumber
-    processQuotation$.pipe(
-      switchMap((quotationResponse) => {
-        this.quotationCode = quotationResponse._embedded.quotationCode;
-        this.quotationNo = quotationResponse._embedded.quotationNumber;
-        sessionStorage.setItem('quotationNumber', JSON.stringify(this.quotationNo));
-        sessionStorage.setItem('quotationNumber', this.quotationNo);
-        sessionStorage.setItem('quickQuotationCode', this.quotationCode.toString());
-        log.debug('Quotation saved successfully', quotationResponse);
-        riskPayload = riskPayload.map((risk) => {
-          return {
-            ...risk,
-            quotationCode: this.quotationCode
-          }
-        })
-        return this.quotationService.createQuotationRisk(this.quotationCode, riskPayload)
-      }),
-      switchMap((riskResponse) => {
-        log.debug('Risk saved successfully', riskResponse);
-        // Add the risk ID to sectionData before saving section
-        this.quotationRiskData = riskResponse;
-        log.debug("This is the quotation risk data", riskResponse)
-        const quotationRiskDetails = this.quotationRiskData._embedded[0];
-        if (quotationRiskDetails) {
-          this.riskCode = quotationRiskDetails.riskCode
-          this.quoteProductCode = quotationRiskDetails.quotProductCode
-        }
-        const clauseCodes = this.clauseList.map((clause) => clause.code);
-        const limitsOfLiability = this.limitsOfLiabilityList.map(item => ({
-          scheduleValueCode: item.code,
-          quotationProductCode: this.quoteProductCode,
-          value: item.value,
-          narration: item.narration,
-          type: "L"
-        }));
-        const excesses = this.excessesList.map(item => ({
-          scheduleValueCode: item.code,
-          quotationProductCode: this.quoteProductCode,
-          value: item.value,
-          narration: item.narration,
-          type: "E"
-        }));
-        const limitsPayLoad = {
-          addOrEdit: 'A',
-          quotationRiskCode: this.riskCode,
-          riskSections:
-            limitsToSave.map((value) => {
-              return {
-                ...value,
-                quotationCode: this.quotationCode,
-                quotRiskCode: this.riskCode
-              }
-            })
-        }
-        return forkJoin(([
-          this.quotationService.addClauses(clauseCodes, this.premiumPayload?.product.code, this.quotationCode, this.riskCode),
-          this.quotationService.createRiskLimits(limitsPayLoad),
-          this.quotationService.addLimitsOfLiability(limitsOfLiability),
-          this.quotationService.addLimitsOfLiability(excesses)
-        ]))
-      })
-    ).subscribe({
-      next: (([clauses, riskSections, limits, excesses]) => {
-        log.debug(riskSections)
-        this.router.navigate(['/home/gis/quotation/quote-summary']);
-      }),
-      error: ((error) => log.error("Error>>>", error))
-    })
-  }
-
-  extractSectionCodes(risks: any[]): void {
-    risks?.forEach((risk) => {
-      if (risk.limits && Array.isArray(risk.limits)) {
-        risk.limits.forEach((limit) => {
-          const sectionCode = limit.section && limit.section.code;
-          if (sectionCode !== undefined && !this.sectionCodesArray.includes(sectionCode)) {
-            this.sectionCodesArray.push(sectionCode);
-          }
-        });
-      }
-    });
-
-    log.debug('Section Codes Array:', this.sectionCodesArray);
   }
 
 
@@ -733,26 +528,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       }
     });
     log.debug("Modified premium computation payload", this.premiumComputationPayload);
-    this.performComputation()
-  }
-
-  performComputation() {
-    forkJoin(([
-      this.quotationService.updatePremiumComputationPayload(this.computationPayloadCode, this.premiumComputationPayload),
-      null
-    ])).pipe(
-      untilDestroyed(this)
-    ).subscribe({
-      next: (([payloadUpdate, computationResponse]) => {
-        this.premiumResponse = computationResponse
-        this.premiumComputationPayload = payloadUpdate._embedded
-        //this.riskLevelPremiums = computationResponse.riskLevelPremiums
-        sessionStorage.setItem('premiumResponse', JSON.stringify(computationResponse));
-      }),
-      error: (error) => {
-        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-      }
-    })
   }
 
   toggleSelectProduct() {
@@ -1030,7 +805,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       }
     });
     log.debug("Modified computation payload for deletion>>>", this.premiumComputationPayload)
-    this.performComputation()
   }
 }
 
