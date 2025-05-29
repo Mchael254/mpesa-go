@@ -1620,7 +1620,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         quotationCode: null,
         transactionCode: null,
         renewalEndorsement: null,
-        taxRateCode: original?.taxCode,
+        taxRateCode: null,//original?.taxCode,
         levelCode: original?.applicationLevel,
         taxType: original?.taxType,
         riskProductLevel: original?.applicationLevel
@@ -1754,7 +1754,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
                   shortDescription: benefit.sectionDescription,
                   limitAmount: benefit.limitAmount,
                   premiumRate: benefit.rate ?? 1,
-                  minimumPremium: benefit.minimumRate ?? 0,
+                  minimumPremium: benefit.minimumPremium ?? 5000,
                   rateType: benefit.rateType,
                   calculationGroup: 1,
                   declarationSection: "N",
