@@ -9,7 +9,6 @@ import { Table } from 'primeng/table';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 
 
