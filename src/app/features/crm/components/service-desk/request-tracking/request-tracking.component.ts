@@ -190,7 +190,7 @@ export class RequestTrackingComponent implements OnInit {
           this.spinner.hide();
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.message);
+          this.globalMessagingService.displayErrorMessage('Error', err?.error?.message);
           this.spinner.hide();
         }
       })
@@ -273,6 +273,7 @@ export class RequestTrackingComponent implements OnInit {
    * Clears the sorting form and table state for request tracking.
    */
   clearRequestTrackingSort() {
+    this.selectedMainUser = null;
     this.requestTrackingSortingForm.reset();
     this.requestTrackingTable.reset();
   }
