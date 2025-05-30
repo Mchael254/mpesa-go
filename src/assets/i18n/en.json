@@ -3191,6 +3191,8 @@
     "otherNames": "Other names",
     "shortDesc": "Short Desc",
     "IDNo": "ID No",
-    "telephone": "Telephone"
+    "telephone": "Telephone",
+    "incidentName": "Incident name",
+    "incidentValidity":"Incident validity"
   }
 }

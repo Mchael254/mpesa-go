@@ -3089,6 +3089,8 @@
     "otherNames": "Otros nombres",
     "shortDesc": "Descripción corta",
     "IDNo": "Número de identificación",
-    "telephone": "Teléfono"
+    "telephone": "Teléfono",
+    "incidentName": "Nombre del incidente",
+    "incidentValidity": "Validez del incidente"
   }
 }

@@ -2557,6 +2557,8 @@
     "otherNames": "Weitere Namen",
     "shortDesc": "Kurzbeschreibung",
     "IDNo": "Ausweisnummer",
-    "telephone": "Telefon"
+    "telephone": "Telefon",
+    "incidentName": "Vorfallname",
+    "incidentValidity": "Gültigkeit des Vorfalls"
   }
 }
