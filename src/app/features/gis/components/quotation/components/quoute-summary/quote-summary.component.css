@@ -252,6 +252,7 @@ color:#00529B
   font-size: 20px;
   line-height: 100%;
   letter-spacing: 0%;
+  color: #00529B;
 
 }
 
@@ -279,6 +280,14 @@ font-size: 16px;
 line-height: 100%;
 letter-spacing: 0%;
 color: #000000;
+}
+.notes-preview {
+  display: inline-block;      
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
 }
 
 /* Responsive */
