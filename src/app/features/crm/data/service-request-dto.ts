@@ -1,3 +1,6 @@
+import {SystemsDto} from "../../../shared/data/common/systemsDto";
+import {MessageTemplate} from "./messaging-template";
+
 export interface ServiceRequestStatusDTO {
   srsCode: number,
   srsName: string,
@@ -27,11 +30,11 @@ export interface ServiceRequestIncidentDTO {
   name: string,
   validity: number,
   userCode: number,
-  branchCode: number,
+  branchCode?: number,
   requestTypeCode: number,
-  isDefault: string,
+  isDefault?: string,
   user?: UserDTO
-  escalationLevels?: ServiceRequestEscalationDTO[];
+  escalationLevels: ServiceRequestEscalationDTO[];
 }
 
 export interface ServiceRequestsDTO {
@@ -46,7 +49,7 @@ export interface ServiceRequestsDTO {
   communicationMode: string,
   communicationModeValue: string,
   comments: string,
-  date: string,
+  date?: string,
   desc: string,
   dueDate: string,
   endorsementCode: number,
@@ -107,12 +110,27 @@ export interface AccountDto {
 }
 
 export interface ServiceRequestEscalationDTO {
-  id: number,
+  id?: number,
   level: number,
   assigneeId: number,
   duration: number,
-  ccId: number,
-  incidentId: number
-  assignee: UserDTO,
-  cc: UserDTO,
+  ccId?: number,
+  incidentId: number,
+  systemId: number,
+  messageCode: number,
+  assignee?: UserDTO,
+  cc?: UserDTO,
+  system?: SystemsDto,
+  message?: MessageTemplate
+}
+
+export interface ServiceRequestCommentsDTO {
+  id: number,
+  srcClientComment: string,
+  srcSolution: string,
+  srcTsrCode: number,
+  srcCapturedDate: string,
+  srcUpdatedDate?: string,
+  srcPostedBy: number,
+  postedBy?: UserDTO,
 }

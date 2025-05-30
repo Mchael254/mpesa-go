@@ -39,31 +39,31 @@
           <div class="col-sm-4">
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.name' | translate }}:</label>
-              <span class="ticketDesc">{{selectedEntity.firstName | titlecase}} {{selectedEntity.lastName | titlecase}}</span>
+              <span class="ticketDesc">{{selectedEntity?.firstName | titlecase}} {{selectedEntity?.lastName | titlecase}}</span>
             </p>
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.telephoneNo' | translate }}:</label>
-              <span class="ticketDesc">{{selectedEntity.mobileNumber}}</span>
+              <span class="ticketDesc">{{selectedEntity?.mobileNumber}}</span>
             </p>
           </div>
           <div class="col-sm-4">
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.shortDescription' | translate }}:</label>
-              <span class="ticketDesc">{{selectedEntity.shortDescription}}</span>
+              <span class="ticketDesc">{{selectedEntity?.shortDescription}}</span>
             </p>
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.emailAddress' | translate }}:</label>
-              <span class="ticketDesc">{{selectedEntity.emailAddress}}</span>
+              <span class="ticketDesc">{{selectedEntity?.emailAddress}}</span>
             </p>
           </div>
           <div class="col-sm-4">
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.accountNo' | translate }}.:</label>
-              <span class="ticketDesc">{{selectedEntity.firstName | titlecase}} {{selectedEntity.lastName | titlecase}}</span>
+              <span class="ticketDesc">{{selectedEntity?.firstName | titlecase}} {{selectedEntity?.lastName | titlecase}}</span>
             </p>
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.physicalAddress' | translate }}:</label>
-              <span class="ticketDesc">{{selectedEntity.physicalAddress}}</span>
+              <span class="ticketDesc">{{selectedEntity?.physicalAddress}}</span>
             </p>
           </div>
         </div>
@@ -112,15 +112,15 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-openRequest>
-            <tr class="custom-table">
+            <tr>
               <td>{{openRequest?.policyNo}}</td>
-              <td>{{openRequest?.requestType | titlecase}}</td>
-              <td>not</td>
+              <td>{{openRequest?.incidentDto?.name | titlecase}}</td>
+              <td>{{openRequest?.source | titlecase}}</td>
               <td>{{openRequest?.captureDate | date: 'dd-MM-yyyy'}}</td>
               <td>{{openRequest?.dueDate | date: 'dd-MM-yyyy'}}</td>
               <td>{{openRequest?.receiveDate | date: 'dd-MM-yyyy'}}</td>
               <td>
-                <span class="text-primary actionBtn">
+                <span class="text-primary actionBtn" (click)="editRequests(openRequest)">
                   View
                 </span>
               </td>
@@ -177,15 +177,15 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-closedRequest>
-            <tr class="custom-table">
+            <tr>
               <td>{{closedRequest?.policyNo}}</td>
-              <td>{{closedRequest?.requestType | titlecase}}</td>
-              <td>not</td>
+              <td>{{closedRequest?.incidentDto?.name | titlecase}}</td>
+              <td>{{closedRequest.source | titlecase}}</td>
               <td>{{closedRequest?.captureDate | date: 'dd-MM-yyyy'}}</td>
               <td>{{closedRequest?.dueDate | date: 'dd-MM-yyyy'}}</td>
               <td>{{closedRequest?.receiveDate | date: 'dd-MM-yyyy'}}</td>
               <td>
-                <span class="text-primary actionBtn">
+                <span class="text-primary actionBtn" (click)="editRequests(closedRequest, true)">
                   Reopen
                 </span>
               </td>
@@ -324,7 +324,7 @@
 
     <div class="card mt-3">
       <div class="card-header bg-transparent float-start border-bottom-0">
-        <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.clientsComments' | translate}}</h6>
+        <h6 class="float-start my-3 fw-semibold">{{'serviceDesk.comments' | translate}}</h6>
         <div class="row mb-3">
           <div class="col-12">
             <div class="float-end">
@@ -332,7 +332,7 @@
                 <i class="fa-solid fa-plus" (click)="openClientCommentModal()"></i>
               </span>
               <span class="icon-circle">
-                <i class="pi pi-pencil"></i>
+                <i class="pi pi-pencil" (click)="editRequestComment()"></i>
               </span>
             </div>
           </div>
@@ -354,27 +354,28 @@
           [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
           responsiveLayout="stack"
           [scrollable]="true"
+          [(selection)]= "selectedComment"
           selectionMode="single"
-          dataKey="code"
+          dataKey="id"
           scrollHeight="400px"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
-          [globalFilterFields]="['campaign.campaignName']"
+          [globalFilterFields]="['srcClientComment', 'srcSolution']"
         >
 
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="campaign.campaignName">{{'serviceDesk.dateCaptured'| translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-              <th pSortableColumn="campaign.objective">{{'serviceDesk.clientComments'| translate }} <p-sortIcon field="campaign.objective"></p-sortIcon></th>
-              <th pSortableColumn="campaign.description">{{'serviceDesk.postedDate'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
-              <th pSortableColumn="campaign.description">{{'serviceDesk.solution'| translate }} <p-sortIcon field="campaign.description"></p-sortIcon></th>
+              <th pSortableColumn="srcCapturedDate">{{'serviceDesk.dateCaptured'| translate }} <p-sortIcon field="srcCapturedDate"></p-sortIcon></th>
+              <th pSortableColumn="srcClientComment">{{'serviceDesk.clientComments'| translate }} <p-sortIcon field="srcClientComment"></p-sortIcon></th>
+              <th pSortableColumn="postedBy.name">{{'serviceDesk.postedBy'| translate }} <p-sortIcon field="postedBy.name"></p-sortIcon></th>
+              <th pSortableColumn="srcSolution">{{'serviceDesk.solution'| translate }} <p-sortIcon field="srcSolution"></p-sortIcon></th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-clientsComment>
-            <tr class="custom-table">
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+            <tr [pSelectableRow]="clientsComment">
+              <td>{{ clientsComment?.srcCapturedDate | date: 'dd-MM-yyyy' }}</td>
+              <td>{{ clientsComment?.srcClientComment | titlecase }}</td>
+              <td>{{ clientsComment?.postedBy?.name | titlecase }}</td>
+              <td>{{ clientsComment?.srcSolution | titlecase }}</td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
@@ -622,7 +623,7 @@
             <div class="col-sm-3 mb-3">
               <select class="form-select" id="requestSource" formControlName="requestSource">
                 <option *ngFor="let source of requestSourcesData"
-                        [value]="source.id">{{source | titlecase}}
+                        [value]="source">{{source | titlecase}}
                 </option>
               </select>
             </div>
@@ -630,38 +631,32 @@
           <div class="mb-3 row">
             <label for="accountType" class="col-sm-3 form-label">{{ 'serviceDesk.accountType' | translate  }}</label>
             <div class="col-sm-3 mb-3">
-              <select class="form-select" id="accountType" formControlName="accountType">
+              <select class="form-select" id="accountType" formControlName="accountType" (change)="openAllUsersModal('accType')">
                 <option *ngFor="let accType of requestAccTypesData"
-                        [value]="accType" [selected]="accType === entity">{{accType}}
+                        [value]="accType.code" [selected]="accType === entity">{{accType.value}}
                 </option>
               </select>
             </div>
             <label for="account" class="col-sm-3 form-label">{{ 'serviceDesk.account' | translate  }}</label>
             <div class="col-sm-3 mb-3">
-              <select class="form-select" id="account" formControlName="account">
-                <option value=""></option>
-                <option value=""></option>
-              </select>
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="account"
+                  id="account"
+                />
+              </div>
             </div>
           </div>
           <div class="mb-3 row">
             <label for="summary" class="col-sm-3 form-label">{{ 'serviceDesk.summary' | translate  }}</label>
             <div class="col-sm-3 mb-3">
-              <input
-                type="text"
-                class="form-control"
-                id="summary"
-                formControlName="summary"
-              />
+              <textarea class="form-control" id="summary" rows="3" formControlName="summary"></textarea>
             </div>
             <label for="desc" class="col-sm-3 form-label">{{ 'serviceDesk.description' | translate  }}</label>
             <div class="col-sm-3 mb-3">
-              <input
-                type="text"
-                class="form-control"
-                id="desc"
-                formControlName="desc"
-              />
+              <textarea class="form-control" id="desc" rows="3" formControlName="desc"></textarea>
             </div>
           </div>
           <div class="mb-3 row">
@@ -707,37 +702,100 @@
           <div class="mb-3 row">
             <label for="assignee" class="col-sm-3 form-label">{{ 'serviceDesk.assignee' | translate  }}</label>
             <div class="col-sm-3 mb-3">
-              <select class="form-select" id="assignee" formControlName="assignee">
-                <option value=""></option>
-                <option value=""></option>
-              </select>
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="assignee"
+                  id="assignee"
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="button-addon"
+                  (click)="openAllUsersModal('assignee')"
+                >
+                  <i class="fa-solid fa-angle-double-down open-all-users-modal"></i>
+                </button>
+              </div>
             </div>
             <label for="reporter" class="col-sm-3 form-label">{{ 'serviceDesk.reporterInitiator' | translate  }}</label>
             <div class="col-sm-3 mb-3">
-              <select class="form-select" id="reporter" formControlName="reporter">
-                <option value=""></option>
-                <option value=""></option>
-              </select>
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="reporter"
+                  id="reporter"
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="button-addon"
+                  (click)="openAllUsersModal('reporter')"
+                >
+                  <i class="fa-solid fa-angle-double-down open-all-users-modal"></i>
+                </button>
+              </div>
             </div>
           </div>
           <div class="mb-3 row">
+            <label for="ownerAccountType" class="col-sm-3 form-label">{{ 'serviceDesk.ownerAccountType' | translate  }}</label>
+            <div class="col-sm-3 mb-3">
+              <select class="form-select" id="ownerAccountType" formControlName="ownerAccountType" (change)="openAllUsersModal('owner')">
+                <option *ngFor="let accType of requestAccTypesData"
+                        [value]="accType.code" [selected]="accType === entity">{{accType.value}}
+                </option>
+              </select>
+            </div>
+            <label for="owner" class="col-sm-3 form-label">{{ 'serviceDesk.owner' | translate  }}</label>
+            <div class="col-sm-3 mb-3">
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="owner"
+                  id="owner"
+                />
+              </div>
+            </div>
+
+            <!--<label for="owner" class="col-sm-3 form-label">{{ 'serviceDesk.owner' | translate  }}</label>
+            <div class="col-sm-3 mb-3">
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="owner"
+                  id="owner"
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="button-addon"
+                  (click)="openAllUsersModal('owner')"
+                >
+                  <i class="fa-solid fa-angle-double-down open-all-users-modal"></i>
+                </button>
+              </div>
+            </div>
             <label for="ownerAccountType" class="col-sm-3 form-label">{{ 'serviceDesk.ownerAccountType' | translate  }}</label>
             <div class="col-sm-3 mb-3">
               <select class="form-select" id="ownerAccountType" formControlName="ownerAccountType">
                 <option value=""></option>
                 <option value=""></option>
               </select>
-            </div>
+            </div>-->
+          </div>
+          <div class="mb-3 row">
             <label for="status" class="col-sm-3 form-label">{{ 'serviceDesk.status' | translate  }}</label>
             <div class="col-sm-3 mb-3">
-              <select class="form-select" id="status" formControlName="status">
+              <select class="form-select" id="status" formControlName="status" (change)="onStatusClick()">
                 <option *ngFor="let status of requestStatusData"
                         [value]="status.srsCode">{{status.srsName | titlecase}}
                 </option>
               </select>
             </div>
-          </div>
-          <div class="mb-3 row">
             <label for="closedBy" class="col-sm-3 form-label">{{ 'serviceDesk.closedBy' | translate  }}</label>
             <div class="col-sm-3 mb-3">
               <input
@@ -747,6 +805,8 @@
                 formControlName="closedBy"
               />
             </div>
+          </div>
+          <div class="mb-3 row">
             <label for="resolutionDate" class="col-sm-3 form-label">{{ 'serviceDesk.resolutionDate' | translate  }}</label>
             <div class="col-sm-3 mb-3">
               <input
@@ -756,28 +816,16 @@
                 formControlName="resolutionDate"
               />
             </div>
-          </div>
-          <div class="mb-3 row">
             <label for="solution" class="col-sm-3 form-label">{{ 'serviceDesk.solution' | translate  }}</label>
             <div class="col-sm-3 mb-3">
-              <input
-                type="text"
-                class="form-control"
-                id="solution"
-                formControlName="solution"
-              />
-            </div>
-            <label for="comments" class="col-sm-3 form-label">{{ 'serviceDesk.comments' | translate  }}</label>
-            <div class="col-sm-3 mb-3">
-              <input
-                type="text"
-                class="form-control"
-                id="comments"
-                formControlName="comments"
-              />
+              <textarea class="form-control" id="solution" rows="3" formControlName="solution"></textarea>
             </div>
           </div>
           <div class="mb-3 row">
+            <label for="comments" class="col-sm-3 form-label">{{ 'serviceDesk.comments' | translate  }}</label>
+            <div class="col-sm-3 mb-3">
+              <textarea class="form-control" id="comments" rows="3" formControlName="comments"></textarea>
+            </div>
             <label for="prefCommMode" class="col-sm-3 form-label">{{ 'serviceDesk.preferredCommsMode' | translate }}</label>
             <div class="col-sm-3 mb-3">
               <select class="form-select" id="prefCommMode" formControlName="prefCommMode">
@@ -786,6 +834,8 @@
                 </option>
               </select>
             </div>
+          </div>
+          <div class="mb-3 row">
             <label for="primaryMode" class="col-sm-3 form-label">{{ 'serviceDesk.primaryMode' | translate }}</label>
             <div class="col-sm-3 mb-3">
               <input
@@ -816,7 +866,7 @@
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title" id="clientCommentsLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'client comment' : 'new client comment' }}</h5>
+        <h5 class="modal-title" id="clientCommentsLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'comment' : 'new comment' }}</h5>
         <button
           type="button"
           class="btn-close"
@@ -843,6 +893,7 @@
                 class="form-control"
                 id="postedBy"
                 formControlName="postedBy"
+                placeholder="{{ loggedInUser?.userName }}"
               />
             </div>
             <div class="col-md-6 mb-3">
@@ -857,7 +908,7 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveClientDetails()">{{ 'serviceDesk.saveDetails' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="saveClientComments()">{{ 'serviceDesk.saveDetails' | translate }}</button>
       </div>
     </div>
   </div>
@@ -926,7 +977,7 @@
             <div class="col-md-6 mb-3">
               <label for="remarks" class="form-label">{{ 'serviceDesk.remarks' | translate }}</label>
               <input
-                type="date"
+                type="text"
                 class="form-control"
                 id="remarks"
                 formControlName="remarks"
@@ -1014,3 +1065,25 @@
     </div>
   </div>
 </div>
+
+<!--Modal for Listing all users !-->
+<app-dynamic-simple-modal
+  [modalVisible]="allUsersModalVisible"
+  [modalButtonLabel]="'Okay'"
+  [showModalButtons]="true"
+  [useDynamicContent]="true"
+  [modalTitle]="'Users'"
+  [zIndex]="1"
+  (actionEmitter)="processSelectedUser($event)"
+  id="process-selected-user"
+>
+  <div modal-body-content>
+    <app-staff-modal
+      #staffModal
+      [accountType]="selectedUserType"
+      (userSelected)="getSelectedUser($event)"
+      id="get-selected-user"
+    >
+    </app-staff-modal>
+  </div>
+</app-dynamic-simple-modal>
