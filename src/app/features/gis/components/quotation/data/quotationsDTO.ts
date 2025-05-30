@@ -1070,5 +1070,8 @@ export interface QuoteReportDTO {
   motorPrivateList: MotorPrivateDTO[];
   domesticList: DomesticDTO[];
 }
-
+export interface QuotationComment{
+  comment:string
+  quotationCode:number
+}
 
