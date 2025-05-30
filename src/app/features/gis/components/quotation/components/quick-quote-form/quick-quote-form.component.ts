@@ -1512,9 +1512,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       untilDestroyed(this)
     ).subscribe({
         next: (response) => {
-          sessionStorage.setItem("quotationNumber", response._embedded.quotationNumber)
-          this.router.navigate(['/home/gis/quotation/quote-summary']).then(r => {
-          })
+          if (response._embedded?.quotationNumber) {
+            sessionStorage.setItem("quotationNumber", response._embedded.quotationNumber)
+            this.router.navigate(['/home/gis/quotation/quote-summary']).then(r => {
+            })
+          } else {
+            this.globalMessagingService.displayErrorMessage('Error', 'Could not save quotation details');
+          }
         },
         error: (error) => {
           this.globalMessagingService.displayErrorMessage('Error', error.error.message);
@@ -1745,7 +1749,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
                 updatedLimits.push({
                   section: {
                     limitAmount: benefit.limitAmount,
-                    code: benefit.code,
+                    code: benefit.sectionCode,
                     description: benefit.sectionDescription,
                     isMandatory: "N",
                   },
