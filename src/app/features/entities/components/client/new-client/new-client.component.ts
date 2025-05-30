@@ -370,7 +370,9 @@ export class NewClientComponent implements OnInit {
 
           this.selectedCategory = this.entityDetails?.categoryName === 'Individual' ? 'I' : 'C';
           log.info('Category from entity', this.selectedCategory);
-          this.processFields(this.formFields, this.selectedCategory);
+          if (party) {
+            this.processFields(this.formFields, this.selectedCategory);
+          }
           this.patchClientEntityFormValues()
         },
         error: (e) => {
@@ -589,7 +591,7 @@ export class NewClientComponent implements OnInit {
 
   private processFields(data: any, selectedEntityType: string) {
     const category= selectedEntityType === 'I'? 'individual' : 'corporate';
-    const selectedClient = data.newClient[category];
+    const selectedClient = data?.newClient[category];
     this.lastSelectedEntity = selectedClient;
 
     if (!selectedClient) {
@@ -1146,7 +1148,7 @@ export class NewClientComponent implements OnInit {
       }
 
       //preparing wealth dto
-      const wealth: any = [{
+      /*const wealth: any = [{
         fundsSource: clientFormValues.wealth_details.funds_source,
         employmentStatus: clientFormValues.wealth_details.typeOfEmployment,
         sectorId: clientFormValues.wealth_details.economic_sector?.id,
@@ -1155,7 +1157,7 @@ export class NewClientComponent implements OnInit {
         premiumFrequency: clientFormValues.wealth_details.premiumFrequency,
         distributeChannel: clientFormValues.wealth_details.distributeChannel,
 
-      }]
+      }]*/
 
       const wealthAml: any = this.selectedCategory === 'I' ? this.individualAmlDetailsData : this.amlDetailsData;
       const ownership: any = this.ownershipStructureData;
