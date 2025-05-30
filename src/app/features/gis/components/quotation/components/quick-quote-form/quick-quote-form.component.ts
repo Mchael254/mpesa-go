@@ -110,6 +110,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   productRiskFields: DynamicRiskField[][] = [];
   expandedStates: boolean[] = [];
+  currencySymbol: string;
 
 
   allSubclassList: Subclasses[];
@@ -280,6 +281,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   premiumComputationResponse: ProductLevelPremium = null
   selectedProductCovers: ProductPremium[] = [];
   coverSelected = false;
+  currentSelectedRisk: any
+  currentComputationPayload: PremiumComputationRequest = null
 
 
   constructor(
@@ -590,7 +593,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug("Form submission payload >>>>", this.quickQuoteForm.value);
     const computationRequest = this.computationPayload();
     log.debug("premium computation payload >>>>", computationRequest);
-    this.quotationService.premiumComputationEngine(computationRequest).pipe(
+    this.performComputation(computationRequest)
+  }
+
+  performComputation(computationPayload: PremiumComputationRequest) {
+    this.quotationService.premiumComputationEngine(computationPayload).pipe(
       untilDestroyed(this)
     ).subscribe({
       next: (response) => {
@@ -612,7 +619,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   computationPayload(): PremiumComputationRequest {
     const formValues = this.quickQuoteForm.getRawValue();
     const withEffectFrom = new Date(formValues.effectiveDate);
-    return {
+    let payload = {
       transactionStatus: "NB",
       quotationStatus: "Draft",
       frequencyOfPayment: "A",
@@ -628,7 +635,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       currency: {
         rate: this.exchangeRate
       }
-    }
+    };
+    this.currentComputationPayload = payload
+    return payload;
   }
 
   getProductPayload(formValues: any): Product[] {
@@ -648,13 +657,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   getRiskPayload(product: any, effectiveDate): Risk[] {
     let riskPayload: Risk[] = []
-    for (let risk of product.risks) {
+    for (const [index, risk] of product.risks.entries()) {
       riskPayload.push({
         code: risk.riskCode,
         binderCode: risk?.applicableBinder?.code,
         sumInsured: risk?.selfDeclaredValue || risk?.value,
         withEffectFrom: this.formatDate(new Date(effectiveDate)),
         withEffectTo: this.formatDate(new Date(product.effectiveTo)),
+        propertyId: `Risk ${index + 1}`,
         prorata: "F",
         subclassSection: {
           code: risk?.useOfProperty?.code
@@ -709,6 +719,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         calculationGroup: 1,
         declarationSection: "N",
         rowNumber: 1,
+        limitPeriod: limit?.limitPeriod || 0,
         rateDivisionFactor: limit?.divisionFactor,
         premiumRate: limit?.rate,
         rateType: limit?.rateType,
@@ -1507,9 +1518,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       untilDestroyed(this)
     ).subscribe({
         next: (response) => {
-          sessionStorage.setItem("quotationNumber", response._embedded.quotationNumber)
-          this.router.navigate(['/home/gis/quotation/quote-summary']).then(r => {
-          })
+          if (response._embedded?.quotationNumber) {
+            sessionStorage.setItem("quotationNumber", response._embedded.quotationNumber)
+            this.router.navigate(['/home/gis/quotation/quote-summary']).then(r => {
+            })
+          } else {
+            this.globalMessagingService.displayErrorMessage('Error', 'Could not save quotation details');
+          }
         },
         error: (error) => {
           this.globalMessagingService.displayErrorMessage('Error', error.error.message);
@@ -1615,7 +1630,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         quotationCode: null,
         transactionCode: null,
         renewalEndorsement: null,
-        taxRateCode: original?.taxCode,
+        taxRateCode: null,//original?.taxCode,
         levelCode: original?.applicationLevel,
         taxType: original?.taxType,
         riskProductLevel: original?.applicationLevel
@@ -1650,13 +1665,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
             code: limit.sectCode,
             compute: "Y",
             description: limit.description,
-            freeLimit: 0,
+            freeLimit: limit?.freeLimit || 0,
             multiplierDivisionFactor: limit.multiplierDivisionFactor,
             multiplierRate: limit.multiplierRate,
             premiumAmount: limit.premium,
             premiumRate: limit.premiumRate,
             rateDivisionFactor: limit.rateDivisionFactor,
-            rateType: limit.rateType || "FXD",
+            rateType: limit?.rateType || "FXD",
             rowNumber: limit.rowNumber,
             sectionType: limit.sectionType,
             sectionShortDescription: limit.shortDescription,
@@ -1701,13 +1716,15 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   selectCovers(product: ProductPremium, riskDetails: RiskLevelPremium) {
     log.debug("Selected risk >>>", riskDetails)
+    log.debug("Currently selected products >>>", this.selectedProductCovers)
+    this.currentSelectedRisk = riskDetails
     this.selectedProductCovers = this.selectedProductCovers.filter(value => value.code !== product.code);
     this.selectedProductCovers.push(product)
     if (this.selectedProductCovers.length === this.premiumComputationResponse.productLevelPremiums.length) {
       this.coverSelected = true
     }
-    log.debug("Current product >>>>", this.selectedProductCovers)
   }
+
 
 
 
@@ -1716,4 +1733,94 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   this.quotationService.premiumItemsSubject$.next(this.premiumComputationResponse)
  }
   
+
+  removeBenefit(benefitDto: any) {
+    log.debug("About to remove >>>>", benefitDto)
+    const updatedPayload = this.modifyPremiumPayload([], benefitDto.sectCode)
+    this.performComputation(updatedPayload)
+  }
+
+  listenToBenefitsAddition(benefitDto: Premiums[]) {
+    let updatedPayload = this.modifyPremiumPayload(benefitDto);
+    log.debug("Modified Premium Computation Payload:", updatedPayload);
+    this.performComputation(updatedPayload)
+  }
+
+  modifyPremiumPayload(benefitDto: Premiums[], sectionCodeToRemove?: number): PremiumComputationRequest {
+    const premiumComputationRequest = this.currentComputationPayload || this.computationPayload();
+    const riskCode = this.currentSelectedRisk.code;
+    const coverTypeCode = this.currentSelectedRisk.selectCoverType.coverTypeCode;
+    const updatedProducts = premiumComputationRequest.products.map(product => ({
+      ...product,
+      risks: product.risks.map(risk => {
+        if (risk.code !== riskCode) return risk;
+        return {
+          ...risk,
+          subclassCoverTypeDto: risk.subclassCoverTypeDto.map(coverType => {
+            if (coverType.coverTypeCode !== coverTypeCode) return coverType;
+
+            let updatedLimits = [...coverType.limits];
+            log.debug("Section to remove>>", sectionCodeToRemove, updatedLimits, coverTypeCode)
+            if (sectionCodeToRemove) {
+              updatedLimits = updatedLimits.filter(
+                limit => limit.section.code !== sectionCodeToRemove
+              );
+            }
+            if (benefitDto.length > 0) {
+              updatedLimits = updatedLimits.map(limit => {
+                const match = benefitDto.find(b => b.code === limit.section.code);
+                return match
+                  ? {...limit, limitAmount: match.limitAmount}
+                  : limit;
+              });
+              benefitDto.forEach(benefit => {
+                updatedLimits = updatedLimits.filter(value => value.section.code !== benefit.sectionCode)
+                log.debug("I am adding this benefit>>>", benefit)
+                updatedLimits.push({
+                  section: {
+                    code: benefit.sectionCode,
+                    description: benefit.sectionDescription,
+                    isMandatory: "N",
+                    limitAmount: benefit.limitAmount
+                  },
+                  multiplierDivisionFactor: benefit.multiplierDivisionFactor,
+                  riskCode: null,
+                  shortDescription: benefit.sectionDescription,
+                  limitAmount: benefit.limitAmount,
+                  premiumRate: benefit.rate ?? 1,
+                  minimumPremium: benefit.minimumPremium ?? 0,
+                  rateType: benefit.rateType,
+                  calculationGroup: 1,
+                  declarationSection: "N",
+                  limitPeriod: benefit?.limitPeriod || 0,
+                  rowNumber: updatedLimits.length + 1,
+                  rateDivisionFactor: benefit.divisionFactor,
+                  annualPremium: 0,
+                  multiplierRate: benefit.multiplierRate || 1,
+                  sectionType: benefit.sectionType,
+                  description: benefit.sectionDescription,
+                  compute: "Y",
+                  dualBasis: "N",
+                  freeLimit: benefit.freeLimit
+                });
+              });
+            }
+            return {
+              ...coverType,
+              limits: updatedLimits
+            };
+          })
+        };
+      })
+    }));
+    let updatedPayload = {
+      ...premiumComputationRequest,
+      products: updatedProducts
+    };
+    this.currentComputationPayload = updatedPayload
+    return updatedPayload;
+  }
+
+
+
 }

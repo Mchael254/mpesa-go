@@ -6,6 +6,7 @@ import {
   Input,
   OnDestroy,
   OnInit, Output,
+  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import stepData from '../../data/steps.json'
@@ -19,7 +20,9 @@ import {QuotationsService} from '../../services/quotations/quotations.service';
 
 import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
 
+
 import {forkJoin, mergeMap} from 'rxjs';
+
 import {
   Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
   premiumPayloadData, QuotationDetails, UserDetail, Limit
@@ -46,15 +49,16 @@ declare var $: any;
   styleUrls: ['./cover-types-comparison.component.css']
 })
 export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
-  activeRiskIndex:number | null = null;
-  @Input() passedRiskedLevelPremiums!: any;
+  activeRiskIndex: number | null = null;
+  @Input() riskLevelPremium!: RiskLevelPremium;
   @Output() selectedCoverEvent: EventEmitter<RiskLevelPremium> = new EventEmitter<RiskLevelPremium>();
+  @Output() additionalBenefitsEvent: EventEmitter<Premiums[]> = new EventEmitter<Premiums[]>();
+  @Output() additionalBenefitsRemovedEvent: EventEmitter<Premiums> = new EventEmitter<Premiums>();
 
 
   selectedOption: string = 'email';
   clientName: string = '';
   steps = stepData;
-  coverTypes: any[];
 
   quotationDetails: any;
 
@@ -84,8 +88,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   selectedPhoneNo: any;
   isChecked: boolean = false;
   premiumPayload: PremiumComputationRequest;
-  premiumResponse: any;
-  riskLevelPremiums: any;
+  additionalBenefits: any;
 
   user: any;
   userDetails: any
@@ -132,7 +135,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   modalHeight: number = 200;
   limitsOfLiabilityList: LimitsOfLiability[] = [];
   excessesList: Excesses[] = []
-  selectedRisk: any;
   premiums: any;
   updatePremiumPayload: premiumPayloadData;
   quoteProductCode: any;
@@ -142,8 +144,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   userCode: number;
   organizationId: number;
   exchangeRate: number;
-  storedQuotationNo: string;
-  storedQuotationCode: number;
   extraRiskCode: [] = [];
   component: {
     risks: {
@@ -157,7 +157,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     }[];
   };
   quoteAction: string = null
-  premiumComputationPayload: PremiumComputationRequest;
+  selectedRisk: any = null
 
   public currencyObj: NgxCurrencyConfig;
   private typingTimer: any;// Timer reference
@@ -192,6 +192,15 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   public isBenefitsDetailsOpen = false;
   public isSelectCoverOpen = true;
 
+  ngOnChanges(changes: SimpleChanges): void {
+
+    if (changes['passedRiskedLevelPremiums'] &&
+      changes['passedRiskedLevelPremiums'].currentValue?.length > 0) {
+      this.activeRiskIndex = 0; //first risk open default
+      // this.activeRiskIndex = changes['passedRiskedLevelPremiums'].currentValue.length - 1; //latest risk open default
+    }
+
+  }
 
   ngOnInit(): void {
     this.createEmailForm();
@@ -227,7 +236,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     this.isModalOpen = false;
   }
 
-  fetchCoverTypeRelatedData(risk: RiskLevelPremium, selectedCover: CoverTypeDetail) {
+  fetchCoverTypeRelatedData(selectedCover: CoverTypeDetail) {
+    log.debug("I selected this cover >>>", selectedCover)
     const coverTypeCode = selectedCover.coverTypeCode
     forkJoin(([
       this.quotationService.getClauses(coverTypeCode, this.selectedSubclassCode),
@@ -245,24 +255,36 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         selectedCover.excesses = excesses._embedded ?? []
         selectedCover.limitOfLiabilities = limitOfLiabilities._embedded ?? []
         selectedCover.clauses = clauses._embedded ?? []
-        risk.selectCoverType = selectedCover
-        this.selectedCoverEvent.emit(risk);
-        const coverTypeSections = this.passedRiskedLevelPremiums
-          .filter(value =>
-            value.coverTypeDetails.some(cover => cover.coverTypeCode === coverTypeCode)
-          )
-
-        log.debug("Cover type sections filtered >>>", coverTypeSections)
-        this.coverTypePremiumItems = applicablePremiumRates;
+        this.additionalBenefits = applicablePremiumRates
+        /* const coverTypeSections = this.riskLevelPremium.coverTypeDetails.filter(value =>value.coverTypeDetails.some(cover => cover.coverTypeCode === coverTypeCode)
+           )*/
         this.temporaryPremiumList = applicablePremiumRates.filter(value => value.isMandatory !== 'Y')
-          .map((value) => {
+        /*  .map((value) => {
             let matchingSection = coverTypeSections.find(section => section.sectCode === value.sectionCode);
             return {
               ...value,
               isChecked: !!matchingSection,
               limitAmount: matchingSection?.limitAmount ?? null
             }
-          })
+          })*/
+        // risk.selectCoverType = selectedCover
+        // this.selectedCoverEvent.emit(risk);
+        /*  const coverTypeSections = this.passedRiskedLevelPremiums
+            .filter(value =>
+              value.coverTypeDetails.some(cover => cover.coverTypeCode === coverTypeCode)
+            )*/
+
+        /*   log.debug("Cover type sections filtered >>>", coverTypeSections)
+           this.coverTypePremiumItems = applicablePremiumRates;
+           this.temporaryPremiumList = applicablePremiumRates.filter(value => value.isMandatory !== 'Y')
+             .map((value) => {
+               let matchingSection = coverTypeSections.find(section => section.sectCode === value.sectionCode);
+               return {
+                 ...value,
+                 isChecked: !!matchingSection,
+                 limitAmount: matchingSection?.limitAmount ?? null
+               }
+             })*/
 
 
       })
@@ -334,8 +356,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
 
-
-
   loadAllCurrencies() {
     this.currencyService.getAllCurrencies()
       .pipe(
@@ -384,13 +404,11 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
 
-
   selectedRiskLevelPremium(data: any) {
     log.info("RiskLevelPremium::::::", data);
     const riskLevelPremiumString = JSON.stringify(data);
     sessionStorage.setItem('riskLevelPremium', riskLevelPremiumString);
   }
-
 
   createEmailForm() {
     this.emailForm = this.fb.group({
@@ -479,61 +497,20 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       );
       return;
     }
+    /*  let rowNumbers = newListToCompute.map(value => value.rowNumber);
+      let maxValueAssigned = Math.max(...rowNumbers);*/
+    let limitsToComputeOn = this.temporaryPremiumList.filter(value => value.isChecked && value.isMandatory !== 'Y')
+    log.debug("Modified limitsToComputeOn", limitsToComputeOn);
+    this.additionalBenefitsEvent.emit(limitsToComputeOn)
 
-    let limitsToModify = this.premiumComputationPayload.risks
-      .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)?.limits;
-
-    let newListToCompute: Limit[] = []
-    for (let limit of limitsToModify) {
-      if (limit.section.isMandatory === "Y") {
-        newListToCompute.push(limit)
-      }
-    }
-    let rowNumbers = newListToCompute.map(value => value.rowNumber);
-    let maxValueAssigned = Math.max(...rowNumbers);
-    for (let limit of this.temporaryPremiumList) {
-      if (limit.isChecked && limit.limitAmount && limit.isMandatory !== 'Y') {
-        maxValueAssigned += 1;
-        newListToCompute.push({
-          calculationGroup: 1,
-          declarationSection: "N",
-          rowNumber: maxValueAssigned,
-          rateDivisionFactor: limit.divisionFactor,
-          premiumRate: limit.rate,
-          rateType: limit.rateType,
-          minimumPremium: limit.premiumMinimumAmount,
-          annualPremium: 0,
-          multiplierDivisionFactor: limit.multiplierDivisionFactor,
-          multiplierRate: limit.multiplierRate,
-          freeLimit: limit?.freeLimit,
-          description: limit.sectionShortDescription,
-          section: {
-            description: limit.sectionDescription,
-            limitAmount: limit.limitAmount,
-            code: limit.sectionCode,
-            isMandatory: "N"
-          },
-          sectionType: limit.sectionType,
-          riskCode: null,
-          limitAmount: limit.limitAmount,
-          limitPeriod: limit?.limitPeriod || 0,
-          compute: "Y",
-          dualBasis: "N"
-        })
-      }
-    }
-    this.premiumComputationPayload.risks.forEach((risk) => {
-      if (risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType) {
-        risk.limits = newListToCompute
-      }
-    });
-    log.debug("Modified premium computation payload", this.premiumComputationPayload);
   }
 
   toggleSelectProduct() {
     this.isSelectCoverOpen = !this.isSelectCoverOpen;
   }
-  toggleSelectRisk(index:number) {
+
+  toggleSelectRisk(index: number, risk: any) {
+    log.debug("Selected risk>>>", risk)
     this.activeRiskIndex = this.activeRiskIndex === index ? null : index;
 
   }
@@ -564,24 +541,23 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     this.modalHeight = event.height;
   }
 
-  onCoverTypeSelected(risk: RiskLevelPremium, selectedCover: CoverTypeDetail): void {
-    log.debug('Risk selected:', risk);
-    log.debug('CoverType selected:', selectedCover);
+  onCoverTypeSelected(selectedCover: CoverTypeDetail): void {
+    log.debug('CoverType selected:', selectedCover, this.riskLevelPremium);
+    this.riskLevelPremium.selectCoverType = selectedCover
     this.selectedCover = selectedCover;
     this.selectedCoverTypeCode = selectedCover.coverTypeCode;
     this.selectedSubclassCode = selectedCover.subclassCode;
-    this.selectedBinderCode = risk.binderCode;
+    this.selectedBinderCode = this.riskLevelPremium.binderCode
     if (this.selectedCoverTypeCode && this.selectedSubclassCode) {
-      this.fetchCoverTypeRelatedData(risk, selectedCover);
+      this.fetchCoverTypeRelatedData(selectedCover);
     } else {
       log.error('Cannot fetch cover type data: selectedSubclassCode is undefined');
     }
-
-    // Collapse all expanded sections
     this.isClauseDetailsOpen = false;
     this.isLimitsDetailsOpen = false;
     this.isExcessDetailsOpen = false;
     this.isBenefitsDetailsOpen = false;
+    this.selectedCoverEvent.emit(this.riskLevelPremium)
 
   }
 
@@ -674,6 +650,11 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     }
   }
 
+  saveAdditionalBenefitChanges() {
+    this.additionalBenefitsEvent.emit(this.temporaryPremiumList);
+    log.debug("Temporary Premium List after saving additional benefits", this.temporaryPremiumList);
+  }
+
   fetchUserOrgId() {
     this.quotationService
       .getUserOrgId(this.userCode)
@@ -713,33 +694,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       });
   }
 
-  getQuotationPayload(): any {
-    return {
-      quotationCode: this.storedQuotationCode,
-      quotationNumber: this.storedQuotationNo,
-      source: 37,
-      user: this.user,
-      clientCode: null,
-      // productCode: this.premiumPayload?.product?.code,
-      currencyCode: this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode,
-      currencyRate: this.exchangeRate || 1,
-      agentCode: 0,
-      premium: this.premiumResponse?.premiumAmount,
-      agentShortDescription: "DIRECT",
-      wefDate: this.premiumPayload?.dateWithEffectFrom,
-      wetDate: this.premiumPayload?.dateWithEffectTo,
-      bindCode: this.premiumPayload?.risks?.[0]?.binderDto?.code,
-      clientType: "C",
-      branchCode: this.userBranchId || 1,
-      quotationProducts: [
-        {
-          wef: this.premiumPayload?.dateWithEffectFrom,
-          wet: this.premiumPayload?.dateWithEffectTo,
-          productCode: this.premiumPayload?.product?.code,
-        }
-      ]
-    }
-  }
 
   deleteRisk() {
     log.debug("Selected Risks to be deleted", this.extraRiskCode);
@@ -784,27 +738,15 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
   openRiskDeleteModal(limitToDelete: any) {
-    for (let premiumRate of this.temporaryPremiumList) {
-      if (premiumRate.sectionCode == limitToDelete.sectCode) {
-        premiumRate.isChecked = false
-        premiumRate.limitAmount = null
-      }
-    }
-    let limitsToModify = this.premiumComputationPayload.risks
-      .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)?.limits;
-    log.debug("Before Modification computation payload for deletion>>>", this.premiumComputationPayload, limitToDelete)
-    let newLimits: Limit[] = []
-    for (let limit of limitsToModify) {
-      if ((limit.section.code !== limitToDelete.sectCode) || limit.section.isMandatory === "Y") {
-        newLimits.push(limit);
-      }
-    }
-    this.premiumComputationPayload.risks.forEach((risk) => {
-      if (risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType) {
-        risk.limits = newLimits
-      }
-    });
-    log.debug("Modified computation payload for deletion>>>", this.premiumComputationPayload)
+    this.additionalBenefitsRemovedEvent.emit(limitToDelete)
+  }
+
+  onCoverTypeChange(coverTypeCode: number) {
+    log.debug("Selected cover type>>>", coverTypeCode)
+  }
+
+  selectCoverNew() {
+
   }
 }
 

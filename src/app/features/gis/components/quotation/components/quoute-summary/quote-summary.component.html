@@ -149,19 +149,18 @@
       <button type="button" class="btn btn-text me-2 " style="border: none;">
         Back
       </button>
-      <button type="button" class="btn btn-outline-primary me-2 ">
-        Re assign
-      </button>
-      <button type="button" class="btn btn-outline-primary me-2 ">
-        Reject
-      </button>
+      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary mx-2" 
+        data-bs-target="#reassignQuotation" data-bs-toggle="modal">{{'gis.quotation.reassign' | translate}}</button>
+      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary"  data-bs-target="#rejectQuote"
+        data-bs-toggle="modal">{{'gis.quotation.reject' |
+        translate}} </button>
     </div>
     <div class="right-buttons">
-      <button type="button" class="btn btn-outline-primary me-2 ">
+      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary me-2 ">
         Share quotation
       </button>
       <!-- <button pButton label="Accept quote" class="p-button-success"></button> -->
-      <button type="button" id="acceptQuote" class="btn btn-primary" data-bs-toggle="modal"
+      <button *ngIf="afterRejectQuote" type="button" id="acceptQuote" class="btn btn-primary" data-bs-toggle="modal"
         id="openAdditionalBenefitsModalButton" data-bs-target="#acceptQuote" title="open">Accept quote
       </button>
     </div>
@@ -194,7 +193,76 @@
     </div>
   </div>
 
+</div>
 
+<!-- reject quote modal -->
+<div class="modal fade" id="rejectQuote">
+  <div class="modal-dialog modal-dialog-centered" style="min-width:400px">
+    <div class="modal-content ps-4 pt-2 pe-4">
+      <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+        <p class="modal-title fw-bold">{{'gis.quotation.reject_quote' | translate}}</p>
+        <button type="button" data-bs-dismiss="modal" class="btn p-1 text-danger fw-bold" style="border: none;">X</button>
+      </div>
+      <p class="text-dark mb-5">Are you sure you want to reject this quote?</p>
+      <label class="text-dark" for="comment">Comment</label>
+      <textarea [(ngModel)]="rejectComment" name="rejectComment"></textarea>
+      <div class="d-flex justify-content-between align-items-center rounded-3 mb-4 mt-5 p-0">
+        <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary" style="text-decoration: none;">{{
+          'gis.quotation.cancel' | translate }}
+        </button>
+        <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+          data-bs-dismiss="modal" (click)="rejectQuotation(quotationDetails.code)">{{ 'gis.quotation.save_changes' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- reassign quote modal -->
+<div class="modal fade" id="reassignQuotation">
+  <div class="modal-dialog modal-dialog-centered" style="min-width:500px">
+    <div class="modal-content ps-4 pt-2 pe-4">
+      <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+        <p class="modal-title fw-bold">{{'gis.quotation.reassign_quote' | translate}}</p>
+        <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X</button>
+      </div>
+      <div class="row mb-4 mt-2">
+        <p-table #dt [value]="users" [rows]="3" [paginator]="true" [globalFilterFields]="['userId', 'fullName']"
+          selectionMode="single" [(selection)]="selectedUser" styleClass="p-datatable-striped"
+          (onRowSelect)="onUserSelect()" (onRowUnselect)="onUserUnselect()">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>User ID</th>
+              <th>Full Name</th>
+            </tr>
+            <tr>
+              <th>
+                <input type="text" [(ngModel)]="globalSearch" (input)="filterGlobal($event)">
+              </th>
+              <th>
+                <input type="text" [(ngModel)]="fullNameSearch" (input)="filterByFullName($event)">
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-user>
+            <tr [pSelectableRow]="user">
+              <td>{{ user.userId }}</td>
+              <td>{{ user.fullName }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
 
+      <label class="text-dark" for="comment">Comment</label>
+      <textarea [(ngModel)]="reassignComment" name="reassignComment"></textarea>
+      <div class="d-flex justify-content-between align-items-center rounded-3 mb-3 mt-3 p-0">
+        <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary" style="text-decoration: none;">{{
+          'gis.quotation.cancel' | translate }}
+        </button>
+        <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+          data-bs-dismiss="modal" (click)="reassignQuotation()">{{ 'gis.quotation.reassign' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
