@@ -5,6 +5,7 @@ import {
   CreateLimitsOfLiability,
   EditRisk,
   premiumPayloadData,
+  QuotationComment,
   quotationDTO,
   quotationRisk,
   RegexPattern,
@@ -812,6 +813,11 @@ export class QuotationsService {
   }
  reviseQuotation(quotCode: number,newQuote:string ="N"): Observable<any> {
     return this.api.POST<any[]>(`v2/revise?quotCode=${quotCode}&newQuote=${newQuote}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL,);
+  }
+  updateQuotationComment(payload: QuotationComment): Observable<any>{
+        return this.api.PUT<any>(`v2/quotation/comment`, JSON.stringify(payload), API_CONFIG.GIS_QUOTATION_BASE_URL);
+
+    
   }
 }
 
