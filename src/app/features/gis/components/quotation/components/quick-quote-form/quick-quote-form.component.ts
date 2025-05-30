@@ -1664,13 +1664,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
             code: limit.sectCode,
             compute: "Y",
             description: limit.description,
-            freeLimit: 0,
+            freeLimit: limit?.freeLimit || 0,
             multiplierDivisionFactor: limit.multiplierDivisionFactor,
             multiplierRate: limit.multiplierRate,
             premiumAmount: limit.premium,
             premiumRate: limit.premiumRate,
             rateDivisionFactor: limit.rateDivisionFactor,
-            rateType: limit.rateType || "FXD",
+            rateType: limit?.rateType || "FXD",
             rowNumber: limit.rowNumber,
             sectionType: limit.sectionType,
             sectionShortDescription: limit.shortDescription,
@@ -1715,13 +1715,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   selectCovers(product: ProductPremium, riskDetails: RiskLevelPremium) {
     log.debug("Selected risk >>>", riskDetails)
+    log.debug("Currently selected products >>>", this.selectedProductCovers)
     this.currentSelectedRisk = riskDetails
     this.selectedProductCovers = this.selectedProductCovers.filter(value => value.code !== product.code);
     this.selectedProductCovers.push(product)
     if (this.selectedProductCovers.length === this.premiumComputationResponse.productLevelPremiums.length) {
       this.coverSelected = true
     }
-    log.debug("Current product >>>>", this.selectedProductCovers)
   }
 
   removeBenefit(benefitDto: any) {

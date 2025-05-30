@@ -155,6 +155,7 @@ export interface LimitPremium {
   multiplierRate?: number
   sectionType?: string
   shortDescription?: string
+  freeLimit?: number
 }
 
 export interface TaxComputation {
