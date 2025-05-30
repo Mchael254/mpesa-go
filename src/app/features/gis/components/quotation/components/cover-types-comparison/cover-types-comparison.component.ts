@@ -53,6 +53,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   @Input() passedRiskedLevelPremiums!: any;
   @Output() selectedCoverEvent: EventEmitter<RiskLevelPremium> = new EventEmitter<RiskLevelPremium>();
   @Output() additionalBenefitsEvent: EventEmitter<Premiums[]> = new EventEmitter<Premiums[]>();
+  @Output() additionalBenefitsRemovedEvent: EventEmitter<Premiums> = new EventEmitter<Premiums>();
 
 
   selectedOption: string = 'email';
@@ -687,7 +688,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
   saveAdditionalBenefitChanges() {
     this.additionalBenefitsEvent.emit(this.temporaryPremiumList);
-    //this.additionalBenefitsEvent.emit({risk: this.selectedRisk, benefits: this.temporaryPremiumList});
     log.debug("Temporary Premium List after saving additional benefits", this.temporaryPremiumList);
   }
 
@@ -730,33 +730,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       });
   }
 
-  getQuotationPayload(): any {
-    return {
-      quotationCode: this.storedQuotationCode,
-      quotationNumber: this.storedQuotationNo,
-      source: 37,
-      user: this.user,
-      clientCode: null,
-      // productCode: this.premiumPayload?.product?.code,
-      currencyCode: this.premiumPayload?.risks?.[0]?.binderDto?.currencyCode,
-      currencyRate: this.exchangeRate || 1,
-      agentCode: 0,
-      premium: this.premiumResponse?.premiumAmount,
-      agentShortDescription: "DIRECT",
-      wefDate: this.premiumPayload?.dateWithEffectFrom,
-      wetDate: this.premiumPayload?.dateWithEffectTo,
-      bindCode: this.premiumPayload?.risks?.[0]?.binderDto?.code,
-      clientType: "C",
-      branchCode: this.userBranchId || 1,
-      quotationProducts: [
-        {
-          wef: this.premiumPayload?.dateWithEffectFrom,
-          wet: this.premiumPayload?.dateWithEffectTo,
-          productCode: this.premiumPayload?.product?.code,
-        }
-      ]
-    }
-  }
 
   deleteRisk() {
     log.debug("Selected Risks to be deleted", this.extraRiskCode);
@@ -801,13 +774,13 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
   openRiskDeleteModal(limitToDelete: any) {
-    for (let premiumRate of this.temporaryPremiumList) {
+  /*  for (let premiumRate of this.temporaryPremiumList) {
       if (premiumRate.sectionCode == limitToDelete.sectCode) {
         premiumRate.isChecked = false
         premiumRate.limitAmount = null
       }
-    }
-    let limitsToModify = this.premiumComputationPayload.risks
+    }*/
+ /*   let limitsToModify = this.premiumComputationPayload.risks
       .find(value => value.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType)?.limits;
     log.debug("Before Modification computation payload for deletion>>>", this.premiumComputationPayload, limitToDelete)
     let newLimits: Limit[] = []
@@ -815,13 +788,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       if ((limit.section.code !== limitToDelete.sectCode) || limit.section.isMandatory === "Y") {
         newLimits.push(limit);
       }
-    }
-    this.premiumComputationPayload.risks.forEach((risk) => {
-      if (risk.subclassCoverTypeDto.coverTypeCode === this.selectedCoverType) {
-        risk.limits = newLimits
-      }
-    });
-    log.debug("Modified computation payload for deletion>>>", this.premiumComputationPayload)
+    }*/
+    this.additionalBenefitsRemovedEvent.emit(limitToDelete)
   }
 }
 

@@ -240,6 +240,7 @@
 
         <app-cover-types-comparison
           (additionalBenefitsEvent)="listenToBenefitsAddition($event)"
+          (additionalBenefitsRemovedEvent)="removeBenefit($event)"
           (selectedCoverEvent)="selectCovers(product, $event)"
           [passedRiskedLevelPremiums]="product.riskLevelPremiums">
         </app-cover-types-comparison>
