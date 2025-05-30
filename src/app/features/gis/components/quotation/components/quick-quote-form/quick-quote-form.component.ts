@@ -110,6 +110,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   productRiskFields: DynamicRiskField[][] = [];
   expandedStates: boolean[] = [];
+  currencySymbol: string;
 
 
   allSubclassList: Subclasses[];
@@ -656,13 +657,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   getRiskPayload(product: any, effectiveDate): Risk[] {
     let riskPayload: Risk[] = []
-    for (let risk of product.risks) {
+    for (const [index, risk] of product.risks.entries()) {
       riskPayload.push({
         code: risk.riskCode,
         binderCode: risk?.applicableBinder?.code,
         sumInsured: risk?.selfDeclaredValue || risk?.value,
         withEffectFrom: this.formatDate(new Date(effectiveDate)),
         withEffectTo: this.formatDate(new Date(product.effectiveTo)),
+        propertyId: `Risk ${index + 1}`,
         prorata: "F",
         subclassSection: {
           code: risk?.useOfProperty?.code
