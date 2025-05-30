@@ -23,8 +23,9 @@
                     <ng-container *ngSwitchCase="'select'">
                       <ng-container *ngIf="field.name === 'product'">
                         <p-multiSelect [formControlName]="field.name" [name]="field.name" [options]="products"
-                          optionLabel="description" [filterBy]="'description'" [filter]="true" display="comma"
-                          (onChange)="getSelectedProducts($event)">
+                                       optionLabel="description" [filterBy]="'description'" [filter]="true"
+                                       display="comma"
+                                       (onChange)="getSelectedProducts($event)">
                         </p-multiSelect>
                       </ng-container>
 
@@ -33,15 +34,16 @@
                     <ng-container *ngSwitchCase="'date'">
                       <ng-container *ngIf="field.name === 'effectiveDate'">
                         <p-calendar [formControlName]="field.name" [name]="field.name" [dateFormat]="dateFormat"
-                          inputStyleClass='form-control' [showButtonBar]='true' [minDate]="selectedEffectiveDate"
-                          [dataType]="'string'" [style]="{ width: '100%' }" [showIcon]="true"></p-calendar>
+                                    inputStyleClass='form-control' [showButtonBar]='true'
+                                    [minDate]="selectedEffectiveDate"
+                                    [dataType]="'string'" [style]="{ width: '100%' }" [showIcon]="true"></p-calendar>
                       </ng-container>
 
                     </ng-container>
                     <ng-container *ngSwitchCase="'textarea'">
                       <ng-container *ngIf="field.name === 'quotComment'">
                         <textarea id="quote-textarea" class="form-control form-control-sm quote-input"
-                          [formControlName]="field.name" rows="3" [placeholder]="field.placeholder"></textarea>
+                                  [formControlName]="field.name" rows="3" [placeholder]="field.placeholder"></textarea>
                       </ng-container>
 
                     </ng-container>
@@ -60,156 +62,158 @@
     </div>
     <div>
       <div class="mb-4" style="background-color: #fff; border: none;border-radius: 5px;">
-      <div formArrayName="products">
-        <div *ngFor="let productGroup of productsFormArray.controls; let i = index" [formGroupName]="i" class="mb-2">
+        <div formArrayName="products">
+          <div *ngFor="let productGroup of productsFormArray.controls; let i = index" [formGroupName]="i" class="mb-2">
 
-          <!-- Collapsible Header -->
-          <div class="card-header d-flex justify-content-between align-items-center"
-            style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;"
-            (click)="toggleExpand(i)">
+            <!-- Collapsible Header -->
+            <div class="card-header d-flex justify-content-between align-items-center"
+                 style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;"
+                 (click)="toggleExpand(i)">
 
-            <!-- ONLY show title when collapsed -->
-            <span *ngIf="!expandedStates[i]" style="font-size: 20px;">
+              <!-- ONLY show title when collapsed -->
+              <span *ngIf="!expandedStates[i]" style="font-size: 20px;">
               {{ productGroup.value.description }}
             </span>
 
-            <button type="button" id="icon-chevron" class="btn btn-primary" style="margin-left: auto;">
-              <i class="fa" [ngClass]="expandedStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'"
+              <button type="button" id="icon-chevron" class="btn btn-primary" style="margin-left: auto;">
+                <i class="fa" [ngClass]="expandedStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'"
                 >
-              </i>
-            </button>
-          </div>
+                </i>
+              </button>
+            </div>
 
-          <!-- Expanded Content -->
-          <div class="card-body collapsible-body" *ngIf="expandedStates[i]">
-            <!-- Title + Icons -->
-            <p class="subtitle mb-3 m-0 d-flex align-items-center">
-              {{ productGroup.value.description }}
-              <i class="fas fa-plus" style="font-size:15px;border: 2px solid #00529B; border-radius: 100px; padding: 2px;padding-right: 3px;
+            <!-- Expanded Content -->
+            <div class="card-body collapsible-body" *ngIf="expandedStates[i]">
+              <!-- Title + Icons -->
+              <p class="subtitle mb-3 m-0 d-flex align-items-center">
+                {{ productGroup.value.description }}
+                <i class="fas fa-plus" style="font-size:15px;border: 2px solid #00529B; border-radius: 100px; padding: 2px;padding-right: 3px;
     padding-left: 3px; margin-left:20px; margin-right: 8px; color: #00529B; cursor: pointer;" title="Add risk"
-                (click)="addRisk(i)">
-              </i>
+                   (click)="addRisk(i)">
+                </i>
 
-              <i  class="fa-solid fa-trash-can"
-                style="font-size:17px; color:#EE3945; cursor: pointer; margin-left: 5px;" title="Delete product"
-                (click)="deleteProduct(productGroup, i)">
-              </i>
+                <i class="fa-solid fa-trash-can"
+                   style="font-size:17px; color:#EE3945; cursor: pointer; margin-left: 5px;" title="Delete product"
+                   (click)="deleteProduct(productGroup, i)">
+                </i>
 
 
-            </p>
+              </p>
 
-            <!-- Risk Fields -->
-            <div formArrayName="risks">
-              <div *ngFor="let riskGroup of getRisks(i).controls; let j = index" [formGroupName]="j">
-                <p class="riskTitle">Risk {{ j + 1 }}
-                  <i *ngIf="getRisks(i).length > 1" class="fa-solid fa-trash-can text-danger ms-2"
-                    style="color:#EE3945;" (click)="deleteRisk(riskGroup, i, j)">
-                  </i>
-                </p>
-                <div class="row">
-                  <!-- Loop over risk fields -->
-                  <ng-container *ngFor="let field of productRiskFields[i]">
-                    <div class="col-sm-4 col-6 dynamic-field mb-3">
-                      <div class="form-group form-group-sm">
-                        <label [for]="field.name" class="quote-label">{{ field.label | translate }}</label>
+              <!-- Risk Fields -->
+              <div formArrayName="risks">
+                <div *ngFor="let riskGroup of getRisks(i).controls; let j = index" [formGroupName]="j">
+                  <p class="riskTitle">Risk {{ j + 1 }}
+                    <i *ngIf="getRisks(i).length > 1" class="fa-solid fa-trash-can text-danger ms-2"
+                       style="color:#EE3945;" (click)="deleteRisk(riskGroup, i, j)">
+                    </i>
+                  </p>
+                  <div class="row">
+                    <!-- Loop over risk fields -->
+                    <ng-container *ngFor="let field of productRiskFields[i]">
+                      <div class="col-sm-4 col-6 dynamic-field mb-3">
+                        <div class="form-group form-group-sm">
+                          <label [for]="field.name" class="quote-label">{{ field.label | translate }}</label>
 
-                        <ng-container [ngSwitch]="field.type">
+                          <ng-container [ngSwitch]="field.type">
 
-                          <!-- Text input -->
-                          <ng-container *ngSwitchCase="'text'">
-                            <ng-container *ngIf="field.name==='carRegNo';else inputField">
-                              <input type="text" id="quote-input" class="form-control form-control-sm"
-                                (input)="validateCarRegNo(i, j); transformToUpperCase($event,i, j)"
-                                [formControlName]="field.name">
+                            <!-- Text input -->
+                            <ng-container *ngSwitchCase="'text'">
+                              <ng-container *ngIf="field.name==='carRegNo';else inputField">
+                                <input type="text" id="quote-input" class="form-control form-control-sm"
+                                       (input)="validateCarRegNo(i, j); transformToUpperCase($event,i, j)"
+                                       [formControlName]="field.name">
 
-                              <!-- Error message -->
-                              <div class="form-text text-danger" style="font-size: 14px;"
-                                *ngIf="getCarRegNoControl(i, j)?.invalid && (getCarRegNoControl(i, j)?.touched || getCarRegNoControl(i, j)?.dirty)">
+                                <!-- Error message -->
+                                <div class="form-text text-danger" style="font-size: 14px;"
+                                     *ngIf="getCarRegNoControl(i, j)?.invalid && (getCarRegNoControl(i, j)?.touched || getCarRegNoControl(i, j)?.dirty)">
 
-                                <div *ngIf="getCarRegNoControl(i, j)?.errors?.['pattern']">
-                                  Invalid registration number format.
+                                  <div *ngIf="getCarRegNoControl(i, j)?.errors?.['pattern']">
+                                    Invalid registration number format.
+                                  </div>
+                                  <div *ngIf="getCarRegNoControl(i, j)?.errors?.['unique']">
+                                    {{ 'gis.quotation.this_property_id_is_duplicated' | translate }}
+                                  </div>
+
                                 </div>
-                                <div *ngIf="getCarRegNoControl(i, j)?.errors?.['unique']">
-                                  {{ 'gis.quotation.this_property_id_is_duplicated' | translate }}
-                                </div>
-
-                              </div>
+                              </ng-container>
+                              <ng-template #inputField>
+                                <input type="text" id="quote-input" class="form-control form-control-sm"
+                                       [formControlName]="field.name">
+                              </ng-template>
                             </ng-container>
-                            <ng-template #inputField>
-                              <input type="text" id="quote-input" class="form-control form-control-sm"
-                                [formControlName]="field.name">
-                            </ng-template>
-                          </ng-container>
-                          <!-- Number input -->
-                          <ng-container *ngSwitchCase="'number'">
-                            <input type="number" id="quote-input" class="form-control form-control-sm"
-                              [max]="field?.max" [min]="field?.min" [formControlName]="field.name">
+                            <!-- Number input -->
+                            <ng-container *ngSwitchCase="'number'">
+                              <input type="number" id="quote-input" class="form-control form-control-sm"
+                                     [max]="field?.max" [min]="field?.min" [formControlName]="field.name">
+                            </ng-container>
+
+                            <!-- Currency input -->
+                            <input *ngSwitchCase="'currency'" type="text" class="form-control form-control-sm"
+                                   [formControlName]="field.name" currencyMask [options]="currencyObj">
+
+                            <!-- Date picker -->
+                            <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [dateFormat]="dateFormat"
+                                        inputStyleClass="form-control" [showButtonBar]="true"
+                                        [dataType]="'string'"></p-calendar>
+
+                            <!-- Years -->
+                            <ng-container *ngIf="field.name === 'yearOfManufacture'">
+                              <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="years"
+                                          [filter]="true"></p-dropdown>
+                            </ng-container>
+                            <!-- Years -->
+                            <ng-container *ngIf="field.name === 'useOfProperty'">
+                              <p-dropdown formControlName="useOfProperty"
+                                          [options]="productSubclassesMap[productGroup.value.code] || []"
+                                          (onChange)="onSubclassSelected($event.value,i, j, productGroup.value.code)"
+                                          optionLabel="description" dataKey="code" [filterBy]="'description'"
+                                          [filter]="true"></p-dropdown>
+
+                            </ng-container>
+                            <!-- Add other field types as needed -->
+                            <ng-container *ngIf="field.name === 'vesselType'">
+                              <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="vesselTypeList"
+                                          optionLabel="name" dataKey="code" [filter]="true"></p-dropdown>
+                            </ng-container>
+                            <ng-container *ngIf="field.name === 'modeOfTransport'">
+                              <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="modeOfTransport"
+                                          optionLabel="description" dataKey="code" [filterBy]="'description'"
+                                          [filter]="true"></p-dropdown>
+                            </ng-container>
+                            <ng-container *ngIf="field.name === 'occupation'">
+                              <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="occupationData"
+                                          optionLabel="name" dataKey="id" [filterBy]="'name'"
+                                          [filter]="true"></p-dropdown>
+                            </ng-container>
+
                           </ng-container>
 
-                          <!-- Currency input -->
-                          <input *ngSwitchCase="'currency'" type="text" class="form-control form-control-sm"
-                            [formControlName]="field.name" currencyMask [options]="currencyObj">
-
-                          <!-- Date picker -->
-                          <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [dateFormat]="dateFormat"
-                            inputStyleClass="form-control" [showButtonBar]="true" [dataType]="'string'"></p-calendar>
-
-                          <!-- Years -->
-                          <ng-container *ngIf="field.name === 'yearOfManufacture'">
-                            <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="years"
-                              [filter]="true"></p-dropdown>
-                          </ng-container>
-                          <!-- Years -->
-                          <ng-container *ngIf="field.name === 'useOfProperty'">
-                            <p-dropdown formControlName="useOfProperty"
-                              [options]="productSubclassesMap[productGroup.value.code] || []"
-                              (onChange)="onSubclassSelected($event.value,i, j, productGroup.value.code)"
-                              optionLabel="description" dataKey="code" [filterBy]="'description'"
-                              [filter]="true"></p-dropdown>
-
-                          </ng-container>
-                          <!-- Add other field types as needed -->
-                          <ng-container *ngIf="field.name === 'vesselType'">
-                            <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="vesselTypeList"
-                              optionLabel="name" dataKey="code" [filter]="true"></p-dropdown>
-                          </ng-container>
-                          <ng-container *ngIf="field.name === 'modeOfTransport'">
-                            <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="modeOfTransport"
-                              optionLabel="description" dataKey="code" [filterBy]="'description'"
-                              [filter]="true"></p-dropdown>
-                          </ng-container>
-                          <ng-container *ngIf="field.name === 'occupation'">
-                            <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="occupationData"
-                              optionLabel="name" dataKey="id" [filterBy]="'name'" [filter]="true"></p-dropdown>
-                          </ng-container>
-
-                        </ng-container>
-
-                        <!-- Validation error -->
-                        <div
-                          *ngIf="riskGroup.get(field.name)?.hasError('required') && riskGroup.get(field.name).touched"
-                          class="form-text text-danger">
-                          {{ field.label }} is required
+                          <!-- Validation error -->
+                          <div
+                            *ngIf="riskGroup.get(field.name)?.hasError('required') && riskGroup.get(field.name).touched"
+                            class="form-text text-danger">
+                            {{ field.label }} is required
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </ng-container>
+                    </ng-container>
+                  </div>
                 </div>
               </div>
             </div>
+
           </div>
 
         </div>
-
-      </div>
-      <div class="row mt-2 mb-4" *ngIf="selectedProducts && selectedProducts.length > 0">
-        <div class="col-6"></div>
-        <div class="col-6 d-flex justify-content-end">
-          <button type="button" class="btn btn-outline-primary btn-lg" id="compute" (click)="onSubmit()">
-            Save
-          </button>
+        <div class="row mt-2 mb-4" *ngIf="selectedProducts && selectedProducts.length > 0">
+          <div class="col-6"></div>
+          <div class="col-6 d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-primary btn-lg" id="compute" (click)="onSubmit()">
+              Save
+            </button>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   </form>
@@ -217,7 +221,7 @@
     <div *ngFor="let product of premiumComputationResponse.productLevelPremiums; let i = index" class="mb-2">
       <!-- Card Header -->
       <div class="card-header d-flex justify-content-between align-items-center"
-        style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;"
+           style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;"
            (click)="toggleExpand(i)"
            *ngIf="product.riskLevelPremiums.length > 0">
 
@@ -226,22 +230,22 @@
         </div>
         <button type="button" id="icon-chevron" class="btn btn-primary">
           <i class="fa" [ngClass]="expandedStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-
         </button>
       </div>
 
       <!-- Card Body -->
       <div *ngIf="expandedStates[i]" class="card-body collapsible-body">
         <div *ngFor="let risk of product.riskLevelPremiums">
-          <p class="subtitle mb-3 m-0 d-flex align-items-center">
-            {{ risk?.propertyDescription }}
+          <p class="mb-3 m-0 d-flex align-items-center">
+            {{ risk?.propertyId }} {{ risk?.sumInsured | currency: selectedCurrencySymbol || '' : 'symbol' }}
           </p>
+          <app-cover-types-comparison
+            (additionalBenefitsEvent)="listenToBenefitsAddition($event)"
+            (additionalBenefitsRemovedEvent)="removeBenefit($event)"
+            (selectedCoverEvent)="selectCovers(product, $event)"
+            [riskLevelPremium]="risk">
+          </app-cover-types-comparison>
         </div>
-
-        <app-cover-types-comparison
-          (selectedCoverEvent)="selectCovers(product, $event)"
-          [passedRiskedLevelPremiums]="product.riskLevelPremiums">
-        </app-cover-types-comparison>
       </div>
 
     </div>

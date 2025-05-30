@@ -41,12 +41,14 @@ export interface Risk {
   sumInsured: number
   withEffectFrom: string;
   withEffectTo: string;
+  propertyId?: string
   prorata: string;
   subclassSection: {
     code: number;
   };
   itemDescription: string;
   noClaimDiscountLevel: number;
+  propertyDescription?: string
   enforceCovertypeMinimumPremium: string;
   binderDto: {
     code: number;
@@ -117,6 +119,7 @@ export interface RiskLevelPremium {
   coverTypeDetails: CoverTypeDetail[];
   selectCoverType?: CoverTypeDetail
   binderCode?: number
+  sumInsured?:number
 }
 
 export interface CoverTypeDetail {
@@ -152,6 +155,7 @@ export interface LimitPremium {
   multiplierRate?: number
   sectionType?: string
   shortDescription?: string
+  freeLimit?: number
 }
 
 export interface TaxComputation {

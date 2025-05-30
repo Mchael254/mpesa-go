@@ -1,11 +1,17 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { QuotationDetails, QuotationDTO } from '../../data/quotationsDTO';
 
 import { QuotationsService } from "../../services/quotations/quotations.service";
 import { Logger, untilDestroyed } from "../../../../../../shared/shared.module";
+import { dummyUsers } from '../../data/dummyData';
+import { Table } from 'primeng/table';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -15,12 +21,25 @@ const log = new Logger('QuoteSummaryComponent');
   styleUrls: ['./quote-summary.component.css']
 })
 export class QuoteSummaryComponent implements OnInit, OnDestroy {
+  @ViewChild('dt') table!: Table;
+  
   quotationDetails: QuotationDetails;
   batchNo: number;
   quotationCode: number;
+  rejectComment: string = ''
+  reassignComment: string = ''
+  users: any[] = [];
+  selectedUser:any;
+  searchUserId: string = '';
+  fullNameSearch: string = '';
+  globalSearch: string = '';
+  status:string = '';
+  afterRejectQuote:boolean = true;
+
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
+    public globalMessagingService:GlobalMessagingService
 
   ) {
 
@@ -101,12 +120,78 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.users = dummyUsers;
+    log.debug("Users>>>", this.users);
     this.quotationService.getQuotationDetails(sessionStorage.getItem("quotationNumber"))
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
         log.debug("Quotation details>>>", response)
         this.quotationDetails = response
-      })
+      });
+
   }
+
+  reassignQuotation() {
+    console.log('');
+    
+    
+
+  }
+  
+  rejectQuotation(code:number) {
+    const quotationCode = code;
+    const reasonCancelled = this.rejectComment;
+    const status = 'Rejected';
+
+    if(!reasonCancelled){
+      this.globalMessagingService.displayWarningMessage('Warning', 'Key in a reason');
+      return;
+    }
+
+    log.debug('reject payload>>>',quotationCode,reasonCancelled,status)
+
+    this.quotationService.updateQuotationStatus(quotationCode, status, reasonCancelled).subscribe({
+      next:(response) => {
+        this.globalMessagingService.displaySuccessMessage('success','quote rejected successfully')
+        log.debug(response);
+        this.afterRejectQuote = false;
+
+      },
+      error:(error) => {
+        this.globalMessagingService.displayErrorMessage('error','error while rejecting quote');
+        log.debug(error);
+
+      }
+      
+    })
+
+  }
+
+  //search member to reassign
+  filterGlobal(event: any): void {
+    const value = event.target.value;
+    this.globalSearch = value;
+    this.table.filterGlobal(value, 'contains');
+  }
+  filterByFullName(event: any): void {
+    const value = event.target.value;
+    this.table.filter(value, 'fullName', 'contains');
+  }
+
+  onUserSelect():void{
+    if(this.selectedUser) {
+      log.debug("Selected user>>>", this.selectedUser);
+      this.globalSearch = this.selectedUser.userId;
+      this.fullNameSearch = this.selectedUser.fullName;
+      
+    }
+
+  }
+  onUserUnselect():void{
+    this.selectedUser = null;
+    this.globalSearch = '';
+    this.fullNameSearch = '';
+  }
+
 
   ngOnDestroy(): void {
   }
