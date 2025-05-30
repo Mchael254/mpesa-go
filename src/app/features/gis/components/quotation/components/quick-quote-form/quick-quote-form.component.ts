@@ -595,6 +595,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    // Collapse all cards first
+    // this.collapseAllCards();
+
     if (this.quickQuoteForm.invalid) {
       this.markAllFieldsAsTouched(this.quickQuoteForm);
       return;
@@ -622,6 +625,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   toggleExpand(index: number) {
     this.expandedStates[index] = !this.expandedStates[index];
+  }
+  collapseAllCards() {
+    this.expandedStates = this.expandedStates.map(() => false);
   }
 
 
@@ -777,6 +783,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         description: this.capitalizeWord(value.description),
       }));
       log.debug("SUBCLASS LIST:", this.productSubclassesMap)
+
     });
   }
 
