@@ -321,7 +321,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     };
 
   }
-
+  //
   expandedCoverTypeIndex: number | null = 0;
   toggleCoverType(index: number) {
     if (this.expandedCoverTypeIndex === index) {
