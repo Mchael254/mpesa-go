@@ -2531,6 +2531,8 @@
     "otherNames": "其他名字",
     "shortDesc": "简要描述",
     "IDNo": "身份证号",
-    "telephone": "电话"
+    "telephone": "电话",
+    "incidentName": "事件名称",
+    "incidentValidity": "事件有效期"
   }
 }
