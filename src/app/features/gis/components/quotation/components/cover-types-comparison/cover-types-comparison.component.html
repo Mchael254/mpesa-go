@@ -267,7 +267,7 @@
                       </div>
                     </div>
                     <div class="collapse" id="additionalBenefitDetails" [class.show]="isBenefitsDetailsOpen">
-                      <button *ngIf="temporaryPremiumList?.length > 0" #openModalButton type="button"
+                      <button *ngIf="selectedCover?.limitPremium.length > 0" #openModalButton type="button"
                               class="btn btn-outline-primary me-2 mb-3"
                               id="btnCoverTypes" (click)="openAdditionalBenefitsModal()">
                         {{ 'gis.quotation.add_benefits' | translate }}
@@ -276,7 +276,7 @@
                               id="openAdditionalBenefitsModalButton" [hidden]="true" data-bs-target="#addMoreBenefits"
                               title="open">
                       </button>
-                      <div class="row ">
+                      <div class="row">
                         <p-table [value]="selectedCover?.limitPremium" responsiveLayout="scroll"
                                  dataKey="sectionCode" selectionMode="single"
                                  responsiveLayout="scroll"
@@ -291,8 +291,8 @@
                               <th class="flexible-header"></th>
                             </tr>
                           </ng-template>
-                          <ng-template pTemplate="body" let-risk>
-                            <tr *ngFor="let limit of selectedCover.limitPremium; let i = index">
+                          <ng-template pTemplate="body" let-limit let-i="rowIndex">
+                            <tr>
                               <td>{{ i + 1 }}.</td>
                               <td>{{ limit.description | sentenceCase }}</td>
                               <td>{{ limit?.limitAmount | number }}</td>
@@ -312,8 +312,6 @@
                             </tr>
                           </ng-template>
                         </p-table>
-
-
                       </div>
                     </div>
                   </div>

@@ -157,7 +157,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     }[];
   };
   quoteAction: string = null
-  premiumComputationPayload: PremiumComputationRequest;
   selectedRisk: any = null
 
   public currencyObj: NgxCurrencyConfig;
@@ -238,6 +237,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
   fetchCoverTypeRelatedData(selectedCover: CoverTypeDetail) {
+    log.debug("I selected this cover >>>", selectedCover)
     const coverTypeCode = selectedCover.coverTypeCode
     forkJoin(([
       this.quotationService.getClauses(coverTypeCode, this.selectedSubclassCode),
