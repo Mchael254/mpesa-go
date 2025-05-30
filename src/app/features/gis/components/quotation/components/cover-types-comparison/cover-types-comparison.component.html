@@ -267,7 +267,7 @@
                       </div>
                     </div>
                     <div class="collapse" id="additionalBenefitDetails" [class.show]="isBenefitsDetailsOpen">
-                      <button *ngIf="selectedCover?.limitPremium.length > 0" #openModalButton type="button"
+                      <button *ngIf="temporaryPremiumList.length > 0" #openModalButton type="button"
                               class="btn btn-outline-primary me-2 mb-3"
                               id="btnCoverTypes" (click)="openAdditionalBenefitsModal()">
                         {{ 'gis.quotation.add_benefits' | translate }}
@@ -331,8 +331,6 @@
     <div class="modal-content ps-4 pt-4 pe-4">
       <p class="modal-title mb-3" id="addMoreBenefitsLabel">
         {{ 'gis.quotation.additional_benefits_details' | translate }}</p>
-
-
       <p-table [value]="temporaryPremiumList" id="clientTable" dataKey="code"
                [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }" [(selection)]="selectedSections"
                [resizableColumns]="true" responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true"
@@ -341,7 +339,7 @@
                currentPageReportTemplate="{first} - {last} of {totalRecords}">
         <ng-template pTemplate="header">
           <tr>
-            <th style="width: 1em;"></th> <!-- Checkbox column -->
+            <th style="width: 1em;"></th>
             <th style="width: 33%;"> {{ 'gis.quotation.benefit' | translate }}</th>
             <th style="width: 33%;"> {{ 'gis.quotation.free_limit' | translate }}</th>
             <th style="width: 33%;"> {{ 'gis.quotation.value' | translate }}</th>
