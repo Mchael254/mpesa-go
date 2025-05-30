@@ -1708,4 +1708,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     }
     log.debug("Current product >>>>", this.selectedProductCovers)
   }
+
+
+
+ shareQuote(){
+  //log.debug("subject >>>>", this.premiumComputationResponse)
+  this.quotationService.premiumItemsSubject$.next(this.premiumComputationResponse)
+ }
+  
 }
