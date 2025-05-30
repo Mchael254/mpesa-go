@@ -60,10 +60,43 @@
 
         </div>
         <div class="col-sm-4 col-6 ">
-          <p id="quote-label">Notes:</p> {{getShortNotes(quotation.notes) }}
+          <p id="quote-label">
+            Notes: <span class="notes-preview" id="quote-input">{{ quotationDetails.comments }}</span>
+
+            <i class="fa fa-pencil edit-icon" data-bs-toggle="modal"
+ data-bs-target="#notesModal" (click)="storeCurrentComment()"></i>
+          </p>
+
 
         </div>
       </div>
+      <!-- NOTES MODAL -->
+      <div class="modal fade pb-4" id="notesModal" tabindex="-1" aria-labelledby="notesLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content ps-4 pt-4 pe-4 pb-4">
+            <div class="d-flex justify-content-between align-items-center rounded-3 mb-4 p-1">
+              <p class="modal-title mb-0" id="acceptQuoteLabel">
+                Notes</p>
+              <button type="button" data-bs-dismiss="modal"
+                class="btn p-0 border-0 bg-transparent text-danger fs-5 fw-bold"
+                style="text-decoration: none;color: #EE3945;">X
+              </button>
+            </div>
+            <textarea rows="5" [(ngModel)]="quotationDetails.comments"></textarea>
+            
+            <div class="justify-content-end mb-4 mt-4">
+              <button type="button" class="btn btn-outline-primary me-1 ">
+                {{ 'gis.quotation.cancel' | translate }}
+              </button>
+              <button type="button" class="btn btn-primary " (click)="saveNotes()">
+                Save details
+              </button>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- <div class="details-grid">
         <div class="column">
           <p><strong>Quotation number:</strong> {{ quotation.number }}</p>
@@ -165,7 +198,7 @@
       </button>
     </div>
   </div>
-
+  <!-- ACCEPT QUOTE MODAL -->
   <div class="modal fade pb-4" id="acceptQuote" tabindex="-1" aria-labelledby="acceptQuoteLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content ps-4 pt-4 pe-4 pb-4">
