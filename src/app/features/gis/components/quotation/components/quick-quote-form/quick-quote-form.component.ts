@@ -1764,37 +1764,34 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
                   : limit;
               });
               benefitDto.forEach(benefit => {
-                const exists = updatedLimits.some(
-                  limit => limit.section.code === benefit.code
-                );
-                if (!exists) {
-                  updatedLimits.push({
-                    section: {
-                      code: benefit.sectionCode,
-                      description: benefit.sectionDescription,
-                      isMandatory: "N",
-                      limitAmount: benefit.limitAmount
-                    },
-                    multiplierDivisionFactor: benefit.multiplierDivisionFactor,
-                    riskCode: null,
-                    shortDescription: benefit.sectionDescription,
-                    limitAmount: benefit.limitAmount,
-                    premiumRate: benefit.rate ?? 1,
-                    minimumPremium: benefit.minimumPremium ?? 0,
-                    rateType: benefit.rateType,
-                    calculationGroup: 1,
-                    declarationSection: "N",
-                    rowNumber: updatedLimits.length + 1,
-                    rateDivisionFactor: benefit.divisionFactor,
-                    annualPremium: 0,
-                    multiplierRate: benefit.multiplierRate || 1,
-                    sectionType: benefit.sectionType,
+                updatedLimits = updatedLimits.filter(value => value.section.code !== benefit.sectionCode)
+                log.debug("I am adding this benefit>>>", benefit)
+                updatedLimits.push({
+                  section: {
+                    code: benefit.sectionCode,
                     description: benefit.sectionDescription,
-                    compute: "Y",
-                    dualBasis: "N",
-                    freeLimit: benefit.freeLimit
-                  });
-                }
+                    isMandatory: "N",
+                    limitAmount: benefit.limitAmount
+                  },
+                  multiplierDivisionFactor: benefit.multiplierDivisionFactor,
+                  riskCode: null,
+                  shortDescription: benefit.sectionDescription,
+                  limitAmount: benefit.limitAmount,
+                  premiumRate: benefit.rate ?? 1,
+                  minimumPremium: benefit.minimumPremium ?? 0,
+                  rateType: benefit.rateType,
+                  calculationGroup: 1,
+                  declarationSection: "N",
+                  rowNumber: updatedLimits.length + 1,
+                  rateDivisionFactor: benefit.divisionFactor,
+                  annualPremium: 0,
+                  multiplierRate: benefit.multiplierRate || 1,
+                  sectionType: benefit.sectionType,
+                  description: benefit.sectionDescription,
+                  compute: "Y",
+                  dualBasis: "N",
+                  freeLimit: benefit.freeLimit
+                });
               });
             }
             return {
