@@ -34,6 +34,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   globalSearch: string = '';
   status:string = '';
   afterRejectQuote:boolean = true;
+   originalComment: string;
 
   constructor(
     private quotationService: QuotationsService,
@@ -108,15 +109,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     return this.quotation.products.reduce((sum, p) => sum + p.premium, 0);
   }
 
-  getShortNotes(notes: string): string {
-    if (!notes) return '';
-    const maxChars = 10;
-    return notes.length > maxChars ? notes.slice(0, maxChars) + '...' : notes;
-  }
 
-  saveNotes() {
-    console.log('Saved notes:', this.quotation.notes);
-  }
 
   ngOnInit(): void {
     this.users = dummyUsers;
@@ -233,10 +226,35 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     this.quotationService
       .convertToNormalQuote(quotationCode)
       .subscribe((data: any) => {
-          log.debug("Response after converting quote to a normalQuote:", data)
-          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        log.debug("Response after converting quote to a normalQuote:", data)
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
 
-        }
+      }
       );
+  }
+  storeCurrentComment(){
+  this.originalComment = this.quotationDetails.comments;
+    log.debug("original comment:",this.originalComment)
+
+  }
+  saveNotes() {
+    log.debug("new comment:",this.quotationDetails.comments)
+     if (
+    this.originalComment === this.quotationDetails.comments ||
+    !this.quotationDetails.comments ||
+    this.quotationDetails.comments.trim() === ''
+  ) {
+    this.globalMessagingService.displayErrorMessage('Error', 'Edit note to proceed');
+    return;
+  }
+  const payload ={
+    comment:this.quotationDetails.comments,
+    quotationCode:this.quotationDetails.code
+  }
+    this.quotationService.updateQuotationComment(payload).subscribe((data: any) => {
+      log.debug("Response after updating quote comment:", data)
+      
+    })
+
   }
 }
