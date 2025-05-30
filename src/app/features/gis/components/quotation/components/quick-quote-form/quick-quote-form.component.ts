@@ -281,6 +281,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   selectedProductCovers: ProductPremium[] = [];
   coverSelected = false;
   currentSelectedRisk: any
+  currentComputationPayload: PremiumComputationRequest = null
 
 
   constructor(
@@ -617,7 +618,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   computationPayload(): PremiumComputationRequest {
     const formValues = this.quickQuoteForm.getRawValue();
     const withEffectFrom = new Date(formValues.effectiveDate);
-    return {
+    let payload = {
       transactionStatus: "NB",
       quotationStatus: "Draft",
       frequencyOfPayment: "A",
@@ -633,7 +634,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       currency: {
         rate: this.exchangeRate
       }
-    }
+    };
+    this.currentComputationPayload = payload
+    return payload;
   }
 
   getProductPayload(formValues: any): Product[] {
@@ -1719,8 +1722,20 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     log.debug("Current product >>>>", this.selectedProductCovers)
   }
 
+  removeBenefit(benefitDto: any) {
+    log.debug("About to remove >>>>", benefitDto)
+    const updatedPayload = this.modifyPremiumPayload([], benefitDto.sectCode)
+    this.performComputation(updatedPayload)
+  }
+
   listenToBenefitsAddition(benefitDto: Premiums[]) {
-    let premiumComputationRequest: PremiumComputationRequest = this.computationPayload();
+    let updatedPayload = this.modifyPremiumPayload(benefitDto);
+    log.debug("Modified Premium Computation Payload:", updatedPayload);
+    this.performComputation(updatedPayload)
+  }
+
+  modifyPremiumPayload(benefitDto: Premiums[], sectionCodeToRemove?: number): PremiumComputationRequest {
+    const premiumComputationRequest = this.currentComputationPayload || this.computationPayload();
     const riskCode = this.currentSelectedRisk.code;
     const coverTypeCode = this.currentSelectedRisk.selectCoverType.coverTypeCode;
     const updatedProducts = premiumComputationRequest.products.map(product => ({
@@ -1731,49 +1746,55 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
           ...risk,
           subclassCoverTypeDto: risk.subclassCoverTypeDto.map(coverType => {
             if (coverType.coverTypeCode !== coverTypeCode) return coverType;
-            const updatedLimits = [...coverType.limits];
-            for (let i = 0; i < updatedLimits.length; i++) {
-              const match = benefitDto.find(b => b.code === updatedLimits[i].section.code);
-              if (match) {
-                updatedLimits[i] = {
-                  ...updatedLimits[i],
-                  limitAmount: match.limitAmount
-                };
-              }
-            }
-            benefitDto.forEach(benefit => {
-              const alreadyExists = updatedLimits.some(
-                limit => limit.section.code === benefit.code
+
+            let updatedLimits = [...coverType.limits];
+            log.debug("Section to remove>>", sectionCodeToRemove, updatedLimits, coverTypeCode)
+            if (sectionCodeToRemove) {
+              updatedLimits = updatedLimits.filter(
+                limit => limit.section.code !== sectionCodeToRemove
               );
-              if (!alreadyExists) {
-                updatedLimits.push({
-                  section: {
+            }
+            if (benefitDto.length > 0) {
+              updatedLimits = updatedLimits.map(limit => {
+                const match = benefitDto.find(b => b.code === limit.section.code);
+                return match
+                  ? {...limit, limitAmount: match.limitAmount}
+                  : limit;
+              });
+              benefitDto.forEach(benefit => {
+                const exists = updatedLimits.some(
+                  limit => limit.section.code === benefit.code
+                );
+                if (!exists) {
+                  updatedLimits.push({
+                    section: {
+                      code: benefit.sectionCode,
+                      description: benefit.sectionDescription,
+                      isMandatory: "N",
+                      limitAmount: benefit.limitAmount
+                    },
+                    multiplierDivisionFactor: benefit.multiplierDivisionFactor,
+                    riskCode: null,
+                    shortDescription: benefit.sectionDescription,
                     limitAmount: benefit.limitAmount,
-                    code: benefit.sectionCode,
+                    premiumRate: benefit.rate ?? 1,
+                    minimumPremium: benefit.minimumPremium ?? 0,
+                    rateType: benefit.rateType,
+                    calculationGroup: 1,
+                    declarationSection: "N",
+                    rowNumber: updatedLimits.length + 1,
+                    rateDivisionFactor: benefit.divisionFactor,
+                    annualPremium: 0,
+                    multiplierRate: benefit.multiplierRate || 1,
+                    sectionType: benefit.sectionType,
                     description: benefit.sectionDescription,
-                    isMandatory: "N",
-                  },
-                  multiplierDivisionFactor: benefit.multiplierDivisionFactor,
-                  riskCode: null,
-                  shortDescription: benefit.sectionDescription,
-                  limitAmount: benefit.limitAmount,
-                  premiumRate: benefit.rate ?? 1,
-                  minimumPremium: benefit.minimumPremium ?? 0,
-                  rateType: benefit.rateType,
-                  calculationGroup: 1,
-                  declarationSection: "N",
-                  rowNumber: updatedLimits.length + 1,
-                  rateDivisionFactor: benefit.divisionFactor,
-                  annualPremium: 0,
-                  multiplierRate: benefit.multiplierRate || 1,
-                  sectionType: benefit.sectionType,
-                  description: benefit.sectionDescription,
-                  compute: "Y",
-                  dualBasis: "N",
-                  freeLimit: benefit.freeLimit
-                });
-              }
-            });
+                    compute: "Y",
+                    dualBasis: "N",
+                    freeLimit: benefit.freeLimit
+                  });
+                }
+              });
+            }
             return {
               ...coverType,
               limits: updatedLimits
@@ -1782,11 +1803,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
         };
       })
     }));
-    premiumComputationRequest = {
+    let updatedPayload = {
       ...premiumComputationRequest,
       products: updatedProducts
     };
-    log.debug("Modified Premium Computation Payload:", premiumComputationRequest);
-    this.performComputation(premiumComputationRequest)
+    this.currentComputationPayload = updatedPayload
+    return updatedPayload;
   }
+
+
 }
