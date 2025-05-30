@@ -1758,7 +1758,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
                   shortDescription: benefit.sectionDescription,
                   limitAmount: benefit.limitAmount,
                   premiumRate: benefit.rate ?? 1,
-                  minimumPremium: benefit.minimumPremium ?? 5000,
+                  minimumPremium: benefit.minimumPremium ?? 0,
                   rateType: benefit.rateType,
                   calculationGroup: 1,
                   declarationSection: "N",
