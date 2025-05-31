@@ -110,6 +110,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
   productRiskFields: DynamicRiskField[][] = [];
   expandedStates: boolean[] = [];
+
   currencySymbol: string;
 
 
@@ -320,7 +321,15 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     };
 
   }
-
+  //
+  expandedCoverTypeIndex: number | null = 0;
+  toggleCoverType(index: number) {
+    if (this.expandedCoverTypeIndex === index) {
+      this.expandedCoverTypeIndex = null;
+    } else {
+      this.expandedCoverTypeIndex = index;
+    }
+  }
   ngOnInit(): void {
     this.LoadAllFormFields();
     this.quickQuoteForm = this.fb.group({
