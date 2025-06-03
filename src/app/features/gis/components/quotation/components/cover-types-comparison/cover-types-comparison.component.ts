@@ -6,7 +6,6 @@ import {
   Input,
   OnDestroy,
   OnInit, Output,
-  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import stepData from '../../data/steps.json'
@@ -25,7 +24,7 @@ import { forkJoin, mergeMap } from 'rxjs';
 
 import {
   Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
-  premiumPayloadData, QuotationDetails, UserDetail, Limit
+  premiumPayloadData, QuotationDetails, UserDetail
 } from '../../data/quotationsDTO'
 import { Premiums } from '../../../setups/data/gisDTO';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
@@ -112,13 +111,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
   passedClientCode: any;
   selectedSubclassCode: number | null = null;
-  allMatchingSubclasses = [];
-  subclassSectionCoverList: any;
-  covertypeSectionList: any;
-  covertypeSpecificSection: any;
   premiumList: Premiums[] = [];
   temporaryPremiumList: Premiums[] = [];
-  coverTypePremiumItems: Premiums[] = [];
 
   passedNumber: string;
   passedQuotationCode: number;
@@ -219,6 +213,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       nullable: true,
       align: 'left',
     };
+    if (this.riskLevelPremium.selectCoverType){
+      this.selectedCoverType = this.riskLevelPremium.selectCoverType.coverTypeCode
+    }
 
 
   }
@@ -253,6 +250,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         selectedCover.excesses = excesses._embedded ?? []
         selectedCover.limitOfLiabilities = limitOfLiabilities._embedded ?? []
         selectedCover.clauses = clauses._embedded ?? []
+        this.riskLevelPremium.selectCoverType = selectedCover
+        this.selectedCoverEvent.emit(this.riskLevelPremium)
         this.additionalBenefits = applicablePremiumRates
         /* const coverTypeSections = this.riskLevelPremium.coverTypeDetails.filter(value =>value.coverTypeDetails.some(cover => cover.coverTypeCode === coverTypeCode)
            )*/
