@@ -6,38 +6,37 @@ import {
   Input,
   OnDestroy,
   OnInit, Output,
-  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import stepData from '../../data/steps.json'
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../../../../../../shared/services/auth.service';
-import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
-import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
 
-import {forkJoin, mergeMap} from 'rxjs';
+import { forkJoin, mergeMap } from 'rxjs';
 
 import {
   Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
-  premiumPayloadData, QuotationDetails, UserDetail, Limit
+  premiumPayloadData, QuotationDetails, UserDetail
 } from '../../data/quotationsDTO'
-import {Premiums} from '../../../setups/data/gisDTO';
-import {ClientDTO} from '../../../../../entities/data/ClientDTO';
-import {NgxSpinnerService} from 'ngx-spinner';
+import { Premiums } from '../../../setups/data/gisDTO';
+import { ClientDTO } from '../../../../../entities/data/ClientDTO';
+import { NgxSpinnerService } from 'ngx-spinner';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service'
-import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
-import {Router} from '@angular/router';
-import {NgxCurrencyConfig} from "ngx-currency";
-import {CoverTypeDetail, RiskLevelPremium} from '../../data/premium-computation';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { Router } from '@angular/router';
+import { NgxCurrencyConfig } from "ngx-currency";
+import { CoverTypeDetail, RiskLevelPremium } from '../../data/premium-computation';
 
 const log = new Logger('CoverTypesComparisonComponent');
 declare var bootstrap: any; // Ensure Bootstrap is available
@@ -54,6 +53,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   @Output() selectedCoverEvent: EventEmitter<RiskLevelPremium> = new EventEmitter<RiskLevelPremium>();
   @Output() additionalBenefitsEvent: EventEmitter<Premiums[]> = new EventEmitter<Premiums[]>();
   @Output() additionalBenefitsRemovedEvent: EventEmitter<Premiums> = new EventEmitter<Premiums>();
+  @Input() isExpanded: boolean = false;
+
 
 
   selectedOption: string = 'email';
@@ -110,13 +111,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
   passedClientCode: any;
   selectedSubclassCode: number | null = null;
-  allMatchingSubclasses = [];
-  subclassSectionCoverList: any;
-  covertypeSectionList: any;
-  covertypeSpecificSection: any;
   premiumList: Premiums[] = [];
   temporaryPremiumList: Premiums[] = [];
-  coverTypePremiumItems: Premiums[] = [];
 
   passedNumber: string;
   passedQuotationCode: number;
@@ -126,7 +122,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   isTempPremiumListUpdated: boolean = false;
   lastUpdatedCoverTypeCode = null;
   selectedCoverType: number;
-  @ViewChild('openModalButton', {static: false}) openModalButton!: ElementRef;
+  @ViewChild('openModalButton', { static: false }) openModalButton!: ElementRef;
   @ViewChild('addMoreBenefits') addMoreBenefitsModal!: ElementRef;
   isModalOpen: boolean = false;
 
@@ -192,15 +188,11 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   public isBenefitsDetailsOpen = false;
   public isSelectCoverOpen = true;
 
-  ngOnChanges(changes: SimpleChanges): void {
-
-    if (changes['passedRiskedLevelPremiums'] &&
-      changes['passedRiskedLevelPremiums'].currentValue?.length > 0) {
-      this.activeRiskIndex = 0; //first risk open default
-      // this.activeRiskIndex = changes['passedRiskedLevelPremiums'].currentValue.length - 1; //latest risk open default
-    }
-
+  openPolicy: string | null = null;
+  togglePolicy(panelName: string) {
+    this.openPolicy = this.openPolicy === panelName ? null : panelName;
   }
+
 
   ngOnInit(): void {
     this.createEmailForm();
@@ -221,6 +213,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       nullable: true,
       align: 'left',
     };
+    if (this.riskLevelPremium.selectCoverType){
+      this.selectedCoverType = this.riskLevelPremium.selectCoverType.coverTypeCode
+    }
 
 
   }
@@ -255,6 +250,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         selectedCover.excesses = excesses._embedded ?? []
         selectedCover.limitOfLiabilities = limitOfLiabilities._embedded ?? []
         selectedCover.clauses = clauses._embedded ?? []
+        this.riskLevelPremium.selectCoverType = selectedCover
+        this.selectedCoverEvent.emit(this.riskLevelPremium)
         this.additionalBenefits = applicablePremiumRates
         /* const coverTypeSections = this.riskLevelPremium.coverTypeDetails.filter(value =>value.coverTypeDetails.some(cover => cover.coverTypeCode === coverTypeCode)
            )*/
@@ -515,21 +512,21 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
   }
 
-  toggleClauseDetails() {
-    this.isClauseDetailsOpen = !this.isClauseDetailsOpen;
-  }
+  // toggleClauseDetails() {
+  //   this.isClauseDetailsOpen = !this.isClauseDetailsOpen;
+  // }
 
-  toggleLimitsDetails() {
-    this.isLimitsDetailsOpen = !this.isLimitsDetailsOpen;
-  }
+  // toggleLimitsDetails() {
+  //   this.isLimitsDetailsOpen = !this.isLimitsDetailsOpen;
+  // }
 
-  toggleExcessDetails() {
-    this.isExcessDetailsOpen = !this.isExcessDetailsOpen;
-  }
+  // toggleExcessDetails() {
+  //   this.isExcessDetailsOpen = !this.isExcessDetailsOpen;
+  // }
 
-  toggleAdditionalBenefitsDetails() {
-    this.isBenefitsDetailsOpen = !this.isBenefitsDetailsOpen;
-  }
+  // toggleAdditionalBenefitsDetails() {
+  //   this.isBenefitsDetailsOpen = !this.isBenefitsDetailsOpen;
+  // }
 
 
   openHelperModal(selectedClause: any) {
