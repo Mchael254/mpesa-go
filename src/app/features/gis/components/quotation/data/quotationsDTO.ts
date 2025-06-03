@@ -202,70 +202,102 @@ export interface QuotationProduct {
   policyNumber?: string;
   taxInformation: TaxInformation[];
   riskInformation: RiskInformation[];
-  clauses: number[]
+  limitsOfLiability?: LimitsOfLiability[];
 }
 
 export interface TaxInformation {
-  quotationRate: number;
-  taxAmount?: any;
-  code?: number;
-  rateDescription?: string
-  rateType?: string
-  productCode?: number
-  quotationCode?: number
-  transactionCode?: number
-  renewalEndorsement?: string
-  taxRateCode?: number
-  levelCode?: string
-  taxType?: string
-  riskProductLevel?: string
+  code: number;
+  rateDescription: string;
+  rate: number;
+  rateType: string;
+  taxAmount: number;
+  transactionCode: string;
+  renewalEndorsement: string;
+  taxRateCode: number;
+  levelCode: string;
+  taxType: string;
+  riskProductLevel: string;
 }
 
 export interface RiskInformation {
-  insuredCode?: any;
-  location?: any;
-  town?: any;
-  ncdLevel?: any;
-  schedules?: any;
   coverTypeCode: number;
-  addEdit?: any;
-  quotationRevisionNumber?: number;
-  code?: number;
-  quotationProductCode?: number;
-  quotationRiskNo?: string;
-  quotationCode?: number;
-  productCode?: any;
-  propertyId: string;
-  value: number;
   coverTypeShortDescription: string;
-  sectionsDetails: SectionDetail[];
-  scheduleDetails?: ScheduleDetails;
+  coverTypeDescription: string;
+  productCode: number;
   premium: number;
-  subclassCode: number;
+  value: number;
+  clientType: string;
   itemDesc: string;
-  binderCode: number;
-  riskLimits: any
   wef: string;
   wet: string;
-  commissionRate?: any;
-  commissionAmount?: any;
-  clientCode?: any;
-  clientShortDescription?: any;
-  annualPremium?: any;
-  coverDays: number;
-  clientType: string;
-  prospectCode?: any;
-  coverTypeDescription: string;
-  subclass: SubclassDetails;
-  limitsOfLiability: LimitsOfLiability[]
-}
-export  interface LimitsOfLiability{
-  scheduleValueCode: number
-  value: string
-  narration: string
-  type: string
-  quotationValueCode?:number
   code?: number
+  propertyId: string;
+  annualPremium: number;
+  sectionsDetails: any; // Replace with actual structure if known
+  subclassCode: number;
+  binderCode: number;
+  action: string;
+  riskLimits: RiskLimit[];
+  clauseCodes: number[];
+  subclass: Subclass;
+  coverDays: number;
+  quotationCode?: number
+  quotationProductCode?: number
+  scheduleDetails?: any
+  location?: any
+  town?: any
+  quotationRevisionNumber?: any
+  quotationRiskNo?: any
+  commissionRate?: number
+  ncdLevel?: any
+  clientShortDescription?: any
+  prospectCode?: any
+  commissionAmount?: any
+}
+export interface RiskLimit{
+  code: number;
+  description: string;
+  sectionCode: number;
+  sectionType: string;
+  sectionShortDescription: string;
+  quotationRiskCode: number;
+  quotationCode: number;
+  limitAmount: number;
+  premiumRate: number;
+  premiumAmount: number;
+  productCode: number;
+  quotationProCode: number;
+  minimumPremium: number;
+  rateType: string;
+  rateDescription: string;
+  rateDivisionFactor: number;
+  multiplierRate: number;
+  multiplierDivisionFactor: number;
+  rowNumber: number;
+  calcGroup: number;
+  compute: string;
+  annualPremium: number;
+  usedLimit: number;
+  dualBasis: string;
+  freeLimit: number;
+  setupPremiumRate: number;
+  indemnityRemainingPeriodPct: number;
+  indemnityFirstPeriodPct: number;
+  indemnityFirstPeriod: number;
+  periodType: string;
+  indemnityPeriod: number;
+  minimumPremiumRate: number;
+  maxPremiumRate: number;
+  sumInsuredRate: number | null;
+}
+
+export interface LimitsOfLiability {
+  scheduleValueCode: number;
+  value: string;
+  narration: string;
+  type: string;
+  code?: number
+  quotationValueCode?: number
 }
 
 export interface SectionDetail {
@@ -499,7 +531,10 @@ export interface BinderDto {
 }
 
 export interface Subclass {
-  code: number
+  code: number;
+  description: string;
+  shortDescription: string | null;
+  productCode: number;
 }
 
 export interface SubclassCoverTypeDto {
@@ -1070,8 +1105,9 @@ export interface QuoteReportDTO {
   motorPrivateList: MotorPrivateDTO[];
   domesticList: DomesticDTO[];
 }
-export interface QuotationComment{
-  comment:string
-  quotationCode:number
+
+export interface QuotationComment {
+  comment: string
+  quotationCode: number
 }
 
