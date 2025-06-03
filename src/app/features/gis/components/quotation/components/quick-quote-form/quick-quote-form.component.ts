@@ -1730,19 +1730,19 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     let limitsOfLiabilities: LimitsOfLiability[] = []
     for (let excess of excesses) {
       limitsOfLiabilities.push({
-        value: excess.value,
-        narration: excess.narration,
+        value: excess?.value,
+        narration: excess?.narration,
         type: 'E',
-        scheduleValueCode: excess.code
+        scheduleValueCode: excess?.code
       })
     }
     const limitOfLiabilities = product.riskLevelPremiums.flatMap(value => value.selectCoverType.limitOfLiabilities)
     for (let limit of limitOfLiabilities) {
       limitsOfLiabilities.push({
-        value: limit.value,
-        narration: limit.narration,
+        value: limit?.value,
+        narration: limit?.narration,
         type: 'L',
-        scheduleValueCode: limit.code
+        scheduleValueCode: limit?.code
       })
     }
     return limitsOfLiabilities
