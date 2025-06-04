@@ -5,9 +5,11 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  Input, NgZone,
+  Input,
+  NgZone,
   OnDestroy,
-  OnInit, Output,
+  OnInit,
+  Output,
   ViewChild
 } from '@angular/core';
 import stepData from '../../data/steps.json'
@@ -25,8 +27,13 @@ import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
 import {forkJoin, mergeMap} from 'rxjs';
 
 import {
-  Clause, Excesses, LimitsOfLiability, PremiumComputationRequest,
-  premiumPayloadData, QuotationDetails, UserDetail
+  Clause,
+  Excesses,
+  LimitsOfLiability,
+  PremiumComputationRequest,
+  premiumPayloadData,
+  QuotationDetails,
+  UserDetail
 } from '../../data/quotationsDTO'
 import {Premiums} from '../../../setups/data/gisDTO';
 import {ClientDTO} from '../../../../../entities/data/ClientDTO';
@@ -50,7 +57,7 @@ declare var $: any;
   styleUrls: ['./cover-types-comparison.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CoverTypesComparisonComponent implements OnInit, OnDestroy,AfterViewInit  {
+export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterViewInit {
   activeRiskIndex: number | null = null;
   private _riskLevelPremium!: RiskLevelPremium;
   @Output() selectedCoverEvent: EventEmitter<RiskLevelPremium> = new EventEmitter<RiskLevelPremium>();
@@ -77,6 +84,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy,AfterVie
   get riskLevelPremium() {
     return this._riskLevelPremium
   }
+
   ngAfterViewInit() {
     if (this.addMoreBenefitsModalRef?.nativeElement) {
       this.bsModalInstance = new bootstrap.Modal(this.addMoreBenefitsModalRef.nativeElement);
@@ -257,7 +265,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy,AfterVie
   }
 
   fetchCoverTypeRelatedData(selectedCover: CoverTypeDetail) {
-    log.debug("I selected this cover >>>", selectedCover)
+    let limitPremiums = this.riskLevelPremium
+      .coverTypeDetails.find(value => value.coverTypeCode === selectedCover.coverTypeCode).limitPremium;
+    log.debug("I selected this cover >>>", selectedCover, limitPremiums)
     const coverTypeCode = selectedCover.coverTypeCode
     forkJoin(([
       this.quotationService.getClauses(coverTypeCode, this.selectedSubclassCode),
@@ -278,7 +288,14 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy,AfterVie
         this.riskLevelPremium.selectCoverType = selectedCover
         this.selectedCoverEvent.emit(this.riskLevelPremium)
         this.additionalBenefits = applicablePremiumRates
-        this.selectedCover.additionalBenefits = applicablePremiumRates.filter(value => value.isMandatory !== 'Y')
+        this.selectedCover.additionalBenefits = applicablePremiumRates.filter(value => value.isMandatory !== 'Y').map((value) => {
+          const matchingSection = limitPremiums.find(limit => limit.sectCode === value.sectionCode)
+          return {
+            ...value,
+            isChecked: !!matchingSection,
+            limitAmount: matchingSection?.limitAmount
+          }
+        })
         this.cdr.detectChanges()
       })
   }
@@ -592,16 +609,23 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy,AfterVie
   }
 
 
-
   openAdditionalBenefitsModal() {
     this.cdr.detectChanges();
-
     if (this.bsModalInstance) {
-      log.debug("Programmatically showing modal for:", this.selectedCover.coverTypeDescription);
+      log.debug("Programmatically showing modal for:", this.selectedCover?.coverTypeDescription);
       this.bsModalInstance.show();
     } else {
+      log.error("openAdditionalBenefitsModal: Bootstrap modal instance is not available. Attempting lazy init.");
+      if (this.addMoreBenefitsModalRef && this.addMoreBenefitsModalRef.nativeElement) {
+        this.bsModalInstance = new bootstrap.Modal(this.addMoreBenefitsModalRef.nativeElement);
+        this.bsModalInstance.show();
+      } else {
+        log.error("openAdditionalBenefitsModal: Still cannot find modal element reference for lazy init.");
+        this.globalMessagingService.displayErrorMessage("Error", "Could not display benefits modal.");
+      }
     }
   }
+
   closeModal() {
     if (this.bsModalInstance) {
       this.bsModalInstance.hide();
