@@ -9,7 +9,7 @@
               <div class="card-body cover-types-body">
                 <label>
                   <input type="radio" name="{{riskLevelPremium.code +  coverType.coverTypeCode}}"
-                    [value]="coverType.coverTypeCode" [(ngModel)]="selectedCoverType" [checked]="i === 0"
+                    [value]="coverType.coverTypeCode" [(ngModel)]="selectedCoverTypeCode" [checked]="i === 0"
                     (change)="onCoverTypeSelected(coverType) " class="radio-btn" />
                   <span class="cover-name">{{
                     coverType.coverTypeDescription ||
