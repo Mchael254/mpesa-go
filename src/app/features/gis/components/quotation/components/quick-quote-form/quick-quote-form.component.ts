@@ -1770,6 +1770,15 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     }
   }
 
+
+
+
+//  shareQuote(){
+//   //log.debug("subject >>>>", this.premiumComputationResponse)
+//   this.quotationService.premiumItemsSubject$.next(this.premiumComputationResponse)
+//  }
+  
+
   removeBenefit(benefitDto: any) {
     log.debug("About to remove >>>>", benefitDto)
     const updatedPayload = this.modifyPremiumPayload([], benefitDto.sectCode)
@@ -1856,4 +1865,5 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.currentComputationPayload = updatedPayload
     return updatedPayload;
   }
+
 }

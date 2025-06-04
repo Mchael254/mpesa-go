@@ -1,14 +1,15 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {QuotationDetails, QuotationDTO} from '../../data/quotationsDTO';
 
-import {QuotationsService} from "../../services/quotations/quotations.service";
-import {Logger, untilDestroyed} from "../../../../../../shared/shared.module";
-import {dummyUsers} from '../../data/dummyData';
-import {Table} from 'primeng/table';
-import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
+import { QuotationsService } from "../../services/quotations/quotations.service";
+import { Logger, untilDestroyed } from "../../../../../../shared/shared.module";
+import { dummyUsers } from '../../data/dummyData';
+import { Table } from 'primeng/table';
+import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
-import {Router} from '@angular/router';
-import {GlobalMessagingService} from 'src/app/shared/services/messaging/global-messaging.service';
+import { Router } from '@angular/router';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { QuoteReportComponent } from '../quote-report/quote-report.component';
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -18,8 +19,54 @@ const log = new Logger('QuoteSummaryComponent');
   templateUrl: './quote-summary.component.html',
   styleUrls: ['./quote-summary.component.css']
 })
-export class QuoteSummaryComponent implements OnInit, OnDestroy {
+export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
   @ViewChild('dt') table!: Table;
+
+  isShareModalOpen = false;
+
+  openShareModal() {
+    this.isShareModalOpen = true;
+  }
+
+  closeShareModal() {
+    this.isShareModalOpen = false;
+  }
+
+
+  
+  @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
+  // To get a reference to app-quote-report
+  @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
+
+
+
+  ngAfterViewInit() {
+    const modalElement = this.shareQuoteModal.nativeElement;
+  
+    modalElement.addEventListener('show.bs.modal', () => {
+      // Use a small delay to let modal animation complete
+      setTimeout(() => {
+        this.isShareModalOpen = true;
+      }, 10); // slight delay (10ms) is usually enough
+    });
+  
+    modalElement.addEventListener('hidden.bs.modal', () => {
+      this.isShareModalOpen = false;
+    });
+  }
+  
+  
+
+
+  onDownloadRequested() {
+    if (this.quoteReportComponent) {
+      this.quoteReportComponent.downloadPdf();
+    } else {
+      console.error('QuoteReportComponent is not available!');
+    }
+  }
+  
+  
 
   quotationDetails: QuotationDetails;
   batchNo: number;
@@ -38,7 +85,12 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
+
+    private cdRef: ChangeDetectorRef,
+
+
     public globalMessagingService: GlobalMessagingService
+
   ) {
 
   }
