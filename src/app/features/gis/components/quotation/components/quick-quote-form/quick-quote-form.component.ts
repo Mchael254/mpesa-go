@@ -613,7 +613,17 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       untilDestroyed(this)
     ).subscribe({
       next: (response) => {
-        this.premiumComputationResponse = response
+        const riskLevelPremiums = this.selectedProductCovers.flatMap(value => value.riskLevelPremiums);
+        this.premiumComputationResponse = response;
+        riskLevelPremiums?.forEach(selected => {
+          this.premiumComputationResponse.productLevelPremiums.forEach(premium => {
+            const match = premium.riskLevelPremiums.find(risk => risk.code === selected.code);
+            if (match) {
+              match.selectCoverType = selected.selectCoverType;
+            }
+          });
+        });
+        log.debug("Currently selected products after computation>>>", riskLevelPremiums, this.premiumComputationResponse)
         this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully ')
         log.debug("Computation response >>>>", response)
       }, error: (error) => {
@@ -1530,7 +1540,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   saveQuotationDetails() {
     const quotationPayload = this.getQuotationPayload()
     log.debug("Quotation details >>>", quotationPayload)
-    //return
     this.quotationService.processQuotation(quotationPayload).pipe(
       untilDestroyed(this)
     ).subscribe({
@@ -1558,6 +1567,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     const formModel = this.quickQuoteForm.getRawValue();
     log.debug("Selected products >>>>", this.selectedProductCovers)
     log.debug("Quotation details >>>", formModel)
+    sessionStorage.setItem("quickQuotePayload", JSON.stringify(formModel))
     const coverTypes = this.selectedProductCovers
       .flatMap(value => value.riskLevelPremiums.map(premium => premium.selectCoverType));
     const totalPremium = coverTypes.reduce((sum, coverType) => sum + coverType.computedPremium, 0);
@@ -1855,7 +1865,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.currentComputationPayload = updatedPayload
     return updatedPayload;
   }
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> 3d4037adb7ecce29d3856d2adc83394374166251
 }
