@@ -136,6 +136,7 @@ export interface CoverTypeDetail {
   clauses?: any
   excesses?: any
   limitOfLiabilities?: any
+  additionalBenefits?: any[]
 }
 
 export interface LimitPremium {

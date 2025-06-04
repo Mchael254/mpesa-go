@@ -1,18 +1,55 @@
-
-import { Component } from '@angular/core';
-import { DomesticDTO, MotorPrivateDTO, QuotationHeaderDTO } from '../../data/quotationsDTO';
-
-
-
-
-
+import { Component, ElementRef, Inject, Input, OnChanges, PLATFORM_ID, SimpleChanges, ViewChild } from '@angular/core';
+import { DomesticDTO, MotorPrivateDTO, QuotationDetails, QuotationHeaderDTO } from '../../data/quotationsDTO';
+import { PdfGeneratorService } from '../../services/quotations/pdf-generator.service';
 
 @Component({
   selector: 'app-quote-report',
   templateUrl: './quote-report.component.html',
-  styleUrls: [ './quote-report.component.css']
+  styleUrls: ['./quote-report.component.css']
 })
-export class QuoteReportComponent {
+export class QuoteReportComponent implements OnChanges {
+  private pdfBlob: Blob | null = null;
+  @Input() quotationDetails!: QuotationDetails;
+
+ 
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['quotationDetails'] && this.quotationDetails) {
+      this.updateHeaderFromDetails();
+    }
+  }
+
+  private updateHeaderFromDetails(): void {
+    const details = this.quotationDetails;
+
+    this.header = {
+      quotationStatus: 'Draft', // you can update this if there's a real field for status
+      proposalIssued: details.expiryDate || 'N/A',
+      period: this.formatPeriod(details.coverFrom, details.coverTo),
+      quoteTime: this.formatDate(details.preparedDate),
+      agencyName: details.agentName || '',
+      logo: '' // Fill if you have a logo field or static image
+    };
+  }
+
+  private formatPeriod(start: string | null, end: string | null): string {
+    if (!start || !end) return '';
+    return `${this.formatDate(start)} to ${this.formatDate(end)}`;
+  }
+
+  private formatDate(dateStr: string | null): string {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  }
+  @Input() data: any;
+  
+  @ViewChild('pdfContent', { static: false }) pdfContent!: ElementRef;
+  constructor(@Inject(PLATFORM_ID) private platformId: Object,private pdfGenerator: PdfGeneratorService) {}
   header: QuotationHeaderDTO = {
     quotationStatus: 'Draft',
     proposalIssued: 'NA',
@@ -114,14 +151,10 @@ export class QuoteReportComponent {
     // add more domestic entries if needed
   ];
 
- constructor() {}
-
- ngOnInit(): void {}
 
 
- 
-
- 
- 
-
+  downloadPdf() {
+    this.pdfGenerator.generatePdfFromElement('content-to-pdf');
+    console.log('generating report')
+  }
 }
