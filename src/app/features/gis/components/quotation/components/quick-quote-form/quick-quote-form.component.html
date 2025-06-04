@@ -253,7 +253,29 @@
               *ngIf="coverSelected" (click)="saveQuotationDetails()">
         {{ 'gis.quotation.next' | translate }}
       </button>
-     <button (click) ="shareQuote()"> Share quote</button>
+
+
+      <button 
+type="button" 
+class="btn btn-outline-primary me-2"
+data-bs-toggle="modal" 
+data-bs-target="#shareQuoteModal">
+Share quotation
+</button>
+     <!-- SHARE QUOTE MODAL -->
+<div class="modal fade" id="shareQuoteModal" tabindex="-1" aria-labelledby="shareQuoteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content p-4">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+  
+      <!-- Your Angular component inside the modal -->
+      <app-share-quotes></app-share-quotes>
+    </div>
+  </div>
+  </div>
       
     </div>
   </div>
