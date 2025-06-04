@@ -45,6 +45,7 @@ import { CardModule } from 'primeng/card';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
+import { PaymentCheckoutComponent } from './components/payment-checkout/payment-checkout.component';
 
 
 
@@ -72,6 +73,7 @@ import { MultiSelect, MultiSelectModule } from 'primeng/multiselect';
     QuoteSummaryComponent,
     ShareQuotesComponent,
     PaymentAdviceComponent,
+    PaymentCheckoutComponent,
 
 
 

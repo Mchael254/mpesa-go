@@ -1,6 +1,6 @@
 import { ClientDTO, ClientTypeDTO } from "src/app/features/entities/data/ClientDTO";
 import { Premiums } from "../../setups/data/gisDTO";
-import { CoverTypeDetails, DummyCoverageData, ProductLevelPremium, QuickQuoteData} from "./quotationsDTO";
+import { CoverTypeDetails, DummyCoverageData, ProductLevelPremium, QuickQuoteData } from "./quotationsDTO";
 
 
 //dummy premiums
@@ -65,7 +65,7 @@ export const dummyPremiums: Premiums[] = generateDummyPremiums(3);
 
 
 //dummy-coverage-data
-export const DUMMY_COVERAGE_DATA:DummyCoverageData = {
+export const DUMMY_COVERAGE_DATA: DummyCoverageData = {
   productLevelPremiums: [
     {
       riskLevelPremiums: [
@@ -173,7 +173,7 @@ const dummyClient: ClientDTO = {
   category: "Individual",
   clientTitle: "Mr.",
   clientType: dummyClientType,
-  country: 254, 
+  country: 254,
   mobileNumber: "+254712345678",
   state: "Nairobi",
   town: "Westlands",
@@ -214,7 +214,7 @@ export const dummyQuickQuoteData: QuickQuoteData = {
   riskId: "RISK-2025-001",
   coverTo: new Date("2026-01-01"),
   existingClientSelected: true,
-  selectedClient: dummyClient, 
+  selectedClient: dummyClient,
   selectedBinderCode: 12345,
   computationPayloadCode: 5001
 };
@@ -231,3 +231,28 @@ export const dummyUsers = [
   { userId: 'U009', fullName: 'Ivy Clark' },
   { userId: 'U010', fullName: 'Jack Turner' }
 ];
+
+export interface PaymentOption {
+  method: string;
+  paybill: string;
+  account: string;
+}
+
+export const dummyPaymentOptions: PaymentOption[] = [
+  {
+    method: 'mpesa',
+    paybill: '123456',
+    account: 'MP12345'
+  },
+  {
+    method: 'airtelMoney',
+    paybill: '654321',
+    account: 'AM54321'
+  },
+  {
+    method: 'Tkash',
+    paybill: '777888',
+    account: 'TK98765'
+  }
+];
+

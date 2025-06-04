@@ -1,12 +1,17 @@
 import { Component } from '@angular/core';
 import { PaymentAdviceDTO } from '../../data/quotationsDTO';
+import { Logger} from "../../../../../../shared/shared.module";
+import { dummyPaymentOptions, PaymentOption } from '../../data/dummyData';
 
+
+const log = new Logger('PaymentAdviceComponent');
 @Component({
   selector: 'app-payment-advice',
   templateUrl: './payment-advice.component.html',
   styleUrls: ['./payment-advice.component.css']
 })
 export class PaymentAdviceComponent {
+  
 
   paymentAdviceData: PaymentAdviceDTO = {
     paymentMethods: [
@@ -48,6 +53,7 @@ export class PaymentAdviceComponent {
   pay() {
     alert('Proceed to payment!');
   }
+
 
 
 }
