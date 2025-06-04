@@ -74,7 +74,7 @@ import {
 } from "../../data/premium-computation";
 import {QuotationDetailsRequestDto} from "../../data/quotation-details";
 import {differenceInCalendarDays, parseISO} from 'date-fns';
-import { QuoteReportComponent } from '../quote-report/quote-report.component';
+import {QuoteReportComponent} from '../quote-report/quote-report.component';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -83,7 +83,7 @@ const log = new Logger('QuickQuoteFormComponent');
   templateUrl: './quick-quote-form.component.html',
   styleUrls: ['./quick-quote-form.component.css'],
 })
-export class QuickQuoteFormComponent implements OnInit, OnDestroy,AfterViewInit {
+export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('calendar', {static: true}) calendar: Calendar;
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
@@ -1541,6 +1541,23 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy,AfterViewInit 
   saveQuotationDetails() {
     const quotationPayload = this.getQuotationPayload()
     log.debug("Quotation details >>>", quotationPayload)
+    const premiumToSave: ProductLevelPremium = {
+      ...this.premiumComputationResponse,
+      productLevelPremiums: this.premiumComputationResponse.productLevelPremiums.map((value) => {
+        return {
+          ...value,
+          riskLevelPremiums: value.riskLevelPremiums.map((riskDetails) => {
+            return {
+              ...riskDetails,
+              coverTypeDetails: riskDetails.coverTypeDetails
+                .filter(coverType => coverType.coverTypeCode === riskDetails.selectCoverType.coverTypeCode)
+            }
+          })
+        }
+      })
+    }
+    log.debug("Computation response after mutation >>>", premiumToSave)
+    sessionStorage.setItem("selectedCovers", JSON.stringify(premiumToSave))
     this.quotationService.processQuotation(quotationPayload).pipe(
       untilDestroyed(this)
     ).subscribe({
@@ -1666,6 +1683,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy,AfterViewInit 
       const formRisk = formRisks.find(value => value.riskCode === risk.code)
       log.debug("Processing Risk>>>, formRisk", risk, formRisk)
       riskInformation.push({
+        riskCode: risk?.code,
         coverTypeCode: risk.selectCoverType.coverTypeCode,
         coverTypeShortDescription: risk.selectCoverType.coverTypeShortDescription,
         coverTypeDescription: risk.selectCoverType.coverTypeDescription,
@@ -1772,13 +1790,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy,AfterViewInit 
   }
 
 
-
-
 //  shareQuote(){
 //   //log.debug("subject >>>>", this.premiumComputationResponse)
 //   this.quotationService.premiumItemsSubject$.next(this.premiumComputationResponse)
 //  }
-  
+
 
   removeBenefit(benefitDto: any) {
     log.debug("About to remove >>>>", benefitDto)
@@ -1866,6 +1882,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy,AfterViewInit 
     this.currentComputationPayload = updatedPayload
     return updatedPayload;
   }
+
   isShareModalOpen = false;
 
   openShareModal() {
@@ -1875,26 +1892,26 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy,AfterViewInit 
   closeShareModal() {
     this.isShareModalOpen = false;
   }
+
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
-    // To get a reference to app-quote-report
-    @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
-  
-  
-  
-    ngAfterViewInit() {
-      const modalElement = this.shareQuoteModal.nativeElement;
-    
-      modalElement.addEventListener('show.bs.modal', () => {
-        // Use a small delay to let modal animation complete
-        setTimeout(() => {
-          this.isShareModalOpen = true;
-        }, 10); // slight delay (10ms) is usually enough
-      });
-    
-      modalElement.addEventListener('hidden.bs.modal', () => {
-        this.isShareModalOpen = false;
-      });
-    }
+  // To get a reference to app-quote-report
+  @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
+
+
+  ngAfterViewInit() {
+    const modalElement = this.shareQuoteModal.nativeElement;
+
+    modalElement.addEventListener('show.bs.modal', () => {
+      // Use a small delay to let modal animation complete
+      setTimeout(() => {
+        this.isShareModalOpen = true;
+      }, 10); // slight delay (10ms) is usually enough
+    });
+
+    modalElement.addEventListener('hidden.bs.modal', () => {
+      this.isShareModalOpen = false;
+    });
+  }
 
   onDownloadRequested() {
     if (this.quoteReportComponent) {
