@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
 import {LazyLoadEvent} from 'primeng/api';
 import {ProductsService} from '../../../setups/services/products/products.service';
@@ -74,6 +74,7 @@ import {
 } from "../../data/premium-computation";
 import {QuotationDetailsRequestDto} from "../../data/quotation-details";
 import {differenceInCalendarDays, parseISO} from 'date-fns';
+import { QuoteReportComponent } from '../quote-report/quote-report.component';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -82,7 +83,7 @@ const log = new Logger('QuickQuoteFormComponent');
   templateUrl: './quick-quote-form.component.html',
   styleUrls: ['./quick-quote-form.component.css'],
 })
-export class QuickQuoteFormComponent implements OnInit, OnDestroy {
+export class QuickQuoteFormComponent implements OnInit, OnDestroy,AfterViewInit {
   @ViewChild('calendar', {static: true}) calendar: Calendar;
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
@@ -1864,6 +1865,43 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     };
     this.currentComputationPayload = updatedPayload
     return updatedPayload;
+  }
+  isShareModalOpen = false;
+
+  openShareModal() {
+    this.isShareModalOpen = true;
+  }
+
+  closeShareModal() {
+    this.isShareModalOpen = false;
+  }
+  @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
+    // To get a reference to app-quote-report
+    @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
+  
+  
+  
+    ngAfterViewInit() {
+      const modalElement = this.shareQuoteModal.nativeElement;
+    
+      modalElement.addEventListener('show.bs.modal', () => {
+        // Use a small delay to let modal animation complete
+        setTimeout(() => {
+          this.isShareModalOpen = true;
+        }, 10); // slight delay (10ms) is usually enough
+      });
+    
+      modalElement.addEventListener('hidden.bs.modal', () => {
+        this.isShareModalOpen = false;
+      });
+    }
+
+  onDownloadRequested() {
+    if (this.quoteReportComponent) {
+      this.quoteReportComponent.downloadPdf();
+    } else {
+      console.error('QuoteReportComponent is not available!');
+    }
   }
 
 }

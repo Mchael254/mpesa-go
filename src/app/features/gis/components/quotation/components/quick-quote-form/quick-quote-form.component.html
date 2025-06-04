@@ -255,34 +255,48 @@
   </ng-container>
   <div class="row " *ngIf="premiumComputationResponse">
     <div class="col-6"></div>
+
+    
     <div class="col-6 d-flex justify-content-end">
+        <!-- SHARE BUTTON -->
+     <button 
+     
+     type="button" 
+     class="btn btn-outline-primary me-2"
+     data-bs-toggle="modal" 
+     data-bs-target="#shareQuoteModal">
+     Share quotation
+     </button>
+     
+     <!-- SHARE QUOTE MODAL -->
+     <div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
+     
+     <div class="modal-dialog modal-dialog-centered modal-md">
+       <div class="modal-content p-4">
+         <div class="d-flex justify-content-end align-items-center mb-1">
+           
+           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+     
+           <!-- Conditionally render the report component with data -->
+         <app-quote-report  #quoteReport style="opacity: 0;
+         position: absolute;
+         left: -9999px;"></app-quote-report>
+     
+         <!-- Your Angular component inside the modal -->
+         <app-share-quotes  (downloadRequested)="onDownloadRequested()"></app-share-quotes>
+       </div>
+     </div>
+     </div>
+     <div>
       <button type="button" class="btn btn-outline-primary " id="save-quotation"
               *ngIf="coverSelected" (click)="saveQuotationDetails()">
         {{ 'gis.quotation.next' | translate }}
       </button>
-
-
-      <button 
-type="button" 
-class="btn btn-outline-primary me-2"
-data-bs-toggle="modal" 
-data-bs-target="#shareQuoteModal">
-Share quotation
-</button>
-     <!-- SHARE QUOTE MODAL -->
-<div class="modal fade" id="shareQuoteModal" tabindex="-1" aria-labelledby="shareQuoteLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content p-4">
-      <div class="d-flex justify-content-between align-items-center mb-1">
-        
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-  
-      <!-- Your Angular component inside the modal -->
-      <app-share-quotes></app-share-quotes>
     </div>
-  </div>
-  </div>
+
+   
+
       
     </div>
   </div>
