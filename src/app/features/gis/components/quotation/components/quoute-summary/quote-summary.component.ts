@@ -1,11 +1,11 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { QuotationDetails, QuotationDTO } from '../../data/quotationsDTO';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ProductLevelPremium, QuotationDetails, QuotationDTO} from '../../data/quotationsDTO';
 
-import { QuotationsService } from "../../services/quotations/quotations.service";
-import { Logger, untilDestroyed } from "../../../../../../shared/shared.module";
-import { dummyUsers } from '../../data/dummyData';
-import { Table } from 'primeng/table';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import {QuotationsService} from "../../services/quotations/quotations.service";
+import {Logger, untilDestroyed} from "../../../../../../shared/shared.module";
+import {dummyUsers} from '../../data/dummyData';
+import {Table} from 'primeng/table';
+import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -35,11 +35,11 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
-
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
   // To get a reference to app-quote-report
-  @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
+  @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
 
+  selectedCovers: ProductLevelPremium = null
 
 
   ngAfterViewInit() {
@@ -58,8 +58,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
-
-
   onDownloadRequested() {
     if (this.quoteReportComponent) {
       this.quoteReportComponent.downloadPdf();
@@ -69,7 +67,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
-
   quotationDetails: QuotationDetails;
   batchNo: number;
   quotationCode: number;
@@ -77,7 +74,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   reassignComment: string = ''
   users: any;
   selectedUser: any;
-  searchUserId: string = '';
   fullNameSearch: string = '';
   globalSearch: string = '';
   status: string = '';
@@ -92,7 +88,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     public claimsService: ClaimsService
 
   ) {
-
+    this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
   }
 
   breadCrumbItems: BreadCrumbItem[] = [
