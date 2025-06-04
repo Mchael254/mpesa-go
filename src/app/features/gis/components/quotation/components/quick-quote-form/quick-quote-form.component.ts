@@ -613,7 +613,17 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       untilDestroyed(this)
     ).subscribe({
       next: (response) => {
-        this.premiumComputationResponse = response
+        const riskLevelPremiums = this.selectedProductCovers.flatMap(value => value.riskLevelPremiums);
+        this.premiumComputationResponse = response;
+        riskLevelPremiums?.forEach(selected => {
+          this.premiumComputationResponse.productLevelPremiums.forEach(premium => {
+            const match = premium.riskLevelPremiums.find(risk => risk.code === selected.code);
+            if (match) {
+              match.selectCoverType = selected.selectCoverType;
+            }
+          });
+        });
+        log.debug("Currently selected products after computation>>>", riskLevelPremiums, this.premiumComputationResponse)
         this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully ')
         log.debug("Computation response >>>>", response)
       }, error: (error) => {
