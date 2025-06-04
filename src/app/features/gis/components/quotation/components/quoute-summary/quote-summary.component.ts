@@ -1,16 +1,15 @@
 import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {QuotationDetails, QuotationDTO} from '../../data/quotationsDTO';
+import {ProductLevelPremium, QuotationDetails, QuotationDTO} from '../../data/quotationsDTO';
 
-import { QuotationsService } from "../../services/quotations/quotations.service";
-import { Logger, untilDestroyed } from "../../../../../../shared/shared.module";
-import { dummyUsers } from '../../data/dummyData';
-import { Table } from 'primeng/table';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import {QuotationsService} from "../../services/quotations/quotations.service";
+import {Logger, untilDestroyed} from "../../../../../../shared/shared.module";
+import {dummyUsers} from '../../data/dummyData';
+import {Table} from 'primeng/table';
+import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
-import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { QuoteReportComponent } from '../quote-report/quote-report.component';
+import {Router} from '@angular/router';
+import {GlobalMessagingService} from 'src/app/shared/services/messaging/global-messaging.service';
+import {QuoteReportComponent} from '../quote-report/quote-report.component';
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -20,7 +19,7 @@ const log = new Logger('QuoteSummaryComponent');
   templateUrl: './quote-summary.component.html',
   styleUrls: ['./quote-summary.component.css']
 })
-export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
+export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('dt') table!: Table;
 
   isShareModalOpen = false;
@@ -34,29 +33,27 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
   }
 
 
-  
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
   // To get a reference to app-quote-report
-  @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
+  @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
 
+  selectedCovers: ProductLevelPremium = null
 
 
   ngAfterViewInit() {
     const modalElement = this.shareQuoteModal.nativeElement;
-  
+
     modalElement.addEventListener('show.bs.modal', () => {
       // Use a small delay to let modal animation complete
       setTimeout(() => {
         this.isShareModalOpen = true;
       }, 10); // slight delay (10ms) is usually enough
     });
-  
+
     modalElement.addEventListener('hidden.bs.modal', () => {
       this.isShareModalOpen = false;
     });
   }
-  
-  
 
 
   onDownloadRequested() {
@@ -66,8 +63,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
       console.error('QuoteReportComponent is not available!');
     }
   }
-  
-  
+
 
   quotationDetails: QuotationDetails;
   batchNo: number;
@@ -76,7 +72,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
   reassignComment: string = ''
   users: any[] = [];
   selectedUser: any;
-  searchUserId: string = '';
   fullNameSearch: string = '';
   globalSearch: string = '';
   status: string = '';
@@ -86,14 +81,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
-
     private cdRef: ChangeDetectorRef,
-
-
     public globalMessagingService: GlobalMessagingService
-
   ) {
-
+    this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
   }
 
   breadCrumbItems: BreadCrumbItem[] = [
@@ -163,12 +154,12 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
 
   ngOnInit(): void {
     this.users = dummyUsers;
-    log.debug("Users>>>", this.users);
     this.quotationService.getQuotationDetails(sessionStorage.getItem("quotationNumber"))
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
       log.debug("Quotation details>>>", response)
       this.quotationDetails = response
     });
+    log.debug("Selected covers>>>>", this.selectedCovers)
 
   }
 

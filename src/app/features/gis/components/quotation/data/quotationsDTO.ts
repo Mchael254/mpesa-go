@@ -220,6 +220,7 @@ export interface TaxInformation {
 }
 
 export interface RiskInformation {
+  riskCode?: string
   coverTypeCode: number;
   coverTypeShortDescription: string;
   coverTypeDescription: string;
