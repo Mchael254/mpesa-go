@@ -63,8 +63,8 @@
           <p id="quote-label">
             Notes: <span class="notes-preview" id="quote-input">{{ quotationDetails.comments }}</span>
 
-            <i class="fa fa-pencil edit-icon" data-bs-toggle="modal"
- data-bs-target="#notesModal" (click)="storeCurrentComment()"></i>
+            <i class="fa fa-pencil edit-icon" data-bs-toggle="modal" data-bs-target="#notesModal"
+              (click)="storeCurrentComment()"></i>
           </p>
 
 
@@ -184,7 +184,7 @@
       </button>
       <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary mx-2"
         data-bs-target="#reassignQuotation" data-bs-toggle="modal">{{'gis.quotation.reassign' | translate}}</button>
-      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary"  data-bs-target="#rejectQuote"
+      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary" data-bs-target="#rejectQuote"
         data-bs-toggle="modal">{{'gis.quotation.reject' |
         translate}} </button>
     </div>
@@ -262,7 +262,8 @@ Share quotation
     <div class="modal-content ps-4 pt-2 pe-4">
       <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
         <p class="modal-title fw-bold">{{'gis.quotation.reject_quote' | translate}}</p>
-        <button type="button" data-bs-dismiss="modal" class="btn p-1 text-danger fw-bold" style="border: none;">X</button>
+        <button type="button" data-bs-dismiss="modal" class="btn p-1 text-danger fw-bold"
+          style="border: none;">X</button>
       </div>
       <p class="text-dark mb-5">Are you sure you want to reject this quote?</p>
       <label class="text-dark" for="comment">Comment</label>
@@ -272,7 +273,8 @@ Share quotation
           'gis.quotation.cancel' | translate }}
         </button>
         <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
-          data-bs-dismiss="modal" (click)="rejectQuotation(quotationDetails.code)">{{ 'gis.quotation.save_changes' | translate }}
+          data-bs-dismiss="modal" (click)="rejectQuotation(quotationDetails.code)">{{ 'gis.quotation.save_changes' |
+          translate }}
         </button>
       </div>
     </div>
@@ -285,7 +287,8 @@ Share quotation
     <div class="modal-content ps-4 pt-2 pe-4">
       <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
         <p class="modal-title fw-bold">{{'gis.quotation.reassign_quote' | translate}}</p>
-        <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X</button>
+        <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+          style="border: none;">X</button>
       </div>
       <div class="row mb-4 mt-2">
         <p-table #dt [value]="users" [rows]="3" [paginator]="true" [globalFilterFields]="['userId', 'fullName']"

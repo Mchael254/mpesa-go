@@ -48,7 +48,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   };
   
 
-  getTotalPremium(): number {
+  getTotalPremium(): any {
    // return this.quotation?.products?.reduce((sum, p) => sum + p.premium, 0) || 0;
   }
   
