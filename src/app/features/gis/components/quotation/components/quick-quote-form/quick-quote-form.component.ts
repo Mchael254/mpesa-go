@@ -1865,10 +1865,5 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.currentComputationPayload = updatedPayload
     return updatedPayload;
   }
-<<<<<<< HEAD
 
-
-
-=======
->>>>>>> 3d4037adb7ecce29d3856d2adc83394374166251
 }
