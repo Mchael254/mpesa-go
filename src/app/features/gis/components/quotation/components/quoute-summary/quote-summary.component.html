@@ -85,7 +85,7 @@
             <textarea rows="5" [(ngModel)]="quotationDetails.comments"></textarea>
 
             <div class="justify-content-end mb-4 mt-4">
-              <button type="button" class="btn btn-outline-primary me-1 ">
+              <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary me-1 ">
                 {{ 'gis.quotation.cancel' | translate }}
               </button>
               <button type="button" class="btn btn-primary " (click)="saveNotes()">
