@@ -1,5 +1,5 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {QuotationDetails, QuotationDTO} from '../../data/quotationsDTO';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { QuotationDetails, QuotationDTO } from '../../data/quotationsDTO';
 
 import { QuotationsService } from "../../services/quotations/quotations.service";
 import { Logger, untilDestroyed } from "../../../../../../shared/shared.module";
@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { QuoteReportComponent } from '../quote-report/quote-report.component';
+import { ClaimsService } from 'src/app/features/gis/components/claim/services/claims.service';
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -20,7 +21,7 @@ const log = new Logger('QuoteSummaryComponent');
   templateUrl: './quote-summary.component.html',
   styleUrls: ['./quote-summary.component.css']
 })
-export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
+export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('dt') table!: Table;
 
   isShareModalOpen = false;
@@ -34,7 +35,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
   }
 
 
-  
+
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
   // To get a reference to app-quote-report
   @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
@@ -43,20 +44,20 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
 
   ngAfterViewInit() {
     const modalElement = this.shareQuoteModal.nativeElement;
-  
+
     modalElement.addEventListener('show.bs.modal', () => {
       // Use a small delay to let modal animation complete
       setTimeout(() => {
         this.isShareModalOpen = true;
       }, 10); // slight delay (10ms) is usually enough
     });
-  
+
     modalElement.addEventListener('hidden.bs.modal', () => {
       this.isShareModalOpen = false;
     });
   }
-  
-  
+
+
 
 
   onDownloadRequested() {
@@ -66,15 +67,15 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
       console.error('QuoteReportComponent is not available!');
     }
   }
-  
-  
+
+
 
   quotationDetails: QuotationDetails;
   batchNo: number;
   quotationCode: number;
   rejectComment: string = ''
   reassignComment: string = ''
-  users: any[] = [];
+  users: any;
   selectedUser: any;
   searchUserId: string = '';
   fullNameSearch: string = '';
@@ -86,11 +87,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
-
     private cdRef: ChangeDetectorRef,
-
-
-    public globalMessagingService: GlobalMessagingService
+    public globalMessagingService: GlobalMessagingService,
+    public claimsService: ClaimsService
 
   ) {
 
@@ -162,22 +161,33 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
 
 
   ngOnInit(): void {
-    this.users = dummyUsers;
+    this.getUsers()
     log.debug("Users>>>", this.users);
     this.quotationService.getQuotationDetails(sessionStorage.getItem("quotationNumber"))
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
-      log.debug("Quotation details>>>", response)
-      this.quotationDetails = response
-    });
+        log.debug("Quotation details>>>", response)
+        this.quotationDetails = response
+      });
 
   }
 
-  reassignQuotation() {
-    console.log('');
 
+  getUsers() {
+    this.claimsService.getUsers().subscribe({
+      next: (res => {
+        this.users = res;
+        this.users = this.users.content;
+        log.debug('users>>>', this.users)
 
+      }),
+      error: (error => {
+        log.debug('error', error)
+        this.globalMessagingService.displayErrorMessage('Error', 'failed to feth users')
+      })
+    })
   }
 
+  //reject quotation
   rejectQuotation(code: number) {
     const quotationCode = code;
     const reasonCancelled = this.rejectComment;
@@ -216,14 +226,14 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
 
   filterByFullName(event: any): void {
     const value = event.target.value;
-    this.table.filter(value, 'fullName', 'contains');
+    this.table.filter(value, 'name', 'contains');
   }
 
   onUserSelect(): void {
     if (this.selectedUser) {
       log.debug("Selected user>>>", this.selectedUser);
-      this.globalSearch = this.selectedUser.userId;
-      this.fullNameSearch = this.selectedUser.fullName;
+      this.globalSearch = this.selectedUser.id;
+      this.fullNameSearch = this.selectedUser.name;
 
     }
 
@@ -234,6 +244,39 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
     this.globalSearch = '';
     this.fullNameSearch = '';
   }
+
+  //reassign quotation
+  comment: boolean = false
+  noUserChosen: boolean = false
+  reassignQuotation() {
+    if (!this.reassignComment) {
+      this.comment = true;
+      setTimeout(() => {
+        this.comment = false
+
+      }, 3000);
+
+      return;
+    }
+    if (!this.selectedUser) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false
+
+      }, 3000);
+
+      return;
+
+    }
+    const reassignPayload = {
+      user: this.selectedUser.id,
+      comment: this.reassignComment
+    }
+    this.globalMessagingService.displaySuccessMessage('Success', 'reassigning...')
+    log.debug('reassign Payload', reassignPayload)
+
+  }
+
 
 
   ngOnDestroy(): void {
@@ -279,10 +322,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy,AfterViewInit {
     this.quotationService
       .convertToNormalQuote(quotationCode)
       .subscribe((data: any) => {
-          log.debug("Response after converting quote to a normalQuote:", data)
-          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        log.debug("Response after converting quote to a normalQuote:", data)
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
 
-        }
+      }
       );
   }
 
