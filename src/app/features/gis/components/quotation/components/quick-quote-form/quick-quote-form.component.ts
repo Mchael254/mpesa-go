@@ -1540,7 +1540,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   saveQuotationDetails() {
     const quotationPayload = this.getQuotationPayload()
     log.debug("Quotation details >>>", quotationPayload)
-    //return
     this.quotationService.processQuotation(quotationPayload).pipe(
       untilDestroyed(this)
     ).subscribe({
@@ -1568,6 +1567,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     const formModel = this.quickQuoteForm.getRawValue();
     log.debug("Selected products >>>>", this.selectedProductCovers)
     log.debug("Quotation details >>>", formModel)
+    sessionStorage.setItem("quickQuotePayload", JSON.stringify(formModel))
     const coverTypes = this.selectedProductCovers
       .flatMap(value => value.riskLevelPremiums.map(premium => premium.selectCoverType));
     const totalPremium = coverTypes.reduce((sum, coverType) => sum + coverType.computedPremium, 0);
@@ -1856,6 +1856,4 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
     this.currentComputationPayload = updatedPayload
     return updatedPayload;
   }
-
-
 }
