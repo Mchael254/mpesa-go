@@ -1,9 +1,11 @@
 import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
-  Input,
+  Input, NgZone,
   OnDestroy,
   OnInit, Output,
   ViewChild
@@ -45,15 +47,19 @@ declare var $: any;
 @Component({
   selector: 'app-cover-types-comparison',
   templateUrl: './cover-types-comparison.component.html',
-  styleUrls: ['./cover-types-comparison.component.css']
+  styleUrls: ['./cover-types-comparison.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
+export class CoverTypesComparisonComponent implements OnInit, OnDestroy,AfterViewInit  {
   activeRiskIndex: number | null = null;
   private _riskLevelPremium!: RiskLevelPremium;
   @Output() selectedCoverEvent: EventEmitter<RiskLevelPremium> = new EventEmitter<RiskLevelPremium>();
   @Output() additionalBenefitsEvent: EventEmitter<Premiums[]> = new EventEmitter<Premiums[]>();
   @Output() additionalBenefitsRemovedEvent: EventEmitter<Premiums> = new EventEmitter<Premiums>();
+  @Output() activeCoverTypeEvent: EventEmitter<CoverTypeDetail> = new EventEmitter<CoverTypeDetail>
   @Input() isExpanded: boolean = false;
+  @ViewChild('addMoreBenefitsModal') addMoreBenefitsModalRef: ElementRef<HTMLDivElement>;
+  private bsModalInstance: any;
 
   @Input()
   set riskLevelPremium(value: RiskLevelPremium) {
@@ -62,6 +68,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       this.selectedCoverTypeCode = this.riskLevelPremium.selectCoverType.coverTypeCode
       const selectedCoverType = value.coverTypeDetails
         .find(coverType => coverType.coverTypeCode === this.selectedCoverTypeCode)
+      this.selectedCover = selectedCoverType
       log.debug("Selected coverType >>>>", selectedCoverType)
       this.onCoverTypeSelected(selectedCoverType)
     }
@@ -70,7 +77,13 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   get riskLevelPremium() {
     return this._riskLevelPremium
   }
-
+  ngAfterViewInit() {
+    if (this.addMoreBenefitsModalRef?.nativeElement) {
+      this.bsModalInstance = new bootstrap.Modal(this.addMoreBenefitsModalRef.nativeElement);
+    } else {
+      console.error("Modal element reference not found in ngAfterViewInit.");
+    }
+  }
 
   selectedOption: string = 'email';
   clientName: string = '';
@@ -187,6 +200,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     public currencyService: CurrencyService,
     public authService: AuthService,
     public cdr: ChangeDetectorRef,
+    private zone: NgZone,
     private router: Router,
     public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
     public globalMessagingService: GlobalMessagingService,
@@ -233,14 +247,13 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.bsModalInstance) {
+      this.bsModalInstance.dispose();
+    }
   }
 
   openModal() {
     this.isModalOpen = true;
-  }
-
-  closeModal() {
-    this.isModalOpen = false;
   }
 
   fetchCoverTypeRelatedData(selectedCover: CoverTypeDetail) {
@@ -265,7 +278,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         this.riskLevelPremium.selectCoverType = selectedCover
         this.selectedCoverEvent.emit(this.riskLevelPremium)
         this.additionalBenefits = applicablePremiumRates
-        this.temporaryPremiumList = applicablePremiumRates.filter(value => value.isMandatory !== 'Y')
+        this.selectedCover.additionalBenefits = applicablePremiumRates.filter(value => value.isMandatory !== 'Y')
+        this.cdr.detectChanges()
       })
   }
 
@@ -348,8 +362,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
         log.debug("Selected Currency:", this.selectedCurrency);
         this.selectedCurrencyCode = curr.id;
         log.debug("Selected Currency code:", this.selectedCurrencyCode);
-
-        this.cdr.detectChanges()
       })
   }
 
@@ -462,7 +474,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
 
   addBenefits() {
     let isValid = true;
-    this.temporaryPremiumList.forEach(section => {
+    this.selectedCover.additionalBenefits.forEach(section => {
       if (section.isChecked && !section.limitAmount) {
         document.getElementById(`section_${section.sectionCode}`)?.classList.add('error-border');
         isValid = false;
@@ -476,11 +488,10 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
       );
       return;
     }
-    /*  let rowNumbers = newListToCompute.map(value => value.rowNumber);
-      let maxValueAssigned = Math.max(...rowNumbers);*/
-    let limitsToComputeOn = this.temporaryPremiumList.filter(value => value.isChecked && value.isMandatory !== 'Y')
+    let limitsToComputeOn = this.selectedCover.additionalBenefits.filter(value => value.isChecked && value.isMandatory !== 'Y')
     log.debug("Modified limitsToComputeOn", limitsToComputeOn);
     this.additionalBenefitsEvent.emit(limitsToComputeOn)
+    this.cdr.detectChanges()
 
   }
 
@@ -493,23 +504,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     this.activeRiskIndex = this.activeRiskIndex === index ? null : index;
 
   }
-
-  // toggleClauseDetails() {
-  //   this.isClauseDetailsOpen = !this.isClauseDetailsOpen;
-  // }
-
-  // toggleLimitsDetails() {
-  //   this.isLimitsDetailsOpen = !this.isLimitsDetailsOpen;
-  // }
-
-  // toggleExcessDetails() {
-  //   this.isExcessDetailsOpen = !this.isExcessDetailsOpen;
-  // }
-
-  // toggleAdditionalBenefitsDetails() {
-  //   this.isBenefitsDetailsOpen = !this.isBenefitsDetailsOpen;
-  // }
-
 
   openHelperModal(selectedClause: any) {
     // Set the showHelperModal property of the selectedClause to true
@@ -527,6 +521,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
     this.selectedCoverTypeCode = selectedCover.coverTypeCode;
     this.selectedSubclassCode = selectedCover.subclassCode;
     this.selectedBinderCode = this.riskLevelPremium.binderCode
+    selectedCover.additionalBenefits = []
     if (this.selectedCoverTypeCode && this.selectedSubclassCode) {
       this.fetchCoverTypeRelatedData(selectedCover);
     } else {
@@ -597,42 +592,22 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy {
   }
 
 
-  navigateToQuickQuote() {
-    log.debug("Navigate to quick quote screen")
-    this.isReturnToQuickQuote = true;
-    sessionStorage.setItem('quoteAction', 'E')
-    // Add a unique flag for add another risk navigation
-    sessionStorage.setItem('navigationSource', 'isReturnToQuickQuote');
-
-    const passedisReturnToQuickQuoteString = JSON.stringify(this.isReturnToQuickQuote);
-    sessionStorage.setItem('isReturnToQuickQuote', passedisReturnToQuickQuoteString);
-
-    const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
-    sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
-    log.debug("New client detail(covertype:", this.passedNewClientDetails)
-
-
-    const passedClientDetailsString = JSON.stringify(this.passedClientDetails);
-    sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
-    log.debug("Existing client detail(covertype:", this.passedClientDetails)
-
-    this.router.navigate(['/home/gis/quotation/quick-quote']);
-
-  }
 
   openAdditionalBenefitsModal() {
-    if (!this.temporaryPremiumList) {
-      this.globalMessagingService.displayInfoMessage('Error', 'Temporary list loading ');
-    } else {
-      document.getElementById("openAdditionalBenefitsModalButton").click();
+    this.cdr.detectChanges();
 
+    if (this.bsModalInstance) {
+      log.debug("Programmatically showing modal for:", this.selectedCover.coverTypeDescription);
+      this.bsModalInstance.show();
+    } else {
+    }
+  }
+  closeModal() {
+    if (this.bsModalInstance) {
+      this.bsModalInstance.hide();
     }
   }
 
-  saveAdditionalBenefitChanges() {
-    this.additionalBenefitsEvent.emit(this.temporaryPremiumList);
-    log.debug("Temporary Premium List after saving additional benefits", this.temporaryPremiumList);
-  }
 
   fetchUserOrgId() {
     this.quotationService

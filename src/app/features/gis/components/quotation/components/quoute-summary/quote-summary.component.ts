@@ -1,15 +1,14 @@
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {QuotationDetails, QuotationDTO} from '../../data/quotationsDTO';
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { QuotationDetails, QuotationDTO } from '../../data/quotationsDTO';
-
-import { QuotationsService } from "../../services/quotations/quotations.service";
-import { Logger, untilDestroyed } from "../../../../../../shared/shared.module";
-import { dummyUsers } from '../../data/dummyData';
-import { Table } from 'primeng/table';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import {QuotationsService} from "../../services/quotations/quotations.service";
+import {Logger, untilDestroyed} from "../../../../../../shared/shared.module";
+import {dummyUsers} from '../../data/dummyData';
+import {Table} from 'primeng/table';
+import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
-import { Router } from '@angular/router';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import {Router} from '@angular/router';
+import {GlobalMessagingService} from 'src/app/shared/services/messaging/global-messaging.service';
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -21,26 +20,25 @@ const log = new Logger('QuoteSummaryComponent');
 })
 export class QuoteSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('dt') table!: Table;
-  
+
   quotationDetails: QuotationDetails;
   batchNo: number;
   quotationCode: number;
   rejectComment: string = ''
   reassignComment: string = ''
   users: any[] = [];
-  selectedUser:any;
+  selectedUser: any;
   searchUserId: string = '';
   fullNameSearch: string = '';
   globalSearch: string = '';
-  status:string = '';
-  afterRejectQuote:boolean = true;
-   originalComment: string;
+  status: string = '';
+  afterRejectQuote: boolean = true;
+  originalComment: string;
 
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
-    public globalMessagingService:GlobalMessagingService
-
+    public globalMessagingService: GlobalMessagingService
   ) {
 
   }
@@ -110,50 +108,48 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
   }
 
 
-
   ngOnInit(): void {
     this.users = dummyUsers;
     log.debug("Users>>>", this.users);
     this.quotationService.getQuotationDetails(sessionStorage.getItem("quotationNumber"))
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
-        log.debug("Quotation details>>>", response)
-        this.quotationDetails = response
-      });
+      log.debug("Quotation details>>>", response)
+      this.quotationDetails = response
+    });
 
   }
 
   reassignQuotation() {
     console.log('');
-    
-    
+
 
   }
-  
-  rejectQuotation(code:number) {
+
+  rejectQuotation(code: number) {
     const quotationCode = code;
     const reasonCancelled = this.rejectComment;
     const status = 'Rejected';
 
-    if(!reasonCancelled){
+    if (!reasonCancelled) {
       this.globalMessagingService.displayWarningMessage('Warning', 'Key in a reason');
       return;
     }
 
-    log.debug('reject payload>>>',quotationCode,reasonCancelled,status)
+    log.debug('reject payload>>>', quotationCode, reasonCancelled, status)
 
     this.quotationService.updateQuotationStatus(quotationCode, status, reasonCancelled).subscribe({
-      next:(response) => {
-        this.globalMessagingService.displaySuccessMessage('success','quote rejected successfully')
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage('success', 'quote rejected successfully')
         log.debug(response);
         this.afterRejectQuote = false;
 
       },
-      error:(error) => {
-        this.globalMessagingService.displayErrorMessage('error','error while rejecting quote');
+      error: (error) => {
+        this.globalMessagingService.displayErrorMessage('error', 'error while rejecting quote');
         log.debug(error);
 
       }
-      
+
     })
 
   }
@@ -164,21 +160,23 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     this.globalSearch = value;
     this.table.filterGlobal(value, 'contains');
   }
+
   filterByFullName(event: any): void {
     const value = event.target.value;
     this.table.filter(value, 'fullName', 'contains');
   }
 
-  onUserSelect():void{
-    if(this.selectedUser) {
+  onUserSelect(): void {
+    if (this.selectedUser) {
       log.debug("Selected user>>>", this.selectedUser);
       this.globalSearch = this.selectedUser.userId;
       this.fullNameSearch = this.selectedUser.fullName;
-      
+
     }
 
   }
-  onUserUnselect():void{
+
+  onUserUnselect(): void {
     this.selectedUser = null;
     this.globalSearch = '';
     this.fullNameSearch = '';
@@ -187,6 +185,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
   }
+
   convertQuoteToPolicy() {
     log.debug("Quotation Details", this.quotationDetails)
     const quotationCode = this.quotationDetails?.code;
@@ -208,6 +207,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     })
 
   }
+
   convertQuoteToNormalQuote() {
     log.debug("Quotation Details", this.quotationDetails);
 
@@ -226,34 +226,36 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy {
     this.quotationService
       .convertToNormalQuote(quotationCode)
       .subscribe((data: any) => {
-        log.debug("Response after converting quote to a normalQuote:", data)
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+          log.debug("Response after converting quote to a normalQuote:", data)
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
 
-      }
+        }
       );
   }
-  storeCurrentComment(){
-  this.originalComment = this.quotationDetails.comments;
-    log.debug("original comment:",this.originalComment)
+
+  storeCurrentComment() {
+    this.originalComment = this.quotationDetails.comments;
+    log.debug("original comment:", this.originalComment)
 
   }
+
   saveNotes() {
-    log.debug("new comment:",this.quotationDetails.comments)
-     if (
-    this.originalComment === this.quotationDetails.comments ||
-    !this.quotationDetails.comments ||
-    this.quotationDetails.comments.trim() === ''
-  ) {
-    this.globalMessagingService.displayErrorMessage('Error', 'Edit note to proceed');
-    return;
-  }
-  const payload ={
-    comment:this.quotationDetails.comments,
-    quotationCode:this.quotationDetails.code
-  }
+    log.debug("new comment:", this.quotationDetails.comments)
+    if (
+      this.originalComment === this.quotationDetails.comments ||
+      !this.quotationDetails.comments ||
+      this.quotationDetails.comments.trim() === ''
+    ) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Edit note to proceed');
+      return;
+    }
+    const payload = {
+      comment: this.quotationDetails.comments,
+      quotationCode: this.quotationDetails.code
+    }
     this.quotationService.updateQuotationComment(payload).subscribe((data: any) => {
       log.debug("Response after updating quote comment:", data)
-      
+
     })
 
   }

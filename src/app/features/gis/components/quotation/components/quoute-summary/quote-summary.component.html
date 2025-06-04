@@ -17,9 +17,9 @@
         <span class="circle">1</span>
         <span class="label" style="color: #00529b;">Quote Information</span>
       </label>
-    
+
       <div class="step-line"></div>
-    
+
       <label class="step">
         <input type="radio" name="step" [checked]="activeIndex === 1" (click)="setStep(1)">
         <span class="circle">2</span>
@@ -83,7 +83,7 @@
               </button>
             </div>
             <textarea rows="5" [(ngModel)]="quotationDetails.comments"></textarea>
-            
+
             <div class="justify-content-end mb-4 mt-4">
               <button type="button" class="btn btn-outline-primary me-1 ">
                 {{ 'gis.quotation.cancel' | translate }}
@@ -91,7 +91,7 @@
               <button type="button" class="btn btn-primary " (click)="saveNotes()">
                 Save details
               </button>
-              
+
             </div>
           </div>
         </div>
@@ -182,7 +182,7 @@
       <button type="button" class="btn btn-text me-2 " style="border: none;">
         Back
       </button>
-      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary mx-2" 
+      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary mx-2"
         data-bs-target="#reassignQuotation" data-bs-toggle="modal">{{'gis.quotation.reassign' | translate}}</button>
       <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary"  data-bs-target="#rejectQuote"
         data-bs-toggle="modal">{{'gis.quotation.reject' |
