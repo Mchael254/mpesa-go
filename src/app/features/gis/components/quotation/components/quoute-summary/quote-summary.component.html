@@ -56,7 +56,7 @@
 
         </div>
         <div class="col-sm-4 col-6 ">
-          <p id="quote-label">Currency: <strong id="quote-input"></strong></p>
+          <p id="quote-label">Currency: <strong id="quote-input">{{quotationDetails.currency}}</strong></p>
 
         </div>
         <div class="col-sm-4 col-6 ">
@@ -142,7 +142,7 @@
 
 
       <!-- Product Table -->
-      <p-table [value]="quotation.products" class="mt-4">
+      <p-table [value]="quotationDetails.quotationProducts" class="mt-4">
         <ng-template pTemplate="header">
           <tr>
             <th>Product</th>
@@ -156,11 +156,11 @@
         </ng-template>
         <ng-template pTemplate="body" let-quote>
           <tr>
-            <td>{{ quote.product }}</td>
+            <td>{{ quote.productName }}</td>
             <td>{{ quote.risk }}</td>
-            <td>{{ quote.coverType }}</td>
+            <td>{{ quote.riskInformation.coverTypeDescription }}</td>
             <td>{{ quote.effectiveDate }}</td>
-            <td>{{ quote.sumInsured }}</td>
+            <td>{{ quote.totalSumInsured }}</td>
             <td>{{ quote.premium }}</td>
 
 
@@ -189,9 +189,37 @@
         translate}} </button>
     </div>
     <div class="right-buttons">
-      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary me-2 ">
-        Share quotation
-      </button>
+     <!-- SHARE BUTTON -->
+<button 
+*ngIf="afterRejectQuote" 
+type="button" 
+class="btn btn-outline-primary me-2"
+data-bs-toggle="modal" 
+data-bs-target="#shareQuoteModal">
+Share quotation
+</button>
+
+<!-- SHARE QUOTE MODAL -->
+<div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-content p-4">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+          <!-- Conditionally render the report component with data -->
+    <app-quote-report *ngIf="isShareModalOpen" [quotationDetails]="quotationDetails" #quoteReport style="opacity: 0;
+    position: absolute;
+    left: -9999px;"></app-quote-report>
+
+    <!-- Your Angular component inside the modal -->
+    <app-share-quotes  (downloadRequested)="onDownloadRequested()"></app-share-quotes>
+  </div>
+</div>
+</div>
+
       <!-- <button pButton label="Accept quote" class="p-button-success"></button> -->
       <button *ngIf="afterRejectQuote" type="button" id="acceptQuote" class="btn btn-primary" data-bs-toggle="modal"
         id="openAdditionalBenefitsModalButton" data-bs-target="#acceptQuote" title="open">Accept quote

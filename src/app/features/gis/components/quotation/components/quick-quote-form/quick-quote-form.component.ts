@@ -1763,10 +1763,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
 
 
 
- shareQuote(){
-  //log.debug("subject >>>>", this.premiumComputationResponse)
-  this.quotationService.premiumItemsSubject$.next(this.premiumComputationResponse)
- }
+//  shareQuote(){
+//   //log.debug("subject >>>>", this.premiumComputationResponse)
+//   this.quotationService.premiumItemsSubject$.next(this.premiumComputationResponse)
+//  }
   
 
   removeBenefit(benefitDto: any) {

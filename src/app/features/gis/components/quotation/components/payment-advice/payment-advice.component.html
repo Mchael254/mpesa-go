@@ -1,22 +1,23 @@
 <div class="invoice-container">
-    <div class="invoice">
-      <h2 class="section-header">Payment methods</h2>
-      <div class="methods-grid">
-        <div class="payment-method" *ngFor="let method of paymentAdviceData.paymentMethods">
-          <strong>{{ method.title }}</strong>
-          <p *ngFor="let detail of method.details">{{ detail }}</p>
-        </div>
+  <div class="invoice">
+    <h2 class="section-header">Payment methods</h2>
+    <div class="methods-grid">
+      <div class="payment-method" *ngFor="let method of paymentAdviceData.paymentMethods">
+        <strong>{{ method.title }}</strong>
+        <p *ngFor="let detail of method.details">{{ detail }}</p>
       </div>
     </div>
-  
-    <div class="payment-method click-to-pay">
-      <p>
-        <a href="#" class="pay-link">Click to Pay</a>
-      </p>
-    </div>
-  
-    <footer class="footer">
-      <p *ngFor="let info of paymentAdviceData.footerInfo">{{ info }}</p>
-    </footer>
   </div>
+
+  <div class="payment-method click-to-pay">
+    <p>
+      <a href="#" class="pay-link">Click here to pay</a>
+    </p>
+  </div>
+
+  <footer class="footer">
+    <p *ngFor="let info of paymentAdviceData.footerInfo">{{ info }}</p>
+  </footer>
+</div>
+
   
