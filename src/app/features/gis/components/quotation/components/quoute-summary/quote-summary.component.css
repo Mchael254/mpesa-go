@@ -172,14 +172,7 @@ p-table ::ng-deep table tbody tr td {
 
 
 
-/* Buttons group */
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 2rem;
-}
+
 
 
 
@@ -216,9 +209,7 @@ p-table ::ng-deep table tbody tr td {
 button{
   font-weight: 500;
 border: 1px solid #00529B}
-.button-group button {
-  background-color: #F5F5F5;
-}
+
 .btn-primary{
    background-color: #00529B!important;
  
