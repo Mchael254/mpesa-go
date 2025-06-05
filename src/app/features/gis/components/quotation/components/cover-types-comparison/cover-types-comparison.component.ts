@@ -54,8 +54,7 @@ declare var $: any;
 @Component({
   selector: 'app-cover-types-comparison',
   templateUrl: './cover-types-comparison.component.html',
-  styleUrls: ['./cover-types-comparison.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./cover-types-comparison.component.css']
 })
 export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterViewInit {
   activeRiskIndex: number | null = null;
@@ -87,9 +86,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
 
   ngAfterViewInit() {
     if (this.addMoreBenefitsModalRef?.nativeElement) {
-      this.bsModalInstance = new bootstrap.Modal(this.addMoreBenefitsModalRef.nativeElement);
-    } else {
-      console.error("Modal element reference not found in ngAfterViewInit.");
+      this.bsModalInstance = bootstrap.Modal.getOrCreateInstance(this.addMoreBenefitsModalRef.nativeElement);
     }
   }
 
@@ -159,7 +156,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   lastUpdatedCoverTypeCode = null;
   selectedCoverTypeCode: number;
   @ViewChild('openModalButton', {static: false}) openModalButton!: ElementRef;
-  @ViewChild('addMoreBenefits') addMoreBenefitsModal!: ElementRef;
+  @ViewChild('addMoreBenefits', {static: false}) addMoreBenefitsModal!: ElementRef;
   isModalOpen: boolean = false;
 
   clauseList: Clause[] = []
@@ -506,9 +503,9 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
       return;
     }
     let limitsToComputeOn = this.selectedCover.additionalBenefits.filter(value => value.isChecked && value.isMandatory !== 'Y')
-    log.debug("Modified limitsToComputeOn", limitsToComputeOn);
+    log.debug("Limits to compute on >>", limitsToComputeOn)
     this.additionalBenefitsEvent.emit(limitsToComputeOn)
-    this.cdr.detectChanges()
+    this.closeModal()
 
   }
 
