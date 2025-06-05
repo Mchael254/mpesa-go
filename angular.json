@@ -24,7 +24,9 @@
               "dayjs",
               "google-libphonenumber",
               "papaparse",
-              "url-search-params-polyfill"
+              "url-search-params-polyfill",
+              "html2canvas",
+              "jspdf"
             ],
             "polyfills": [
               "zone.js"
