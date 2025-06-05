@@ -614,6 +614,25 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       untilDestroyed(this)
     ).subscribe({
       next: (response) => {
+        /* const riskLevelPremiumsFromSelection = this.selectedProductCovers.flatMap(value => value.riskLevelPremiums || []);
+         this.premiumComputationResponse = response;
+         const selectedCoverTypeMap = new Map<string, any>();
+         riskLevelPremiumsFromSelection.forEach(selectedRisk => {
+           if (selectedRisk && selectedRisk.code && selectedRisk.selectCoverType) {
+             selectedCoverTypeMap.set(selectedRisk.code, selectedRisk.selectCoverType);
+           }
+         });
+         if (this.premiumComputationResponse && this.premiumComputationResponse.productLevelPremiums) {
+           this.premiumComputationResponse.productLevelPremiums.forEach(premiumProduct => {
+             if (premiumProduct.riskLevelPremiums) {
+               premiumProduct.riskLevelPremiums.forEach(riskInResponse => {
+                 if (riskInResponse && riskInResponse.code && selectedCoverTypeMap.has(riskInResponse.code)) {
+                   riskInResponse.selectCoverType = selectedCoverTypeMap.get(riskInResponse.code);
+                 }
+               });
+             }
+           })
+         }*/
         const riskLevelPremiums = this.selectedProductCovers.flatMap(value => value.riskLevelPremiums);
         this.premiumComputationResponse = response;
         riskLevelPremiums?.forEach(selected => {
@@ -627,6 +646,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         log.debug("Currently selected products after computation>>>", riskLevelPremiums, this.premiumComputationResponse)
         this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully ')
         log.debug("Computation response >>>>", response)
+        this.cdr.markForCheck()
       }, error: (error) => {
         this.globalMessagingService.displayErrorMessage('Error', 'Error during computation');
       }
@@ -1790,22 +1810,22 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-//  shareQuote(){
-//   //log.debug("subject >>>>", this.premiumComputationResponse)
-//   this.quotationService.premiumItemsSubject$.next(this.premiumComputationResponse)
-//  }
-
-
   removeBenefit(benefitDto: any) {
     log.debug("About to remove >>>>", benefitDto)
     const updatedPayload = this.modifyPremiumPayload([], benefitDto.sectCode)
-    this.performComputation(updatedPayload)
+    setTimeout(() => {
+      this.performComputation(updatedPayload);
+      document.body.style.overflow = 'auto';
+    }, 100);
   }
 
   listenToBenefitsAddition(benefitDto: Premiums[]) {
     let updatedPayload = this.modifyPremiumPayload(benefitDto);
     log.debug("Modified Premium Computation Payload:", updatedPayload);
-    this.performComputation(updatedPayload)
+    setTimeout(() => {
+      this.performComputation(updatedPayload);
+      document.body.style.overflow = 'auto';
+    }, 100);
   }
 
   modifyPremiumPayload(benefitDto: Premiums[], sectionCodeToRemove?: number): PremiumComputationRequest {
