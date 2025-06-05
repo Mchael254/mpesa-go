@@ -357,34 +357,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         effectiveDate: parsed.formArray.effectiveDate || new Date()
       });
 
-      // const productLoaders = parsed.formArray.products.map(async (product: any) => {
-      //   const riskFields = await this.getRiskFieldsForProduct(product.code).toPromise();
-
-      //   const productGroup = this.fb.group({
-      //     code: [product.code],
-      //     expiry: [product.expiry],
-      //     effectiveTo: [product.effectiveTo],
-      //     description: [product.description],
-      //     risks: this.fb.array([]),
-      //   });
-
-      //   const risksArray = productGroup.get('risks') as FormArray;
-      //   product.risks.forEach((savedRisk: any, index: number) => {
-      //     const riskGroup = this.createRiskGroup(riskFields, product.code, index + 1);
-
-      //     // Patch the saved values into the risk group
-      //     Object.keys(savedRisk).forEach(key => {
-      //       if (riskGroup.get(key)) {
-      //         riskGroup.get(key)?.setValue(savedRisk[key]);
-      //       }
-      //     });
-
-      //     risksArray.push(riskGroup);
-      //   });
-
-      //   this.productsFormArray.push(productGroup);
-      //   this.productRiskFields[this.productsFormArray.length - 1] = riskFields;
-      // });
 
       // Wait for all async loads to finish
       const productLoaders = parsed.formArray.products.map(async (product: any) => {
@@ -429,9 +401,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       });
     }
     const premiumComputationResponse = JSON.parse(sessionStorage.getItem('premiumComputationResponse'));
-
     this.premiumComputationResponse = premiumComputationResponse
     log.debug("Premium Computation:", this.premiumComputationResponse)
+
+   this.quotationNo = JSON.parse(sessionStorage.getItem('quotationNum'))
+    this.quotationCode = JSON.parse(sessionStorage.getItem('quotationCode'))
+
+
   }
 
   ngOnDestroy(): void {
@@ -1692,8 +1668,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     log.debug("Quotation details map1 >>>", coverTypes, totalPremium)
     return {
       quotationProducts: this.getQuotationProductPayload(),
-      quotationNumber: null,
-      quotationCode: null,
+      quotationNumber: this.quotationNo || null,
+      quotationCode: this.quotationCode || null,
       source: 37,
       user: this.user,
       currencyCode: this.currencyCode,
