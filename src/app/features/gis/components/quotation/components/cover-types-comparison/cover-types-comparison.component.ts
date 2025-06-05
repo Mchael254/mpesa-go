@@ -60,11 +60,20 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   activeRiskIndex: number | null = null;
   private _riskLevelPremium!: RiskLevelPremium;
   @Output() selectedCoverEvent: EventEmitter<RiskLevelPremium> = new EventEmitter<RiskLevelPremium>();
-  @Output() additionalBenefitsEvent: EventEmitter<Premiums[]> = new EventEmitter<Premiums[]>();
-  @Output() additionalBenefitsRemovedEvent: EventEmitter<Premiums> = new EventEmitter<Premiums>();
+  @Output() additionalBenefitsEvent: EventEmitter<{
+    risk: RiskLevelPremium,
+    premiumItems: Premiums[]
+  }> = new EventEmitter<{
+    risk: RiskLevelPremium,
+    premiumItems: Premiums[]
+  }>();
+  @Output() additionalBenefitsRemovedEvent: EventEmitter<{
+    risk: RiskLevelPremium,
+    premiumItems: Premiums
+  }> = new EventEmitter<{ risk: RiskLevelPremium, premiumItems: Premiums }>();
   @Output() activeCoverTypeEvent: EventEmitter<CoverTypeDetail> = new EventEmitter<CoverTypeDetail>
   @Input() isExpanded: boolean = false;
-  @ViewChild('addMoreBenefitsModal') addMoreBenefitsModalRef: ElementRef<HTMLDivElement>;
+  @ViewChild('addMoreBenefits') addMoreBenefitsModalRef: ElementRef<HTMLDivElement>;
   private bsModalInstance: any;
 
   @Input()
@@ -87,6 +96,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   ngAfterViewInit() {
     if (this.addMoreBenefitsModalRef?.nativeElement) {
       this.bsModalInstance = bootstrap.Modal.getOrCreateInstance(this.addMoreBenefitsModalRef.nativeElement);
+    } else {
+      log.warn('Modal element not yet initialized — delaying modal setup.');
     }
   }
 
@@ -156,7 +167,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   lastUpdatedCoverTypeCode = null;
   selectedCoverTypeCode: number;
   @ViewChild('openModalButton', {static: false}) openModalButton!: ElementRef;
-  @ViewChild('addMoreBenefits', {static: false}) addMoreBenefitsModal!: ElementRef;
+  @ViewChild('addMoreBenefits', {static: true}) addMoreBenefitsModal!: ElementRef;
   isModalOpen: boolean = false;
 
   clauseList: Clause[] = []
@@ -503,8 +514,11 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
       return;
     }
     let limitsToComputeOn = this.selectedCover.additionalBenefits.filter(value => value.isChecked && value.isMandatory !== 'Y')
-    log.debug("Limits to compute on >>", limitsToComputeOn)
-    this.additionalBenefitsEvent.emit(limitsToComputeOn)
+    log.debug("Limits to compute on >>", limitsToComputeOn, this.riskLevelPremium)
+    this.additionalBenefitsEvent.emit({
+      risk: this.riskLevelPremium,
+      premiumItems: limitsToComputeOn
+    })
     this.closeModal()
 
   }
@@ -713,7 +727,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   }
 
   openRiskDeleteModal(limitToDelete: any) {
-    this.additionalBenefitsRemovedEvent.emit(limitToDelete)
+    this.additionalBenefitsRemovedEvent.emit({risk: this.riskLevelPremium, premiumItems: limitToDelete})
   }
 }
 

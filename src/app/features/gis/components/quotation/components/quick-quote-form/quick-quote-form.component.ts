@@ -1810,16 +1810,21 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-  removeBenefit(benefitDto: any) {
-    log.debug("About to remove >>>>", benefitDto)
-    const updatedPayload = this.modifyPremiumPayload([], benefitDto.sectCode)
+  removeBenefit(benefitDto: { risk: RiskLevelPremium, premiumItems: Premiums }) {
+    const sectionToRemove = benefitDto.premiumItems.sectCode
+    const dtoToProcess: { risk: RiskLevelPremium, premiumItems: Premiums[] } = {
+      risk: benefitDto.risk,
+      premiumItems: []
+    }
+    log.debug("About to remove >>>>",benefitDto, dtoToProcess, sectionToRemove)
+    const updatedPayload = this.modifyPremiumPayload(dtoToProcess, sectionToRemove)
     setTimeout(() => {
       this.performComputation(updatedPayload);
       document.body.style.overflow = 'auto';
     }, 100);
   }
 
-  listenToBenefitsAddition(benefitDto: Premiums[]) {
+  listenToBenefitsAddition(benefitDto: { risk: RiskLevelPremium, premiumItems: Premiums[] }) {
     let updatedPayload = this.modifyPremiumPayload(benefitDto);
     log.debug("Modified Premium Computation Payload:", updatedPayload);
     setTimeout(() => {
@@ -1828,10 +1833,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     }, 100);
   }
 
-  modifyPremiumPayload(benefitDto: Premiums[], sectionCodeToRemove?: number): PremiumComputationRequest {
+  modifyPremiumPayload(benefitsDto: {
+    risk: RiskLevelPremium,
+    premiumItems: Premiums[]
+  }, sectionCodeToRemove?: number): PremiumComputationRequest {
     const premiumComputationRequest = this.currentComputationPayload || this.computationPayload();
-    const riskCode = this.currentSelectedRisk.code;
-    const coverTypeCode = this.currentSelectedRisk.selectCoverType.coverTypeCode;
+    const riskCode = benefitsDto.risk.code;
+    const coverTypeCode = benefitsDto.risk.selectCoverType.coverTypeCode;
     const updatedProducts = premiumComputationRequest.products.map(product => ({
       ...product,
       risks: product.risks.map(risk => {
@@ -1848,14 +1856,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
                 limit => limit.section.code !== sectionCodeToRemove
               );
             }
-            if (benefitDto.length > 0) {
+            if (benefitsDto.premiumItems.length > 0) {
               updatedLimits = updatedLimits.map(limit => {
-                const match = benefitDto.find(b => b.code === limit.section.code);
+                const match = benefitsDto.premiumItems.find(b => b.code === limit.section.code);
                 return match
                   ? {...limit, limitAmount: match.limitAmount}
                   : limit;
               });
-              benefitDto.forEach(benefit => {
+              benefitsDto.premiumItems.forEach(benefit => {
                 updatedLimits = updatedLimits.filter(value => value.section.code !== benefit.sectionCode)
                 log.debug("I am adding this benefit>>>", benefit)
                 updatedLimits.push({

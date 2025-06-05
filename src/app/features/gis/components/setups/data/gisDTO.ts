@@ -961,7 +961,7 @@ export class Binder {
 }
 
 export interface Premiums {
-
+  sectCode?: number
   code: number,
   sectionCode: number,
   sectionShortDescription: string,
