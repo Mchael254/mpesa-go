@@ -7,9 +7,11 @@ import {dummyUsers} from '../../data/dummyData';
 import {Table} from 'primeng/table';
 import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
-import {Router} from '@angular/router';
-import {GlobalMessagingService} from 'src/app/shared/services/messaging/global-messaging.service';
-import {QuoteReportComponent} from '../quote-report/quote-report.component';
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { QuoteReportComponent } from '../quote-report/quote-report.component';
+import { ClaimsService } from 'src/app/features/gis/components/claim/services/claims.service';
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -70,7 +72,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   quotationCode: number;
   rejectComment: string = ''
   reassignComment: string = ''
-  users: any[] = [];
+  users: any;
   selectedUser: any;
   fullNameSearch: string = '';
   globalSearch: string = '';
@@ -82,7 +84,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     private quotationService: QuotationsService,
     private router: Router,
     private cdRef: ChangeDetectorRef,
-    public globalMessagingService: GlobalMessagingService
+    public globalMessagingService: GlobalMessagingService,
+    public claimsService: ClaimsService
+
   ) {
     this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
   }
@@ -153,22 +157,33 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   ngOnInit(): void {
-    this.users = dummyUsers;
+    this.getUsers()
+    log.debug("Users>>>", this.users);
     this.quotationService.getQuotationDetails(sessionStorage.getItem("quotationNumber"))
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
-      log.debug("Quotation details>>>", response)
-      this.quotationDetails = response
-    });
-    log.debug("Selected covers>>>>", this.selectedCovers)
+        log.debug("Quotation details>>>", response)
+        this.quotationDetails = response
+      });
 
   }
 
-  reassignQuotation() {
-    console.log('');
 
+  getUsers() {
+    this.claimsService.getUsers().subscribe({
+      next: (res => {
+        this.users = res;
+        this.users = this.users.content;
+        log.debug('users>>>', this.users)
 
+      }),
+      error: (error => {
+        log.debug('error', error)
+        this.globalMessagingService.displayErrorMessage('Error', 'failed to feth users')
+      })
+    })
   }
 
+  //reject quotation
   rejectQuotation(code: number) {
     const quotationCode = code;
     const reasonCancelled = this.rejectComment;
@@ -207,14 +222,14 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   filterByFullName(event: any): void {
     const value = event.target.value;
-    this.table.filter(value, 'fullName', 'contains');
+    this.table.filter(value, 'name', 'contains');
   }
 
   onUserSelect(): void {
     if (this.selectedUser) {
       log.debug("Selected user>>>", this.selectedUser);
-      this.globalSearch = this.selectedUser.userId;
-      this.fullNameSearch = this.selectedUser.fullName;
+      this.globalSearch = this.selectedUser.id;
+      this.fullNameSearch = this.selectedUser.name;
 
     }
 
@@ -225,6 +240,39 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     this.globalSearch = '';
     this.fullNameSearch = '';
   }
+
+  //reassign quotation
+  comment: boolean = false
+  noUserChosen: boolean = false
+  reassignQuotation() {
+    if (!this.reassignComment) {
+      this.comment = true;
+      setTimeout(() => {
+        this.comment = false
+
+      }, 3000);
+
+      return;
+    }
+    if (!this.selectedUser) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false
+
+      }, 3000);
+
+      return;
+
+    }
+    const reassignPayload = {
+      user: this.selectedUser.id,
+      comment: this.reassignComment
+    }
+    this.globalMessagingService.displaySuccessMessage('Success', 'reassigning...')
+    log.debug('reassign Payload', reassignPayload)
+
+  }
+
 
 
   ngOnDestroy(): void {
@@ -270,10 +318,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     this.quotationService
       .convertToNormalQuote(quotationCode)
       .subscribe((data: any) => {
-          log.debug("Response after converting quote to a normalQuote:", data)
-          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        log.debug("Response after converting quote to a normalQuote:", data)
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
 
-        }
+      }
       );
   }
 
