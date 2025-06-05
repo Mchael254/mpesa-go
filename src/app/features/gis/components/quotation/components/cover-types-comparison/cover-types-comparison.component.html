@@ -272,19 +272,20 @@
                       </div>
                     </div>
                     <div class="collapse" id="additionalBenefitDetails"
-                      [class.show]="openPolicy === 'additionalBenefits'">
+                         [class.show]="openPolicy === 'additionalBenefits'">
                       <button *ngIf="selectedCover?.additionalBenefits.length > 0" #openModalButton type="button"
-                        class="btn btn-outline-primary me-2 mb-3" id="btnCoverTypes"
-                        (click)="openAdditionalBenefitsModal()">
+                              class="btn btn-outline-primary me-2 mb-3" id="btnCoverTypes"
+                              (click)="openAdditionalBenefitsModal()">
                         {{ 'gis.quotation.add_benefits' | translate }}
                       </button>
                       <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
-                        id="openAdditionalBenefitsModalButton" [hidden]="true" data-bs-target="#addMoreBenefits"
-                        title="open">
+                              id="openAdditionalBenefitsModalButton" [hidden]="true" data-bs-target="#addMoreBenefits"
+                              title="open">
                       </button>
                       <div class="row">
                         <p-table [value]="selectedCover?.limitPremium" responsiveLayout="scroll" dataKey="sectionCode"
-                          selectionMode="single" responsiveLayout="scroll" [autoLayout]="true" class='ui-datatable'>
+                                 selectionMode="single" responsiveLayout="scroll" [autoLayout]="true"
+                                 class='ui-datatable'>
                           <ng-template pTemplate="header">
                             <tr>
                               <th class="flexible-header"></th>
@@ -323,16 +324,18 @@
   </div>
 </div>
 <!-- Add More Benefits Modal -->
-<div class="modal fade" #addMoreBenefitsModal id="addMoreBenefits" tabindex="-1" aria-labelledby="addMoreBenefitsModalLabel" aria-hidden="true">
+<div  class="modal fade" #addMoreBenefits id="addMoreBenefits" tabindex="-1"
+     aria-labelledby="addMoreBenefitsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" style="min-width: 608px;">
     <div class="modal-content ps-4 pt-4 pe-4">
       <p class="modal-title mb-3" id="addMoreBenefitsModalLabel">
         {{ 'gis.quotation.additional_benefits_details' | translate }}</p>
       <p-table [value]="selectedCover?.additionalBenefits" id="clientTable" dataKey="sectionCode"
-        [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }" [(selection)]="selectedSections"
-        [resizableColumns]="true" responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true" [paginator]="true"
-        [rows]="10" [scrollable]="true" scrollDirection="horizontal" [showCurrentPageReport]="true"
-        currentPageReportTemplate="{first} - {last} of {totalRecords}">
+               [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }" [(selection)]="selectedSections"
+               [resizableColumns]="true" responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true"
+               [paginator]="true"
+               [rows]="10" [scrollable]="true" scrollDirection="horizontal" [showCurrentPageReport]="true"
+               currentPageReportTemplate="{first} - {last} of {totalRecords}">
         <ng-template pTemplate="header">
           <tr>
             <th style="width: 1em;"></th>
