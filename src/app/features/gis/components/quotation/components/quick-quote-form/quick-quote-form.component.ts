@@ -613,25 +613,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
       untilDestroyed(this)
     ).subscribe({
       next: (response) => {
-        /* const riskLevelPremiumsFromSelection = this.selectedProductCovers.flatMap(value => value.riskLevelPremiums || []);
-         this.premiumComputationResponse = response;
-         const selectedCoverTypeMap = new Map<string, any>();
-         riskLevelPremiumsFromSelection.forEach(selectedRisk => {
-           if (selectedRisk && selectedRisk.code && selectedRisk.selectCoverType) {
-             selectedCoverTypeMap.set(selectedRisk.code, selectedRisk.selectCoverType);
-           }
-         });
-         if (this.premiumComputationResponse && this.premiumComputationResponse.productLevelPremiums) {
-           this.premiumComputationResponse.productLevelPremiums.forEach(premiumProduct => {
-             if (premiumProduct.riskLevelPremiums) {
-               premiumProduct.riskLevelPremiums.forEach(riskInResponse => {
-                 if (riskInResponse && riskInResponse.code && selectedCoverTypeMap.has(riskInResponse.code)) {
-                   riskInResponse.selectCoverType = selectedCoverTypeMap.get(riskInResponse.code);
-                 }
-               });
-             }
-           })
-         }*/
         const riskLevelPremiums = this.selectedProductCovers.flatMap(value => value.riskLevelPremiums);
         this.premiumComputationResponse = response;
         riskLevelPremiums?.forEach(selected => {
@@ -1979,13 +1960,19 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   }
 
   listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
-    if (sendEvent && ['email','whatsapp'].includes(sendEvent.mode.selectedMethod)) {
+    if (sendEvent && ['email', 'whatsapp'].includes(sendEvent.mode.selectedMethod)) {
       this.cdr.detectChanges();
-      setTimeout(() => {
-        this.quoteReportComponent.generatePdf().then(r => {
-          log.debug("Generated report >>>", r)
-        })
-      }, 100);
+      setTimeout(async () => {
+        try {
+          const pdfFile = await this.quoteReportComponent.generatePdf(false, 'quote-report.pdf');
+          const formData = new FormData();
+          formData.append('file', pdfFile);
+          log.debug("Form Data....", formData,pdfFile)
+          //this.http.post('/api/send-quote', formData).subscribe();
+        } catch (err) {
+          console.error('PDF generation failed', err);
+        }
+      }, 200);
     }
   }
 }
