@@ -1,11 +1,11 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ProductLevelPremium, QuotationDetails, QuotationDTO} from '../../data/quotationsDTO';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ProductLevelPremium, QuotationDetails, QuotationDTO } from '../../data/quotationsDTO';
 
-import {QuotationsService} from "../../services/quotations/quotations.service";
-import {Logger, untilDestroyed} from "../../../../../../shared/shared.module";
-import {dummyUsers} from '../../data/dummyData';
-import {Table} from 'primeng/table';
-import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
+import { QuotationsService } from "../../services/quotations/quotations.service";
+import { Logger, untilDestroyed } from "../../../../../../shared/shared.module";
+import { dummyUsers } from '../../data/dummyData';
+import { Table } from 'primeng/table';
+import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -46,7 +46,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   status: string = '';
   afterRejectQuote: boolean = true;
   originalComment: string;
-  totalSumInsured : number;
+  totalSumInsured: number;
   isShareModalOpen: boolean;
 
   constructor(
@@ -83,7 +83,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   setStep(index: number) {
     this.activeIndex = index;
   }
-  productDetails:ProductWithRiskId[]
+  productDetails: ProductWithRiskId[]
 
   // Use the DTO type here
   quotation: QuotationDTO = {
@@ -135,11 +135,11 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
         this.quotationDetails = response
         const quotationProducts = this.quotationDetails.quotationProducts
         this.flattenQuotationProducts(quotationProducts)
-        this.totalSumInsured=this.quotationDetails.sumInsured
+        this.totalSumInsured = this.quotationDetails.sumInsured
       });
 
   }
-   openShareModal() {
+  openShareModal() {
     this.isShareModalOpen = true;
   }
 
@@ -150,7 +150,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
   // To get a reference to app-quote-report
-  @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
+  @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
 
   selectedCovers: ProductLevelPremium = null
 
@@ -179,26 +179,26 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-flattenQuotationProducts(quotationProducts: any[]) {
-  this.productDetails = [];
+  flattenQuotationProducts(quotationProducts: any[]) {
+    this.productDetails = [];
 
-  quotationProducts.forEach(product => {
-    product.riskInformation.forEach(risk => {
-      this.productDetails.push({
-        productName: product.productName,
-        riskId: risk.propertyId,
-        coverType: risk.coverTypeDescription,
-        wef: product.wef,
-        sumInsured: risk.value,
-        premium: risk.premium
+    quotationProducts.forEach(product => {
+      product.riskInformation.forEach(risk => {
+        this.productDetails.push({
+          productName: product.productName,
+          riskId: risk.propertyId,
+          coverType: risk.coverTypeDescription,
+          wef: product.wef,
+          sumInsured: risk.value,
+          premium: risk.premium
+        });
       });
     });
-  });
-}
-shouldShowProductName(index: number): boolean {
-  if (index === 0) return true;
-  return this.productDetails[index].productName !== this.productDetails[index - 1].productName;
-}
+  }
+  shouldShowProductName(index: number): boolean {
+    if (index === 0) return true;
+    return this.productDetails[index].productName !== this.productDetails[index - 1].productName;
+  }
 
 
 
@@ -383,6 +383,18 @@ shouldShowProductName(index: number): boolean {
       log.debug("Response after updating quote comment:", data)
 
     })
+
+  }
+  navigateToQuoteDetails() {
+    const quotationNumber = this.quotationDetails?.quotationNo;
+    log.debug("Quotation Number", quotationNumber);
+    sessionStorage.setItem("quotationNum", JSON.stringify(quotationNumber));
+
+    const quotationCode = this.quotationDetails?.code;
+    log.debug("Quotation Code", quotationCode);
+    sessionStorage.setItem("quotationCode", JSON.stringify(quotationCode));
+
+    this.router.navigate(['/home/gis/quotation/quick-quote']);
 
   }
 }
