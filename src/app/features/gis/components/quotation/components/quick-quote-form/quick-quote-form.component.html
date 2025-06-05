@@ -256,48 +256,47 @@
   <div class="row " *ngIf="premiumComputationResponse">
     <div class="col-6"></div>
 
-    
+
     <div class="col-6 d-flex justify-content-end">
-        <!-- SHARE BUTTON -->
-     <button 
-     
-     type="button" 
-     class="btn btn-outline-primary me-2"
-     data-bs-toggle="modal" 
-     data-bs-target="#shareQuoteModal">
-     Share quotation
-     </button>
-     
-     <!-- SHARE QUOTE MODAL -->
-     <div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
-     
-     <div class="modal-dialog modal-dialog-centered modal-md">
-       <div class="modal-content p-4">
-         <div class="d-flex justify-content-end align-items-center mb-1">
-           
-           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-         </div>
-     
-           <!-- Conditionally render the report component with data -->
-         <app-quote-report  #quoteReport style="opacity: 0;
-         position: absolute;
-         left: -9999px;"></app-quote-report>
-     
-         <!-- Your Angular component inside the modal -->
-         <app-share-quotes  (downloadRequested)="onDownloadRequested()"></app-share-quotes>
-       </div>
-     </div>
-     </div>
-     <div>
-      <button type="button" class="btn btn-outline-primary " id="save-quotation"
-              *ngIf="coverSelected" (click)="saveQuotationDetails()">
-        {{ 'gis.quotation.next' | translate }}
+      <!-- SHARE BUTTON -->
+      <button
+
+        type="button"
+        class="btn btn-outline-primary me-2"
+        data-bs-toggle="modal"
+        (click)="fetchCoverRelatedData()"
+        data-bs-target="#shareQuoteModal">
+        Share quotation
       </button>
-    </div>
 
-   
+      <!-- SHARE QUOTE MODAL -->
+      <div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
 
-      
+        <div class="modal-dialog modal-dialog-centered modal-md">
+          <div class="modal-content p-4">
+            <div class="d-flex justify-content-end align-items-center mb-1">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <ng-container *ngIf="premiumComputationPayloadToShare">
+              <app-quote-report [premiumComputationResponse]="premiumComputationPayloadToShare"
+                                #quoteReport  style="position: absolute; left: -9999px; top: 0; width: 800px;">
+              </app-quote-report>
+            </ng-container>
+
+            <app-share-quotes (downloadRequested)="onDownloadRequested()" (sendEvent)="listenToSendEvent($event)">
+
+            </app-share-quotes>
+          </div>
+        </div>
+      </div>
+      <div>
+        <button type="button" class="btn btn-outline-primary " id="save-quotation"
+                *ngIf="coverSelected" (click)="saveQuotationDetails()">
+          {{ 'gis.quotation.next' | translate }}
+        </button>
+      </div>
+
+
     </div>
   </div>
 </div>

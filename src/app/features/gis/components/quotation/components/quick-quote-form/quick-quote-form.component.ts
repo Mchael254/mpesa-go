@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
 import {LazyLoadEvent} from 'primeng/api';
 import {ProductsService} from '../../../setups/services/products/products.service';
@@ -39,7 +39,7 @@ import {
   DynamicRiskField, LimitsOfLiability,
   QuickQuoteData,
   QuotationProduct,
-  RiskInformation,
+  RiskInformation, ShareQuoteDTO,
   Tax,
   TaxInformation,
   UserDetail,
@@ -62,9 +62,7 @@ import {debounceTime} from "rxjs/internal/operators/debounceTime";
 import {distinctUntilChanged, map} from "rxjs/operators";
 import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import {
-  CoverType,
-  CoverTypeDetail,
-  Limit,
+  CoverType, Limit,
   PremiumComputationRequest,
   Product,
   ProductLevelPremium,
@@ -83,7 +81,7 @@ const log = new Logger('QuickQuoteFormComponent');
   templateUrl: './quick-quote-form.component.html',
   styleUrls: ['./quick-quote-form.component.css'],
 })
-export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit {
+export class QuickQuoteFormComponent implements OnInit, OnDestroy {
   @ViewChild('calendar', {static: true}) calendar: Calendar;
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
@@ -285,6 +283,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   coverSelected = false;
   currentSelectedRisk: any
   currentComputationPayload: PremiumComputationRequest = null
+  premiumComputationPayloadToShare: ProductLevelPremium = null
 
 
   constructor(
@@ -1816,7 +1815,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       risk: benefitDto.risk,
       premiumItems: []
     }
-    log.debug("About to remove >>>>",benefitDto, dtoToProcess, sectionToRemove)
+    log.debug("About to remove >>>>", benefitDto, dtoToProcess, sectionToRemove)
     const updatedPayload = this.modifyPremiumPayload(dtoToProcess, sectionToRemove)
     setTimeout(() => {
       this.performComputation(updatedPayload);
@@ -1922,31 +1921,71 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
-  // To get a reference to app-quote-report
   @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
 
 
-  ngAfterViewInit() {
-    const modalElement = this.shareQuoteModal.nativeElement;
+  onDownloadRequested() {
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.quoteReportComponent.generatePdf(true).then(r => {
 
-    modalElement.addEventListener('show.bs.modal', () => {
-      // Use a small delay to let modal animation complete
-      setTimeout(() => {
-        this.isShareModalOpen = true;
-      }, 10); // slight delay (10ms) is usually enough
+      })
+    }, 100);
+  }
+
+  fetchCoverRelatedData() {
+    const productLevelPremiums$ = this.premiumComputationResponse.productLevelPremiums.map((product) => {
+      const riskLevelPremiums$ = product.riskLevelPremiums.map((risk) => {
+        const coverTypeDetails$ = risk.coverTypeDetails.map((coverType) => {
+          const clauses$ = this.quotationService.getClauses(coverType.coverTypeCode, coverType.subclassCode);
+          const limits$ = this.quotationService.getLimitsOfLiability(coverType.subclassCode);
+          const excesses$ = this.quotationService.getExcesses(coverType.subclassCode);
+          return forkJoin([clauses$, limits$, excesses$]).pipe(
+            map(([clauses, limits, excesses]) => ({
+              ...coverType,
+              clauses: clauses?._embedded ?? [],
+              limits,
+              limitOfLiabilities: limits?._embedded ?? [],
+              excesses: excesses?._embedded ?? [],
+            }))
+          );
+        });
+
+        return forkJoin(coverTypeDetails$).pipe(
+          map((coverTypeDetails) => ({
+            ...risk,
+            coverTypeDetails,
+          }))
+        );
+      });
+
+      return forkJoin(riskLevelPremiums$).pipe(
+        map((riskLevelPremiums) => ({
+          ...product,
+          riskLevelPremiums,
+        }))
+      );
     });
 
-    modalElement.addEventListener('hidden.bs.modal', () => {
-      this.isShareModalOpen = false;
+    forkJoin(productLevelPremiums$).pipe(
+      map((productLevelPremiums) => ({
+        ...this.premiumComputationResponse,
+        productLevelPremiums,
+      }))
+    ).subscribe((enrichedResult: ProductLevelPremium) => {
+      this.premiumComputationPayloadToShare = enrichedResult;
+      log.debug("Enriched Premium Computation: ", enrichedResult);
     });
   }
 
-  onDownloadRequested() {
-    if (this.quoteReportComponent) {
-      this.quoteReportComponent.downloadPdf();
-    } else {
-      console.error('QuoteReportComponent is not available!');
+  listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
+    if (sendEvent && ['email','whatsapp'].includes(sendEvent.mode.selectedMethod)) {
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.quoteReportComponent.generatePdf().then(r => {
+          log.debug("Generated report >>>", r)
+        })
+      }, 100);
     }
   }
-
 }
