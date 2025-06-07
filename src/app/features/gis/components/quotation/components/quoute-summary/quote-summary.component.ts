@@ -1,11 +1,11 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ProductLevelPremium, QuotationDetails, QuotationDTO} from '../../data/quotationsDTO';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ProductLevelPremium, QuotationDetails, QuotationDTO } from '../../data/quotationsDTO';
 
-import {QuotationsService} from "../../services/quotations/quotations.service";
-import {Logger, untilDestroyed} from "../../../../../../shared/shared.module";
-import {dummyUsers} from '../../data/dummyData';
-import {Table} from 'primeng/table';
-import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
+import { QuotationsService } from "../../services/quotations/quotations.service";
+import { Logger, untilDestroyed } from "../../../../../../shared/shared.module";
+import { dummyUsers } from '../../data/dummyData';
+import { Table } from 'primeng/table';
+import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
@@ -14,6 +14,16 @@ import { ClaimsService } from 'src/app/features/gis/components/claim/services/cl
 
 
 const log = new Logger('QuoteSummaryComponent');
+type ProductWithRiskId = {
+  productName: string;
+  riskId: string;
+  coverType: string;
+  wef: any;
+  sumInsured: number;
+  premium: number;
+};
+
+
 
 @Component({
   selector: 'app-quoute-summary',
@@ -22,49 +32,6 @@ const log = new Logger('QuoteSummaryComponent');
 })
 export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('dt') table!: Table;
-
-  isShareModalOpen = false;
-
-  openShareModal() {
-    this.isShareModalOpen = true;
-  }
-
-  closeShareModal() {
-    this.isShareModalOpen = false;
-  }
-
-
-  @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
-  // To get a reference to app-quote-report
-  @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
-
-  selectedCovers: ProductLevelPremium = null
-
-
-  ngAfterViewInit() {
-    const modalElement = this.shareQuoteModal.nativeElement;
-
-    modalElement.addEventListener('show.bs.modal', () => {
-      // Use a small delay to let modal animation complete
-      setTimeout(() => {
-        this.isShareModalOpen = true;
-      }, 10); // slight delay (10ms) is usually enough
-    });
-
-    modalElement.addEventListener('hidden.bs.modal', () => {
-      this.isShareModalOpen = false;
-    });
-  }
-
-
-  onDownloadRequested() {
-    if (this.quoteReportComponent) {
-      this.quoteReportComponent.downloadPdf();
-    } else {
-      console.error('QuoteReportComponent is not available!');
-    }
-  }
-
 
   quotationDetails: QuotationDetails;
   batchNo: number;
@@ -78,6 +45,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   status: string = '';
   afterRejectQuote: boolean = true;
   originalComment: string;
+  totalSumInsured: number;
+  isShareModalOpen: boolean;
 
   constructor(
     private quotationService: QuotationsService,
@@ -113,6 +82,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   setStep(index: number) {
     this.activeIndex = index;
   }
+  productDetails: ProductWithRiskId[]
 
   // Use the DTO type here
   quotation: QuotationDTO = {
@@ -162,9 +132,74 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
         log.debug("Quotation details>>>", response)
         this.quotationDetails = response
+        const quotationProducts = this.quotationDetails.quotationProducts
+        this.flattenQuotationProducts(quotationProducts)
+        this.totalSumInsured = this.quotationDetails.sumInsured
       });
 
   }
+  openShareModal() {
+    this.isShareModalOpen = true;
+  }
+
+  closeShareModal() {
+    this.isShareModalOpen = false;
+  }
+
+
+  @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
+  // To get a reference to app-quote-report
+  @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
+
+  selectedCovers: ProductLevelPremium = null
+
+
+  ngAfterViewInit() {
+    const modalElement = this.shareQuoteModal.nativeElement;
+
+    modalElement.addEventListener('show.bs.modal', () => {
+      // Use a small delay to let modal animation complete
+      setTimeout(() => {
+        this.isShareModalOpen = true;
+      }, 10); // slight delay (10ms) is usually enough
+    });
+
+    modalElement.addEventListener('hidden.bs.modal', () => {
+      this.isShareModalOpen = false;
+    });
+  }
+
+
+  onDownloadRequested() {
+    if (this.quoteReportComponent) {
+      this.quoteReportComponent.downloadPdf();
+    } else {
+      console.error('QuoteReportComponent is not available!');
+    }
+  }
+
+  flattenQuotationProducts(quotationProducts: any[]) {
+    this.productDetails = [];
+
+    quotationProducts.forEach(product => {
+      product.riskInformation.forEach(risk => {
+        this.productDetails.push({
+          productName: product.productName,
+          riskId: risk.propertyId,
+          coverType: risk.coverTypeDescription,
+          wef: product.wef,
+          sumInsured: risk.value,
+          premium: risk.premium
+        });
+      });
+    });
+  }
+  shouldShowProductName(index: number): boolean {
+    if (index === 0) return true;
+    return this.productDetails[index].productName !== this.productDetails[index - 1].productName;
+  }
+
+
 
 
   getUsers() {
@@ -233,7 +268,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
   }
-
   onUserUnselect(): void {
     this.selectedUser = null;
     this.globalSearch = '';
@@ -353,4 +387,16 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showQuoteReport = true; // Set to true to debug quote report
 
+  navigateToQuoteDetails() {
+    const quotationNumber = this.quotationDetails?.quotationNo;
+    log.debug("Quotation Number", quotationNumber);
+    sessionStorage.setItem("quotationNum", JSON.stringify(quotationNumber));
+
+    const quotationCode = this.quotationDetails?.code;
+    log.debug("Quotation Code", quotationCode);
+    sessionStorage.setItem("quotationCode", JSON.stringify(quotationCode));
+
+    this.router.navigate(['/home/gis/quotation/quick-quote']);
+
+  }
 }
