@@ -237,8 +237,8 @@
       <div *ngIf="expandedStates[i]" class="card-body collapsible-body">
         <div *ngFor="let risk of product.riskLevelPremiums; let j = index">
           <p class="mb-3 m-0 d-flex align-items-center">
-            <i class="fa" [ngClass]="expandedCoverTypeIndex === j ? 'fa-chevron-up' : 'fa-chevron-down'"
-               (click)="toggleCoverType(j)" style="cursor: pointer;">
+            <i class="fa me-2" [ngClass]="expandedCoverTypeIndex === j ? 'fa-chevron-up' : 'fa-chevron-down'"
+              (click)="toggleCoverType(j)" style="cursor: pointer;">
             </i>
             {{ risk?.propertyId }} {{ risk?.sumInsured | currency: selectedCurrencySymbol || '' : 'symbol' }}
           </p>

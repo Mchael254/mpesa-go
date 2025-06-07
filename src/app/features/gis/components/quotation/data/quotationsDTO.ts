@@ -18,6 +18,7 @@ export interface quotationDTO {
   fequencyOfPayment: string,
   internalComments: string,
   introducerCode: number,
+  ipayReferenceNumber?:string,
   isBinderPolicy: string,
   paymentMode: string,
   proInterfaceType: string,
@@ -131,6 +132,7 @@ export interface QuotationDetails {
   quotIncsCode?: any;
   web: string;
   introducerCode?: any;
+  ipayReferenceNumber?:string
   sourceCode: string;
   chequeRequisition?: any;
   parentRevision?: any;
