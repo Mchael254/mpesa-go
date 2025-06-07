@@ -1,192 +1,159 @@
 <div #pdfContent id="content-to-pdf">
-
-  <div class="container">  
-      
-    
+  <div class="container">
     <div class="header">
-      <img [src]="header.logo" alt="Company Logo" class="logo">
+      <img [src]="header.logo" alt="Company Logo" class="logo" />
       <h1>QUOTATION REPORT</h1>
-      
     </div>
 
     <!-- Quotation Info Card -->
     <p-card styleClass="mb-4 info-card">
-      <p-table [value]="[{}]" styleClass="quotation-info;" responsiveLayout="scroll">
+      <p-table
+        [value]="[{}]"
+        styleClass="quotation-info;"
+        responsiveLayout="scroll"
+      >
         <ng-template pTemplate="body">
-          
-            <tr>
-              <td class="label">Quotation status</td>
-              <td>{{ header.quotationStatus }}</td>
-            </tr>
-            <tr>
-              <td class="label">Proposal/Insured</td>
-              <td>{{ header.proposalIssued }}</td>
-            </tr>
-            <tr>
-              <td class="label">Period</td>
-              <td>{{ header.period }}</td>
-            </tr>
-            <tr>
-              <td class="label">Quote time</td>
-              <td>{{ header.quoteTime }}</td>
-            </tr>
-            <tr>
-              <td class="label">Agency name</td>
-              <td>{{ header.agencyName }}</td>
-            </tr>
-          
+          <tr>
+            <td class="label">Quotation status</td>
+            <td>{{ header.quotationStatus }}</td>
+          </tr>
+          <tr>
+            <td class="label">Proposal/Insured</td>
+            <td>{{ header.proposalIssued }}</td>
+          </tr>
+          <tr>
+            <td class="label">Period</td>
+            <td>{{ header.period }}</td>
+          </tr>
+          <tr>
+            <td class="label">Quote time</td>
+            <td>{{ header.quoteTime }}</td>
+          </tr>
+          <tr>
+            <td class="label">Agency name</td>
+            <td>{{ header.agencyName }}</td>
+          </tr>
         </ng-template>
       </p-table>
     </p-card>
+<!-- 
+    <p-card
+      *ngFor="let product of premiumComputationResponse?.productLevelPremiums"
+      styleClass="mb-4 motor-card"
+    >
+      <div class="property-summary">
+        <table class="property-table">
+          <tbody>
+            <tr>
+              <td class="value-cell text-primary">{{ product.description }}</td>
+            </tr>
+
+            <tr *ngFor="let risk of product.riskLevelPremiums">
+              <td>
+                >{{ risk.propertyId }}
+              </td>
+              <td class="label-cell">
+                <span class="mr-5"><strong>Value </strong></span
+                >{{ risk.sumInsured }}
+              </td>
+            </tr>
+            <tr *ngFor="let risk of product.riskLevelPremiums">
+              <ng-container *ngFor="let cover of risk.selectCoverType.clauses">
+              <ng-container *ngFor="let clause of cover.heading">
+
+              </ng-container>
+               
+              </ng-container>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </p-card> -->
 
     <!-- Motor Private Cards -->
-    <p-card *ngFor="let motor of motorPrivateList; let i = index" [header]="'Motor Private '" styleClass="mb-4 motor-card">
-      <!-- Vehicle Info Row -->
-      <div class="property-summary">
+     <p-card *ngFor="let product of premiumComputationResponse.productLevelPremiums; let i = index" [header]="product.description" styleClass="mb-4 motor-card"> 
+    <!-- Vehicle Info Row -->
+    <div class="property-summary">
         <table class="property-table">
           <tbody>
             <tr>
-              <td class="title-cell"><strong>Motor Private {{ i + 1 }}</strong></td>
+              <td class="title-cell"><strong>{{ product.description }} {{ i + 1 }}</strong></td>
               <td class="label-cell"><strong>Use of property</strong></td>
-              <td class="value-cell">{{ motor.useOfProperty }}</td>
+              <td class="value-cell">{{ product.description }}</td>
               <td class="label-cell"><strong>Value</strong></td>
-              <td class="value-cell">{{ motor.value }}</td>
+              <td *ngFor="let risk of product.riskLevelPremiums" class="value-cell">{{ risk.sumInsured}}</td>
             </tr>
           </tbody>
         </table>
-      </div>
+      </div> 
 
-      <!-- Coverage Details -->
-      <div class="coverage-details motor">
+    <!-- Coverage Details -->
+    <div *ngFor="let risk of product.riskLevelPremiums " class="coverage-details motor">
         <table class="coverage-table">
           <tbody>
-            <tr>
+            <tr >
               <td class="spacer-cell"></td>
-              <th colspan="2" style="color: #007BFF">Comprehensive</th>
+              <th colspan="2" style="color: #007BFF">{{risk.selectCoverType.coverTypeDescription}}</th>
               
-              <th colspan="2" style="color: #007BFF">Third Party</th>
+              <!-- <th colspan="2" style="color: #007BFF">Third Party</th> -->
             </tr>
-            <tr>
+             <tr>
               <td class="section-header">Premium:</td>
-              <td>{{ motor.comprehensive.premium }}</td>
-              <td class="section-header">Premium:</td>
-              <td>{{ motor.thirdParty.premium }}</td>
+              <td>{{ risk.selectCoverType.computedPremium }}</td>
+               <!-- <td class="section-header">Premium:</td>
+              <td>{{ motor.thirdParty.premium }}</td> -->
             </tr>
             <tr>
               <td class="section-header">Clauses:</td>
               <td>
-                <div *ngFor="let clause of motor.comprehensive.clauses">{{ clause }}</div>
+                <div *ngFor="let clauses of risk.selectCoverType.clauses">{{clauses.heading}}</div>
               </td>
-              <td class="section-header">Clauses:</td>
+              <!-- <td class="section-header">Clauses:</td>
               <td>
                 <div *ngFor="let clause of motor.thirdParty.clauses">{{ clause }}</div>
-              </td>
+              </td> -->
             </tr>
-            <tr>
+             <tr>
               <td class="section-header">Limits of liability:</td>
               <td>
-                <div *ngFor="let motor of motorPrivateList">
-                  <div *ngFor="let limit of motor.comprehensive.limitsOfLiability">{{ limit }}</div>
-                </div>
-                
-              </td>
-              <td class="section-header">Limits of liability:</td>
+              
+                  <div *ngFor="let limit of risk.selectCoverType.limitOfLiabilities">{{ limit.narration }}</div>
+
+             
+               </td>
+              <!-- <td class="section-header">Limits of liability:</td>
               <td>
                 <div *ngFor="let limit of motor.thirdParty.limitsOfLiability">{{ limit }}</div>
-              </td>
-            </tr>
+              </td> -->
+            </tr> 
             <tr>
               <td class="section-header">Excess applicable:</td>
               <td>
-                <div *ngFor="let excess of motor.comprehensive.excess">{{ excess }}</div>
+                <div *ngFor="let excess of risk.selectCoverType.excesses">{{ excess.narration }}</div>
               </td>
               
-              <td class="section-header">Excess applicable:</td>
+              <!-- <td class="section-header">Excess applicable:</td>
               <td>
                 <div *ngFor="let excess of motor.thirdParty.excess">{{ excess }}</div>
-              </td>
-            </tr>
+              </td> -->
+            </tr> 
             <tr>
               <td class="section-header">Additional benefits:</td>
               <td>
-                <div *ngFor="let benefit of motor.comprehensive.benefits">{{ benefit }}</div>
+                <div *ngFor="let benefit of risk.selectCoverType.additionalBenefits">{{ benefit.sectionDescription }}</div>
               </td>
-              <td class="section-header">Additional benefits:</td>
+              <!-- <td class="section-header">Additional benefits:</td>
               <td>
                 <div *ngFor="let benefit of motor.thirdParty.benefits">{{ benefit }}</div>
-              </td>
-            </tr>
+              </td>   -->
+             </tr> 
           </tbody>
         </table>
       </div>
-    </p-card>
+    </p-card> 
 
-    <p-card *ngFor="let domestic of domesticList; let i = index" [header]="'Domestic '" styleClass="mb-4">
-      <div class="property-summary">
-        <table class="property-table">
-          <tbody>
-            <tr>
-              <td class="title-cell"><strong>Domestic {{ i + 1 }}</strong></td>
-              <td class="label-cell"><strong>Use of property</strong></td>
-              <td class="value-cell">{{ domestic.useOfProperty }}</td>
-              <td class="label-cell"><strong>Value</strong></td>
-              <td class="value-cell">{{ domestic.value }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    
-      <div class="coverage-details domestic">
-          <table class="coverage-table">
-            <tbody>
-              <tr>
-                <td class="spacer-cell"></td>
-                <th colspan="2" style="color: #007BFF">Comprehensive</th>
-                <th colspan="2" style="color: #007BFF"></th>
-              </tr>
-              <tr>
-                <td class="section-header">Premium:</td>
-                <td colspan="2">{{ domestic.premium.premium }}</td>
-                <td class="section-header"></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td class="section-header">Clauses:</td>
-                <td colspan="2">
-                  <div *ngFor="let clause of domestic.premium.clauses">{{ clause }}</div>
-                </td>
-                <td class="section-header"></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td class="section-header">Limits of liability:</td>
-                <td colspan="2">
-                  <div *ngFor="let limit of domestic.premium.limitsOfLiability">{{ limit }}</div>
-                </td>
-                <td class="section-header"></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td class="section-header">Excess applicable:</td>
-                <td colspan="2">
-                  <div *ngFor="let excess of domestic.premium.excess">{{ excess }}</div>
-                </td>
-                <td class="section-header"></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td class="section-header">Additional benefits:</td>
-                <td colspan="2">
-                  <div *ngFor="let benefit of domestic.premium.benefits">{{ benefit }}</div>
-                </td>
-                <td class="section-header"></td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        
+    <app-payment-advice></app-payment-advice>
 
-        <app-payment-advice></app-payment-advice>
-      </div>
-       
-      <!-- <button (click)="downloadPdf()">Download PDF</button> -->
+    <!-- <button (click)="downloadPdf()">Download PDF</button> -->
+  </div>
+</div>
