@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { PaymentAdviceDTO } from '../../data/quotationsDTO';
-import { Logger} from "../../../../../../shared/shared.module";
-import { dummyPaymentOptions, PaymentOption } from '../../data/dummyData';
+import { Logger} from "../../../../../../shared/services";
 
 
 const log = new Logger('PaymentAdviceComponent');
@@ -11,7 +10,7 @@ const log = new Logger('PaymentAdviceComponent');
   styleUrls: ['./payment-advice.component.css']
 })
 export class PaymentAdviceComponent {
-  
+
 
   paymentAdviceData: PaymentAdviceDTO = {
     paymentMethods: [

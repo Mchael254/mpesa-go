@@ -1,10 +1,14 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, } from '@angular/forms';
-import { LazyLoadEvent } from 'primeng/api';
-import { ProductsService } from '../../../setups/services/products/products.service';
-import { Logger, UtilService } from '../../../../../../shared/services';
-import { BinderService } from '../../../setups/services/binder/binder.service';
-import { QuotationsService } from '../../services/quotations/quotations.service';
+
+import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
+import {LazyLoadEvent} from 'primeng/api';
+import {ProductsService} from '../../../setups/services/products/products.service';
+import {Logger, UtilService} from '../../../../../../shared/services';
+import {BinderService} from '../../../setups/services/binder/binder.service';
+import {QuotationsService} from '../../services/quotations/quotations.service';
+import { AfterViewInit} from '@angular/core';
+
+
 
 import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
 import { ClientService } from '../../../../../entities/services/client/client.service';
@@ -39,7 +43,7 @@ import {
   DynamicRiskField, LimitsOfLiability,
   QuickQuoteData,
   QuotationProduct,
-  RiskInformation,
+  RiskInformation, ShareQuoteDTO,
   Tax,
   TaxInformation,
   UserDetail,
@@ -62,9 +66,7 @@ import { debounceTime } from "rxjs/internal/operators/debounceTime";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import {
-  CoverType,
-  CoverTypeDetail,
-  Limit,
+  CoverType, Limit,
   PremiumComputationRequest,
   Product,
   ProductLevelPremium,
@@ -285,6 +287,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   coverSelected = false;
   currentSelectedRisk: any
   currentComputationPayload: PremiumComputationRequest = null
+  premiumComputationPayloadToShare: ProductLevelPremium = null
 
 
   constructor(
@@ -321,6 +324,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       showSorting: false,
     };
 
+  }
+  ngAfterViewInit(): void {
+    throw new Error('Method not implemented.');
   }
 
   //
@@ -687,25 +693,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       untilDestroyed(this)
     ).subscribe({
       next: (response) => {
-        /* const riskLevelPremiumsFromSelection = this.selectedProductCovers.flatMap(value => value.riskLevelPremiums || []);
-         this.premiumComputationResponse = response;
-         const selectedCoverTypeMap = new Map<string, any>();
-         riskLevelPremiumsFromSelection.forEach(selectedRisk => {
-           if (selectedRisk && selectedRisk.code && selectedRisk.selectCoverType) {
-             selectedCoverTypeMap.set(selectedRisk.code, selectedRisk.selectCoverType);
-           }
-         });
-         if (this.premiumComputationResponse && this.premiumComputationResponse.productLevelPremiums) {
-           this.premiumComputationResponse.productLevelPremiums.forEach(premiumProduct => {
-             if (premiumProduct.riskLevelPremiums) {
-               premiumProduct.riskLevelPremiums.forEach(riskInResponse => {
-                 if (riskInResponse && riskInResponse.code && selectedCoverTypeMap.has(riskInResponse.code)) {
-                   riskInResponse.selectCoverType = selectedCoverTypeMap.get(riskInResponse.code);
-                 }
-               });
-             }
-           })
-         }*/
         const riskLevelPremiums = this.selectedProductCovers.flatMap(value => value.riskLevelPremiums);
         this.premiumComputationResponse = response;
 
@@ -1997,31 +1984,77 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
-  // To get a reference to app-quote-report
-  @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
+  @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
 
-
-  ngAfterViewInit() {
-    const modalElement = this.shareQuoteModal.nativeElement;
-
-    modalElement.addEventListener('show.bs.modal', () => {
-      // Use a small delay to let modal animation complete
-      setTimeout(() => {
-        this.isShareModalOpen = true;
-      }, 10); // slight delay (10ms) is usually enough
-    });
-
-    modalElement.addEventListener('hidden.bs.modal', () => {
-      this.isShareModalOpen = false;
-    });
-  }
 
   onDownloadRequested() {
-    if (this.quoteReportComponent) {
-      this.quoteReportComponent.downloadPdf();
-    } else {
-      console.error('QuoteReportComponent is not available!');
-    }
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.quoteReportComponent.generatePdf(true).then(r => {
+
+      })
+    }, 100);
   }
 
+  fetchCoverRelatedData() {
+    const productLevelPremiums$ = this.premiumComputationResponse.productLevelPremiums.map((product) => {
+      const riskLevelPremiums$ = product.riskLevelPremiums.map((risk) => {
+        const coverTypeDetails$ = risk.coverTypeDetails.map((coverType) => {
+          const clauses$ = this.quotationService.getClauses(coverType.coverTypeCode, coverType.subclassCode);
+          const limits$ = this.quotationService.getLimitsOfLiability(coverType.subclassCode);
+          const excesses$ = this.quotationService.getExcesses(coverType.subclassCode);
+          return forkJoin([clauses$, limits$, excesses$]).pipe(
+            map(([clauses, limits, excesses]) => ({
+              ...coverType,
+              clauses: clauses?._embedded ?? [],
+              limits,
+              limitOfLiabilities: limits?._embedded ?? [],
+              excesses: excesses?._embedded ?? [],
+            }))
+          );
+        });
+
+        return forkJoin(coverTypeDetails$).pipe(
+          map((coverTypeDetails) => ({
+            ...risk,
+            coverTypeDetails,
+          }))
+        );
+      });
+
+      return forkJoin(riskLevelPremiums$).pipe(
+        map((riskLevelPremiums) => ({
+          ...product,
+          riskLevelPremiums,
+        }))
+      );
+    });
+
+    forkJoin(productLevelPremiums$).pipe(
+      map((productLevelPremiums) => ({
+        ...this.premiumComputationResponse,
+        productLevelPremiums,
+      }))
+    ).subscribe((enrichedResult: ProductLevelPremium) => {
+      this.premiumComputationPayloadToShare = enrichedResult;
+      log.debug("Enriched Premium Computation: ", enrichedResult);
+    });
+  }
+
+  listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
+    if (sendEvent && ['email', 'whatsapp'].includes(sendEvent.mode.selectedMethod)) {
+      this.cdr.detectChanges();
+      setTimeout(async () => {
+        try {
+          const pdfFile = await this.quoteReportComponent.generatePdf(false, 'quote-report.pdf');
+          const formData = new FormData();
+          formData.append('file', pdfFile);
+          log.debug("Form Data....", formData,pdfFile)
+          //this.http.post('/api/send-quote', formData).subscribe();
+        } catch (err) {
+          console.error('PDF generation failed', err);
+        }
+      }, 200);
+    }
+  }
 }
