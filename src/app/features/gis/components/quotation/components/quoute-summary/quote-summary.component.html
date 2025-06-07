@@ -143,9 +143,9 @@
   </div>
   <div class="row">
     <div class="col-md-4  col-12 mt-2 d-flex justify-content-start">
-      <button type="button" class="btn btn-text me-2 " style="border: none;" (click)="navigateToQuoteDetails()">
-        Back
-      </button>
+       <button type="button" class="btn btn-text me-2 " style="border: none;" (click)="navigateToQuoteDetails()"> 
+        <!-- Back
+      </button> 
       <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary mx-2"
         data-bs-target="#reassignQuotation" data-bs-toggle="modal">{{'gis.quotation.reassign' | translate}}</button>
       <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary" data-bs-target="#rejectQuote"
@@ -153,9 +153,9 @@
         translate}} </button>
     </div>
     <div class="col-md-8  col-12 mt-2 d-flex justify-content-end">
-      <!-- <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary me-2 ">
+       <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary me-2 ">
         Share quotation
-      </button> -->
+      </button> 
       <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
         data-bs-target="#shareQuoteModal">
         Share quotation
@@ -170,7 +170,7 @@
     </div>
   </div>
 
-  <!-- ACCEPT QUOTE MODAL -->
+  < ACCEPT QUOTE MODAL -->
   <div class="modal fade pb-4" id="acceptQuote" tabindex="-1" aria-labelledby="acceptQuoteLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content ps-4 pt-4 pe-4 pb-4">
@@ -237,9 +237,10 @@
             Convert to policy
           </button>
         </div>
+        </div>
       </div>
     </div>
-  </div>
+  
 
 
   <!-- reject quote modal -->

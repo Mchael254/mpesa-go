@@ -384,6 +384,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     })
 
   }
+
+  showQuoteReport = true; // Set to true to debug quote report
+
   navigateToQuoteDetails() {
     const quotationNumber = this.quotationDetails?.quotationNo;
     log.debug("Quotation Number", quotationNumber);
