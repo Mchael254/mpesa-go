@@ -204,9 +204,7 @@
 
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
+          
 
           <!-- Conditionally render the report component with data -->
           <app-quote-report *ngIf="isShareModalOpen" [quotationDetails]="quotationDetails" #quoteReport style="opacity: 0;
@@ -215,6 +213,7 @@
 
           <!-- Your Angular component inside the modal -->
           <app-share-quotes (downloadRequested)="onDownloadRequested()"></app-share-quotes>
+        </div>
         </div>
       </div>
     </div>

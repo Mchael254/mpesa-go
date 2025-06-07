@@ -26,6 +26,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   private pdfBlob: Blob | null = null;
   @Input() quotationDetails!: QuotationDetails;
   private _premiumComputationResponse: ProductLevelPremium
+  
 
 
   @Input()
@@ -37,6 +38,12 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   get premiumComputationResponse() {
     return this._premiumComputationResponse
   }
+  // Add this getter to expose productLevelPremiums safely
+  get productLevelPremiums() {
+    return this._premiumComputationResponse?.productLevelPremiums || [];
+  }
+  
+  
 
   ngAfterViewInit() {
     log.debug('PDF content:', this.pdfContent.nativeElement.innerHTML);

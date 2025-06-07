@@ -350,4 +350,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     })
 
   }
+
+  showQuoteReport = true; // Set to true to debug quote report
+
 }
