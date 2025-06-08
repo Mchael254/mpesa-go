@@ -89,24 +89,27 @@
 
     <!-- Coverage Details -->
     <div *ngFor="let risk of product.riskLevelPremiums " class="coverage-details motor">
+
+       <!-- If a specific cover type is selected -->
+  <div *ngIf="risk.selectCoverType; else showAll">
         <table class="coverage-table">
           <tbody>
             <tr >
               <td class="spacer-cell"></td>
-              <th colspan="2" style="color: #007BFF">{{risk.selectCoverType.coverTypeDescription}}</th>
+              <th colspan="2" style="color: #00529b">{{risk.selectCoverType?.coverTypeDescription}}</th>
               
               <!-- <th colspan="2" style="color: #007BFF">Third Party</th> -->
             </tr>
              <tr>
               <td class="section-header">Premium:</td>
-              <td>{{ risk.selectCoverType.computedPremium }}</td>
+              <td>{{ risk.selectCoverType?.computedPremium }}</td>
                <!-- <td class="section-header">Premium:</td>
               <td>{{ motor.thirdParty.premium }}</td> -->
             </tr>
             <tr>
               <td class="section-header">Clauses:</td>
               <td>
-                <div *ngFor="let clauses of risk.selectCoverType.clauses">{{clauses.heading}}</div>
+                <div *ngFor="let clauses of risk.selectCoverType?.clauses">{{clauses.heading}}</div>
               </td>
               <!-- <td class="section-header">Clauses:</td>
               <td>
@@ -117,7 +120,7 @@
               <td class="section-header">Limits of liability:</td>
               <td>
               
-                  <div *ngFor="let limit of risk.selectCoverType.limitOfLiabilities">{{ limit.narration }}</div>
+                  <div *ngFor="let limit of risk.selectCoverType?.limitOfLiabilities">{{ limit.narration }}</div>
 
              
                </td>
@@ -129,7 +132,7 @@
             <tr>
               <td class="section-header">Excess applicable:</td>
               <td>
-                <div *ngFor="let excess of risk.selectCoverType.excesses">{{ excess.narration }}</div>
+                <div *ngFor="let excess of risk.selectCoverType?.excesses">{{ excess.narration }}</div>
               </td>
               
               <!-- <td class="section-header">Excess applicable:</td>
@@ -140,7 +143,7 @@
             <tr>
               <td class="section-header">Additional benefits:</td>
               <td>
-                <div *ngFor="let benefit of risk.selectCoverType.additionalBenefits">{{ benefit.sectionDescription }}</div>
+                <div *ngFor="let benefit of risk.selectCoverType?.additionalBenefits">{{ benefit.sectionDescription }}</div>
               </td>
               <!-- <td class="section-header">Additional benefits:</td>
               <td>
@@ -149,6 +152,62 @@
              </tr> 
           </tbody>
         </table>
+      </div>
+
+       <!-- Show all cover types if none is selected -->
+  <ng-template #showAll>
+    <div class="cover-type-row">
+    <div *ngFor="let coverType of risk.coverTypeDetails" class="cover-type-box">
+      <table class="coverage-table">
+        <tbody>
+          <tr>
+            <td class="spacer-cell"></td>
+            <th colspan="2" style="color: #00529b">
+              {{ coverType.coverTypeDescription }}
+            </th>
+          </tr>
+          <tr>
+            <td class="section-header">Premium:</td>
+            <td>{{ coverType.computedPremium }}</td>
+          </tr>
+          <tr>
+            <td class="section-header">Clauses:</td>
+            <td>
+              <div *ngFor="let clause of coverType.clauses">
+                {{ clause.heading }}
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="section-header">Limits of liability:</td>
+            <td>
+              <div *ngFor="let limit of coverType.limitOfLiabilities">
+                {{ limit.narration }}
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="section-header">Excess applicable:</td>
+            <td>
+              <div *ngFor="let excess of coverType.excesses">
+                {{ excess.narration }}
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="section-header">Additional benefits:</td>
+            <td>
+              <div *ngFor="let benefit of coverType.additionalBenefits">
+                {{ benefit.sectionDescription }}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br />
+    </div>
+  </div>
+  </ng-template>
       </div>
     </p-card> 
 
