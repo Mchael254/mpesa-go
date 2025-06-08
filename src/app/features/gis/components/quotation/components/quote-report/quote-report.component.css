@@ -173,6 +173,8 @@ border-bottom: 1px solid #cce5ff ; /* or your preferred color */
 
 
 
+
+
 @media (max-width: 768px) {
   .property-summary,
   .coverage-details table {
