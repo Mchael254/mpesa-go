@@ -8,14 +8,35 @@ import {
   PLATFORM_ID,
   ViewChild
 } from '@angular/core';
-import {DomesticDTO, MotorPrivateDTO, QuotationDetails, QuotationHeaderDTO} from '../../data/quotationsDTO';
-import {PdfGeneratorService} from '../../services/quotations/pdf-generator.service';
-import {ProductLevelPremium} from "../../data/premium-computation";
-import {Logger} from "../../../../../../shared/services";
+import { DomesticDTO, MotorPrivateDTO, PaymentAdviceDTO, QuotationDetails, QuotationHeaderDTO } from '../../data/quotationsDTO';
+import { PdfGeneratorService } from '../../services/quotations/pdf-generator.service';
+import { ProductLevelPremium } from "../../data/premium-computation";
+import { Logger } from "../../../../../../shared/services";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+(pdfMake as any).vfs = (pdfFonts as any).vfs;
+import { TDocumentDefinitions } from 'pdfmake/interfaces';
+
 
 const log = new Logger('QuoteReportComponent');
+interface DisplayRow {
+  productDescription: string;
+  risk: any;
+  propertyId: string;
+  count: number;
+}
+interface EnrichedRisk {
+  risk: any;
+  count: number;
+}
+
+interface EnrichedProduct {
+  description: string;
+  code: number;
+  enrichedRisks: EnrichedRisk[];
+}
 
 @Component({
   selector: 'app-quote-report',
@@ -26,7 +47,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   private pdfBlob: Blob | null = null;
   @Input() quotationDetails!: QuotationDetails;
   private _premiumComputationResponse: ProductLevelPremium
-  
+
 
 
   @Input()
@@ -42,8 +63,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   get productLevelPremiums() {
     return this._premiumComputationResponse?.productLevelPremiums || [];
   }
-  
-  
+
+
 
   ngAfterViewInit() {
     log.debug('PDF content:', this.pdfContent.nativeElement.innerHTML);
@@ -79,11 +100,11 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
   @Input() data: any;
 
-  @ViewChild('pdfContent', {static: false}) pdfContent!: ElementRef;
+  @ViewChild('pdfContent', { static: false }) pdfContent!: ElementRef;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object,
-              private pdfGenerator: PdfGeneratorService,
-              private cdr: ChangeDetectorRef) {
+    private pdfGenerator: PdfGeneratorService,
+    private cdr: ChangeDetectorRef) {
   }
 
   header: QuotationHeaderDTO = {
@@ -97,55 +118,305 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
 
 
-  async generatePdf(
-    download: boolean = false,
-    fileName: string = 'document.pdf',
-  ): Promise<File> {
-    await document.fonts.ready;
-    // 1. Wait for fonts and images to fully load
-    const element = this.pdfContent.nativeElement as HTMLElement;
-    await this.waitForImagesToLoad(element);
+  // async generatePdf(
+  //   download: boolean = false,
+  //   fileName: string = 'document.pdf',
+  // ): Promise<File> {
+  //   await document.fonts.ready;
+  //   // 1. Wait for fonts and images to fully load
+  //   const element = this.pdfContent.nativeElement as HTMLElement;
+  //   await this.waitForImagesToLoad(element);
 
-    // 2. Render canvas from full content
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#fff'
+  //   // 2. Render canvas from full content
+  //   const canvas = await html2canvas(element, {
+  //     scale: 2,
+  //     useCORS: true,
+  //     backgroundColor: '#fff'
+  //   });
+
+  //   const imgData = canvas.toDataURL('image/png');
+  //   const pdf = new jsPDF('p', 'pt', 'a4');
+
+  //   const pageWidth = pdf.internal.pageSize.getWidth();
+  //   const pageHeight = pdf.internal.pageSize.getHeight();
+
+  //   const imgWidth = pageWidth;
+  //   const imgHeight = (canvas.height * pageWidth) / canvas.width;
+
+  //   let heightLeft = imgHeight;
+  //   let position = 0;
+
+  //   // 3. Add first page
+  //   pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+  //   heightLeft -= pageHeight;
+
+  //   // 4. Add extra pages if needed
+  //   while (heightLeft > 0) {
+  //     position -= pageHeight;
+  //     pdf.addPage();
+  //     pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+  //     heightLeft -= pageHeight;
+  //   }
+
+  //   // 5. Optional download
+  //   if (download) {
+  //     pdf.save(fileName);
+  //   }
+
+  //   // 6. Return PDF as File for further use (e.g., API upload)
+  //   const blob = pdf.output('blob');
+  //   return new File([blob], fileName, { type: 'application/pdf' });
+  // }
+
+  chunkArray<T>(arr: T[], size: number): T[][] {
+    const result: T[][] = [];
+    for (let i = 0; i < arr.length; i += size) {
+      result.push(arr.slice(i, i + size));
+    }
+    return result;
+  }
+
+
+  async generatePdf(download = false, fileName = 'document.pdf'): Promise<Blob | void> {
+    const riskContents: any = this.enrichedProducts.flatMap(product => {
+      const risks: any = product.enrichedRisks.flatMap(enriched => {
+        const coverageContent: any = !enriched.risk.selectCoverType
+          ? (() => {
+
+            const coverChunks = [];
+            for (let i = 0; i < enriched.risk.coverTypeDetails.length; i += 4) {
+              coverChunks.push(enriched.risk.coverTypeDetails.slice(i, i + 4));
+            }
+
+
+            return coverChunks.map(chunk => {
+              const rows = [];
+
+
+              for (let i = 0; i < chunk.length; i += 2) {
+                const rowItems = chunk.slice(i, i + 2);
+
+                rows.push({
+                  columns: rowItems.map(cover => ({
+                    width: '50%',
+                    table: {
+                      widths: ['*'],
+                      body: [[
+                        {
+                          stack: [
+                            { text: cover.coverTypeDescription, color: '#0d6efd', bold: true, margin: [0, 0, 0, 5] },
+                            { text: 'Clauses', bold: true },
+                            ...cover.clauses.map(c => ({ text: c.heading, fontSize: 9, color: 'gray' })),
+                            { text: 'Limits of Liability', bold: true, margin: [0, 5, 0, 0] },
+                            ...cover.limitOfLiabilities.map(l => ({ text: l.narration, fontSize: 9, color: 'gray' })),
+                            { text: 'Excess applicable', bold: true, margin: [0, 5, 0, 0] },
+                            ...cover.excesses.map(e => ({ text: e.narration, fontSize: 9, color: 'gray' }))
+                          ]
+                        }
+                      ]]
+                    },
+                    layout: {
+                      hLineWidth: () => 1,
+                      vLineWidth: () => 1,
+                      hLineColor: () => '#0d6efd',
+                      vLineColor: () => '#0d6efd',
+                      paddingTop: () => 2,
+                      paddingBottom: () => 2,
+                      paddingLeft: () => 2,
+                      paddingRight: () => 2
+                    },
+                    margin: [0, 0, 0, 10]
+                  })),
+                  columnGap: 0,
+                  margin: [0, 0, 0, 15]
+                });
+              }
+
+              return rows;
+            }).flat();
+          })()
+          : [];
+
+        return [
+          {
+            columns: [
+              { text: `${product.description} ${enriched.risk.propertyId}`, style: 'riskTitle', width: '*' },
+              {
+                width: 'auto',
+                text: [
+                  { text: 'Use of Property: ', style: 'label' },
+                  { text: `${enriched.risk.propertyDescription || enriched.risk.propertyId} `, bold: true },
+                  { text: '    ' }
+                ]
+              },
+              {
+                width: 'auto',
+                text: [
+                  { text: 'Value: ', style: 'label' },
+                  { text: `${enriched.risk.sumInsured}`, bold: true }
+                ]
+              }
+            ],
+            margin: [0, 0, 0, 10]
+          },
+          ...coverageContent
+        ];
+      });
+
+      return [{
+        table: {
+          widths: ['*'],
+          body: [[{
+            stack: [
+              { text: product.description, style: 'sectionHeader', margin: [0, 10, 0, 5] },
+              ...risks
+            ]
+          }]]
+        },
+        layout: {
+          hLineWidth: () => 1,
+          vLineWidth: () => 1,
+          hLineColor: () => '#0d6efd',
+          vLineColor: () => '#0d6efd',
+          paddingTop: () => 10,
+          paddingBottom: () => 10,
+          paddingLeft: () => 10,
+          paddingRight: () => 10
+        },
+        margin: [0, 10, 0, 10]
+      }];
     });
 
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'pt', 'a4');
+    //payment methods section 
+    const paymentMethodsSection = {
+      table: {
+        widths: ['*'],
+        body: [[{
+          stack: [
+            { text: 'Payment methods', style: 'sectionHeader', margin: [0, 20, 0, 10] },
+            {
+              columns: this.paymentAdviceData.paymentMethods.map(method => ({
+                width: '*',
+                stack: [
+                  { text: method.title, bold: true, margin: [0, 0, 0, 5] },
+                  ...method.details.map(detail => ({ text: detail, margin: [0, 0, 0, 2] }))
+                ]
+              })),
+              columnGap: 20,
+              margin: [0, 0, 0, 15]
+            },
+            {
+              text: [
+                { text: 'Click here to pay', link: '#', color: '#0d6efd', decoration: 'underline' }
+              ],
+              alignment: 'center',
+              margin: [0, 10, 0, 20]
+            }
+          ]
+        }]]
+      },
+      layout: {
+        hLineWidth: () => 1,
+        vLineWidth: () => 1,
+        hLineColor: () => '#0d6efd',
+        vLineColor: () => '#0d6efd',
+        paddingTop: () => 10,
+        paddingBottom: () => 10,
+        paddingLeft: () => 10,
+        paddingRight: () => 10
+      },
+      margin: [0, 10, 0, 10]
+    };
 
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
+    // footer section 
+    const footerSection = {
+      stack: this.paymentAdviceData.footerInfo.map(info => ({
+        text: info,
+        fontSize: 9,
+        alignment: 'center',
+        margin: [0, 2, 0, 0]
+      })),
+      margin: [0, 30, 0, 0] 
+    };
 
-    const imgWidth = pageWidth;
-    const imgHeight = (canvas.height * pageWidth) / canvas.width;
+    const docDefinition: TDocumentDefinitions = {
+      content: [
+        {
+          columns: [
+            { image: this.header.logo, width: 100 },
+            { text: 'QUOTATION REPORT', style: 'header', alignment: 'center', margin: [0, 30, 0, 0] }
+          ]
+        },
+        { text: '\n' },
+        {
+          style: 'infoTable',
+          table: {
+            widths: ['auto', '*'],
+            body: [
+              ['Quotation status', this.header.quotationStatus],
+              ['Proposal/Insured', this.header.proposalIssued],
+              ['Period', this.header.period],
+              ['Quote time', this.header.quoteTime],
+              ['Agency name', this.header.agencyName]
+            ]
+          },
+          layout: {
+            fillColor: (rowIndex) => (rowIndex % 2 === 0 ? '#f3f3f3' : null),
+            hLineWidth: () => 0.5,
+            vLineWidth: () => 0.5,
+            hLineColor: () => '#aaa',
+            vLineColor: () => '#aaa',
+          }
+        },
+        { text: '\n' },
 
-    let heightLeft = imgHeight;
-    let position = 0;
+        ...riskContents,
+        paymentMethodsSection,
+        footerSection
+      ],
 
-    // 3. Add first page
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
+      footer: function (currentPage, pageCount) {
+        return {
+          stack: [
+            ...this.paymentAdviceData.footerInfo.map(info => ({
+              text: info,
+              fontSize: 9,
+              alignment: 'center',
+              margin: [0, 2, 0, 0]
+            }))
+          ],
+          margin: [40, 20, 40, 20]
+        };
+      }.bind(this),
 
-    // 4. Add extra pages if needed
-    while (heightLeft > 0) {
-      position -= pageHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
+      styles: {
+        header: { fontSize: 22, bold: true },
+        infoTable: { margin: [0, 0, 0, 10], fontSize: 12 },
+        sectionHeader: { fontSize: 16, bold: true, color: '#0d6efd' },
+        riskTitle: { fontSize: 14, bold: true, color: '#343a40' },
+        label: { fontSize: 11, color: '#6c757d' }
+      },
 
-    // 5. Optional download
+      defaultStyle: {
+        // font: 'Helvetica'
+      }
+    };
+
     if (download) {
-      pdf.save(fileName);
+      pdfMake.createPdf(docDefinition).download(fileName);
+      return; 
+    } else {
+      return new Promise<Blob>((resolve, reject) => {
+        pdfMake.createPdf(docDefinition).getBlob(blob => {
+          resolve(blob);
+        });
+      });
     }
-
-    // 6. Return PDF as File for further use (e.g., API upload)
-    const blob = pdf.output('blob');
-    return new File([blob], fileName, {type: 'application/pdf'});
   }
+
+
+
+
 
   private waitForImagesToLoad(container: HTMLElement): Promise<void> {
     const images = Array.from(container.querySelectorAll('img'));
@@ -167,6 +438,72 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     console.log('generating report')
   }
 
+
+  enrichedProducts: EnrichedProduct[] = [];
+  displayRows: DisplayRow[] = [];
+
   ngOnInit(): void {
+    const propertyIdCounter: { [key: string]: number } = {};
+
+    this.enrichedProducts = this.premiumComputationResponse.productLevelPremiums.map(product => {
+      const enrichedRisks: EnrichedRisk[] = [];
+
+      for (const risk of product.riskLevelPremiums) {
+        const id = risk.propertyId;
+        propertyIdCounter[id] = (propertyIdCounter[id] || 0) + 1;
+
+        enrichedRisks.push({
+          risk,
+          count: propertyIdCounter[id],
+        });
+      }
+
+      return {
+        description: product.description,
+        code: product.code,
+        enrichedRisks
+      };
+    });
+  }
+
+
+  //payment adive
+  paymentAdviceData: PaymentAdviceDTO = {
+    paymentMethods: [
+      {
+        title: 'Cheque',
+        details: ['Paybill: 123456', 'Account: Your name', 'Drop off: Lavington Chalbi drive']
+      },
+      {
+        title: 'Mpesa',
+        details: [
+          'Paybill: 987654',
+          'Account: Your Name',
+          'Mobile number: +254712345678',
+        ]
+      },
+      {
+        title: 'Bank transfer',
+        details: [
+          'Bank: ABSA Bank Kenya',
+          'Account name: TurnQuest Insurance Ltd',
+          'Account Number: 12345658',
+          'Branch: Westlands',
+          'Swift code: ABSAKENX'
+        ]
+      },
+      {
+        title: 'Airtel money',
+        details: ['Business name: TurnQuest Insurance Ltd', 'Reference: Your name']
+      }
+    ],
+
+    footerInfo: [
+      'Registered Office: Leadway Assurance House NN 28/29 Constitution Road P.O.Box 458, Kaduna',
+    ]
+  };
+
+  pay() {
+    alert('Proceed to payment!');
   }
 }
