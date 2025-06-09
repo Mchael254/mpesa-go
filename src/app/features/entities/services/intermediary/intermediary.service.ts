@@ -39,11 +39,11 @@ export class IntermediaryService {
       // .set('organizationId', 2)
       .set('sortListFields', `${sortList}`)
       .set('order', `${order}`);
-
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.api.GET<Pagination<AgentDTO>>(
       `agents`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
-      params
+      paramObject
     );
   }
 

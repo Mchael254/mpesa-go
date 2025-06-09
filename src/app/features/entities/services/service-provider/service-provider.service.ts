@@ -30,11 +30,11 @@ export class ServiceProviderService {
       /*.set('organizationId', null)*/ //TODO:Find proper way to fetch organization Id
       .set('sortListFields', `${sortFields}`)
       .set('order', `${sortOrder}`);
-
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.api.GET<Pagination<ServiceProviderDTO>>(
       `service-providers`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
-      params
+      paramObject
     );
   }
 
