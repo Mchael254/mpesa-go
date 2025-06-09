@@ -7,11 +7,7 @@
 
     <!-- Quotation Info Card -->
     <p-card styleClass="mb-4 info-card">
-      <p-table
-        [value]="[{}]"
-        styleClass="quotation-info;"
-        responsiveLayout="scroll"
-      >
+      <p-table [value]="[{}]" styleClass="quotation-info;" responsiveLayout="scroll">
         <ng-template pTemplate="body">
           <tr>
             <td class="label">Quotation status</td>
@@ -36,183 +32,99 @@
         </ng-template>
       </p-table>
     </p-card>
-<!-- 
-    <p-card
-      *ngFor="let product of premiumComputationResponse?.productLevelPremiums"
-      styleClass="mb-4 motor-card"
-    >
-      <div class="property-summary">
-        <table class="property-table">
-          <tbody>
-            <tr>
-              <td class="value-cell text-primary">{{ product.description }}</td>
-            </tr>
 
-            <tr *ngFor="let risk of product.riskLevelPremiums">
-              <td>
-                >{{ risk.propertyId }}
-              </td>
-              <td class="label-cell">
-                <span class="mr-5"><strong>Value </strong></span
-                >{{ risk.sumInsured }}
-              </td>
-            </tr>
-            <tr *ngFor="let risk of product.riskLevelPremiums">
-              <ng-container *ngFor="let cover of risk.selectCoverType.clauses">
-              <ng-container *ngFor="let clause of cover.heading">
 
-              </ng-container>
-               
-              </ng-container>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </p-card> -->
 
-    <!-- Motor Private Cards -->
-     <p-card *ngFor="let product of premiumComputationResponse.productLevelPremiums; let i = index" [header]="product.description" styleClass="mb-4 motor-card"> 
-    <!-- Vehicle Info Row -->
-    <div class="property-summary">
-        <table class="property-table">
-          <tbody>
-            <tr>
-              <td class="title-cell"><strong>{{ product.description }} {{ i + 1 }}</strong></td>
-              <td class="label-cell"><strong>Use of property</strong></td>
-              <td class="value-cell">{{ product.description }}</td>
-              <td class="label-cell"><strong>Value</strong></td>
-              <td *ngFor="let risk of product.riskLevelPremiums" class="value-cell">{{ risk.sumInsured}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div> 
+    <!-- risk details -->
+    <div *ngFor="let product of enrichedProducts" class="border border-primary mb-4 p-3 rounded">
+      <h5 class="section-header">{{ product.description }}</h5>
 
-    <!-- Coverage Details -->
-    <div *ngFor="let risk of product.riskLevelPremiums " class="coverage-details motor">
+      <div *ngFor="let enriched of product.enrichedRisks" class="mb-4 p-3">
 
-       <!-- If a specific cover type is selected -->
-  <div *ngIf="risk.selectCoverType; else showAll">
-        <table class="coverage-table">
-          <tbody>
-            <tr >
-              <td class="spacer-cell"></td>
-              <th colspan="2" style="color: #00529b">{{risk.selectCoverType?.coverTypeDescription}}</th>
-              
-              <!-- <th colspan="2" style="color: #007BFF">Third Party</th> -->
-            </tr>
-             <tr>
-              <td class="section-header">Premium:</td>
-              <td>{{ risk.selectCoverType?.computedPremium }}</td>
-               <!-- <td class="section-header">Premium:</td>
-              <td>{{ motor.thirdParty.premium }}</td> -->
-            </tr>
-            <tr>
-              <td class="section-header">Clauses:</td>
-              <td>
-                <div *ngFor="let clauses of risk.selectCoverType?.clauses">{{clauses.heading}}</div>
-              </td>
-              <!-- <td class="section-header">Clauses:</td>
-              <td>
-                <div *ngFor="let clause of motor.thirdParty.clauses">{{ clause }}</div>
-              </td> -->
-            </tr>
-             <tr>
-              <td class="section-header">Limits of liability:</td>
-              <td>
-              
-                  <div *ngFor="let limit of risk.selectCoverType?.limitOfLiabilities">{{ limit.narration }}</div>
+        <div class="d-flex w-[70vw] gap-2 justify-content-around mt-1">
+          <div>
+            <span class="text-lg font-bold text-secondary"> {{ product.description }} {{ enriched.risk.propertyId }}
+            </span>
+          </div>
+          <div>
+            <span>Use of Property</span>
+            <span class="fw-bold ms-3">{{ enriched.risk.propertyDescription || enriched.risk.propertyId }}</span>
+          </div>
+          <div>
+            <span>Value</span>
+            <span class="fw-bold ms-3">{{ enriched.risk.sumInsured }}</span>
+          </div>
 
-             
-               </td>
-              <!-- <td class="section-header">Limits of liability:</td>
-              <td>
-                <div *ngFor="let limit of motor.thirdParty.limitsOfLiability">{{ limit }}</div>
-              </td> -->
-            </tr> 
-            <tr>
-              <td class="section-header">Excess applicable:</td>
-              <td>
-                <div *ngFor="let excess of risk.selectCoverType?.excesses">{{ excess.narration }}</div>
-              </td>
-              
-              <!-- <td class="section-header">Excess applicable:</td>
-              <td>
-                <div *ngFor="let excess of motor.thirdParty.excess">{{ excess }}</div>
-              </td> -->
-            </tr> 
-            <tr>
-              <td class="section-header">Additional benefits:</td>
-              <td>
-                <div *ngFor="let benefit of risk.selectCoverType?.additionalBenefits">{{ benefit.sectionDescription }}</div>
-              </td>
-              <!-- <td class="section-header">Additional benefits:</td>
-              <td>
-                <div *ngFor="let benefit of motor.thirdParty.benefits">{{ benefit }}</div>
-              </td>   -->
-             </tr> 
-          </tbody>
-        </table>
+        </div>
+
+        <!--Coverage Details -->
+        <!-- non selected -->
+        <div *ngIf="!enriched.risk.selectCoverType">
+          <div class="row g-0">
+
+            <div *ngFor="let cover of enriched.risk.coverTypeDetails" class="col-md-6">
+              <div class="border border-primary p-3 h-100">
+                <p class="text-primary fw-bold text-center mb-2">
+                  {{ cover.coverTypeDescription }}
+                </p>
+
+                <!-- Clauses -->
+                <div class="d-flex mb-2">
+                  <div class="w-25">
+                    <p class="fw-semibold">Clauses</p>
+                  </div>
+                  <div class="w-75 ps-2">
+                    <div *ngFor="let clause of cover.clauses" class="mb-1">
+                      <p class="text-muted small mb-0">{{ clause.heading }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Limits of Liability -->
+                <div class="d-flex mb-2">
+                  <div class="w-25">
+                    <p class="fw-semibold">Limits of Liability</p>
+                  </div>
+                  <div class="w-75 ps-2">
+                    <div *ngFor="let liability of cover.limitOfLiabilities" class="mb-1">
+                      <p class="text-muted small mb-0">{{ liability.narration }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Excesses -->
+                <div class="d-flex">
+                  <div class="w-25">
+                    <p class="fw-semibold">Excess applicable</p>
+                  </div>
+                  <div class="w-75 ps-2">
+                    <div *ngFor="let excess of cover.excesses" class="mb-1">
+                      <p class="text-muted small mb-0">{{ excess.narration }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- selected -->
+        <div *ngIf="enriched.risk.selectCoverType">
+          <div class="row g-0">
+
+          </div>
+
+        </div>
+
+
+
       </div>
 
-       <!-- Show all cover types if none is selected -->
-  <ng-template #showAll>
-    <div class="cover-type-row">
-    <div *ngFor="let coverType of risk.coverTypeDetails" class="cover-type-box">
-      <table class="coverage-table">
-        <tbody>
-          <tr>
-            <td class="spacer-cell"></td>
-            <th colspan="2" style="color: #00529b">
-              {{ coverType.coverTypeDescription }}
-            </th>
-          </tr>
-          <tr>
-            <td class="section-header">Premium:</td>
-            <td>{{ coverType.computedPremium }}</td>
-          </tr>
-          <tr>
-            <td class="section-header">Clauses:</td>
-            <td>
-              <div *ngFor="let clause of coverType.clauses">
-                {{ clause.heading }}
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="section-header">Limits of liability:</td>
-            <td>
-              <div *ngFor="let limit of coverType.limitOfLiabilities">
-                {{ limit.narration }}
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="section-header">Excess applicable:</td>
-            <td>
-              <div *ngFor="let excess of coverType.excesses">
-                {{ excess.narration }}
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="section-header">Additional benefits:</td>
-            <td>
-              <div *ngFor="let benefit of coverType.additionalBenefits">
-                {{ benefit.sectionDescription }}
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <br />
+      <!-- payment advice component // conditional -->
+      <app-payment-advice>
+
+      </app-payment-advice>
     </div>
-  </div>
-  </ng-template>
-      </div>
-    </p-card> 
-
-    <app-payment-advice></app-payment-advice>
-
-    <!-- <button (click)="downloadPdf()">Download PDF</button> -->
   </div>
 </div>
