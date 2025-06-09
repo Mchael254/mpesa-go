@@ -155,27 +155,28 @@
             [resizableColumns]="true"
             [showCurrentPageReport]="true"
             [rows]="pageSize || 10"
-            [totalRecords]="accountsData?.length"
-            [value]="accountsData"
+            [totalRecords]="agentsData?.totalElements"
+            [value]="agentsData.content"
             [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
             responsiveLayout="stack"
             [scrollable]="true"
             selectionMode="single"
-            dataKey="code"
+            dataKey="id"
             scrollHeight="400px"
             currentPageReportTemplate="{first} - {last} of {totalRecords}"
-            [globalFilterFields]="['campaign.campaignName']"
+            [globalFilterFields]="['shortDesc', 'name']"
           >
 
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.shortDescription' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.name' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="shortDesc">{{ 'serviceDesk.shortDescription' | translate }} <p-sortIcon field="shortDesc"></p-sortIcon></th>
+                <th pSortableColumn="name">{{ 'serviceDesk.name' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-agent>
-              <tr class="custom-table">
-                <td></td>
+              <tr (click)="viewDetailsWithId('agent',agent)">
+                <td>{{agent?.shortDesc | uppercase}}</td>
+                <td>{{agent?.name | titlecase}}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
@@ -194,28 +195,28 @@
             [resizableColumns]="true"
             [showCurrentPageReport]="true"
             [rows]="pageSize || 10"
-            [totalRecords]="accountsData?.length"
-            [value]="accountsData"
+            [totalRecords]="serviceProvidersData?.totalElements"
+            [value]="serviceProvidersData.content"
             [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
             responsiveLayout="stack"
             [scrollable]="true"
             selectionMode="single"
-            dataKey="code"
+            dataKey="id"
             scrollHeight="400px"
             currentPageReportTemplate="{first} - {last} of {totalRecords}"
-            [globalFilterFields]="['campaign.campaignName']"
+            [globalFilterFields]="['shortDescription', 'name']"
           >
 
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.shortDescription' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
-                <th pSortableColumn="campaign.campaignName">{{ 'serviceDesk.name' | translate }} <p-sortIcon field="campaign.campaignName"></p-sortIcon></th>
+                <th pSortableColumn="shortDescription">{{ 'serviceDesk.shortDescription' | translate }} <p-sortIcon field="shortDescription"></p-sortIcon></th>
+                <th pSortableColumn="name">{{ 'serviceDesk.name' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-serviceProvider>
-              <tr class="custom-table">
-                <td></td>
-                <td></td>
+              <tr (click)="viewDetailsWithId('serviceProvider',serviceProvider)">
+                <td>{{serviceProvider?.shortDescription | uppercase}}</td>
+                <td>{{serviceProvider?.name | titlecase}}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">

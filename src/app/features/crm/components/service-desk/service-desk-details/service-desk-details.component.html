@@ -39,17 +39,23 @@
           <div class="col-sm-4">
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.name' | translate }}:</label>
-              <span class="ticketDesc">{{selectedEntity?.firstName | titlecase}} {{selectedEntity?.lastName | titlecase}}</span>
+              <span class="ticketDesc">{{selectedEntity?.firstName | titlecase}}
+                {{selectedEntity?.lastName | titlecase}}
+                {{ selectedEntity.name | titlecase }}
+              </span>
             </p>
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.telephoneNo' | translate }}:</label>
-              <span class="ticketDesc">{{selectedEntity?.mobileNumber}}</span>
+              <span class="ticketDesc">{{selectedEntity?.mobileNumber}}
+                {{selectedEntity?.phoneNumber}}</span>
             </p>
           </div>
           <div class="col-sm-4">
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.shortDescription' | translate }}:</label>
-              <span class="ticketDesc">{{selectedEntity?.shortDescription}}</span>
+              <span class="ticketDesc">{{selectedEntity?.shortDescription}}
+                {{selectedEntity?.shortDesc}}
+              </span>
             </p>
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.emailAddress' | translate }}:</label>
@@ -63,7 +69,7 @@
             </p>
             <p>
               <label class="ticketLabel">{{ 'serviceDesk.physicalAddress' | translate }}:</label>
-              <span class="ticketDesc">{{selectedEntity?.physicalAddress}}</span>
+              <span class="ticketDesc">{{selectedEntity?.physicalAddress | titlecase}}</span>
             </p>
           </div>
         </div>
