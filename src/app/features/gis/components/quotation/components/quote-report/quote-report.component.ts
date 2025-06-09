@@ -74,8 +74,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     const details = this.quotationDetails;
 
     this.header = {
-      quotationStatus: 'Draft', // you can update this if there's a real field for status
-      proposalIssued: details.expiryDate || 'N/A',
+      quotationStatus: details.status, // you can update this if there's a real field for status
+      proposalIssued: details.dateCreated || 'N/A',
       period: this.formatPeriod(details.coverFrom, details.coverTo),
       quoteTime: this.formatDate(details.preparedDate),
       agencyName: details.agentName || '',
