@@ -33,122 +33,74 @@
       </p-table>
     </p-card>
 
+
+
     <!-- risk details -->
-    <div *ngFor="let product of premiumComputationResponse.productLevelPremiums; let i = index" class="h-[60vh]">
-      <h5 class="class=" section-header>{{product.description}}</h5>
-      <div class="property-summary">
-        <table class="property-table">
-          <tbody>
-            <tr>
-              <td class="title-cell"><strong>{{ product.description }} {{ i + 1 }}</strong></td>
-              <td class="label-cell"><strong>Use of property</strong></td>
-              <td class="value-cell">{{ product.description }}</td>
-              <td class="label-cell"><strong>Value</strong></td>
-              <td *ngFor="let risk of product.riskLevelPremiums" class="value-cell">{{ risk.sumInsured}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div *ngFor="let product of enrichedProducts" class="border border-primary mb-4 p-3 rounded">
+      <h5 class="section-header">{{ product.description }}</h5>
 
-      <!-- Coverage Details -->
-      <div *ngFor="let risk of product.riskLevelPremiums">
-        <div *ngIf="!risk.selectCoverType">
-          <div class="wrap">
-            <div *ngFor="let cover of risk.coverTypeDetails" class="cover">
-              <p class="text-primary font-bold lowercase first-letter:uppercase">{{ cover.coverTypeDescription }}</p>
+      <div *ngFor="let enriched of product.enrichedRisks" class="mb-4 p-3">
 
-              <div class="d-flex w-100 p-2">
-                <div style="width: 20%;">
-                  <p class="coverDescription">Clauses</p>
-                </div>
-
-                <div class="d-flex flex-column ps-3 w-100">
-                  <div *ngFor="let clause of cover.clauses" class="mb-1">
-                    <p class="lh-1 text-lowercase leading-none">{{ clause.heading }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="d-flex w-100 p-2">
-                <div style="width: 20%;">
-                  <p class="coverDescription">Limits of Liability</p>
-                </div>
-                <div class="d-flex flex-column ps-3 w-100">
-                  <div *ngFor="let liability of cover.limitOfLiabilities" class="mb-1">
-                    <p class="lh-1">{{ liability.narration }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="d-flex w-100 p-2">
-                <div style="width: 20%;">
-                  <p class="coverDescription">Excess applicable</p>
-                </div>
-                <div class="d-flex flex-column ps-3 w-100 lh-1">
-                  <div *ngFor="let excessApplicable of cover.excesses" class="mb-1">
-                    <p style="line-height: normal;">{{ excessApplicable.narration }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div class="d-flex w-[70vw] gap-2 justify-content-around mt-1">
+          <div>
+            <span class="text-lg font-bold text-secondary"> {{ product.description }} {{ enriched.risk.propertyId }}
+            </span>
           </div>
+          <div>
+            <span>Use of Property</span>
+            <span class="fw-bold ms-3">{{ enriched.risk.propertyDescription || enriched.risk.propertyId }}</span>
+          </div>
+          <div>
+            <span>Value</span>
+            <span class="fw-bold ms-3">{{ enriched.risk.sumInsured }}</span>
+          </div>
+
         </div>
 
-        <!-- if selected -->
-        <div *ngIf="risk.selectCoverType">
-          <div class="wrap2">
-            <div class="cover2">
-              <p class="text-primary font-bold lowercase first-letter:uppercase">
-                Selected Cover Type {{risk.selectCoverType.coverTypeDescription }}</p>
+        <!--Coverage Details -->
+        <!-- non selected -->
+        <div *ngIf="!enriched.risk.selectCoverType">
+          <div class="row g-0">
 
-              <div *ngFor="let additionalBenefit of risk.selectCoverType.additionalBenefits" class="d-flex w-100 p-2">
-                <div *ngIf="additionalBenefit">
-                  <div style="width: 30%;">
-                    <p class="coverDescription2">Additional Benefits</p>
+            <div *ngFor="let cover of enriched.risk.coverTypeDetails" class="col-md-6">
+              <div class="border border-primary p-3 h-100">
+                <p class="text-primary fw-bold text-center mb-2">
+                  {{ cover.coverTypeDescription }}
+                </p>
+
+                <!-- Clauses -->
+                <div class="d-flex mb-2">
+                  <div class="w-25">
+                    <p class="fw-semibold">Clauses</p>
                   </div>
-
-                  <div class="d-flex flex-column ps-3 w-100">
-                    <div class="mb-1">
-                      <p class="lh-1 text-lowercase leading-none ml-3">{{ additionalBenefit.sectionDescription}}</p>
+                  <div class="w-75 ps-2">
+                    <div *ngFor="let clause of cover.clauses" class="mb-1">
+                      <p class="text-muted small mb-0">{{ clause.heading }}</p>
                     </div>
                   </div>
-
                 </div>
 
-              </div>
-
-              <div class="d-flex w-100 p-2">
-                <div style="width: 30%;">
-                  <p class="coverDescription">Clauses</p>
-                </div>
-
-                <div class="d-flex flex-column ps-3 w-100">
-                  <div *ngFor="let clause of risk.selectCoverType.clauses" class="mb-1">
-                    <p class="lh-1 text-lowercase leading-none">{{ clause.heading}}</p>
+                <!-- Limits of Liability -->
+                <div class="d-flex mb-2">
+                  <div class="w-25">
+                    <p class="fw-semibold">Limits of Liability</p>
+                  </div>
+                  <div class="w-75 ps-2">
+                    <div *ngFor="let liability of cover.limitOfLiabilities" class="mb-1">
+                      <p class="text-muted small mb-0">{{ liability.narration }}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="d-flex w-100 p-2">
-                <div style="width: 30%;">
-                  <p class="coverDescription">Limits of Liability</p>
-                </div>
-
-                <div class="d-flex flex-column ps-3 w-100">
-                  <div *ngFor="let liability of risk.selectCoverType.limitOfLiabilities" class="mb-1">
-                    <p class="lh-1 text-lowercase leading-none">{{ liability.narration}}</p>
+                <!-- Excesses -->
+                <div class="d-flex">
+                  <div class="w-25">
+                    <p class="fw-semibold">Excess applicable</p>
                   </div>
-                </div>
-              </div>
-
-              <div class="d-flex w-100 p-2">
-                <div style="width: 30%;">
-                  <p class="coverDescription">Excess applicable</p>
-                </div>
-
-                <div class="d-flex flex-column ps-3 w-100">
-                  <div *ngFor="let excess of risk.selectCoverType.excesses" class="mb-1">
-                    <p class="lh-1 text-lowercase leading-none">{{ excess.narration}}</p>
+                  <div class="w-75 ps-2">
+                    <div *ngFor="let excess of cover.excesses" class="mb-1">
+                      <p class="text-muted small mb-0">{{ excess.narration }}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -157,9 +109,26 @@
           </div>
         </div>
 
+        <!-- selected -->
+        <div *ngIf="enriched.risk.selectCoverType">
+          <div class="row g-0">
+
+          </div>
+
+        </div>
+
+
+
       </div>
 
-      <app-payment-advice></app-payment-advice>
+      <!-- payment advice component // conditional -->
+      <a href="http://localhost:4200/home/gis/quotation/quick-quote"
+        data-link="http://localhost:4200/home/gis/quotation/quick-quote">
+        http://localhost:4200/home/gis/quotation/quick-quote
+      </a>
+      <app-payment-advice>
 
-      <!-- <button (click)="downloadPdf()">Download PDF</button> -->
+      </app-payment-advice>
     </div>
+  </div>
+</div>
