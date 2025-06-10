@@ -18,6 +18,8 @@ import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 (pdfMake as any).vfs = (pdfFonts as any).vfs;
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
+import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
 
 const log = new Logger('QuoteReportComponent');
@@ -49,7 +51,6 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   private _premiumComputationResponse: ProductLevelPremium
 
 
-
   @Input()
   set premiumComputationResponse(value: ProductLevelPremium) {
     log.debug("Computation payload upon click>>>", value)
@@ -74,12 +75,12 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     const details = this.quotationDetails;
 
     this.header = {
-      quotationStatus: details.status, // you can update this if there's a real field for status
+      quotationStatus: details.status, 
       proposalIssued: details.dateCreated || 'N/A',
       period: this.formatPeriod(details.coverFrom, details.coverTo),
       quoteTime: this.formatDate(details.preparedDate),
       agencyName: details.agentName || '',
-      logo: '' // Fill if you have a logo field or static image
+      logo: '' 
     };
   }
 
@@ -104,7 +105,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object,
     private pdfGenerator: PdfGeneratorService,
-    private cdr: ChangeDetectorRef) {
+    private cdr: ChangeDetectorRef,
+    private quotationService: QuotationsService) {
   }
 
   header: QuotationHeaderDTO = {
@@ -175,8 +177,19 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     }
     return result;
   }
-
+  
+  IPREF:string = ''
   async generatePdf(download = false, fileName = 'document.pdf'): Promise<Blob | void> {
+    let paymentUrl = '';
+    try {
+      //connect url to checkout
+      // const paymentResponse = await this.quotationService.getPaymentUrll(this.IPREF || '').toPromise();
+      // paymentUrl = paymentResponse.paymentUrl;
+      paymentUrl = 'http://localhost:4200/home/gis/quotation/payment-checkout'
+    } catch (error) {
+      console.error('Failed to fetch payment URL:', error);
+    }
+    const showPaymentMethods = sessionStorage.getItem("showPaymentMethods") === "true";
     const riskContents: any = this.enrichedProducts.flatMap((product, productIndex) => {
       const risks: any = product.enrichedRisks.flatMap(enriched => {
         const coverageContent: any = !enriched.risk.selectCoverType
@@ -438,7 +451,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
       }];
     });
 
-    // Add payment methods section after products
+    //payment methods section 
     const paymentMethodsSection = {
       table: {
         widths: ['*'],
@@ -453,12 +466,12 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
                   ...method.details.map(detail => ({ text: detail, margin: [0, 0, 0, 2] }))
                 ]
               })),
-              columnGap: 20, // Reduced from 100 to prevent overflow
-              margin: [10, 0, 10, 15] // Added left/right margins for breathing room
+              columnGap: 20, 
+              margin: [10, 0, 10, 15] 
             },
             {
               text: [
-                { text: 'Click here to pay', link: 'https://www.google.com/', color: '#0d6efd', decoration: 'underline' }
+                { text: 'Click here to pay', link: `${paymentUrl}`, color: '#0d6efd', decoration: 'underline' }
               ],
               alignment: 'center',
               margin: [0, 10, 0, 20]
@@ -472,9 +485,9 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
         hLineColor: () => '#0d6efd',
         vLineColor: () => '#0d6efd',
         paddingTop: () => 10,
-        paddingBottom: () => 10, // Changed from 0 to 10 for consistency
-        paddingLeft: () => 15,   // Added padding to prevent content touching borders
-        paddingRight: () => 15   // Added padding to prevent content touching borders
+        paddingBottom: () => 10, 
+        paddingLeft: () => 15,   
+        paddingRight: () => 15   
       },
       margin: [0, 10, 0, 10]
     };
@@ -512,7 +525,6 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
         ...riskContents,
         paymentMethodsSection
-        // Remove footerSection from here - it was causing the duplication
       ],
 
       footer: function (currentPage, pageCount) {
@@ -533,13 +545,13 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
       },
 
       defaultStyle: {
-        // font: 'Helvetica'
+        
       }
     };
 
     if (download) {
       pdfMake.createPdf(docDefinition).download(fileName);
-      return; // return void here
+      return; 
     } else {
       return new Promise<Blob>((resolve, reject) => {
         pdfMake.createPdf(docDefinition).getBlob(blob => {
@@ -550,11 +562,6 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   }
 
 
-
-
-
-
-
   private waitForImagesToLoad(container: HTMLElement): Promise<void> {
     const images = Array.from(container.querySelectorAll('img'));
     const unloaded = images.filter(img => !img.complete);
@@ -563,7 +570,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
       unloaded.map(img =>
         new Promise<void>((resolve) => {
           img.onload = () => resolve();
-          img.onerror = () => resolve(); // Fail silently
+          img.onerror = () => resolve(); 
         })
       )
     ).then(() => void 0);
