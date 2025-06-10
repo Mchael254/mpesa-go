@@ -1619,6 +1619,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       });
   }
 
+  payPart: boolean = false;
   saveQuotationDetails() {
     const quotationPayload = this.getQuotationPayload()
     log.debug("Quotation details >>>", quotationPayload)
@@ -1646,6 +1647,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       next: (response) => {
         if (response._embedded?.quotationNumber) {
           sessionStorage.setItem("quotationNumber", response._embedded.quotationNumber)
+          this.payPart = true;
+          sessionStorage.setItem("showPaymentMethods", "true");
           this.router.navigate(['/home/gis/quotation/quote-summary']).then(r => {
           })
         } else {
@@ -1654,6 +1657,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       },
       error: (error) => {
         this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        log.debug('saveQuote error >>>',error.error.message)
       }
     }
     )
