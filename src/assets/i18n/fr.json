@@ -180,12 +180,10 @@
     "Transactions": "Transactions",
     "Invoices/Cr Notes": "Factures/Notes de Crédit",
     "Invoices/DR Notes": "Factures/Notes de Débit",
-
     "Gl-Inquiries": "Requêtes du grand livre",
     "Gl-Transactions": "Transactions du grand livre",
     "Inquires": "Requêtes",
     "GL-Parameters": "Paramètres du grand livre",
-
     "Inquiries": "Demandes",
     "Requisitions": "Réquisitions",
     "Gl-Final Reports": "Rapports Finaux du Grand Livre",
@@ -902,7 +900,7 @@
       "delete": "Supprimer",
       "add_another_risk": "Ajouter un Autre Risque",
       "cancel_quote": "Annuler le Devis",
-       "cancel": "Annuler",
+      "cancel": "Annuler",
       "accept_quote": "Accepter le Devis",
       "quotation_summary": "Devis: Résumé du devis",
       "provide_reason_for_cancellation": "Veuillez fournir une raison pour votre annulation",
@@ -1043,7 +1041,29 @@
       "select_a_policy": "Sélectionnez une police",
       "policy_ID": "ID de la police",
       "no_policy_found": "Aucune police trouvée",
-      "rate": "Taux"
+      "rate": "Taux",
+      "risk": "Risque",
+      "save_changes": "Enregistrer les modifications",
+      "reassign": "Réaffecter",
+      "reassign_quote": "Réaffecter le devis",
+      "reject": "Rejeter",
+      "reject_quote": "Rejeter le devis",
+      "payment_details": "Détails de paiement",
+      "quotation_summmary": "Résumé du devis",
+      "quotation_status": "Statut du devis",
+      "ticket_number": "Numéro de ticket",
+      "ipay_reference": "Référence IPAY",
+      "notes": "Notes",
+      "sub_total": "Sous-total",
+      "share_quotation": "Partager le devis",
+      "quick_quote": "Devis rapide",
+      "delete_product": "Supprimer le produit",
+      "delete_risk": "Supprimer le risque",
+      "sure_deleting_product": "Êtes-vous sûr de vouloir supprimer ce produit ?",
+      "deleting_associated_risk": "La suppression de ce produit entraînera la suppression de tous les risques associés",
+      "sure_deleting_risk": "Êtes-vous sûr de vouloir supprimer ce risque ?",
+      "cover_types": "Types de couverture",
+      "section": "Section"
     },
     "policy": {
       "underwriting_new_transaction": "Souscription : Nouvelle transaction",
@@ -2677,7 +2697,6 @@
     "signSelect": "Signer la sélection",
     "correction": "Envoyer pour correction",
     "reject": "Rejeter",
-
     "base-fms": {
       "parameters": "Paramètres",
       "reconciliation": "Rapprochement",
@@ -2696,7 +2715,6 @@
       "premiumSuspense": "Compte d'attente de primes",
       "directDebits": "Prélèvements automatiques"
     },
-
     "receipting": {
       "receipting": "Emission de reçus",
       "cbReceipting": "Livre de caisse-Emission de reçus",
@@ -2745,9 +2763,7 @@
       "accountType": "Type de compte",
       "searchCriteria": "Critères de recherche",
       "search": "Rechercher",
-
       "Debit Note": "Note de débit",
-
       "receiptAmount": "Montant du reçu",
       "receiptAllocations": "Allocations de reçus",
       "enterAmount": "Saisir le montant",
@@ -2777,7 +2793,6 @@
       "isReceiptPrinted?": "Le reçu est-il imprimé ?",
       "unallocatedAmount": "Montant non alloué",
       "client_name": "Nom du client",
-
       "name": "Nom",
       "type": "Type",
       "actions": "Actions",
@@ -2851,12 +2866,12 @@
       "cancel": "annuler",
       "share": "partager",
       "print": "imprimer",
-      "reprint":"Réimprimer",
+      "reprint": "Réimprimer",
       "receiptCancellation": "annulation de reçu",
       "cancellationDate": "Date d'annulation",
       "remarks": "Remarques",
       "raiseBankCharge": "Appliquer des frais bancaires",
-      "clientCharges":"Frais clients",
+      "clientCharges": "Frais clients",
       "yes": "oui",
       "no": "non",
       "accountCharged": "cuenta cargada",
