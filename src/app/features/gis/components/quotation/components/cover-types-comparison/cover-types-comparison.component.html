@@ -17,7 +17,7 @@
                         | sentenceCase
                     }}</span><br/>
                   <small class="cover-premium">
-                    Basic premium: <span style="font-weight: bold;">{{
+                      {{ 'gis.quotation.basic_premium' | translate }}:<span style="font-weight: bold;">{{
                       coverType.computedPremium | number: '1.2-2'
                     }}</span>
                   </small>
@@ -289,9 +289,9 @@
                           <ng-template pTemplate="header">
                             <tr>
                               <th class="flexible-header"></th>
-                              <th class="flexible-header">Section</th>
-                              <th class="flexible-header">Limit amount</th>
-                              <th class="flexible-header">Premium</th>
+                              <th class="flexible-header">{{ 'gis.quotation.section' | translate }} </th>
+                              <th class="flexible-header"> {{ 'gis.quotation.limit_amount' | translate }}</th>
+                              <th class="flexible-header"> {{ 'gis.quotation.premium' | translate }}</th>
                               <th class="flexible-header"></th>
                             </tr>
                           </ng-template>

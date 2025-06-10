@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { Logger } from '../../services';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Logger, UtilService } from '../../services';
 import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
 import { QuotationsService } from '../../../features/gis/components/quotation/services/quotations/quotations.service';
 import { Router } from '@angular/router';
@@ -25,27 +25,33 @@ export class ClientSearchModalComponent {
 
   @ViewChild('closebutton') closebutton;
   @Output() clientSelected = new EventEmitter<{ clientName: string; clientCode: number }>();
+  @Input() convertToPolicy: boolean ;
+  @Output() onClickSaveClient: EventEmitter<any> = new EventEmitter<any>();
 
   gisQuotationList: QuotationList[] = [];
   tableDetails: any = {
     rows: [], // Initially empty array for rows
     totalElements: 0 // Default total count
   };
-  pageSize: number = 19;
+  pageSize: number = 5;
   isSearching = false;
   searchTerm = '';
   public clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
   filterObject: {
-    name:string, idNumber:string,
+    name: string, idNumber: string,
   } = {
-    name:'',  idNumber:'',
-  };
+      name: '', idNumber: '',
+    };
   clientDetails: ClientDTO;
-  globalFilterFields = ['idNumber', 'firstName','lastName'];
+  globalFilterFields = ['idNumber', 'firstName', 'lastName'];
   clientName: any;
   clientCode: any;
   clientType: any;
   idValue: string;
+  emailValue: string;
+  phoneValue: string;
+  selectedClient: ClientDTO;
+  showActionButtons: boolean;
 
   constructor(
     private router: Router,
@@ -53,28 +59,39 @@ export class ClientSearchModalComponent {
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
     private clientService: ClientService,
-    private spinner:NgxSpinnerService,
-  ) {}
+    private spinner: NgxSpinnerService,
+    public utilService: UtilService,
+
+  ) {
+   
+  }
 
   ngOnDestroy(): void { }
-
+ngOnInit(): void {
+     log.debug("Convert to policy flag:",this.convertToPolicy)
+    if (this.convertToPolicy) {
+      this.showActionButtons = true
+    } else {
+      this.showActionButtons = false
+    }
+}
   // SEARCHING CLIENT USING KYC
   getClients(pageIndex: number,
-      pageSize: number,
-      sortField: any = 'createdDate',
-      sortOrder: string = 'desc') {
-      return this.clientService
+    pageSize: number,
+    sortField: any = 'createdDate',
+    sortOrder: string = 'desc') {
+    return this.clientService
       .getClients(pageIndex, pageSize, sortField, sortOrder)
       .pipe(
-      untilDestroyed(this),
-    );
+        untilDestroyed(this),
+      );
   }
   /**
    * The function "lazyLoadClients" is used to fetch clients data with pagination, sorting, and filtering options.
    * @param {LazyLoadEvent | TableLazyLoadEvent} event - The `event` parameter is of type `LazyLoadEvent` or
    * `TableLazyLoadEvent`. It is used to determine the pagination, sorting, and filtering options for fetching clients.
   */
-  lazyLoadClients(event:LazyLoadEvent | TableLazyLoadEvent){
+  lazyLoadClients(event: LazyLoadEvent | TableLazyLoadEvent) {
     const pageIndex = event.first / event.rows;
     const sortField = event.sortField;
     const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
@@ -83,7 +100,7 @@ export class ClientSearchModalComponent {
 
     if (this.isSearching) {
       const searchEvent = {
-        target: {value: this.searchTerm}
+        target: { value: this.searchTerm }
       };
       this.filter(searchEvent, pageIndex, pageSize);
     }
@@ -95,7 +112,7 @@ export class ClientSearchModalComponent {
         )
         .subscribe(
           (data: Pagination<ClientDTO>) => {
-            data.content.forEach( client => {
+            data.content.forEach(client => {
               client.clientTypeName = client.clientType.clientTypeName;
               client.clientFullName = client.firstName + ' ' + (client.lastName || ''); //the client.clientFullName will be set to just firstName,
               // as the null value for lastName is handled  using the logical OR (||) operator
@@ -114,31 +131,36 @@ export class ClientSearchModalComponent {
   }
   filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
     this.clientsData = null; // Initialize with an empty array or appropriate structure
-    let columnName ;
+    let columnName;
     let columnValue;
-
-    if(this.idValue){
-      columnName = "id";
-      columnValue = this.idValue
+    if (this.emailValue) {
+      columnName = 'emailAddress';
+      columnValue = this.emailValue;
+    } else if (this.phoneValue) {
+      columnName = 'phoneNumber';
+      columnValue = this.phoneValue;
     }
-
 
     this.isSearching = true;
     this.spinner.show();
-    this.quotationService.searchClients(
-      columnName,columnValue,
-      pageIndex, pageSize,
-      this.filterObject?.name,
-      this.filterObject?.idNumber,
-
-    ).subscribe((data) => {
-      this.clientsData = data;
-      this.spinner.hide();
-    },
-      error => {
-        this.spinner.hide();
-      }
-    );
+    this.quotationService
+      .searchClients(
+        columnName,
+        columnValue,
+        pageIndex,
+        pageSize,
+        this.filterObject?.name,
+        this.filterObject?.idNumber
+      )
+      .subscribe(
+        (data) => {
+          this.clientsData = data;
+          this.spinner.hide();
+        },
+        (error) => {
+          this.spinner.hide();
+        }
+      );
   }
 
   /**
@@ -182,15 +204,34 @@ export class ClientSearchModalComponent {
       clientCode: this.clientCode,
     });
   }
+  saveSelectedClient() {
+    log.debug("Selected client:", this.selectedClient)
+    this.onClickSaveClient.emit(this.selectedClient);
 
-  inputInternalId(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.idValue = value
+
   }
+  // inputInternalId(event) {
+  //   const value = (event.target as HTMLInputElement).value;
+  //   this.idValue = value
+  // }
 
   inputName(event) {
     const value = (event.target as HTMLInputElement).value;
     this.filterObject['name'] = value;
+  }
+
+
+  inputEmail(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.emailValue = value;
+    // this.filterObject['emailAddress'] = value;
+  }
+
+  inputPhone(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.phoneValue = value;
+
+    // this.filterObject['phoneNumber'] = value;
   }
 
 }

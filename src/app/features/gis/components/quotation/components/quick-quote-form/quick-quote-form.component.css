@@ -217,11 +217,50 @@
   letter-spacing: 0%;
 
 }
+
 #icon-chevron {
-    background-color: #E4E7EB;
-    border-radius: 100px;
-    border: none;
+  background-color: #E4E7EB;
+  border-radius: 100px;
+  border: none;
 }
+
 #icon-chevron {
-    color: #00529B;
+  color: #00529B;
+}
+
+.deleteMessage {
+  color: #000;
+  font-size: 16px;
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-align: left;
+}
+
+.deleteBody {
+  color: #000;
+  font-family: Roboto;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+    text-align: left;
+
+
+}
+
+#btn-close {
+  color: #EE3945 !important;
+   background: none;
+  border: none;
+  font-size: 32px;
+}
+.modal-title{
+  font-family: Roboto;
+font-weight: 600;
+font-size: 20px;
+line-height: 100%;
+letter-spacing: 0%;
+
 }

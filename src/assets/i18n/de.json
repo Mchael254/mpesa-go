@@ -179,13 +179,11 @@
     "Parameters": "Hauptbuch-Parameter",
     "Transactions": "Hauptbuch-Transaktionen",
     "Inquiries": "Hauptbuch-Anfragen",
-
     "Invoices/Cr Notes": "Rechnungen/Gutschriften",
     "Gl-Inquiries": "Hauptbuch-Anfragen",
     "Gl-Transactions": "Hauptbuch-Transaktionen",
     "Inquires": "Anfragen",
     "GL-Parameters": "Hauptbuch-Parameter",
-
     "Gl-Final Reports": "Hauptbuch-Abschlussberichte",
     "invoicesDrNotes": "Rechnungen/Belastungsanzeigen",
     "Cheques": "Schecks",
@@ -1015,7 +1013,30 @@
       "select_a_policy": "Wählen Sie eine Police aus",
       "policy_ID": "Police-ID",
       "no_policy_found": "Keine Police gefunden",
-      "rate": "Satz"
+      "rate": "Satz",
+      "risk": "Risiko",
+      "save_changes": "Änderungen speichern",
+      "reassign": "Neu zuweisen",
+      "reassign_quote": "Angebot neu zuweisen",
+      "reject": "Ablehnen",
+      "reject_quote": "Angebot ablehnen",
+      "payment_details": "Zahlungsdetails",
+      "quotation_summmary": "Angebotsübersicht",
+      "quotation_status": "Angebotsstatus",
+      "ticket_number": "Ticketnummer",
+      "ipay_reference": "IPAY-Referenz",
+      "notes": "Notizen",
+      "sub_total": "Zwischensumme",
+      "share_quotation": "Angebot teilen",
+      "quick_quote": "Schnellangebot",
+      "delete_product": "Produkt löschen",
+      "delete_risk": "Risiko löschen",
+      "sure_deleting_product": "Sind Sie sicher, dass Sie dieses Produkt löschen möchten?",
+      "deleting_associated_risk": "Durch das Löschen dieses Produkts werden alle zugehörigen Risiken entfernt",
+      "sure_deleting_risk": "Sind Sie sicher, dass Sie dieses Risiko löschen möchten?",
+      "cover_types": "Deckungsarten",
+      "basic_premium:": "Grundprämie:",
+      "section": "Abschnitt"
     },
     "policy": {
       "underwriting_new_transaction": "Unterzeichnung: Neue Transaktion",
@@ -1171,7 +1192,6 @@
       "premium": "Prämie",
       "fee_rate": "Gebührensatz",
       "fee_amount": "Gebührenbetrag",
-
       "import_schedule": "Importplan",
       "from_csv_file": "Aus CSV-Datei",
       "from_another_policy": "Aus einer anderen Police",
@@ -1249,7 +1269,6 @@
       "ref_no": "Referenznummer",
       "risk_note": "Risikohinweis",
       "uw_year": "Underwriting-Jahr",
-
       "select_risk_clauses": "Risikoklauseln auswählen",
       "peril": "Gefahr",
       "limit_description": "Grenzbeschreibung",
@@ -1258,7 +1277,6 @@
       "excess_type": "Selbstbehalttyp",
       "peril_id": "ID",
       "previous": "Vorherige",
-
       "select_required_documents": "Erforderliche Dokumente auswählen",
       "edit_required_documents": "Erforderliche Dokumente bearbeiten",
       "certificates": "Zertifikate",
@@ -1294,7 +1312,6 @@
       "commission_amount": "Provisionsbetrag",
       "withholding_rate": "Einbehaltungsrate",
       "code": "Code",
-
       "select_risk_peril": "Risikoart auswählen",
       "risk_service_list": "Risikodienstliste",
       "reassign": "Neu zuweisen",
@@ -2140,7 +2157,6 @@
     "signSelect": "Auswahl unterschreiben",
     "correction": "Zur Korrektur senden",
     "reject": "Ablehnen",
-
     "base-fms": {
       "parameters": "Parameter",
       "reconciliation": "Abstimmung",
@@ -2159,13 +2175,10 @@
       "premiumSuspense": "Prämienkonto",
       "directDebits": "Lastschriften"
     },
-
     "receipting": {
       "receipting": "Belegerstellung",
       "cbReceipting": "Kassenbuch-Belegerstellung",
-
       "clientSearch": "Kundensuche",
-
       "capture_receipt": "Quittung erfassen",
       "receipt_details": "Empfangsdetails",
       "currency": "Währung",
@@ -2196,7 +2209,6 @@
       "saveReceipt": "Quittung speichern",
       "printReceipt": "Quittung drucken",
       "cancel": "Abbrechen",
-
       "receiptAmount": "Belegbetrag",
       "receiptAllocations": "Belegzuweisungen",
       "enterAmount": "Betrag eingeben",
@@ -2212,9 +2224,7 @@
       "transactionNumber": "Transaktionsnummer",
       "batchNumber": "Batch Number",
       "allocatedAmount": "Zugewiesener Betrag",
-
       "Debit Note": "Lastschriftanzeige",
-
       "commissionAmount": "Provisionsbetrag",
       "includeCommission": "Provision einbeziehen",
       "postFile": "Datei posten",
@@ -2227,7 +2237,6 @@
       "amount": "Betrag",
       "unallocatedAmount": "Nicht zugewiesener Betrag",
       "client_name": "Kundenname",
-
       "captureReceipt": "Quittung erfassen",
       "charges": "Gebühren",
       "capitalInjection": "Kapitalzufuhr",
@@ -2284,7 +2293,6 @@
       "save_allocations": "Zuweisungen speichern",
       "print_receipt": "Empfang drucken",
       "cancel_receipt": "Empfang abbrechen",
-
       "allocation_type": "Zuweisungstyp",
       "allocatedAmount": "Zugewiesener Betrag"
     },
@@ -2326,12 +2334,12 @@
       "cancel": "abbrechen",
       "share": "teilen",
       "print": "drucken",
-      "reprint":"Nachdruck",
+      "reprint": "Nachdruck",
       "receiptCancellation": "Quittungsstornierung",
       "cancellationDate": "Stornierungsdatum",
       "remarks": "Bemerkungen",
       "raiseBankCharge": "Bankgebühr erheben",
-      "clientCharges":"Kundengebühren",
+      "clientCharges": "Kundengebühren",
       "yes": "ja",
       "no": "nein",
       "accountCharged": "belastetes Konto",
