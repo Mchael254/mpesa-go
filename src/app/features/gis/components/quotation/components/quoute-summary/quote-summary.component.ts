@@ -2,15 +2,23 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnI
 import { ProductLevelPremium, QuotationDetails, QuotationDTO } from '../../data/quotationsDTO';
 
 import { QuotationsService } from "../../services/quotations/quotations.service";
-import { Logger, untilDestroyed } from "../../../../../../shared/shared.module";
+import { Logger, untilDestroyed, UtilService } from "../../../../../../shared/shared.module";
 import { dummyUsers } from '../../data/dummyData';
-import { Table } from 'primeng/table';
+import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { QuoteReportComponent } from '../quote-report/quote-report.component';
 import { ClaimsService } from 'src/app/features/gis/components/claim/services/claims.service';
+import { LazyLoadEvent } from 'primeng/api';
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import { Pagination } from 'src/app/shared/data/common/pagination';
+import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import { tap } from 'rxjs';
+import { TableDetail } from 'src/app/shared/data/table-detail';
+import { NgxSpinnerService } from 'ngx-spinner';
+
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -32,6 +40,8 @@ type ProductWithRiskId = {
 })
 export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('dt') table!: Table;
+  @ViewChild('clientModal') clientModal: any;
+  @ViewChild('closebutton') closebutton;
 
   quotationDetails: QuotationDetails;
   batchNo: number;
@@ -47,16 +57,62 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   originalComment: string;
   totalSumInsured: number;
   isShareModalOpen: boolean;
+  isSearching = false;
+  searchTerm = '';
+  cols = [
+    { field: 'clientFullName', header: 'Name' },
+    { field: 'emailAddress', header: 'Email' },
+    { field: 'phoneNumber', header: 'Phone number' },
+    { field: 'idNumber', header: 'ID number' },
+    { field: 'pinNumber', header: 'Pin' },
+    { field: 'id', header: 'ID' },
+  ];
+  globalFilterFields = ['idNumber', 'firstName', 'lastName', 'emailAddress'];
+  emailValue: string;
+  phoneValue: string;
+  pinValue: string;
+  idValue: string;
+  tableDetails: TableDetail;
+  clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
+  pageSize: 5;
+  filterObject: {
+    name: string;
+    idNumber: string;
+  } = {
+      name: '',
+      idNumber: '',
+    };
+  clientDetails: ClientDTO;
+  clientCode: number;
+  clientType: string;
+  clientName: string;
+  clientEmail: string;
+  clientPhone: string;
+  selectedClient:ClientDTO
+    showClientSearchModal = false;
+
 
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
     private cdRef: ChangeDetectorRef,
     public globalMessagingService: GlobalMessagingService,
-    public claimsService: ClaimsService
+    public claimsService: ClaimsService,
+    private clientService: ClientService,
+    private spinner: NgxSpinnerService,
+    public utilService: UtilService,
 
   ) {
     this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
+    this.tableDetails = {
+      cols: this.cols,
+      rows: this.clientsData?.content,
+      globalFilterFields: this.globalFilterFields,
+      isLazyLoaded: true,
+      paginator: false,
+      showFilter: false,
+      showSorting: false,
+    };
   }
 
   breadCrumbItems: BreadCrumbItem[] = [
@@ -389,14 +445,60 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   navigateToQuoteDetails() {
     const quotationNumber = this.quotationDetails?.quotationNo;
-    log.debug("Quotation Number", quotationNumber);
-    sessionStorage.setItem("quotationNum", JSON.stringify(quotationNumber));
+    log.debug("Quotation Object", this.quotationDetails);
+    sessionStorage.setItem("quotationObject", JSON.stringify(this.quotationDetails));
 
-    const quotationCode = this.quotationDetails?.code;
-    log.debug("Quotation Code", quotationCode);
-    sessionStorage.setItem("quotationCode", JSON.stringify(quotationCode));
+    // const quotationCode = this.quotationDetails?.code;
+    // log.debug("Quotation Code", quotationCode);
+    // sessionStorage.setItem("quotationCode", JSON.stringify(quotationCode));
 
     this.router.navigate(['/home/gis/quotation/quick-quote']);
 
   }
+  
+
+  
+handleSaveClient(eventData: any) {
+  log.debug('Event received from Client search comp', eventData);
+  const clientCode = eventData.id;
+  const payload = {
+    quotationCode: this.quotationDetails?.code,
+    clientCode: clientCode
+  };
+
+  this.quotationService.updateQuotation(payload).subscribe({
+    next: (response) => {
+      log.debug('Quotation update response:', response);
+    if(response){
+      // Now call convertQuoteToPolicy
+      const quotationCode = this.quotationDetails?.code;
+      const quoteProductCode = this.quotationDetails?.quotationProducts[0]?.code;
+      const conversionFlag = true;
+      sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
+
+      this.quotationService.convertQuoteToPolicy(quotationCode, quoteProductCode).subscribe({
+        next: (data: any) => {
+          log.debug("Response after converting quote to a policy:", data);
+           this.closebutton.nativeElement.click();
+          this.batchNo = data._embedded.batchNo;
+          log.debug("Batch number", this.batchNo);
+          const convertedQuoteBatchNo = JSON.stringify(this.batchNo);
+          sessionStorage.setItem('convertedQuoteBatchNo', convertedQuoteBatchNo);
+          this.router.navigate(['/home/gis/policy/policy-summary']);
+        },
+        error: (err) => {
+          log.debug('Error while converting quote to policy:', err);
+          this.globalMessagingService.displayErrorMessage('error', 'Failed to convert quote to policy.');
+        }
+      });
+    }
+    },
+    error: (error) => {
+      this.globalMessagingService.displayErrorMessage('error', error.error.message);
+      log.debug('Error while updating quotation:', error);
+    }
+  });
+}
+
+
 }
