@@ -1105,7 +1105,24 @@
       "reassign_quote": "Re-Assign Quote",
       "reject": "Reject",
       "reject_quote": "Reject Quote",
-      "payment_details": "Payment details"
+      "payment_details": "Payment details",
+
+      
+      "quotation_summmary":"Quptation Summary",
+      "quotation_status":"Quotation status",
+      "ticket_number":"Ticket number",
+      "ipay_reference":"IPAY reference",
+      "notes":"Notes",
+      "sub_total":" Sub Total",
+      "share_quotation":"Share quotation",
+      "quick_quote":"Quick quote ",
+      "delete_product":"Delete product",
+      "delete_risk":"Delete risk",
+      "sure_deleting_product":"Are you sure you want to delete this product",
+      "deleting_associated_risk":"Deleting this product will remove all the associated risks",
+      "sure_deleting_risk":"Are you sure you want to delete this Risk?",
+      "cover_types":"Cover types",
+      "section":"Section"
     },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",

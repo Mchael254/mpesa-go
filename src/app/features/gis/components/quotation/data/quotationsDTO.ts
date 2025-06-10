@@ -1113,4 +1113,7 @@ export interface QuotationComment {
   comment: string
   quotationCode: number
 }
-
+export interface QuotationUpdate {
+  quotationCode:number
+  clientCode:number
+}

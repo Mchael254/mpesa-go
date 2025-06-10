@@ -8,6 +8,7 @@ import {
   QuotationComment,
   quotationDTO,
   quotationRisk,
+  QuotationUpdate,
   RegexPattern,
   riskSection, RiskValidationDto,
   scheduleDetails,
@@ -551,6 +552,7 @@ export class QuotationsService {
       retry(1),
       catchError(this.errorHandl)
     )
+        
 
   }
 
@@ -826,10 +828,14 @@ export class QuotationsService {
   reviseQuotation(quotCode: number, newQuote: string = "N"): Observable<any> {
     return this.api.POST<any[]>(`v2/revise?quotCode=${quotCode}&newQuote=${newQuote}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL,);
   }
-  updateQuotationComment(payload: QuotationComment): Observable<any> {
-    return this.api.PUT<any>(`v2/quotation/comment`, JSON.stringify(payload), API_CONFIG.GIS_QUOTATION_BASE_URL);
-
-
+  updateQuotationComment(payload: QuotationComment): Observable<any>{
+        return this.api.PUT<any>(`v2/quotation/comment`, JSON.stringify(payload), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+  updateQuotation(payload:QuotationUpdate):Observable<any>{
+        return this.api.POST<any[]>(`v2/quotation/update`, JSON.stringify(payload), API_CONFIG.GIS_QUOTATION_BASE_URL,).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+        )
   }
 }
 
