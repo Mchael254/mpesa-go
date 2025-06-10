@@ -182,14 +182,12 @@
     "FinalReports": "Informes Finales del Libro Mayor",
     "Invoices/DR Notes": "Facturas/Notas de Débito",
     "invoicesCrNotes": "Facturas/Notas de Crédito",
-
     "Invoices/Cr Notes": "Facturas/Notas de crédito",
     "Gl-Inquiries": "Consultas de libro mayor",
     "Gl-Transactions": "Transacciones de libro mayor",
     "Inquires": "Consultas",
     "GL-Parameters": "Parámetros de libro mayor",
     "Gl-Final Reports": "Informes finales de libro mayor",
-
     "Requisitions": "Requisiciones",
     "Cheques": "Cheques",
     "Petty cash": "Caja Chica",
@@ -1045,7 +1043,29 @@
       "select_a_policy": "Seleccionar una póliza",
       "policy_ID": "ID de la póliza",
       "no_policy_found": "No se encontró ninguna póliza",
-      "rate": "Tarifa"
+      "rate": "Tarifa",
+      "risk": "Riesgo",
+      "save_changes": "Guardar cambios",
+      "reassign": "Reasignar",
+      "reassign_quote": "Reasignar cotización",
+      "reject": "Rechazar",
+      "reject_quote": "Rechazar cotización",
+      "payment_details": "Detalles de pago",
+      "quotation_summmary": "Resumen de cotización",
+      "quotation_status": "Estado de cotización",
+      "ticket_number": "Número de ticket",
+      "ipay_reference": "Referencia de IPAY",
+      "notes": "Notas",
+      "sub_total": "Subtotal",
+      "share_quotation": "Compartir cotización",
+      "quick_quote": "Cotización rápida",
+      "delete_product": "Eliminar producto",
+      "delete_risk": "Eliminar riesgo",
+      "sure_deleting_product": "¿Está seguro de que desea eliminar este producto?",
+      "deleting_associated_risk": "Eliminar este producto también eliminará todos los riesgos asociados",
+      "sure_deleting_risk": "¿Está seguro de que desea eliminar este riesgo?",
+      "cover_types": "Tipos de cobertura",
+      "section": "Sección"
     },
     "policy": {
       "underwriting_new_transaction": "Suscripción: Nueva transacción",
@@ -1201,7 +1221,6 @@
       "premium": "Prima",
       "fee_rate": "Tasa de Tarifa",
       "fee_amount": "Cantidad de Tarifa",
-
       "import_schedule": "Importar horario",
       "from_csv_file": "Desde archivo CSV",
       "from_another_policy": "Desde otra póliza",
@@ -1279,7 +1298,6 @@
       "ref_no": "Número de referencia",
       "risk_note": "Nota de riesgo",
       "uw_year": "Año de suscripción",
-
       "select_risk_clauses": "Seleccionar cláusulas de riesgo",
       "peril": "Peligro",
       "limit_description": "Descripción del límite",
@@ -1288,7 +1306,6 @@
       "excess_type": "Tipo de exceso",
       "peril_id": "ID",
       "previous": "Anterior",
-
       "select_required_documents": "Seleccionar documentos requeridos",
       "edit_required_documents": "Editar documentos requeridos",
       "certificates": "Certificados",
@@ -2679,7 +2696,6 @@
     "signSelect": "Firmar selección",
     "correction": "Enviar para corrección",
     "reject": "Rechazar",
-
     "base-fms": {
       "parameters": "Parámetros",
       "reconciliation": "Conciliación",
@@ -2698,7 +2714,6 @@
       "premiumSuspense": "Suspensión de prima",
       "directDebits": "Débitos directos"
     },
-
     "receipting": {
       "receipting": "Emisión de recibos",
       "cbReceipting": "Libro de caja-Emisión de recibos",
@@ -2747,9 +2762,7 @@
       "accountType": "Tipo de cuenta",
       "searchCriteria": "Criterios de búsqueda",
       "search": "Buscar",
-
       "Debit Note": "Nota de débito",
-
       "receiptAmount": "Importe del recibo",
       "receiptAllocations": "Asignaciones de recibos",
       "enterAmount": "Introducir importe",
@@ -2779,7 +2792,6 @@
       "amount": "Importe",
       "unallocatedAmount": "Importe no asignado",
       "client_name": "Nombre del cliente",
-
       "name": "Nombre",
       "type": "Tipo",
       "actions": "Acciones",
@@ -2798,7 +2810,6 @@
       "byClientName": "Por nombre del cliente",
       "EnterSearchTerm": "Introducir término de búsqueda"
     },
-
     "allocation": {
       "allocate_funds": "Asignar Fondos",
       "transactions": "Transacciones",
@@ -2846,7 +2857,6 @@
       "total_amount": "Cantidad Total",
       "send_sms_alerts": "Enviar Alertas SMS"
     },
-
     "receipt-management": {
       "cancellation": "cancelación",
       "printing": "impresión",
@@ -2858,12 +2868,12 @@
       "cancel": "Cancelar",
       "share": "compartir",
       "print": "imprimir",
-      "reprint":"Reimprimir",
+      "reprint": "Reimprimir",
       "receiptCancellation": "cancelación de recibo",
       "cancellationDate": "Fecha de cancelación",
       "remarks": "Observaciones",
       "raiseBankCharge": "Aplicar cargo bancario",
-      "clientCharges":"Cargos al cliente",
+      "clientCharges": "Cargos al cliente",
       "yes": "sí",
       "no": "no",
       "accountCharged": "cuenta cargada",
