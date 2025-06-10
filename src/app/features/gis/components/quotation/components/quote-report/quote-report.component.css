@@ -1,12 +1,13 @@
 .container {
   max-width: 1100px;
-  
+
   margin: 0 auto;
   font-family: Roboto;
   font-size: 16px;
   line-height: 1.5;
   color: #000000;
   font-weight: 500;
+  height: auto;
 }
 
 
@@ -43,9 +44,11 @@
   box-shadow: none;
   background-color: #ffffff;
 }
+
 ::ng-deep .p-card .p-card-body {
   padding: 20px;
 }
+
 ::ng-deep .p-card .p-card-title {
   font-size: 18px;
   font-weight: 600;
@@ -54,10 +57,9 @@
 }
 
 
-.property-summary{
-border-bottom: 1px solid #cce5ff ;
-margin-left: 2rem;
-
+.property-summary {
+  border-bottom: 1px solid #cce5ff;
+  /* or your preferred color */
 }
 
 /* Property Summary */
@@ -77,8 +79,6 @@ margin-left: 2rem;
   padding: 13px 11px;
   vertical-align: middle;
   text-align: left;
-  padding: 13px 25px 13px 11px;
-  
 }
 
 .title-cell {
@@ -99,85 +99,75 @@ margin-left: 2rem;
 }
 
 .value-cell {
-  color:#000000;
-  font-weight: 500;
-  width: auto;
+  color: #343a40;
+  font-weight: 400;
+  width: 20%;
   white-space: nowrap;
   padding-left: 5px;
 }
 
 
+.wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  border: solid rgb(111, 159, 201) 2px;
+  padding: 0px;
 
-/* Coverage Table */
-.coverage-details {
-  padding: 30px;
 }
 
-.coverage-details th {
-  text-align: left;
-  padding: 10px;
+.wrap2 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  border: solid rgb(111, 159, 201) 2px;
+  padding: 0px;
 
-  color: #00529b;
-  
-}
-
-.coverage-details .section-header {
-  font-weight: 400;
-  color: #343a40;
-  white-space: nowrap;
-}
-.coverage-details table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed; 
-}
-.coverage-details td,
-.coverage-details th {
-  padding: 10px 12px;
-  vertical-align: top;
-  border-bottom: 1px solid #f1f1f1;
 }
 
-
-/* Cards & Tables Specific to Motor */
-.motor-card .coverage-table {
-  display: table;
-  width: 100%;
-}
-.motor-card .coverage-table td,
-.motor-card .coverage-table th {
-  padding: 12px;
-}
-
-.borderClause{
-  border: solid rgb(64, 108, 158) 1px;
-  width: 40vw;
+.cover {
+  height: auto;
+  width: 50%;
+  border: solid rgb(111, 159, 201) 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-top: none;
 }
 
-.property-summary {
-  font-size: 0.95rem;
-  color: #333;
+.cover2 {
+  height: auto;
+  width: 50%;
+  border: solid rgb(111, 159, 201) 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.property-summary strong {
-  color: #495057;
+.cover h3,
+.cover2 h3 {
+  text-transform: lowercase;
 }
 
-.motor-card {
-  border-radius: 12px;
-  border: 1px solid #dee2e6;
-  transition: box-shadow 0.2s ease;
+.coverDescription {
+  font-weight: bold;
 }
 
-.motor-card:hover {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+.coverDescription2 {
+  font-weight: bold;
+  margin-right: 5px;
 }
 
-.table td {
-  vertical-align: top;
-  padding: 0.4rem 0.75rem;
+.cover2 {
+  height: auto;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
-
 
 
 
@@ -188,6 +178,7 @@ margin-left: 2rem;
 
 
 @media (max-width: 768px) {
+
   .property-summary,
   .coverage-details table {
     font-size: 13px;

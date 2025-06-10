@@ -1,12 +1,12 @@
 
-import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
-import {LazyLoadEvent} from 'primeng/api';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {Logger, UtilService} from '../../../../../../shared/services';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
-import { AfterViewInit} from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, } from '@angular/forms';
+import { LazyLoadEvent } from 'primeng/api';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { Logger, UtilService } from '../../../../../../shared/services';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
+import { AfterViewInit } from '@angular/core';
 
 
 
@@ -411,7 +411,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.premiumComputationResponse = premiumComputationResponse
     log.debug("Premium Computation:", this.premiumComputationResponse)
 
-   this.quotationNo = JSON.parse(sessionStorage.getItem('quotationNum'))
+    this.quotationNo = JSON.parse(sessionStorage.getItem('quotationNum'))
     this.quotationCode = JSON.parse(sessionStorage.getItem('quotationCode'))
 
 
@@ -1984,7 +1984,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
-  @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
+  @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
 
 
   onDownloadRequested() {
@@ -2047,10 +2047,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       setTimeout(async () => {
         try {
           const pdfFile = await this.quoteReportComponent.generatePdf(false, 'quote-report.pdf');
-          const formData = new FormData();
-          formData.append('file', pdfFile);
-          log.debug("Form Data....", formData,pdfFile)
-          //this.http.post('/api/send-quote', formData).subscribe();
+          if (pdfFile) {
+            const formData = new FormData();
+            formData.append('file', pdfFile, 'quote-report.pdf');
+            log.debug("Form Data....", formData, pdfFile);
+            // this.http.post('/api/send-quote', formData).subscribe();
+          }
         } catch (err) {
           console.error('PDF generation failed', err);
         }
