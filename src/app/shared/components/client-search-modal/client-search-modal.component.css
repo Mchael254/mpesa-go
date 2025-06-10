@@ -24,7 +24,7 @@
   cursor: pointer;
 }
 
-.quote-label{
+.quote-label {
   color: #000;
   font-family: Roboto;
   font-size: 14px;
@@ -34,11 +34,38 @@
   padding-bottom: 7px;
 }
 
-.title{
+.title {
   color: #000;
   font-family: Lato;
   font-size: 15px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+}
+
+#selectClient {
+  font-family: Roboto;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #00529B;
+}
+/* * Table headers */ 
+
+p-table ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  color: #000000;
+  font-weight: 500;
+  text-align: left;
+  font-size: 16px!important;
+}
+
+/* Table rows */
+p-table ::ng-deep table tbody tr td {
+  padding: 18px 22px;
+  border-bottom: 1px solid #e8eef7;
+  transition: background-color 0.3s ease;
+    font-size: 16px!important;
+    font-weight: 400;
+
 }
