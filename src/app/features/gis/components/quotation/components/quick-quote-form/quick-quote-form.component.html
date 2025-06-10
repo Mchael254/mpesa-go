@@ -260,7 +260,6 @@
     <div class="col-6 d-flex justify-content-end">
       <!-- SHARE BUTTON -->
       <button
-
         type="button"
         class="btn btn-outline-primary me-2"
         data-bs-toggle="modal"
@@ -272,14 +271,15 @@
       <!-- SHARE QUOTE MODAL -->
       <div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
 
-        <div class="modal-dialog modal-dialog-centered modal-md">
-          <div class="modal-content p-4">
+        <div class="modal-dialog modal-dialog-centered modal-md ">
+          <div class="modal-content w-[40vw] h-[40vh] p-3">
             <div class="d-flex justify-content-end align-items-center mb-1">
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <h3 class="page-title mt-0">Share quote</h3>
             <ng-container *ngIf="premiumComputationPayloadToShare">
               <app-quote-report [premiumComputationResponse]="premiumComputationPayloadToShare"
-                                #quoteReport  style="position: absolute; left: -9999px; top: 0; width: 800px;">
+                                #quoteReport  style="display: none;">
               </app-quote-report>
             </ng-container>
 
