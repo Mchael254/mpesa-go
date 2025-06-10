@@ -42,6 +42,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import {
   DynamicRiskField, LimitsOfLiability,
   QuickQuoteData,
+  QuotationDetails,
   QuotationProduct,
   RiskInformation, ShareQuoteDTO,
   Tax,
@@ -112,8 +113,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   previousSelected: Products[] = [];
 
   productRiskFields: DynamicRiskField[][] = [];
-  expandedStates: boolean[] = [];
-
+  // expandedStates: boolean[] = [];
+  expandedQuoteStates: boolean[] = [];
+  expandedComparisonStates: boolean[] = [];
   currencySymbol: string;
 
 
@@ -288,6 +290,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   currentSelectedRisk: any
   currentComputationPayload: PremiumComputationRequest = null
   premiumComputationPayloadToShare: ProductLevelPremium = null
+  selectedProductIndex: number = null
+  selectedRiskIndex: number = null
+  selectedRiskGroup: AbstractControl<any, any>;
+  quotationObject: QuotationDetails;
+  currentExpandedIndex: number | null = null;
 
 
   constructor(
@@ -411,8 +418,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.premiumComputationResponse = premiumComputationResponse
     log.debug("Premium Computation:", this.premiumComputationResponse)
 
-    this.quotationNo = JSON.parse(sessionStorage.getItem('quotationNum'))
-    this.quotationCode = JSON.parse(sessionStorage.getItem('quotationCode'))
+    this.quotationObject = JSON.parse(sessionStorage.getItem('quotationObject'))
+    log.debug("Quotation object", this.quotationObject)
+    this.quotationNo = this.quotationObject?.quotationNo
+    this.quotationCode = this.quotationObject?.code
 
 
   }
@@ -507,6 +516,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   getRisks(productIndex: number): FormArray {
     return this.productsFormArray.at(productIndex).get('risks') as FormArray;
+
   }
 
   getRiskFieldsForProduct(productCode: number): Observable<DynamicRiskField[]> {
@@ -532,24 +542,65 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
 
   // Dynamically creates a FormGroup for a risk using provided fields
+  // createRiskGroup(riskFields: DynamicRiskField[],
+  //   productCode: number, nextRiskIndex: number): FormGroup {
+  //   const group: { [key: string]: AbstractControl } = {};
+
+  //   riskFields.forEach(field => {
+  //     group[field.name] = new FormControl(
+  //       { value: '', disabled: field.disabled },
+  //       field.isMandatory === 'Y' ? Validators.required : []
+  //     );
+  //   });
+  //   group['applicableTaxes'] = new FormControl(null)
+  //   group['applicableBinder'] = new FormControl(null)
+  //   group['applicableCoverTypes'] = new FormControl(null)
+  //   group['riskCode'] = new FormControl('#' + productCode + nextRiskIndex)
+  //   return new FormGroup(group);
+  // }
   createRiskGroup(riskFields: DynamicRiskField[],
-    productCode: number, nextRiskIndex: number): FormGroup {
+    productCode: number,
+    nextRiskIndex: number,
+    productIndex?: number,
+    riskIndex?: number): FormGroup {
     const group: { [key: string]: AbstractControl } = {};
 
     riskFields.forEach(field => {
-      group[field.name] = new FormControl(
-        { value: '', disabled: field.disabled },
-        field.isMandatory === 'Y' ? Validators.required : []
-      );
+      if (field.name === 'useOfProperty') {
+        const subclasses = this.productSubclassesMap[productCode] || [];
+        const initialValue = subclasses.length === 1 ? subclasses[0] : '';
+
+        group[field.name] = new FormControl(
+          initialValue,
+          field.isMandatory === 'Y' ? Validators.required : []
+        );
+
+        // Trigger subclass selection if only one exists
+        if (subclasses.length === 1) {
+          setTimeout(() => {
+            this.onSubclassSelected(
+              subclasses[0],
+              productIndex,
+              riskIndex,
+              productCode
+            );
+          });
+        }
+      } else {
+        group[field.name] = new FormControl(
+          { value: '', disabled: field.disabled },
+          field.isMandatory === 'Y' ? Validators.required : []
+        );
+      }
     });
-    group['applicableTaxes'] = new FormControl(null)
-    group['applicableBinder'] = new FormControl(null)
-    group['applicableCoverTypes'] = new FormControl(null)
-    group['riskCode'] = new FormControl('#' + productCode + nextRiskIndex)
+
+    group['applicableTaxes'] = new FormControl(null);
+    group['applicableBinder'] = new FormControl(null);
+    group['applicableCoverTypes'] = new FormControl(null);
+    group['riskCode'] = new FormControl('#' + productCode + nextRiskIndex);
+
     return new FormGroup(group);
   }
-
-
   // When products are selected from multi-select
   getSelectedProducts(event: any) {
     const currentSelection = event.value as Products[];
@@ -571,6 +622,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     if (addedProduct) {
+      log.debug("Added product Array:", addedProduct)
       const effectiveDate = this.quickQuoteForm.get('effectiveDate')?.value || new Date();
       forkJoin(([
         this.subclassService.getProductSubclasses(addedProduct.code),
@@ -590,11 +642,21 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
             description: this.capitalizeWord(value.description),
           }));
           this.productsFormArray.push(productGroup);
-          this.expandedStates = this.productsFormArray.controls.map((_, index) => index === 0);
+          const index = this.productsFormArray.controls.findIndex(
+            ctrl => ctrl.get('code')?.value === addedProduct.code
+          );
+          const productIndex = index
+          log.debug("PRODUCT INDEX", index);
+          log.debug("PRODUCT ARRAY CONTENTS", this.productsFormArray.value);
+          this.expandedQuoteStates = this.productsFormArray.controls.map((_, index) => index === 0);
           log.debug("SUBCLASS LIST:", this.productSubclassesMap)
           const risksArray = productGroup.get('risks') as FormArray;
           const nextRiskIndex = risksArray.length + 1;
-          risksArray.push(this.createRiskGroup(riskFields, addedProduct.code, nextRiskIndex));
+          const riskIndex = risksArray.length
+          log.debug("RISFH INDEX", nextRiskIndex);
+          log.debug("RISFH INDEX NEW", riskIndex);
+
+          risksArray.push(this.createRiskGroup(riskFields, addedProduct.code, nextRiskIndex, productIndex, riskIndex));
           this.productRiskFields[this.productsFormArray.length - 1] = riskFields;
         })
 
@@ -618,14 +680,23 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     const productCode = productGroup.get('code')?.value;
     const nextRiskIndex = risksArray.length + 1;
     this.getRiskFieldsForProduct(productCode).subscribe((riskFields: DynamicRiskField[]) => {
-      const newRiskGroup = this.createRiskGroup(riskFields, productCode, nextRiskIndex);
+      const newRiskGroup = this.createRiskGroup(riskFields, productCode, nextRiskIndex, productIndex);
       risksArray.push(newRiskGroup);
     });
   }
+  fetchProductRiskIndex(riskControl: AbstractControl, productIndex: number, riskIndex: number) {
+    this.selectedProductIndex = productIndex
+    this.selectedRiskIndex = riskIndex
+    this.selectedRiskGroup = riskControl
+    log.debug("PRODUCT INDEX", this.selectedProductIndex)
+    log.debug("RISK INDEX", this.selectedRiskIndex)
+    log.debug("RISK GROUP", riskControl)
 
+  }
 
   // Remove a risk row
-  deleteRisk(riskControl: AbstractControl, productIndex: number, riskIndex: number) {
+  deleteRisk() {
+    const riskControl = this.selectedRiskGroup
     log.debug("Removing risk>>>", riskControl.value)
     if (this.premiumComputationResponse) {
       this.premiumComputationResponse = {
@@ -639,12 +710,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           })
       }
     }
-    this.getRisks(productIndex).removeAt(riskIndex);
+    this.getRisks(this.selectedProductIndex).removeAt(this.selectedRiskIndex);
+    log.debug("FORM ARRAY:", this.productsFormArray)
   }
 
   // Remove product
   deleteProduct(product: AbstractControl, productIndex: number) {
     log.debug("Selected product>>>", product.value)
+    log.debug("PRODUCT INDEX", productIndex)
     if (this.premiumComputationResponse) {
       this.premiumComputationResponse = {
         productLevelPremiums: this.premiumComputationResponse
@@ -715,12 +788,30 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-  toggleExpand(index: number) {
-    this.expandedStates[index] = !this.expandedStates[index];
+  toggleQuoteExpand(index: number) {
+    // Collapse if clicking the already expanded item
+    if (this.currentExpandedIndex === index) {
+      this.expandedQuoteStates[index] = false;
+      this.currentExpandedIndex = null;
+    }
+    // Expand the new item and collapse others
+    else {
+      // Collapse previously expanded item
+      if (this.currentExpandedIndex !== null) {
+        this.expandedQuoteStates[this.currentExpandedIndex] = false;
+      }
+
+      // Expand the new one
+      this.expandedQuoteStates[index] = true;
+      this.currentExpandedIndex = index;
+    }
+  }
+  toggleCoverExpand(index: number) {
+    this.expandedComparisonStates[index] = !this.expandedComparisonStates[index];
   }
 
   collapseAllCards() {
-    this.expandedStates = this.expandedStates.map(() => false);
+    this.expandedQuoteStates = this.expandedQuoteStates.map(() => false);
   }
 
 
@@ -856,29 +947,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-  /**
-   * Retrieves and matches product subclasses for a given product code.
-   * - Makes an HTTP GET request to GISService for product subclasses.
-   * - Matches and combines subclasses with the existing 'allSubclassList'.
-   * - Logs the final list of matching subclasses.
-   * - Forces change detection to reflect updates.
-   * @method getProductSubclass
-   * @param {number} code - The product code to fetch subclasses.
-   * @return {void}
-   */
-
-  getProductSubclass(code: number) {
-    this.subclassService.getProductSubclasses(code).pipe(
-      untilDestroyed(this)
-    ).subscribe((subclasses: Subclasses[]) => {
-      this.productSubclassesMap[code] = subclasses.map(value => ({
-        ...value,
-        description: this.capitalizeWord(value.description),
-      }));
-      log.debug("SUBCLASS LIST:", this.productSubclassesMap)
-
-    });
-  }
 
   /**
    * Loads all currencies and selects based on the currency code.
@@ -1315,6 +1383,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   fetchComputationData(productCode: number, subClassCode: number, riskIndex: number, productIndex: number
   ) {
+    log.debug("PRODUCT INDEX-computation data fetching", productIndex);
+    log.debug("RISK INDEX-computation data fetching", riskIndex);
+    log.debug("PRO CODE-computation data fetching", productCode);
+    log.debug("SYB CODE-computation data fetching", subClassCode);
+    log.debug("productFormArray for risks>>>", this.productsFormArray)
+
     let productFormArray = this.productsFormArray.at(productIndex);
     let riskFormGroup = (this.productsFormArray.at(productIndex).get('risks') as FormArray).at(riskIndex) as FormGroup
     log.debug("Current  productFormArray for risks>>>", riskFormGroup)
