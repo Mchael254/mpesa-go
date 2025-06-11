@@ -552,7 +552,7 @@ export class QuotationsService {
       retry(1),
       catchError(this.errorHandl)
     )
-        
+
 
   }
 
@@ -746,8 +746,8 @@ export class QuotationsService {
 
   }
 
-  savePremiumComputationPayload(data: PremiumComputationRequest): Observable<any> {
-    return this.api.POST<any[]>(`api/v1/computation-payload?`, JSON.stringify(data), API_CONFIG.PREMIUM_COMPUTATION,);
+  savePremiumComputationPayload(quotationCode: number, data: PremiumComputationRequest): Observable<any> {
+    return this.api.POST<any[]>(`api/v1/computation-payload/${quotationCode}`, JSON.stringify(data), API_CONFIG.PREMIUM_COMPUTATION,);
   }
 
   getPremiumComputationPayload(code: number): Observable<any> {
