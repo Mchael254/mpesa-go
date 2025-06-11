@@ -8,24 +8,24 @@ export class SharedQuotationsService {
   constructor() { }
 
   formData: any;
-  quotationDetails:any;
-  quotationCode:any;
-  quotationNum:any;
-  quickQuotationCode:any;
-  quickSectionList:any;
-  sumInsuredValue:any;
-  coverquotationNo:any;
+  quotationDetails: any;
+  quotationCode: any;
+  quotationNum: any;
+  quickQuotationCode: any;
+  quickSectionList: any;
+  sumInsuredValue: any;
+  coverquotationNo: any;
 
-  quotationDetailsRisk:any;
-  clientDetails:any;
+  quotationDetailsRisk: any;
+  clientDetails: any;
 
-  isAddRisk:boolean;
+  isAddRisk: boolean;
 
-  premiumPayload:any;
-  premiumResponse:any;
-  covertypeDetails:any;
-  quickClientDetails:any;
-  quotationSource:any
+  premiumPayload: any;
+  premiumResponse: any;
+  covertypeDetails: any;
+  quickClientDetails: any;
+  quotationSource: any
 
   setFormData(data: any) {
     this.formData = data;
@@ -35,96 +35,109 @@ export class SharedQuotationsService {
     return this.formData;
   }
 
-  setQuotationFormDetails(data){
+  setQuotationFormDetails(data) {
     this.quotationDetails = data;
   }
 
-  getQuotationFormDetails(){
+  getQuotationFormDetails() {
     return this.quotationDetails;
   }
 
-  setQuotationDetails(quotationNo,quotationCode){
+  setQuotationDetails(quotationNo, quotationCode) {
     this.quotationCode = quotationCode;
     this.quotationNum = quotationNo
-    
+
   }
 
-  getQuotationCode(){
+  getQuotationCode() {
     return this.quotationCode;
   }
-  setQuickQuotationDetails(data){
+  setQuickQuotationDetails(data) {
     this.quickQuotationCode = data;
   }
 
-  getQuickQuotationDetails(){
+  getQuickQuotationDetails() {
     return this.quickQuotationCode;
   }
-  setQuickSectionDetails(data){
+  setQuickSectionDetails(data) {
     this.quickSectionList = data;
   }
 
-  getQuickSectionDetails(){
+  getQuickSectionDetails() {
     return this.quickSectionList;
   }
-  setSumInsured(data){
+  setSumInsured(data) {
     this.sumInsuredValue = data;
   }
 
-  getSumInsured(){
+  getSumInsured() {
     return this.sumInsuredValue;
   }
 
-  getQuotationNumber(){
+  getQuotationNumber() {
     return this.quotationNum;
   }
-  setSelectedCover(data){
+  setSelectedCover(data) {
     this.coverquotationNo = data;
   }
 
-  getSelectedCover(){
+  getSelectedCover() {
     return this.coverquotationNo;
   }
-  setAddAnotherRisk(riskQuoationDetails,clientDetails){
-    this.quotationDetailsRisk=riskQuoationDetails;
-    this.clientDetails=clientDetails
+  setAddAnotherRisk(riskQuoationDetails, clientDetails) {
+    this.quotationDetailsRisk = riskQuoationDetails;
+    this.clientDetails = clientDetails
   }
   getAddAnotherRisk() {
     if (this.quotationDetailsRisk == null && this.clientDetails == null) {
-        return { quotationDetailsRisk: null, clientDetails: null };
+      return { quotationDetailsRisk: null, clientDetails: null };
     }
 
     return { quotationDetailsRisk: this.quotationDetailsRisk, clientDetails: this.clientDetails };
-}
-setIsAddRisk(data){
-  this.isAddRisk=data;
-}
-getIsAddRisk(){
-  return this.isAddRisk;
-}
-setPremiumComputationPayload(data, covertypes){
-  this.premiumPayload=data;
-  this.covertypeDetails=covertypes
-}
-getPremiumPayload(){
-  return {data:this.premiumPayload,covertypes:this.covertypeDetails}
+  }
+  setIsAddRisk(data) {
+    this.isAddRisk = data;
+  }
+  getIsAddRisk() {
+    return this.isAddRisk;
+  }
+  setPremiumComputationPayload(data, covertypes) {
+    this.premiumPayload = data;
+    this.covertypeDetails = covertypes
+  }
+  getPremiumPayload() {
+    return { data: this.premiumPayload, covertypes: this.covertypeDetails }
+  }
+
+  setPremiumResponse(data) {
+    this.premiumResponse = data;
+  }
+  getPremiumResponse() {
+    return this.premiumResponse;
+  }
+  setClientDetails(data) {
+    this.quickClientDetails = data;
+  }
+  getClientDetails() {
+    return this.quickClientDetails
+  }
+  setQuotationSource(data) {
+    this.quotationSource = data;
+  }
+  getQuotationSource() {
+    return this.quotationSource;
+  }
+
+
+  private _quotationSaved = false;
+
+  set quotationSaved(value: boolean) {
+    this._quotationSaved = value;
+  }
+
+  get quotationSaved(): boolean {
+    return this._quotationSaved;
+  }
 }
 
-setPremiumResponse(data){
-  this.premiumResponse=data;
-}
-getPremiumResponse(){
-  return this.premiumResponse;
-}
-setClientDetails(data){
-this.quickClientDetails=data;
-}
-getClientDetails(){
-  return this.quickClientDetails
-}
-setQuotationSource(data){
-  this.quotationSource=data;
-}
-getQuotationSource(){
-  return this.quotationSource;
-}
-}
+

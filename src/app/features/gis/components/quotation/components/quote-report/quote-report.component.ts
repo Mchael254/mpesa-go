@@ -8,10 +8,10 @@ import {
   PLATFORM_ID,
   ViewChild
 } from '@angular/core';
-import {PaymentAdviceDTO, QuotationDetails, QuotationHeaderDTO} from '../../data/quotationsDTO';
-import {PdfGeneratorService} from '../../services/quotations/pdf-generator.service';
-import {ProductLevelPremium} from "../../data/premium-computation";
-import {Logger} from "../../../../../../shared/services";
+import { PaymentAdviceDTO, QuotationDetails, QuotationHeaderDTO } from '../../data/quotationsDTO';
+import { PdfGeneratorService } from '../../services/quotations/pdf-generator.service';
+import { ProductLevelPremium } from "../../data/premium-computation";
+import { Logger } from "../../../../../../shared/services";
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
@@ -103,7 +103,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
   @Input() data: any;
 
-  @ViewChild('pdfContent', {static: false}) pdfContent!: ElementRef;
+  @ViewChild('pdfContent', { static: false }) pdfContent!: ElementRef;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object,
     private pdfGenerator: PdfGeneratorService,
@@ -179,7 +179,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     return result;
   }
 
-  IPREF:string = ''
+  IPREF: string = ''
   async generatePdf(download = false, fileName = 'document.pdf'): Promise<Blob | void> {
     let paymentUrl = '';
     try {
@@ -190,6 +190,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     } catch (error) {
       console.error('Failed to fetch payment URL:', error);
     }
+    const quotationSaved = sessionStorage.getItem('quotationSaved') === 'true';
     const showPaymentMethods = sessionStorage.getItem("showPaymentMethods") === "true";
     const riskContents: any = this.enrichedProducts.flatMap((product, productIndex) => {
       const risks: any = product.enrichedRisks.flatMap(enriched => {
@@ -404,20 +405,20 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
         return [
           {
             columns: [
-              {text: `${product.description} ${enriched.risk.propertyId}`, style: 'riskTitle', width: '*'},
+              { text: `${product.description} ${enriched.risk.propertyId}`, style: 'riskTitle', width: '*' },
               {
                 width: 'auto',
                 text: [
-                  {text: 'Use of Property: ', style: 'label'},
-                  {text: `${enriched.risk.propertyDescription || enriched.risk.propertyId} `, bold: true},
-                  {text: '    '}
+                  { text: 'Use of Property: ', style: 'label' },
+                  { text: `${enriched.risk.propertyDescription || enriched.risk.propertyId} `, bold: true },
+                  { text: '    ' }
                 ]
               },
               {
                 width: 'auto',
                 text: [
-                  {text: 'Value: ', style: 'label'},
-                  {text: `${enriched.risk.sumInsured}`, bold: true}
+                  { text: 'Value: ', style: 'label' },
+                  { text: `${enriched.risk.sumInsured}`, bold: true }
                 ]
               }
             ],
@@ -453,18 +454,18 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     });
 
     //payment methods section
-    const paymentMethodsSection = {
+    const paymentMethodsSection = quotationSaved ? {
       table: {
         widths: ['*'],
         body: [[{
           stack: [
-            {text: 'Payment methods', style: 'sectionHeader', margin: [0, 20, 0, 10]},
+            { text: 'Payment methods', style: 'sectionHeader', margin: [0, 20, 0, 10] },
             {
               columns: this.paymentAdviceData.paymentMethods.map(method => ({
                 width: '*',
                 stack: [
-                  {text: method.title, bold: true, margin: [0, 0, 0, 5]},
-                  ...method.details.map(detail => ({text: detail, margin: [0, 0, 0, 2]}))
+                  { text: method.title, bold: true, margin: [0, 0, 0, 5] },
+                  ...method.details.map(detail => ({ text: detail, margin: [0, 0, 0, 2] }))
                 ]
               })),
               columnGap: 20,
@@ -491,17 +492,17 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
         paddingRight: () => 15
       },
       margin: [0, 10, 0, 10]
-    };
+    } : {};
 
     const docDefinition: TDocumentDefinitions = {
       content: [
         {
           columns: [
-            {image: this.header.logo, width: 100},
-            {text: 'QUOTATION REPORT', style: 'header', alignment: 'center', margin: [0, 30, 0, 0]}
+            { image: this.header.logo, width: 100 },
+            { text: 'QUOTATION REPORT', style: 'header', alignment: 'center', margin: [0, 30, 0, 0] }
           ]
         },
-        {text: '\n'},
+        { text: '\n' },
         {
           style: 'infoTable',
           table: {
@@ -522,7 +523,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
             vLineColor: () => '#aaa',
           }
         },
-        {text: '\n'},
+        { text: '\n' },
 
         ...riskContents,
         paymentMethodsSection
@@ -538,11 +539,11 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
       }.bind(this),
 
       styles: {
-        header: {fontSize: 22, bold: true},
-        infoTable: {margin: [0, 0, 0, 10], fontSize: 12},
-        sectionHeader: {fontSize: 16, bold: true, color: '#0d6efd'},
-        riskTitle: {fontSize: 14, bold: true, color: '#343a40'},
-        label: {fontSize: 11, color: '#6c757d'}
+        header: { fontSize: 22, bold: true },
+        infoTable: { margin: [0, 0, 0, 10], fontSize: 12 },
+        sectionHeader: { fontSize: 16, bold: true, color: '#0d6efd' },
+        riskTitle: { fontSize: 14, bold: true, color: '#343a40' },
+        label: { fontSize: 11, color: '#6c757d' }
       },
 
       defaultStyle: {
