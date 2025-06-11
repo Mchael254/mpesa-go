@@ -553,7 +553,6 @@ export class QuotationsService {
       catchError(this.errorHandl)
     )
 
-
   }
 
   getFormFields(shortDescription: any): Observable<any> {
