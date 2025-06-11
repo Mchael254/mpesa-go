@@ -1117,3 +1117,4 @@ export interface QuotationUpdate {
   quotationCode:number
   clientCode:number
 }
+
