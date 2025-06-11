@@ -10,29 +10,53 @@
       <p-table [value]="[{}]" styleClass="quotation-info;" responsiveLayout="scroll">
         <ng-template pTemplate="body">
           <tr>
-            <td class="label">Quotation status</td>
-            <td>{{ header.quotationStatus }}</td>
+            <td class="label" style="font-weight: 200;color: #000000;">Quotation status</td>
+            <td style="font-weight: 400;color: #000000;">{{ header.quotationStatus }}</td>
           </tr>
           <tr>
-            <td class="label">Proposal/Insured</td>
-            <td>{{ header.proposalIssued }}</td>
+            <td class="label"style="font-weight: 200;color: #000000;">Proposal/Insured</td>
+            <td style="font-weight: 400; color: #000000;">{{ header.proposalIssued }}</td>
           </tr>
           <tr>
-            <td class="label">Period</td>
-            <td>{{ header.period }}</td>
+            <td class="label"style="font-weight: 200;color: #000000;">Period</td>
+            <td style="font-weight: 400;color: #000000;">{{ header.period }}</td>
           </tr>
           <tr>
-            <td class="label">Quote time</td>
-            <td>{{ header.quoteTime }}</td>
+            <td class="label"style="font-weight: 200;color: #000000;">Quote time</td>
+            <td style="font-weight: 400;color: #000000;">{{ header.quoteTime }}</td>
           </tr>
           <tr>
-            <td class="label">Agency name</td>
-            <td>{{ header.agencyName }}</td>
+            <td class="label"style="font-weight: 200;color: #000000;">Agency name</td>
+            <td style="font-weight: 400;color: #000000;">{{ header.agencyName }}</td>
           </tr>
         </ng-template>
       </p-table>
     </p-card>
 
+
+
+
+    <!-- Motor Private Cards -->
+     
+     <p-card *ngFor="let product of premiumComputationResponse?.productLevelPremiums; let i = index" [header]="product.description" styleClass="mb-4 motor-card"> 
+    <!-- Vehicle Info Row -->
+    <div class="property-summary">
+        <table class="property-table">
+          <tbody>
+            <tr>
+              <td class="title-cell"><strong>{{ product.description }} {{ i + 1 }}</strong></td>
+              <td style="width: 50px;"></td>
+              <td ></td>
+              <td class="label-cell"><strong>Use of property</strong></td>
+              <td ></td>
+              <td class="value-cell">{{ product.description }}</td>
+              
+              <td class="label-cell"><strong>Value</strong></td>
+              <td *ngFor="let risk of product.riskLevelPremiums" class="value-cell">{{ risk.sumInsured}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div> 
 
     <!-- risk details -->
     <div *ngFor="let product of enrichedProducts" class="border border-primary mb-4 p-3 rounded">
@@ -118,9 +142,13 @@
 
 
       </div>
+
+
+      <!-- payment advice component // conditional -->
+      <app-payment-advice>
+
       <ng-container *ngIf="payNow">
         <app-payment-advice></app-payment-advice>
       </ng-container>
-    </div>
-  </div>
-</div>
+    
+
