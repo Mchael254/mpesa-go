@@ -1,7 +1,7 @@
 <div #pdfContent id="content-to-pdf">
   <div class="container">
     <div class="header">
-      <img [src]="header.logo" alt="Company Logo" class="logo" />
+      <img [src]="header.logo" alt="Company Logo" class="logo"/>
       <h1>QUOTATION REPORT</h1>
     </div>
 
@@ -34,7 +34,6 @@
     </p-card>
 
 
-
     <!-- risk details -->
     <div *ngFor="let product of enrichedProducts" class="border border-primary mb-4 p-3 rounded">
       <h5 class="section-header">{{ product.description }}</h5>
@@ -43,7 +42,7 @@
 
         <div class="d-flex w-[70vw] gap-2 justify-content-around mt-1">
           <div>
-            <span class="text-lg font-bold text-secondary"> {{ product.description }} {{ enriched.risk.propertyId }}
+            <span class="text-lg font-bold text-secondary"> {{ product.description | titlecase }} {{ enriched.risk.propertyId }}
             </span>
           </div>
           <div>
@@ -65,7 +64,7 @@
             <div *ngFor="let cover of enriched.risk.coverTypeDetails" class="col-md-6">
               <div class="border border-primary p-3 h-100">
                 <p class="text-primary fw-bold text-center mb-2">
-                  {{ cover.coverTypeDescription }}
+                  {{ cover.coverTypeDescription | titlecase }}
                 </p>
 
                 <!-- Clauses -->
@@ -75,7 +74,7 @@
                   </div>
                   <div class="w-75 ps-2">
                     <div *ngFor="let clause of cover.clauses" class="mb-1">
-                      <p class="text-muted small mb-0">{{ clause.heading }}</p>
+                      <p class="text-muted small mb-0">{{ clause.heading | titlecase }}</p>
                     </div>
                   </div>
                 </div>
@@ -87,7 +86,7 @@
                   </div>
                   <div class="w-75 ps-2">
                     <div *ngFor="let liability of cover.limitOfLiabilities" class="mb-1">
-                      <p class="text-muted small mb-0">{{ liability.narration }}</p>
+                      <p class="text-muted small mb-0">{{ liability.narration | titlecase }}</p>
                     </div>
                   </div>
                 </div>
@@ -99,7 +98,7 @@
                   </div>
                   <div class="w-75 ps-2">
                     <div *ngFor="let excess of cover.excesses" class="mb-1">
-                      <p class="text-muted small mb-0">{{ excess.narration }}</p>
+                      <p class="text-muted small mb-0">{{ excess.narration | titlecase }}</p>
                     </div>
                   </div>
                 </div>
@@ -119,11 +118,9 @@
 
 
       </div>
-
-      <!-- payment advice component // conditional -->
-      <app-payment-advice>
-
-      </app-payment-advice>
+      <ng-container *ngIf="payNow">
+        <app-payment-advice></app-payment-advice>
+      </ng-container>
     </div>
   </div>
 </div>
