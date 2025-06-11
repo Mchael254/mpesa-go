@@ -27,6 +27,7 @@ import {
   SubclassSectionPeril,
   TaxInformation
 } from '../../data/quotationsDTO';
+import {EmailDto} from "../../../../../../shared/data/common/email-dto";
 
 const log = new Logger('QuotationSummaryComponent');
 
@@ -662,7 +663,28 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       systemModule: this.emailForm.value.systemModule,
 
     };
-    this.quotationService.sendEmail(payload).subscribe({
+    const emailDto: EmailDto = {
+      address: [
+
+      ],
+      emailAggregator: this.emailForm.value.emailAggregator,
+      from: this.emailForm.value.fromName,
+      message: this.emailForm.value.message,
+      sendOn: current,
+      status: this.emailForm.value.status,
+      systemModule: this.emailForm.value.systemModule,
+      subject: this.emailForm.value.subject,
+      attachments: [],
+      systemCode: null,
+      fromName: null,
+      response: null,
+
+    }
+    this.quotationService.sendEmail(emailDto)
+      .pipe(
+        untilDestroyed(this)
+      )
+      .subscribe({
       next: (res) => {
         const response = res
         this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');

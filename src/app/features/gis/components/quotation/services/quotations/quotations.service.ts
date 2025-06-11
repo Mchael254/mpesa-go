@@ -31,6 +31,7 @@ import {map} from "rxjs/operators";
 import {QuotationsDTO} from 'src/app/features/gis/data/quotations-dto';
 import {PremiumComputationRequest, ProductLevelPremium} from "../../data/premium-computation";
 import {QuotationDetailsRequestDto} from "../../data/quotation-details";
+import {EmailDto} from "../../../../../../shared/data/common/email-dto";
 
 @Injectable({
   providedIn: 'root'
@@ -364,7 +365,7 @@ export class QuotationsService {
     })
   }
 
-  sendEmail(data:any): Observable<any> {
+  sendEmail(data:EmailDto): Observable<any> {
     return this.http.post<any>(`/${this.notificationUrl}/email/send`, JSON.stringify(data), this.httpOptions)
   }
 
