@@ -37,7 +37,8 @@
 
 
     <!-- Motor Private Cards -->
-     <p-card *ngFor="let product of premiumComputationResponse.productLevelPremiums; let i = index" [header]="product.description" styleClass="mb-4 motor-card"> 
+     
+     <p-card *ngFor="let product of premiumComputationResponse?.productLevelPremiums; let i = index" [header]="product.description" styleClass="mb-4 motor-card"> 
     <!-- Vehicle Info Row -->
     <div class="property-summary">
         <table class="property-table">
