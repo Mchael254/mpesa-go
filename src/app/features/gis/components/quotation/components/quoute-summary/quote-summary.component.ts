@@ -358,6 +358,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       comment: this.reassignComment
     }
     this.globalMessagingService.displaySuccessMessage('Success', 'reassigning...')
+     this.onUserUnselect()
     log.debug('reassign Payload', reassignPayload)
 
   }
