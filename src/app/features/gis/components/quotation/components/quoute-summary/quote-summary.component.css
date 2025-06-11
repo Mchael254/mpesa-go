@@ -66,6 +66,12 @@ input {
 }
 
 
+/* Remove border-radius from table, headers, and cells */
+.no-rounded ::ng-deep .p-datatable,
+.no-rounded ::ng-deep .p-datatable-thead > tr > th,
+.no-rounded ::ng-deep .p-datatable-tbody > tr > td {
+  border-radius: 0 !important;
+}
 
 
 
