@@ -2,7 +2,7 @@
   max-width: 1100px;
 
   margin: 0 auto;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: Roboto;
   font-size: 16px;
   line-height: 1.5;
   color: #000000;
@@ -15,7 +15,8 @@
   position: relative;
   padding: 40px 20px 20px;
   text-align: center;
-  border-bottom: 2px solid #ccc;
+  font-weight: 400;
+  
 }
 
 .logo {
@@ -68,6 +69,8 @@
   margin-bottom: 0rem;
   table-layout: fixed;
   border-bottom: 1px #009b22;
+  table-layout: auto;
+  
 }
 
 
@@ -76,21 +79,23 @@
   padding: 13px 11px;
   vertical-align: middle;
   text-align: left;
-
 }
 
 .title-cell {
   background-color: #ffffff;
-  font-weight: 400;
+  font-weight: 200;
   width: 20%;
   white-space: nowrap;
+  padding-right: 60px;
 }
 
 .label-cell {
-  font-weight: 400;
-  color: #343a40;
-  width: 15%;
+  font-weight: 200;
+  color: #000000;
+  width: auto;
   white-space: nowrap;
+  padding-right: 5px;
+  
 }
 
 .value-cell {
@@ -98,6 +103,7 @@
   font-weight: 400;
   width: 20%;
   white-space: nowrap;
+  padding-left: 5px;
 }
 
 
@@ -162,6 +168,8 @@
   justify-content: center;
   align-items: center;
 }
+
+
 
 
 
