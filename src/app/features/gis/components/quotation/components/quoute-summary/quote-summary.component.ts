@@ -1,23 +1,22 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ProductLevelPremium, QuotationDetails, QuotationDTO } from '../../data/quotationsDTO';
+import {  QuotationDetails, QuotationDTO } from '../../data/quotationsDTO';
 
 import { QuotationsService } from "../../services/quotations/quotations.service";
 import { Logger, untilDestroyed, UtilService } from "../../../../../../shared/shared.module";
-import { dummyUsers } from '../../data/dummyData';
-import { Table, TableLazyLoadEvent } from 'primeng/table';
+import { Table } from 'primeng/table';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { QuoteReportComponent } from '../quote-report/quote-report.component';
 import { ClaimsService } from 'src/app/features/gis/components/claim/services/claims.service';
-import { LazyLoadEvent } from 'primeng/api';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { Pagination } from 'src/app/shared/data/common/pagination';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { tap } from 'rxjs';
 import { TableDetail } from 'src/app/shared/data/table-detail';
 import { NgxSpinnerService } from 'ngx-spinner';
+import {ProductLevelPremium} from "../../data/premium-computation";
 
 
 
@@ -456,9 +455,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/home/gis/quotation/quick-quote']);
 
   }
-  
 
-  
+
+
 handleSaveClient(eventData: any) {
   log.debug('Event received from Client search comp', eventData);
   const clientCode = eventData.id;
