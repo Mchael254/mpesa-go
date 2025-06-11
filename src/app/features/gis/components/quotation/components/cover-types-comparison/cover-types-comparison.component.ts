@@ -1,6 +1,5 @@
 import {
   AfterViewInit,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -258,8 +257,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
       nullable: true,
       align: 'left',
     };
-     
-   
+
+
   }
 
   ngOnDestroy(): void {

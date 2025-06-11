@@ -26,7 +26,8 @@
               "papaparse",
               "url-search-params-polyfill",
               "html2canvas",
-              "jspdf"
+              "jspdf",
+              "vfs_fonts"
             ],
             "polyfills": [
               "zone.js"

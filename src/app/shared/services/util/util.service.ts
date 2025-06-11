@@ -652,6 +652,10 @@ export class UtilService {
     sessionStorage.removeItem('passedSelectedRiskDetails')
     sessionStorage.removeItem('product')
     sessionStorage.removeItem('quoteAction')
+    sessionStorage.removeItem('quickQuotePayload')
+    sessionStorage.removeItem('savedProductsState')
+    sessionStorage.removeItem('premiumComputationResponse')
+    sessionStorage.removeItem('quotationObject')
   }
   clearNormalQuoteSessionStorage(){
     sessionStorage.removeItem('quotationFormDetails')
