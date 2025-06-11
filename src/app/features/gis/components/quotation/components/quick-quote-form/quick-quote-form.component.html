@@ -126,7 +126,7 @@
                         </button>
                         <button type="button" class="btn btn-primary px-5" data-bs-dismiss="modal"
                           (click)="deleteProduct(productGroup, i)">
-                          {{ 'gis.policy.delete'| translate }}
+                          {{ 'gis.quotation.delete'| translate }}
                         </button>
                       </div>
 
@@ -139,7 +139,7 @@
               <!-- Risk Fields -->
               <div formArrayName="risks">
                 <div *ngFor="let riskGroup of getRisks(i).controls; let j = index" [formGroupName]="j">
-                  <p class="riskTitle">{{ 'gis.policy.risk'| translate }} {{ j + 1 }}
+                  <p class="riskTitle">{{ 'gis.quotation.risk'| translate }} {{ j + 1 }}
                     <i *ngIf="getRisks(i).length > 1" class="fa-solid fa-trash-can text-danger ms-2"
                       style="color:#EE3945;" (click)="fetchProductRiskIndex(riskGroup, i, j)" data-bs-toggle="modal"
                       data-bs-target="#deleteRisk">
@@ -170,7 +170,7 @@
                               {{'gis.policy.cancel' | translate }}
                             </button>
                             <button type="button" class="btn btn-primary px-5" data-bs-dismiss="modal"
-                              (click)="deleteRisk()"> {{'gis.policy.delete' | translate }}
+                              (click)="deleteRisk()"> {{'gis.quotation.delete' | translate }}
 
                             </button>
                           </div>
@@ -298,7 +298,7 @@
         (click)="toggleCoverExpand(i)" *ngIf="product.riskLevelPremiums.length > 0">
 
         <div class="product-comparison-title">
-          {{ product.description }} <span>-  {{'gis.policy.cover_types' | translate }}</span>
+          {{ product.description }} <span>-  {{'gis.quotation.cover_types' | translate }}</span>
         </div>
         <button type="button" id="icon-chevron" class="btn btn-primary">
           <i class="fa" [ngClass]="expandedComparisonStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
@@ -332,7 +332,7 @@
       <!-- SHARE BUTTON -->
       <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
         (click)="fetchCoverRelatedData()" data-bs-target="#shareQuoteModal">
-      {{'gis.policy.share_quotation' | translate }}
+      {{'gis.quotation.share_quotation' | translate }}
       </button>
 
       <!-- SHARE QUOTE MODAL -->
@@ -343,7 +343,7 @@
             <div class="d-flex justify-content-end align-items-center mb-1">
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <h3 class="page-title mt-0">Share quote</h3>
+            <h3 class="page-title mt-0">{{'gis.quotation.share_quotation' | translate }}</h3>
             <ng-container *ngIf="premiumComputationPayloadToShare">
               <app-quote-report [premiumComputationResponse]="premiumComputationPayloadToShare"
                                 #quoteReport  style="display: none;">
