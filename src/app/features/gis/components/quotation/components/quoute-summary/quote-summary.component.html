@@ -158,24 +158,22 @@
   <!-- SHARE QUOTE MODAL -->
   <div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
 
-    <div class="modal-dialog modal-dialog-centered modal-md">
-      <div class="modal-content p-4">
+    <div class="modal-dialog modal-dialog-centered modal-md ">
+      <div class="modal-content w-[40vw] h-[40vh] p-3">
         <div class="d-flex justify-content-end align-items-center mb-1">
-
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <h3 class="page-title mt-0">Share quote</h3>
+      
 
+        <app-share-quotes (downloadRequested)="onDownloadRequested()">
+
+        </app-share-quotes>
       </div>
-
-      <!-- Conditionally render the report component with data -->
-      <app-quote-report *ngIf="isShareModalOpen" [quotationDetails]="quotationDetails" #quoteReport style="opacity: 0;
-    position: absolute;
-    left: -9999px;"></app-quote-report>
-
-      <!-- Your Angular component inside the modal -->
-      <app-share-quotes (downloadRequested)="onDownloadRequested()"></app-share-quotes>
     </div>
   </div>
+
+
   <!-- reject quote modal -->
   <div class="modal fade" id="rejectQuote">
     <div class="modal-dialog modal-dialog-centered" style="min-width:400px">

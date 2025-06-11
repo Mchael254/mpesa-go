@@ -298,7 +298,7 @@
         (click)="toggleCoverExpand(i)" *ngIf="product.riskLevelPremiums.length > 0">
 
         <div class="product-comparison-title">
-          {{ product.description }} <span>-  {{'gis.policy.cover_types' | translate }}</span>
+          {{ product.description }} <span>- {{'gis.policy.cover_types' | translate }}</span>
         </div>
         <button type="button" id="icon-chevron" class="btn btn-primary">
           <i class="fa" [ngClass]="expandedComparisonStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
@@ -332,7 +332,7 @@
       <!-- SHARE BUTTON -->
       <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
         (click)="fetchCoverRelatedData()" data-bs-target="#shareQuoteModal">
-      {{'gis.policy.share_quotation' | translate }}
+        {{'gis.policy.share_quotation' | translate }}
       </button>
 
       <!-- SHARE QUOTE MODAL -->
@@ -345,8 +345,8 @@
             </div>
             <h3 class="page-title mt-0">Share quote</h3>
             <ng-container *ngIf="premiumComputationPayloadToShare">
-              <app-quote-report [premiumComputationResponse]="premiumComputationPayloadToShare"
-                                #quoteReport  style="display: none;">
+              <app-quote-report [premiumComputationResponse]="premiumComputationPayloadToShare" #quoteReport
+                style="display: none;">
               </app-quote-report>
             </ng-container>
 
