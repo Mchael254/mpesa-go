@@ -1709,7 +1709,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     log.debug("Computation response after mutation >>>", premiumToSave)
     sessionStorage.setItem("selectedCovers", JSON.stringify(premiumToSave))
     sessionStorage.setItem('premiumComputationResponse', JSON.stringify(this.premiumComputationResponse));
-    this.quotationService.processQuotation(quotationPayload).pipe(
+    this.quotationService.processQuickQuotation(quotationPayload).pipe(
       mergeMap((response) => {
         if (response._embedded?.quotationNumber && response._embedded?.quotationCode) {
           sessionStorage.setItem("quotationNumber", response._embedded.quotationNumber)

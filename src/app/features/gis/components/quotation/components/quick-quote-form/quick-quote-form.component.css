@@ -264,3 +264,17 @@ line-height: 100%;
 letter-spacing: 0%;
 
 }
+.btn-close.text-danger {
+  opacity: 1; /* make the red icon more visible */
+}
+.btn-close:focus,
+.btn-close:active,
+.btn-close:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+
+
+
