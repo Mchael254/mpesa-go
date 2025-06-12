@@ -906,13 +906,6 @@ export interface PremiumComputationResponse {
   riskLevelPremiums: RiskLevelPremium[];
 }
 
-export interface ProductLevelPremium {
-  riskLevelPremiums: RiskLevelPremium[];
-}
-
-export interface DummyCoverageData {
-  productLevelPremiums: ProductLevelPremium[];
-}
 
 export interface RiskLevelPremium {
   code: number | null;
