@@ -1,0 +1,430 @@
+{
+    "productLevelPremiums": [
+        {
+            "description": "Private motor",
+            "code": 8293,
+            "riskLevelPremiums": [
+                {
+                    "code": "#82931",
+                    "propertyId": "Risk 1",
+                    "propertyDescription": null,
+                    "minimumPremiumUsed": null,
+                    "coverTypeDetails": [
+                        {
+                            "subclassCode": 460,
+                            "coverTypeCode": 302,
+                            "minimumAnnualPremium": null,
+                            "minimumPremium": null,
+                            "coverTypeShortDescription": "COMP",
+                            "coverTypeDescription": "COMPREHENSIVE",
+                            "limits": null,
+                            "computedPremium": 5000,
+                            "limitPremium": [
+                                {
+                                    "sectCode": 3514,
+                                    "premium": 5000,
+                                    "description": "SUM INSURED",
+                                    "limitAmount": 30000,
+                                    "isMandatory": "Y",
+                                    "calculationGroup": 1,
+                                    "compute": "Y",
+                                    "dualBasis": "N",
+                                    "rateDivisionFactor": 100,
+                                    "rateType": "FXD",
+                                    "rowNumber": 1,
+                                    "premiumRate": 10,
+                                    "freeLimit": 0,
+                                    "sectionType": "SS",
+                                    "multiplierRate": 1,
+                                    "shortDescription": "SI",
+                                    "sumInsuredRate": 0
+                                }
+                            ],
+                            "taxComputation": [
+                                {
+                                    "code": 885,
+                                    "premium": 3.75
+                                },
+                                {
+                                    "code": 944,
+                                    "premium": 12.5
+                                }
+                            ],
+                            "additionalBenefits": [
+                                {
+                                    "code": 2024113247,
+                                    "sectionCode": 3794,
+                                    "sectionShortDescription": "SPARE",
+                                    "sectionType": "SS",
+                                    "rate": 5,
+                                    "dateWithEffectFrom": "2024-01-01",
+                                    "dateWithEffectTo": null,
+                                    "subClassCode": 460,
+                                    "binderCode": 202420207353,
+                                    "rangeFrom": 0,
+                                    "rangeTo": 0,
+                                    "rateDescription": "Percent",
+                                    "divisionFactor": 100,
+                                    "rateType": "FXD",
+                                    "premiumMinimumAmount": null,
+                                    "territoryCode": null,
+                                    "proratedOrFull": "P",
+                                    "premiumEndorsementMinimumAmount": null,
+                                    "multiplierRate": null,
+                                    "multiplierDivisionFactor": null,
+                                    "maximumRate": null,
+                                    "minimumRate": null,
+                                    "freeLimit": 14000,
+                                    "isExProtectorApplication": "N",
+                                    "isSumInsuredLimitApplicable": "N",
+                                    "sumInsuredLimitType": "A",
+                                    "sumInsuredRate": null,
+                                    "grpCode": null,
+                                    "isNoClaimDiscountApplicable": "N",
+                                    "currencyCode": null,
+                                    "agentName": null,
+                                    "rangeType": null,
+                                    "doesCashBackApply": null,
+                                    "cashBackLevel": null,
+                                    "rateFrequencyType": "A",
+                                    "sectionDescription": "SPARE",
+                                    "isMandatory": null,
+                                    "noClaimDiscountLevel": null,
+                                    "isChecked": false
+                                },
+                                {
+                                    "code": 2024113250,
+                                    "sectionCode": 2080,
+                                    "sectionShortDescription": "WINDSCREEN",
+                                    "sectionType": "EL",
+                                    "rate": 5,
+                                    "dateWithEffectFrom": "2024-01-01",
+                                    "dateWithEffectTo": null,
+                                    "subClassCode": 460,
+                                    "binderCode": 202420207353,
+                                    "rangeFrom": 1,
+                                    "rangeTo": 1,
+                                    "rateDescription": "Percent",
+                                    "divisionFactor": 100,
+                                    "rateType": "FXD",
+                                    "premiumMinimumAmount": null,
+                                    "territoryCode": null,
+                                    "proratedOrFull": "P",
+                                    "premiumEndorsementMinimumAmount": null,
+                                    "multiplierRate": null,
+                                    "multiplierDivisionFactor": null,
+                                    "maximumRate": null,
+                                    "minimumRate": null,
+                                    "freeLimit": 20000,
+                                    "isExProtectorApplication": "N",
+                                    "isSumInsuredLimitApplicable": "N",
+                                    "sumInsuredLimitType": "A",
+                                    "sumInsuredRate": null,
+                                    "grpCode": null,
+                                    "isNoClaimDiscountApplicable": "N",
+                                    "currencyCode": null,
+                                    "agentName": null,
+                                    "rangeType": null,
+                                    "doesCashBackApply": null,
+                                    "cashBackLevel": null,
+                                    "rateFrequencyType": "A",
+                                    "sectionDescription": "WINDSCREEN",
+                                    "isMandatory": null,
+                                    "noClaimDiscountLevel": null,
+                                    "isChecked": false
+                                }
+                            ],
+                            "excesses": [
+                                {
+                                    "code": 545,
+                                    "narration": "test excess",
+                                    "value": "4000000",
+                                    "subclassCode": 460,
+                                    "quotationValueCode": null
+                                },
+                                {
+                                    "code": 546,
+                                    "narration": "Multiple excess added for test",
+                                    "value": "400000",
+                                    "subclassCode": 460,
+                                    "quotationValueCode": null
+                                }
+                            ],
+                            "limitOfLiabilities": [
+                                {
+                                    "code": 544,
+                                    "narration": "test limit of liability",
+                                    "value": "1000000",
+                                    "subclassCode": 460,
+                                    "quotationValueCode": null
+                                },
+                                {
+                                    "code": 547,
+                                    "narration": "multiple test on limits of liability",
+                                    "value": "67890",
+                                    "subclassCode": 460,
+                                    "quotationValueCode": null
+                                }
+                            ],
+                            "clauses": [
+                                {
+                                    "code": 9178,
+                                    "coverTypeCode": 302,
+                                    "subclassCode": 460,
+                                    "classShortDescription": "CV-INS-012",
+                                    "heading": "JURISDICTION CLAUSE",
+                                    "isMandatory": "Y",
+                                    "wording": "Notwithstanding anything contained herein to the contrary, it is hereby declared and agreed that the indemnity provided herein shall not apply in:\n\n(a)\tCompensation for damages in respect of judgements delivered or obtained in the first instance other than in court of competent jurisdiction within the Geographical Area.\n(b)\tCosts and expenses of litigation recovered by and claimant from the insured which are not incurred in and recoverable in the geographical Area.\n(c)\tFor purpose of this clause, the geographical area shall mean the Federal Republic of Nigeria.\n"
+                                },
+                                {
+                                    "code": 9179,
+                                    "coverTypeCode": 302,
+                                    "subclassCode": 460,
+                                    "classShortDescription": "CV-INS-013",
+                                    "heading": "AUTOMATIC DEPRECIATION CLAUSE",
+                                    "isMandatory": "Y",
+                                    "wording": "It is understood and agreed that the vehicles insured under this policy will be subject to 10% yearly automatic depreciation at every renewal subject to a minimum sum insured of 30% of the original value . Therefore in the event of a total loss claim, the market value of the vehicle or the renewal value whichever is lower will form the basis of claim settlement subject to the application of depreciation rate below within the insurance year.\nPeriod                                                      Year                  \n3 months                                                   2.5%\n6 months                                                   5.0%\n9 months                                                   7.5%\n12 months                                                 10.0%\n"
+                                },
+                                {
+                                    "code": 9180,
+                                    "coverTypeCode": 302,
+                                    "subclassCode": 460,
+                                    "classShortDescription": "CV-INS-014",
+                                    "heading": "INCREASE OF THIRD PARTY PROPERTY DAMAGE LIMIT",
+                                    "isMandatory": "Y",
+                                    "wording": "It is hereby understood and agreed that the limit of the amount of the Company's liability under Section II-1(b) of the policy in respect of any one claim or series of claims arising out of one event is increased to Nxxxxxxxx consequent upon payment of NXXXXX additional premium\n\nSubject otherwise to the terms, conditions and excepions of the policy"
+                                },
+                                {
+                                    "code": 3418,
+                                    "coverTypeCode": 302,
+                                    "subclassCode": 460,
+                                    "classShortDescription": "TST1",
+                                    "heading": "TEST 1 ",
+                                    "isMandatory": "Y",
+                                    "wording": "TEST 1 CLAUSE"
+                                },
+                                {
+                                    "code": 3414,
+                                    "coverTypeCode": 302,
+                                    "subclassCode": 460,
+                                    "classShortDescription": "TEST-Peril",
+                                    "heading": "Test perilclause",
+                                    "isMandatory": "Y",
+                                    "wording": "Test peril clause"
+                                }
+                            ]
+                        }
+                    ],
+                    "sumInsured": 30000,
+                    "binderCode": 202420207353,
+                    "selectCoverType": {
+                        "subclassCode": 460,
+                        "coverTypeCode": 302,
+                        "minimumAnnualPremium": null,
+                        "minimumPremium": null,
+                        "coverTypeShortDescription": "COMP",
+                        "coverTypeDescription": "COMPREHENSIVE",
+                        "limits": null,
+                        "computedPremium": 5000,
+                        "limitPremium": [
+                            {
+                                "sectCode": 3514,
+                                "premium": 5000,
+                                "description": "SUM INSURED",
+                                "limitAmount": 30000,
+                                "isMandatory": "Y",
+                                "calculationGroup": 1,
+                                "compute": "Y",
+                                "dualBasis": "N",
+                                "rateDivisionFactor": 100,
+                                "rateType": "FXD",
+                                "rowNumber": 1,
+                                "premiumRate": 10,
+                                "freeLimit": 0,
+                                "sectionType": "SS",
+                                "multiplierRate": 1,
+                                "shortDescription": "SI",
+                                "sumInsuredRate": 0
+                            }
+                        ],
+                        "taxComputation": [
+                            {
+                                "code": 885,
+                                "premium": 3.75
+                            },
+                            {
+                                "code": 944,
+                                "premium": 12.5
+                            }
+                        ],
+                        "additionalBenefits": [
+                            {
+                                "code": 2024113247,
+                                "sectionCode": 3794,
+                                "sectionShortDescription": "SPARE",
+                                "sectionType": "SS",
+                                "rate": 5,
+                                "dateWithEffectFrom": "2024-01-01",
+                                "dateWithEffectTo": null,
+                                "subClassCode": 460,
+                                "binderCode": 202420207353,
+                                "rangeFrom": 0,
+                                "rangeTo": 0,
+                                "rateDescription": "Percent",
+                                "divisionFactor": 100,
+                                "rateType": "FXD",
+                                "premiumMinimumAmount": null,
+                                "territoryCode": null,
+                                "proratedOrFull": "P",
+                                "premiumEndorsementMinimumAmount": null,
+                                "multiplierRate": null,
+                                "multiplierDivisionFactor": null,
+                                "maximumRate": null,
+                                "minimumRate": null,
+                                "freeLimit": 14000,
+                                "isExProtectorApplication": "N",
+                                "isSumInsuredLimitApplicable": "N",
+                                "sumInsuredLimitType": "A",
+                                "sumInsuredRate": null,
+                                "grpCode": null,
+                                "isNoClaimDiscountApplicable": "N",
+                                "currencyCode": null,
+                                "agentName": null,
+                                "rangeType": null,
+                                "doesCashBackApply": null,
+                                "cashBackLevel": null,
+                                "rateFrequencyType": "A",
+                                "sectionDescription": "SPARE",
+                                "isMandatory": null,
+                                "noClaimDiscountLevel": null,
+                                "isChecked": false
+                            },
+                            {
+                                "code": 2024113250,
+                                "sectionCode": 2080,
+                                "sectionShortDescription": "WINDSCREEN",
+                                "sectionType": "EL",
+                                "rate": 5,
+                                "dateWithEffectFrom": "2024-01-01",
+                                "dateWithEffectTo": null,
+                                "subClassCode": 460,
+                                "binderCode": 202420207353,
+                                "rangeFrom": 1,
+                                "rangeTo": 1,
+                                "rateDescription": "Percent",
+                                "divisionFactor": 100,
+                                "rateType": "FXD",
+                                "premiumMinimumAmount": null,
+                                "territoryCode": null,
+                                "proratedOrFull": "P",
+                                "premiumEndorsementMinimumAmount": null,
+                                "multiplierRate": null,
+                                "multiplierDivisionFactor": null,
+                                "maximumRate": null,
+                                "minimumRate": null,
+                                "freeLimit": 20000,
+                                "isExProtectorApplication": "N",
+                                "isSumInsuredLimitApplicable": "N",
+                                "sumInsuredLimitType": "A",
+                                "sumInsuredRate": null,
+                                "grpCode": null,
+                                "isNoClaimDiscountApplicable": "N",
+                                "currencyCode": null,
+                                "agentName": null,
+                                "rangeType": null,
+                                "doesCashBackApply": null,
+                                "cashBackLevel": null,
+                                "rateFrequencyType": "A",
+                                "sectionDescription": "WINDSCREEN",
+                                "isMandatory": null,
+                                "noClaimDiscountLevel": null,
+                                "isChecked": false
+                            }
+                        ],
+                        "excesses": [
+                            {
+                                "code": 545,
+                                "narration": "test excess",
+                                "value": "4000000",
+                                "subclassCode": 460,
+                                "quotationValueCode": null
+                            },
+                            {
+                                "code": 546,
+                                "narration": "Multiple excess added for test",
+                                "value": "400000",
+                                "subclassCode": 460,
+                                "quotationValueCode": null
+                            }
+                        ],
+                        "limitOfLiabilities": [
+                            {
+                                "code": 544,
+                                "narration": "test limit of liability",
+                                "value": "1000000",
+                                "subclassCode": 460,
+                                "quotationValueCode": null
+                            },
+                            {
+                                "code": 547,
+                                "narration": "multiple test on limits of liability",
+                                "value": "67890",
+                                "subclassCode": 460,
+                                "quotationValueCode": null
+                            }
+                        ],
+                        "clauses": [
+                            {
+                                "code": 9178,
+                                "coverTypeCode": 302,
+                                "subclassCode": 460,
+                                "classShortDescription": "CV-INS-012",
+                                "heading": "JURISDICTION CLAUSE",
+                                "isMandatory": "Y",
+                                "wording": "Notwithstanding anything contained herein to the contrary, it is hereby declared and agreed that the indemnity provided herein shall not apply in:\n\n(a)\tCompensation for damages in respect of judgements delivered or obtained in the first instance other than in court of competent jurisdiction within the Geographical Area.\n(b)\tCosts and expenses of litigation recovered by and claimant from the insured which are not incurred in and recoverable in the geographical Area.\n(c)\tFor purpose of this clause, the geographical area shall mean the Federal Republic of Nigeria.\n"
+                            },
+                            {
+                                "code": 9179,
+                                "coverTypeCode": 302,
+                                "subclassCode": 460,
+                                "classShortDescription": "CV-INS-013",
+                                "heading": "AUTOMATIC DEPRECIATION CLAUSE",
+                                "isMandatory": "Y",
+                                "wording": "It is understood and agreed that the vehicles insured under this policy will be subject to 10% yearly automatic depreciation at every renewal subject to a minimum sum insured of 30% of the original value . Therefore in the event of a total loss claim, the market value of the vehicle or the renewal value whichever is lower will form the basis of claim settlement subject to the application of depreciation rate below within the insurance year.\nPeriod                                                      Year                  \n3 months                                                   2.5%\n6 months                                                   5.0%\n9 months                                                   7.5%\n12 months                                                 10.0%\n"
+                            },
+                            {
+                                "code": 9180,
+                                "coverTypeCode": 302,
+                                "subclassCode": 460,
+                                "classShortDescription": "CV-INS-014",
+                                "heading": "INCREASE OF THIRD PARTY PROPERTY DAMAGE LIMIT",
+                                "isMandatory": "Y",
+                                "wording": "It is hereby understood and agreed that the limit of the amount of the Company's liability under Section II-1(b) of the policy in respect of any one claim or series of claims arising out of one event is increased to Nxxxxxxxx consequent upon payment of NXXXXX additional premium\n\nSubject otherwise to the terms, conditions and excepions of the policy"
+                            },
+                            {
+                                "code": 3418,
+                                "coverTypeCode": 302,
+                                "subclassCode": 460,
+                                "classShortDescription": "TST1",
+                                "heading": "TEST 1 ",
+                                "isMandatory": "Y",
+                                "wording": "TEST 1 CLAUSE"
+                            },
+                            {
+                                "code": 3414,
+                                "coverTypeCode": 302,
+                                "subclassCode": 460,
+                                "classShortDescription": "TEST-Peril",
+                                "heading": "Test perilclause",
+                                "isMandatory": "Y",
+                                "wording": "Test peril clause"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "coverFrom": "2025-06-12",
+            "coverTo": "2026-06-11"
+        }
+    ]
+}
