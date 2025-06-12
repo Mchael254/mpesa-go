@@ -1401,7 +1401,7 @@ export class ClientAllocationComponent {
               module: 'CB-RECEIPTS',
               originalFileName: this.selectedFile.name,
               filename: this.selectedFile.name,
-              referenceNo: detail.referenceNumber,
+              referenceNo: detail.policyNumber,
               docDescription:
                 this.fileDescriptions[this.currentFileIndex].description,
               amount: detail.premiumAmount,
