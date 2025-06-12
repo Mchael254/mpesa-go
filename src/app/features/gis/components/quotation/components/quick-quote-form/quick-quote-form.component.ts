@@ -749,14 +749,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       return;
     }
     log.debug("Form submission payload >>>>", this.quickQuoteForm.value);
-    const fullState = {
-      selectedProducts: this.selectedProducts,
-      formArray: this.quickQuoteForm.value,
-    };
-
-    sessionStorage.setItem('savedProductsState', JSON.stringify(fullState));
-
-
     const computationRequest = this.computationPayload();
     log.debug("premium computation payload >>>>", computationRequest);
     this.performComputation(computationRequest)
@@ -1721,6 +1713,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       mergeMap((response) => {
         if (response._embedded?.quotationNumber && response._embedded?.quotationCode) {
           sessionStorage.setItem("quotationNumber", response._embedded.quotationNumber)
+          const fullState = {
+            selectedProducts: this.selectedProducts,
+            formArray: this.quickQuoteForm.value,
+          };
+          sessionStorage.setItem('savedProductsState', JSON.stringify(fullState));
           this.payPart = true;
           sessionStorage.setItem("showPaymentMethods", "true");
           return this.quotationService.savePremiumComputationPayload(response._embedded?.quotationCode, this.currentComputationPayload)
