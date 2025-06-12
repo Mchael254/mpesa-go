@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Logger } from 'src/app/shared/services';
 import { dummyPaymentOptions, PaymentOption } from '../../data/dummyData';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { ActivatedRoute } from '@angular/router';
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -12,8 +13,19 @@ const log = new Logger('QuoteSummaryComponent');
 })
 export class PaymentCheckoutComponent {
 
-  constructor(private globalMessagingService: GlobalMessagingService){
+  constructor(private globalMessagingService: GlobalMessagingService, private route: ActivatedRoute) {
 
+  }
+
+  ngOnInit() {
+    const token = this.route.snapshot.paramMap.get('token');
+    const ipayRefNo = sessionStorage.getItem(`payment_${token}`);
+
+    if (ipayRefNo) {
+      sessionStorage.removeItem(`payment_${token}`);
+    } else {
+      console.error('Invalid payment link');
+    }
   }
 
   //paymnet
@@ -37,7 +49,7 @@ export class PaymentCheckoutComponent {
       setTimeout(() => {
         this.validPhoneNumber = false;
       }, 3000);
-      
+
 
       return;
     }
@@ -49,7 +61,7 @@ export class PaymentCheckoutComponent {
       paybill: this.selectedDetails.paybill,
       account: this.selectedDetails.account
     }
-    this.globalMessagingService.displaySuccessMessage('Success','ProcessingPayment...Check your phone')
+    this.globalMessagingService.displaySuccessMessage('Success', 'ProcessingPayment...Check your phone')
 
     log.debug(paymentDetails)
 
