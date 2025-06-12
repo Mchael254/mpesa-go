@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import {  QuotationDetails, QuotationDTO } from '../../data/quotationsDTO';
+import { QuotationDetails, QuotationDTO, ShareQuoteDTO } from '../../data/quotationsDTO';
 
 import { QuotationsService } from "../../services/quotations/quotations.service";
 import { Logger, untilDestroyed, UtilService } from "../../../../../../shared/shared.module";
@@ -16,7 +16,7 @@ import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { tap } from 'rxjs';
 import { TableDetail } from 'src/app/shared/data/table-detail';
 import { NgxSpinnerService } from 'ngx-spinner';
-import {ProductLevelPremium} from "../../data/premium-computation";
+import { ProductLevelPremium } from "../../data/premium-computation";
 
 
 
@@ -87,8 +87,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   clientName: string;
   clientEmail: string;
   clientPhone: string;
-  selectedClient:ClientDTO
-    showClientSearchModal = false;
+  selectedClient: ClientDTO
+  showClientSearchModal = false;
 
 
   constructor(
@@ -100,6 +100,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     private clientService: ClientService,
     private spinner: NgxSpinnerService,
     public utilService: UtilService,
+    public cdr: ChangeDetectorRef
 
   ) {
     this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
@@ -181,6 +182,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   ngOnInit(): void {
+    const stored = sessionStorage.getItem('selectedCovers');
+    this.selectedCovers = stored ? JSON.parse(stored) : null;
+
     this.getUsers()
     log.debug("Users>>>", this.users);
     this.quotationService.getQuotationDetails(sessionStorage.getItem("quotationNumber"))
@@ -202,10 +206,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
-  @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
-  // To get a reference to app-quote-report
-  @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
-
   selectedCovers: ProductLevelPremium = null
 
 
@@ -224,14 +224,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-
-  onDownloadRequested() {
-    if (this.quoteReportComponent) {
-      this.quoteReportComponent.downloadPdf();
-    } else {
-      console.error('QuoteReportComponent is not available!');
-    }
-  }
 
   flattenQuotationProducts(quotationProducts: any[]) {
     this.productDetails = [];
@@ -357,7 +349,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       comment: this.reassignComment
     }
     this.globalMessagingService.displaySuccessMessage('Success', 'reassigning...')
-     this.onUserUnselect()
+    this.onUserUnselect()
     log.debug('reassign Payload', reassignPayload)
 
   }
@@ -457,48 +449,83 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
+  handleSaveClient(eventData: any) {
+    log.debug('Event received from Client search comp', eventData);
+    const clientCode = eventData.id;
+    const payload = {
+      quotationCode: this.quotationDetails?.code,
+      clientCode: clientCode
+    };
 
-handleSaveClient(eventData: any) {
-  log.debug('Event received from Client search comp', eventData);
-  const clientCode = eventData.id;
-  const payload = {
-    quotationCode: this.quotationDetails?.code,
-    clientCode: clientCode
+    this.quotationService.updateQuotation(payload).subscribe({
+      next: (response) => {
+        log.debug('Quotation update response:', response);
+        if (response) {
+          // Now call convertQuoteToPolicy
+          const quotationCode = this.quotationDetails?.code;
+          const quoteProductCode = this.quotationDetails?.quotationProducts[0]?.code;
+          const conversionFlag = true;
+          sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
+
+          this.quotationService.convertQuoteToPolicy(quotationCode, quoteProductCode).subscribe({
+            next: (data: any) => {
+              log.debug("Response after converting quote to a policy:", data);
+              this.closebutton.nativeElement.click();
+              this.batchNo = data._embedded.batchNo;
+              log.debug("Batch number", this.batchNo);
+              const convertedQuoteBatchNo = JSON.stringify(this.batchNo);
+              sessionStorage.setItem('convertedQuoteBatchNo', convertedQuoteBatchNo);
+              this.router.navigate(['/home/gis/policy/policy-summary']);
+            },
+            error: (err) => {
+              log.debug('Error while converting quote to policy:', err);
+              this.globalMessagingService.displayErrorMessage('error', 'Failed to convert quote to policy.');
+            }
+          });
+        }
+      },
+      error: (error) => {
+        this.globalMessagingService.displayErrorMessage('error', error.error.message);
+        log.debug('Error while updating quotation:', error);
+      }
+    });
+  }
+
+
+  //pdf functionality
+  @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
+  @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
+
+  quoteData = {
+    name: 'John Doe',
+    amount: 'KES 25,000'
   };
 
-  this.quotationService.updateQuotation(payload).subscribe({
-    next: (response) => {
-      log.debug('Quotation update response:', response);
-    if(response){
-      // Now call convertQuoteToPolicy
-      const quotationCode = this.quotationDetails?.code;
-      const quoteProductCode = this.quotationDetails?.quotationProducts[0]?.code;
-      const conversionFlag = true;
-      sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
+  onDownloadRequested() {
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.quoteReportComponent.generatePdfSelectCover(true).then(r => {
 
-      this.quotationService.convertQuoteToPolicy(quotationCode, quoteProductCode).subscribe({
-        next: (data: any) => {
-          log.debug("Response after converting quote to a policy:", data);
-           this.closebutton.nativeElement.click();
-          this.batchNo = data._embedded.batchNo;
-          log.debug("Batch number", this.batchNo);
-          const convertedQuoteBatchNo = JSON.stringify(this.batchNo);
-          sessionStorage.setItem('convertedQuoteBatchNo', convertedQuoteBatchNo);
-          this.router.navigate(['/home/gis/policy/policy-summary']);
-        },
-        error: (err) => {
-          log.debug('Error while converting quote to policy:', err);
-          this.globalMessagingService.displayErrorMessage('error', 'Failed to convert quote to policy.');
+      })
+    }, 100);
+  }
+
+  listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
+    if (sendEvent && ['email', 'whatsapp'].includes(sendEvent.mode.selectedMethod)) {
+      this.cdr.detectChanges();
+      setTimeout(async () => {
+        try {
+          await this.quoteReportComponent.generatePdfSelectCover(false, 'quote-report.pdf');
+          // If generatePdfSelectCover returns a file in the future, handle it here.
+          // Currently, it returns void, so no further action is needed.
+        } catch (err) {
+          console.error('PDF generation failed', err);
         }
-      });
+      }, 200);
     }
-    },
-    error: (error) => {
-      this.globalMessagingService.displayErrorMessage('error', error.error.message);
-      log.debug('Error while updating quotation:', error);
-    }
-  });
-}
+  }
+
+
 
 
 }

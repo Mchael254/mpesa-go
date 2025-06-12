@@ -19,6 +19,7 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
+import { color } from 'chart.js/helpers';
 
 
 const log = new Logger('QuoteReportComponent');
@@ -49,6 +50,7 @@ interface EnrichedProduct {
 export class QuoteReportComponent implements OnInit, AfterViewInit {
   @Input() quotationDetails!: QuotationDetails;
   private _premiumComputationResponse: ProductLevelPremium
+  @Input() selectedCovers: any
 
   @Input()
   payNow = false
@@ -121,64 +123,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   };
 
 
-  // async generatePdf(
-  //   download: boolean = false,
-  //   fileName: string = 'document.pdf',
-  // ): Promise<File> {
-  //   await document.fonts.ready;
-  //   // 1. Wait for fonts and images to fully load
-  //   const element = this.pdfContent.nativeElement as HTMLElement;
-  //   await this.waitForImagesToLoad(element);
-
-  //   // 2. Render canvas from full content
-  //   const canvas = await html2canvas(element, {
-  //     scale: 2,
-  //     useCORS: true,
-  //     backgroundColor: '#fff'
-  //   });
-
-  //   const imgData = canvas.toDataURL('image/png');
-  //   const pdf = new jsPDF('p', 'pt', 'a4');
-
-  //   const pageWidth = pdf.internal.pageSize.getWidth();
-  //   const pageHeight = pdf.internal.pageSize.getHeight();
-
-  //   const imgWidth = pageWidth;
-  //   const imgHeight = (canvas.height * pageWidth) / canvas.width;
-
-  //   let heightLeft = imgHeight;
-  //   let position = 0;
-
-  //   // 3. Add first page
-  //   pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-  //   heightLeft -= pageHeight;
-
-  //   // 4. Add extra pages if needed
-  //   while (heightLeft > 0) {
-  //     position -= pageHeight;
-  //     pdf.addPage();
-  //     pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-  //     heightLeft -= pageHeight;
-  //   }
-
-  //   // 5. Optional download
-  //   if (download) {
-  //     pdf.save(fileName);
-  //   }
-
-  //   // 6. Return PDF as File for further use (e.g., API upload)
-  //   const blob = pdf.output('blob');
-  //   return new File([blob], fileName, { type: 'application/pdf' });
-  // }
-
-  chunkArray<T>(arr: T[], size: number): T[][] {
-    const result: T[][] = [];
-    for (let i = 0; i < arr.length; i += size) {
-      result.push(arr.slice(i, i + size));
-    }
-    return result;
-  }
-
+  //quick-quote report
   IPREF: string = ''
   async generatePdf(download = false, fileName = 'document.pdf'): Promise<Blob | void> {
     let paymentUrl = '';
@@ -196,7 +141,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
       const risks: any = product.enrichedRisks.flatMap(enriched => {
         const coverageContent: any = !enriched.risk.selectCoverType
           ? (() => {
-            // Existing code for coverTypeDetails (multiple covers)
+            //  (multiple covers)
             const coverChunks = [];
             for (let i = 0; i < enriched.risk.coverTypeDetails.length; i += 4) {
               coverChunks.push(enriched.risk.coverTypeDetails.slice(i, i + 4));
@@ -291,7 +236,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
             }).flat();
           })()
           : (() => {
-            // NEW: Handle single selectCoverType structure
+            //  selectCoverType structure
             const cover = enriched.risk.selectCoverType;
 
             return [{
@@ -418,7 +363,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
                 width: 'auto',
                 text: [
                   { text: 'Value: ', style: 'label' },
-                  { text: `${enriched.risk.sumInsured}`, bold: true }
+                  { text: `${enriched.risk.sumInsured || 'N/A'}`, style: 'boldText' }
                 ]
               }
             ],
@@ -433,8 +378,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
           widths: ['*'],
           body: [[{
             stack: [
-              { text: product.description, style: 'sectionHeader', margin: [5, 10, 0, 0] }, // Remove bottom margin
-              ...risks
+              { text: product.description, style: 'sectionHeader', margin: [5, 10, 0, 0] }, 
             ]
           }]]
         },
@@ -564,6 +508,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   }
 
 
+
+
   private waitForImagesToLoad(container: HTMLElement): Promise<void> {
     const images = Array.from(container.querySelectorAll('img'));
     const unloaded = images.filter(img => !img.complete);
@@ -652,4 +598,298 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   pay() {
     alert('Proceed to payment!');
   }
+
+  //Summary screen report
+
+  async generatePdfSelectCover(download = false, fileName = 'document.pdf'): Promise<void> {
+    const productLevelPremiums = this.selectedCovers?.productLevelPremiums || [];
+
+    // Header content with logo and info table
+    const headerContent: any[] = [
+      {
+        columns: [
+          { image: this.header.logo, width: 100 },
+          { text: 'QUOTATION REPORT', style: 'header', alignment: 'center', margin: [0, 30, 0, 0] }
+        ]
+      },
+      { text: '\n' },
+      {
+        style: 'infoTable',
+        table: {
+          widths: ['auto', '*'],
+          body: [
+            ['Quotation status', this.header.quotationStatus],
+            ['Period', this.header.period],
+            ['Quote time', this.header.quoteTime],
+
+          ]
+        },
+        layout: {
+          fillColor: (rowIndex) => (rowIndex % 2 === 0 ? '#f3f3f3' : null),
+          hLineWidth: () => 0.5,
+          vLineWidth: () => 0.5,
+          hLineColor: () => '#aaa',
+          vLineColor: () => '#aaa',
+        }
+      },
+      { text: '\n' }
+    ];
+
+    // All products content
+    const allProductsContent: any[] = [];
+
+    for (let productIndex = 0; productIndex < productLevelPremiums.length; productIndex++) {
+      const product = productLevelPremiums[productIndex];
+
+      // Product content with blue border
+      const productContent: any[] = [
+        { text: `Product: ${product.description} (${product.code})`, style: 'riskTitle', margin: [0, 0, 0, 10] },
+
+        {
+          canvas: [
+            {
+              type: 'line',
+              x1: 0, y1: 0,
+              x2: 515, y2: 0,
+              lineWidth: 1.5,
+              lineColor: '#0d6efd'
+            }
+          ],
+          margin: [0, 0, 0, 15]
+        }
+      ];
+
+      const risks = product.riskLevelPremiums || [];
+      const coverTypesContent: any[] = [];
+
+      for (const risk of risks) {
+        const selectCoverType = risk.selectCoverType;
+
+        if (selectCoverType) {
+          const coverTypeContent: any[] = [
+            {
+              text: `Cover Type: ${selectCoverType.coverTypeDescription}`,
+              style: 'riskTitle',
+              margin: [0, 0, 0, 10]
+            }
+          ];
+
+          // Additional Benefits
+          if (selectCoverType.additionalBenefits?.length > 0) {
+            coverTypeContent.push({
+              text: 'Additional Benefits:',
+              style: 'sectionHeader',
+              margin: [0, 5, 0, 5]
+            });
+
+            const benefitsList = selectCoverType.additionalBenefits.map((benefit, i) =>
+              `${String.fromCharCode(97 + i)}) ${benefit.sectionDescription}`
+            ).join('\n');
+
+            coverTypeContent.push({ text: benefitsList, margin: [0, 0, 0, 10] });
+          }
+
+          // Excesses
+          if (selectCoverType.excesses?.length > 0) {
+            coverTypeContent.push({
+              text: 'Excesses:',
+              style: 'sectionHeader',
+              margin: [0, 5, 0, 5]
+            });
+
+            const excessesList = selectCoverType.excesses.map((excess, i) =>
+              `${String.fromCharCode(97 + i)}) ${excess.narration}`
+            ).join('\n');
+
+            coverTypeContent.push({ text: excessesList, margin: [0, 0, 0, 10] });
+          }
+
+          // Limits of Liability
+          if (selectCoverType.limitOfLiabilities?.length > 0) {
+            coverTypeContent.push({
+              text: 'Limits of Liability:',
+              style: 'sectionHeader',
+              margin: [0, 5, 0, 5]
+            });
+
+            const liabilitiesList = selectCoverType.limitOfLiabilities.map((limit, i) =>
+              `${String.fromCharCode(97 + i)}) ${limit.narration}`
+            ).join('\n');
+
+            coverTypeContent.push({ text: liabilitiesList, margin: [0, 0, 0, 10] });
+          }
+
+          // Clauses
+          if (selectCoverType.clauses?.length > 0) {
+            coverTypeContent.push({
+              text: 'Clauses:',
+              style: 'sectionHeader',
+              margin: [0, 5, 0, 5]
+            });
+
+            for (const clause of selectCoverType.clauses) {
+              coverTypeContent.push({
+                text: clause.wording,
+                margin: [0, 0, 0, 15],
+                style: 'clauseText'
+              });
+            }
+          }
+
+          //risk title 
+          coverTypesContent.push({
+            columns: [
+
+              {
+                text: `${risk.propertyId || 'N/A'}`,
+                width: 'auto',
+                style: 'riskTitle'
+              },
+
+              {
+                text: '',
+                width: '*'
+              },
+
+              {
+                text: ` Value: ${risk.sumInsured || 'N/A'}`,
+                width: 'auto',
+                style: 'riskTitle',
+                alignment: 'right'
+              }
+            ],
+            margin: [0, 15, 0, 5]
+          });
+
+          coverTypesContent.push({
+            table: {
+              widths: ['*'],
+              body: [[{ stack: coverTypeContent }]]
+            },
+            layout: {
+              hLineWidth: () => 0.75,
+              vLineWidth: (i) => 0.75,
+              hLineColor: () => '#0d6efd',
+              vLineColor: () => '#0d6efd',
+              paddingTop: () => 12,
+              paddingBottom: () => 12,
+              paddingLeft: () => 15,
+              paddingRight: () => 15
+            },
+            margin: [0, 0, 0, 15]
+          });
+        }
+      }
+
+      productContent.push(...coverTypesContent);
+
+      allProductsContent.push({
+        table: {
+          widths: ['*'],
+          body: [[{
+            stack: productContent
+          }]]
+        },
+        layout: {
+          hLineWidth: () => 2,
+          vLineWidth: () => 2,
+          hLineColor: () => '#0d6efd',
+          vLineColor: () => '#0d6efd',
+          paddingTop: () => 15,
+          paddingBottom: () => 15,
+          paddingLeft: () => 15,
+          paddingRight: () => 15
+        },
+        margin: [0, 0, 0, 20]
+      });
+
+      if (productIndex < productLevelPremiums.length - 1) {
+        allProductsContent.push({ text: '', pageBreak: 'after' });
+      }
+    }
+
+    // Payment Methods Section
+    const paymentMethodsSection = {
+      table: {
+        widths: ['*'],
+        body: [[{
+          stack: [
+            { text: 'Payment methods', style: 'sectionHeader', margin: [0, 20, 0, 10] },
+            {
+              columns: this.paymentAdviceData?.paymentMethods?.map(method => ({
+                width: '*',
+                stack: [
+                  { text: method.title, bold: true, margin: [0, 0, 0, 5] },
+                  ...method.details.map(detail => ({ text: detail, margin: [0, 0, 0, 2] }))
+                ]
+              })) || [],
+              columnGap: 20,
+              margin: [10, 0, 10, 15]
+            },
+            {
+              text: [
+                { text: 'Click here to pay', link: 'http://localhost:4200/home/gis/quotation/payment-checkout', color: '#0d6efd', decoration: 'underline' }
+              ],
+              alignment: 'center',
+              margin: [0, 10, 0, 20]
+            }
+          ]
+        }]]
+      },
+      layout: {
+        hLineWidth: () => 1,
+        vLineWidth: () => 1,
+        hLineColor: () => '#0d6efd',
+        vLineColor: () => '#0d6efd',
+        paddingTop: () => 10,
+        paddingBottom: () => 10,
+        paddingLeft: () => 15,
+        paddingRight: () => 15
+      },
+      margin: [0, 10, 0, 10]
+    };
+
+    const fullContent = [
+      ...headerContent,
+      { text: 'Covers Selected', style: 'sectionHeader', margin: [0, 0, 0, 20], color: 'black' },
+      ...allProductsContent,
+      paymentMethodsSection
+    ];
+
+    const docDefinition: any = {
+      content: fullContent,
+
+      footer: function (currentPage, pageCount) {
+        return {
+          text: this.paymentAdviceData?.footerInfo?.join(' | ') || 'Footer Information',
+          fontSize: 9,
+          alignment: 'center',
+          margin: [40, 10, 40, 10]
+        };
+      }.bind(this),
+
+      styles: {
+        header: { fontSize: 22, bold: true },
+        infoTable: { margin: [0, 0, 0, 10], fontSize: 12 },
+        sectionHeader: { fontSize: 16, bold: true, color: '#0d6efd' },
+        riskTitle: { fontSize: 14, bold: true, color: '#343a40' },
+        label: { fontSize: 11, color: '#6c757d' },
+        clauseText: { fontSize: 10, alignment: 'justify' }
+      },
+
+      pageOrientation: 'portrait',
+      pageSize: 'A4',
+      pageMargins: [40, 40, 40, 60]
+    };
+
+    const pdf = pdfMake.createPdf(docDefinition);
+
+    if (download) {
+      await pdf.download(fileName);
+    } else {
+      pdf.open();
+    }
+  }
+
+
 }
