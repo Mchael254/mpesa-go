@@ -339,18 +339,18 @@
       <div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
 
         <div class="modal-dialog modal-dialog-centered modal-md ">
-          <div class="modal-content w-[40vw] h-[40vh] p-3">
-            <div class="d-flex justify-content-end align-items-center mb-1">
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div class="modal-content  p-4">
+            <div class="d-flex justify-content-end align-items-center ">
+              <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"  style="width: 2rem; height: 2rem; filter: brightness(0) saturate(100%) invert(12%) sepia(93%) saturate(5425%) hue-rotate(357deg) brightness(92%) contrast(115%); border: none;"></button>
             </div>
-            <h3 class="page-title mt-0">{{'gis.quotation.share_quotation' | translate }}</h3>
+            <h3 class="page-title mt-0"style="margin-left: 15px; ">Share quote</h3>
             <ng-container *ngIf="premiumComputationPayloadToShare">
               <app-quote-report [premiumComputationResponse]="premiumComputationPayloadToShare" #quoteReport
                 style="display: none;">
               </app-quote-report>
             </ng-container>
 
-            <app-share-quotes (downloadRequested)="onDownloadRequested()" (sendEvent)="listenToSendEvent($event)">
+            <app-share-quotes (downloadRequested)="onDownloadRequested()" (sendEvent)="listenToSendEvent($event)" style="margin-top: 0;">
 
             </app-share-quotes>
           </div>

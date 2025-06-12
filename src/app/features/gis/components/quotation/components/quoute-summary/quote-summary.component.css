@@ -291,6 +291,22 @@ color: #000000;
   vertical-align: middle;
 }
 
+#btn-close {
+  color: #EE3945 !important;
+   background: none;
+  border: none;
+  font-size: 32px;
+}
+.btn-close:focus,
+.btn-close:active,
+.btn-close:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+
+
 /* Responsive */
 @media (max-width: 768px) {
   .details-grid {
