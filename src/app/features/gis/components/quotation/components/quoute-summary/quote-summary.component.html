@@ -154,10 +154,11 @@
 
     </div>
   </div>
-
+  
 
   <!-- SHARE QUOTE MODAL -->
   <div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
+    <p>ddd</p>
 
     <div class="modal-dialog modal-dialog-centered modal-md">
       <div class="modal-content w-[40vw] h-[40vh] p-3">
@@ -171,7 +172,7 @@
           </app-quote-report>
         </ng-container> -->
         <ng-container>
-          <app-quote-report #quoteReport [selectedCovers]="selectedCovers" style="display: none;">
+          <app-quote-report [quotationDetails]="quotationDetails" #quoteReport [selectedCovers]="selectedCovers" style="display: none;">
           </app-quote-report>
         </ng-container>
 
