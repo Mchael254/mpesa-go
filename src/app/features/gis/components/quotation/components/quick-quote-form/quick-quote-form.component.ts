@@ -1686,8 +1686,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       });
   }
 
-  payPart: boolean = false;
-
   saveQuotationDetails() {
     const quotationPayload = this.getQuotationPayload()
     log.debug("Quotation details >>>", quotationPayload)
@@ -1718,8 +1716,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
             formArray: this.quickQuoteForm.value,
           };
           sessionStorage.setItem('savedProductsState', JSON.stringify(fullState));
-          this.payPart = true;
-          sessionStorage.setItem("showPaymentMethods", "true");
+      
           return this.quotationService.savePremiumComputationPayload(response._embedded?.quotationCode, this.currentComputationPayload)
         } else {
           this.globalMessagingService.displayErrorMessage('Error', 'Could not save quotation details');
