@@ -1,3 +1,8 @@
+export interface ComputationPayloadDto {
+  payload: PremiumComputationRequest,
+  quotationCode: number
+}
+
 export interface PremiumComputationRequest {
   dateWithEffectFrom: string;
   dateWithEffectTo: string;
@@ -119,7 +124,7 @@ export interface RiskLevelPremium {
   coverTypeDetails: CoverTypeDetail[];
   selectCoverType?: CoverTypeDetail
   binderCode?: number
-  sumInsured?:number
+  sumInsured?: number
 }
 
 export interface CoverTypeDetail {
@@ -163,10 +168,10 @@ export interface TaxComputation {
   code: number;
   premium: number;
   taxRate?: number
-  taxRateType?:string
+  taxRateType?: string
   description?: string
   levelCode?: string
-  taxType?:string
-  applicationLevel?:string
+  taxType?: string
+  applicationLevel?: string
 }
 

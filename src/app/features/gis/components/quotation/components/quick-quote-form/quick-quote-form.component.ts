@@ -65,6 +65,7 @@ import {debounceTime} from "rxjs/internal/operators/debounceTime";
 import {distinctUntilChanged, map} from "rxjs/operators";
 import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import {
+  ComputationPayloadDto,
   CoverType, Limit,
   PremiumComputationRequest,
   Product,
@@ -76,6 +77,7 @@ import {
 import {QuotationDetailsRequestDto} from "../../data/quotation-details";
 import {differenceInCalendarDays, parseISO} from 'date-fns';
 import {QuoteReportComponent} from '../quote-report/quote-report.component';
+import {EmailDto} from "../../../../../../shared/data/common/email-dto";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -1707,7 +1709,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     log.debug("Computation response after mutation >>>", premiumToSave)
     sessionStorage.setItem("selectedCovers", JSON.stringify(premiumToSave))
     sessionStorage.setItem('premiumComputationResponse', JSON.stringify(this.premiumComputationResponse));
-    this.quotationService.processQuickQuotation(quotationPayload).pipe(
+    this.quotationService.processQuotation(quotationPayload).pipe(
       mergeMap((response) => {
         if (response._embedded?.quotationNumber && response._embedded?.quotationCode) {
           sessionStorage.setItem("quotationNumber", response._embedded.quotationNumber)
@@ -1716,8 +1718,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
             formArray: this.quickQuoteForm.value,
           };
           sessionStorage.setItem('savedProductsState', JSON.stringify(fullState));
-      
-          return this.quotationService.savePremiumComputationPayload(response._embedded?.quotationCode, this.currentComputationPayload)
+          const computationPayload: ComputationPayloadDto = {
+            quotationCode : +response._embedded?.quotationCode,
+            payload: this.currentComputationPayload
+          }
+          return this.quotationService.savePremiumComputationPayload(computationPayload)
         } else {
           this.globalMessagingService.displayErrorMessage('Error', 'Could not save quotation details');
         }
@@ -2125,10 +2130,28 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         try {
           const pdfFile = await this.quoteReportComponent.generatePdf(false, 'quote-report.pdf');
           if (pdfFile) {
+            const emailDto: EmailDto = {
+              address: [sendEvent.mode.email],
+              clientCode: 0,
+              attachments: [],
+              subject: 'Draft Quotation',
+              message: 'Draft Quotation',
+              emailAggregator: 'P',
+              systemModule: 'GIS',
+              systemCode: 37,
+              fromName: 'Turnkey Africa',
+              sendOn: new Date().toString(),
+              from: 'test@gmail.com',
+              status: 'pending'
+            }
             const formData = new FormData();
+            this.quotationService.sendEmail(emailDto).pipe(
+              untilDestroyed(this)
+            )
+              .subscribe((response) => {
+                log.debug("Form Data....", response);
+              })
             formData.append('file', pdfFile, 'quote-report.pdf');
-            log.debug("Form Data....", formData, pdfFile);
-            // this.http.post('/api/send-quote', formData).subscribe();
           }
         } catch (err) {
           console.error('PDF generation failed', err);

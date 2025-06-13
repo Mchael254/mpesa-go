@@ -29,7 +29,7 @@ import {ClientDTO} from '../../../../../entities/data/ClientDTO';
 import {UtilService} from '../../../../../../shared/services';
 import {map} from "rxjs/operators";
 import {QuotationsDTO} from 'src/app/features/gis/data/quotations-dto';
-import {PremiumComputationRequest, ProductLevelPremium} from "../../data/premium-computation";
+import {ComputationPayloadDto, PremiumComputationRequest, ProductLevelPremium} from "../../data/premium-computation";
 import {QuotationDetailsRequestDto} from "../../data/quotation-details";
 import {EmailDto} from "../../../../../../shared/data/common/email-dto";
 
@@ -755,8 +755,8 @@ export class QuotationsService {
 
   }
 
-  savePremiumComputationPayload(quotationCode: number, data: PremiumComputationRequest): Observable<any> {
-    return this.api.POST<any[]>(`api/v1/computation-payload/${quotationCode}`, JSON.stringify(data), API_CONFIG.PREMIUM_COMPUTATION,);
+  savePremiumComputationPayload(data: ComputationPayloadDto): Observable<any> {
+    return this.api.POST<any[]>(`api/v1/computation-payload`, JSON.stringify(data), API_CONFIG.PREMIUM_COMPUTATION,);
   }
 
   getPremiumComputationPayload(code: number): Observable<any> {
