@@ -555,7 +555,6 @@ export class QuotationsService {
       catchError(this.errorHandl)
     )
 
-
   }
   processQuickQuotation(data: QuotationDetailsRequestDto): Observable<any> {
     return this.api.POST<any>(`v2/quotation/process-quick-quotation`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
