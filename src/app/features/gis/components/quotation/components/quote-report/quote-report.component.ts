@@ -864,11 +864,10 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   }
 
   get paymentLink(): string {
-    const token = Math.random().toString(36).substring(2, 10);
-    sessionStorage.setItem(`payment_${token}`, this.quotationDetails.ipayReferenceNumber);
+    const encodedRef = btoa(this.quotationDetails.ipayReferenceNumber);
 
     const urlTree = this.router.createUrlTree(
-      ['/home/gis/quotation/payment-checkout', token]
+      ['/home/gis/quotation/payment-checkout', encodedRef]
     );
 
     return `${location.origin}${this.router.serializeUrl(urlTree)}`;

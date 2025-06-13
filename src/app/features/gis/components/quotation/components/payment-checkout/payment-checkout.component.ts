@@ -17,16 +17,25 @@ export class PaymentCheckoutComponent {
 
   }
 
-  ngOnInit() {
-    const token = this.route.snapshot.paramMap.get('token');
-    const ipayRefNo = sessionStorage.getItem(`payment_${token}`);
+  decodedIpayRefNo: string
+  encodedIpayRefNo: string
 
-    if (ipayRefNo) {
-      sessionStorage.removeItem(`payment_${token}`);
+  ngOnInit() {
+    const encodedRef = this.route.snapshot.paramMap.get('ipayRefNumber'); 
+    console.log('Token from URL:', encodedRef);
+
+    if (encodedRef) {
+      try {
+        this.decodedIpayRefNo = atob(encodedRef);
+        console.log('Decoded iPay Reference:', this.decodedIpayRefNo);
+      } catch (error) {
+        console.error('Error decoding iPay reference:', error);
+      }
     } else {
-      console.error('Invalid payment link');
+      console.error('Invalid payment link - no reference found');
     }
   }
+
 
   //paymnet
   validPhoneNumber: boolean = false
@@ -34,6 +43,7 @@ export class PaymentCheckoutComponent {
   selectedPayment: string = 'mpesa';
   amount: number = 500;
   paymentOptions: PaymentOption[] = dummyPaymentOptions
+
 
   get selectedDetails(): PaymentOption | undefined {
     return this.paymentOptions.find(opt => opt.method === this.selectedPayment);
@@ -55,6 +65,7 @@ export class PaymentCheckoutComponent {
     }
 
     const paymentDetails = {
+      ipayReferenceNumber: this.decodedIpayRefNo,
       phoneNumber: this.phoneNumber,
       paymentMethod: this.selectedPayment,
       amount: this.amount,
@@ -64,8 +75,6 @@ export class PaymentCheckoutComponent {
     this.globalMessagingService.displaySuccessMessage('Success', 'ProcessingPayment...Check your phone')
 
     log.debug(paymentDetails)
-
-
   }
 
 }
