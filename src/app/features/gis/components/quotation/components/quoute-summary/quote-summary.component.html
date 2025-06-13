@@ -9,7 +9,7 @@
   <div class="card mb-2" style=" position: relative; border: none; border-radius: 5px;">
 
     <div class="card-body">
-      <p class="subtitle ">{{ 'gis.quotation.quotation_summmary' | translate }}</p>
+      <p class="subtitle ">{{ 'gis.quotation.quotation-summmary' | translate }}</p>
 
       <!-- Quotation Details -->
       <div class="row mb-1">
@@ -154,34 +154,38 @@
 
     </div>
   </div>
+  
 
   <!-- SHARE QUOTE MODAL -->
   <div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
+    <p>ddd</p>
 
     <div class="modal-dialog modal-dialog-centered modal-md">
-      <div class="modal-content p-4">
-        
-        <div class="d-flex justify-content-end align-items-center mb-0">
-
-          <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"  style="width: 2rem; height: 2rem; filter: brightness(0) saturate(100%) invert(12%) sepia(93%) saturate(5425%) hue-rotate(357deg) brightness(92%) contrast(115%);
-  border: none;"></button>
+      <div class="modal-content w-[40vw] h-[40vh] p-3">
+        <div class="d-flex justify-content-end align-items-center mb-1">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <h3 class="page-title mt-0 " style="margin-left: 15px;">Share quote</h3>
+        <h3 class="page-title mt-0">{{'gis.quotation.share_quotation' | translate }}</h3>
+        <!-- <ng-container>
+          <app-quote-report [quotationDetails]="quotationDetails" [selectedCovers]="selectedCovers" #quoteReport
+            style="display: none;">
+          </app-quote-report>
+        </ng-container> -->
+        <ng-container>
+          <app-quote-report [quotationDetails]="quotationDetails" #quoteReport [selectedCovers]="selectedCovers" style="display: none;">
+          </app-quote-report>
+        </ng-container>
 
 
+        <app-share-quotes (downloadRequested)="onDownloadRequested()" (sendEvent)="listenToSendEvent($event)">
 
-      <!-- Conditionally render the report component with data -->
-      <app-quote-report *ngIf="isShareModalOpen" [quotationDetails]="quotationDetails"
-                        #quoteReport style="opacity: 0;
-    position: absolute;
-    left: -9999px;" [premiumComputationResponse]="selectedCovers">
+        </app-share-quotes>
+      </div>
 
-      </app-quote-report>
-
-      <!-- Your Angular component inside the modal -->
-      <app-share-quotes (downloadRequested)="onDownloadRequested()"></app-share-quotes>
     </div>
+
   </div>
+
   <!-- reject quote modal -->
   <div class="modal fade" id="rejectQuote">
     <div class="modal-dialog modal-dialog-centered" style="min-width:400px">
@@ -216,7 +220,7 @@
         <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
           <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
             {{'gis.quotation.reassign_quote' | translate}}</p>
-          <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger"
+          <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
             style="border: none;">X</button>
         </div>
         <div class="row mt-2">
@@ -247,20 +251,20 @@
           </p-table>
         </div>
 
-        <hr class="mt-2" style="border: none; border-top: 2.5px solid #0000004D;">
-        <small class="text-danger d-block my-1" [class.invisible]="!noUserChosen">
+        <hr class="mt-1" style="border: none; border-top: 2.5px solid #0000004D;">
+        <small class="text-danger block" [class.invisible]="!noUserChosen">
           Please select a person to reassign before continuing
         </small>
 
-        <div style="margin-top: -2rem;">
-          <label class="text-dark d-block mb-1" for="comment">Comment</label>
-          <textarea [(ngModel)]="reassignComment" name="reassignComment" class="w-full p-2 border rounded"></textarea>
+        <div>
+          <label class="text-dark block" for="comment">Comment</label>
+          <textarea [(ngModel)]="reassignComment" name="reassignComment"
+            class="w-full mt-0 p-2 border rounded"></textarea>
         </div>
 
-        <small class="text-danger d-block my-1" [class.invisible]="!comment">
+        <small class="text-danger block" [class.invisible]="!comment">
           Please leave a comment before continuing
         </small>
-
         <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-2 mt-2 p-0">
           <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
             style="text-decoration: none;">{{
