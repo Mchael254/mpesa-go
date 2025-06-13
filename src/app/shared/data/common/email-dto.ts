@@ -5,7 +5,7 @@ export interface EmailDto {
   message: string;
   status: string;
   emailAggregator: string;
-  response: string;
+  response?: string;
   systemModule: string;
   systemCode: number;
   attachments?: Attachment[];
