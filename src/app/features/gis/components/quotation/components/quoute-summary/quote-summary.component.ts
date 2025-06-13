@@ -182,6 +182,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   ngOnInit(): void {
+    log.debug('these are quotation details',this.quotationDetails)
     const stored = sessionStorage.getItem('selectedCovers');
     this.selectedCovers = stored ? JSON.parse(stored) : null;
 
