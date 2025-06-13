@@ -12,6 +12,7 @@ import { PaymentAdviceDTO, QuotationDetails, QuotationHeaderDTO } from '../../da
 import { PdfGeneratorService } from '../../services/quotations/pdf-generator.service';
 import { ProductLevelPremium } from "../../data/premium-computation";
 import { Logger } from "../../../../../../shared/services";
+import { Router } from '@angular/router';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
@@ -116,8 +117,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object,
     private pdfGenerator: PdfGeneratorService,
-    private cdr: ChangeDetectorRef) {
-
+    private cdr: ChangeDetectorRef, private router: Router) {
 
   }
 
@@ -457,7 +457,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
             widths: ['auto', '*'],
             body: [
               ['Quotation status', 'Draft'],
-          
+
             ]
           },
           layout: {
@@ -473,12 +473,35 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
         ...riskContents
       ],
 
-      footer: function (currentPage, pageCount) {
+      footer: (currentPage, pageCount) => {
+        const footerLines = this.paymentAdviceData.footerInfo || [];
+
         return {
-          text: `Page ${currentPage} of ${pageCount}`,
-          fontSize: 9,
-          alignment: 'center',
-          margin: [40, 10, 40, 10]
+          margin: [40, 10, 40, 10],
+          layout: 'noBorders',
+          table: {
+            widths: ['*'],
+            body: [
+              // Each line of footerInfo
+              ...footerLines.map(line => [
+                {
+                  text: line,
+                  fontSize: 9,
+                  alignment: 'center',
+                  color: 'gray'
+                }
+              ]),
+              // Page number
+              [
+                {
+                  text: `Page ${currentPage} of ${pageCount}`,
+                  fontSize: 9,
+                  alignment: 'center',
+                  margin: [0, 5, 0, 0]
+                }
+              ]
+            ]
+          }
         };
       },
 
@@ -506,34 +529,6 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
       });
     }
   }
-
-
-
-
-  private waitForImagesToLoad(container: HTMLElement): Promise<void> {
-    const images = Array.from(container.querySelectorAll('img'));
-    const unloaded = images.filter(img => !img.complete);
-
-    return Promise.all(
-      unloaded.map(img =>
-        new Promise<void>((resolve) => {
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-        })
-      )
-    ).then(() => void 0);
-  }
-
-
-  downloadPdf() {
-    this.pdfGenerator.generatePdfFromElement('content-to-pdf');
-    console.log('generating report')
-  }
-
-
-
-
-
 
   //payment adive
   paymentAdviceData: PaymentAdviceDTO = {
@@ -868,10 +863,15 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     }
   }
 
-  get paymentLink() {
+  get paymentLink(): string {
     const token = Math.random().toString(36).substring(2, 10);
     sessionStorage.setItem(`payment_${token}`, this.quotationDetails.ipayReferenceNumber);
-    return `http://localhost:4200/home/gis/quotation/payment-checkout/${token}`;
+
+    const urlTree = this.router.createUrlTree(
+      ['/home/gis/quotation/payment-checkout', token]
+    );
+
+    return `${location.origin}${this.router.serializeUrl(urlTree)}`;
   }
 
 
