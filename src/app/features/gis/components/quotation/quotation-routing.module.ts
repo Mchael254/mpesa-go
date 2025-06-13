@@ -89,7 +89,7 @@ const routes: Routes = [
     path:'payment-advice',component:PaymentAdviceComponent
   },
   {
-    path:'payment-checkout',component:PaymentCheckoutComponent
+    path:'payment-checkout/:ipayRefNumber',component:PaymentCheckoutComponent
   },
 ];
 
