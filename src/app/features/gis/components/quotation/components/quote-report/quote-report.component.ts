@@ -18,6 +18,9 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
 (pdfMake as any).vfs = (pdfFonts as any).vfs;
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
+import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
+import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
+import { NgxCurrencyConfig } from 'ngx-currency';
 
 
 
@@ -46,7 +49,9 @@ interface EnrichedProduct {
   templateUrl: './quote-report.component.html',
   styleUrls: ['./quote-report.component.css']
 })
+
 export class QuoteReportComponent implements OnInit, AfterViewInit {
+
 
   @Input() quotationDetails!: QuotationDetails;
   @ViewChild('pdfContent', { static: false }) pdfContent!: ElementRef;
@@ -56,6 +61,70 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   set premiumComputationResponse(value: ProductLevelPremium) {
     log.debug("Computation payload upon click>>>", value)
     this._premiumComputationResponse = value
+  }
+
+  public currencyObj: NgxCurrencyConfig;
+  currencyList: any;
+  currencyCode: any;
+  selectedCurrency: any;
+  selectedCurrencyCode: any;
+  defaultCurrencyName: any;
+  currencyDelimiter: any;
+  defaultCurrencySymbol: any;
+  selectedCurrencySymbol: any;
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object,
+    private pdfGenerator: PdfGeneratorService,
+    private cdr: ChangeDetectorRef, private router: Router,
+    public currencyService: CurrencyService) {
+
+  }
+  /**
+    * Loads all currencies and selects based on the currency code.
+    * - Subscribes to 'getAllCurrencies' from CurrencyService.
+    * - Populates 'currencyList' and filters for the selected currency.
+    * - Assigns name and code from the filtered currency.
+    * - Logs the selected currency details and triggers change detection.
+    * @method loadAllCurrencies
+    * @return {void}
+    */
+  loadAllCurrencies() {
+    this.currencyService
+      .getAllCurrencies()
+      .pipe(
+        untilDestroyed(this))
+      .subscribe((data) => {
+        this.currencyList = data
+        const defaultCurrency = this.currencyList.find(
+          (currency) => currency.currencyDefault == 'Y'
+        );
+        if (defaultCurrency) {
+          log.debug('DEFAULT CURRENCY', defaultCurrency);
+          this.defaultCurrencyName = defaultCurrency.name;
+          log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+          this.defaultCurrencySymbol = defaultCurrency.symbol;
+          log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+          this.setCurrencySymbol(this.defaultCurrencySymbol);
+        }
+      });
+  }
+
+  setCurrencySymbol(currencySymbol: string) {
+    this.selectedCurrencySymbol = currencySymbol + ' ';
+    sessionStorage.setItem('currencySymbol', this.selectedCurrencySymbol);
+
+    this.currencyObj = {
+      prefix: this.selectedCurrencySymbol,
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: this.currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
+    log.debug("Currency object:", this.currencyObj)
   }
 
   get premiumComputationResponse() {
@@ -115,21 +184,6 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   };
 
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object,
-    private pdfGenerator: PdfGeneratorService,
-    private cdr: ChangeDetectorRef, private router: Router) {
-
-  }
-
-
-  private encodeReference(ref: string): string {
-    return btoa(ref)
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-  }
-
-
   header: QuotationHeaderDTO = {
     quotationStatus: 'Draft',
     proposalIssued: 'NA',
@@ -140,8 +194,9 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   };
 
   ngOnInit(): void {
+    this.loadAllCurrencies();
+    sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
     const propertyIdCounter: { [key: string]: number } = {};
-
     this.enrichedProducts = this.premiumComputationResponse.productLevelPremiums.map(product => {
       const enrichedRisks: EnrichedRisk[] = [];
 
@@ -398,7 +453,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
                 width: 'auto',
                 text: [
                   { text: 'Value: ', style: 'label' },
-                  { text: `${enriched.risk.sumInsured || 'N/A'}`, style: 'boldText' }
+                  { text: `${this.currencyObj.prefix}${enriched.risk.sumInsured.toLocaleString()}`, style: 'boldText' },
                 ]
               }
             ],
@@ -612,7 +667,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     for (let productIndex = 0; productIndex < productLevelPremiums.length; productIndex++) {
       const product = productLevelPremiums[productIndex];
 
-      // Product content with blue border
+      // Product content
       const productContent: any[] = [
         { text: `Product: ${product.description} (${product.code})`, style: 'riskTitle', margin: [0, 0, 0, 10] },
 
