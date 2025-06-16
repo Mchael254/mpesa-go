@@ -98,12 +98,7 @@ export class QuotationsService {
    * @return {Observable<any>} - An observable of the response containing quotation sources.
    */
   //remember
-  getPaymentUrll(ipref: string): Observable<{ paymentUrl: string }> {
-    return this.api.GET<{ paymentUrl: string }>(
-      `http://localhost:4200/home/gis/quotation/payment-checkout?ipref=${ipref}`,
-      API_CONFIG.GIS_QUOTATION_BASE_URL
-    );
-  }
+
 
 
   getAllQuotationSources(): Observable<any> {
@@ -852,5 +847,7 @@ export class QuotationsService {
       catchError(this.errorHandl)
     )
   }
+
+ 
 }
 

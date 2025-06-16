@@ -3,6 +3,7 @@ import { Logger } from 'src/app/shared/services';
 import { dummyPaymentOptions, PaymentOption } from '../../data/dummyData';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { ActivatedRoute } from '@angular/router';
+import { PaymentService } from '../../services/paymentService/payment.service';
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -13,7 +14,9 @@ const log = new Logger('QuoteSummaryComponent');
 })
 export class PaymentCheckoutComponent {
 
-  constructor(private globalMessagingService: GlobalMessagingService, private route: ActivatedRoute) {
+  constructor(private globalMessagingService: GlobalMessagingService,
+    private route: ActivatedRoute,
+    private paymentService: PaymentService) {
 
   }
 
@@ -21,7 +24,7 @@ export class PaymentCheckoutComponent {
   encodedIpayRefNo: string
 
   ngOnInit() {
-    const encodedRef = this.route.snapshot.paramMap.get('ipayRefNumber'); 
+    const encodedRef = this.route.snapshot.paramMap.get('ipayRefNumber');
     console.log('Token from URL:', encodedRef);
 
     if (encodedRef) {
@@ -65,16 +68,29 @@ export class PaymentCheckoutComponent {
     }
 
     const paymentDetails = {
-      ipayReferenceNumber: this.decodedIpayRefNo,
-      phoneNumber: this.phoneNumber,
-      paymentMethod: this.selectedPayment,
-      amount: this.amount,
-      paybill: this.selectedDetails.paybill,
-      account: this.selectedDetails.account
+      TransactionCode: this.decodedIpayRefNo,//ipayRefNumber
+      PhoneNumber: this.phoneNumber,
+      Amount: this.amount,
+      // paybill: this.selectedDetails.paybill,
+      // account: this.selectedDetails.account,
+      // paymentMethod: this.selectedPayment,
     }
-    this.globalMessagingService.displaySuccessMessage('Success', 'ProcessingPayment...Check your phone')
+
+    this.paymentService.initiatePayment(paymentDetails).subscribe({
+      next: ((res) => {
+        log.debug(res.data)
+        this.globalMessagingService.displaySuccessMessage('Success', 'ProcessingPayment...Check your phone')
+
+      }),
+      error: ((err) => {
+        log.debug(err)
+      })
+    })
+
 
     log.debug(paymentDetails)
+
+
   }
 
 }
