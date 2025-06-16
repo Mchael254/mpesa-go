@@ -184,7 +184,7 @@ export class RiskDetailsComponent {
     this.quotationNumber = sessionStorage.getItem('quotationNum');
     log.debug("Quotation number from session storage:", this.quotationNumber)
     if (this.quotationNumber) {
-      this.fetchQuotationDetails(this.quotationNumber)
+      this.fetchQuotationDetails(this.quotationCode)
     }
 
 
@@ -204,7 +204,8 @@ export class RiskDetailsComponent {
       this.getProductSubclass(selectedProductCode)
       this.checkMotorClass()
       const quoatationNo = this.selectedProduct.quotationNo
-      this.fetchQuotationDetails(quoatationNo)
+      const quoatationCode = this.selectedProduct.quotationCode
+      this.fetchQuotationDetails(quoatationCode)
       this.scheduleList = []
       this.sectionPremium = []
       this.sectionDetails = []
@@ -237,9 +238,9 @@ export class RiskDetailsComponent {
     };
   }
   ngOnDestroy(): void { }
-  fetchQuotationDetails(quotationNo: string) {
-    log.debug("Quotation Number tot use:", quotationNo)
-    this.quotationService.getQuotationDetails(quotationNo)
+  fetchQuotationDetails(quotationCode: number) {
+    log.debug("Quotation Number tot use:", quotationCode)
+    this.quotationService.getQuotationDetails(quotationCode)
       .subscribe({
         next: (res: any) => {
           this.quotationDetails = res;

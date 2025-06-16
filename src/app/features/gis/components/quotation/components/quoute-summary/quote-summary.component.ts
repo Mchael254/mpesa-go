@@ -7,14 +7,14 @@ import { Table } from 'primeng/table';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { QuoteReportComponent } from '../quote-report/quote-report.component';
-import { ClaimsService } from 'src/app/features/gis/components/claim/services/claims.service';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { Pagination } from 'src/app/shared/data/common/pagination';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import { ClaimsService } from '../../../claim/services/claims.service';
+import { LazyLoadEvent } from 'primeng/api';
 import { tap } from 'rxjs';
-import { TableDetail } from 'src/app/shared/data/table-detail';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ProductLevelPremium } from "../../data/premium-computation";
 
@@ -40,7 +40,8 @@ type ProductWithRiskId = {
 export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('dt') table!: Table;
   @ViewChild('clientModal') clientModal: any;
-  @ViewChild('closebutton') closebutton;
+  // @ViewChild('closebutton') closebutton;
+@ViewChild('closeButton') closeButton: ElementRef;
 
   quotationDetails: QuotationDetails;
   batchNo: number;
@@ -55,41 +56,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   afterRejectQuote: boolean = true;
   originalComment: string;
   totalSumInsured: number;
-  isShareModalOpen: boolean;
+  isShareModalOpen: boolean = false;
   isSearching = false;
   searchTerm = '';
-  cols = [
-    { field: 'clientFullName', header: 'Name' },
-    { field: 'emailAddress', header: 'Email' },
-    { field: 'phoneNumber', header: 'Phone number' },
-    { field: 'idNumber', header: 'ID number' },
-    { field: 'pinNumber', header: 'Pin' },
-    { field: 'id', header: 'ID' },
-  ];
-  globalFilterFields = ['idNumber', 'firstName', 'lastName', 'emailAddress'];
-  emailValue: string;
-  phoneValue: string;
-  pinValue: string;
-  idValue: string;
-  tableDetails: TableDetail;
-  clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
-  pageSize: 5;
-  filterObject: {
-    name: string;
-    idNumber: string;
-  } = {
-      name: '',
-      idNumber: '',
-    };
-  clientDetails: ClientDTO;
-  clientCode: number;
-  clientType: string;
-  clientName: string;
-  clientEmail: string;
-  clientPhone: string;
-  selectedClient: ClientDTO
-  showClientSearchModal = false;
-
+  comments: string;
 
   constructor(
     private quotationService: QuotationsService,
@@ -97,22 +67,13 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     private cdRef: ChangeDetectorRef,
     public globalMessagingService: GlobalMessagingService,
     public claimsService: ClaimsService,
-    private clientService: ClientService,
     private spinner: NgxSpinnerService,
     public utilService: UtilService,
     public cdr: ChangeDetectorRef
 
   ) {
     this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
-    this.tableDetails = {
-      cols: this.cols,
-      rows: this.clientsData?.content,
-      globalFilterFields: this.globalFilterFields,
-      isLazyLoaded: true,
-      paginator: false,
-      showFilter: false,
-      showSorting: false,
-    };
+   
   }
 
   breadCrumbItems: BreadCrumbItem[] = [
@@ -132,53 +93,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   steps = stepData;
 
 
-  editNotesVisible = false;
-  activeIndex = 1;
-
-  setStep(index: number) {
-    this.activeIndex = index;
-  }
+ 
   productDetails: ProductWithRiskId[]
 
-  // Use the DTO type here
-  quotation: QuotationDTO = {
-    number: 'Q123',
-    status: 'Active',
-    reference: 'REF456',
-    ticket: 'TICK789',
-    notes: 'Some note goes here... Some note goes here..Some note goes here..Some note goes here..',
-    currency: 'KES',
-    products: [
-      {
-        product: 'Motor Private',
-        risk: 'Toyota Premio',
-        coverType: 'Comprehensive',
-        effectiveDate: '2025-06-01',
-        sumInsured: 1200000,
-        premium: 25000,
-      },
-      {
-        product: 'Motor Private',
-        risk: 'Honda Fit',
-        coverType: 'Third Party',
-        effectiveDate: '2025-06-01',
-        sumInsured: 800000,
-        premium: 15000,
-      },
-      {
-        product: 'Domestic',
-        risk: 'House Fire',
-        coverType: 'Full',
-        effectiveDate: '2025-06-01',
-        sumInsured: 2000000,
-        premium: 30000,
-      }
-    ]
-  };
-
-  getTotalPremium(): number {
-    return this.quotation.products.reduce((sum, p) => sum + p.premium, 0);
-  }
 
 
   ngOnInit(): void {
@@ -186,15 +103,15 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     const stored = sessionStorage.getItem('selectedCovers');
     this.selectedCovers = stored ? JSON.parse(stored) : null;
 
-    this.getUsers()
-    log.debug("Users>>>", this.users);
-    this.quotationService.getQuotationDetails(sessionStorage.getItem("quotationNumber"))
+  
+    this.quotationService.getQuotationDetails(JSON.parse(sessionStorage.getItem('quotationCode')))
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
         log.debug("Quotation details>>>", response)
         this.quotationDetails = response
         const quotationProducts = this.quotationDetails.quotationProducts
         this.flattenQuotationProducts(quotationProducts)
         this.totalSumInsured = this.quotationDetails.sumInsured
+        this.comments = this.quotationDetails?.comments        
       });
 
   }
@@ -471,7 +388,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
           this.quotationService.convertQuoteToPolicy(quotationCode, quoteProductCode).subscribe({
             next: (data: any) => {
               log.debug("Response after converting quote to a policy:", data);
-              this.closebutton.nativeElement.click();
+              this.closeButton.nativeElement.click();
               this.batchNo = data._embedded.batchNo;
               log.debug("Batch number", this.batchNo);
               const convertedQuoteBatchNo = JSON.stringify(this.batchNo);

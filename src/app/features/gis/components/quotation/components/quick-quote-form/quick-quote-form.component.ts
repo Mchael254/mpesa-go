@@ -543,65 +543,69 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
 
   // Dynamically creates a FormGroup for a risk using provided fields
-  // createRiskGroup(riskFields: DynamicRiskField[],
-  //   productCode: number, nextRiskIndex: number): FormGroup {
-  //   const group: { [key: string]: AbstractControl } = {};
-
-  //   riskFields.forEach(field => {
-  //     group[field.name] = new FormControl(
-  //       { value: '', disabled: field.disabled },
-  //       field.isMandatory === 'Y' ? Validators.required : []
-  //     );
-  //   });
-  //   group['applicableTaxes'] = new FormControl(null)
-  //   group['applicableBinder'] = new FormControl(null)
-  //   group['applicableCoverTypes'] = new FormControl(null)
-  //   group['riskCode'] = new FormControl('#' + productCode + nextRiskIndex)
-  //   return new FormGroup(group);
-  // }
   createRiskGroup(riskFields: DynamicRiskField[],
-                  productCode: number,
-                  nextRiskIndex: number,
-                  productIndex?: number,
-                  riskIndex?: number): FormGroup {
+    productCode: number, nextRiskIndex: number): FormGroup {
     const group: { [key: string]: AbstractControl } = {};
 
     riskFields.forEach(field => {
-      if (field.name === 'useOfProperty') {
-        const subclasses = this.productSubclassesMap[productCode] || [];
-        const initialValue = subclasses.length === 1 ? subclasses[0] : '';
-
-        group[field.name] = new FormControl(
-          initialValue,
-          field.isMandatory === 'Y' ? Validators.required : []
-        );
-
-        // Trigger subclass selection if only one exists
-        if (subclasses.length === 1) {
-          setTimeout(() => {
-            this.onSubclassSelected(
-              subclasses[0],
-              productIndex,
-              riskIndex,
-              productCode
-            );
-          });
-        }
-      } else {
-        group[field.name] = new FormControl(
-          {value: '', disabled: field.disabled},
-          field.isMandatory === 'Y' ? Validators.required : []
-        );
-      }
+      group[field.name] = new FormControl(
+        { value: '', disabled: field.disabled },
+        field.isMandatory === 'Y' ? Validators.required : []
+      );
     });
-
-    group['applicableTaxes'] = new FormControl(null);
-    group['applicableBinder'] = new FormControl(null);
-    group['applicableCoverTypes'] = new FormControl(null);
-    group['riskCode'] = new FormControl('#' + productCode + nextRiskIndex);
-
+    group['applicableTaxes'] = new FormControl(null)
+    group['applicableBinder'] = new FormControl(null)
+    group['applicableCoverTypes'] = new FormControl(null)
+    group['riskCode'] = new FormControl('#' + productCode + nextRiskIndex)
     return new FormGroup(group);
   }
+  // createRiskGroup(riskFields: DynamicRiskField[],
+  //                 productCode: number,
+  //                 nextRiskIndex: number,
+  //                 productIndex?: number,
+  //                 riskIndex?: number): FormGroup {
+  //   const group: { [key: string]: AbstractControl } = {};
+
+  //   const index  =  riskIndex  || riskIndex == 0 ? riskIndex : nextRiskIndex 
+
+  //   riskFields.forEach(field => {
+  //     if (field.name === 'useOfProperty') {
+  //       const subclasses = this.productSubclassesMap[productCode] || [];
+  //       const initialValue = subclasses.length === 1 ? subclasses[0] : '';
+
+  //       group[field.name] = new FormControl(
+  //         initialValue,
+  //         field.isMandatory === 'Y' ? Validators.required : []
+  //       );
+
+  //       if (subclasses.length === 1) {
+  //         log.debug("One subclass")
+  //         log.debug("PRODUCT INDEX-create risk Group",productIndex)
+  //         log.debug("RISK INDEX-create risk Group",index)
+  //         setTimeout(() => {
+  //           this.onSubclassSelected(
+  //             subclasses[0],
+  //             productIndex,
+  //             index,
+  //             productCode
+  //           );
+  //         });
+  //       }
+  //     } else {
+  //       group[field.name] = new FormControl(
+  //         {value: '', disabled: field.disabled},
+  //         field.isMandatory === 'Y' ? Validators.required : []
+  //       );
+  //     }
+  //   });
+
+  //   group['applicableTaxes'] = new FormControl(null);
+  //   group['applicableBinder'] = new FormControl(null);
+  //   group['applicableCoverTypes'] = new FormControl(null);
+  //   group['riskCode'] = new FormControl('#' + productCode + nextRiskIndex);
+
+  //   return new FormGroup(group);
+  // }
 
   // When products are selected from multi-select
   getSelectedProducts(event: any) {
@@ -658,7 +662,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           log.debug("RISFH INDEX", nextRiskIndex);
           log.debug("RISFH INDEX NEW", riskIndex);
 
-          risksArray.push(this.createRiskGroup(riskFields, addedProduct.code, nextRiskIndex, productIndex, riskIndex));
+          risksArray.push(this.createRiskGroup(riskFields, addedProduct.code, nextRiskIndex));
           this.productRiskFields[this.productsFormArray.length - 1] = riskFields;
         })
 
@@ -682,7 +686,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     const productCode = productGroup.get('code')?.value;
     const nextRiskIndex = risksArray.length + 1;
     this.getRiskFieldsForProduct(productCode).subscribe((riskFields: DynamicRiskField[]) => {
-      const newRiskGroup = this.createRiskGroup(riskFields, productCode, nextRiskIndex, productIndex);
+      const newRiskGroup = this.createRiskGroup(riskFields, productCode, nextRiskIndex);
       risksArray.push(newRiskGroup);
     });
   }
@@ -1713,6 +1717,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       mergeMap((response) => {
         if (response._embedded?.quotationNumber && response._embedded?.quotationCode) {
           sessionStorage.setItem("quotationNumber", response._embedded.quotationNumber)
+          sessionStorage.setItem("quotationCode", response._embedded.quotationCode)
           const fullState = {
             selectedProducts: this.selectedProducts,
             formArray: this.quickQuoteForm.value,
@@ -1775,6 +1780,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   getQuotationProductPayload(): QuotationProduct[] {
+    let existingProducts  = this.quotationObject?.quotationProducts;
     const quotationProducts: QuotationProduct[] = []
     const products = this.quickQuoteForm.getRawValue().products
     log.debug("User selected products>>>", products)
@@ -1787,10 +1793,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       selectedProductPremium.coverTo = product.effectiveTo
       const productPremium = selectedProductPremium.riskLevelPremiums
         .reduce((sum, value) => sum + value.selectCoverType.computedPremium, 0);
+        const matchingProduct  = existingProducts?.find((value) => value.productCode === product.code)
       quotationProducts.push({
-        code: null,
+        code: matchingProduct ? matchingProduct.code : null,
         productCode: product.code,
-        quotationCode: null,
+        quotationCode: this.quotationCode || null,
         productName: product.description,
         productShortDescription: product.description,
         premium: productPremium,
@@ -1800,7 +1807,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         converted: "N",
         binder: null,
         agentShortDescription: "DIRECT",
-        riskInformation: this.getProductRisksPayload(product.risks, selectedProductPremium),
+        riskInformation: this.getProductRisksPayload(product.risks, selectedProductPremium,matchingProduct),
         limitsOfLiability: this.limitsOfLiabilityPayload(selectedProductPremium),
         taxInformation: this.getProductTaxesPayload(product)
       })
@@ -1841,12 +1848,16 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     })
   }
 
-  getProductRisksPayload(formRisks: any, product: ProductPremium): RiskInformation[] {
+  getProductRisksPayload(formRisks: any, product: ProductPremium, quotationProduct: QuotationProduct): RiskInformation[] {
+    const existingRisks = quotationProduct?.riskInformation
     const riskInformation: RiskInformation[] = []
     for (const [index, risk] of product.riskLevelPremiums.entries()) {
+      const riskId = `Risk ${index + 1}`
       const formRisk = formRisks.find(value => value.riskCode === risk.code)
+      const matchingRisk = existingRisks?.find((value) => value.propertyId?.replace(/\s/g, '') === riskId?.replace(/\s/g, ''))
       log.debug("Processing Risk>>>, formRisk", risk, formRisk)
       riskInformation.push({
+        code: matchingRisk ? matchingRisk.code : null,
         riskCode: risk?.code,
         coverTypeCode: risk.selectCoverType.coverTypeCode,
         coverTypeShortDescription: risk.selectCoverType.coverTypeShortDescription,
@@ -1855,10 +1866,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         premium: risk.selectCoverType.computedPremium,
         value: formRisk?.selfDeclaredValue || formRisk?.value,
         clientType: "I",
-        itemDesc: `Risk ${index + 1}`,
+        itemDesc: riskId,
         wef: product.coverFrom,
         wet: product.coverTo,
-        propertyId: `Risk ${index + 1}`,
+        propertyId: riskId,
         annualPremium: risk.selectCoverType.computedPremium,
         sectionsDetails: null,
         action: "A",
