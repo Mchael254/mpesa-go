@@ -67,7 +67,7 @@ export class PaymentCheckoutComponent {
       return;
     }
 
-    const paymentDetails = {
+    const paymentPayload = {
       TransactionCode: this.decodedIpayRefNo,//ipayRefNumber
       PhoneNumber: this.phoneNumber,
       Amount: this.amount,
@@ -76,7 +76,9 @@ export class PaymentCheckoutComponent {
       // paymentMethod: this.selectedPayment,
     }
 
-    this.paymentService.initiatePayment(paymentDetails).subscribe({
+    log.debug(paymentPayload)
+
+    this.paymentService.initiatePayment(paymentPayload).subscribe({
       next: ((res) => {
         log.debug(res.data)
         this.globalMessagingService.displaySuccessMessage('Success', 'ProcessingPayment...Check your phone')
@@ -84,12 +86,9 @@ export class PaymentCheckoutComponent {
       }),
       error: ((err) => {
         log.debug(err)
+        this.globalMessagingService.displayErrorMessage('Error', 'Something went wrong')
       })
     })
-
-
-    log.debug(paymentDetails)
-
 
   }
 
