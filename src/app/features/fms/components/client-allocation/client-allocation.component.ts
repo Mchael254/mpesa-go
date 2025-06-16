@@ -1401,7 +1401,10 @@ export class ClientAllocationComponent {
               module: 'CB-RECEIPTS',
               originalFileName: this.selectedFile.name,
               filename: this.selectedFile.name,
-              referenceNo: detail.referenceNumber,
+              
+              //I fed the referenceNo: field with values of policy number to match the expected string format
+              //i.e replaced referenceNo:detail.referenceNumber with referenceNo:detail.policyNumber
+              referenceNo: detail.policyNumber,
               docDescription:
                 this.fileDescriptions[this.currentFileIndex].description,
               amount: detail.premiumAmount,
