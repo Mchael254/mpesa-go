@@ -74,12 +74,12 @@ export class RiskCentreComponent {
     this.quotationCode = sessionStorage.getItem('quotationCode');
     this.quotationNumber = sessionStorage.getItem('quotationNum');
     if (this.quotationNumber) {
-      this.fetchQuotationDetails(this.quotationNumber)
+      this.fetchQuotationDetails(this.quotationCode)
     }
   }
-  fetchQuotationDetails(quotationNo: string) {
-    log.debug("Quotation Number tot use:", quotationNo)
-    this.quotationService.getQuotationDetails(quotationNo)
+  fetchQuotationDetails(quoatationCode: number) {
+    log.debug("Quotation code tot use:", quoatationCode)
+    this.quotationService.getQuotationDetails(quoatationCode)
       .subscribe({
         next: (res: any) => {
           this.quotationDetails = res;
