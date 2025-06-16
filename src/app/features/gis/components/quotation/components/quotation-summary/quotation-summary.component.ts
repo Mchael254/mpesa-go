@@ -200,7 +200,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.quotationDetails = parsedMoreDetails;
     }
 
-    this.getQuotationDetails(this.quotationNumber || this.revisedQuotationNumber);
+    this.getQuotationDetails(this.quotationCode || this.revisedQuotationNumber);
     this.getuser();
 
     this.createInsurersForm();
@@ -469,7 +469,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.makeQuotationReady = !this.makeQuotationReady;
           this.authoriseQuotation = !this.authoriseQuotation;
-          this.getQuotationDetails(this.quotationNumber);
+          this.getQuotationDetails(this.quotationCode);
           this.messageService.displaySuccessMessage('Success', 'Quotation Made Ready, Authorise to proceed')
         },
         error: (e) => {
@@ -486,7 +486,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.authoriseQuotation = !this.authoriseQuotation;
           this.confirmQuotation = !this.confirmQuotation;
-          this.getQuotationDetails(this.quotationNumber);
+          this.getQuotationDetails(this.quotationCode);
           this.messageService.displaySuccessMessage('Success', 'Quotation Authorised, Confirm to proceed')
         },
         error: (e) => {
@@ -503,7 +503,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.authoriseQuotation = !this.authoriseQuotation;
           this.confirmQuotation = !this.confirmQuotation;
-          this.getQuotationDetails(this.quotationNumber);
+          this.getQuotationDetails(this.quotationCode);
           this.messageService.displaySuccessMessage('Success', 'Quotation Authorization Confirmed')
         },
         error: (e) => {
@@ -1445,7 +1445,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         next: (response: any) => {
           const result = response;
           log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
-          result && this.getQuotationDetails(this.quotationNumber);
+          result && this.getQuotationDetails(this.quotationCode);
 
         },
         error: (error) => {
