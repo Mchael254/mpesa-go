@@ -69,3 +69,8 @@ p-table ::ng-deep table tbody tr td {
     font-weight: 400;
 
 }
+/* For the selected row */
+::ng-deep .p-datatable .p-datatable-tbody > tr.p-highlight {
+  background-color: #BAD0E4 !important;
+  color: inherit; /* Optional: maintain text color */
+}
