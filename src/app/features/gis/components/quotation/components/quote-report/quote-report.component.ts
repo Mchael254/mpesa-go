@@ -8,7 +8,7 @@ import {
   PLATFORM_ID,
   ViewChild
 } from '@angular/core';
-import { PaymentAdviceDTO, QuotationDetails, QuotationHeaderDTO } from '../../data/quotationsDTO';
+import { PaymentAdviceDTO, PaymentMethodDTO, QuotationDetails, QuotationHeaderDTO } from '../../data/quotationsDTO';
 import { PdfGeneratorService } from '../../services/quotations/pdf-generator.service';
 import { ProductLevelPremium } from "../../data/premium-computation";
 import { Logger } from "../../../../../../shared/services";
@@ -19,6 +19,7 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 (pdfMake as any).vfs = (pdfFonts as any).vfs;
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { ConfigurationLoader } from 'src/app/core/config/app-config-loader';
 
 
 
@@ -121,7 +122,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   constructor(@Inject(PLATFORM_ID) private platformId: Object,
     private pdfGenerator: PdfGeneratorService,
     private cdr: ChangeDetectorRef, private router: Router,
-    private appConfigService: AppConfigService) {
+    private appConfigService: AppConfigService,
+    private configLoader: ConfigurationLoader) {
 
   }
 
@@ -144,9 +146,12 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   };
 
   ngOnInit(): void {
+    this.appConfigService.loadConfigurations(this.configLoader).then(() => {
+
+    
     const propertyIdCounter: { [key: string]: number } = {};
 
-    this.enrichedProducts = this.premiumComputationResponse.productLevelPremiums.map(product => {
+    this.enrichedProducts = this.premiumComputationResponse?.productLevelPremiums.map(product => {
       const enrichedRisks: EnrichedRisk[] = [];
 
       for (const risk of product.riskLevelPremiums) {
@@ -165,14 +170,17 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
         enrichedRisks
       };
     });
+
     this.paymentAdviceData = {
       paymentMethods: this.appConfigService.paymentMethods,
       footerInfo: this.appConfigService.footerInfo
     };
+    this.cdr.detectChanges();
 
     log.debug(this.enrichedProducts)
     log.debug(this.paymentAdviceData)
-  }
+  });
+}
 
 
   //quick-quote report
@@ -180,6 +188,17 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   enrichedProducts: EnrichedProduct[] = [];
   displayRows: DisplayRow[] = [];
   async generatePdf(download = false, fileName = 'document.pdf'): Promise<Blob | void> {
+
+    if (
+      !this.paymentAdviceData?.paymentMethods?.length ||
+      !this.paymentAdviceData?.footerInfo?.length
+    ) {
+      console.warn('Missing paymentAdviceData. Cannot generate PDF.');
+      return;
+    }
+
+
+
     const riskContents: any = this.enrichedProducts.flatMap((product, productIndex) => {
       const risks: any = product.enrichedRisks.flatMap(enriched => {
         const coverageContent: any = !enriched.risk.selectCoverType
@@ -540,7 +559,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   }
 
   // //payment adive
-  // paymentAdviceData: PaymentAdviceDTO = {
+  // paymentAdviceData1: PaymentAdviceDTO = {
   //   paymentMethods: [
   //     {
   //       title: 'Cheque',
@@ -837,6 +856,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
       paymentMethodsSection
     ];
 
+
+    
     const docDefinition: any = {
       content: fullContent,
 

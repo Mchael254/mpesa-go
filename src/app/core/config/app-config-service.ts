@@ -41,6 +41,8 @@ export class AppConfigService{
             // console.log('APP CONFIG>>>>>>>>');
             // console.log(data);
 
+            console.log('Loaded Config Data:', data);
+
             this.appConfig = data;
             resolve();
           },
@@ -54,6 +56,6 @@ export class AppConfigService{
 
 }
 
-function providedIn(providedIn: any, arg1: string) {
-  throw new Error('Function not implemented.');
-}
+// function providedIn(providedIn: any, arg1: string) {
+//   throw new Error('Function not implemented.');
+// }
