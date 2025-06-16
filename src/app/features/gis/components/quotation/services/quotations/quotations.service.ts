@@ -231,8 +231,8 @@ export class QuotationsService {
    * @param {string} quotationNo - The quotation number for which to retrieve details.
    * @return {Observable<any>} - An observable of the response containing quotation details.
    */
-  getQuotationDetails(quotationNo) {
-    return this.api.GET(`v2/quotation/view?quotationNo=${quotationNo}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  getQuotationDetails(quotationCode:number) {
+    return this.api.GET(`v2/quotation/view?quotationCode=${quotationCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
   /**
