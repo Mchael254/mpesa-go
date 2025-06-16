@@ -18,9 +18,9 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
 (pdfMake as any).vfs = (pdfFonts as any).vfs;
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
+import { NgxCurrencyConfig } from 'ngx-currency';
 import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
-import { NgxCurrencyConfig } from 'ngx-currency';
 
 
 
@@ -49,9 +49,7 @@ interface EnrichedProduct {
   templateUrl: './quote-report.component.html',
   styleUrls: ['./quote-report.component.css']
 })
-
 export class QuoteReportComponent implements OnInit, AfterViewInit {
-
 
   @Input() quotationDetails!: QuotationDetails;
   @ViewChild('pdfContent', { static: false }) pdfContent!: ElementRef;
@@ -63,31 +61,33 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     this._premiumComputationResponse = value
   }
 
-  public currencyObj: NgxCurrencyConfig;
   currencyList: any;
   currencyCode: any;
   selectedCurrency: any;
   selectedCurrencyCode: any;
   defaultCurrencyName: any;
+  minDate: Date | undefined;
   currencyDelimiter: any;
   defaultCurrencySymbol: any;
   selectedCurrencySymbol: any;
+  public currencyObj: NgxCurrencyConfig;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object,
     private pdfGenerator: PdfGeneratorService,
     private cdr: ChangeDetectorRef, private router: Router,
-    public currencyService: CurrencyService) {
+    private currencyService: CurrencyService) {
 
   }
+
   /**
-    * Loads all currencies and selects based on the currency code.
-    * - Subscribes to 'getAllCurrencies' from CurrencyService.
-    * - Populates 'currencyList' and filters for the selected currency.
-    * - Assigns name and code from the filtered currency.
-    * - Logs the selected currency details and triggers change detection.
-    * @method loadAllCurrencies
-    * @return {void}
-    */
+   * Loads all currencies and selects based on the currency code.
+   * - Subscribes to 'getAllCurrencies' from CurrencyService.
+   * - Populates 'currencyList' and filters for the selected currency.
+   * - Assigns name and code from the filtered currency.
+   * - Logs the selected currency details and triggers change detection.
+   * @method loadAllCurrencies
+   * @return {void}
+   */
   loadAllCurrencies() {
     this.currencyService
       .getAllCurrencies()
@@ -112,6 +112,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   setCurrencySymbol(currencySymbol: string) {
     this.selectedCurrencySymbol = currencySymbol + ' ';
     sessionStorage.setItem('currencySymbol', this.selectedCurrencySymbol);
+    const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
 
     this.currencyObj = {
       prefix: this.selectedCurrencySymbol,
@@ -119,12 +120,19 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
       allowZero: false,
       decimal: '.',
       precision: 0,
-      thousands: this.currencyDelimiter,
+      thousands: currencyDelimiter,
       suffix: ' ',
       nullable: true,
       align: 'left',
     };
-    log.debug("Currency object:", this.currencyObj)
+    log.debug("Currencyy object-quotation report:", this.currencyObj)
+  }
+
+  formatCurrency(value: number, prefix: string, delimiter: string): string {
+    // No decimals, just thousands
+    let parts = value.toFixed(0).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
+    return `${prefix}${parts.join('')}`;
   }
 
   get premiumComputationResponse() {
@@ -184,6 +192,14 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   };
 
 
+  private encodeReference(ref: string): string {
+    return btoa(ref)
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+  }
+
+
   header: QuotationHeaderDTO = {
     quotationStatus: 'Draft',
     proposalIssued: 'NA',
@@ -194,9 +210,10 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   };
 
   ngOnInit(): void {
-    this.loadAllCurrencies();
-    sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
+    this.loadAllCurrencies()
+    // log.debug('rregee', this.quotationDetails)
     const propertyIdCounter: { [key: string]: number } = {};
+
     this.enrichedProducts = this.premiumComputationResponse.productLevelPremiums.map(product => {
       const enrichedRisks: EnrichedRisk[] = [];
 
@@ -218,6 +235,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     });
 
     log.debug(this.enrichedProducts)
+  }
+  ngOnDestroy(): void {
   }
 
 
@@ -453,7 +472,14 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
                 width: 'auto',
                 text: [
                   { text: 'Value: ', style: 'label' },
-                  { text: `${this.currencyObj.prefix}${enriched.risk.sumInsured.toLocaleString()}`, style: 'boldText' },
+                  {
+                    text: this.formatCurrency(
+                      enriched.risk.sumInsured,
+                      this.currencyObj.prefix,
+                      this.currencyObj.thousands
+                    ),
+                    style: 'boldText'
+                  }
                 ]
               }
             ],
@@ -667,7 +693,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     for (let productIndex = 0; productIndex < productLevelPremiums.length; productIndex++) {
       const product = productLevelPremiums[productIndex];
 
-      // Product content
+      // Product content with blue border
       const productContent: any[] = [
         { text: `Product: ${product.description} (${product.code})`, style: 'riskTitle', margin: [0, 0, 0, 10] },
 
@@ -778,7 +804,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
               },
 
               {
-                text: `Value: ${this.quotationDetails.currency ?? ''} ${risk.sumInsured ? risk.sumInsured.toLocaleString() : 'N/A'}`,
+                // text: `Value: ${this.quotationDetails.currency ?? ''} ${risk.sumInsured ? risk.sumInsured.toLocaleString() : 'N/A'}`,
+                text:this.formatCurrency(risk.sumInsured, this.currencyObj.prefix, this.currencyObj.thousands),
                 width: 'auto',
                 style: 'riskTitle',
                 alignment: 'right'
