@@ -1,5 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { AppConfigService } from 'src/app/core/config/app-config-service';
 import { ApiService } from 'src/app/shared/services/api/api.service';
 import { API_CONFIG } from 'src/environments/api_service_config';
 
@@ -8,10 +10,10 @@ import { API_CONFIG } from 'src/environments/api_service_config';
 })
 export class PaymentService {
 
-  constructor(private api: ApiService) { }
+  constructor(private api: ApiService, private appConfig: AppConfigService, private http:HttpClient) { }
+   paymentUrl = this.appConfig.config.contextPath.payment_service;
 
   initiatePayment(paymentPayload): Observable<any> {
-    return this.api.POST<any[]>(`v1/mpesa/initiate-payment-request`, JSON.stringify(paymentPayload), API_CONFIG.GIS_PAYMENT_BASE_URL)
-
+    return this.http.post<any[]>(`/${this.paymentUrl}/api/v1/mpesa/initiate-payment-request`, paymentPayload)
   }
 }

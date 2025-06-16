@@ -76,7 +76,7 @@ export class PaymentCheckoutComponent {
       // paymentMethod: this.selectedPayment,
     }
 
-    log.debug(paymentPayload)
+    log.debug('this is payment payload>>>', paymentPayload)
 
     this.paymentService.initiatePayment(paymentPayload).subscribe({
       next: ((res) => {
@@ -86,7 +86,7 @@ export class PaymentCheckoutComponent {
       }),
       error: ((err) => {
         log.debug(err)
-        this.globalMessagingService.displayErrorMessage('Error', 'Something went wrong')
+        this.globalMessagingService.displayErrorMessage('Error', err)
       })
     })
 
