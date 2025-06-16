@@ -18,6 +18,9 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
 (pdfMake as any).vfs = (pdfFonts as any).vfs;
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
+import { NgxCurrencyConfig } from 'ngx-currency';
+import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
+import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
 
 
 
@@ -56,6 +59,80 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   set premiumComputationResponse(value: ProductLevelPremium) {
     log.debug("Computation payload upon click>>>", value)
     this._premiumComputationResponse = value
+  }
+
+  currencyList: any;
+  currencyCode: any;
+  selectedCurrency: any;
+  selectedCurrencyCode: any;
+  defaultCurrencyName: any;
+  minDate: Date | undefined;
+  currencyDelimiter: any;
+  defaultCurrencySymbol: any;
+  selectedCurrencySymbol: any;
+  public currencyObj: NgxCurrencyConfig;
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object,
+    private pdfGenerator: PdfGeneratorService,
+    private cdr: ChangeDetectorRef, private router: Router,
+    private currencyService: CurrencyService) {
+
+  }
+
+  /**
+   * Loads all currencies and selects based on the currency code.
+   * - Subscribes to 'getAllCurrencies' from CurrencyService.
+   * - Populates 'currencyList' and filters for the selected currency.
+   * - Assigns name and code from the filtered currency.
+   * - Logs the selected currency details and triggers change detection.
+   * @method loadAllCurrencies
+   * @return {void}
+   */
+  loadAllCurrencies() {
+    this.currencyService
+      .getAllCurrencies()
+      .pipe(
+        untilDestroyed(this))
+      .subscribe((data) => {
+        this.currencyList = data
+        const defaultCurrency = this.currencyList.find(
+          (currency) => currency.currencyDefault == 'Y'
+        );
+        if (defaultCurrency) {
+          log.debug('DEFAULT CURRENCY', defaultCurrency);
+          this.defaultCurrencyName = defaultCurrency.name;
+          log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+          this.defaultCurrencySymbol = defaultCurrency.symbol;
+          log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+          this.setCurrencySymbol(this.defaultCurrencySymbol);
+        }
+      });
+  }
+
+  setCurrencySymbol(currencySymbol: string) {
+    this.selectedCurrencySymbol = currencySymbol + ' ';
+    sessionStorage.setItem('currencySymbol', this.selectedCurrencySymbol);
+    const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
+
+    this.currencyObj = {
+      prefix: this.selectedCurrencySymbol,
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
+    log.debug("Currencyy object-quotation report:", this.currencyObj)
+  }
+
+  formatCurrency(value: number, prefix: string, delimiter: string): string {
+    // No decimals, just thousands
+    let parts = value.toFixed(0).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
+    return `${prefix}${parts.join('')}`;
   }
 
   get premiumComputationResponse() {
@@ -115,13 +192,6 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   };
 
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object,
-    private pdfGenerator: PdfGeneratorService,
-    private cdr: ChangeDetectorRef, private router: Router) {
-
-  }
-
-
   private encodeReference(ref: string): string {
     return btoa(ref)
       .replace(/\+/g, '-')
@@ -140,6 +210,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   };
 
   ngOnInit(): void {
+    this.loadAllCurrencies()
+    // log.debug('rregee', this.quotationDetails)
     const propertyIdCounter: { [key: string]: number } = {};
 
     this.enrichedProducts = this.premiumComputationResponse.productLevelPremiums.map(product => {
@@ -163,6 +235,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     });
 
     log.debug(this.enrichedProducts)
+  }
+  ngOnDestroy(): void {
   }
 
 
@@ -398,7 +472,14 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
                 width: 'auto',
                 text: [
                   { text: 'Value: ', style: 'label' },
-                  { text: `${enriched.risk.sumInsured || 'N/A'}`, style: 'boldText' }
+                  {
+                    text: this.formatCurrency(
+                      enriched.risk.sumInsured,
+                      this.currencyObj.prefix,
+                      this.currencyObj.thousands
+                    ),
+                    style: 'boldText'
+                  }
                 ]
               }
             ],
@@ -723,7 +804,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
               },
 
               {
-                text: `Value: ${this.quotationDetails.currency ?? ''} ${risk.sumInsured ? risk.sumInsured.toLocaleString() : 'N/A'}`,
+                // text: `Value: ${this.quotationDetails.currency ?? ''} ${risk.sumInsured ? risk.sumInsured.toLocaleString() : 'N/A'}`,
+                text:this.formatCurrency(risk.sumInsured, this.currencyObj.prefix, this.currencyObj.thousands),
                 width: 'auto',
                 style: 'riskTitle',
                 alignment: 'right'
@@ -864,11 +946,10 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   }
 
   get paymentLink(): string {
-    const token = Math.random().toString(36).substring(2, 10);
-    sessionStorage.setItem(`payment_${token}`, this.quotationDetails.ipayReferenceNumber);
+    const encodedRef = btoa(this.quotationDetails.ipayReferenceNumber);
 
     const urlTree = this.router.createUrlTree(
-      ['/home/gis/quotation/payment-checkout', token]
+      ['/home/gis/quotation/payment-checkout', encodedRef]
     );
 
     return `${location.origin}${this.router.serializeUrl(urlTree)}`;
