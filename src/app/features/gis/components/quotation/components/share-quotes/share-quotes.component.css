@@ -8,12 +8,7 @@
     
   }
   
-  .page-title {
-    font-size: 1.75rem;
-    margin-bottom: 1rem;
-    color:#00529b;
-    font-weight: 600;
-  }
+ 
   
   .method-group {
     margin-bottom: 1.5rem;
@@ -27,7 +22,7 @@
     font-family: Roboto;
     display: flex;
     gap: 2rem;
-    font-size: larger;
+    font-size: 16px;
     color: #000000;
     font-weight: 400;
   }
@@ -48,10 +43,11 @@
     color: #000000;
     cursor: pointer;
     font-weight: 400;
+    font-size: 16px;
   }
   
   .download-section i {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
   
 
@@ -120,6 +116,7 @@
     margin-top: 0.2rem;
     font-weight: 400;
     color: #000000;
+    font-size: 16px;
   }
   
   .p-inputtext {
@@ -129,7 +126,7 @@
     margin-bottom: 0.5rem;
     border-radius: 2px;
     border: 1px solid #ced4da;
-    font-size: 1rem;
+    font-size: 16px;
     box-sizing: border-box;
   }
   

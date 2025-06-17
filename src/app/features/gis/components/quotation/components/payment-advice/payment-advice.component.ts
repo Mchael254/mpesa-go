@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PaymentAdviceDTO } from '../../data/quotationsDTO';
 import { Logger} from "../../../../../../shared/services";
+import { AppConfigService } from 'src/app/core/config/app-config-service';
 
 
 const log = new Logger('PaymentAdviceComponent');
@@ -9,10 +10,11 @@ const log = new Logger('PaymentAdviceComponent');
   templateUrl: './payment-advice.component.html',
   styleUrls: ['./payment-advice.component.css']
 })
-export class PaymentAdviceComponent {
+export class PaymentAdviceComponent implements OnInit {
+  paymentAdviceData!: PaymentAdviceDTO;
 
 
-  paymentAdviceData: PaymentAdviceDTO = {
+  paymentAdviceData1: PaymentAdviceDTO = {
     paymentMethods: [
       {
         title: 'Cheque',
@@ -48,6 +50,19 @@ export class PaymentAdviceComponent {
       'Printed On: 15 February 2025'
     ]
   };
+
+  constructor(private appConfigService: AppConfigService){
+
+  }
+
+  ngOnInit(): void {
+    this.paymentAdviceData = {
+      paymentMethods: this.appConfigService.paymentMethods,
+      footerInfo: this.appConfigService.footerInfo
+    };
+
+    
+  }
 
   pay() {
     alert('Proceed to payment!');

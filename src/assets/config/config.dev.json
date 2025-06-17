@@ -28,7 +28,45 @@
     "huduma_number_regex": "^[0-9]{5}-[0-9]{5}-[0-9]{4}$",
     "registration_number_regex": "^[0-9]{5}\\/[0-9]{5}$",
     "drivers_license_number_regex": "^[0-9]{9}$",
-    "cert_of_incorporation_number_regex": "^[a-zA-Z0-9_]{3}\\/[a-zA-Z0-9_]{3}\\/[0-9]{6}$"
+    "cert_of_incorporation_number_regex": "^[a-zA-Z0-9_]{3}\\/[a-zA-Z0-9_]{3}\\/[0-9]{6}$",
+    "paymentMethods": [
+      {
+        "title": "Cheque",
+        "details": [
+          "Paybill: 123456",
+          "Account: Your name",
+          "Drop off: Lavington Chalbi drive"
+        ]
+      },
+      {
+        "title": "Mpesa",
+        "details": [
+          "Paybill: 987654",
+          "Account: Your Name",
+          "Mobile number: +254712345678"
+        ]
+      },
+      {
+        "title": "Bank transfer",
+        "details": [
+          "Bank: ABSA Bank Kenya",
+          "Account name: TurnQuest Insurance Ltd",
+          "Account Number: 12345658",
+          "Branch: Westlands",
+          "Swift code: ABSAKENX"
+        ]
+      },
+      {
+        "title": "Airtel money",
+        "details": [
+          "Business name: TurnQuest Insurance Ltd",
+          "Reference: Your name"
+        ]
+      }
+    ],
+    "footerInfo": [
+      "Registered Office: Leadway Assurance House NN 28/29 Constitution Road P.O.Box 458, Kaduna"
+    ]
   },
 
   "dmsDefaultUrl": "http://192.0.1.140:9080/alfrescoServices",

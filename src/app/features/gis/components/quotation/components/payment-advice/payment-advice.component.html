@@ -2,7 +2,7 @@
   <div class="invoice">
     <h2 class="section-header">Payment methods</h2>
     <div class="methods-grid">
-      <div class="payment-method" *ngFor="let method of paymentAdviceData.paymentMethods">
+      <div class="payment-method" *ngFor="let method of paymentAdviceData1.paymentMethods">
         <strong>{{ method.title }}</strong>
         <p *ngFor="let detail of method.details">{{ detail }}</p>
       </div>
