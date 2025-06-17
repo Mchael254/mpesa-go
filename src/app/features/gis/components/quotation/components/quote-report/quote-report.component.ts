@@ -21,7 +21,6 @@ import { TDocumentDefinitions } from 'pdfmake/interfaces';
 
 import { AppConfigService } from 'src/app/core/config/app-config-service';
 import { ConfigurationLoader } from 'src/app/core/config/app-config-loader';
-=======
 import { NgxCurrencyConfig } from 'ngx-currency';
 import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
@@ -62,6 +61,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   @ViewChild('pdfContent', { static: false }) pdfContent!: ElementRef;
   private _premiumComputationResponse: ProductLevelPremium
   @Input() selectedCovers: any
+  enrichedProducts: { description: string; code: number; enrichedRisks: EnrichedRisk[]; }[];
   @Input()
   set premiumComputationResponse(value: ProductLevelPremium) {
     log.debug("Computation payload upon click>>>", value)
@@ -82,9 +82,22 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   constructor(@Inject(PLATFORM_ID) private platformId: Object,
     private pdfGenerator: PdfGeneratorService,
     private cdr: ChangeDetectorRef, private router: Router,
-    private currencyService: CurrencyService) {
+    private currencyService: CurrencyService,
+    private appConfigService: AppConfigService,
+    private configLoader: ConfigurationLoader
+  ) {
 
   }
+
+
+
+  // constructor(@Inject(PLATFORM_ID) private platformId: Object,
+  //   private pdfGenerator: PdfGeneratorService,
+  //   private cdr: ChangeDetectorRef, private router: Router,
+  //   private appConfigService: AppConfigService,
+  //   private configLoader: ConfigurationLoader) {
+
+  // }
 
   /**
    * Loads all currencies and selects based on the currency code.
@@ -200,13 +213,6 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
 
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object,
-    private pdfGenerator: PdfGeneratorService,
-    private cdr: ChangeDetectorRef, private router: Router,
-    private appConfigService: AppConfigService,
-    private configLoader: ConfigurationLoader) {
-
-  }
 
 
   private encodeReference(ref: string): string {
@@ -231,7 +237,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     this.appConfigService.loadConfigurations(this.configLoader).then(() => {
 
     
-=======
+
     this.loadAllCurrencies()
     // log.debug('rregee', this.quotationDetails)
 
@@ -268,8 +274,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     log.debug(this.paymentAdviceData)
   });
 }
-=======
-  }
+
+  
   ngOnDestroy(): void {
   }
 
@@ -277,7 +283,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
   //quick-quote report
   IPREF: string = ''
-  enrichedProducts: EnrichedProduct[] = [];
+  // enrichedProducts: EnrichedProduct[] = [];
   displayRows: DisplayRow[] = [];
   async generatePdf(download = false, fileName = 'document.pdf'): Promise<Blob | void> {
 
@@ -1007,3 +1013,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
 
 }
+function ngOnDestroy() {
+  throw new Error('Function not implemented.');
+}
+
