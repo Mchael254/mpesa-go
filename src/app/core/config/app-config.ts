@@ -25,6 +25,8 @@ export interface ContextPath {
 }
 
 export interface Organization {
+  footerInfo: {};
+  paymentMethods: any[];
   passport_regex: string;
   pin_regex: string;
   birth_cert_regex: string;

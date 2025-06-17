@@ -8,7 +8,7 @@ import {
   PLATFORM_ID,
   ViewChild
 } from '@angular/core';
-import { PaymentAdviceDTO, QuotationDetails, QuotationHeaderDTO } from '../../data/quotationsDTO';
+import { PaymentAdviceDTO, PaymentMethodDTO, QuotationDetails, QuotationHeaderDTO } from '../../data/quotationsDTO';
 import { PdfGeneratorService } from '../../services/quotations/pdf-generator.service';
 import { ProductLevelPremium } from "../../data/premium-computation";
 import { Logger } from "../../../../../../shared/services";
@@ -18,9 +18,14 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
 (pdfMake as any).vfs = (pdfFonts as any).vfs;
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
+
+import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { ConfigurationLoader } from 'src/app/core/config/app-config-loader';
+=======
 import { NgxCurrencyConfig } from 'ngx-currency';
 import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
+
 
 
 
@@ -50,6 +55,8 @@ interface EnrichedProduct {
   styleUrls: ['./quote-report.component.css']
 })
 export class QuoteReportComponent implements OnInit, AfterViewInit {
+
+  paymentAdviceData!: PaymentAdviceDTO;
 
   @Input() quotationDetails!: QuotationDetails;
   @ViewChild('pdfContent', { static: false }) pdfContent!: ElementRef;
@@ -192,6 +199,16 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   };
 
 
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object,
+    private pdfGenerator: PdfGeneratorService,
+    private cdr: ChangeDetectorRef, private router: Router,
+    private appConfigService: AppConfigService,
+    private configLoader: ConfigurationLoader) {
+
+  }
+
+
   private encodeReference(ref: string): string {
     return btoa(ref)
       .replace(/\+/g, '-')
@@ -210,11 +227,17 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   };
 
   ngOnInit(): void {
+
+    this.appConfigService.loadConfigurations(this.configLoader).then(() => {
+
+    
+=======
     this.loadAllCurrencies()
     // log.debug('rregee', this.quotationDetails)
+
     const propertyIdCounter: { [key: string]: number } = {};
 
-    this.enrichedProducts = this.premiumComputationResponse.productLevelPremiums.map(product => {
+    this.enrichedProducts = this.premiumComputationResponse?.productLevelPremiums.map(product => {
       const enrichedRisks: EnrichedRisk[] = [];
 
       for (const risk of product.riskLevelPremiums) {
@@ -234,10 +257,22 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
       };
     });
 
+    this.paymentAdviceData = {
+      paymentMethods: this.appConfigService.paymentMethods,
+      footerInfo: this.appConfigService.footerInfo
+    };
+    this.cdr.detectChanges();
+
     log.debug(this.enrichedProducts)
+
+    log.debug(this.paymentAdviceData)
+  });
+}
+=======
   }
   ngOnDestroy(): void {
   }
+
 
 
   //quick-quote report
@@ -245,6 +280,17 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   enrichedProducts: EnrichedProduct[] = [];
   displayRows: DisplayRow[] = [];
   async generatePdf(download = false, fileName = 'document.pdf'): Promise<Blob | void> {
+
+    if (
+      !this.paymentAdviceData?.paymentMethods?.length ||
+      !this.paymentAdviceData?.footerInfo?.length
+    ) {
+      console.warn('Missing paymentAdviceData. Cannot generate PDF.');
+      return;
+    }
+
+
+
     const riskContents: any = this.enrichedProducts.flatMap((product, productIndex) => {
       const risks: any = product.enrichedRisks.flatMap(enriched => {
         const coverageContent: any = !enriched.risk.selectCoverType
@@ -611,41 +657,41 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     }
   }
 
-  //payment adive
-  paymentAdviceData: PaymentAdviceDTO = {
-    paymentMethods: [
-      {
-        title: 'Cheque',
-        details: ['Paybill: 123456', 'Account: Your name', 'Drop off: Lavington Chalbi drive']
-      },
-      {
-        title: 'Mpesa',
-        details: [
-          'Paybill: 987654',
-          'Account: Your Name',
-          'Mobile number: +254712345678',
-        ]
-      },
-      {
-        title: 'Bank transfer',
-        details: [
-          'Bank: ABSA Bank Kenya',
-          'Account name: TurnQuest Insurance Ltd',
-          'Account Number: 12345658',
-          'Branch: Westlands',
-          'Swift code: ABSAKENX'
-        ]
-      },
-      {
-        title: 'Airtel money',
-        details: ['Business name: TurnQuest Insurance Ltd', 'Reference: Your name']
-      }
-    ],
+  // //payment adive
+  // paymentAdviceData1: PaymentAdviceDTO = {
+  //   paymentMethods: [
+  //     {
+  //       title: 'Cheque',
+  //       details: ['Paybill: 123456', 'Account: Your name', 'Drop off: Lavington Chalbi drive']
+  //     },
+  //     {
+  //       title: 'Mpesa',
+  //       details: [
+  //         'Paybill: 987654',
+  //         'Account: Your Name',
+  //         'Mobile number: +254712345678',
+  //       ]
+  //     },
+  //     {
+  //       title: 'Bank transfer',
+  //       details: [
+  //         'Bank: ABSA Bank Kenya',
+  //         'Account name: TurnQuest Insurance Ltd',
+  //         'Account Number: 12345658',
+  //         'Branch: Westlands',
+  //         'Swift code: ABSAKENX'
+  //       ]
+  //     },
+  //     {
+  //       title: 'Airtel money',
+  //       details: ['Business name: TurnQuest Insurance Ltd', 'Reference: Your name']
+  //     }
+  //   ],
 
-    footerInfo: [
-      'Registered Office: Leadway Assurance House NN 28/29 Constitution Road P.O.Box 458, Kaduna',
-    ]
-  };
+  //   footerInfo: [
+  //     'Registered Office: Leadway Assurance House NN 28/29 Constitution Road P.O.Box 458, Kaduna',
+  //   ]
+  // };
 
 
   //Summary screen report
@@ -910,6 +956,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
       paymentMethodsSection
     ];
 
+
+    
     const docDefinition: any = {
       content: fullContent,
 
