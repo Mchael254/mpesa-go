@@ -44,7 +44,7 @@ export class PaymentCheckoutComponent {
   validPhoneNumber: boolean = false
   phoneNumber: string = ''
   selectedPayment: string = 'mpesa';
-  amount: number = 500;
+  amount: number = 1;
   paymentOptions: PaymentOption[] = dummyPaymentOptions
 
 
