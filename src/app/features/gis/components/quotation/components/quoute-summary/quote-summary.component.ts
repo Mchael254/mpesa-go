@@ -54,6 +54,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   globalSearch: string = '';
   status: string = '';
   afterRejectQuote: boolean = true;
+  rejected:boolean = false
   originalComment: string;
   totalSumInsured: number;
   isShareModalOpen: boolean = false;
@@ -198,6 +199,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
         this.globalMessagingService.displaySuccessMessage('success', 'quote rejected successfully')
         log.debug(response);
         this.afterRejectQuote = false;
+        this.rejected = true
 
       },
       error: (error) => {

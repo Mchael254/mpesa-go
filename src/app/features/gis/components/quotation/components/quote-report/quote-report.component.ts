@@ -369,7 +369,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
                             { width: '30%', text: 'Premium', bold: true },
                             {
                               width: '*',
-                              text: `${cover.computedPremium || 0}`,
+                              text: this.formatCurrency(cover.computedPremium, this.currencyObj.prefix, this.currencyObj.thousands || '0'),
                               fontSize: 11,
                               color: 'gray'
                             }
@@ -490,7 +490,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
       });
 
       return [
-        // Show product title separately, above the border
+        // product title 
         {
           text: product.description,
           style: 'sectionHeader',
@@ -518,8 +518,6 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
           margin: [0, 0, 0, 10]
         }
       ];
-
-
 
     });
 
@@ -703,7 +701,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
               type: 'line',
               x1: 0, y1: 0,
               x2: 515, y2: 0,
-              lineWidth: 1.5,
+              lineWidth: 1,
               lineColor: '#0d6efd'
             }
           ],
@@ -793,7 +791,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
             columns: [
 
               {
-                text: `${risk.propertyId || 'N/A'}`,
+                text: `${risk.propertyId || risk.propertyDescription}`,
                 width: 'auto',
                 style: 'riskTitle'
               },
@@ -804,8 +802,18 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
               },
 
               {
-                // text: `Value: ${this.quotationDetails.currency ?? ''} ${risk.sumInsured ? risk.sumInsured.toLocaleString() : 'N/A'}`,
-                text:this.formatCurrency(risk.sumInsured, this.currencyObj.prefix, this.currencyObj.thousands),
+                text: `Premium: ${this.formatCurrency(selectCoverType.computedPremium, this.currencyObj.prefix,
+                  this.currencyObj.thousands) || ''}`
+
+              },
+
+              {
+                text: '',
+                width: '*'
+              },
+
+              {
+                text: this.formatCurrency(risk.sumInsured, this.currencyObj.prefix, this.currencyObj.thousands),
                 width: 'auto',
                 style: 'riskTitle',
                 alignment: 'right'
@@ -845,8 +853,8 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
           }]]
         },
         layout: {
-          hLineWidth: () => 2,
-          vLineWidth: () => 2,
+          hLineWidth: () => 1.5,
+          vLineWidth: () => 1.5,
           hLineColor: () => '#0d6efd',
           vLineColor: () => '#0d6efd',
           paddingTop: () => 15,
