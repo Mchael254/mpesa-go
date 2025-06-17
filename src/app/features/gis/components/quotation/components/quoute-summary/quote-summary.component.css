@@ -181,37 +181,17 @@ p-table ::ng-deep table tbody tr td {
 }
 
 
-
-
-
-
-
-
 /* Remove unwanted table borders */
 .custom-table ::ng-deep .p-datatable-tbody>tr,
 .custom-table ::ng-deep .p-datatable-thead>tr {
   border: none;
 }
 
-/* Style the total row to align to the right */
-.total-row {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  /* match the number of columns */
-  margin-top: 8px;
+.label, .value {
+  margin-bottom: 0;
+  padding: 0 0.5rem;
+  padding-right: 6.4rem;
   font-weight: bold;
-}
-
-.total-row .label {
-  grid-column: 5;
-  text-align: right;
-  padding-right: 4rem;
-}
-
-.total-row .value {
-  grid-column: 6;
-  padding-right: 6.0rem;
-  text-align: right;
 }
 
 
