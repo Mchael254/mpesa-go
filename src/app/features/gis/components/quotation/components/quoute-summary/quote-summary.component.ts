@@ -166,8 +166,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
-
-
   getUsers() {
     this.claimsService.getUsers().subscribe({
       next: (res => {
