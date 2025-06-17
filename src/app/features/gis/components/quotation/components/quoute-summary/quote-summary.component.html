@@ -114,11 +114,10 @@
       </p-table>
 
 
-
       <!-- Total Premium Row (outside table but aligned) -->
-      <div class="total-row">
-        <div class="label"> {{ 'gis.quotation.sub_total' | translate }}</div>
-        <div class="value">{{ totalSumInsured |number: '1.0-2' }}</div>
+      <div class="d-flex justify-content-end align-items-center">
+        <p class="label"> {{ 'gis.quotation.sub_total' | translate }}</p>
+        <p class="value">{{ totalSumInsured |number: '1.0-2' }}</p>
       </div>
 
     </div>
