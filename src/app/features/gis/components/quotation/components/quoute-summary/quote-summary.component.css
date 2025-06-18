@@ -49,15 +49,18 @@ textarea:focus {
   outline: none;
 
 }
+
 textarea {
   width: 100%;
   height: 80px;
   border-radius: 5px;
   padding: 5px 10px;
 }
+
 input:focus {
   outline: none;
 }
+
 input {
   height: 30px;
   border-radius: 5px;
@@ -68,8 +71,8 @@ input {
 
 /* Remove border-radius from table, headers, and cells */
 .no-rounded ::ng-deep .p-datatable,
-.no-rounded ::ng-deep .p-datatable-thead > tr > th,
-.no-rounded ::ng-deep .p-datatable-tbody > tr > td {
+.no-rounded ::ng-deep .p-datatable-thead>tr>th,
+.no-rounded ::ng-deep .p-datatable-tbody>tr>td {
   border-radius: 0 !important;
 }
 
@@ -166,17 +169,17 @@ p-table ::ng-deep table thead tr th {
   border-bottom: 1px solid #e8eef7;
   letter-spacing: 0.05em;
   user-select: none;
-  font-size: 16px!important;
+  font-size: 16px !important;
 }
 
 /* Table rows */
 p-table ::ng-deep table tbody tr td {
   padding: 18px 22px;
   border-bottom: 1px solid #e8eef7;
-  color: #000000!important;
+  color: #000000 !important;
   transition: background-color 0.3s ease;
-    font-size: 16px!important;
-    font-weight: 400;
+  font-size: 16px !important;
+  font-weight: 400;
 
 }
 
@@ -196,27 +199,29 @@ p-table ::ng-deep table tbody tr td {
 
 
 
-button{
+button {
   font-weight: 500;
-border: 1px solid #00529B}
-
-.btn-primary{
-   background-color: #00529B!important;
- 
+  border: 1px solid #00529B
 }
-.btn-text{
+
+.btn-primary {
+  background-color: #00529B !important;
+
+}
+
+.btn-text {
   font-family: Roboto;
-font-weight: 600;
-font-size: 16px;
-line-height: 100%;
-letter-spacing: 0%;
-vertical-align: middle;
-text-decoration: underline;
-text-decoration-style: solid;
-text-decoration-thickness: 0%;
-color:#00529B
-
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 0%;
+  color: #00529B
 }
+
 .subtitle {
   color: #00529B;
   font-family: Roboto;
@@ -246,24 +251,27 @@ color:#00529B
   letter-spacing: 0%;
 
 }
-#quote-label{
+
+#quote-label {
   font-family: Roboto;
-font-weight: 400;
-font-size: 16px;
-line-height: 100%;
-letter-spacing: 0%;
-color: #00000080;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #00000080;
 }
-#quote-input{
+
+#quote-input {
   font-family: Roboto;
-font-weight: 500;
-font-size: 16px;
-line-height: 100%;
-letter-spacing: 0%;
-color: #000000;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #000000;
 }
+
 .notes-preview {
-  display: inline-block;      
+  display: inline-block;
   max-width: 100px;
   white-space: nowrap;
   overflow: hidden;
@@ -273,10 +281,11 @@ color: #000000;
 
 #btn-close {
   color: #EE3945 !important;
-   background: none;
+  background: none;
   border: none;
   font-size: 32px;
 }
+
 .btn-close:focus,
 .btn-close:active,
 .btn-close:focus-visible {
@@ -300,3 +309,11 @@ color: #000000;
 
 
 }
+  #shareQuote {
+    font-family: Roboto;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 100%;
+    letter-spacing: 0%;
+
+  }

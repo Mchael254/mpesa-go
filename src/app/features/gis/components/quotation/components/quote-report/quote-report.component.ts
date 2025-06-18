@@ -699,7 +699,12 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
 
   //Summary screen report
-  async generatePdfSelectCover(download = false, fileName = 'document.pdf'): Promise<void> {
+  iprefNo = 'fff'
+  async generatePdfSelectCover(
+    download = false,
+    fileName = 'document.pdf',
+    forEmail = false
+  ): Promise<Blob | void> {
     const productLevelPremiums = this.selectedCovers?.productLevelPremiums || [];
 
     // Header content with logo and info table
@@ -1007,10 +1012,17 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
     const pdf = pdfMake.createPdf(docDefinition);
 
-    if (download) {
-      await pdf.download(fileName);
+   
+    if (forEmail) {
+        return new Promise<Blob>((resolve, reject) => {
+            pdf.getBlob((blob: Blob) => {
+                resolve(blob);
+            });
+        });
+    } else if (download) {
+        await pdf.download(fileName);
     } else {
-      pdf.open();
+        pdf.open();
     }
   }
 
