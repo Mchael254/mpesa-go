@@ -795,7 +795,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
                 .find(limit => limit.sectCode === benefit.sectionCode);
 
               const premiumText = matchingPremium ? ` - ${this.formatCurrency(matchingPremium.premium, this.currencyObj.prefix,
-                  this.currencyObj.thousands)}` : '';
+                this.currencyObj.thousands)}` : '';
 
               return `${String.fromCharCode(97 + i)}) ${benefit.sectionDescription}${premiumText}`;
             }).join('\n');
@@ -1027,20 +1027,26 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
   }
 
   get paymentLink(): string {
-    const encodedRef = btoa(this.quotationDetails.ipayReferenceNumber);
+    const ipayRef = btoa(this.quotationDetails.ipayReferenceNumber);
+    const sumInsured = this.quotationDetails.sumInsured;
+    const storeData = sessionStorage.getItem('store_');
+    const tenantId = storeData ? JSON.parse(storeData).API_TENANT_ID : null;
 
-    const urlTree = this.router.createUrlTree(
-      ['/home/gis/quotation/payment-checkout', encodedRef]
-    );
+    const currencyPrefix = this.currencyObj.prefix;
+
+    const urlTree = this.router.createUrlTree(['/home/gis/quotation/payment-checkout'], {
+      queryParams: {
+        ref: ipayRef,
+        sumInsured: sumInsured,
+        currencyPrefix: currencyPrefix,
+        tenant: tenantId
+      }
+    });
 
     return `${location.origin}${this.router.serializeUrl(urlTree)}`;
   }
 
 
 
-
-}
-function ngOnDestroy() {
-  throw new Error('Function not implemented.');
 }
 
