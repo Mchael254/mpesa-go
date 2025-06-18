@@ -1,23 +1,16 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { QuotationDetails, QuotationDTO, ShareQuoteDTO } from '../../data/quotationsDTO';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {QuotationDetails, ShareQuoteDTO} from '../../data/quotationsDTO';
 
-import { QuotationsService } from "../../services/quotations/quotations.service";
-import { Logger, untilDestroyed, UtilService } from "../../../../../../shared/shared.module";
-import { Table } from 'primeng/table';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import {QuotationsService} from "../../services/quotations/quotations.service";
+import {Logger, untilDestroyed, UtilService} from "../../../../../../shared/shared.module";
+import {Table} from 'primeng/table';
+import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
-import { Router } from '@angular/router';
-import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
-import { QuoteReportComponent } from '../quote-report/quote-report.component';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { Pagination } from 'src/app/shared/data/common/pagination';
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { ClaimsService } from '../../../claim/services/claims.service';
-import { LazyLoadEvent } from 'primeng/api';
-import { tap } from 'rxjs';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { ProductLevelPremium } from "../../data/premium-computation";
-
+import {Router} from '@angular/router';
+import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
+import {QuoteReportComponent} from '../quote-report/quote-report.component';
+import {ClaimsService} from '../../../claim/services/claims.service';
+import {ProductLevelPremium} from "../../data/premium-computation";
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -31,17 +24,15 @@ type ProductWithRiskId = {
 };
 
 
-
 @Component({
-  selector: 'app-quoute-summary',
+  selector: 'app-quote-summary',
   templateUrl: './quote-summary.component.html',
   styleUrls: ['./quote-summary.component.css']
 })
 export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('dt') table!: Table;
   @ViewChild('clientModal') clientModal: any;
-  // @ViewChild('closebutton') closebutton;
-@ViewChild('closeButton') closeButton: ElementRef;
+  @ViewChild('closeButton') closeButton: ElementRef;
 
   quotationDetails: QuotationDetails;
   batchNo: number;
@@ -53,7 +44,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   fullNameSearch: string = '';
   globalSearch: string = '';
   status: string = '';
-  afterRejectQuote: boolean = true;
+  afterRejectQuote: boolean = false;
   originalComment: string;
   totalSumInsured: number;
   isShareModalOpen: boolean = false;
@@ -64,16 +55,13 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
-    private cdRef: ChangeDetectorRef,
     public globalMessagingService: GlobalMessagingService,
     public claimsService: ClaimsService,
-    private spinner: NgxSpinnerService,
     public utilService: UtilService,
     public cdr: ChangeDetectorRef
-
   ) {
     this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
-   
+
   }
 
   breadCrumbItems: BreadCrumbItem[] = [
@@ -93,29 +81,31 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   steps = stepData;
 
 
- 
   productDetails: ProductWithRiskId[]
 
 
-
   ngOnInit(): void {
-    
-    log.debug('these are quotation details',this.quotationDetails)
+
+    log.debug('these are quotation details', this.quotationDetails)
     const stored = sessionStorage.getItem('selectedCovers');
     this.selectedCovers = stored ? JSON.parse(stored) : null;
 
-  
+
     this.quotationService.getQuotationDetails(JSON.parse(sessionStorage.getItem('quotationCode')))
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
-        log.debug("Quotation details>>>", response)
-        this.quotationDetails = response
-        const quotationProducts = this.quotationDetails.quotationProducts
-        this.flattenQuotationProducts(quotationProducts)
-        this.totalSumInsured = this.quotationDetails.sumInsured
-        this.comments = this.quotationDetails?.comments        
-      });
+      log.debug("Quotation details>>>", response)
+      this.quotationDetails = response
+      const quotationProducts = this.quotationDetails.quotationProducts
+      this.flattenQuotationProducts(quotationProducts)
+      this.totalSumInsured = this.quotationDetails.sumInsured
+      this.comments = this.quotationDetails?.comments
+      if ('Rejected' === response.status) {
+        this.afterRejectQuote = true
+      }
+    });
 
   }
+
   openShareModal() {
     this.isShareModalOpen = true;
   }
@@ -160,6 +150,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     });
   }
+
   shouldShowProductName(index: number): boolean {
     if (index === 0) return true;
     return this.productDetails[index].productName !== this.productDetails[index - 1].productName;
@@ -186,7 +177,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     const quotationCode = code;
     const reasonCancelled = this.rejectComment;
     const status = 'Rejected';
-
     if (!reasonCancelled) {
       this.globalMessagingService.displayWarningMessage('Warning', 'Key in a reason');
       return;
@@ -198,8 +188,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       next: (response) => {
         this.globalMessagingService.displaySuccessMessage('success', 'quote rejected successfully')
         log.debug(response);
-        this.afterRejectQuote = false;
-
+        this.afterRejectQuote = true;
+        this.quotationDetails.status = 'Rejected'
       },
       error: (error) => {
         this.globalMessagingService.displayErrorMessage('error', 'error while rejecting quote');
@@ -232,6 +222,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
   }
+
   onUserUnselect(): void {
     this.selectedUser = null;
     this.globalSearch = '';
@@ -241,6 +232,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   //reassign quotation
   comment: boolean = false
   noUserChosen: boolean = false
+
   reassignQuotation() {
     if (!this.reassignComment) {
       this.comment = true;
@@ -272,31 +264,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
-
   ngOnDestroy(): void {
   }
 
-  convertQuoteToPolicy() {
-    log.debug("Quotation Details", this.quotationDetails)
-    const quotationCode = this.quotationDetails?.code;
-    log.debug("Quotation Code", quotationCode);
-    log.debug("Quotation Details", this.quotationDetails);
-    const quoteProductCode = this.quotationDetails?.quotationProducts[0]?.code
 
-    const conversionFlag = true;
-    sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
-
-    this.quotationService.convertQuoteToPolicy(quotationCode, quoteProductCode).subscribe((data: any) => {
-      log.debug("Response after converting quote to a policy:", data)
-      this.batchNo = data._embedded.batchNo
-      log.debug("Batch number", this.batchNo)
-      const convertedQuoteBatchNo = JSON.stringify(this.batchNo);
-      sessionStorage.setItem('convertedQuoteBatchNo', convertedQuoteBatchNo);
-      this.router.navigate(['/home/gis/policy/policy-summary']);
-
-    })
-
-  }
 
   convertQuoteToNormalQuote() {
     log.debug("Quotation Details", this.quotationDetails);
@@ -316,10 +287,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     this.quotationService
       .convertToNormalQuote(quotationCode)
       .subscribe((data: any) => {
-        log.debug("Response after converting quote to a normalQuote:", data)
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+          log.debug("Response after converting quote to a normalQuote:", data)
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
 
-      }
+        }
       );
   }
 
@@ -350,19 +321,15 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   }
 
-  showQuoteReport = true; // Set to true to debug quote report
-
   navigateToQuoteDetails() {
     const quotationNumber = this.quotationDetails?.quotationNo;
     log.debug("Quotation Object", this.quotationDetails);
     sessionStorage.setItem("quotationObject", JSON.stringify(this.quotationDetails));
-
-    // const quotationCode = this.quotationDetails?.code;
-    // log.debug("Quotation Code", quotationCode);
-    // sessionStorage.setItem("quotationCode", JSON.stringify(quotationCode));
-
-    this.router.navigate(['/home/gis/quotation/quick-quote']);
-
+    if (this.afterRejectQuote) {
+      this.utilService.clearSessionStorageData()
+    }
+    this.router.navigate(['/home/gis/quotation/quick-quote']).then(r => {
+    });
   }
 
 
@@ -411,7 +378,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   //pdf functionality
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
-  @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
+  @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
 
   quoteData = {
     name: 'John Doe',
@@ -441,8 +408,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       }, 200);
     }
   }
-
-
 
 
 }
