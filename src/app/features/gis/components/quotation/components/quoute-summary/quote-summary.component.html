@@ -5,9 +5,9 @@
   </div>
   <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
   <!-- Subcard: Quotation Details & Table -->
-  <div class="card mb-2" style=" position: relative; border: none; border-radius: 5px;">
+  <div class="card mb-4" style=" position: relative; border: none; border-radius: 5px;">
 
-    <div class="card-body">
+    <div class="card-body mx-4">
       <p class="subtitle ">{{ 'gis.quotation.quotation_summmary' | translate }}</p>
 
       <!-- Quotation Details -->
@@ -185,7 +185,7 @@
             </app-quote-report>
           </ng-container>
 
-          <app-share-quotes (sendEvent)="listenToSendEvent($event)"></app-share-quotes>
+          <app-share-quotes (sendEvent)="listenToSendEvent($event)" (downloadRequested)="onDownloadRequested()"></app-share-quotes>
 
 
         </div>

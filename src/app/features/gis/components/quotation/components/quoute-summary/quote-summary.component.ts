@@ -404,20 +404,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 100);
   }
 
-  // listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
-  //   if (sendEvent && ['email', 'whatsapp'].includes(sendEvent.mode.selectedMethod)) {
-  //     this.cdr.detectChanges();
-  //     setTimeout(async () => {
-  //       try {
-  //         await this.quoteReportComponent.generatePdfSelectCover(false, 'quote-report.pdf');
-  //         // If generatePdfSelectCover returns a file in the future, handle it here.
-  //         // Currently, it returns void, so no further action is needed.
-  //       } catch (err) {
-  //         console.error('PDF generation failed', err);
-  //       }
-  //     }, 200);
-  //   }
-  // }
  
 listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
   if (sendEvent && ['email', 'whatsapp'].includes(sendEvent.mode.selectedMethod)) {
