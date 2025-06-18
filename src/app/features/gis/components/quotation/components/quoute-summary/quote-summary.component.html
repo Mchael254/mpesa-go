@@ -116,15 +116,15 @@
 
 
       <!-- Total Premium Row (outside table but aligned) -->
-      <div class="total-row">
-        <div class="label"> {{ 'gis.quotation.sub_total' | translate }}</div>
-        <div class="value">{{ totalSumInsured |number: '1.0-2' }}</div>
+      <div class="d-flex justify-content-end align-items-center">
+        <p class="label"> {{ 'gis.quotation.sub_total' | translate }}</p>
+        <p class="value">{{ totalSumInsured |number: '1.0-2' }}</p>
       </div>
 
     </div>
   </div>
   <div class="row mb-4">
-    <div class="col-md-4  col-12 mt-2 d-flex justify-content-start">
+    <div class="col-md-4  col-12 mt-2 d-flex justify-content-start gap-2">
       <button type="button" class="btn btn-text me-2 " style="border: none;" (click)="navigateToQuoteDetails()">
         {{ 'gis.quotation.back' | translate }}
       </button>
@@ -199,9 +199,9 @@
           </button>
         </div>
         <p class="text-dark mb-5">Are you sure you want to reject this quote? </p>
-        <label class="text-dark" for="comment">Comment</label>
-        <textarea [(ngModel)]="rejectComment" name="rejectComment"></textarea>
-        <div class="d-flex justify-content-between align-items-center rounded-3 mb-4 mt-5 p-0">
+        <label class="text-dark mt-0" for="comment">Comment</label>
+        <textarea [(ngModel)]="rejectComment" name="rejectComment" #commentInput="ngModel"></textarea>
+        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
           <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
                   style="text-decoration: none;">{{
               'gis.quotation.cancel' | translate

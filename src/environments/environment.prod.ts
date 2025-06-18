@@ -26,6 +26,8 @@ export const environment = {
     [API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis/quotation/api'],
     [API_CONFIG.GIS_QUOTATION_BASE_URL, '/gis/quotation/api'],
     [API_CONFIG.NOTIFICATION_BASE_URL, '/turnquest/notification'],
+    [API_CONFIG.GIS_PAYMENT_SERVICE_BASE_URL, '/gis/payment'],
+
     // [API_CONFIG.REPORT_SERVICE_BASE_URL, 'http://10.176.18.211:9991'],
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/report'],
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices'],

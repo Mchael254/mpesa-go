@@ -1,52 +1,38 @@
-
 <div class="share-quote-page">
-  
+
 
   <!-- Share method -->
   <div class="method-options">
-    <div 
-      class="method-option" 
-      *ngFor="let method of shareMethods"
+    <div class="method-option" *ngFor="let method of shareMethods"
       (click)="shareQuoteData.selectedMethod = method.value "
-      [class.selected]="shareQuoteData.selectedMethod === method.value"
-    >
+      [class.selected]="shareQuoteData.selectedMethod === method.value">
       <i class="far fa-circle" *ngIf="shareQuoteData.selectedMethod !== method.value"></i>
       <i class="fas fa-dot-circle" *ngIf="shareQuoteData.selectedMethod === method.value"></i>
       <span>{{ method.label }}</span>
     </div>
   </div>
-  
+
 
   <!-- Download -->
-  <div class="download-section" (click)="onDownload()" role="button" tabindex="0">
-    <i class="pi pi-download"></i>
-    <span >Download</span>
+  <div class="btn btn-outline-primary d-inline-flex align-items-center my-3" (click)="onDownload()" role="button"
+    tabindex="0">
+    <i class="pi pi-download me-2"></i>
+    <span>Download</span>
   </div>
 
   <!-- Client name -->
   <div class="p-field p-mb-3">
     <label for="clientName">Client name</label>
-    <input
-      pInputText
-      id="clientName"
-      [(ngModel)]="shareQuoteData.clientName"
-      class="p-inputtext"
-      placeholder=""
-    />
+    <input pInputText id="clientName" [(ngModel)]="shareQuoteData.clientName" class="p-inputtext" placeholder="" />
   </div>
 
   <!-- Email input field -->
-  <div class="p-field p-mb-3" *ngIf="shareQuoteData.selectedMethod !== 'sms' && shareQuoteData.selectedMethod !== 'whatsapp'">
-    <label for="email" >
+  <div class="p-field p-mb-3"
+    *ngIf="shareQuoteData.selectedMethod !== 'sms' && shareQuoteData.selectedMethod !== 'whatsapp'">
+    <label for="email">
       Email address<span class="required"></span>
     </label>
-    <input
-      pInputText
-      id="email"
-      [(ngModel)]="shareQuoteData.email"
-      class="p-inputtext"
-      placeholder=""
-    />
+    <input pInputText id="email" [(ngModel)]="shareQuoteData.email" class="p-inputtext" placeholder="" />
   </div>
 
   <!-- SMS input field -->
@@ -54,32 +40,23 @@
     <label for="smsNumber">
       Phone number<span class="required"></span>
     </label>
-    <input
-      pInputText
-      id="smsNumber"
-      [(ngModel)]="shareQuoteData.smsNumber"
-      class="p-inputtext"
-      placeholder=""
-    />
+    <input pInputText id="smsNumber" [(ngModel)]="shareQuoteData.smsNumber" class="p-inputtext" placeholder="" />
   </div>
 
   <!-- WhatsApp input field -->
   <div class="p-field p-mb-3" *ngIf="shareQuoteData.selectedMethod === 'whatsapp'">
-    <label for="whatsappNumber" >
+    <label for="whatsappNumber">
       WhatsApp number<span class="required"></span>
     </label>
-    <input
-      pInputText
-      id="whatsappNumber"
-      [(ngModel)]="shareQuoteData.whatsappNumber"
-      class="p-inputtext"
-      placeholder=""
-    />
+    <input pInputText id="whatsappNumber" [(ngModel)]="shareQuoteData.whatsappNumber" class="p-inputtext"
+      placeholder="" />
   </div>
 
   <!-- Actions -->
   <div class="action-buttons">
-    <button pButton type="button" label="Cancel" class="p-button-secondary" (click)="cancel()"  data-bs-dismiss="modal" style="font-size: larger; font-weight: 600;"></button>
-    <button pButton type="button" label="Send" class="p-button-primary" (click)="send()" style="font-size: larger; font-weight: 600;"></button>
+    <button pButton type="button" label="Cancel" class="p-button-secondary" (click)="cancel()" data-bs-dismiss="modal"
+      style="font-size: larger; font-weight: 600;"></button>
+    <button pButton type="button" label="Send" class="p-button-primary" (click)="send()"
+      style="font-size: larger; font-weight: 600;"></button>
   </div>
 </div>
