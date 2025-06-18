@@ -317,3 +317,26 @@ button {
     letter-spacing: 0%;
 
   }
+  .total-premium-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 40px;
+    gap: 10px; 
+  }
+  
+  .total-premium-row .label {
+    font-weight: 600;
+    color: #000000;
+    margin-right: 3.2rem;
+  }
+  
+  .total-premium-row .value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-right: 3rem;
+
+    margin: 0;
+  }
+  
+  
