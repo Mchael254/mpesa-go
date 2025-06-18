@@ -18,17 +18,22 @@
             </div>
         </div>
         <div class="d-flex flex-column w-75 justify-content-around mt-4">
-            <div class="d-flex gap-2 justify-content-between text-black">
+            <!-- <div class="d-flex gap-2 justify-content-between text-black">
                 <p>Paybill number</p>
                 <p><strong>{{ selectedDetails.paybill }}</strong></p>
+            </div> -->
+            <!-- <div class="d-flex gap-2 justify-content-between text-black">
+                <p>Account number</p>
+                <p><strong>{{ selectedDetails.account }}</strong></p>
+            </div> -->
+            <div class="d-flex gap-2 justify-content-between text-black">
+                <p>Amount</p>
+                <p><strong>{{ currencyPrefix }} {{ sumInsured | number:'1.0-0' }}</strong></p>
             </div>
             <div class="d-flex gap-2 justify-content-between text-black">
                 <p>Account number</p>
-                <p><strong>{{ selectedDetails.account }}</strong></p>
-            </div>
-            <div class="d-flex gap-2 justify-content-between text-black">
-                <p>Amount</p>
-                <p><strong>{{amount}}</strong></p>
+                <p><strong>{{decodedIpayRefNo}}</strong></p>
+
             </div>
         </div>
         <div class="d-flex flex-column mt-3">
