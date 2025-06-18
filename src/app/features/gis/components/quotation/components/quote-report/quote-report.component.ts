@@ -721,10 +721,10 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
         table: {
           widths: ['auto', '*'],
           body: [
-            ['Quotation status', this.quotationDetails.status],
-            ['Period', this.formatPeriod(this.quotationDetails.coverFrom, this.quotationDetails.coverTo),],
+            ['Quotation status', this.quotationDetails?.status ?? 'NA'],
+            ['Period', this.formatPeriod(this.quotationDetails?.coverFrom, this.quotationDetails?.coverTo) ?? 'NA'],
             ['Quote time', this.formatQuoteTime(new Date())],
-            ['Expiry Date', this.formatDate(this.quotationDetails.expiryDate)],
+            ['Expiry Date', this.formatDate(this.quotationDetails?.expiryDate) ?? 'NA'],
             ['Agency Name', 'N/A'],
 
           ]
@@ -1012,23 +1012,23 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
     const pdf = pdfMake.createPdf(docDefinition);
 
-   
+
     if (forEmail) {
-        return new Promise<Blob>((resolve, reject) => {
-            pdf.getBlob((blob: Blob) => {
-                resolve(blob);
-            });
+      return new Promise<Blob>((resolve, reject) => {
+        pdf.getBlob((blob: Blob) => {
+          resolve(blob);
         });
+      });
     } else if (download) {
-        await pdf.download(fileName);
+      await pdf.download(fileName);
     } else {
-        pdf.open();
+      pdf.open();
     }
   }
 
   get paymentLink(): string {
-    const ipayRef = btoa(this.quotationDetails.ipayReferenceNumber);
-    const sumInsured = this.quotationDetails.sumInsured;
+    const ipayRef = btoa(this.quotationDetails?.ipayReferenceNumber ?? 'NA');;
+    const sumInsured = this.quotationDetails?.sumInsured ?? 'NA';
     const storeData = sessionStorage.getItem('store_');
     const tenantId = storeData ? JSON.parse(storeData).API_TENANT_ID : null;
 

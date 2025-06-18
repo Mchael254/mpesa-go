@@ -144,6 +144,11 @@ input {
 button.p-button {
   min-width: 100px;
 }
+.card {
+  border-radius: 5px;
+    box-shadow: none !important;
+
+}
 
 
 
