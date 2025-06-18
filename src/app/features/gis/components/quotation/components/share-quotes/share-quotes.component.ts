@@ -71,39 +71,7 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
   onDownload() {
     this.downloadRequested.emit();
   }
-  // send() {
-  //   let contactInfo = '';
-  //   switch (this.shareQuoteData.selectedMethod) {
-  //     case 'email':
-  //       contactInfo = this.shareQuoteData.email || '';
-  //       break;
-  //     case 'sms':
-  //       contactInfo = this.shareQuoteData.smsNumber || '';
-  //       break;
-  //     case 'whatsapp':
-  //       contactInfo = this.shareQuoteData.whatsappNumber || '';
-  //       break;
-  //   }
-  //   this.sendEvent.emit({ mode: this.shareQuoteData })
-  //   log.debug("Sending notification >>>", this.notificationPayload)
-  //   this.quotationService.sendEmail(this.notificationPayload).pipe(
-  //     untilDestroyed(this)
-  //   )
-  //     .subscribe({
-  //       next: (res) => {
-  //         if (res) {
-  //           this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
-  //           log.debug(res)
-  //         }
-  //       },
-  //       error: (error: HttpErrorResponse) => {
-  //         log.info(error);
-  //         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-  //       }
-  //     })
-  //   log.debug('Submitted payload:', JSON.stringify(this.notificationPayload));
-  // }
-
+ 
 
   cancel() {
     this.display = false;

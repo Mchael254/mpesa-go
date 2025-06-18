@@ -78,6 +78,7 @@ import {QuotationDetailsRequestDto} from "../../data/quotation-details";
 import {differenceInCalendarDays, parseISO} from 'date-fns';
 import {QuoteReportComponent} from '../quote-report/quote-report.component';
 import {EmailDto} from "../../../../../../shared/data/common/email-dto";
+import { ShareQuotesComponent } from '../share-quotes/share-quotes.component';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -2075,6 +2076,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
   @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
+@ViewChild(ShareQuotesComponent)shareQuotes!: ShareQuotesComponent;
 
 
   onDownloadRequested() {
@@ -2131,40 +2133,21 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     });
   }
 
-  listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
-    if (sendEvent && ['email', 'whatsapp'].includes(sendEvent.mode.selectedMethod)) {
-      this.cdr.detectChanges();
-      setTimeout(async () => {
-        try {
-          const pdfFile = await this.quoteReportComponent.generatePdf(false, 'quote-report.pdf');
-          if (pdfFile) {
-            const emailDto: EmailDto = {
-              address: [sendEvent.mode.email],
-              clientCode: 0,
-              attachments: [],
-              subject: 'Draft Quotation',
-              message: 'Draft Quotation',
-              emailAggregator: 'P',
-              systemModule: 'GIS',
-              systemCode: 37,
-              fromName: 'Turnkey Africa',
-              sendOn: new Date().toString(),
-              from: 'test@gmail.com',
-              status: 'pending'
-            }
-            const formData = new FormData();
-            this.quotationService.sendEmail(emailDto).pipe(
-              untilDestroyed(this)
-            )
-              .subscribe((response) => {
-                log.debug("Form Data....", response);
-              })
-            formData.append('file', pdfFile, 'quote-report.pdf');
-          }
-        } catch (err) {
-          console.error('PDF generation failed', err);
-        }
-      }, 200);
-    }
-  }
+ listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
+   if (sendEvent && ['email', 'whatsapp'].includes(sendEvent.mode.selectedMethod)) {
+     this.cdr.detectChanges();
+ 
+     setTimeout(async () => {
+       try {
+         const pdfBlob = await this.quoteReportComponent.generatePdfSelectCover(false, 'quote-report.pdf', true) as Blob;
+         log.debug("PDF BLOB:",pdfBlob)
+         if (pdfBlob) {
+           this.shareQuotes.handlePdfBlob(pdfBlob, sendEvent.mode);
+         }
+       } catch (err) {
+         console.error('PDF generation failed', err);
+       }
+     }, 200);
+   }
+ }
 }
