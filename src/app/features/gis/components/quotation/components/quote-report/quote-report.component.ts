@@ -236,46 +236,46 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
     this.appConfigService.loadConfigurations(this.configLoader).then(() => {
 
-    
 
-    this.loadAllCurrencies()
-    // log.debug('rregee', this.quotationDetails)
 
-    const propertyIdCounter: { [key: string]: number } = {};
+      this.loadAllCurrencies()
+      // log.debug('rregee', this.quotationDetails)
 
-    this.enrichedProducts = this.premiumComputationResponse?.productLevelPremiums.map(product => {
-      const enrichedRisks: EnrichedRisk[] = [];
+      const propertyIdCounter: { [key: string]: number } = {};
 
-      for (const risk of product.riskLevelPremiums) {
-        const id = risk.propertyId;
-        propertyIdCounter[id] = (propertyIdCounter[id] || 0) + 1;
+      this.enrichedProducts = this.premiumComputationResponse?.productLevelPremiums.map(product => {
+        const enrichedRisks: EnrichedRisk[] = [];
 
-        enrichedRisks.push({
-          risk,
-          count: propertyIdCounter[id],
-        });
-      }
+        for (const risk of product.riskLevelPremiums) {
+          const id = risk.propertyId;
+          propertyIdCounter[id] = (propertyIdCounter[id] || 0) + 1;
 
-      return {
-        description: product.description,
-        code: product.code,
-        enrichedRisks
+          enrichedRisks.push({
+            risk,
+            count: propertyIdCounter[id],
+          });
+        }
+
+        return {
+          description: product.description,
+          code: product.code,
+          enrichedRisks
+        };
+      });
+
+      this.paymentAdviceData = {
+        paymentMethods: this.appConfigService.paymentMethods,
+        footerInfo: this.appConfigService.footerInfo
       };
+      this.cdr.detectChanges();
+
+      log.debug(this.enrichedProducts)
+
+      log.debug(this.paymentAdviceData)
     });
+  }
 
-    this.paymentAdviceData = {
-      paymentMethods: this.appConfigService.paymentMethods,
-      footerInfo: this.appConfigService.footerInfo
-    };
-    this.cdr.detectChanges();
 
-    log.debug(this.enrichedProducts)
-
-    log.debug(this.paymentAdviceData)
-  });
-}
-
-  
   ngOnDestroy(): void {
   }
 
@@ -699,7 +699,6 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
 
 
   //Summary screen report
-  iprefNo = 'fff'
   async generatePdfSelectCover(download = false, fileName = 'document.pdf'): Promise<void> {
     const productLevelPremiums = this.selectedCovers?.productLevelPremiums || [];
 
@@ -743,7 +742,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     for (let productIndex = 0; productIndex < productLevelPremiums.length; productIndex++) {
       const product = productLevelPremiums[productIndex];
 
-      // Product content with blue border
+      // Product content
       const productContent: any[] = [
         { text: `Product: ${product.description} (${product.code})`, style: 'riskTitle', margin: [0, 0, 0, 10] },
 
@@ -777,16 +776,24 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
           ];
 
           // Additional Benefits
-          if (selectCoverType.additionalBenefits?.length > 0) {
+          const checkedBenefits = selectCoverType.additionalBenefits.filter(benefit => benefit.isChecked === true);
+          if (checkedBenefits.length > 0) {
             coverTypeContent.push({
               text: 'Additional Benefits:',
               style: 'sectionHeader',
               margin: [0, 5, 0, 5]
             });
 
-            const benefitsList = selectCoverType.additionalBenefits.map((benefit, i) =>
-              `${String.fromCharCode(97 + i)}) ${benefit.sectionDescription}`
-            ).join('\n');
+            const benefitsList = checkedBenefits.map((benefit, i) => {
+              const matchingPremium = selectCoverType.limitPremium
+                .filter(limit => limit.description !== "SUM INSURED")
+                .find(limit => limit.sectCode === benefit.sectionCode);
+
+              const premiumText = matchingPremium ? ` - ${this.formatCurrency(matchingPremium.premium, this.currencyObj.prefix,
+                  this.currencyObj.thousands)}` : '';
+
+              return `${String.fromCharCode(97 + i)}) ${benefit.sectionDescription}${premiumText}`;
+            }).join('\n');
 
             coverTypeContent.push({ text: benefitsList, margin: [0, 0, 0, 10] });
           }
@@ -971,7 +978,7 @@ export class QuoteReportComponent implements OnInit, AfterViewInit {
     ];
 
 
-    
+
     const docDefinition: any = {
       content: fullContent,
 
