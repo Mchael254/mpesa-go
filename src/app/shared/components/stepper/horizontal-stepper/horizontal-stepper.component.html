@@ -1,16 +1,3 @@
-<!-- <section class="rt-container">
-  <div class="container">
-    <div class="text-center step link" style="display: flex; flex-direction: row; flex-wrap:wrap; justify-content: space-between; flex-grow: 1;">
-      <div  *ngFor="let step of stepperData; let i = index"
-      [ngClass]="getStepClasses(i+1)" (click)="navigateToPage(step.link)">
-        <div class="circle">{{step.number}}</div>
-        <div class="title step-link" >{{step.title}}</div>
-      </div>
-    </div>
-
-  </div>
-</section> -->
-
 <section class="rt-container" *ngIf="stepType === 'link'">
   <div class="container-fluid">
     <div class="stepper">
@@ -21,7 +8,8 @@
           </div>
           <div class="title step-link">{{ step.title }}</div>
         </div>
-        <!-- <div [ngClass]="getStepClasses(i + 1)"></div> -->
+        <!-- Add connecting line after each step except the last one -->
+        <div *ngIf="i < stepperData.length - 1" class="connector"></div>
       </ng-container>
     </div>
   </div>
@@ -36,9 +24,9 @@
             <div>{{ step.number }}</div>
           </div>
           <div class="title step-link">{{ step.title }}</div>
-<!--          <div *ngIf="i < stepperData.length - 1" class="border-line position-absolute"></div>-->
         </div>
-        <!-- <div [ngClass]="getStepClasses(i + 1)"></div> -->
+        <!-- Add connecting line after each step except the last one -->
+        <div *ngIf="i < stepperData.length - 1" class="connector"></div>
       </ng-container>
     </div>
   </div>
