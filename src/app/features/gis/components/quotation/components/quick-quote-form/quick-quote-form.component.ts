@@ -368,7 +368,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       this.quickQuoteForm.patchValue({
         product: parsed.formArray.product || [],
         quotComment: parsed.formArray.quotComment || '',
-        effectiveDate: parsed.formArray.effectiveDate || new Date()
+        effectiveDate: new Date(parsed.formArray.effectiveDate) || new Date()
       });
 
 
