@@ -113,7 +113,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   previousSelected: Products[] = [];
 
   productRiskFields: DynamicRiskField[][] = [];
-  // expandedStates: boolean[] = [];
   expandedQuoteStates: boolean[] = [];
   expandedComparisonStates: boolean[] = [];
   currencySymbol: string;
@@ -286,7 +285,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   applicablePremiumRates: any
   premiumComputationResponse: ProductLevelPremium = null
   selectedProductCovers: ProductPremium[] = [];
-  coverSelected = false;
+  canMoveToNextScreen = false;
   currentSelectedRisk: any
   currentComputationPayload: PremiumComputationRequest = null
   premiumComputationPayloadToShare: ProductLevelPremium = null
@@ -369,7 +368,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       this.quickQuoteForm.patchValue({
         product: parsed.formArray.product || [],
         quotComment: parsed.formArray.quotComment || '',
-        effectiveDate: parsed.formArray.effectiveDate || new Date()
+        effectiveDate: new Date(parsed.formArray.effectiveDate) || new Date()
       });
 
 
@@ -541,71 +540,69 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     );
   }
 
+  private handleSingleSubclassLogic(
+    subclass: any,
+    productCode: number,
+    group: { [key: string]: AbstractControl }
+  ): void {
+    const subClassCode = subclass.code;
+
+    this.binderService.getAllBindersQuick(subClassCode).pipe(
+      mergeMap(binders => {
+        this.binderList = binders._embedded.binder_dto_list;
+        const defaultBinder = this.binderList.find((binder: { is_default: string }) =>
+          binder?.is_default === 'Y'
+        ) as Binders;
+        group['applicableBinder'].setValue(defaultBinder);
+        this.currencyCode = defaultBinder?.currency_code;
+
+        if (this.currencyCode) {
+          this.fetchExchangeRate();
+        }
+        return forkJoin([
+          this.quotationService.getTaxes(productCode, subClassCode),
+          this.subclassCoverTypesService.getCoverTypeSections(subClassCode, defaultBinder.code)
+        ]);
+      }),
+      untilDestroyed(this)
+    ).subscribe(([taxes, coverTypeSections]) => {
+      const taxList = taxes._embedded as Tax[];
+      this.taxList = taxList;
+      group['applicableTaxes'].setValue(taxList);
+      group['applicableCoverTypes'].setValue(coverTypeSections._embedded);
+    });
+  }
+
 
   // Dynamically creates a FormGroup for a risk using provided fields
-  createRiskGroup(riskFields: DynamicRiskField[],
-    productCode: number, nextRiskIndex: number): FormGroup {
+  createRiskGroup(
+    riskFields: DynamicRiskField[],
+    productCode: number,
+    nextRiskIndex: number
+  ): FormGroup {
     const group: { [key: string]: AbstractControl } = {};
-
+    const subclasses = this.productSubclassesMap?.[productCode] || [];
+    const hasSingleSubclass = subclasses.length === 1;
+    const singleSubclass = hasSingleSubclass ? subclasses[0] : null;
     riskFields.forEach(field => {
+      const isUseOfProperty = field.name === 'useOfProperty';
       group[field.name] = new FormControl(
-        { value: '', disabled: field.disabled },
+        {
+          value: isUseOfProperty && singleSubclass ? singleSubclass : '',
+          disabled: field.disabled
+        },
         field.isMandatory === 'Y' ? Validators.required : []
       );
     });
-    group['applicableTaxes'] = new FormControl(null)
-    group['applicableBinder'] = new FormControl(null)
-    group['applicableCoverTypes'] = new FormControl(null)
-    group['riskCode'] = new FormControl('#' + productCode + nextRiskIndex)
+    group['applicableTaxes'] = new FormControl(null);
+    group['applicableBinder'] = new FormControl(null);
+    group['applicableCoverTypes'] = new FormControl(null);
+    group['riskCode'] = new FormControl(`#${productCode}${nextRiskIndex}`);
+    if (hasSingleSubclass) {
+      this.handleSingleSubclassLogic(singleSubclass, productCode, group);
+    }
     return new FormGroup(group);
   }
-  // createRiskGroup(riskFields: DynamicRiskField[],
-  //                 productCode: number,
-  //                 nextRiskIndex: number,
-  //                 productIndex?: number,
-  //                 riskIndex?: number): FormGroup {
-  //   const group: { [key: string]: AbstractControl } = {};
-
-  //   const index  =  riskIndex  || riskIndex == 0 ? riskIndex : nextRiskIndex 
-
-  //   riskFields.forEach(field => {
-  //     if (field.name === 'useOfProperty') {
-  //       const subclasses = this.productSubclassesMap[productCode] || [];
-  //       const initialValue = subclasses.length === 1 ? subclasses[0] : '';
-
-  //       group[field.name] = new FormControl(
-  //         initialValue,
-  //         field.isMandatory === 'Y' ? Validators.required : []
-  //       );
-
-  //       if (subclasses.length === 1) {
-  //         log.debug("One subclass")
-  //         log.debug("PRODUCT INDEX-create risk Group",productIndex)
-  //         log.debug("RISK INDEX-create risk Group",index)
-  //         setTimeout(() => {
-  //           this.onSubclassSelected(
-  //             subclasses[0],
-  //             productIndex,
-  //             index,
-  //             productCode
-  //           );
-  //         });
-  //       }
-  //     } else {
-  //       group[field.name] = new FormControl(
-  //         {value: '', disabled: field.disabled},
-  //         field.isMandatory === 'Y' ? Validators.required : []
-  //       );
-  //     }
-  //   });
-
-  //   group['applicableTaxes'] = new FormControl(null);
-  //   group['applicableBinder'] = new FormControl(null);
-  //   group['applicableCoverTypes'] = new FormControl(null);
-  //   group['riskCode'] = new FormControl('#' + productCode + nextRiskIndex);
-
-  //   return new FormGroup(group);
-  // }
 
   // When products are selected from multi-select
   getSelectedProducts(event: any) {
@@ -675,7 +672,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
     this.selectedProducts = [...currentSelection];
     this.previousSelected = [...currentSelection];
-
+    this.canMoveToNextScreen = false
     log.debug("FormArray now >>>>", this.productsFormArray);
   }
 
@@ -1724,7 +1721,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           };
           sessionStorage.setItem('savedProductsState', JSON.stringify(fullState));
           const computationPayload: ComputationPayloadDto = {
-            quotationCode : +response._embedded?.quotationCode,
+            quotationCode: +response._embedded?.quotationCode,
             payload: this.currentComputationPayload
           }
           return this.quotationService.savePremiumComputationPayload(computationPayload)
@@ -1780,7 +1777,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   getQuotationProductPayload(): QuotationProduct[] {
-    let existingProducts  = this.quotationObject?.quotationProducts;
+    let existingProducts = this.quotationObject?.quotationProducts;
     const quotationProducts: QuotationProduct[] = []
     const products = this.quickQuoteForm.getRawValue().products
     log.debug("User selected products>>>", products)
@@ -1793,7 +1790,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       selectedProductPremium.coverTo = product.effectiveTo
       const productPremium = selectedProductPremium.riskLevelPremiums
         .reduce((sum, value) => sum + value.selectCoverType.computedPremium, 0);
-        const matchingProduct  = existingProducts?.find((value) => value.productCode === product.code)
+      const matchingProduct = existingProducts?.find((value) => value.productCode === product.code)
       quotationProducts.push({
         code: matchingProduct ? matchingProduct.code : null,
         productCode: product.code,
@@ -1807,7 +1804,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         converted: "N",
         binder: null,
         agentShortDescription: "DIRECT",
-        riskInformation: this.getProductRisksPayload(product.risks, selectedProductPremium,matchingProduct),
+        riskInformation: this.getProductRisksPayload(product.risks, selectedProductPremium, matchingProduct),
         limitsOfLiability: this.limitsOfLiabilityPayload(selectedProductPremium),
         taxInformation: this.getProductTaxesPayload(product)
       })
@@ -1960,7 +1957,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.selectedProductCovers = this.selectedProductCovers.filter(value => value.code !== product.code);
     this.selectedProductCovers.push(product)
     if (this.selectedProductCovers.length === this.premiumComputationResponse.productLevelPremiums.length) {
-      this.coverSelected = true
+      this.canMoveToNextScreen = true
     }
   }
 
