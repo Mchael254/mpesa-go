@@ -285,7 +285,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   applicablePremiumRates: any
   premiumComputationResponse: ProductLevelPremium = null
   selectedProductCovers: ProductPremium[] = [];
-  coverSelected = false;
+  canMoveToNextScreen = false;
   currentSelectedRisk: any
   currentComputationPayload: PremiumComputationRequest = null
   premiumComputationPayloadToShare: ProductLevelPremium = null
@@ -672,7 +672,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
     this.selectedProducts = [...currentSelection];
     this.previousSelected = [...currentSelection];
-
+    this.canMoveToNextScreen = false
     log.debug("FormArray now >>>>", this.productsFormArray);
   }
 
@@ -1957,7 +1957,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.selectedProductCovers = this.selectedProductCovers.filter(value => value.code !== product.code);
     this.selectedProductCovers.push(product)
     if (this.selectedProductCovers.length === this.premiumComputationResponse.productLevelPremiums.length) {
-      this.coverSelected = true
+      this.canMoveToNextScreen = true
     }
   }
 
