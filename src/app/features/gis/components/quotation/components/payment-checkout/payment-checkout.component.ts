@@ -14,29 +14,42 @@ const log = new Logger('QuoteSummaryComponent');
 })
 export class PaymentCheckoutComponent {
 
+  decodedIpayRefNo: string
+  encodedIpayRefNo: string
+  sumInsured: number;
+  tenantId: string;
+
+  currencyPrefix: string;
+  currencyThousands: string;
+
   constructor(private globalMessagingService: GlobalMessagingService,
     private route: ActivatedRoute,
     private paymentService: PaymentService) {
 
   }
 
-  decodedIpayRefNo: string
-  encodedIpayRefNo: string
-
   ngOnInit() {
-    const encodedRef = this.route.snapshot.paramMap.get('ipayRefNumber');
-    console.log('Token from URL:', encodedRef);
+    const queryParams = this.route.snapshot.queryParamMap;
+    const encodedRef = queryParams.get('ref');
+    const sumInsured = queryParams.get('sumInsured');
+    const tenant = queryParams.get('tenant');
+
+    this.currencyPrefix = queryParams.get('currencyPrefix') || '';
 
     if (encodedRef) {
       try {
         this.decodedIpayRefNo = atob(encodedRef);
-        console.log('Decoded iPay Reference:', this.decodedIpayRefNo);
       } catch (error) {
         console.error('Error decoding iPay reference:', error);
       }
-    } else {
-      console.error('Invalid payment link - no reference found');
     }
+
+    this.sumInsured = Number(sumInsured);
+    this.tenantId = tenant;
+
+    console.log('Decoded Ref:', this.decodedIpayRefNo);
+    console.log('Sum Insured:', this.sumInsured);
+    console.log('Tenant:', this.tenantId);
   }
 
 
