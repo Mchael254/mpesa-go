@@ -26,7 +26,6 @@
         </div>
         <div class="col-sm-4 col-12 ">
           <p id="quote-label">{{ 'gis.quotation.ticket_number' | translate }}:<strong id="quote-input"></strong></p>
-
         </div>
       </div>
       <div class="row mb-4">
@@ -128,23 +127,23 @@
       <button type="button" class="btn btn-text me-2 " style="border: none;" (click)="navigateToQuoteDetails()">
         {{ 'gis.quotation.back' | translate }}
       </button>
-      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary mx-2" (click)="getUsers(); $event.preventDefault()"
+      <button *ngIf="!afterRejectQuote" type="button" class="btn btn-outline-primary mx-2" (click)="getUsers(); $event.preventDefault()"
         data-bs-target="#reassignQuotation" data-bs-toggle="modal" >{{'gis.quotation.reassign' | translate}}</button>
-      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary" data-bs-target="#rejectQuote"
+      <button *ngIf="!afterRejectQuote" type="button" class="btn btn-outline-primary" data-bs-target="#rejectQuote"
         data-bs-toggle="modal" >{{'gis.quotation.reject' |
         translate}} </button>
     </div>
     <div class="col-md-8  col-12 mt-2 d-flex justify-content-end">
 
-      <button *ngIf="afterRejectQuote" type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
+      <button *ngIf="!afterRejectQuote" type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
         data-bs-target="#shareQuoteModal">
         {{ 'gis.quotation.share_quotation' | translate }}
       </button>
 
-      <button *ngIf="afterRejectQuote" type="button" class="btn btn-primary " (click)="convertQuoteToNormalQuote()">
+      <button *ngIf="!afterRejectQuote" type="button" class="btn btn-primary " (click)="convertQuoteToNormalQuote()">
         {{ 'gis.quotation.convert_to_normal_quote' | translate }}
       </button>
-      <button *ngIf="afterRejectQuote" type="button" class="btn btn-primary " data-bs-toggle="modal"
+      <button *ngIf="!afterRejectQuote" type="button" class="btn btn-primary " data-bs-toggle="modal"
         data-bs-target="#clientSearchModal">
         {{ 'gis.quotation.convert_to_policy' | translate }}
       </button>
@@ -156,7 +155,7 @@
 
     </div>
   </div>
-  
+
 
   <!-- SHARE QUOTE MODAL -->
   <div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
@@ -167,13 +166,6 @@
           <h3 class="page-title  mb-0 mt-0"style="margin-left: 15px;  font-size: 20px; font-weight:600;">Share quote</h3>
           <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"  style="width: 2rem; height: 2rem;  filter: brightness(0) saturate(100%) invert(12%) sepia(93%) saturate(5425%) hue-rotate(357deg) brightness(92%) contrast(115%); border: none;"></button>
         </div>
-       
-
-        <!-- <ng-container>
-          <app-quote-report [quotationDetails]="quotationDetails" [selectedCovers]="selectedCovers" #quoteReport
-            style="display: none;">
-          </app-quote-report>
-        </ng-container> -->
         <ng-container>
           <app-quote-report [quotationDetails]="quotationDetails" #quoteReport [selectedCovers]="selectedCovers" style="display: none;">
           </app-quote-report>
