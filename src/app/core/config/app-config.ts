@@ -21,7 +21,7 @@ export interface ContextPath {
   fms_payments_service: string;
   etims_service: string;
   reports:string;
-
+  payment_service: string
 }
 
 export interface Organization {
