@@ -205,12 +205,12 @@ p-table ::ng-deep table tbody tr td {
 .total-row .label {
   grid-column: 5;
   text-align: right;
-  padding-right: 4rem;
+  padding-right: 10.1rem;
 }
 
 .total-row .value {
   grid-column: 6;
-  padding-right: 6.0rem;
+  padding-right: 9.7rem;
   text-align: right;
 }
 
