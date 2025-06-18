@@ -30,6 +30,7 @@ export const environment = {
     //[API_CONFIG.JSON_SERVICE_BASE_URL, 'http://localhost:1020/json'],
     [API_CONFIG.NOTIFICATION_BASE_URL, '/turnquest/notification'],
     [API_CONFIG.PREMIUM_COMPUTATION, '/premium/computation'],
+    [API_CONFIG.GIS_PAYMENT_SERVICE_BASE_URL, '/gis/payment'],
     [API_CONFIG.GIS_REINSURANCE_BASE_URL, '/gis/reinsurance'],
     [API_CONFIG.GIS_UNDERWRITING_BASE_URL, '/gis/underwriting/api'],
     [API_CONFIG.GIS_QUOTATION_BASE_URL, '/gis/quotation/api'],

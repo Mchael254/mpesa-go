@@ -21,6 +21,7 @@ export interface ContextPath {
   fms_payments_service: string;
   etims_service: string;
   reports:string;
+  gis_payment_service:string;
 
 }
 
