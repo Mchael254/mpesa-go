@@ -52,11 +52,13 @@
       placeholder="" />
   </div>
 
-  <!-- Actions -->
-  <div class="action-buttons">
-    <button pButton type="button" label="Cancel" class="p-button-secondary" (click)="cancel()" data-bs-dismiss="modal"
-      style="font-size: larger; font-weight: 600;"></button>
-    <button pButton type="button" label="Send" class="p-button-primary" (click)="send()"
-      style="font-size: larger; font-weight: 600;"></button>
+  <div class="d-flex justify-content-end  mt-4">
+    <button type="button" class="btn btn-outline-primary me-4" data-bs-dismiss="modal"
+      (click)="cancel()">Cancel</button>
+
+    <button   type="button" class="btn btn-primary" (click)="onSend()" data-bs-dismiss="modal">Send</button>
+    <button  #closeButton type="button" class="btn btn-primary" data-bs-dismiss="modal" style="display: none;"></button>
+
   </div>
+
 </div>
