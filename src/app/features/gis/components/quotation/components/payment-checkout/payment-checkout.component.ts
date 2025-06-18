@@ -3,7 +3,7 @@ import { Logger } from 'src/app/shared/services';
 import { dummyPaymentOptions, PaymentOption } from '../../data/dummyData';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { ActivatedRoute } from '@angular/router';
-import { PaymentService } from '../../services/paymentService/payment.service';
+import { PaymentService } from '../../services/payment-service/payment.service';
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -44,7 +44,7 @@ export class PaymentCheckoutComponent {
   validPhoneNumber: boolean = false
   phoneNumber: string = ''
   selectedPayment: string = 'mpesa';
-  amount: number = 500;
+  amount: number = 1;
   paymentOptions: PaymentOption[] = dummyPaymentOptions
 
 
