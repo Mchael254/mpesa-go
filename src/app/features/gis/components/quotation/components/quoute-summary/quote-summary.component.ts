@@ -42,6 +42,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('clientModal') clientModal: any;
   // @ViewChild('closebutton') closebutton;
   @ViewChild('closeButton') closeButton: ElementRef;
+  @ViewChild('closeReassignButton') closeReassignButton: ElementRef;
+  
 
   quotationDetails: QuotationDetails;
   batchNo: number;
@@ -107,7 +109,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       this.quotationDetails = response
       const quotationProducts = this.quotationDetails.quotationProducts
       this.flattenQuotationProducts(quotationProducts)
-      this.totalSumInsured = this.quotationDetails.sumInsured
+      this.totalSumInsured = this.quotationDetails.premium
       this.comments = this.quotationDetails?.comments
       if ('Rejected' === response.status) {
         this.afterRejectQuote = true
@@ -268,6 +270,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       comment: this.reassignComment
     }
     this.globalMessagingService.displaySuccessMessage('Success', 'reassigning...')
+    this.closeReassignButton.nativeElement.click();
+
     this.onUserUnselect()
     log.debug('reassign Payload', reassignPayload)
 

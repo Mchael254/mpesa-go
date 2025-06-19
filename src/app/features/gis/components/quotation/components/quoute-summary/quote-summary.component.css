@@ -330,18 +330,28 @@ button {
     gap: 10px; 
   }
   
-  .total-premium-row .label {
-    font-weight: 600;
+  .label {
+    font-weight: 500;
     color: #000000;
-    margin-right: 3.2rem;
+    font-size: 16px;
   }
   
-  .total-premium-row .value {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-right: 3rem;
+  .value {
+   color: #000000;
+   font-size: 20px;
+   font-weight: 600;
+  }
+  
+  
+.flexible-header {
+  white-space: nowrap;
+  width: auto;
+  text-align: left;
+}
 
-    margin: 0;
-  }
-  
-  
+
+.ui-datatable th,
+.ui-datatable td {
+  white-space: nowrap;
+  /* color: #000; */
+}

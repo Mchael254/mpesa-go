@@ -12,14 +12,14 @@
 
       <!-- Quotation Details -->
       <div class="row mb-1">
-        <div class="col-sm-4 col-12 ">
+        <div class="col-sm-5 col-12 ">
           <p id="quote-label">{{ 'gis.quotation.quotation_number' | translate }}: <strong id="quote-input">{{
               quotationDetails?.quotationNo
               }}</strong>
           </p>
 
         </div>
-        <div class="col-sm-4 col-12 ">
+        <div class="col-sm-3 col-12 ">
           <p id="quote-label">{{ 'gis.quotation.quotation_status' | translate }}:<strong id="quote-input">{{
               quotationDetails?.status
               }}</strong></p>
@@ -30,12 +30,12 @@
         </div>
       </div>
       <div class="row mb-4">
-        <div class="col-sm-4 col-12 ">
+        <div class="col-sm-5 col-12 ">
           <p id="quote-label">{{ 'gis.quotation.ipay_reference' | translate }}: <strong id="quote-input">{{
               quotationDetails?.ipayReferenceNumber }}</strong></p>
 
         </div>
-        <div class="col-sm-4 col-12 ">
+        <div class="col-sm-3 col-12 ">
           <p id="quote-label">{{ 'gis.quotation.currency' | translate }}: <strong id="quote-input">{{
               quotationDetails?.currency }}</strong></p>
 
@@ -83,16 +83,16 @@
 
       <!-- Product Table -->
       <p-table [value]="productDetails" [sortField]="'productName'" [sortOrder]="1" rowGroupMode="rowspan"
-        groupField="productName" class="mt-4">
+        groupField="productName" class="mt-4 ui-datatable" >
         <!-- Table Header -->
         <ng-template pTemplate="header">
           <tr>
-            <th> {{ 'gis.quotation.product' | translate }}</th>
-            <th> {{ 'gis.quotation.risk' | translate }}</th>
-            <th> {{ 'gis.quotation.cover_type' | translate }}</th>
-            <th> {{ 'gis.quotation.effective_date' | translate }}</th>
-            <th> {{ 'gis.quotation.sum_insured' | translate }}</th>
-            <th> {{ 'gis.quotation.premium' | translate }}</th>
+            <th class="flexible-header"> {{ 'gis.quotation.product' | translate }}</th>
+            <th class="flexible-header"> {{ 'gis.quotation.risk' | translate }}</th>
+            <th class="flexible-header"> {{ 'gis.quotation.cover_type' | translate }}</th>
+            <th class="flexible-header"> {{ 'gis.quotation.effective_date' | translate }}</th>
+            <th class="flexible-header"> {{ 'gis.quotation.sum_insured' | translate }}</th>
+            <th class="flexible-header"> {{ 'gis.quotation.premium' | translate }}</th>
           </tr>
         </ng-template>
 
@@ -112,14 +112,20 @@
             <td>{{ quote.premium | number: '1.0-2' }}</td>
           </tr>
         </ng-template>
+        <ng-template pTemplate="footer">
+          <tr>
+            <td colspan="4"></td>
+            <td class="text-right  label">
+              {{ 'gis.quotation.sub_total' | translate }}
+            </td>
+            <td class="text-right  value">
+              {{ totalSumInsured | number: '1.0-2' }}
+            </td>
+          </tr>
+        </ng-template>
+
+
       </p-table>
-
-
-      <!-- Total Premium Row (outside table but aligned) -->
-      <div class="total-premium-row">
-        <p class="label"> {{ 'gis.quotation.sub_total' | translate }}</p>
-        <p class="value">{{ totalSumInsured |number: '1.0-2' }}</p>
-      </div>
 
     </div>
   </div>
@@ -185,7 +191,8 @@
             </app-quote-report>
           </ng-container>
 
-          <app-share-quotes (sendEvent)="listenToSendEvent($event)" (downloadRequested)="onDownloadRequested()"></app-share-quotes>
+          <app-share-quotes (sendEvent)="listenToSendEvent($event)"
+            (downloadRequested)="onDownloadRequested()"></app-share-quotes>
 
 
         </div>
@@ -282,7 +289,8 @@
             'gis.quotation.cancel' | translate
             }}
           </button>
-          <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+           <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;" ></button>
+          <button  type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
             (click)="reassignQuotation()">{{ 'gis.quotation.reassign' | translate }}
           </button>
         </div>
