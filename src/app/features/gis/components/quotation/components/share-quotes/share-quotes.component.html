@@ -4,8 +4,8 @@
   <!-- Share method -->
   <div class="method-options">
     <div class="method-option" *ngFor="let method of shareMethods"
-      (click)="shareQuoteData.selectedMethod = method.value "
-      [class.selected]="shareQuoteData.selectedMethod === method.value">
+         (click)="shareQuoteData.selectedMethod = method.value "
+         [class.selected]="shareQuoteData.selectedMethod === method.value">
       <i class="far fa-circle" *ngIf="shareQuoteData.selectedMethod !== method.value"></i>
       <i class="fas fa-dot-circle" *ngIf="shareQuoteData.selectedMethod === method.value"></i>
       <span>{{ method.label }}</span>
@@ -14,50 +14,53 @@
 
 
   <!-- Download -->
-  <div class="btn btn-outline-primary d-inline-flex align-items-center my-3" (click)="onDownload()" role="button"
-    tabindex="0">
+  <div *ngIf="shareQuoteData.selectedMethod === 'email'"
+       class="btn btn-outline-primary d-inline-flex align-items-center my-3" (click)="onDownload()" role="button"
+       tabindex="0">
     <i class="pi pi-download me-2"></i>
     <span>Download</span>
   </div>
-
-  <!-- Client name -->
-  <div class="p-field p-mb-3">
-    <label for="clientName">Client name</label>
-    <input pInputText id="clientName" [(ngModel)]="shareQuoteData.clientName" class="p-inputtext" placeholder="" />
-  </div>
-
-  <!-- Email input field -->
-  <div class="p-field p-mb-3"
-    *ngIf="shareQuoteData.selectedMethod !== 'sms' && shareQuoteData.selectedMethod !== 'whatsapp'">
+  <ng-container *ngIf="shareQuoteData.selectedMethod === 'email';else soonComingChannels">
+    <div class="p-field p-mb-3">
+      <label for="clientName">Client name</label>
+      <input pInputText id="clientName" [(ngModel)]="shareQuoteData.clientName" class="p-inputtext" placeholder=""/>
+    </div>
     <label for="email">
       Email address<span class="required"></span>
     </label>
-    <input pInputText id="email" [(ngModel)]="shareQuoteData.email" class="p-inputtext" placeholder="" />
-  </div>
+    <input pInputText id="email" [(ngModel)]="shareQuoteData.email" class="p-inputtext" placeholder=""/>
+  </ng-container>
+  <ng-template #soonComingChannels>
+    <br>
+    <br><br>
+    <p>Communication channel coming soon</p>
+  </ng-template>
 
-  <!-- SMS input field -->
-  <div class="p-field p-mb-3" *ngIf="shareQuoteData.selectedMethod === 'sms'">
-    <label for="smsNumber">
-      Phone number<span class="required"></span>
-    </label>
-    <input pInputText id="smsNumber" [(ngModel)]="shareQuoteData.smsNumber" class="p-inputtext" placeholder="" />
-  </div>
+  <!--  &lt;!&ndash; SMS input field &ndash;&gt;-->
+  <!--  <div class="p-field p-mb-3" *ngIf="shareQuoteData.selectedMethod === 'sms'">-->
+  <!--    <label for="smsNumber">-->
+  <!--      Phone number<span class="required"></span>-->
+  <!--    </label>-->
+  <!--    <input pInputText id="smsNumber" [(ngModel)]="shareQuoteData.smsNumber" class="p-inputtext" placeholder="" />-->
+  <!--  </div>-->
 
-  <!-- WhatsApp input field -->
-  <div class="p-field p-mb-3" *ngIf="shareQuoteData.selectedMethod === 'whatsapp'">
-    <label for="whatsappNumber">
-      WhatsApp number<span class="required"></span>
-    </label>
-    <input pInputText id="whatsappNumber" [(ngModel)]="shareQuoteData.whatsappNumber" class="p-inputtext"
-      placeholder="" />
-  </div>
+  <!--  &lt;!&ndash; WhatsApp input field &ndash;&gt;-->
+  <!--  <div class="p-field p-mb-3" *ngIf="shareQuoteData.selectedMethod === 'whatsapp'">-->
+  <!--    <label for="whatsappNumber">-->
+  <!--      WhatsApp number<span class="required"></span>-->
+  <!--    </label>-->
+  <!--    <input pInputText id="whatsappNumber" [(ngModel)]="shareQuoteData.whatsappNumber" class="p-inputtext"-->
+  <!--      placeholder="" />-->
+  <!--  </div>-->
 
   <div class="d-flex justify-content-end  mt-4">
     <button type="button" class="btn btn-outline-primary me-4" data-bs-dismiss="modal"
-      (click)="cancel()">Cancel</button>
-
-    <button   type="button" class="btn btn-primary" (click)="onSend()" data-bs-dismiss="modal">Send</button>
-    <button  #closeButton type="button" class="btn btn-primary" data-bs-dismiss="modal" style="display: none;"></button>
+            (click)="cancel()">Cancel
+    </button>
+    <button type="button" class="btn btn-primary" (click)="onSend()" data-bs-dismiss="modal"
+            *ngIf="shareQuoteData.selectedMethod === 'email'">Send
+    </button>
+    <button #closeButton type="button" class="btn btn-primary" data-bs-dismiss="modal" style="display: none;"></button>
 
   </div>
 
