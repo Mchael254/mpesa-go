@@ -1,4 +1,5 @@
 import {ClientDTO} from "src/app/features/entities/data/ClientDTO";
+import {ProductLevelPremium, ProductPremium} from "./premium-computation";
 
 export interface quotationDTO {
   actionType: string,
@@ -18,7 +19,7 @@ export interface quotationDTO {
   fequencyOfPayment: string,
   internalComments: string,
   introducerCode: number,
-  ipayReferenceNumber?:string,
+  ipayReferenceNumber?: string,
   isBinderPolicy: string,
   paymentMode: string,
   proInterfaceType: string,
@@ -132,7 +133,7 @@ export interface QuotationDetails {
   quotIncsCode?: any;
   web: string;
   introducerCode?: any;
-  ipayReferenceNumber?:string
+  ipayReferenceNumber?: string
   sourceCode: string;
   chequeRequisition?: any;
   parentRevision?: any;
@@ -257,7 +258,8 @@ export interface RiskInformation {
   prospectCode?: any
   commissionAmount?: any
 }
-export interface RiskLimit{
+
+export interface RiskLimit {
   code: number;
   description: string;
   sectionCode: number;
@@ -1106,8 +1108,59 @@ export interface QuotationComment {
   comment: string
   quotationCode: number
 }
+
 export interface QuotationUpdate {
-  quotationCode:number
-  clientCode:number
+  quotationCode: number
+  clientCode: number
+}
+
+export interface OrganizationDto {
+  organizationName: string
+  organizationLogo: string
+}
+
+export interface QuotationDetailsDto {
+  quotationPeriod: string
+  quotationStatus: string
+  quotationTime: string
+  quotationAgent?: string
+  insuredName?: string
+}
+
+export interface QuotationReportDto {
+  paymentLink?: string,
+  products?: {
+    code: number
+    description: string
+    riskLevelPremiums: {
+      coverTypeDetails: {
+        coverTypeShortDescription: string;
+        coverTypeDescription: string,
+        limits: {
+          narration: string;
+          value: string
+        }[]
+        computedPremium: number,
+        taxComputation: {
+          premium: number,
+          code: number
+        }
+        clauses: {
+          heading: string,
+          wording: string
+        }[]
+        limitOfLiabilities: {
+          narration: string,
+          value: string
+        }[]
+        excesses: {
+          narration: string,
+          value: string
+        }[]
+      }
+    }[]
+  }[]
+  organization?: OrganizationDto
+  quotation?: QuotationDetailsDto
 }
 

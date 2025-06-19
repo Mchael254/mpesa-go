@@ -357,8 +357,10 @@
                 style="display: none;">
               </app-quote-report>
             </ng-container>
+            <app-share-quotes (sendEvent)="listenToSendEvent($event)"
+                              (downloadRequested)="onDownloadRequested()">
 
-                      <app-share-quotes (sendEvent)="listenToSendEvent($event)" (downloadRequested)="onDownloadRequested()"></app-share-quotes>
+            </app-share-quotes>
 
           </div>
         </div>

@@ -6,11 +6,11 @@ export interface EmailDto {
   status: string;
   emailAggregator: string;
   response?: string;
-  systemModule: string;
-  systemCode: number;
+  systemModule?: string;
+  systemCode?: number;
   attachments?: Attachment[];
-  fromName: string;
-  from: string;
+  fromName?: string;
+  from?: string;
   sendOn: string;
   clientCode?: number;
   agentCode?: number;
