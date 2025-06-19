@@ -1,11 +1,10 @@
-import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
 import {LazyLoadEvent} from 'primeng/api';
 import {ProductsService} from '../../../setups/services/products/products.service';
 import {Logger, UtilService} from '../../../../../../shared/services';
 import {BinderService} from '../../../setups/services/binder/binder.service';
 import {QuotationsService} from '../../services/quotations/quotations.service';
-import {AfterViewInit} from '@angular/core';
 
 
 import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
@@ -38,11 +37,12 @@ import {OrganizationBranchDto} from '../../../../../../shared/data/common/organi
 
 import {NgxSpinnerService} from 'ngx-spinner';
 import {
-  DynamicRiskField, LimitsOfLiability,
-  QuickQuoteData,
+  DynamicRiskField,
+  LimitsOfLiability,
   QuotationDetails,
   QuotationProduct,
-  RiskInformation, ShareQuoteDTO,
+  RiskInformation,
+  ShareQuoteDTO,
   Tax,
   TaxInformation,
   UserDetail,
@@ -66,7 +66,8 @@ import {distinctUntilChanged, map} from "rxjs/operators";
 import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import {
   ComputationPayloadDto,
-  CoverType, Limit,
+  CoverType,
+  Limit,
   PremiumComputationRequest,
   Product,
   ProductLevelPremium,
@@ -77,7 +78,6 @@ import {
 import {QuotationDetailsRequestDto} from "../../data/quotation-details";
 import {differenceInCalendarDays, parseISO} from 'date-fns';
 import {QuoteReportComponent} from '../quote-report/quote-report.component';
-import {EmailDto} from "../../../../../../shared/data/common/email-dto";
 import {ShareQuotesComponent} from '../share-quotes/share-quotes.component';
 
 const log = new Logger('QuickQuoteFormComponent');
@@ -278,7 +278,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   taxList: Tax[] = [];
 
   isReturnToQuickQuote: boolean;
-  storedData: QuickQuoteData = null
   userCode: number;
   userOrgDetails: UserDetail;
   organizationId: number;
@@ -753,6 +752,15 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.expandedQuoteStates[index] = false;
       }
     });
+    /*let riskLevelPremiums = this.premiumComputationResponse.productLevelPremiums
+      .flatMap(riskLevelPremium => riskLevelPremium.riskLevelPremiums);
+    for (let risk of riskLevelPremiums) {
+      if (!risk.selectCoverType) {
+        log.debug("Found unselected risk >>>", risk)
+        this.canMoveToNextScreen = false
+      }
+    }*/
+
   }
 
   private handleValidRiskForm(): void {
@@ -794,9 +802,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
             if (match) {
               match.selectCoverType = selected.selectCoverType;
             }
+            /* if (!match.selectCoverType){
+               this.canMoveToNextScreen = false
+             }*/
           });
         });
-
+        this.canMoveToNextScreen = false
+        log.debug("I changed canMoveToNextScreen", this.canMoveToNextScreen)
         this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully');
         this.cdr.markForCheck();
       },
@@ -805,7 +817,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       }
     });
   }
-
 
 
   toggleQuoteExpand(index: number) {
@@ -1970,14 +1981,19 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
 
   selectCovers(product: ProductPremium, riskDetails: RiskLevelPremium) {
-    log.debug("Selected risk >>>", riskDetails)
-    log.debug("Currently selected products >>>", this.selectedProductCovers)
-    this.currentSelectedRisk = riskDetails
+    log.debug("Selected risk >>>", riskDetails);
+    this.currentSelectedRisk = riskDetails;
     this.selectedProductCovers = this.selectedProductCovers.filter(value => value.code !== product.code);
-    this.selectedProductCovers.push(product)
-    if (this.selectedProductCovers.length === this.premiumComputationResponse.productLevelPremiums.length) {
-      this.canMoveToNextScreen = true
+    this.selectedProductCovers.push(product);
+    this.canMoveToNextScreen = this.selectedProductCovers.length === this.premiumComputationResponse.productLevelPremiums.length;
+    let riskLevelPremiums = this.premiumComputationResponse.productLevelPremiums.flatMap(productLevel => productLevel.riskLevelPremiums);
+    for (let risk of riskLevelPremiums) {
+      if (!risk.selectCoverType) {
+        this.canMoveToNextScreen = false
+      }
     }
+    this.cdr.markForCheck();
+    log.debug('canMoveToNextScreen:', this.canMoveToNextScreen);
   }
 
 
