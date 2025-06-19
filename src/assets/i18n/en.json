@@ -35,7 +35,7 @@
     "choose_entity": "Choose your entity"
   },
   "base": {
-    "accounts": "Accounts",
+    "accounts": "Entities",
     "administration": "Administration",
     "analytics": "Analytics",
     "dashboard": "dashboard",
@@ -49,8 +49,8 @@
     "quotation": "Quotation",
     "reinsurance": "Tickets",
     "Summary": "Summary",
-    "team": "Team",
-    "tickets": "Tickets",
+    "team": "CRM",
+    "tickets": "Claims",
 
     "view_all": "VIEW ALL",
     "dispatch": "MASS DISPATCH",
@@ -1107,7 +1107,7 @@
       "reject_quote": "Reject Quote",
       "payment_details": "Payment details",
 
-      
+
       "quotation_summmary":"Quotation Summary",
       "quotation_status":"Quotation status",
       "ticket_number":"Ticket number",

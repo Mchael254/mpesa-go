@@ -78,7 +78,7 @@ import {QuotationDetailsRequestDto} from "../../data/quotation-details";
 import {differenceInCalendarDays, parseISO} from 'date-fns';
 import {QuoteReportComponent} from '../quote-report/quote-report.component';
 import {EmailDto} from "../../../../../../shared/data/common/email-dto";
-import { ShareQuotesComponent } from '../share-quotes/share-quotes.component';
+import {ShareQuotesComponent} from '../share-quotes/share-quotes.component';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -747,16 +747,36 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     });
   }
 
+  private handleInvalidRiskForm(): void {
+    this.markAllFieldsAsTouched(this.quickQuoteForm);
+    this.productsFormArray.controls.forEach((group, index) => {
+      if (group.invalid) {
+        log.debug("Invalid group detected:", group);
+        this.expandedQuoteStates[index] = true;
+      }
+    });
+  }
+
+  private handleValidRiskForm(): void {
+    log.debug("Form submission payload:", this.quickQuoteForm.value);
+    const computationRequest = this.computationPayload();
+    log.debug("Premium computation payload:", computationRequest);
+    this.performComputation(computationRequest);
+    this.productsFormArray.controls.forEach((group, index) => {
+      if (group.valid) {
+        this.expandedQuoteStates[index] = false;
+      }
+    });
+  }
+
   onSubmit() {
     if (this.quickQuoteForm.invalid) {
-      this.markAllFieldsAsTouched(this.quickQuoteForm);
+      this.handleInvalidRiskForm();
       return;
     }
-    log.debug("Form submission payload >>>>", this.quickQuoteForm.value);
-    const computationRequest = this.computationPayload();
-    log.debug("premium computation payload >>>>", computationRequest);
-    this.performComputation(computationRequest)
+    this.handleValidRiskForm();
   }
+
 
   performComputation(computationPayload: PremiumComputationRequest) {
     this.quotationService.premiumComputationEngine(computationPayload).pipe(
@@ -2076,7 +2096,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
   @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
-@ViewChild(ShareQuotesComponent)shareQuotes!: ShareQuotesComponent;
+  @ViewChild(ShareQuotesComponent) shareQuotes!: ShareQuotesComponent;
 
 
   onDownloadRequested() {
@@ -2133,21 +2153,21 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     });
   }
 
- listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
-   if (sendEvent && ['email', 'whatsapp'].includes(sendEvent.mode.selectedMethod)) {
-     this.cdr.detectChanges();
- 
-     setTimeout(async () => {
-       try {
-         const pdfBlob = await this.quoteReportComponent.generatePdfSelectCover(false, 'quote-report.pdf', true) as Blob;
-         log.debug("PDF BLOB:",pdfBlob)
-         if (pdfBlob) {
-           this.shareQuotes.handlePdfBlob(pdfBlob, sendEvent.mode);
-         }
-       } catch (err) {
-         console.error('PDF generation failed', err);
-       }
-     }, 200);
-   }
- }
+  listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
+    if (sendEvent && ['email', 'whatsapp'].includes(sendEvent.mode.selectedMethod)) {
+      this.cdr.detectChanges();
+
+      setTimeout(async () => {
+        try {
+          const pdfBlob = await this.quoteReportComponent.generatePdfSelectCover(false, 'quote-report.pdf', true) as Blob;
+          log.debug("PDF BLOB:", pdfBlob)
+          if (pdfBlob) {
+            this.shareQuotes.handlePdfBlob(pdfBlob, sendEvent.mode);
+          }
+        } catch (err) {
+          console.error('PDF generation failed', err);
+        }
+      }, 200);
+    }
+  }
 }
