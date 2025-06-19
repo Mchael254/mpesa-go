@@ -61,13 +61,13 @@
               <p class="modal-title mb-0" id="acceptQuoteLabel">
                 {{ 'gis.quotation.notes' | translate }}</p>
               <button type="button" data-bs-dismiss="modal"
-                class="btn p-0 border-0 bg-transparent text-danger fs-5 fw-bold"
-                style="text-decoration: none;color: #EE3945;">X
+                class="btn p-0 border-0 bg-transparent text-danger fs-4 fw-light"
+                style="text-decoration: none;color: #EE3945;" #closeBtn>X
               </button>
             </div>
-            <textarea rows="5" [(ngModel)]="comments"></textarea>
+            <textarea rows="5" [(ngModel)]="quotationDetails.comments"></textarea>
 
-            <div class="justify-content-end mb-4 mt-4">
+            <div class=" d-flex justify-content-end mb-4 mt-4">
               <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary me-1 ">
                 {{ 'gis.quotation.cancel' | translate }}
               </button>
