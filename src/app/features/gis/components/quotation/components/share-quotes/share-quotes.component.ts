@@ -1,13 +1,10 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ShareQuoteDTO } from '../../data/quotationsDTO';
 import { Logger } from "../../../../../../shared/services";
-import { HttpErrorResponse } from "@angular/common/http";
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { QuotationsService } from "../../services/quotations/quotations.service";
-import { untilDestroyed } from "../../../../../../shared/shared.module";
 import { EmailDto } from 'src/app/shared/data/common/email-dto';
 import { QuoteReportComponent } from '../quote-report/quote-report.component';
-import { NotificationServiceService } from '../../services/notification/notification-service.service';
 import { NotificationService } from '../../services/notification/notification.service';
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
@@ -71,7 +68,7 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
   onDownload() {
     this.downloadRequested.emit();
   }
- 
+
 
   cancel() {
     this.display = false;
@@ -133,7 +130,7 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
     log.debug("Email payload", payload)
     this.notificationService.sendEmail(payload).subscribe({
       next: (response) => {
-        
+
                 this.closeButton.nativeElement.click();
 
         this.globalMessagingService.displaySuccessMessage('success', 'Email sent successfully')
