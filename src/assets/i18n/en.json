@@ -1120,7 +1120,7 @@
       "delete_risk":"Delete risk",
       "sure_deleting_product":"Are you sure you want to delete this product",
       "deleting_associated_risk":"Deleting this product will remove all the associated risks",
-      "sure_deleting_risk":"Are you sure you want to delete this Risk?",
+      "sure_deleting_risk":"Are you sure you want to delete this Risk",
       "cover_types":"Cover types",
       "section":"Section"
     },
