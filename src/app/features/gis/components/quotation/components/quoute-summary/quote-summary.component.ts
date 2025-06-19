@@ -311,6 +311,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     log.debug("original comment:", this.originalComment)
 
   }
+  @ViewChild('closeBtn') closeBtn: ElementRef;
 
   saveNotes() {
     log.debug("new comment:", this.quotationDetails.comments)
@@ -328,6 +329,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.quotationService.updateQuotationComment(payload).subscribe((data: any) => {
       log.debug("Response after updating quote comment:", data)
+
+      this.closeBtn.nativeElement.click();
 
     })
 
