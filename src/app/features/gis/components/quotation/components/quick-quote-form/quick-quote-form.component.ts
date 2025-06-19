@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
 import {LazyLoadEvent} from 'primeng/api';
 import {ProductsService} from '../../../setups/services/products/products.service';
@@ -116,6 +116,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   productRiskFields: DynamicRiskField[][] = [];
   expandedQuoteStates: boolean[] = [];
   expandedComparisonStates: boolean[] = [];
+  expandedCoverTypeIndexes: (number | null)[] = [];
   currencySymbol: string;
 
 
@@ -338,14 +339,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   //
-  expandedCoverTypeIndex: number | null = 0;
-
-  toggleCoverType(index: number) {
-    if (this.expandedCoverTypeIndex === index) {
-      this.expandedCoverTypeIndex = null;
-    } else {
-      this.expandedCoverTypeIndex = index;
-    }
+  toggleCoverType(productIndex: number, riskIndex: number): void {
+    const current = this.expandedCoverTypeIndexes[productIndex];
+    this.expandedCoverTypeIndexes[productIndex] = current === riskIndex ? null : riskIndex;
   }
 
   ngOnInit(): void {
@@ -753,6 +749,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       if (group.invalid) {
         log.debug("Invalid group detected:", group);
         this.expandedQuoteStates[index] = true;
+      } else {
+        this.expandedQuoteStates[index] = false;
       }
     });
   }
@@ -785,7 +783,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       next: (response) => {
         const riskLevelPremiums = this.selectedProductCovers.flatMap(value => value.riskLevelPremiums);
         this.premiumComputationResponse = response;
-
+        const productLevelPremiums = response.productLevelPremiums;
+        this.expandedComparisonStates = productLevelPremiums.map(() => true);
+        this.expandedCoverTypeIndexes = productLevelPremiums.map(product =>
+          product.riskLevelPremiums.length > 0 ? 0 : null
+        );
         riskLevelPremiums?.forEach(selected => {
           this.premiumComputationResponse.productLevelPremiums.forEach(premium => {
             const match = premium.riskLevelPremiums.find(risk => risk.code === selected.code);
@@ -794,15 +796,16 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
             }
           });
         });
-        log.debug("Currently selected products after computation>>>", riskLevelPremiums, this.premiumComputationResponse)
-        this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully ')
-        log.debug("Computation response >>>>", response)
-        this.cdr.markForCheck()
-      }, error: (error) => {
+
+        this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully');
+        this.cdr.markForCheck();
+      },
+      error: () => {
         this.globalMessagingService.displayErrorMessage('Error', 'Error during computation');
       }
     });
   }
+
 
 
   toggleQuoteExpand(index: number) {
@@ -824,14 +827,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
   }
 
-  toggleCoverExpand(index: number) {
-    this.expandedComparisonStates[index] = !this.expandedComparisonStates[index];
+  toggleCoverExpand(productIndex: number): void {
+    this.expandedComparisonStates[productIndex] = !this.expandedComparisonStates[productIndex];
   }
-
-  collapseAllCards() {
-    this.expandedQuoteStates = this.expandedQuoteStates.map(() => false);
-  }
-
 
   computationPayload(): PremiumComputationRequest {
     const formValues = this.quickQuoteForm.getRawValue();
