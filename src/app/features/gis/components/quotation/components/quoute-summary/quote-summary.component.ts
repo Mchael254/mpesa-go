@@ -6,19 +6,12 @@ import {Logger, untilDestroyed, UtilService} from "../../../../../../shared/shar
 import {Table} from 'primeng/table';
 import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
-import { Router } from '@angular/router';
-import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
-import { QuoteReportComponent } from '../quote-report/quote-report.component';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { Pagination } from 'src/app/shared/data/common/pagination';
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { ClaimsService } from '../../../claim/services/claims.service';
-import { LazyLoadEvent } from 'primeng/api';
-import { tap } from 'rxjs';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { ProductLevelPremium } from "../../data/premium-computation";
-import { ShareQuotesComponent } from '../share-quotes/share-quotes.component';
-
+import {Router} from '@angular/router';
+import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
+import {QuoteReportComponent} from '../quote-report/quote-report.component';
+import {ClaimsService} from '../../../claim/services/claims.service';
+import {ProductLevelPremium} from "../../data/premium-computation";
+import {ShareQuotesComponent} from '../share-quotes/share-quotes.component';
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -43,7 +36,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   // @ViewChild('closebutton') closebutton;
   @ViewChild('closeButton') closeButton: ElementRef;
   @ViewChild('closeReassignButton') closeReassignButton: ElementRef;
-  
+
 
   quotationDetails: QuotationDetails;
   batchNo: number;
@@ -90,7 +83,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     },
   ];
   steps = stepData;
-
 
 
   productDetails: ProductWithRiskId[]
@@ -282,7 +274,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
-
   convertQuoteToNormalQuote() {
     log.debug("Quotation Details", this.quotationDetails);
 
@@ -392,8 +383,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   //pdf functionality
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
-  @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
-@ViewChild(ShareQuotesComponent)shareQuotes!: ShareQuotesComponent;
+  @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
+  @ViewChild(ShareQuotesComponent) shareQuotes!: ShareQuotesComponent;
 
   quoteData = {
     name: 'John Doe',
@@ -401,30 +392,42 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   };
 
   onDownloadRequested() {
+   // log.debug("Quotation report payload >>", this.)
     this.cdr.detectChanges();
+    this.quotationService.generateQuotationReport(null).pipe(
+      untilDestroyed(this)
+    )
+      .subscribe({
+        next: (response) => {
+          log.debug("DownloadSuccess")
+        },
+        error: () => {
+
+        }
+      })
     setTimeout(() => {
       this.quoteReportComponent.generatePdfSelectCover(true).then(r => {
       })
     }, 100);
   }
 
- 
-listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
-  if (sendEvent && ['email', 'whatsapp'].includes(sendEvent.mode.selectedMethod)) {
-    this.cdr.detectChanges();
 
-    setTimeout(async () => {
-      try {
-        const pdfBlob = await this.quoteReportComponent.generatePdfSelectCover(false, 'quote-report.pdf', true) as Blob;
-        log.debug("PDF BLOB:",pdfBlob)
-        if (pdfBlob) {
-          this.shareQuotes.handlePdfBlob(pdfBlob, sendEvent.mode);
+  listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
+    if (sendEvent && ['email', 'whatsapp'].includes(sendEvent.mode.selectedMethod)) {
+      this.cdr.detectChanges();
+
+      setTimeout(async () => {
+        try {
+          const pdfBlob = await this.quoteReportComponent.generatePdfSelectCover(false, 'quote-report.pdf', true) as Blob;
+          log.debug("PDF BLOB:", pdfBlob)
+          if (pdfBlob) {
+            this.shareQuotes.handlePdfBlob(pdfBlob, sendEvent.mode);
+          }
+        } catch (err) {
+          console.error('PDF generation failed', err);
         }
-      } catch (err) {
-        console.error('PDF generation failed', err);
-      }
-    }, 200);
+      }, 200);
+    }
   }
-}
 
 }

@@ -9,16 +9,17 @@ import {AbstractControl, AsyncValidatorFn, FormArray, ValidationErrors} from '@a
 import {ClientAccountContact} from "../../data/client-account-contact";
 import {AccountContact} from "../../data/account-contact";
 import {WebAdmin} from "../../data/web-admin";
-import {HttpParams} from "@angular/common/http";
+import {HttpParams, HttpResponse} from "@angular/common/http";
 import {DatePipe} from "@angular/common";
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import {ClientDTO} from 'src/app/features/entities/data/ClientDTO';
 import {BehaviorSubject} from "rxjs";
+import {saveAs} from "file-saver";
 
 // import { format, subYears } from 'date-fns';
 
 export interface FullName {
   clntName: string;
-  clntSurname: string ;
+  clntSurname: string;
   clntOtherNames: string;
 }
 
@@ -31,6 +32,7 @@ export interface FullName {
 export class UtilService {
   constructor() {
   }
+
   private languageSource = new BehaviorSubject<any>('en');
   currentLanguage = this.languageSource.asObservable();
 
@@ -72,17 +74,18 @@ export class UtilService {
    * @param user the current logged in user
    * @returns {UserType}
    */
- /* resolveUserType(user: any): UserType | undefined | null {
-    if (this.isUserClient(user)) {
-      return UserType.CLIENT;
-    } else if (this.isUserAdmin(user)) {
-      return UserType.ADMIN;
-    } else if (this.isUserAgent(user)) {
-      return UserType.AGENT;
-    }
 
-    return null;
-  }*/
+  /* resolveUserType(user: any): UserType | undefined | null {
+     if (this.isUserClient(user)) {
+       return UserType.CLIENT;
+     } else if (this.isUserAdmin(user)) {
+       return UserType.ADMIN;
+     } else if (this.isUserAgent(user)) {
+       return UserType.AGENT;
+     }
+
+     return null;
+   }*/
 
   /**
    * Gets the logged in user code
@@ -195,10 +198,10 @@ export class UtilService {
     let fullName = '';
     const firstName = (client.firstName || '').trim();
     const lastName = (client.lastName || '').trim();
-    if (firstName){
+    if (firstName) {
       fullName += firstName;
     }
-    if (lastName){
+    if (lastName) {
       fullName += ' ' + lastName;
     }
     return fullName;
@@ -336,14 +339,15 @@ export class UtilService {
    * @param from
    * @param to
    */
- /* computeYearRange(from: Date, to: Date = new Date()): string {
-    let _from = from;
-    if (this.isEmpty(from)) {
-      _from = subYears(new Date(), 100);
-    }
 
-    return format(_from, 'yyyy') + ':' + format(to, 'yyyy');
-  }*/
+  /* computeYearRange(from: Date, to: Date = new Date()): string {
+     let _from = from;
+     if (this.isEmpty(from)) {
+       _from = subYears(new Date(), 100);
+     }
+
+     return format(_from, 'yyyy') + ':' + format(to, 'yyyy');
+   }*/
 
   /**
    *
@@ -641,7 +645,7 @@ export class UtilService {
     return datePipe.transform(date, format);
   }
 
-  clearSessionStorageData(){
+  clearSessionStorageData() {
     sessionStorage.removeItem('quickQuoteData')
     sessionStorage.removeItem('mandatorySections')
     sessionStorage.removeItem('passedQuotationDetails')
@@ -657,7 +661,8 @@ export class UtilService {
     sessionStorage.removeItem('premiumComputationResponse')
     sessionStorage.removeItem('quotationObject')
   }
-  clearNormalQuoteSessionStorage(){
+
+  clearNormalQuoteSessionStorage() {
     sessionStorage.removeItem('quotationFormDetails')
     sessionStorage.removeItem('clientPayload')
     sessionStorage.removeItem('clientCode')
@@ -688,7 +693,6 @@ export class UtilService {
     sessionStorage.removeItem('passedQuotationCode')
     sessionStorage.removeItem('riskFormData')
     sessionStorage.removeItem('quoteToEditData')
-
 
 
   }
@@ -724,5 +728,24 @@ export class UtilService {
       .replace(/\[a-zA-Z0-9_\]\{(\d+)\}/g, (_, n) => 'X'.repeat(+n))       // generic alphanum
       .replace(/A/g, 'A')                                                  // literal A
       .replace(/\^?A/, 'A');                                               // leading A if not captured above
+  }
+  downloadPdfFromBase64(base64: string, fileName: string) {
+    const binaryData = atob(base64);
+    const blob = new Blob([new Uint8Array(this.stringToArrayBuffer(binaryData))], {type: 'application/pdf'});
+    const downloadLink = window.URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = downloadLink;
+    anchor.download = fileName;
+    anchor.click();
+    window.URL.revokeObjectURL(downloadLink);
+  }
+
+  private stringToArrayBuffer(str: string): ArrayBuffer {
+    const buffer = new ArrayBuffer(str.length);
+    const view = new Uint8Array(buffer);
+    for (let i = 0; i < str.length; i++) {
+      view[i] = str.charCodeAt(i);
+    }
+    return buffer;
   }
 }

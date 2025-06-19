@@ -14,7 +14,8 @@
     "json":"json",
     "gis_reinsurance": "gis/reinsurance",
     "gis_quotation_service": "quotation",
-    "gis_payment_service":"gis/payment",
+    "payment_service":"gis/payment",
+    "report_service":"gis/report",
     "fms_payments_service": "fms/payment",
     "etims_service" : "etims",
     "reports":"turnquest/reports"

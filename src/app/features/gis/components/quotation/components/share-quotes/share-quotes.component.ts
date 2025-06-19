@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ShareQuoteDTO } from '../../data/quotationsDTO';
 import { Logger } from "../../../../../../shared/services";
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";

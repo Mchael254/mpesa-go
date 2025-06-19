@@ -6,7 +6,7 @@ import {
   EditRisk,
   premiumPayloadData,
   QuotationComment,
-  quotationDTO,
+  quotationDTO, QuotationReportDto,
   quotationRisk,
   QuotationUpdate,
   RegexPattern,
@@ -100,7 +100,6 @@ export class QuotationsService {
   //remember
 
 
-
   getAllQuotationSources(): Observable<any> {
     let page = 0;
     let size = 100;
@@ -146,6 +145,10 @@ export class QuotationsService {
   createQuotation(data: quotationDTO, user) {
     console.log("Data", JSON.stringify(data))
     return this.api.POST(`v1/quotation?user=${user}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+  }
+
+  generateQuotationReport(data: QuotationReportDto): Observable<any> {
+    return this.api.POST<any>(`v1/reports/quotation-report`, JSON.stringify(data), API_CONFIG.REPORT_SERVICE_BASE_URL);
   }
 
   /**
@@ -231,7 +234,7 @@ export class QuotationsService {
    * @param {string} quotationNo - The quotation number for which to retrieve details.
    * @return {Observable<any>} - An observable of the response containing quotation details.
    */
-  getQuotationDetails(quotationCode:number) {
+  getQuotationDetails(quotationCode: number) {
     return this.api.GET(`v2/quotation/view?quotationCode=${quotationCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
@@ -360,7 +363,7 @@ export class QuotationsService {
     })
   }
 
-  sendEmail(data:EmailDto): Observable<any> {
+  sendEmail(data: EmailDto): Observable<any> {
     return this.http.post<any>(`/${this.notificationUrl}/email/send`, JSON.stringify(data), this.httpOptions)
   }
 
@@ -551,6 +554,7 @@ export class QuotationsService {
     )
 
   }
+
   processQuickQuotation(data: QuotationDetailsRequestDto): Observable<any> {
     return this.api.POST<any>(`v2/quotation/process-quick-quotation`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
@@ -848,6 +852,6 @@ export class QuotationsService {
     )
   }
 
- 
+
 }
 
