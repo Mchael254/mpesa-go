@@ -2,9 +2,7 @@ import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChi
 import { ShareQuoteDTO } from '../../data/quotationsDTO';
 import { Logger } from "../../../../../../shared/services";
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
-import { QuotationsService } from "../../services/quotations/quotations.service";
 import { EmailDto } from 'src/app/shared/data/common/email-dto';
-import { QuoteReportComponent } from '../quote-report/quote-report.component';
 import { NotificationService } from '../../services/notification/notification.service';
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
@@ -19,7 +17,6 @@ const log = new Logger('ShareQuotesComponent');
 export class ShareQuotesComponent implements OnInit, OnDestroy {
   constructor(
     private globalMessagingService: GlobalMessagingService,
-    private quotationService: QuotationsService,
     private notificationService: NotificationService
   ) {
   }
@@ -30,7 +27,6 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
   private _notificationPayload: any
 
   @ViewChild('closeButton') closeButton: ElementRef;
-  @ViewChild('quoteReport', { static: false }) quoteReportComponent!: QuoteReportComponent;
 
 
   shareMethods: { label: string, value: ShareMethod }[] = [

@@ -27,8 +27,7 @@ export class PaymentService {
     }
 
   initiatePayment(paymentPayload): Observable<any> {
-
-    return this.api.POST<any>('api/v1/mpesa/initiate-payment-request',
+    return this.api.POST<any>('v1/mpesa/initiate-payment-request',
       JSON.stringify(paymentPayload), API_CONFIG.PAYMENT_SERVICE_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandle)

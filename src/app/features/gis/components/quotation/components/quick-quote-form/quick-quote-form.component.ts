@@ -78,7 +78,6 @@ import {
 } from "../../data/premium-computation";
 import {QuotationDetailsRequestDto} from "../../data/quotation-details";
 import {differenceInCalendarDays, format, parseISO} from 'date-fns';
-import {QuoteReportComponent} from '../quote-report/quote-report.component';
 import {ShareQuotesComponent} from '../share-quotes/share-quotes.component';
 import {EmailDto} from "../../../../../../shared/data/common/email-dto";
 import {NotificationService} from "../../services/notification/notification.service";
@@ -2113,7 +2112,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
-  @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
   @ViewChild(ShareQuotesComponent) shareQuotes!: ShareQuotesComponent;
 
   notificationPayload(): QuotationReportDto {

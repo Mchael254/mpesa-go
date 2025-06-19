@@ -18,14 +18,15 @@
                 <div class="form-group form-group-sm">
 
                   <label for="{{i}}{{field.name}}" class="quote-label"
-                    [ngClass]="{ 'required': field.isMandatory === 'Y' }">{{ field.label | translate }}</label>
+                         [ngClass]="{ 'required': field.isMandatory === 'Y' }">{{ field.label | translate }}</label>
 
                   <ng-container [ngSwitch]="field.type">
                     <ng-container *ngSwitchCase="'select'">
                       <ng-container *ngIf="field.name === 'product'">
                         <p-multiSelect [formControlName]="field.name" [name]="field.name" [options]="products"
-                          optionLabel="description" [filterBy]="'description'" [filter]="true" display="comma"
-                          (onChange)="getSelectedProducts($event)">
+                                       optionLabel="description" [filterBy]="'description'" [filter]="true"
+                                       display="comma"
+                                       (onChange)="getSelectedProducts($event)">
                         </p-multiSelect>
                       </ng-container>
 
@@ -35,8 +36,9 @@
                       <ng-container *ngIf="field.name === 'effectiveDate'">
 
                         <p-calendar [formControlName]="field.name" [name]="field.name" [dateFormat]="dateFormat"
-                          inputStyleClass="form-control" [showButtonBar]="true" [minDate]="selectedEffectiveDate"
-                          [dataType]="'string'" [style]="{ width: '100%' }" [showIcon]="true">
+                                    inputStyleClass="form-control" [showButtonBar]="true"
+                                    [minDate]="selectedEffectiveDate"
+                                    [dataType]="'string'" [style]="{ width: '100%' }" [showIcon]="true">
                         </p-calendar>
 
                       </ng-container>
@@ -45,7 +47,7 @@
                     <ng-container *ngSwitchCase="'textarea'">
                       <ng-container *ngIf="field.name === 'quotComment'">
                         <textarea id="quote-textarea" class="form-control form-control-sm quote-input"
-                          [formControlName]="field.name" rows="3" [placeholder]="field.placeholder"></textarea>
+                                  [formControlName]="field.name" rows="3" [placeholder]="field.placeholder"></textarea>
                       </ng-container>
 
                     </ng-container>
@@ -69,8 +71,8 @@
 
             <!-- Collapsible Header -->
             <div class="card-header mx-4 d-flex justify-content-between align-items-center"
-              style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;"
-              (click)="toggleQuoteExpand(i)">
+                 style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;"
+                 (click)="toggleQuoteExpand(i)">
 
               <!-- ONLY show title when collapsed -->
               <span *ngIf="!expandedQuoteStates[i]" style="font-size: 20px;">
@@ -90,49 +92,48 @@
                 {{ productGroup.value.description }}
                 <i class="fas fa-plus" style="font-size:15px;border: 2px solid #00529B; border-radius: 100px; padding: 2px;padding-right: 3px;
     padding-left: 3px; margin-left:20px; margin-right: 8px; color: #00529B; cursor: pointer;" title="Add risk"
-                  (click)="addRisk(i)">
+                   (click)="addRisk(i)">
                 </i>
 
                 <i class="fa-solid fa-trash-can"
-                  style="font-size:17px; color:#EE3945; cursor: pointer; margin-left: 5px;" title="Delete product"
-                  data-bs-toggle="modal" data-bs-target="#deleteProduct">
+                   style="font-size:17px; color:#EE3945; cursor: pointer; margin-left: 5px;" title="Delete product"
+                   data-bs-toggle="modal" data-bs-target="#deleteProduct">
                 </i>
 
 
               </p>
               <!-- DELETE PRODUCT MODAL -->
               <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
-                aria-hidden="true">
+                   aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                   <div class="modal-content" id="deleteProduct">
                     <div class="modal-body ">
 
                       <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
-                        <p class="modal-title fw-bold">{{'gis.quotation.delete_product' | translate}}</p>
+                        <p class="modal-title fw-bold">{{ 'gis.quotation.delete_product' | translate }}</p>
                         <button type="button" class="custom-close" id="btn-close" data-bs-dismiss="modal"
-                          aria-label="Close">
+                                aria-label="Close">
                           &times;
                         </button>
                       </div>
                       <p class="deleteMessage mt-2 ">
-                        {{'gis.quotation.sure_deleting_product' | translate}}?
+                        {{ 'gis.quotation.sure_deleting_product' | translate }}?
                       </p>
                       <p class="deleteBody mt-2 mb-4">
-                        {{'gis.quotation.deleting_associated_risk' | translate}}?
+                        {{ 'gis.quotation.deleting_associated_risk' | translate }}?
                       </p>
                       <div class="d-flex justify-content-end mb-3">
                         <button type="button" class="btn btn-outline-primary px-5 me-4" id="delete"
-                          data-bs-dismiss="modal">{{
-                          'gis.policy.cancel'
-                          | translate
+                                data-bs-dismiss="modal">{{
+                            'gis.policy.cancel'
+                              | translate
                           }}
                         </button>
                         <button type="button" class="btn btn-primary px-5" data-bs-dismiss="modal"
-                          (click)="deleteProduct(productGroup, i)">
+                                (click)="deleteProduct(productGroup, i)">
                           {{ 'gis.quotation.delete'| translate }}
                         </button>
                       </div>
-
 
 
                     </div>
@@ -144,40 +145,39 @@
                 <div *ngFor="let riskGroup of getRisks(i).controls; let j = index" [formGroupName]="j">
                   <p class="riskTitle">{{ 'gis.quotation.risk'| translate }} {{ j + 1 }}
                     <i *ngIf="getRisks(i).length > 1" class="fa-solid fa-trash-can text-danger ms-2"
-                      style="color:#EE3945;" (click)="fetchProductRiskIndex(riskGroup, i, j)" data-bs-toggle="modal"
-                      data-bs-target="#deleteRisk">
+                       style="color:#EE3945;" (click)="fetchProductRiskIndex(riskGroup, i, j)" data-bs-toggle="modal"
+                       data-bs-target="#deleteRisk">
                     </i>
                   </p>
                   <!-- DELETE RISK MODAL -->
                   <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
-                    aria-hidden="true">
+                       aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                       <div class="modal-content" id="deleteProduct">
                         <div class="modal-body ">
 
                           <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
-                            <p class="modal-title fw-bold">{{'gis.quotation.delete_risk' | translate}}</p>
+                            <p class="modal-title fw-bold">{{ 'gis.quotation.delete_risk' | translate }}</p>
                             <button type="button" class="custom-close" id="btn-close" data-bs-dismiss="modal"
-                              aria-label="Close">
+                                    aria-label="Close">
                               &times;
                             </button>
                           </div>
                           <p class="deleteMessage mt-2 mb-4">
 
-                            {{'gis.quotation.sure_deleting_risk' | translate}}?
+                            {{ 'gis.quotation.sure_deleting_risk' | translate }}?
                           </p>
 
                           <div class="d-flex justify-content-end mb-3">
                             <button type="button" class="btn btn-outline-primary px-5 me-4" id="delete"
-                              data-bs-dismiss="modal">
-                              {{'gis.policy.cancel' | translate }}
+                                    data-bs-dismiss="modal">
+                              {{ 'gis.policy.cancel' | translate }}
                             </button>
                             <button type="button" class="btn btn-primary px-5" data-bs-dismiss="modal"
-                              (click)="deleteRisk()"> {{'gis.quotation.delete' | translate }}
+                                    (click)="deleteRisk()"> {{ 'gis.quotation.delete' | translate }}
 
                             </button>
                           </div>
-
 
 
                         </div>
@@ -190,7 +190,7 @@
                       <div class="col-sm-4 col-6 dynamic-field mb-3">
                         <div class="form-group form-group-sm">
                           <label [for]="field.name" class="quote-label"
-                            [ngClass]="{ 'required': field.isMandatory === 'Y' }">{{ field.label | translate }}</label>
+                                 [ngClass]="{ 'required': field.isMandatory === 'Y' }">{{ field.label | translate }}</label>
 
                           <ng-container [ngSwitch]="field.type">
 
@@ -198,12 +198,12 @@
                             <ng-container *ngSwitchCase="'text'">
                               <ng-container *ngIf="field.name==='carRegNo';else inputField">
                                 <input type="text" id="quote-input" class="form-control form-control-sm"
-                                  (input)="validateCarRegNo(i, j); transformToUpperCase($event,i, j)"
-                                  [formControlName]="field.name">
+                                       (input)="validateCarRegNo(i, j); transformToUpperCase($event,i, j)"
+                                       [formControlName]="field.name">
 
                                 <!-- Error message -->
                                 <div class="form-text text-danger" style="font-size: 14px;"
-                                  *ngIf="getCarRegNoControl(i, j)?.invalid && (getCarRegNoControl(i, j)?.touched || getCarRegNoControl(i, j)?.dirty)">
+                                     *ngIf="getCarRegNoControl(i, j)?.invalid && (getCarRegNoControl(i, j)?.touched || getCarRegNoControl(i, j)?.dirty)">
 
                                   <div *ngIf="getCarRegNoControl(i, j)?.errors?.['pattern']">
                                     Invalid registration number format.
@@ -216,49 +216,52 @@
                               </ng-container>
                               <ng-template #inputField>
                                 <input type="text" id="quote-input" class="form-control form-control-sm"
-                                  [formControlName]="field.name">
+                                       [formControlName]="field.name">
                               </ng-template>
                             </ng-container>
                             <!-- Number input -->
                             <ng-container *ngSwitchCase="'number'">
                               <input type="number" id="quote-input" class="form-control form-control-sm"
-                                [max]="field?.max" [min]="field?.min" [formControlName]="field.name">
+                                     [max]="field?.max" [min]="field?.min" [formControlName]="field.name">
                             </ng-container>
 
                             <!-- Currency input -->
                             <input *ngSwitchCase="'currency'" type="text" class="form-control form-control-sm"
-                              [formControlName]="field.name" currencyMask [options]="currencyObj">
+                                   [formControlName]="field.name" currencyMask [options]="currencyObj">
 
                             <!-- Date picker -->
                             <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [dateFormat]="dateFormat"
-                              inputStyleClass="form-control" [showButtonBar]="true" [dataType]="'string'"></p-calendar>
+                                        inputStyleClass="form-control" [showButtonBar]="true"
+                                        [dataType]="'string'"></p-calendar>
 
                             <!-- Years -->
                             <ng-container *ngIf="field.name === 'yearOfManufacture'">
                               <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="years"
-                                [filter]="true"></p-dropdown>
+                                          [filter]="true"></p-dropdown>
                             </ng-container>
                             <!-- Subclass -->
                             <ng-container *ngIf="field.name === 'useOfProperty'">
                               <p-dropdown formControlName="useOfProperty"
-                                [options]="productSubclassesMap[productGroup.value.code] || []"
-                                (onChange)="onSubclassSelected($event.value,i, j, productGroup.value.code)"
-                                optionLabel="description" [filterBy]="'description'" [filter]="true"></p-dropdown>
+                                          [options]="productSubclassesMap[productGroup.value.code] || []"
+                                          (onChange)="onSubclassSelected($event.value,i, j, productGroup.value.code)"
+                                          optionLabel="description" [filterBy]="'description'"
+                                          [filter]="true"></p-dropdown>
 
                             </ng-container>
                             <!-- Add other field types as needed -->
                             <ng-container *ngIf="field.name === 'vesselType'">
                               <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="vesselTypeList"
-                                optionLabel="name" dataKey="code" [filter]="true"></p-dropdown>
+                                          optionLabel="name" dataKey="code" [filter]="true"></p-dropdown>
                             </ng-container>
                             <ng-container *ngIf="field.name === 'modeOfTransport'">
                               <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="modeOfTransport"
-                                optionLabel="description" dataKey="code" [filterBy]="'description'"
-                                [filter]="true"></p-dropdown>
+                                          optionLabel="description" dataKey="code" [filterBy]="'description'"
+                                          [filter]="true"></p-dropdown>
                             </ng-container>
                             <ng-container *ngIf="field.name === 'occupation'">
                               <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="occupationData"
-                                optionLabel="name" dataKey="id" [filterBy]="'name'" [filter]="true"></p-dropdown>
+                                          optionLabel="name" dataKey="id" [filterBy]="'name'"
+                                          [filter]="true"></p-dropdown>
                             </ng-container>
 
                           </ng-container>
@@ -337,8 +340,8 @@
     <div class="col-6 d-flex justify-content-end">
       <!-- SHARE BUTTON -->
       <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
-        (click)="fetchCoverRelatedData()" data-bs-target="#shareQuoteModal">
-        {{'gis.quotation.share_quotation' | translate }}
+              (click)="fetchCoverRelatedData()" data-bs-target="#shareQuoteModal">
+        {{ 'gis.quotation.share_quotation' | translate }}
       </button>
 
       <!-- SHARE QUOTE MODAL -->
@@ -350,13 +353,8 @@
               <h3 class="page-title  mb-0 mt-0" style="margin-left: 15px;  font-size: 20px; font-weight:600;">Share
                 quote</h3>
               <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"
-                style="width: 2rem; height: 2rem; filter: brightness(0) saturate(100%) invert(12%) sepia(93%) saturate(5425%) hue-rotate(357deg) brightness(92%) contrast(115%); border: none;"></button>
+                      style="width: 2rem; height: 2rem; filter: brightness(0) saturate(100%) invert(12%) sepia(93%) saturate(5425%) hue-rotate(357deg) brightness(92%) contrast(115%); border: none;"></button>
             </div>
-            <ng-container *ngIf="premiumComputationPayloadToShare">
-              <app-quote-report [premiumComputationResponse]="premiumComputationPayloadToShare" #quoteReport
-                style="display: none;">
-              </app-quote-report>
-            </ng-container>
             <app-share-quotes (sendEvent)="listenToSendEvent($event)"
                               (downloadRequested)="onDownloadRequested()">
 
@@ -374,8 +372,6 @@
           </button>
         </ng-container>
       </div>
-
-
 
 
     </div>
