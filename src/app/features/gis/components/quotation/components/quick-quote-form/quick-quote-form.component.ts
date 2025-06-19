@@ -618,6 +618,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       const index = this.productsFormArray.controls.findIndex(
         ctrl => ctrl.get('code')?.value === removedProduct.code
       );
+      this.removeProductCoverTypes(removedProduct.code)
       if (index !== -1) {
         this.productsFormArray.removeAt(index);
       }
@@ -718,17 +719,20 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     log.debug("Selected product>>>", product.value, this.quickQuoteForm.get('product'))
     log.debug("PRODUCT INDEX", this.previousSelected)
     this.previousSelected = this.previousSelected.filter(value => value.code !== product.value.code)
-    if (this.premiumComputationResponse) {
-      this.premiumComputationResponse = {
-        productLevelPremiums: this.premiumComputationResponse
-          .productLevelPremiums.filter(value => value.code !== product.value.code)
-      }
-    }
+   this.removeProductCoverTypes(product.value.code)
     this.quickQuoteForm.patchValue({
       product: this.previousSelected
     })
     log.debug("Current computation payload >>>", this.premiumComputationResponse)
     this.productsFormArray.removeAt(productIndex);
+  }
+  removeProductCoverTypes(code: number){
+    if (this.premiumComputationResponse) {
+      this.premiumComputationResponse = {
+        productLevelPremiums: this.premiumComputationResponse
+          .productLevelPremiums.filter(value => value.code !== code)
+      }
+    }
   }
 
   markAllFieldsAsTouched(formGroup: FormGroup | FormArray) {
