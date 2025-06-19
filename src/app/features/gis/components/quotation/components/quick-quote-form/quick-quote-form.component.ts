@@ -651,13 +651,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           log.debug("PRODUCT INDEX", index);
           log.debug("PRODUCT ARRAY CONTENTS", this.productsFormArray.value);
           this.expandedQuoteStates = this.productsFormArray.controls.map((_, index) => index === 0);
-          log.debug("SUBCLASS LIST:", this.productSubclassesMap)
           const risksArray = productGroup.get('risks') as FormArray;
           const nextRiskIndex = risksArray.length + 1;
           const riskIndex = risksArray.length
-          log.debug("RISFH INDEX", nextRiskIndex);
-          log.debug("RISFH INDEX NEW", riskIndex);
-
           risksArray.push(this.createRiskGroup(riskFields, addedProduct.code, nextRiskIndex));
           this.productRiskFields[this.productsFormArray.length - 1] = riskFields;
         })
@@ -719,18 +715,20 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   // Remove product
   deleteProduct(product: AbstractControl, productIndex: number) {
-    log.debug("Selected product>>>", product.value)
-    log.debug("PRODUCT INDEX", productIndex)
+    log.debug("Selected product>>>", product.value, this.quickQuoteForm.get('product'))
+    log.debug("PRODUCT INDEX", this.previousSelected)
+    this.previousSelected = this.previousSelected.filter(value => value.code !== product.value.code)
     if (this.premiumComputationResponse) {
       this.premiumComputationResponse = {
         productLevelPremiums: this.premiumComputationResponse
           .productLevelPremiums.filter(value => value.code !== product.value.code)
       }
     }
-
+    this.quickQuoteForm.patchValue({
+      product: this.previousSelected
+    })
     log.debug("Current computation payload >>>", this.premiumComputationResponse)
     this.productsFormArray.removeAt(productIndex);
-    this.selectedProducts.splice(productIndex, 1);
   }
 
   markAllFieldsAsTouched(formGroup: FormGroup | FormArray) {
