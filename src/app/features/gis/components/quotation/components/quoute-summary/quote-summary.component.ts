@@ -1,5 +1,5 @@
 import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {QuotationDetails, ShareQuoteDTO} from '../../data/quotationsDTO';
+import {QuotationDetails, QuotationReportDto, ShareQuoteDTO} from '../../data/quotationsDTO';
 
 import {QuotationsService} from "../../services/quotations/quotations.service";
 import {Logger, untilDestroyed, UtilService} from "../../../../../../shared/shared.module";
@@ -8,10 +8,16 @@ import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import {Router} from '@angular/router';
 import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
-import {QuoteReportComponent} from '../quote-report/quote-report.component';
 import {ClaimsService} from '../../../claim/services/claims.service';
 import {ProductLevelPremium} from "../../data/premium-computation";
 import {ShareQuotesComponent} from '../share-quotes/share-quotes.component';
+import {format} from "date-fns";
+import {mergeMap} from "rxjs";
+import {EmailDto} from "../../../../../../shared/data/common/email-dto";
+import {NotificationService} from "../../services/notification/notification.service";
+import {StringManipulation} from "../../../../../lms/util/string_manipulation";
+import {SESSION_KEY} from "../../../../../lms/util/session_storage_enum";
+import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -33,7 +39,6 @@ type ProductWithRiskId = {
 export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('dt') table!: Table;
   @ViewChild('clientModal') clientModal: any;
-  // @ViewChild('closebutton') closebutton;
   @ViewChild('closeButton') closeButton: ElementRef;
   @ViewChild('closeReassignButton') closeReassignButton: ElementRef;
 
@@ -59,10 +64,12 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
+    private notificationService: NotificationService,
     public globalMessagingService: GlobalMessagingService,
     public claimsService: ClaimsService,
     public utilService: UtilService,
-    public cdr: ChangeDetectorRef
+    public cdr: ChangeDetectorRef,
+    private session_storage: SessionStorageService,
   ) {
     this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
 
@@ -327,7 +334,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   navigateToQuoteDetails() {
-    const quotationNumber = this.quotationDetails?.quotationNo;
     log.debug("Quotation Object", this.quotationDetails);
     sessionStorage.setItem("quotationObject", JSON.stringify(this.quotationDetails));
     if (this.afterRejectQuote) {
@@ -383,51 +389,128 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   //pdf functionality
   @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
-  @ViewChild('quoteReport', {static: false}) quoteReportComponent!: QuoteReportComponent;
   @ViewChild(ShareQuotesComponent) shareQuotes!: ShareQuotesComponent;
 
-  quoteData = {
-    name: 'John Doe',
-    amount: 'KES 25,000'
-  };
+
+  notificationPayload(): QuotationReportDto {
+    const now = new Date();
+    const coverFrom = format(new Date(this.quotationDetails.coverFrom), 'dd MMMM yyyy')
+    const coverTo = format(new Date(this.quotationDetails.coverTo), 'dd MMMM yyyy')
+    const fullUrl = window.location.href;
+    const baseUrl = fullUrl.split('/home')[0]
+    let tenantId = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.API_TENANT_ID)
+    );
+    const urlTree = this.router.createUrlTree(['/home/gis/quotation/payment-checkout'], {
+      queryParams: {
+        ref: this.quotationDetails.ipayReferenceNumber,
+        sumInsured: this.quotationDetails.premium,
+        currencyPrefix: this.quotationDetails.currency,
+        tenant: tenantId
+      }
+    });
+    return {
+      paymentLink:  `${baseUrl}${urlTree}`,
+      quotation: {
+        quotationAgent: 'N/A',
+        insuredName: 'N/A',
+        quotationPeriod: `${coverFrom} to ${coverTo}`,
+        quotationTime: format(now, 'dd MMMM yyyy HHmm') + ' HRS',
+        quotationStatus: 'Draft',
+      },
+      organization: {
+        organizationLogo: null,
+        organizationName: null,
+      },
+      products: this.selectedCovers.productLevelPremiums.map((product: any) => ({
+        code: product.code,
+        description: product.description,
+        riskLevelPremiums: product.riskLevelPremiums.map((risk: any) => ({
+          coverTypeDetails: risk.coverTypeDetails.map((cover: any) => ({
+            coverTypeShortDescription: cover.coverTypeShortDescription,
+            coverTypeDescription: cover.coverTypeDescription,
+            limits: cover.limits?.map((limit: any) => ({
+              narration: limit.narration?.trim(),
+              value: limit.value
+            })) || [],
+            computedPremium: cover.computedPremium,
+            taxComputation: cover.taxComputation?.reduce(
+              (acc: any, tax: any) => {
+                acc.premium += tax.premium;
+                acc.code = tax.code;
+                return acc;
+              },
+              {premium: 0, code: 0}
+            ),
+            clauses: cover.clauses?.map((clause: any) => ({
+              heading: clause.heading,
+              wording: clause.wording
+            })) || [],
+            limitOfLiabilities: cover.limitOfLiabilities?.map((limit: any) => ({
+              narration: limit.narration?.trim(),
+              value: limit.value
+            })) || [],
+            excesses: cover.excesses?.map((excess: any) => ({
+              narration: excess.narration?.trim(),
+              value: excess.value
+            })) || []
+          }))
+        }))
+      }))
+    }
+  }
 
   onDownloadRequested() {
-   // log.debug("Quotation report payload >>", this.)
-    this.cdr.detectChanges();
-    this.quotationService.generateQuotationReport(null).pipe(
+    const payload = this.notificationPayload();
+    this.quotationService.generateQuotationReport(payload).pipe(
       untilDestroyed(this)
+    ).subscribe((response) => {
+      this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf")
+    });
+  }
+
+  listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
+    const emailPayload = this.notificationPayload()
+    this.quotationService.generateQuotationReport(emailPayload).pipe(
+      mergeMap((response) => {
+        const payload: EmailDto = {
+          code: null,
+          address: [sendEvent.mode.email],
+          subject: 'Quotation Report',
+          message: 'Please find the attached quotation report.',
+          status: 'D',
+          emailAggregator: 'N',
+          response: '524L',
+          systemModule: 'NB for New Business',
+          systemCode: 0,
+          attachments: [
+            {
+              name: 'quote-report.pdf',
+              content: response.base64,
+              type: 'application/pdf',
+              disposition: 'attachment',
+              contentId: 'quote-report'
+            }
+          ],
+          sendOn: new Date().toISOString(),
+          clientCode: 0,
+          agentCode: 0
+        };
+        return this.notificationService.sendEmail(payload)
+
+      })
     )
       .subscribe({
         next: (response) => {
-          log.debug("DownloadSuccess")
-        },
-        error: () => {
-
-        }
-      })
-    setTimeout(() => {
-      this.quoteReportComponent.generatePdfSelectCover(true).then(r => {
-      })
-    }, 100);
-  }
-
-
-  listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
-    if (sendEvent && ['email', 'whatsapp'].includes(sendEvent.mode.selectedMethod)) {
-      this.cdr.detectChanges();
-
-      setTimeout(async () => {
-        try {
-          const pdfBlob = await this.quoteReportComponent.generatePdfSelectCover(false, 'quote-report.pdf', true) as Blob;
-          log.debug("PDF BLOB:", pdfBlob)
-          if (pdfBlob) {
-            this.shareQuotes.handlePdfBlob(pdfBlob, sendEvent.mode);
+          if (response) {
+            this.globalMessagingService.displaySuccessMessage('success', 'Email sent successfully')
           }
-        } catch (err) {
-          console.error('PDF generation failed', err);
+        },
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage('error', error.error.message);
+          log.debug(error);
         }
-      }, 200);
-    }
+      })
   }
 
 }

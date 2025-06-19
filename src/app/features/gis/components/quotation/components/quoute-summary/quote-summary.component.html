@@ -180,16 +180,6 @@
           <button type="button" class="float-end btn-close" data-bs-dismiss="modal" aria-label="Close"
             style="border:none; color: red;"></button>
           <p class="text-start" id="shareQuote"> {{'gis.quotation.share_quotation' | translate }}</p>
-          <!-- <ng-container>
-          <app-quote-report [quotationDetails]="quotationDetails" [selectedCovers]="selectedCovers" #quoteReport
-            style="display: none;">
-          </app-quote-report>
-        </ng-container> -->
-          <ng-container>
-            <app-quote-report [quotationDetails]="quotationDetails" #quoteReport [selectedCovers]="selectedCovers"
-              style="display: none;">
-            </app-quote-report>
-          </ng-container>
 
           <app-share-quotes (sendEvent)="listenToSendEvent($event)"
             (downloadRequested)="onDownloadRequested()"></app-share-quotes>
