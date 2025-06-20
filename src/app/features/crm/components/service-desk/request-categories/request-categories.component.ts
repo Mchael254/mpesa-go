@@ -11,6 +11,8 @@ import {ServiceRequestService} from "../../../services/service-request.service";
 import {NgxSpinnerService} from "ngx-spinner";
 import {ServiceRequestCategoryDTO, ServiceRequestIncidentDTO} from "../../../data/service-request-dto";
 import {ReusableInputComponent} from "../../../../../shared/components/reusable-input/reusable-input.component";
+import {MessagingService} from "../../../services/messaging.service";
+import {MessageTemplate} from "../../../data/messaging-template";
 
 const log = new Logger('RequestCategoriesComponent');
 @Component({
@@ -48,6 +50,8 @@ export class RequestCategoriesComponent implements OnInit {
     levelTwoEscalatedTo: 'Y',
     assignTo: 'Y',
     messageTemplate: 'Y',
+    incidentName: 'Y',
+    incidentValidity: 'Y',
   }
 
   groupId: string = 'serviceDeskTab';
@@ -59,12 +63,15 @@ export class RequestCategoriesComponent implements OnInit {
     | 'assignee'
     | null = null;
 
-  public levelOneEscalatedToUser: any;
-  public levelTwoEscalatedToUser: any;
-  public assignToUser: any;
+  public levelOneEscalatedToUser: StaffDto;
+  public levelTwoEscalatedToUser: StaffDto;
+  public assignToUser: StaffDto;
 
   @ViewChild('requestCategoryConfirmationModal') requestCategoryConfirmationModal!: ReusableInputComponent;
   @ViewChild('requestIncidentsConfirmationModal') requestIncidentsConfirmationModal!: ReusableInputComponent;
+
+  messageTemplates: MessageTemplate[];
+  selectedSystem: number;
 
   constructor(
     private fb: FormBuilder,
@@ -74,6 +81,7 @@ export class RequestCategoriesComponent implements OnInit {
     private systemsService: SystemsService,
     private spinner: NgxSpinnerService,
     private serviceRequestService: ServiceRequestService,
+    private messagingService: MessagingService,
   ) { }
 
   ngOnInit(): void {
@@ -131,7 +139,9 @@ export class RequestCategoriesComponent implements OnInit {
       levelTwoDuration: [''],
       levelTwoEscalatedTo: [''],
       assignTo: [''],
-      messageTemplate: ['']
+      messageTemplate: [''],
+      incidentName: [''],
+      incidentValidity: ['']
     });
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId).pipe(
       untilDestroyed(this)
@@ -340,6 +350,24 @@ export class RequestCategoriesComponent implements OnInit {
   }
 
   /**
+   * Fetches the list of message templates from the server
+   * @param systemCode The system code for which the message templates are to be fetched
+   */
+  fetchMessageTemplates(systemCode:number): void {
+    this.messagingService.getMessageTemplates(0, 50, systemCode).subscribe({
+      next: (res) => {
+        this.messageTemplates = res.content;
+        log.info("messages", this.messageTemplates);
+      },
+      error: (err) => {
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      },
+    });
+    this.cdr.detectChanges();
+  }
+
+  /**
    * Save the service request category.
    */
   saveServiceRequestCategory() {
@@ -356,7 +384,7 @@ export class RequestCategoriesComponent implements OnInit {
       sysCode: 0
     };
 
-    console.log(saveRequestCategoryPayload)
+    log.info(saveRequestCategoryPayload)
     const serviceRequestServiceCall = this.selectedRequestCategory
       ? this.serviceRequestService.updateRequestCategory(this.selectedRequestCategory.id, saveRequestCategoryPayload)
       : this.serviceRequestService.createRequestCategory(saveRequestCategoryPayload);
@@ -434,11 +462,92 @@ export class RequestCategoriesComponent implements OnInit {
     }
   }
 
+  /**
+   * Saves the request escalation details.
+   */
   saveRequestEscalation() {
+    this.requestEscalationForm.markAllAsTouched();
+    if (this.requestEscalationForm.invalid) return;
+    const requestEscalationFormValues = this.requestEscalationForm.getRawValue();
+    const requestIncidentCode = !this.editMode ? null : this.selectedIncident?.id;
 
+    log.info("request escalation form", requestEscalationFormValues, requestIncidentCode);
+
+    const saveRequestEscalationPayload: ServiceRequestIncidentDTO = {
+      id: requestIncidentCode,
+      name: requestEscalationFormValues.incidentName,
+      requestTypeCode: Number(requestEscalationFormValues.requestCategory),
+      userCode: requestEscalationFormValues.assignTo,
+      validity: requestEscalationFormValues.incidentValidity,
+      escalationLevels: [
+        {
+          level: 1,
+          assigneeId: requestEscalationFormValues.levelOneEscalatedTo,
+          duration: requestEscalationFormValues.levelOneDuration,
+          incidentId: requestIncidentCode,
+          systemId: requestEscalationFormValues.system,
+          messageCode: requestEscalationFormValues.messageTemplate
+        },
+        {
+          level: 2,
+          assigneeId: requestEscalationFormValues.levelTwoEscalatedTo,
+          duration: requestEscalationFormValues.levelTwoDuration,
+          incidentId: requestIncidentCode,
+          systemId: requestEscalationFormValues.system,
+          messageCode: requestEscalationFormValues.messageTemplate
+        }
+      ],
+    };
+
+    log.info(saveRequestEscalationPayload);
+    const serviceRequestServiceCall = this.selectedIncident
+      ? this.serviceRequestService.updateRequestIncident(this.selectedIncident.id, saveRequestEscalationPayload)
+      : this.serviceRequestService.createRequestIncident(saveRequestEscalationPayload);
+
+    return serviceRequestServiceCall.toPromise()
+      .then(data => {
+        this.globalMessagingService.displaySuccessMessage('Success', this.selectedRequestCategory ? 'Successfully updated request escalation' : 'Successfully created request escalation');
+        this.requestEscalationForm.reset();
+        this.closeRequestEscalationModal();
+        this.fetchServiceIncidents();
+      })
+      .catch(error => {
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message || 'Error saving request escalation');
+        throw error;
+      });
   }
 
   ngOnDestroy(): void {}
+
+  /**
+   * Edit the selected service request incident.
+   * If no request incident is selected, display an error message.
+   * Otherwise, open the request escalation modal and patch the form values with the selected request incident.
+   */
+  editRequestIncident() {
+    if (this.selectedIncident) {
+      this.editMode = !this.editMode;
+      this.openRequestEscalationModal();
+      this.requestEscalationForm.patchValue({
+        system: this.selectedIncident?.escalationLevels[0]?.system?.id,
+        requestCategory: this.selectedIncident?.requestTypeCode,
+        levelOneDuration: this.selectedIncident?.escalationLevels[0]?.duration,
+        levelOneEscalatedTo: this.selectedIncident?.escalationLevels[0]?.assignee?.id,
+        levelTwoDuration: this.selectedIncident?.escalationLevels[1]?.duration,
+        levelTwoEscalatedTo: this.selectedIncident?.escalationLevels[1]?.assignee?.id,
+        assignTo: this.selectedIncident?.user?.id,
+        messageTemplate: this.selectedIncident?.escalationLevels[0]?.message?.id,
+        incidentName: this.selectedIncident?.name,
+        incidentValidity: this.selectedIncident?.validity,
+      });
+      this.fetchMessageTemplates(this.selectedIncident?.escalationLevels[0]?.system?.id);
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No request incident is selected!'
+      );
+    }
+  }
 
   /**
    * Show the confirmation modal for deleting a service request incident.
@@ -475,6 +584,16 @@ export class RequestCategoriesComponent implements OnInit {
         'Error',
         'No request incident is selected.'
       );
+    }
+  }
+
+  /**
+   * Triggered when the system selection changes.
+   * If a system is selected, fetches the message templates for the selected system.
+   */
+  onSystemChange() {
+    if (this.selectedSystem != null) {
+      this.fetchMessageTemplates(this.selectedSystem)
     }
   }
 }

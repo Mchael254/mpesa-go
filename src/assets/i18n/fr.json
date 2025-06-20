@@ -3097,6 +3097,8 @@
     "otherNames": "Autres prénoms",
     "shortDesc": "Brève description",
     "IDNo": "Numéro d'identité",
-    "telephone": "Téléphone"
+    "telephone": "Téléphone",
+    "incidentName": "Nom de l'incident",
+    "incidentValidity": "Validité de l'incident"
   }
 }
