@@ -1,0 +1,197 @@
+{
+  "id": "upload-form",
+  "locale": "en",
+  "label": "New Entity",
+  "fields": [
+    {
+      "fieldId": "role",
+      "type": "select",
+      "label": {
+        "en": "role",
+        "ke": "",
+        "fr": ""
+      },
+      "defaultValue": null,
+      "visible": true,
+      "disabled": false,
+      "validations": [],
+      "groupId": "",
+      "order": 1,
+      "tooltip": {
+        "en": "",
+        "fr": "",
+        "ke": ""
+      },
+      "placeholder": {
+        "en": "",
+        "fr": "",
+        "ke": ""
+      },
+      "isMandatory": true,
+      "options": ["client", "intermediary", "staff", "service provider"]
+    },
+    {
+      "fieldId": "category",
+      "type": "select",
+      "label": {
+        "en": "category",
+        "ke": "",
+        "fr": ""
+      },
+      "defaultValue": null,
+      "visible": true,
+      "disabled": false,
+      "validations": [],
+      "groupId": "",
+      "order": 2,
+      "tooltip": {
+        "en": "",
+        "fr": "",
+        "ke": ""
+      },
+      "placeholder": {
+        "en": "",
+        "fr": "",
+        "ke": ""
+      },
+      "isMandatory": true,
+      "options": ["individual", "corporate"]
+    },
+    {
+      "fieldId": "organizationType",
+      "type": "select",
+      "label": {
+        "en": "organization type",
+        "ke": "",
+        "fr": ""
+      },
+      "defaultValue": null,
+      "visible": true,
+      "disabled": false,
+      "validations": [],
+      "groupId": "",
+      "order": 3,
+      "tooltip": {
+        "en": "",
+        "fr": "",
+        "ke": ""
+      },
+      "placeholder": {
+        "en": "",
+        "fr": "",
+        "ke": ""
+      },
+      "isMandatory": true,
+      "options": ["resident", "foreign"]
+    },
+    {
+      "fieldId": "national_id_card_btn",
+      "type": "button",
+      "label": {
+        "en": "national identity card",
+        "ke": "",
+        "fr": ""
+      },
+      "defaultValue": null,
+      "visible": true,
+      "disabled": false,
+      "validations": [],
+      "groupId": "",
+      "order": 4,
+      "tooltip": {
+        "en": "",
+        "fr": "",
+        "ke": ""
+      },
+      "placeholder": {
+        "en": "choose file",
+        "fr": "",
+        "ke": ""
+      },
+      "isMandatory": true,
+      "options": []
+    },
+    {
+      "fieldId": "kenya_revenue_authority_pin",
+      "type": "button",
+      "label": {
+        "en": "Kenya revenue authority pin",
+        "ke": "",
+        "fr": ""
+      },
+      "defaultValue": null,
+      "visible": true,
+      "disabled": false,
+      "validations": [],
+      "groupId": "",
+      "order": 4,
+      "tooltip": {
+        "en": "",
+        "fr": "",
+        "ke": ""
+      },
+      "placeholder": {
+        "en": "choose file",
+        "fr": "",
+        "ke": ""
+      },
+      "isMandatory": true,
+      "options": []
+    },
+    {
+      "fieldId": "birth_certificate",
+      "type": "button",
+      "label": {
+        "en": "birth certificate",
+        "ke": "",
+        "fr": ""
+      },
+      "defaultValue": null,
+      "visible": true,
+      "disabled": false,
+      "validations": [],
+      "groupId": "",
+      "order": 4,
+      "tooltip": {
+        "en": "",
+        "fr": "",
+        "ke": ""
+      },
+      "placeholder": {
+        "en": "choose file",
+        "fr": "",
+        "ke": ""
+      },
+      "isMandatory": true,
+      "options": []
+    },
+    {
+      "fieldId": "utility_bill",
+      "type": "button",
+      "label": {
+        "en": "utility bill document",
+        "ke": "",
+        "fr": ""
+      },
+      "defaultValue": null,
+      "visible": true,
+      "disabled": false,
+      "validations": [],
+      "groupId": "",
+      "order": 4,
+      "tooltip": {
+        "en": "",
+        "fr": "",
+        "ke": ""
+      },
+      "placeholder": {
+        "en": "choose file",
+        "fr": "",
+        "ke": ""
+      },
+      "isMandatory": true,
+      "options": []
+    }
+  ]
+}
+
