@@ -36,7 +36,7 @@ import { TokenInterceptor } from './services/http/token-interceptor';
 import { HttpCacheService } from './services/http/http-cache.service';
 import { IeCacheControlInterceptor } from './services/http/ie-cache-control-interceptor';
 import { OtpComponent } from './components/otp/otp.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { DynamicTableComponent } from './components/dynamic-table/dynamic-table.component';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -105,6 +105,8 @@ import { ClientSearchModalComponent } from './components/client-search-modal/cli
 import { AgentSearchModalComponent } from './components/agent-search-modal/agent-search-modal.component';
 import { ProductSearchModalComponent } from './components/product-search-modal/product-search-modal.component';
 import { DynamicReportsComponent } from './components/dynamic-reports/dynamic-reports.component';
+import { DynamicSetupTableComponent } from './components/dynamic-setup-table/dynamic-setup-table.component';
+import {DialogModule} from "primeng/dialog";
 
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
@@ -217,33 +219,36 @@ const SERVICES = [
     ClientSearchModalComponent,
     AgentSearchModalComponent,
     ProductSearchModalComponent,
-    DynamicReportsComponent
+    DynamicReportsComponent,
+    DynamicSetupTableComponent
 
   ],
-    imports: [
-        CommonModule,
-        ToastModule,
-        ProgressBarModule,
-        NgOptimizedImage,
-        ReactiveFormsModule,
-        TableModule,
-        ButtonModule,
-        ChipsModule,
-        ChartModule,
-        RouterLink,
-        NgxSpinnerModule,
-        TranslateModule,
-        ReactiveFormsModule,
-        CalendarModule,
-        DropdownModule,
-        HttpClientModule,
-        NgbModule,
-        Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
-        TabViewModule,
-        FileUploadModule,
-        PolicyModule,
-        PdfViewerModule
-    ],
+  imports: [
+    CommonModule,
+    ToastModule,
+    ProgressBarModule,
+    NgOptimizedImage,
+    ReactiveFormsModule,
+    TableModule,
+    ButtonModule,
+    ChipsModule,
+    ChartModule,
+    RouterLink,
+    NgxSpinnerModule,
+    TranslateModule,
+    ReactiveFormsModule,
+    CalendarModule,
+    DropdownModule,
+    HttpClientModule,
+    NgbModule,
+    Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
+    TabViewModule,
+    FileUploadModule,
+    PolicyModule,
+    PdfViewerModule,
+    DialogModule,
+    FormsModule
+  ],
   exports: [
     ErrorComponent,
     HideMessageDirective,
@@ -294,7 +299,8 @@ const SERVICES = [
     ClientSearchModalComponent,
     AgentSearchModalComponent,
     ProductSearchModalComponent,
-    DynamicReportsComponent
+    DynamicReportsComponent,
+    DynamicSetupTableComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

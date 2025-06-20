@@ -39,6 +39,7 @@ export class MenuService {
             name: 'Service Providers',
             link: '/home/entity/service-provider/list',
           },
+          { name: 'Create Entity', link: '/home/entity/create' },
         ],
         collapsed: true,
       },
