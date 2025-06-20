@@ -91,6 +91,77 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   get riskLevelPremium() {
     return this._riskLevelPremium
   }
+  public currencyObj: NgxCurrencyConfig;
+  currencyList: any;
+  currencyCode: any;
+  selectedCurrency: any;
+  selectedCurrencyCode: any;
+  defaultCurrencyName: any;
+  minDate: Date | undefined;
+  currencyDelimiter: any;
+  defaultCurrencySymbol: any;
+  selectedCurrencySymbol: any;
+
+ /**
+   * Loads all currencies and selects based on the currency code.
+   * - Subscribes to 'getAllCurrencies' from CurrencyService.
+   * - Populates 'currencyList' and filters for the selected currency.
+   * - Assigns name and code from the filtered currency.
+   * - Logs the selected currency details and triggers change detection.
+   * @method loadAllCurrencies
+   * @return {void}
+   */
+
+
+  setCurrencySymbol(currencySymbol: string) {
+    this.selectedCurrencySymbol = currencySymbol + ' ';
+    sessionStorage.setItem('currencySymbol', this.selectedCurrencySymbol);
+
+    this.currencyObj = {
+      prefix: this.selectedCurrencySymbol,
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: this.currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
+    log.debug("Currency object:", this.currencyObj)
+  }
+
+  formatCurrency(value: number, prefix: string, delimiter: string): string {
+    // No decimals, just thousands
+    let parts = value.toFixed(0).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
+    return `${prefix}${parts.join('')}`;
+  }
+
+  loadAllCurrencies() {
+    this.currencyService.getAllCurrencies()
+      .pipe(
+        untilDestroyed(this)
+      )
+      .subscribe(data => {
+        this.currencyList = data;
+        log.info(this.currencyList, "this is a currency list");
+        const curr = this.currencyList.find(currency => currency.id == this.currencyCode);
+        this.selectedCurrency = curr.name
+        log.debug("Selected Currency:", this.selectedCurrency);
+        this.selectedCurrencyCode = curr.id;
+        log.debug("Selected Currency code:", this.selectedCurrencyCode);
+      })
+  }
+ 
+
+
+
+
+
+
+
+
 
   ngAfterViewInit() {
     if (this.addMoreBenefitsModalRef?.nativeElement) {
@@ -144,10 +215,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   passedQuotationSource: any;
 
 
-  currencyList: any;
-  currencyCode: any;
-  selectedCurrency: any;
-  selectedCurrencyCode: any;
+ 
 
   passedClientDetails: any;
   passedNewClientDetails: any;
@@ -198,7 +266,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   quoteAction: string = null
   selectedRisk: any = null
 
-  public currencyObj: NgxCurrencyConfig;
+
   private typingTimer: any;// Timer reference
   sectionToBeRemoved: number[] = [];
   inputErrors: { [key: string]: boolean } = {};
@@ -239,6 +307,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
 
 
   ngOnInit(): void {
+    this.loadAllCurrencies()
     this.createEmailForm();
     this.createSmsForm();
 
@@ -373,21 +442,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   }
 
 
-  loadAllCurrencies() {
-    this.currencyService.getAllCurrencies()
-      .pipe(
-        untilDestroyed(this)
-      )
-      .subscribe(data => {
-        this.currencyList = data;
-        log.info(this.currencyList, "this is a currency list");
-        const curr = this.currencyList.find(currency => currency.id == this.currencyCode);
-        this.selectedCurrency = curr.name
-        log.debug("Selected Currency:", this.selectedCurrency);
-        this.selectedCurrencyCode = curr.id;
-        log.debug("Selected Currency code:", this.selectedCurrencyCode);
-      })
-  }
+ 
 
   loadClientQuotation() {
     log.debug("quotation Number generated after adding a benefit:", this.quotationNo)
