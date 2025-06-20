@@ -60,6 +60,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   isSearching = false;
   searchTerm = '';
   comments: string;
+  isClientSearchModalVisible = false;
 
   constructor(
     private quotationService: QuotationsService,
@@ -387,6 +388,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
         log.debug('Error while updating quotation:', error);
       }
     });
+    this.isClientSearchModalVisible = false;
   }
 
 
@@ -514,6 +516,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
           log.debug(error);
         }
       })
+  }
+  openClientSearchModal(){
+    this.isClientSearchModalVisible = true;
   }
 
 }
