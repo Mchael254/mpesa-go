@@ -12,7 +12,7 @@
       },
       {
         label: 'Service Desk Request',
-        url: '/home/crm/service-desk'
+        url: '/home/crm'
       },
       {
         label: 'Request Categories',
@@ -101,7 +101,7 @@
               ><i class="fa-solid fa-plus" (click)="openRequestEscalationModal()"></i
               ></span>
               <span class="icon-circle"
-              ><i class="pi pi-pencil"></i
+              ><i class="pi pi-pencil" (click)="editRequestIncident()"></i
               ></span>
               <span class="icon-circle"
               ><i
@@ -128,7 +128,8 @@
           responsiveLayout="stack"
           [scrollable]="true"
           selectionMode="single"
-          dataKey="code"
+          [(selection)]="selectedIncident"
+          dataKey="id"
           scrollHeight="400px"
           currentPageReportTemplate="{first} - {last} of {totalRecords}"
           [globalFilterFields]="['name', 'validity', 'user.name']"
@@ -143,24 +144,31 @@
               <th>{{ 'serviceDesk.levelTwoDuration' | translate }}</th>
               <th>{{ 'serviceDesk.escalatedTo' | translate }}</th>
               <th>{{ 'serviceDesk.messageTemplate' | translate }}</th>
-              <!--<th pSortableColumn="name">{{ 'serviceDesk.name' | translate }} <p-sortIcon field="name"></p-sortIcon></th>
-              <th pSortableColumn="validity">{{ 'serviceDesk.validityInDays' | translate }} <p-sortIcon field="validity"></p-sortIcon></th>
-              <th pSortableColumn="user.name">{{ 'serviceDesk.escalatedTo' | translate }} <p-sortIcon field="user.name"></p-sortIcon></th>-->
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-requestIncident>
-            <tr class="custom-table">
-              <!--<td>
-                {{ requestIncident.name | titlecase }}
+            <tr [pSelectableRow]="requestIncident">
+              <td>
+                {{ requestIncident?.escalationLevels[0]?.system?.shortDesc | titlecase }}
               </td>
               <td>
-                {{ requestIncident.validity }}
+                {{ requestIncident?.user?.name | titlecase }}
               </td>
               <td>
-                {{ requestIncident.user?.name | titlecase }}
-              </td>-->
-
-              <!--TODO: Endpoint needs modification to get the data-->
+                {{ requestIncident?.escalationLevels[0]?.duration }}
+              </td>
+              <td>
+                {{ requestIncident?.escalationLevels[0]?.assignee?.name | titlecase }}
+              </td>
+              <td>
+                {{ requestIncident?.escalationLevels[1]?.duration }}
+              </td>
+              <td>
+                {{ requestIncident?.escalationLevels[1]?.assignee?.name | titlecase }}
+              </td>
+              <td>
+                {{ requestIncident?.escalationLevels[0]?.message?.name | titlecase }}
+              </td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
@@ -300,6 +308,8 @@
                   [showClear]="true"
                   [style]="{ width: '100%', height: '50%' }"
                   placeholder="Select option"
+                  [(ngModel)]="selectedSystem"
+                  (onChange)="onSystemChange()"
                   [ngClass]="{ 'is-invalid': g['system']?.invalid && (g['system']?.dirty || g['system']?.touched) }"
                 >
                 </p-dropdown>
@@ -311,15 +321,45 @@
             <ng-container *ngIf="visibleStatus.requestCategory === 'Y'">
               <div class="col-md-6 mb-3">
                 <label for="requestCategory" class="form-label">{{ 'serviceDesk.requestCategory' | translate | titlecase }}</label>
+                <select class="form-select" id="requestCategory" formControlName="requestCategory"
+                        [ngClass]="{ 'is-invalid': g['requestCategory']?.invalid && (g['requestCategory']?.dirty || g['requestCategory']?.touched) }">
+                  <option *ngFor="let requestCategory of requestCategoriesData"
+                          [value]="requestCategory.id">{{requestCategory.desc | titlecase}}
+                  </option>
+                </select>
+                <div *ngIf="g['requestCategory']?.invalid && (g['requestCategory']?.dirty || g['requestCategory']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['requestCategory']?.errors['required']">Request category is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.incidentName === 'Y'">
+              <div class="col-md-6 mb-3">
+                <label for="incidentName" class="form-label">{{ 'serviceDesk.incidentName' | translate | titlecase }}</label>
                 <input
                   type="text"
                   class="form-control"
-                  id="requestCategory"
-                  formControlName="requestCategory"
-                  [ngClass]="{ 'is-invalid': g['requestCategory']?.invalid && (g['requestCategory']?.dirty || g['requestCategory']?.touched) }"
+                  formControlName="incidentName"
+                  value=""
+                  id="incidentName"
+                  [ngClass]="{ 'is-invalid': g['incidentName']?.invalid && (g['incidentName']?.dirty || g['incidentName']?.touched) }"
                 />
-                <div *ngIf="g['requestCategory']?.invalid && (g['requestCategory']?.dirty || g['requestCategory']?.touched)" class="form-text text-danger">
-                  <div *ngIf="g['requestCategory']?.errors['required']">Request category is required</div>
+                <div *ngIf="g['incidentName']?.invalid && (g['incidentName']?.dirty || g['incidentName']?.touched)" class="form-text text-danger">
+                  <div *ngIf="g['incidentName']?.errors['required']">Incident name is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.incidentValidity === 'Y'">
+              <div class="col-md-6 mb-3">
+                <label for="incidentValidity" class="form-label">{{ 'serviceDesk.incidentValidity' | translate | titlecase }}</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="incidentValidity"
+                  formControlName="incidentValidity"
+                  [ngClass]="{ 'is-invalid': g['incidentValidity']?.invalid && (g['incidentValidity']?.dirty || g['incidentValidity']?.touched) }"
+                />
+                <div *ngIf="f['incidentValidity']?.invalid && (f['incidentValidity']?.dirty || f['incidentValidity']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['incidentValidity']?.errors['required']">Incident validity is required</div>
                 </div>
               </div>
             </ng-container>
@@ -331,26 +371,35 @@
                   class="form-control"
                   id="levelOneDuration"
                   formControlName="levelOneDuration"
-                  [ngClass]="{ 'is-invalid': g['assignTo']?.invalid && (g['assignTo']?.dirty || g['assignTo']?.touched) }"
+                  [ngClass]="{ 'is-invalid': g['levelOneDuration']?.invalid && (g['levelOneDuration']?.dirty || g['levelOneDuration']?.touched) }"
                 />
-                <div *ngIf="f['assignee']?.invalid && (f['assignee']?.dirty || f['assignee']?.touched)" class="form-text text-danger">
-                  <div *ngIf="f['assignee']?.errors['required']">Assignee is required</div>
+                <div *ngIf="f['levelOneDuration']?.invalid && (f['levelOneDuration']?.dirty || f['levelOneDuration']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['levelOneDuration']?.errors['required']">Level one duration is required</div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.levelOneEscalatedTo === 'Y'">
               <div class="col-md-6 mb-3">
                 <label for="levelOneEscalatedTo" class="form-label">{{ 'serviceDesk.escalatedTo' | translate | titlecase }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="levelOneEscalatedTo"
-                  value="{{levelOneEscalatedToUser?.name}}"
-                  id="levelOneEscalatedTo"
-                  readonly
-                  (click)="openAllUsersModal('levelOneEscalatedTo')"
-                  [ngClass]="{ 'is-invalid': g['levelOneEscalatedTo']?.invalid && (g['levelOneEscalatedTo']?.dirty || g['levelOneEscalatedTo']?.touched) }"
-                />
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="levelOneEscalatedTo"
+                    value="{{!this.editMode ? levelOneEscalatedToUser?.name : selectedIncident?.escalationLevels[0]?.assignee?.name}}"
+                    id="levelOneEscalatedTo"
+                    readonly
+                    [ngClass]="{ 'is-invalid': g['levelOneEscalatedTo']?.invalid && (g['levelOneEscalatedTo']?.dirty || g['levelOneEscalatedTo']?.touched) }"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    id="button-addon"
+                    (click)="openAllUsersModal('levelOneEscalatedTo')"
+                  >
+                    <i class="fa-solid fa-angle-double-down"></i>
+                  </button>
+                </div>
                 <div *ngIf="g['levelOneEscalatedTo']?.invalid && (g['levelOneEscalatedTo']?.dirty || g['levelOneEscalatedTo']?.touched)" class="form-text text-danger">
                   <div *ngIf="g['levelOneEscalatedTo']?.errors['required']">Escalated to is required</div>
                 </div>
@@ -374,16 +423,25 @@
             <ng-container *ngIf="visibleStatus.levelTwoEscalatedTo === 'Y'">
               <div class="col-md-6 mb-3">
                 <label for="levelTwoEscalatedTo" class="form-label">{{ 'serviceDesk.escalatedTo' | translate | titlecase }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="levelTwoEscalatedTo"
-                  value="{{levelTwoEscalatedToUser?.name}}"
-                  id="levelTwoEscalatedTo"
-                  readonly
-                  (click)="openAllUsersModal('levelTwoEscalatedTo')"
-                  [ngClass]="{ 'is-invalid': g['levelTwoEscalatedTo']?.invalid && (g['levelTwoEscalatedTo']?.dirty || g['levelTwoEscalatedTo']?.touched) }"
-                />
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="levelTwoEscalatedTo"
+                    value="{{!this.editMode ? levelTwoEscalatedToUser?.name : selectedIncident?.escalationLevels[1]?.assignee?.name}}"
+                    id="levelTwoEscalatedTo"
+                    readonly
+                    [ngClass]="{ 'is-invalid': g['levelTwoEscalatedTo']?.invalid && (g['levelTwoEscalatedTo']?.dirty || g['levelTwoEscalatedTo']?.touched) }"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    id="button-addon"
+                    (click)="openAllUsersModal('levelTwoEscalatedTo')"
+                  >
+                    <i class="fa-solid fa-angle-double-down"></i>
+                  </button>
+                </div>
                 <div *ngIf="g['levelTwoEscalatedTo']?.invalid && (g['levelTwoEscalatedTo']?.dirty || g['levelTwoEscalatedTo']?.touched)" class="form-text text-danger">
                   <div *ngIf="g['levelTwoEscalatedTo']?.errors['required']">Escalated to is required</div>
                 </div>
@@ -392,16 +450,25 @@
             <ng-container *ngIf="visibleStatus.assignTo === 'Y'">
               <div class="col-md-6 mb-3">
                 <label for="assignTo" class="form-label">{{ 'serviceDesk.assignTo' | translate | titlecase }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="assignTo"
-                  value="{{assignToUser?.name}}"
-                  id="assignTo"
-                  readonly
-                  (click)="openAllUsersModal('assignTo')"
-                  [ngClass]="{ 'is-invalid': g['assignTo']?.invalid && (g['assignTo']?.dirty || g['assignTo']?.touched) }"
-                />
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="assignTo"
+                    value="{{!this.editMode ? assignToUser?.name : selectedIncident?.user?.name}}"
+                    id="assignTo"
+                    readonly
+                    [ngClass]="{ 'is-invalid': g['assignTo']?.invalid && (g['assignTo']?.dirty || g['assignTo']?.touched) }"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    id="button-addon"
+                    (click)="openAllUsersModal('assignTo')"
+                  >
+                    <i class="fa-solid fa-angle-double-down"></i>
+                  </button>
+                </div>
                 <div *ngIf="g['assignTo']?.invalid && (g['assignTo']?.dirty || g['assignTo']?.touched)" class="form-text text-danger">
                   <div *ngIf="g['assignTo']?.errors['required']">Assign to is required</div>
                 </div>
@@ -410,14 +477,20 @@
             <ng-container *ngIf="visibleStatus.messageTemplate === 'Y'">
               <div class="col-md-6 mb-3">
                 <label for="messageTemplate" class="form-label">{{ 'serviceDesk.messageTemplate' | translate | titlecase }}</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="messageTemplate"
+                <p-dropdown
+                  [options]="messageTemplates"
+                  optionLabel="name"
+                  optionValue="id"
                   formControlName="messageTemplate"
-                  [disabled]="true"
+                  id="messageTemplate"
+                  [filter]="true"
+                  filterBy="shortDesc"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '50%' }"
+                  placeholder="Select option"
                   [ngClass]="{ 'is-invalid': g['messageTemplate']?.invalid && (g['messageTemplate']?.dirty || g['messageTemplate']?.touched) }"
-                />
+                >
+                </p-dropdown>
                 <div *ngIf="g['messageTemplate']?.invalid && (g['messageTemplate']?.dirty || g['messageTemplate']?.touched)" class="form-text text-danger">
                   <div *ngIf="g['messageTemplate']?.errors['required']">Message template is required</div>
                 </div>

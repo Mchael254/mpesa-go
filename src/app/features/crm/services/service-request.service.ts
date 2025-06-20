@@ -3,6 +3,7 @@ import {ApiService} from "../../../shared/services/api/api.service";
 import {Observable} from "rxjs";
 import {API_CONFIG} from "../../../../environments/api_service_config";
 import {
+  ServiceRequestCommentsDTO,
   ServiceRequestCategoryDTO, ServiceRequestDocumentsDTO,
   ServiceRequestIncidentDTO, ServiceRequestsDTO,
   ServiceRequestStatusDTO
@@ -134,6 +135,17 @@ export class ServiceRequestService {
     );
   }
 
+  updateServiceRequest(
+    requestId: number,
+    data: ServiceRequestsDTO
+  ): Observable<ServiceRequestsDTO> {
+    return this.apiService.PUT<ServiceRequestsDTO>(
+      `service-requests/${requestId}`,
+      data,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
   getRequestAccTypes(): Observable<any> {
     return this.apiService.GET<any>(
       `service-request/account-types`,
@@ -217,6 +229,39 @@ export class ServiceRequestService {
   getRequestCommunicationModes(): Observable<any> {
     return this.apiService.GET<any>(
       `service-request/communication-modes`,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  getRequestComments(): Observable<ServiceRequestCommentsDTO[]> {
+    return this.apiService.GET<ServiceRequestCommentsDTO[]>(
+      `service-request/comments`,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  createRequestComment(data: ServiceRequestCommentsDTO): Observable<ServiceRequestCommentsDTO> {
+    return this.apiService.POST<ServiceRequestCommentsDTO>(
+      `service-request/comments`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  updateRequestComment(
+    requestCommentId: number,
+    data: ServiceRequestCommentsDTO
+  ): Observable<ServiceRequestCommentsDTO> {
+    return this.apiService.PUT<ServiceRequestCommentsDTO>(
+      `service-request/comments/${requestCommentId}`,
+      data,
+      API_CONFIG.CRM_SERVICE_REQUEST
+    );
+  }
+
+  deleteRequestComment(requestCommentId: number) {
+    return this.apiService.DELETE<ServiceRequestCommentsDTO>(
+      `service-request/comments/${requestCommentId}`,
       API_CONFIG.CRM_SERVICE_REQUEST
     );
   }
