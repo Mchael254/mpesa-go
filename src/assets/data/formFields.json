@@ -1,0 +1,2216 @@
+{
+    "id": "client-registration",
+    "locale": "en",
+    "formGroups":[
+      {
+        "groupId":"cntl_contactDtls",
+        "labels":{
+          "en":"",
+          "fr":""
+        },
+        "groupOrder":1,
+        "description":"client contact details",
+        "subsections":
+        [
+          {
+          "subgroupId":"cntl_ccontacts",
+          "labels":{
+            "en":"company contacts",
+            "fr":""
+          },
+          "subgroupOrder":1,
+          "description":"client wealth details",
+          "component":"component-contact-person"
+        },
+          {
+            "subgroupId":"cntl_cpersons",
+            "labels":{
+              "en":"contacts persons",
+              "fr":""
+            },
+            "subgroupOrder":2,
+            "description":"contact person details",
+            "component":"component-contact-person"
+          }
+        ]
+      }
+    ],
+    "fields": [
+        {
+            "fieldId": "category",
+            "type": "select",
+            "label": {
+                "en": "Client Category",
+                "ke": "Kategoria ya Mteja",
+                "fr": "Cat'gorie de Client"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Client Category is required",
+                        "ke": "Kategoria ya Mteja inahitajika",
+                        "fr": "La cat'gorie de client est requise"
+                    }
+                }
+            ],
+            "conditions": [],
+            "tooltip":{
+                "en":"",
+                "fr":""
+            },
+            "placeholder":{
+                "en":"Select Client Category",
+                "fr":""
+            },
+            "groupId":"cntl_contactDtls",
+            "subGroupId":"cntl_cpersons",
+            "order":"",
+            "defaultValue":null
+        },
+        {
+            "fieldId": "branchId",
+            "type": "select",
+            "label": {
+                "en": "Organization Branch",
+                "ke": "Tawi la Shirika",
+                "fr": "Succursale de l'organisation"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Organization Branch is required",
+                        "ke": "Tawi la Shirika linahitajika",
+                        "fr": "La succursale de l'organisation est requise"
+                    }
+                }
+            ],
+            "conditions": [],
+          "tooltip":{
+            "en":"",
+            "fr":""
+          },
+          "placeholder":{
+            "en":"Select Organization Branch",
+            "fr":""
+          },
+          "groupId":"cntl_contactDtls",
+          "subGroupId":"cntl_cpersons",
+          "order":"",
+          "defaultValue":null
+        },
+        {
+            "fieldId": "shortDescription",
+            "type": "text",
+            "label": {
+                "en": "Short Description",
+                "ke": "Maelezo Mafupi",
+                "fr": "Brève Description"
+            },
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": [],
+          "tooltip":{
+            "en":"",
+            "fr":""
+          },
+          "placeholder":{
+            "en":"Short Description",
+            "fr":""
+          },
+          "groupId":"cntl_contactDtls",
+          "subGroupId":"cntl_cpersons",
+          "order":"",
+          "defaultValue":null
+        },
+        {
+            "fieldId": "clientTypeId",
+            "type": "select",
+            "label": {
+                "en": "Client Type",
+                "ke": "Aina ya Mteja",
+                "fr": "Type de Client"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Client Type is required",
+                        "ke": "Aina ya Mteja inahitajika",
+                        "fr": "Le type de client est requis"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "gender",
+            "type": "select",
+            "label": {
+                "en": "Gender",
+                "ke": "Jinsia",
+                "fr": "Genre"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Gender is required",
+                        "ke": "Jinsia inahitajika",
+                        "fr": "Le genre est requis"
+                    }
+                }
+            ],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ]
+        },
+        {
+            "fieldId": "dateOfBirth",
+            "type": "date",
+            "label": {
+                "en": "Date of Birth",
+                "ke": "Tarehe ya Kuzaliwa",
+                "fr": "Date de Naissance"
+            },
+            "dynamicLabel": {
+                "field": "category",
+                "mapping": {
+                    "Individual": {
+                        "en": "Date of Birth",
+                        "ke": "Tarehe ya Kuzaliwa",
+                        "fr": "Date de Naissance"
+                    },
+                    "Corporate": {
+                        "en": "Date of Incorporation",
+                        "ke": "Tarehe ya Usajili",
+                        "fr": "Date de Constitution"
+                    }
+                }
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "This field is required",
+                        "ke": "Sehemu hii inahitajika",
+                        "fr": "Ce champ est requis"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "modeOfIdentityId",
+            "type": "select",
+            "label": {
+                "en": "ID Type",
+                "ke": "Aina ya Kitambulisho",
+                "fr": "Type d'Identification"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "ID Type is required",
+                        "ke": "Aina ya Kitambulisho inahitajika",
+                        "fr": "Le type d'identification est requis"
+                    }
+                }
+            ],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true,
+                    "config": {
+                        "defaultValue": "NATIONAL_ID"
+                    }
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": true,
+                    "config": {
+                        "defaultValue": "CERT_OF_INCOP_NUMBER"
+                    }
+                }
+            ]
+        },
+        {
+            "fieldId": "idNumber",
+            "type": "text",
+            "label": {
+                "en": "National ID Number",
+                "ke": "Namba ya Kitambulisho cha Kitaifa",
+                "fr": "Num'ro de Carte Nationale d'Identit'"
+            },
+            "dynamicLabel": {
+                "field": "modeOfIdentityId",
+                "mapping": {
+                    "NATIONAL_ID": {
+                        "en": "National ID Number",
+                        "ke": "Namba ya Kitambulisho cha Kitaifa",
+                        "fr": "Num'ro de Carte Nationale d'Identit'"
+                    },
+                    "PASSPORT_NUMBER": {
+                        "en": "Passport Number",
+                        "ke": "Namba ya Pasipoti",
+                        "fr": "Num'ro de Passeport"
+                    },
+                    "BIRTH_CERT_NUMBER": {
+                        "en": "Birth Certificate Number",
+                        "ke": "Namba ya Cheti cha Kuzaliwa",
+                        "fr": "Num'ro de Certificat de Naissance"
+                    },
+                    "CERT_OF_INCOP_NUMBER": {
+                        "en": "Certificate of Incorporation Number",
+                        "ke": "Namba ya Cheti cha Usajili",
+                        "fr": "Num'ro de Certificat d'Incorporation"
+                    },
+                    "TAX_NUMBER": {
+                        "en": "Tax Number",
+                        "ke": "Namba ya Ushuru",
+                        "fr": "Num'ro Fiscal"
+                    }
+                }
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "ID Number is required",
+                        "ke": "Namba ya Kitambulisho inahitajika",
+                        "fr": "Le num'ro d'identification est requis"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "firstName",
+            "type": "text",
+            "label": {
+                "en": "First Name",
+                "ke": "Jina la Kwanza",
+                "fr": "Pr'nom"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "First Name is required",
+                        "ke": "Jina la Kwanza linahitajika",
+                        "fr": "Le pr'nom est requis"
+                    }
+                }
+            ],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ]
+        },
+        {
+            "fieldId": "lastName",
+            "type": "text",
+            "label": {
+                "en": "Last Name",
+                "ke": "Jina la Mwisho",
+                "fr": "Nom de Famille"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Last Name is required",
+                        "ke": "Jina la Mwisho linahitajika",
+                        "fr": "Le nom de famille est requis"
+                    }
+                }
+            ],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ]
+        },
+        {
+            "fieldId": "otherNames",
+            "type": "text",
+            "label": {
+                "en": "Company/Organization Name",
+                "ke": "Jina la Kampuni",
+                "fr": "Nom de l'Entreprise"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Company Name is required",
+                        "ke": "Jina la Kampuni linahitajika",
+                        "fr": "Le nom de l'entreprise est requis"
+                    }
+                }
+            ],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": false
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": true
+                }
+            ]
+        },
+        {
+            "fieldId": "pinNumber",
+            "type": "text",
+            "label": {
+                "en": "PIN Number",
+                "ke": "Namba ya PIN",
+                "fr": "Num'ro PIN"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "PIN Number is required",
+                        "ke": "Namba ya PIN inahitajika",
+                        "fr": "Le num'ro PIN est requis"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "withEffectFromDate",
+            "type": "date",
+            "label": {
+                "en": "Start Date",
+                "ke": "Tarehe ya Kuanza",
+                "fr": "Date de D'but"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "withEffectToDate",
+            "type": "date",
+            "label": {
+                "en": "End Date",
+                "ke": "Tarehe ya Mwisho",
+                "fr": "Date de Fin"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "organizationId",
+            "type": "number",
+            "label": {
+                "en": "Organization",
+                "ke": "Shirika",
+                "fr": "Organisation"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "maritalStatus",
+            "type": "select",
+            "label": {
+                "en": "Marital Status",
+                "ke": "Hali ya Ndoa",
+                "fr": "État Civil"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Marital Status is required",
+                        "ke": "Hali ya Ndoa inahitajika",
+                        "fr": "L''tat civil est requis"
+                    }
+                }
+            ],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ]
+        },
+        {
+            "fieldId": "contactDetails.titleId",
+            "type": "select",
+            "label": {
+                "en": "Client Title",
+                "ke": "Cheo cha Mteja",
+                "fr": "Titre du Client"
+            },
+            "defaultValue": "",
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Client Title is required",
+                        "ke": "Cheo cha Mteja kinahitajika",
+                        "fr": "Le titre du client est requis"
+                    }
+                }
+            ],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ]
+        },
+        {
+            "fieldId": "contactDetails.emailAddress",
+            "type": "email",
+            "label": {
+                "en": "Email Address",
+                "ke": "Anwani ya Barua Pepe",
+                "fr": "Adresse Email"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Email Address is required",
+                        "ke": "Anwani ya Barua Pepe inahitajika",
+                        "fr": "L'adresse email est requise"
+                    }
+                },
+                {
+                    "type": "email",
+                    "message": {
+                        "en": "Invalid email format",
+                        "ke": "Muundo batili wa barua pepe",
+                        "fr": "Format d'email invalide"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactDetails.phoneNumber",
+            "type": "text",
+            "label": {
+                "en": "Phone Number",
+                "ke": "Namba ya Simu",
+                "fr": "Num'ro de T'l'phone"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Phone Number is required",
+                        "ke": "Namba ya Simu inahitajika",
+                        "fr": "Le num'ro de t'l'phone est requis"
+                    }
+                },
+                {
+                    "type": "pattern",
+                    "value": "^\\+?[1-9][0-9]{7,14}$",
+                    "message": {
+                        "en": "Invalid phone number format",
+                        "ke": "Muundo batili wa namba ya simu",
+                        "fr": "Format de num'ro de t'l'phone invalide"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactDetails.contactChannel",
+            "type": "select",
+            "label": {
+                "en": "Preferred Contact Channel",
+                "ke": "Njia ya Mawasiliano Unayoipendelea",
+                "fr": "Canal de Contact Pr'f'r'"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactDetails.smsNumber",
+            "type": "text",
+            "label": {
+                "en": "SMS Number",
+                "ke": "Nambari ya SMS",
+                "fr": "Num'ro SMS"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactDetails.whatsappNumber",
+            "type": "text",
+            "label": {
+                "en": "WhatsApp Number",
+                "ke": "Nambari ya WhatsApp",
+                "fr": "Num'ro WhatsApp"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactDetails.socialMediaUrl",
+            "type": "text",
+            "label": {
+                "en": "Social Media Profile URL",
+                "ke": "Kiungo cha Wasifu wa Mitandao ya Kijamii",
+                "fr": "Lien du Profil R'seaux Sociaux"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactDetails.faxNumber",
+            "type": "text",
+            "label": {
+                "en": "Fax Number",
+                "ke": "Nambari ya Faksi",
+                "fr": "Num'ro de Fax"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "address.countryId",
+            "type": "select",
+            "label": {
+                "en": "Country",
+                "ke": "Nchi",
+                "fr": "Pays"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Country is required",
+                        "ke": "Nchi inahitajika",
+                        "fr": "Le pays est requis"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "address.stateId",
+            "type": "select",
+            "label": {
+                "en": "State/Province",
+                "ke": "Jimbo/Mkoa",
+                "fr": "État/Province"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "State/Province is required",
+                        "ke": "Jimbo/Mkoa unahitajika",
+                        "fr": "L''tat/province est requis"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "address.townId",
+            "type": "select",
+            "label": {
+                "en": "Town/City",
+                "ke": "Mji",
+                "fr": "Ville"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Town/City is required",
+                        "ke": "Mji unahitajika",
+                        "fr": "La ville est requise"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "address.boxNumber",
+            "type": "text",
+            "label": {
+                "en": "P.O. Box Number",
+                "ke": "Sanduku la Posta",
+                "fr": "Num'ro de Boîte Postale"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "address.isUtilityAddress",
+            "type": "select",
+            "label": {
+                "en": "Utility Address",
+                "ke": "Anwani ya Huduma",
+                "fr": "Adresse de Service"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "address.residentialAddress",
+            "type": "text",
+            "label": {
+                "en": "Residential Address",
+                "ke": "Anwani ya Makazi",
+                "fr": "Adresse R'sidentielle"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ]
+        },
+        {
+            "fieldId": "address.zip",
+            "type": "text",
+            "label": {
+                "en": "ZIP Code",
+                "ke": "Msimbo wa ZIP",
+                "fr": "Code ZIP"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": false
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ]
+        },
+        {
+            "fieldId": "address.estate",
+            "type": "text",
+            "label": {
+                "en": "Estate",
+                "ke": "Mtaa/Eneo",
+                "fr": "Lotissement"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": false
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ]
+        },
+        {
+            "fieldId": "address.road",
+            "type": "text",
+            "label": {
+                "en": "Road/Street",
+                "ke": "Barabara",
+                "fr": "Rue"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": false
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ]
+        },
+        {
+            "fieldId": "address.physicalAddress",
+            "type": "text",
+            "label": {
+                "en": "Physical Address",
+                "ke": "Anwani ya Makazi",
+                "fr": "Adresse Physique"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Physical Address is required",
+                        "ke": "Anwani ya Makazi inahitajika",
+                        "fr": "L'adresse physique est requise"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "address.postalCode",
+            "type": "text",
+            "label": {
+                "en": "Postal Code",
+                "ke": "Msimbo wa Posta",
+                "fr": "Code Postal"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "pattern",
+                    "value": "^\\d{5}$",
+                    "message": {
+                        "en": "Postal Code must be 5 digits",
+                        "ke": "Msimbo wa Posta lazima uwe na tarakimu 5",
+                        "fr": "Le code postal doit comporter 5 chiffres"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.bankBranchId",
+            "type": "select",
+            "label": {
+                "en": "Bank Branch",
+                "ke": "Tawi la Benki",
+                "fr": "Agence Bancaire"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Bank Branch is required",
+                        "ke": "Tawi la Benki linahitajika",
+                        "fr": "L'agence bancaire est requise"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.accountNumber",
+            "type": "text",
+            "label": {
+                "en": "Account Number",
+                "ke": "Namba ya Akaunti",
+                "fr": "Num'ro de Compte"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Account Number is required",
+                        "ke": "Namba ya Akaunti inahitajika",
+                        "fr": "Le num'ro de compte est requis"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.currencyId",
+            "type": "select",
+            "label": {
+                "en": "Currency",
+                "ke": "Sarafu",
+                "fr": "Devise"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.effectiveFromDate",
+            "type": "date",
+            "label": {
+                "en": "Effective From",
+                "ke": "Tarehe ya Kuanza",
+                "fr": "Date de D'but"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.effectiveToDate",
+            "type": "date",
+            "label": {
+                "en": "Effective To",
+                "ke": "Tarehe ya Mwisho",
+                "fr": "Date de Fin"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.isDefaultChannel",
+            "type": "select",
+            "label": {
+                "en": "Default Channel",
+                "ke": "Chaneli Chaguomsingi",
+                "fr": "Canal par D'faut"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.MPAYNO",
+            "type": "text",
+            "label": {
+                "en": "MPAY Number",
+                "ke": "Nambari ya MPAY",
+                "fr": "Num'ro MPAY"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.IBAN",
+            "type": "text",
+            "label": {
+                "en": "IBAN",
+                "ke": "IBAN",
+                "fr": "IBAN"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.preferredChannel",
+            "type": "select",
+            "label": {
+                "en": "Preferred Channel",
+                "ke": "Chaneli Inayopendelewa",
+                "fr": "Canal Pr'f'r'"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.swiftCode",
+            "type": "text",
+            "label": {
+                "en": "SWIFT Code",
+                "ke": "Msimbo wa SWIFT",
+                "fr": "Code SWIFT"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.vatApplicable",
+            "type": "select",
+            "label": {
+                "en": "VAT Applicable?",
+                "ke": "Je, VAT Inahitajika?",
+                "fr": "TVA Applicable ?"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.commissionAllowed",
+            "type": "select",
+            "label": {
+                "en": "Commission Allowed?",
+                "ke": "Je, Tume Inaruhusiwa?",
+                "fr": "Commission Autoris'e ?"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.creditAllowed",
+            "type": "select",
+            "label": {
+                "en": "Credit Allowed?",
+                "ke": "Je, Mkopo Unaruhusiwa?",
+                "fr": "Cr'dit Autoris' ?"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.commissionStatusDate",
+            "type": "date",
+            "label": {
+                "en": "Commission Status Date",
+                "ke": "Tarehe ya Hali ya Tume",
+                "fr": "Date du Statut de Commission"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.commissionEffectiveDate",
+            "type": "date",
+            "label": {
+                "en": "Commission Effective Date",
+                "ke": "Tarehe ya Kuanzisha Tume",
+                "fr": "Date d'Entr'e en Vigueur de la Commission"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.creditLimit",
+            "type": "number",
+            "label": {
+                "en": "Credit Limit",
+                "ke": "Kikomo cha Mkopo",
+                "fr": "Plafond de Cr'dit"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.taxAuthorityCode",
+            "type": "text",
+            "label": {
+                "en": "Tax Authority Code",
+                "ke": "Msimbo wa Mamlaka ya Ushuru",
+                "fr": "Code de l'Autorit' Fiscale"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.paymentTerms",
+            "type": "text",
+            "label": {
+                "en": "Payment Terms",
+                "ke": "Masharti ya Malipo",
+                "fr": "Modalit's de Paiement"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.paymentFrequency",
+            "type": "select",
+            "label": {
+                "en": "Payment Frequency",
+                "ke": "Mzunguko wa Malipo",
+                "fr": "Fr'quence de Paiement"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.glAccountNumber",
+            "type": "text",
+            "label": {
+                "en": "GL Account Number",
+                "ke": "Nambari ya Akaunti ya GL",
+                "fr": "Num'ro de Compte GL"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.withholdingTax",
+            "type": "number",
+            "label": {
+                "en": "Withholding Tax",
+                "ke": "Kodi ya Zuio",
+                "fr": "Impôt Retenu à la Source"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "paymentDetails.withholdingTaxApplicable",
+            "type": "select",
+            "label": {
+                "en": "Withholding Tax Applicable?",
+                "ke": "Je, Kodi ya Zuio Inahitajika?",
+                "fr": "Impôt Retenu Applicable ?"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "payee.idNo",
+            "type": "text",
+            "label": {
+                "en": "ID Number",
+                "fr": "Num'ro d'identification",
+                "ke": "Nambari ya Kitambulisho"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "payee.name",
+            "type": "text",
+            "label": {
+                "en": "Name",
+                "fr": "Nom",
+                "ke": "Jina"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Name is required",
+                        "fr": "Le nom est requis",
+                        "ke": "Jina linahitajika"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "payee.address",
+            "type": "textarea",
+            "label": {
+                "en": "Address",
+                "fr": "Adresse",
+                "ke": "Anwani"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "payee.mobileNo",
+            "type": "text",
+            "label": {
+                "en": "Mobile Number",
+                "fr": "Num'ro de mobile",
+                "ke": "Nambari ya Simu"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "pattern",
+                    "message": {
+                        "en": "Invalid mobile number format",
+                        "fr": "Format de num'ro de mobile invalide",
+                        "ke": "Muundo wa nambari ya simu si sahihi"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "payee.email",
+            "type": "email",
+            "label": {
+                "en": "Email Address",
+                "fr": "Adresse e-mail",
+                "ke": "Barua pepe"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "email",
+                    "message": {
+                        "en": "Invalid email format",
+                        "fr": "Format d'e-mail invalide",
+                        "ke": "Muundo wa barua pepe si sahihi"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "payee.type",
+            "type": "select",
+            "label": {
+                "en": "Type",
+                "fr": "Type",
+                "ke": "Aina"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "payee.zip",
+            "type": "text",
+            "label": {
+                "en": "ZIP Code",
+                "fr": "Code postal",
+                "ke": "Nambari ya Posta"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "payee.town",
+            "type": "text",
+            "label": {
+                "en": "Town",
+                "fr": "Ville",
+                "ke": "Mji"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "payee.countryCode",
+            "type": "select",
+            "label": {
+                "en": "Country",
+                "fr": "Pays",
+                "ke": "Nchi"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Country is required",
+                        "fr": "Le pays est requis",
+                        "ke": "Nchi inahitajika"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "payee.bankBranchCode",
+            "type": "select",
+            "label": {
+                "en": "Bank Branch",
+                "fr": "Agence bancaire",
+                "ke": "Tawi la Benki"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "payee.accountNumber",
+            "type": "text",
+            "label": {
+                "en": "Account Number",
+                "fr": "Num'ro de compte",
+                "ke": "Nambari ya Akaunti"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactPersons.code",
+            "type": "number",
+            "label": {
+                "en": "Contact Code",
+                "fr": "Code du contact",
+                "ke": "Nambari ya mawasiliano"
+            },
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactPersons.clientCode",
+            "type": "number",
+            "label": {
+                "en": "Client Code",
+                "fr": "Code client",
+                "ke": "Nambari ya mteja"
+            },
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactPersons.clientTitleCode",
+            "type": "select",
+            "label": {
+                "en": "Title",
+                "fr": "Titre",
+                "ke": "Cheo"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactPersons.name",
+            "type": "text",
+            "label": {
+                "en": "Name",
+                "fr": "Nom",
+                "ke": "Jina"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Name is required",
+                        "fr": "Le nom est requis",
+                        "ke": "Jina linahitajika"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactPersons.idNumber",
+            "type": "text",
+            "label": {
+                "en": "ID Number",
+                "fr": "Num'ro d'identit'",
+                "ke": "Nambari ya kitambulisho"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactPersons.email",
+            "type": "email",
+            "label": {
+                "en": "Email",
+                "fr": "Email",
+                "ke": "Barua pepe"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "email",
+                    "message": {
+                        "en": "Invalid email address",
+                        "fr": "Adresse e-mail invalide",
+                        "ke": "Anwani ya barua pepe si sahihi"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactPersons.mobileNumber",
+            "type": "text",
+            "label": {
+                "en": "Mobile Number",
+                "fr": "Num'ro de portable",
+                "ke": "Nambari ya simu"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "pattern",
+                    "message": {
+                        "en": "Invalid mobile number format",
+                        "fr": "Format de num'ro de portable invalide",
+                        "ke": "Muundo wa nambari ya simu si sahihi"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactPersons.wef",
+            "type": "date",
+            "label": {
+                "en": "Valid From (W.E.F)",
+                "fr": "Valide à partir de",
+                "ke": "Imethibitishwa kuanzia"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactPersons.wet",
+            "type": "date",
+            "label": {
+                "en": "Valid To (W.E.T)",
+                "fr": "Valide jusqu'à",
+                "ke": "Imethibitishwa hadi"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactPersons.postalAddress",
+            "type": "text",
+            "label": {
+                "en": "Postal Address",
+                "fr": "Adresse postale",
+                "ke": "Anwani ya posta"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactPersons.physicalAddress",
+            "type": "text",
+            "label": {
+                "en": "Physical Address",
+                "fr": "Adresse physique",
+                "ke": "Anwani ya makazi"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "contactPersons.sectorCode",
+            "type": "number",
+            "label": {
+                "en": "Sector Code",
+                "fr": "Code secteur",
+                "ke": "Nambari ya sekta"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.code",
+            "type": "number",
+            "label": {
+                "en": "Branch Code",
+                "fr": "Code de la succursale",
+                "ke": "Nambari ya tawi"
+            },
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.clientCode",
+            "type": "number",
+            "label": {
+                "en": "Client Code",
+                "fr": "Code client",
+                "ke": "Nambari ya mteja"
+            },
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.name",
+            "type": "text",
+            "label": {
+                "en": "Branch Name",
+                "fr": "Nom de la succursale",
+                "ke": "Jina la tawi"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Branch name is required",
+                        "fr": "Le nom de la succursale est requis",
+                        "ke": "Jina la tawi linahitajika"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.shortDesc",
+            "type": "text",
+            "label": {
+                "en": "Short Description",
+                "fr": "Description courte",
+                "ke": "Maelezo mafupi"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.countryId",
+            "type": "select",
+            "label": {
+                "en": "Country",
+                "fr": "Pays",
+                "ke": "Nchi"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.stateId",
+            "type": "select",
+            "label": {
+                "en": "State/Region",
+                "fr": "État/R'gion",
+                "ke": "Jimbo/Eneo"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.townId",
+            "type": "select",
+            "label": {
+                "en": "Town",
+                "fr": "Ville",
+                "ke": "Mji"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.physicalAddress",
+            "type": "text",
+            "label": {
+                "en": "Physical Address",
+                "fr": "Adresse physique",
+                "ke": "Anwani ya makazi"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.postalAddress",
+            "type": "text",
+            "label": {
+                "en": "Postal Address",
+                "fr": "Adresse postale",
+                "ke": "Anwani ya posta"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.postalCode",
+            "type": "text",
+            "label": {
+                "en": "Postal Code",
+                "fr": "Code postal",
+                "ke": "Msimbo wa posta"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.email",
+            "type": "email",
+            "label": {
+                "en": "Email",
+                "fr": "Email",
+                "ke": "Barua pepe"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "email",
+                    "message": {
+                        "en": "Invalid email address",
+                        "fr": "Adresse e-mail invalide",
+                        "ke": "Anwani ya barua pepe si sahihi"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.landlineNumber",
+            "type": "text",
+            "label": {
+                "en": "Landline Number",
+                "fr": "Num'ro fixe",
+                "ke": "Nambari ya simu ya mezani"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "pattern",
+                    "message": {
+                        "en": "Invalid landline number format",
+                        "fr": "Format de num'ro fixe invalide",
+                        "ke": "Muundo wa nambari ya simu si sahihi"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "branches.mobileNumber",
+            "type": "text",
+            "label": {
+                "en": "Mobile Number",
+                "fr": "Num'ro de portable",
+                "ke": "Nambari ya simu ya mkononi"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "pattern",
+                    "message": {
+                        "en": "Invalid mobile number format",
+                        "fr": "Format de num'ro de portable invalide",
+                        "ke": "Muundo wa nambari ya simu si sahihi"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "ownershipDetails.code",
+            "type": "number",
+            "label": {
+                "en": "Ownership Code",
+                "fr": "Code de propri't'",
+                "ke": "Nambari ya umiliki"
+            },
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "ownershipDetails.accountCode",
+            "type": "number",
+            "label": {
+                "en": "Account Code",
+                "fr": "Code du compte",
+                "ke": "Nambari ya akaunti"
+            },
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "ownershipDetails.idNumber",
+            "type": "text",
+            "label": {
+                "en": "ID Number",
+                "fr": "Num'ro d'identification",
+                "ke": "Nambari ya kitambulisho"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "ownershipDetails.name",
+            "type": "text",
+            "label": {
+                "en": "Name",
+                "fr": "Nom",
+                "ke": "Jina"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Name is required",
+                        "fr": "Le nom est requis",
+                        "ke": "Jina linahitajika"
+                    }
+                },
+                {
+                    "type": "max_length",
+                    "value": "100",
+                    "message": {
+                        "en": "Name must not exceed 100 characters",
+                        "fr": "Le nom ne doit pas d'passer 100 caractères",
+                        "ke": "Jina halipaswi kuzidi herufi 100"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "ownershipDetails.contactPersonPhone",
+            "type": "text",
+            "label": {
+                "en": "Contact Person Phone",
+                "fr": "T'l'phone du contact",
+                "ke": "Nambari ya simu ya mtu wa mawasiliano"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Contact person phone is required",
+                        "fr": "Le t'l'phone du contact est requis",
+                        "ke": "Nambari ya simu ya mtu wa mawasiliano inahitajika"
+                    }
+                },
+                {
+                    "type": "max_length",
+                    "value": "20",
+                    "message": {
+                        "en": "Phone number must not exceed 20 characters",
+                        "fr": "Le num'ro de t'l'phone ne doit pas d'passer 20 caractères",
+                        "ke": "Nambari ya simu haipaswi kuzidi herufi 20"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "ownershipDetails.percentOwnership",
+            "type": "number",
+            "label": {
+                "en": "Percentage Ownership",
+                "fr": "Pourcentage de propri't'",
+                "ke": "Asilimia ya umiliki"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Percentage ownership is required",
+                        "fr": "Le pourcentage de propri't' est requis",
+                        "ke": "Asilimia ya umiliki inahitajika"
+                    }
+                },
+                {
+                    "type": "min",
+                    "message": {
+                        "en": "Percentage ownership must be at least 0.01",
+                        "fr": "Le pourcentage de propri't' doit être au moins 0,01",
+                        "ke": "Asilimia ya umiliki lazima iwe angalau 0.01"
+                    }
+                },
+                {
+                    "type": "max",
+                    "value": "100.0",
+                    "message": {
+                        "en": "Percentage ownership cannot exceed 100",
+                        "fr": "Le pourcentage de propri't' ne peut pas d'passer 100",
+                        "ke": "Asilimia ya umiliki haiwezi kuzidi 100"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "wealthAmlDetails.nationalityCountryId",
+            "type": "number",
+            "label": {
+                "en": "Nationality Country ID",
+                "fr": "ID du pays de nationalit'",
+                "ke": "Nambari ya nchi ya utaifa"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "wealthAmlDetails.citizenshipCountryId",
+            "type": "number",
+            "label": {
+                "en": "Citizenship Country ID",
+                "fr": "ID du pays de citoyennet'",
+                "ke": "Nambari ya nchi ya uraia"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "wealthAmlDetails.fundsSource",
+            "type": "text",
+            "label": {
+                "en": "Source of Funds",
+                "fr": "Source des fonds",
+                "ke": "Chanzo cha fedha"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Source of funds is required",
+                        "fr": "La source des fonds est requise",
+                        "ke": "Chanzo cha fedha kinahitajika"
+                    }
+                },
+                {
+                    "type": "max_length",
+                    "value": "200",
+                    "message": {
+                        "en": "Source of funds must not exceed 200 characters",
+                        "fr": "La source des fonds ne doit pas d'passer 200 caractères",
+                        "ke": "Chanzo cha fedha hakipaswi kuzidi herufi 200"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "wealthAmlDetails.employmentStatus",
+            "type": "select",
+            "label": {
+                "en": "Employment Status",
+                "fr": "Statut d'emploi",
+                "ke": "Hali ya ajira"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Employment status is required",
+                        "fr": "Le statut d'emploi est requis",
+                        "ke": "Hali ya ajira inahitajika"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "wealthAmlDetails.maritalStatus",
+            "type": "select",
+            "label": {
+                "en": "Marital Status",
+                "fr": "Statut matrimonial",
+                "ke": "Hali ya ndoa"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "required",
+                    "message": {
+                        "en": "Marital status is required",
+                        "fr": "Le statut matrimonial est requis",
+                        "ke": "Hali ya ndoa inahitajika"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "wealthAmlDetails.occupationId",
+            "type": "number",
+            "label": {
+                "en": "Occupation ID",
+                "fr": "ID de profession",
+                "ke": "Nambari ya kazi"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "wealthAmlDetails.sectorId",
+            "type": "number",
+            "label": {
+                "en": "Sector ID",
+                "fr": "ID du secteur",
+                "ke": "Nambari ya sekta"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "wealthAmlDetails.tradingName",
+            "type": "text",
+            "label": {
+                "en": "Trading Name",
+                "fr": "Nom commercial",
+                "ke": "Jina la biashara"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "max_length",
+                    "value": "150",
+                    "message": {
+                        "en": "Trading name must not exceed 150 characters",
+                        "fr": "Le nom commercial ne doit pas d'passer 150 caractères",
+                        "ke": "Jina la biashara halipaswi kuzidi herufi 150"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "cr12Details.cr12Code",
+            "type": "number",
+            "label": {
+                "en": "CR12 Code",
+                "fr": "Code CR12",
+                "ke": "Nambari ya CR12"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "cr12Details.wealthDetailsCode",
+            "type": "number",
+            "label": {
+                "en": "Wealth Details Code",
+                "fr": "Code des D'tails de Richesse",
+                "ke": "Nambari ya Maelezo ya Mali"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "cr12Details.certificateReferenceNo",
+            "type": "text",
+            "label": {
+                "en": "Certificate Reference Number",
+                "fr": "Num'ro de R'f'rence du Certificat",
+                "ke": "Nambari ya Rejeleo la Cheti"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "cr12Details.certificateRegistrationYear",
+            "type": "text",
+            "label": {
+                "en": "Certificate Registration Year",
+                "fr": "Ann'e d'Enregistrement du Certificat",
+                "ke": "Mwaka wa Usajili wa Cheti"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "max_length",
+                    "value": "4",
+                    "message": {
+                        "en": "Year must be 4 digits",
+                        "fr": "L'ann'e doit contenir 4 chiffres",
+                        "ke": "Mwaka lazima uwe na tarakimu 4"
+                    }
+                }
+            ],
+            "conditions": []
+        },
+        {
+            "fieldId": "cr12Details.certificateName",
+            "type": "text",
+            "label": {
+                "en": "Certificate Name",
+                "fr": "Nom du Certificat",
+                "ke": "Jina la Cheti"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "cr12Details.address",
+            "type": "text",
+            "label": {
+                "en": "Director Email Address",
+                "fr": "Adresse e-mail du Directeur",
+                "ke": "Barua pepe ya Mkurugenzi"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "cr12Details.category",
+            "type": "select",
+            "label": {
+                "en": "Client Category",
+                "fr": "Cat'gorie du Client",
+                "ke": "Aina ya Mteja"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "cr12Details.directorName",
+            "type": "text",
+            "label": {
+                "en": "Director Name",
+                "fr": "Nom du Directeur",
+                "ke": "Jina la Mkurugenzi"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "cr12Details.directorIdRegNo",
+            "type": "text",
+            "label": {
+                "en": "Director ID Registration Number",
+                "fr": "Num'ro d'enregistrement d'identit'",
+                "ke": "Nambari ya Usajili ya Kitambulisho"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "cr12Details.directorDob",
+            "type": "date",
+            "label": {
+                "en": "Date of Incorporation",
+                "ke": "Tarehe ya Usajili",
+                "fr": "Date de Constitution"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        },
+        {
+            "fieldId": "cr12Details.directorTitle",
+            "type": "text",
+            "label": {
+                "en": "Director Title",
+                "fr": "Titre du Directeur",
+                "ke": "Cheo cha Mkurugenzi"
+            },
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": []
+        }
+    ]
+}
