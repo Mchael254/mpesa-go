@@ -51,6 +51,7 @@ import { ListProspectComponent } from './components/prospect/list-prospect/list-
 import { NewProspectComponent } from './components/prospect/new-prospect/new-prospect.component';
 import { EditContactAddressFormComponent } from './components/entity/view-entity/entity-other-details/edit-contact-address-form/edit-contact-address-form.component';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+import { NewEntityV2Component } from './components/entity/new-entity-v2/new-entity-v2.component';
 
 @NgModule({
   declarations: [
@@ -92,6 +93,7 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
     ListProspectComponent,
     NewProspectComponent,
     EditContactAddressFormComponent,
+    NewEntityV2Component,
   ],
   imports: [
     CommonModule,
