@@ -1,16 +1,16 @@
 
-<div class="modal fade" id="clientSearchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div  #clientSearchModalElement class="modal fade" id="clientSearchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered  modal-fade modal-lg"  >
     <div class="modal-content">
 
       <div class="modal-body">
-        <button type="button" #closebutton class="float-end btn-close" data-bs-dismiss="modal"
+        <button type="button" class="float-end btn-close" (click)="cancel()"
           aria-label="Close"></button>
         <p class="text-start" id="selectClient"> {{
           'gis.quotation.select_a_client' |
           translate
           }}</p>
-        <p-table #dt1 (onLazyLoad)="lazyLoadClients($event)" [autoLayout]="true" [lazy]="true" [paginator]="true"
+        <p-table  #dt1 (onLazyLoad)="lazyLoadClients($event)" [autoLayout]="true" [lazy]="true" [paginator]="true"
           [rowHover]="true" [resizableColumns]="true" [showCurrentPageReport]="true" [rows]="pageSize || 5"
           [totalRecords]="clientsData?.totalElements" [value]="clientsData?.content"
           [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]" responsiveLayout="stack" [scrollable]="true"
@@ -63,7 +63,7 @@
           </ng-template>
         </p-table>
         <div class="d-flex justify-content-end mt-4 mb-3" *ngIf="showActionButtons">
-          <button type="button" class="btn btn-primary px-5 me-2" id="cancel" data-bs-dismiss="modal">{{
+          <button type="button" class="btn btn-primary px-5 me-2" id="cancel" (click)="cancel()">{{
             'gis.policy.cancel'
             | translate
             }}
