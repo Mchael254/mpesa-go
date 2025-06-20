@@ -1,0 +1,746 @@
+<!--<div class="container-fluid py-4">
+  &lt;!&ndash; Loading State &ndash;&gt;
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">LOADING</span>
+    </div>
+    <p class="mt-2">LOADING FORM</p>
+  </div>
+
+  &lt;!&ndash; Form Content &ndash;&gt;
+  <ng-container *ngIf="!loading && formConfig">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    &lt;!&ndash; Form Header &ndash;&gt;
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h4 class="mb-0">
+          <i class="bi bi-person-plus me-2"></i>
+          CREATE ENTITY
+        </h4>
+      </div>
+    </div>
+
+    &lt;!&ndash; Fields without a group &ndash;&gt;
+    <div *ngIf="getFieldsForGroup().length > 0" class="card mb-4">
+      <div class="card-body">
+        <div class="row g-3">
+          <ng-container *ngFor="let field of getFieldsForGroup(); let i = index">
+            <div *ngIf="field.visible !== false" class="col-12" [ngClass]="getFieldClass(field)">
+              <div class="mb-3">
+                <label [for]="field.fieldId" class="form-label">
+                  {{ field.label | translate }}
+                  <span *ngIf="field.validations?.some(v => v.type === 'required')" class="text-danger">*</span>
+                  <i *ngIf="field.tooltip"
+                     class="bi bi-info-circle ms-2 text-muted"
+                     [ngbTooltip]="field.tooltip | translate">
+                  </i>
+                </label>
+
+                    &lt;!&ndash; Text Input &ndash;&gt;
+                    <input *ngIf="['text', 'email', 'password', 'number'].includes(field.type)"
+                      [id]="field.fieldId"
+                      [type]="field.type"
+                      class="form-control"
+                      [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                      [formControlName]="field.fieldId"
+                      [placeholder]="(field.placeholder || '') | translate"
+                      [attr.min]="field.min || null"
+                      [attr.max]="field.max || null"
+                      [attr.step]="field.type === 'number' ? 'any' : null">
+
+                    &lt;!&ndash; Textarea &ndash;&gt;
+                    <textarea *ngIf="field.type === 'textarea'"
+                      [id]="field.fieldId"
+                      class="form-control"
+                      [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                      [formControlName]="field.fieldId"
+                      [placeholder]="(field.placeholder || '') | translate"
+                      [rows]="field.rows || 3"
+                      [cols]="field.cols || undefined">
+                    </textarea>
+
+                    &lt;!&ndash; Select Dropdown &ndash;&gt;
+                    <select *ngIf="field.type === 'select'"
+                      [id]="field.fieldId"
+                      class="form-select"
+                      [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                      [formControlName]="field.fieldId"
+                      [multiple]="field.multiple || false">
+                      <option [ngValue]="null" [disabled]="true">{{ 'FORM.SELECT_OPTION' | translate }}</option>
+                      <ng-container *ngIf="field.options">
+                        <option *ngFor="let option of field.options; trackBy: trackByOptionValue"
+                                [ngValue]="option.value">
+                          {{ (option.label || '') | translate }}
+                        </option>
+                      </ng-container>
+                    </select>
+
+                    &lt;!&ndash; Radio Buttons &ndash;&gt;
+                    <div *ngIf="field.type === 'radio'" class="btn-group" role="group">
+                      <ng-container *ngIf="field.options">
+                        <ng-container *ngFor="let option of field.options; let i = index">
+                          <input type="radio"
+                                class="btn-check"
+                                [id]="field.fieldId + i"
+                                [name]="field.fieldId"
+                                [value]="option.value"
+                                [formControlName]="field.fieldId"
+                                autocomplete="off">
+                          <label class="btn btn-outline-primary" [for]="field.fieldId + i">
+                            {{ (option.label || '') | translate }}
+                          </label>
+                        </ng-container>
+                      </ng-container>
+                    </div>
+
+                    &lt;!&ndash; Checkbox &ndash;&gt;
+                    <div *ngIf="field.type === 'checkbox'" class="form-check">
+                      <input class="form-check-input"
+                            type="checkbox"
+                            [id]="field.fieldId"
+                            [formControlName]="field.fieldId">
+                      <label class="form-check-label" [for]="field.fieldId">
+                        {{ field.label | translate }}
+                      </label>
+                    </div>
+
+                    &lt;!&ndash; Date Picker &ndash;&gt;
+                    <input *ngIf="field.type === 'date'"
+                      [id]="field.fieldId"
+                      type="date"
+                      class="form-control"
+                      [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                      [formControlName]="field.fieldId"
+                      [min]="field.min || undefined"
+                      [max]="field.max || undefined">
+
+                    &lt;!&ndash; Error Messages &ndash;&gt;
+                    <div *ngIf="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)" class="invalid-feedback d-flex align-items-center">
+                      <i class="bi bi-exclamation-circle me-1"></i>
+                      <span>{{ getFieldError(field.fieldId) }}</span>
+                    </div>
+
+                    &lt;!&ndash; Help Text &ndash;&gt;
+&lt;!&ndash;                    <div *ngIf="field.helpText" class="form-text">&ndash;&gt;
+&lt;!&ndash;                      {{ field.helpText | translate }}&ndash;&gt;
+&lt;!&ndash;                    </div>&ndash;&gt;
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+&lt;!&ndash;      </div>&ndash;&gt;
+
+
+    &lt;!&ndash; Grouped Fields &ndash;&gt;
+    <ng-container *ngFor="let group of formConfig.formGroups; let i = index">
+      <div class="card mb-4">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">
+            <i *ngIf="group" [class]="group + ' me-2'"></i>
+            {{ getGroupLabel(group) }}
+          </h5>
+          <button *ngIf="group.collapsible"
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            (click)="toggleGroup(group.groupId)">
+            <i class="bi" [class.bi-dash]="!isGroupCollapsed(group.groupId)" [class.bi-plus]="isGroupCollapsed(group.groupId)"></i>
+          </button>
+        </div>
+
+        <div *ngIf="!isGroupCollapsed(group.groupId)" class="card-body">
+          <div class="row g-3">
+            <ng-container *ngFor="let field of getFieldsForGroup(group.groupId); let j = index">
+              <div *ngIf="field.visible !== false" class="col-12" [ngClass]="getFieldClass(field)">
+                <div class="mb-3">
+                  <label [for]="field.fieldId" class="form-label">
+                    {{ field.label | translate }}
+                    <span *ngIf="field.validations?.some(v => v.type === 'required')" class="text-danger">*</span>
+                    <i *ngIf="field.tooltip"
+                       class="bi bi-info-circle ms-2 text-muted"
+                       [ngbTooltip]="field.tooltip | translate">
+                    </i>
+                      </label>
+
+                      &lt;!&ndash; Text Input &ndash;&gt;
+                      <input *ngIf="['text', 'email', 'password', 'number'].includes(field.type)"
+                        [id]="field.fieldId"
+                        [type]="field.type"
+                        class="form-control"
+                        [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                        [formControlName]="field.fieldId"
+                        [placeholder]="(field.placeholder || '') | translate"
+                        [attr.min]="field.min || null"
+                        [attr.max]="field.max || null"
+                        [attr.step]="field.type === 'number' ? 'any' : null">
+
+                      &lt;!&ndash; Textarea &ndash;&gt;
+                      <textarea *ngIf="field.type === 'textarea'"
+                        [id]="field.fieldId"
+                        class="form-control"
+                        [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                        [formControlName]="field.fieldId"
+                        [placeholder]="(field.placeholder || '') | translate"
+                        [rows]="field.rows || 3"
+                        [cols]="field.cols || undefined">
+                      </textarea>
+
+
+                      &lt;!&ndash; Select Dropdown &ndash;&gt;
+                      <select *ngIf="field.type === 'select'"
+                        [id]="field.fieldId"
+                        class="form-select"
+                        [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                        [formControlName]="field.fieldId"
+                        [multiple]="field.multiple || false">
+                        <option [ngValue]="null" [disabled]="true">SELECT OPTION</option>
+                        <ng-container *ngIf="field.options">
+                          <option *ngFor="let option of field.options; let k = index"
+                                  [ngValue]="option.value">
+                            {{ option.label ? (option.label | translate) : '' }}
+                          </option>
+                        </ng-container>
+                      </select>
+
+
+                      &lt;!&ndash; Radio Buttons &ndash;&gt;
+                      <div *ngIf="field.type === 'radio'" class="btn-group" role="group">
+                        <ng-container *ngIf="field.options">
+                          <ng-container *ngFor="let option of field.options; let k = index">
+                            <input type="radio"
+                                  class="btn-check"
+                                  [id]="field.fieldId + i"
+                                  [name]="field.fieldId"
+                                  [value]="option.value"
+                                  [formControlName]="field.fieldId"
+                                  autocomplete="off">
+                            <label class="btn btn-outline-primary" [for]="field.fieldId + i">
+                              {{ (option.label || '') | translate }}
+                            </label>
+                          </ng-container>
+                        </ng-container>
+                      </div>
+
+                      &lt;!&ndash; Checkbox &ndash;&gt;
+                      <div *ngIf="field.type === 'checkbox'" class="form-check">
+                        <input class="form-check-input"
+                              type="checkbox"
+                              [id]="field.fieldId"
+                              [formControlName]="field.fieldId">
+                        <label class="form-check-label" [for]="field.fieldId">
+                          {{ field.label | translate }}
+                        </label>
+                      </div>
+
+                      &lt;!&ndash; Date Picker &ndash;&gt;
+                      <input *ngIf="field.type === 'date'"
+                        [id]="field.fieldId"
+                        type="date"
+                        class="form-control"
+                        [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                        [formControlName]="field.fieldId"
+                        [min]="field.min || undefined"
+                        [max]="field.max || undefined">
+
+
+                      &lt;!&ndash; Error Messages &ndash;&gt;
+                      <div *ngIf="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)" class="invalid-feedback d-flex align-items-center">
+                        <i class="bi bi-exclamation-circle me-1"></i>
+                        <span>{{ getFieldError(field.fieldId) }}</span>
+                      </div>
+
+                      &lt;!&ndash; Help Text &ndash;&gt;
+                      &lt;!&ndash;<div *ngIf="field.helpText" class="form-text">
+                        {{ field.helpText | translate }}
+                      </div>&ndash;&gt;
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+&lt;!&ndash;        </div>&ndash;&gt;
+&lt;!&ndash;      </div>&ndash;&gt;
+    </ng-container>
+
+
+    &lt;!&ndash; Form Actions &ndash;&gt;
+    <div class="d-flex justify-content-between mt-4">
+      <button type="button"
+              class="btn btn-outline-secondary"
+              (click)="onReset()"
+              [disabled]="form.pristine">
+        <i class="bi bi-arrow-counterclockwise me-1"></i>
+        RESET
+      </button>
+      <div>
+        <button type="button"
+                class="btn btn-outline-secondary me-2"
+                (click)="onCancel()">
+          <i class="bi bi-x-lg me-1"></i>
+          CANCEL
+        </button>
+        <button type="submit"
+                class="btn btn-primary"
+                [disabled]="form.invalid && submitted">
+          <i class="bi bi-check-lg me-1"></i>
+          SUBMIT
+          <span *ngIf="loading" class="spinner-border spinner-border-sm ms-1" role="status">
+            <span class="visually-hidden">LOADING</span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </form>
+</ng-container>
+</div>-->
+
+<form [formGroup]="formGroup">
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4 mb-3" *ngFor="let field of formFields?.fields">
+          <label>{{ field.label.en }}</label>
+
+          <!-- Select Field -->
+          <select *ngIf="field.type === 'select'" formControlName="{{field.fieldId}}">
+            <option *ngFor="let option of field.options" [value]="option">{{ option }}</option>
+          </select>
+
+          <!-- Text Field -->
+          <input *ngIf="field.type === 'text'" type="text" formControlName="{{field.fieldId}}" />
+
+          <!-- Email Field -->
+          <input *ngIf="field.type === 'email'" type="email" formControlName="{{field.fieldId}}" />
+
+          <!-- Tel Field -->
+          <input *ngIf="field.type === 'tel'" type="tel" formControlName="{{field.fieldId}}" />
+
+          <!-- Date Field -->
+          <input *ngIf="field.type === 'date'" type="date" formControlName="{{field.fieldId}}" />
+
+          <!-- Number Field -->
+          <input *ngIf="field.type === 'number'" type="number" formControlName="{{field.fieldId}}" />
+
+          <!-- Textarea Field -->
+          <textarea *ngIf="field.type === 'textarea'"
+                    [id]="field.fieldId"
+                    class="form-control"
+                    formControlName="{{ field.fieldId }}"
+                    [placeholder]="(field.placeholder || '') | translate"
+                    [rows]="field.rows || 3"
+                    [cols]="field.cols || undefined">
+                    </textarea>
+
+          <span *ngIf="formGroup.controls[field.fieldId].invalid && formGroup.controls[field.fieldId].touched">
+      {{ field.validations?.[0]?.message.en }}
+    </span>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- Grouped Fields -->
+  <ng-container *ngFor="let group of formFields?.formGroups; let i = index">
+<!--    {{formFields.formGroups | json}}-->
+    <div class="card mb-4">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+          <i *ngIf="group" [class]="group + ' me-2'"></i>
+          {{ getGroupLabel(group) }}
+        </h5>
+        <button *ngIf="group.collapsible"
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                (click)="toggleGroup(group.groupId)">
+          <i class="bi" [class.bi-dash]="!isGroupCollapsed(group.groupId)" [class.bi-plus]="isGroupCollapsed(group.groupId)"></i>
+        </button>
+      </div>
+
+      <div *ngIf="!isGroupCollapsed(group.groupId)" class="card-body">
+        <div class="row g-3">
+          <ng-container *ngFor="let field of getFieldsForGroup(group.groupId); let j = index">
+            <div *ngIf="field.visible !== false" class="col-md-4" [ngClass]="getFieldClass(field)">
+              <div class="mb-3">
+                <label [for]="field.fieldId" class="form-label">
+                  {{ field.label['en'] }}
+
+                  <i *ngIf="field.tooltip"
+                     class="bi bi-info-circle ms-2 text-muted"
+                     [ngbTooltip]="field.tooltip | translate">
+                  </i>
+                </label>
+
+                <!-- Text Input -->
+                <input *ngIf="['text', 'email', 'password', 'number'].includes(field.type)"
+                       [id]="field.fieldId"
+                       [type]="field.type"
+                       class="form-control"
+                       [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                       [formControlName]="field.fieldId"
+                       [placeholder]="(field.placeholder['en'] || '') | translate"
+                       [attr.min]="field.min || null"
+                       [attr.max]="field.max || null"
+                       [attr.step]="field.type === 'number' ? 'any' : null">
+
+                <!-- Textarea -->
+                <textarea *ngIf="field.type === 'textarea'"
+                          [id]="field.fieldId"
+                          class="form-control"
+                          [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                          [formControlName]="field.fieldId"
+                          [placeholder]="(field.placeholder['en'] || '') | translate"
+                          [rows]="field.rows || 3"
+                          [cols]="field.cols || undefined">
+                      </textarea>
+
+
+                <!-- Select Dropdown -->
+                <select *ngIf="field.type === 'select'"
+                        [id]="field.fieldId"
+                        class="form-select"
+                        [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                        [formControlName]="field.fieldId"
+                        [multiple]="field.multiple || false">
+                  <option [ngValue]="null" [disabled]="true">SELECT OPTION</option>
+                  <ng-container *ngIf="field.options">
+                    <option *ngFor="let option of field.options; let k = index"
+                            [ngValue]="option.value">
+                      {{ option.label ? (option.label | translate) : '' }}
+                    </option>
+                  </ng-container>
+                </select>
+
+
+                <!-- Radio Buttons -->
+                <div *ngIf="field.type === 'radio'" class="btn-group" role="group">
+                  <ng-container *ngIf="field.options">
+                    <ng-container *ngFor="let option of field.options; let k = index">
+                      <input type="radio"
+                             class="btn-check"
+                             [id]="field.fieldId + i"
+                             [name]="field.fieldId"
+                             [value]="option.value"
+                             [formControlName]="field.fieldId"
+                             autocomplete="off">
+                      <label class="btn btn-outline-primary" [for]="field.fieldId + k">
+                        {{ (option.label || '') | translate }}
+                      </label>
+                    </ng-container>
+                  </ng-container>
+                </div>
+
+                <!-- Checkbox -->
+                <div *ngIf="field.type === 'checkbox'" class="form-check">
+                  <input class="form-check-input"
+                         type="checkbox"
+                         [id]="field.fieldId"
+                         [formControlName]="field.fieldId">
+                  <label class="form-check-label" [for]="field.fieldId">
+                    {{ field.label | translate }}
+                  </label>
+                </div>
+
+                <!-- Date Picker -->
+                <input *ngIf="field.type === 'date'"
+                       [id]="field.fieldId"
+                       type="date"
+                       class="form-control"
+                       [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                       [formControlName]="field.fieldId"
+                       [min]="field.min || undefined"
+                       [max]="field.max || undefined">
+
+
+                <!-- Error Messages -->
+                <div *ngIf="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)" class="invalid-feedback d-flex align-items-center">
+                  <i class="bi bi-exclamation-circle me-1"></i>
+                  <span>{{ getFieldError(field.fieldId) }}</span>
+                </div>
+
+                <!-- Help Text -->
+                <!--<div *ngIf="field.helpText" class="form-text">
+                  {{ field.helpText | translate }}
+                </div>-->
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngFor="let subsection of group.subsections; let j = index">
+            {{ subsection | json}}
+            <h5 class="mb-0">
+              <i *ngIf="group" [class]="group + ' me-2'"></i>
+              {{ subsection.description }}
+            </h5>
+
+            <h6 class="mb-0">
+              <i *ngIf="group" [class]="group + ' me-2'"></i>
+              {{ subsection.component }}
+            </h6>
+
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <!--        </div>-->
+    <!--      </div>-->
+  </ng-container>
+</form>
+
+<!--<form [formGroup]="formGroup">-->
+<!--  <div *ngFor="let field of formFields.fields">-->
+<!--    <label>{{ field.label.en }}</label>-->
+
+<!--    &lt;!&ndash; Select Field &ndash;&gt;-->
+<!--    <select *ngIf="field.type === 'select'" formControlName="{{field.fieldId}}">-->
+<!--      <option *ngFor="let option of field.options" [value]="option">{{ option }}</option>-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash; Text Field &ndash;&gt;-->
+<!--    <input *ngIf="field.type === 'text'" type="text" formControlName="{{field.fieldId}}" />-->
+
+<!--    &lt;!&ndash; Date Field &ndash;&gt;-->
+<!--    <input *ngIf="field.type === 'date'" type="date" formControlName="{{field.fieldId}}" />-->
+
+<!--    &lt;!&ndash; Number Field &ndash;&gt;-->
+<!--    <input *ngIf="field.type === 'number'" type="number" formControlName="{{field.fieldId}}" />-->
+
+<!--    <span *ngIf="formGroup.controls[field.fieldId].invalid && formGroup.controls[field.fieldId].touched">-->
+<!--      {{ field.validations?.[0]?.message.en }}-->
+<!--    </span>-->
+<!--  </div>-->
+<!--  <button [disabled]="formGroup?.invalid" (click)="submitForm()">Submit</button>-->
+<!--</form>-->
+
+<div class="card border-0 mt-3">
+  <div class="card-header bg-transparent float-start border-bottom-0">
+    <div class="row mb-3">
+      <div class="col-sm-12 col-md-6 d-flex justify-content-lg-start">
+        <h5 class="my-3">{{'entities.contactPersonDetails' | translate}}</h5>
+      </div>
+      <div class="col-sm-12 col-md-6 d-flex justify-content-lg-end">
+        <div class="float-end">
+          <button class="btn btn-primary" (click)="openModal()">
+            Add contact
+          </button>
+
+          <span (click)="columnDialogVisible = true">
+            <i class="fa-regular fa-caret-square-down fs-3 text-primary" role="button"></i>
+          </span>
+
+          <p-dialog header="Show/Hide Columns" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '300px'}">
+            <div *ngFor="let col of columns">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" value="" id="checkChecked" [checked]="col.visible" [(ngModel)]="col.visible">
+                <label class="form-check-label" for="checkChecked">
+                  {{ col.header }}
+                </label>
+              </div>
+            </div>
+          </p-dialog>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-body p-0">
+
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [value]="contactPersonDetailsData"
+      [paginator]="true"
+      [rows]="pageSize || 10"
+      [totalRecords]="contactPersonDetailsData?.length"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      scrollHeight="400px"
+      [scrollable]="true"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <ng-container *ngFor="let col of columns">
+            <th *ngIf="col.visible"
+                [pSortableColumn]="col.header">
+              {{ col.header }}
+              <p-sortIcon [field]="col.header"></p-sortIcon>
+            </th>
+          </ng-container>
+          <th style="width: 2%"></th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-rowData>
+        <tr>
+          <ng-container *ngFor="let col of columns">
+            <td *ngIf="col.visible">
+              {{ rowData[col.field] }}
+            </td>
+          </ng-container>
+
+          <td *ngIf="contactPersonDetailsData?.length > 0" class="text-center">
+            <div>
+              <a role="button" class="text-primary me-4" (click)="editContactPersonDetail(rowData)">Edit</a>
+              <a role="button" class="text-primary" (click)="deleteContactPersonDetail(rowData)">Delete</a>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">No Contact Person Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+
+<!--Modal-->
+<div
+  class="modal fade"
+  #detailsModal
+  id="detailsModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel"> Details</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeModal()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formGroup">
+          <div class="row my-3">
+            <ng-container *ngFor="let field of groupFields; let j = index">
+              <div *ngIf="field.visible !== false" class="col-md-6" [ngClass]="getFieldClass(field)">
+                <div class="mb-3">
+                  <label [for]="field.fieldId" class="form-label">
+                    {{ field?.label['en'] }}
+
+                    <i *ngIf="field.tooltip"
+                       class="bi bi-info-circle ms-2 text-muted"
+                       [ngbTooltip]="field.tooltip | translate">
+                    </i>
+                  </label>
+
+                  <!-- Text Input -->
+                  <input *ngIf="['text', 'email', 'password', 'number'].includes(field.type)"
+                         [id]="field.fieldId"
+                         [type]="field.type"
+                         class="form-control"
+                         [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                         [formControlName]="field.fieldId"
+                         [placeholder]="(field.placeholder['en'] || '') | translate"
+                         [attr.min]="field.min || null"
+                         [attr.max]="field.max || null"
+                         [attr.step]="field.type === 'number' ? 'any' : null">
+
+                  <!-- Textarea -->
+                  <textarea *ngIf="field.type === 'textarea'"
+                            [id]="field.fieldId"
+                            class="form-control"
+                            [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                            [formControlName]="field.fieldId"
+                            [placeholder]="(field.placeholder['en'] || '') | translate"
+                            [rows]="field.rows || 3"
+                            [cols]="field.cols || undefined">
+                      </textarea>
+
+
+                  <!-- Select Dropdown -->
+                  <select *ngIf="field.type === 'select'"
+                          [id]="field.fieldId"
+                          class="form-select"
+                          [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                          [formControlName]="field.fieldId"
+                          [multiple]="field.multiple || false">
+                    <option [ngValue]="null" [disabled]="true">SELECT OPTION</option>
+                    <ng-container *ngIf="field.options">
+                      <option *ngFor="let option of field.options; let k = index"
+                              [ngValue]="option.value">
+                        {{ option.label ? (option.label | translate) : '' }}
+                      </option>
+                    </ng-container>
+                  </select>
+
+
+                  <!-- Radio Buttons -->
+                  <div *ngIf="field.type === 'radio'" class="btn-group" role="group">
+                    <ng-container *ngIf="field.options">
+                      <ng-container *ngFor="let option of field.options; let k = index">
+                        <input type="radio"
+                               class="btn-check"
+                               [id]="field.fieldId + k"
+                               [name]="field.fieldId"
+                               [value]="option.value"
+                               [formControlName]="field.fieldId"
+                               autocomplete="off">
+                        <label class="btn btn-outline-primary" [for]="field.fieldId + k">
+                          {{ (option.label || '') | translate }}
+                        </label>
+                      </ng-container>
+                    </ng-container>
+                  </div>
+
+                  <!-- Checkbox -->
+                  <div *ngIf="field.type === 'checkbox'" class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           [id]="field.fieldId"
+                           [formControlName]="field.fieldId">
+                    <label class="form-check-label" [for]="field.fieldId">
+                      {{ field.label | translate }}
+                    </label>
+                  </div>
+
+                  <!-- Date Picker -->
+                  <input *ngIf="field.type === 'date'"
+                         [id]="field.fieldId"
+                         type="date"
+                         class="form-control"
+                         [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                         [formControlName]="field.fieldId"
+                         [min]="field.min || undefined"
+                         [max]="field.max || undefined">
+
+
+                  <!-- Error Messages -->
+                  <div *ngIf="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)" class="invalid-feedback d-flex align-items-center">
+                    <i class="bi bi-exclamation-circle me-1"></i>
+                    <span>{{ getFieldError(field.fieldId) }}</span>
+                  </div>
+
+                </div>
+              </div>
+            </ng-container>
+
+          </div>
+
+        </form>
+
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveDetails()">{{ 'serviceDesk.saveDetails' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-container *ngIf="formFields">
+  <app-dynamic-setup-table
+    [tableTitle]="tableTitle"
+    [addButtonText]="addButtonText"
+    [emptyTableMessage]="emptyTableMessage"
+    [formFields]="formFields"
+    subGroupId="cntl_cpersons">
+
+  </app-dynamic-setup-table>
+</ng-container>
+
