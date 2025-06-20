@@ -249,6 +249,55 @@
     "Quotation Numbers": "Quotation Numbers",
     "Quotation Management": "Quotation Management"
   },
+  "FORM": {
+    "TITLE": "Create New Entity",
+    "SUBTITLE": "Fill in the details below to create a new entity",
+    "SECTIONS": {
+      "ENTITY_INFO": "Entity Information"
+    },
+    "FIELDS": {
+      "NAME": {
+        "LABEL": "Full Name"
+      },
+      "EMAIL": {
+        "LABEL": "Email Address"
+      },
+      "PHONE": {
+        "LABEL": "Phone Number"
+      },
+      "BIRTH_DATE": {
+        "LABEL": "Date of Birth"
+      },
+      "AGE": {
+        "LABEL": "Age"
+      },
+      "STATUS": {
+        "LABEL": "Status"
+      }
+    },
+    "OPTIONS": {
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive",
+      "PENDING": "Pending"
+    },
+    "VALIDATION": {
+      "REQUIRED": "This field is required",
+      "INVALID_FORMAT": "Invalid format",
+      "NAME_LENGTH": "Name must be between 3 and 50 characters",
+      "INVALID_EMAIL": "Please enter a valid email address",
+      "INVALID_PHONE": "Please enter a valid 10-digit phone number",
+      "AGE_RANGE": "Age must be between 18 and 100",
+      "MIN_LENGTH": "Minimum length is {{length}} characters",
+      "MAX_LENGTH": "Maximum length is {{length}} characters",
+      "MIN_VALUE": "Minimum value is {{value}}",
+      "MAX_VALUE": "Maximum value is {{value}}"
+    },
+    "SELECT_PLACEHOLDER": "Select {{field}}",
+    "BUTTONS": {
+      "SUBMIT": "Submit",
+      "RESET": "Reset"
+    }
+  },
   "shared": {
     "quotation_landing_screen": {
       "new_quote": "New quote",
