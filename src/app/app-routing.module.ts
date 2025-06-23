@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { ExtraOptions, PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './features/auth/home/home.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { PaymentCheckoutComponent } from './features/gis/components/quotation/components/payment-checkout/payment-checkout.component';
 
 
 
@@ -12,6 +13,10 @@ export const routes: Routes = [
   },
   {
     path: 'auth', loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule),
+  },
+  {
+    path: 'payment-checkout', 
+    component: PaymentCheckoutComponent,
   },
   {
     path: 'home',
