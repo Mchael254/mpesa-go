@@ -1,12 +1,12 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Logger} from 'src/app/shared/services';
-import {GlobalMessagingService} from 'src/app/shared/services/messaging/global-messaging.service';
-import {ActivatedRoute} from '@angular/router';
-import {PaymentService} from '../../services/payment-service/payment.service';
-import {untilDestroyed} from "../../../../../../shared/shared.module";
-import {tap} from "rxjs";
-import {SESSION_KEY} from "../../../../../lms/util/session_storage_enum";
-import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Logger } from 'src/app/shared/services';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { ActivatedRoute } from '@angular/router';
+import { PaymentService } from '../../services/payment-service/payment.service';
+import { untilDestroyed } from "../../../../../../shared/shared.module";
+import { tap } from "rxjs";
+import { SESSION_KEY } from "../../../../../lms/util/session_storage_enum";
+import { SessionStorageService } from "../../../../../../shared/services/session-storage/session-storage.service";
 
 const log = new Logger('PaymentCheckoutComponent');
 
@@ -22,9 +22,9 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
   amount: number
 
   constructor(private globalMessagingService: GlobalMessagingService,
-              private route: ActivatedRoute,
-              private sessionStorageService: SessionStorageService,
-              private paymentService: PaymentService) {
+    private route: ActivatedRoute,
+    private sessionStorageService: SessionStorageService,
+    private paymentService: PaymentService) {
   }
 
   ngOnInit() {
@@ -39,10 +39,23 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
   phoneNumber: string = ''
   selectedPayment: string = 'mpesa';
 
+  formatPhoneNumber = (phoneNumber: string): string => {
+    const cleaned = phoneNumber.replace(/\D/g, '');
+    if (cleaned.startsWith('254')) {
+      return cleaned;
+    }
+
+    if (!cleaned.match(/^(01|07)/)) {
+      throw new Error("invalid format");
+    }
+
+    return '254' + cleaned.substring(1);
+  };
 
   isValidPhoneNumber(): boolean {
-    return /^\d{10}$/.test(this.phoneNumber);
+    return /^(01|07)\d{8}$/.test(this.phoneNumber);
   }
+
 
   sendSTK() {
     if (!this.isValidPhoneNumber()) {
@@ -55,14 +68,14 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
 
     const paymentPayload = {
       TransactionCode: this.ipayRefNo,
-      PhoneNumber: this.phoneNumber,
-      Amount: this.amount,
+      PhoneNumber: this.formatPhoneNumber(this.phoneNumber),
+      Amount: Math.round(this.amount)
     }
 
     log.debug('this is payment payload>>>', paymentPayload)
 
 
-    this.paymentService.initiatePayment(paymentPayload, this.tenantId)
+    this.paymentService.initiatePayment(paymentPayload)
       .pipe(
         tap((value) => {
         }),
