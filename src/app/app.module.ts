@@ -21,6 +21,7 @@ import { CommonModule } from '@angular/common';
 import { NgxAwesomePopupModule, ToastNotificationConfigModule, ToastPositionEnum, ToastProgressBarEnum, ToastUserViewTypeEnum } from '@costlydeveloper/ngx-awesome-popup';
 import {NgbModule, NgbTooltipModule} from '@ng-bootstrap/ng-bootstrap';
 import {NgxSpinnerModule} from "ngx-spinner";
+import { PaymentCheckoutComponent } from './features/gis/components/quotation/components/payment-checkout/payment-checkout.component';
 
 export function loadConfig(
   config: AppConfigService,
@@ -38,6 +39,7 @@ export function loadConfig(
   declarations: [
     AppComponent,
     HomeComponent,
+    PaymentCheckoutComponent,
 
 
   ],

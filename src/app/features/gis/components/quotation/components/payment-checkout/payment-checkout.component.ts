@@ -14,8 +14,7 @@ const log = new Logger('QuoteSummaryComponent');
 })
 export class PaymentCheckoutComponent {
 
-  decodedIpayRefNo: string
-  encodedIpayRefNo: string
+  ipayRefNo: string
   sumInsured: number;
   tenantId: string;
 
@@ -30,24 +29,18 @@ export class PaymentCheckoutComponent {
 
   ngOnInit() {
     const queryParams = this.route.snapshot.queryParamMap;
-    const encodedRef = queryParams.get('ref');
+    const ipRef = queryParams.get('ref');
     const sumInsured = queryParams.get('sumInsured');
     const tenant = queryParams.get('tenant');
 
     this.currencyPrefix = queryParams.get('currencyPrefix') || '';
 
-    if (encodedRef) {
-      try {
-        this.decodedIpayRefNo = atob(encodedRef);
-      } catch (error) {
-        console.error('Error decoding iPay reference:', error);
-      }
-    }
 
     this.sumInsured = Number(sumInsured);
     this.tenantId = tenant;
+    this.ipayRefNo = ipRef
 
-    console.log('Decoded Ref:', this.decodedIpayRefNo);
+    console.log('ipay ref:', this.ipayRefNo);
     console.log('Sum Insured:', this.sumInsured);
     console.log('Tenant:', this.tenantId);
   }
@@ -81,7 +74,7 @@ export class PaymentCheckoutComponent {
     }
 
     const paymentPayload = {
-      TransactionCode: this.decodedIpayRefNo,//ipayRefNumber
+      TransactionCode: this.ipayRefNo,//ipayRefNumber
       PhoneNumber: this.phoneNumber,
       Amount: this.amount,
       // paybill: this.selectedDetails.paybill,
