@@ -147,13 +147,13 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
         this.currencyList = data;
         log.info(this.currencyList, "this is a currency list");
         const curr = this.currencyList.find(currency => currency.id == this.currencyCode);
-        this.selectedCurrency = curr.name
+        this.selectedCurrency = curr?.name
         log.debug("Selected Currency:", this.selectedCurrency);
         this.selectedCurrencyCode = curr.id;
         log.debug("Selected Currency code:", this.selectedCurrencyCode);
       })
   }
- 
+
 
 
 
@@ -215,7 +215,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   passedQuotationSource: any;
 
 
- 
+
 
   passedClientDetails: any;
   passedNewClientDetails: any;
@@ -442,7 +442,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   }
 
 
- 
+
 
   loadClientQuotation() {
     log.debug("quotation Number generated after adding a benefit:", this.quotationNo)

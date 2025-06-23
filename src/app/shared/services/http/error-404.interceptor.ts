@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
   HttpRequest,
   HttpHandler,
@@ -6,13 +6,16 @@ import {
   HttpInterceptor,
   HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { Router } from '@angular/router';
-import { SessionStorageService } from '../session-storage/session-storage.service';
-import { ToastService } from '../toast/toast.service';
-import { StringManipulation } from '../../../features/lms/util/string_manipulation';
-import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
+import {Observable} from 'rxjs';
+import {tap} from 'rxjs/operators';
+import {Router} from '@angular/router';
+import {SessionStorageService} from '../session-storage/session-storage.service';
+import {ToastService} from '../toast/toast.service';
+import {StringManipulation} from '../../../features/lms/util/string_manipulation';
+import {SESSION_KEY} from '../../../features/lms/util/session_storage_enum';
+import {Logger} from "../logger/logger.service";
+
+const log = new Logger('Error401Interceptor');
 
 @Injectable()
 export class Error401Interceptor implements HttpInterceptor {
@@ -26,6 +29,11 @@ export class Error401Interceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
+    const excludedUrl = 'initiate-payment-request';
+    if (request.url.includes(excludedUrl)) {
+      log.debug("Ignoring this url >>>", request.url)
+      return next.handle(request);
+    }
     return next.handle(request).pipe(
       tap(
         () => {},
@@ -33,8 +41,6 @@ export class Error401Interceptor implements HttpInterceptor {
           let session = StringManipulation.returnNullIfEmpty(
             this.session_storage.getItem('SESSION_TOKEN')
           );
-          console.log('RRRRRR');
-          console.log(session);
 
           let tenantId = StringManipulation.returnNullIfEmpty(
             this.session_storage.get(SESSION_KEY.API_TENANT_ID)

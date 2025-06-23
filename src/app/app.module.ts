@@ -14,7 +14,6 @@ import {ConfirmDialogModule} from "primeng/confirmdialog";
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {ChartModule} from "primeng/chart";
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient} from '@angular/common/http';
 import { HttpLoaderFactory } from './shared/utils/httpLoaderFactory';
 import { CommonModule } from '@angular/common';
@@ -29,11 +28,6 @@ export function loadConfig(
 ): Function {
   return () => config.loadConfigurations(configLoader);
 }
-
-// const cubejsOptions = {
-//   token: '',
-//   options: { apiUrl : 'https://ekwe.turnkeyafrica.com/cubejs-api/v1' }
-// }
 
 @NgModule({
   declarations: [
