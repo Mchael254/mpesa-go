@@ -17,6 +17,7 @@ export class PaymentCheckoutComponent {
   ipayRefNo: string
   sumInsured: number;
   tenantId: string;
+  amount:number = 0;
 
   currencyPrefix: string;
   currencyThousands: string;
@@ -38,7 +39,9 @@ export class PaymentCheckoutComponent {
 
     this.sumInsured = Number(sumInsured);
     this.tenantId = tenant;
-    this.ipayRefNo = ipRef
+    this.ipayRefNo = ipRef;
+    this.amount = Number(sumInsured)
+
 
     console.log('ipay ref:', this.ipayRefNo);
     console.log('Sum Insured:', this.sumInsured);
@@ -50,7 +53,7 @@ export class PaymentCheckoutComponent {
   validPhoneNumber: boolean = false
   phoneNumber: string = ''
   selectedPayment: string = 'mpesa';
-  amount: number = 1;
+ 
   paymentOptions: PaymentOption[] = dummyPaymentOptions
 
 
