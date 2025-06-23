@@ -39,7 +39,7 @@ export const environment = {
     [API_CONFIG.CRM_SERVICE_REQUEST, '/crm/requests/api/v1'],
     [API_CONFIG.PREMIUM_COMPUTATION, '/premium/computation'],
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/report/api'],
-    [API_CONFIG.PAYMENT_SERVICE_BASE_URL, '/gis/payment'],
+    [API_CONFIG.PAYMENT_SERVICE_BASE_URL, '/gis/payment/api'],
     [API_CONFIG.NONE_BASE_URL, 'assets'],
 
   ]),
