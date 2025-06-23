@@ -408,10 +408,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     );
     const urlTree = this.router.createUrlTree(['/payment-checkout'], {
       queryParams: {
-        ref: this.quotationDetails.ipayReferenceNumber,
-        sumInsured: this.quotationDetails.premium,
+        reference: btoa(this.quotationDetails.ipayReferenceNumber),
+        amount: btoa(this.quotationDetails.premium.toString()),
         currencyPrefix: this.quotationDetails.currency,
-        tenant: tenantId
+        tenant: btoa(tenantId)
       }
     });
     return {

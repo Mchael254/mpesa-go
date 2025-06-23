@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
-import { Observable } from 'rxjs/internal/Observable';
-import { environment } from '../../../../environments/environment';
-import { API_CONFIG } from '../../../../environments/api_service_config';
-import { AppConfigService } from '../../../core/config/app-config-service';
-import { SessionStorageService } from '../session-storage/session-storage.service';
-import { StringManipulation } from '../../../features/lms/util/string_manipulation';
-import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
+import {Observable} from 'rxjs/internal/Observable';
+import {environment} from '../../../../environments/environment';
+import {API_CONFIG} from '../../../../environments/api_service_config';
+import {AppConfigService} from '../../../core/config/app-config-service';
+import {SessionStorageService} from '../session-storage/session-storage.service';
+import {StringManipulation} from '../../../features/lms/util/string_manipulation';
+import {SESSION_KEY} from '../../../features/lms/util/session_storage_enum';
 
 @Injectable({
   providedIn: 'root',
@@ -21,45 +21,33 @@ export class ApiService {
     private http: HttpClient,
     private appConfig: AppConfigService,
     private session_storage: SessionStorageService
-  ) {}
+  ) {
+  }
 
   private getHeaders(): HttpHeaders {
-    // console.log(this.session_storage.getItem('SESSION_TOKEN'));
-
     let headers = new HttpHeaders()
       .set('Accept', 'application/json')
-      .set('Content-Type', 'application/json')
-      .set(
-        'X-TenantId',
-        StringManipulation.returnNullIfEmpty(
-          this.session_storage.get(SESSION_KEY.API_TENANT_ID)
-        )
-      )
-      .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN') || '')
-      .set('entityType', this.session_storage.get(SESSION_KEY.ENTITY_TYPE));
+      .set('Content-Type', 'application/json');
+    const tenantId = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.API_TENANT_ID)
+    );
+    if (tenantId) {
+      headers = headers.set('X-TenantId', tenantId);
+    }
 
-    // // For General File Downloads (e.g., PDF, Images)
-    // headers = headers.append('Content-Type', 'application/octet-stream');
-    // headers = headers.append('Content-Disposition', 'attachment; filename=your_file_name.extension');
-    // // For Excel (XLSX) File Downloads
-    // headers = headers.append('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    // headers = headers.append('Content-Disposition', 'attachment; filename=your_excel_file.xlsx');
-    // // For Word (DOCX) File Downloads
-    // headers = headers.append('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    // headers = headers.append('Content-Disposition', 'attachment; filename=your_word_file.docx');
-    // // For PDF File Downloads
-    // headers = headers.append('Content-Type', 'application/pdf');
-    // headers = headers.append('Content-Disposition', 'attachment; filename=your_pdf_file.pdf');
-    // // For Blob Downloads (Binary Data)
-    // headers = headers.append('Content-Type', 'application/octet-stream');
-    // headers = headers.append('Content-Disposition', 'attachment; filename=your_blob_file.bin');
-    // let token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhcGl1c2VyIiwic2NvcGVzIjpbXSwiaXNzIjoidHVybnF1ZXN0LWxtcy1hcGlzIiwiaWF0IjoxNjkzMzg0MzI2LCJleHAiOjE2OTM1NjQzMjZ9.v8eSQVRtYHWTknHyKJ9Cson2ZKCye2kwKCrqPI635kQ'
-    // headers = headers.append('Authorization', token);
+    const sessionToken = this.session_storage.getItem('SESSION_TOKEN');
+    if (sessionToken) {
+      headers = headers.set('SESSION_TOKEN', sessionToken);
+    }
 
-    // if (!headers.has('Authorization')) { headers = headers.append('Authorization', token); }
+    const entityType = this.session_storage.get(SESSION_KEY.ENTITY_TYPE);
+    if (entityType) {
+      headers = headers.set('entityType', entityType);
+    }
 
     return headers;
   }
+
 
   GET<T>(
     endpoint: string,
@@ -72,9 +60,9 @@ export class ApiService {
 
     let config = {};
     if (params === null) {
-      config = { headers };
+      config = {headers};
     } else {
-      config = { headers, params };
+      config = {headers, params};
     }
     return this.http.get<T>(url, config);
   }
@@ -93,7 +81,7 @@ export class ApiService {
       url = `${this.baseURL}/${endpoint}`;
     }
     const headers = this.getHeaders();
-    return this.http.post<T>(url, data, { headers, params: params });
+    return this.http.post<T>(url, data, {headers, params: params});
   }
 
   public POSTBYTE(
@@ -111,12 +99,12 @@ export class ApiService {
     }
     const headers = this.getHeaders();
 
-    return this.http.post(url, data, { headers, params, responseType: 'blob' });
+    return this.http.post(url, data, {headers, params, responseType: 'blob'});
   }
 
   public downloadFile(endpoint: string, data: any): void {
     this.POST(endpoint, data).subscribe((response: any) => {
-      const blob = new Blob([response], { type: 'application/octet-stream' });
+      const blob = new Blob([response], {type: 'application/octet-stream'});
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -146,7 +134,7 @@ export class ApiService {
     //   this.saveBlobAsFile(csvData, 'sampleCsv.csv');
     // });
     return this.http
-      .get(url, { responseType: 'blob', headers })
+      .get(url, {responseType: 'blob', headers})
       .pipe
       // tap(data => console.log(data))
       ();
@@ -170,7 +158,7 @@ export class ApiService {
       byteArrays.push(byteArray);
     }
 
-    const blob = new Blob(byteArrays, { type: fileType });
+    const blob = new Blob(byteArrays, {type: fileType});
     const url = window['URL'].createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -184,7 +172,7 @@ export class ApiService {
     fileName = 'file.pdf',
     fileType = 'application/pdf'
   ): void {
-    const blob = new Blob([bytes], { type: fileType });
+    const blob = new Blob([bytes], {type: fileType});
     const url = window['URL'].createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -210,7 +198,7 @@ export class ApiService {
         )
       );
 
-    return this.http.post<T>(url, data, { headers });
+    return this.http.post<T>(url, data, {headers});
   }
 
   PUT<T>(
@@ -222,7 +210,7 @@ export class ApiService {
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
 
-    return this.http.put<T>(url, data, { headers });
+    return this.http.put<T>(url, data, {headers});
   }
 
   PATCH<T>(
@@ -233,7 +221,7 @@ export class ApiService {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
-    return this.http.patch<T>(url, data, { headers });
+    return this.http.patch<T>(url, data, {headers});
   }
 
   DELETE<T>(
@@ -244,6 +232,6 @@ export class ApiService {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
-    return this.http.delete<T>(url, { headers, body: data });
+    return this.http.delete<T>(url, {headers, body: data});
   }
 }
