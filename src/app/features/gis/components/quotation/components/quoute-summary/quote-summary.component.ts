@@ -406,7 +406,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     let tenantId = StringManipulation.returnNullIfEmpty(
       this.session_storage.get(SESSION_KEY.API_TENANT_ID)
     );
-    const urlTree = this.router.createUrlTree(['/home/gis/quotation/payment-checkout'], {
+    const urlTree = this.router.createUrlTree(['/payment-checkout'], {
       queryParams: {
         ref: this.quotationDetails.ipayReferenceNumber,
         sumInsured: this.quotationDetails.premium,
