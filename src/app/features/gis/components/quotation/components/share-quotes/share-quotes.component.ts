@@ -24,7 +24,6 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
   display = true;
   @Output() downloadRequested = new EventEmitter<void>();
   @Output() sendEvent = new EventEmitter<{ mode: ShareQuoteDTO }>();
-  private _notificationPayload: any
 
   @ViewChild('closeButton') closeButton: ElementRef;
 
@@ -52,14 +51,6 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
   }
-  set notificationPayload(value: any) {
-    this._notificationPayload = value
-  }
-
-  get notificationPayload() {
-    return this._notificationPayload
-  }
-
 
   onDownload() {
     this.downloadRequested.emit();
@@ -74,54 +65,6 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
   }
 
 
-  handlePdfBlob(pdfBlob: Blob, mode: ShareQuoteDTO): void {
-    this.convertBlobToBase64(pdfBlob).then(base64String => {
-      console.log('Base64 PDF:', base64String);
-      // Remove 'data:application/pdf;base64,' if it exists
-      const cleanedBase64 = base64String.replace(/^data:application\/pdf;base64,/, '');
-
-      // Now you can build your payload for email/whatsapp
-      const payload: EmailDto = {
-        code: null,
-        address: [mode.email],
-        subject: 'Quotation Report',
-        message: 'Please find the attached quotation report.',
-        status: 'D',
-        emailAggregator: 'N',
-        response: '524L',
-        systemModule: 'NB for New Business',
-        systemCode: 0,
-        attachments: [
-          {
-            name: 'quote-report.pdf',
-            content: cleanedBase64,
-            type: 'application/pdf',
-            disposition: 'attachment',
-            contentId: 'quote-report'
-          }
-        ],
-        fromName: 'Hope Ibrahim',
-        from: 'hope.ibrahim@turnkeyAfrica.com',
-        sendOn: new Date().toISOString(),
-        clientCode: 0,
-        agentCode: 0
-      };
-
-      // Call your sendEmail or sendWhatsapp method with the payload
-      this.sendEmail(payload);
-    }).catch(error => {
-      console.error('Error converting PDF to base64', error);
-    });
-  }
-
-  private convertBlobToBase64(blob: Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-    });
-  }
   sendEmail(payload: EmailDto) {
     log.debug("Email payload", payload)
     this.notificationService.sendEmail(payload).subscribe({

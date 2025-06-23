@@ -413,8 +413,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
       });
     }
-    const premiumComputationResponse = JSON.parse(sessionStorage.getItem('premiumComputationResponse'));
-    this.premiumComputationResponse = premiumComputationResponse
+    this.premiumComputationResponse = JSON.parse(sessionStorage.getItem('premiumComputationResponse'))
     log.debug("Premium Computation:", this.premiumComputationResponse)
 
     this.quotationObject = JSON.parse(sessionStorage.getItem('quotationObject'))
@@ -622,6 +621,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       if (index !== -1) {
         this.productsFormArray.removeAt(index);
       }
+      if (this.productsFormArray.controls.length == 0) {
+        this.premiumComputationResponse = null
+        this.premiumComputationPayloadToShare = null
+      }
+      this.checkCanMoveToNextScreen()
+
     }
 
     if (addedProduct) {
@@ -719,14 +724,15 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     log.debug("Selected product>>>", product.value, this.quickQuoteForm.get('product'))
     log.debug("PRODUCT INDEX", this.previousSelected)
     this.previousSelected = this.previousSelected.filter(value => value.code !== product.value.code)
-   this.removeProductCoverTypes(product.value.code)
+    this.removeProductCoverTypes(product.value.code)
     this.quickQuoteForm.patchValue({
       product: this.previousSelected
     })
     log.debug("Current computation payload >>>", this.premiumComputationResponse)
     this.productsFormArray.removeAt(productIndex);
   }
-  removeProductCoverTypes(code: number){
+
+  removeProductCoverTypes(code: number) {
     if (this.premiumComputationResponse) {
       this.premiumComputationResponse = {
         productLevelPremiums: this.premiumComputationResponse
@@ -757,14 +763,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.expandedQuoteStates[index] = false;
       }
     });
-    /*let riskLevelPremiums = this.premiumComputationResponse.productLevelPremiums
-      .flatMap(riskLevelPremium => riskLevelPremium.riskLevelPremiums);
-    for (let risk of riskLevelPremiums) {
-      if (!risk.selectCoverType) {
-        log.debug("Found unselected risk >>>", risk)
-        this.canMoveToNextScreen = false
-      }
-    }*/
 
   }
 
@@ -786,6 +784,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       return;
     }
     this.handleValidRiskForm();
+    this.checkCanMoveToNextScreen()
   }
 
 
@@ -807,13 +806,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
             if (match) {
               match.selectCoverType = selected.selectCoverType;
             }
-            /* if (!match.selectCoverType){
-               this.canMoveToNextScreen = false
-             }*/
           });
         });
         this.canMoveToNextScreen = false
-        log.debug("I changed canMoveToNextScreen", this.canMoveToNextScreen)
         this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully');
         this.cdr.markForCheck();
       },
@@ -1990,15 +1985,16 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.currentSelectedRisk = riskDetails;
     this.selectedProductCovers = this.selectedProductCovers.filter(value => value.code !== product.code);
     this.selectedProductCovers.push(product);
-    this.canMoveToNextScreen = this.selectedProductCovers.length === this.premiumComputationResponse.productLevelPremiums.length;
-    let riskLevelPremiums = this.premiumComputationResponse.productLevelPremiums.flatMap(productLevel => productLevel.riskLevelPremiums);
-    for (let risk of riskLevelPremiums) {
-      if (!risk.selectCoverType) {
-        this.canMoveToNextScreen = false
-      }
-    }
-    this.cdr.markForCheck();
+    this.checkCanMoveToNextScreen()
     log.debug('canMoveToNextScreen:', this.canMoveToNextScreen);
+  }
+  checkCanMoveToNextScreen() {
+    const premiums = this.premiumComputationResponse?.productLevelPremiums ?? [];
+    log.debug("current premiums >>>", premiums)
+    const hasSelectedAllProductCovers =   this.selectedProductCovers &&  this.selectedProductCovers.length === premiums.length;
+    const allRisksHaveSelectedCover = premiums
+      .flatMap(premium => premium.riskLevelPremiums).every(risk => risk.selectCoverType);
+    this.canMoveToNextScreen = hasSelectedAllProductCovers && allRisksHaveSelectedCover;
   }
 
 
