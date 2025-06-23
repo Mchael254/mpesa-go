@@ -22,7 +22,7 @@ import {RiskCentreComponent} from './components/risk-centre/risk-centre.componen
 import {QuoteSummaryComponent} from './components/quoute-summary/quote-summary.component';
 import {ShareQuotesComponent} from './components/share-quotes/share-quotes.component';
 import {PaymentAdviceComponent} from './components/payment-advice/payment-advice.component';
-import {PaymentCheckoutComponent} from './components/payment-checkout/payment-checkout.component';
+
 
 
 const routes: Routes = [
@@ -86,9 +86,7 @@ const routes: Routes = [
   {
     path: 'payment-advice', component: PaymentAdviceComponent
   },
-  {
-    path: 'payment-checkout', component: PaymentCheckoutComponent
-  },
+
 ];
 
 @NgModule({
