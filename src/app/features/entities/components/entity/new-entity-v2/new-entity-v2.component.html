@@ -15,7 +15,7 @@
                 <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
 
                   <ng-container *ngIf="field.type === 'select'">
-                    <label [for]="field.fieldId">
+                    <label class="form-label" [for]="field.fieldId">
                       {{ field.label?.[language] | titlecase }}
                       <span *ngIf="field.isMandatory" class="text-danger">*</span>
                     </label>
@@ -100,7 +100,7 @@
 
                     <!-- Text / Email / Tel / etc -->
                     <ng-container *ngIf="field.type === 'text' || field.type === 'email' || field.type==='tel'">
-                      <ng-container *ngIf="field.fieldId !== 'idNumber'">
+                      <ng-container *ngIf="!['idNumber', 'smsNumber'].includes(field.fieldId)">
                         <label class="form-label" [for]="field.fieldId">
                           {{ field.label?.[language] | titlecase }}
                           <span *ngIf="field.isMandatory" class="text-danger">*</span>
@@ -137,6 +137,44 @@
                           [class.is-invalid]="getFieldControl(group.groupId, field.fieldId)?.invalid && getFieldControl(group.groupId, field.fieldId)?.touched"
                           [class.is-valid]="getFieldControl(group.groupId, field.fieldId)?.valid && getFieldControl(group.groupId, field.fieldId)?.touched"
                         />
+                      </ng-container>
+                      <ng-container *ngIf="field.fieldId==='smsNumber'">
+                        <label class="form-label" [for]="field.fieldId">
+                          {{ field.label?.[language] | titlecase }}
+                          <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        </label>
+                        <ngx-intl-tel-input
+                          [cssClass]="'form-control form-control-md mb-1'"
+                          id="smsNumber"
+                          [preferredCountries]=""
+                          [enableAutoCountrySelect]="true"
+                          [enablePlaceholder]="true"
+                          [searchCountryFlag]="true"
+                          [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                          [selectFirstCountry]="false"
+                          [selectedCountryISO]="CountryISO.Nigeria"
+                          [phoneValidation]="true"
+                          [separateDialCode]="true"
+                          [numberFormat]="PhoneNumberFormat.National"
+                          formControlName="smsNumber"
+                          [style]="{ width: '100%' }">
+                        </ngx-intl-tel-input>
+
+                        <!--<input
+                          [type]="field.type"
+                          [formControlName]="field.fieldId"
+                          [placeholder]="field?.placeholder[language]"
+                          [id]="field.fieldId"
+                          class="form-control"
+                          (keyup)="validateRegex(field, group.groupId)"
+
+                          [class.is-invalid]="getFieldControl(group.groupId, field.fieldId)?.invalid &&
+                            getFieldControl(group.groupId, field.fieldId)?.touched"
+
+                          [class.is-valid]="getFieldControl(group.groupId, field.fieldId)?.valid &&
+                            getFieldControl(group.groupId, field.fieldId)?.touched"
+
+                        />-->
                       </ng-container>
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
                           * {{ regexErrorMessages[field.fieldId]?.errorMessage }}
