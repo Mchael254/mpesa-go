@@ -240,6 +240,7 @@ export interface Products {
   maximumTerm: number;
   termDistribution: number;
   organizationCode: number;
+  productImage:string;
 }
 
 export interface otherdetails {
