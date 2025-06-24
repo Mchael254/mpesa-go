@@ -1,14 +1,14 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
-import {LazyLoadEvent} from 'primeng/api';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {Logger, UtilService} from '../../../../../../shared/services';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, } from '@angular/forms';
+import { LazyLoadEvent } from 'primeng/api';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { Logger, UtilService } from '../../../../../../shared/services';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
 
-import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
-import {ClientService} from '../../../../../entities/services/client/client.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { ClientService } from '../../../../../entities/services/client/client.service';
 import stepData from '../../data/steps.json';
 import {
   Binders,
@@ -20,22 +20,22 @@ import {
   Subclasses,
   VesselType,
 } from '../../../setups/data/gisDTO';
-import {AuthService} from '../../../../../../shared/services/auth.service';
-import {SubClassCoverTypesService} from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {Calendar} from 'primeng/calendar';
-import {SectionsService} from '../../../setups/services/sections/sections.service';
-import {CountryService} from '../../../../../../shared/services/setups/country/country.service';
-import {CountryDto} from '../../../../../../shared/data/common/countryDto';
-import {Table, TableLazyLoadEvent} from 'primeng/table';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { Calendar } from 'primeng/calendar';
+import { SectionsService } from '../../../setups/services/sections/sections.service';
+import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
+import { CountryDto } from '../../../../../../shared/data/common/countryDto';
+import { Table, TableLazyLoadEvent } from 'primeng/table';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import {ClientDTO,} from '../../../../../entities/data/ClientDTO';
-import {BranchService} from '../../../../../../shared/services/setups/branch/branch.service';
-import {OrganizationBranchDto} from '../../../../../../shared/data/common/organization-branch-dto';
+import { ClientDTO, } from '../../../../../entities/data/ClientDTO';
+import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
+import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
 
-import {NgxSpinnerService} from 'ngx-spinner';
+import { NgxSpinnerService } from 'ngx-spinner';
 import {
   DynamicRiskField,
   LimitsOfLiability,
@@ -48,23 +48,23 @@ import {
   TaxInformation,
   UserDetail,
 } from '../../data/quotationsDTO';
-import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
-import {Router} from '@angular/router';
-import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+import { Router } from '@angular/router';
+import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
-import {firstValueFrom, forkJoin, mergeMap, Observable, tap} from 'rxjs';
-import {NgxCurrencyConfig} from 'ngx-currency';
-import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
-import {OccupationDTO} from '../../../../../../shared/data/common/occupation-dto';
-import {VesselTypesService} from '../../../setups/services/vessel-types/vessel-types.service';
-import {Pagination} from '../../../../../../shared/data/common/pagination';
-import {TableDetail} from '../../../../../../shared/data/table-detail';
-import {MenuService} from 'src/app/features/base/services/menu.service';
-import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
-import {debounceTime} from "rxjs/internal/operators/debounceTime";
-import {distinctUntilChanged, map} from "rxjs/operators";
-import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
+import { firstValueFrom, forkJoin, mergeMap, Observable, tap } from 'rxjs';
+import { NgxCurrencyConfig } from 'ngx-currency';
+import { OccupationService } from '../../../../../../shared/services/setups/occupation/occupation.service';
+import { OccupationDTO } from '../../../../../../shared/data/common/occupation-dto';
+import { VesselTypesService } from '../../../setups/services/vessel-types/vessel-types.service';
+import { Pagination } from '../../../../../../shared/data/common/pagination';
+import { TableDetail } from '../../../../../../shared/data/table-detail';
+import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
+import { debounceTime } from "rxjs/internal/operators/debounceTime";
+import { distinctUntilChanged, map } from "rxjs/operators";
+import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import {
   ComputationPayloadDto,
   CoverType,
@@ -92,7 +92,7 @@ const log = new Logger('QuickQuoteFormComponent');
   styleUrls: ['./quick-quote-form.component.css'],
 })
 export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('calendar', {static: true}) calendar: Calendar;
+  @ViewChild('calendar', { static: true }) calendar: Calendar;
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
 
@@ -258,21 +258,21 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     name: string;
     idNumber: string;
   } = {
-    name: '',
-    idNumber: '',
-  };
+      name: '',
+      idNumber: '',
+    };
   public clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
   tableDetails: TableDetail;
   public pageSize: 5;
   isSearching = false;
   searchTerm = '';
   cols = [
-    {field: 'clientFullName', header: 'Name'},
-    {field: 'emailAddress', header: 'Email'},
-    {field: 'phoneNumber', header: 'Phone number'},
-    {field: 'idNumber', header: 'ID number'},
-    {field: 'pinNumber', header: 'Pin'},
-    {field: 'id', header: 'ID'},
+    { field: 'clientFullName', header: 'Name' },
+    { field: 'emailAddress', header: 'Email' },
+    { field: 'phoneNumber', header: 'Phone number' },
+    { field: 'idNumber', header: 'ID number' },
+    { field: 'pinNumber', header: 'Pin' },
+    { field: 'id', header: 'ID' },
   ];
   globalFilterFields = ['idNumber', 'firstName', 'lastName', 'emailAddress'];
   emailValue: string;
@@ -299,7 +299,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   selectedRiskGroup: AbstractControl<any, any>;
   quotationObject: QuotationDetails;
   currentExpandedIndex: number | null = null;
-
+  productSearch: string = '';
+  filteredProducts: Products[] = [];
 
   constructor(
     public fb: FormBuilder,
@@ -491,23 +492,23 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
    * @return {void}
    */
   loadAllproducts() {
-    this.productService
+    
+      this.productService
       .getAllProducts()
       .pipe(
-        map(products => {
-          return products.map(product => {
-            return {
-              ...product,
-              description: this.capitalizeWord(product.description)
-            }
-          })
-        }),
         untilDestroyed(this))
       .subscribe((data) => {
-        this.products = data
+        this.products = data;
+        this.filteredProducts = this.products
       });
   }
-
+  filterProducts() {
+    const search = this.productSearch.toLowerCase();
+    log.debug("Search product",this.productSearch)
+    this.filteredProducts = this.products.filter(p =>
+      p.description.toLowerCase().includes(search)
+    );
+  }
   get productsFormArray(): FormArray {
     return this.quickQuoteForm.get('products') as FormArray;
   }
@@ -601,7 +602,23 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
     return new FormGroup(group);
   }
+onCheckboxChange(event: Event, product: any) {
+  const checked = (event.target as HTMLInputElement).checked;
 
+  if (checked) {
+    this.selectedProducts.push(product);
+  } else {
+    this.selectedProducts = this.selectedProducts.filter(p => p !== product);
+  }
+
+  // Call the existing method with the same format as p-multiSelect
+  const fakeEvent = { value: this.selectedProducts };
+  this.getSelectedProducts(fakeEvent);
+}
+
+isProductSelected(product: any): boolean {
+  return this.selectedProducts.includes(product);
+}
   // When products are selected from multi-select
   getSelectedProducts(event: any) {
     const currentSelection = event.value as Products[];
@@ -746,7 +763,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       const control = formGroup.get(field);
 
       if (control instanceof FormControl) {
-        control.markAsTouched({onlySelf: true});
+        control.markAsTouched({ onlySelf: true });
       } else if (control instanceof FormGroup || control instanceof FormArray) {
         this.markAllFieldsAsTouched(control);
       }
@@ -1058,7 +1075,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     // Extract the day, month, and year
     const day = todaysDate.getDate();
-    const month = todaysDate.toLocaleString('default', {month: 'long'}); // 'long' gives the full month name
+    const month = todaysDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
     const year = todaysDate.getFullYear();
 
     // Format the date in 'dd-Month-yyyy' format
@@ -1294,7 +1311,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     // Remove validator before making the service call
     control.removeValidators([this.uniqueValidator]);
-    control.updateValueAndValidity({emitEvent: false});
+    control.updateValueAndValidity({ emitEvent: false });
 
     this.quotationService.validateRiskExistence({
       propertyId: value,
@@ -1323,13 +1340,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         control.removeValidators([this.uniqueValidator]);
       }
 
-      control.updateValueAndValidity({emitEvent: false});
+      control.updateValueAndValidity({ emitEvent: false });
     });
   }
 
 
   uniqueValidator(control: AbstractControl) {
-    return {unique: true};
+    return { unique: true };
   }
 
   /**
@@ -1504,7 +1521,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     log.debug("Keyed In value>>>", control.value);
 
-    control.setValue(upperCaseValue, {emitEvent: false});
+    control.setValue(upperCaseValue, { emitEvent: false });
   }
 
 
@@ -1606,7 +1623,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     if (this.isSearching) {
       const searchEvent = {
-        target: {value: this.searchTerm},
+        target: { value: this.searchTerm },
       };
       this.filter(searchEvent, pageIndex, pageSize);
     } else {
@@ -1761,15 +1778,15 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       }),
       untilDestroyed(this)
     ).subscribe({
-        next: (response) => {
-          this.router.navigate(['/home/gis/quotation/quote-summary']).then(r => {
-          })
-        },
-        error: (error) => {
-          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-          log.debug('saveQuote error >>>', error.error.message)
-        }
+      next: (response) => {
+        this.router.navigate(['/home/gis/quotation/quote-summary']).then(r => {
+        })
+      },
+      error: (error) => {
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        log.debug('saveQuote error >>>', error.error.message)
       }
+    }
     )
   }
 
@@ -1901,8 +1918,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         sectionsDetails: null,
         action: "A",
         clauseCodes: Array.from(new Set(risk.coverTypeDetails.flatMap(cover =>
-            (cover.clauses ?? []).map(clause => clause.code)
-          )
+          (cover.clauses ?? []).map(clause => clause.code)
+        )
         )),
         subclassCode: risk.selectCoverType.subclassCode,
         binderCode: risk.binderCode,
@@ -2049,7 +2066,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
               updatedLimits = updatedLimits.map(limit => {
                 const match = benefitsDto.premiumItems.find(b => b.code === limit.section.code);
                 return match
-                  ? {...limit, limitAmount: match.limitAmount}
+                  ? { ...limit, limitAmount: match.limitAmount }
                   : limit;
               });
               benefitsDto.premiumItems.forEach(benefit => {
@@ -2149,7 +2166,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
                 acc.code = tax.code;
                 return acc;
               },
-              {premium: 0, code: 0}
+              { premium: 0, code: 0 }
             ),
             clauses: cover.clauses?.map((clause: any) => ({
               heading: clause.heading,
