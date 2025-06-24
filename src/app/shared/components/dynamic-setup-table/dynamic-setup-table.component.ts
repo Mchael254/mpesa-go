@@ -48,13 +48,14 @@ export class DynamicSetupTableComponent implements OnInit {
 
   ngOnInit(): void {
     this.filterFormFields();
-    this.tableData = this.sessionStorageService.getItem('contactPersonDetailsData') ? JSON.parse(this.sessionStorageService.getItem('contactPersonDetailsData')) : [];
+    this.tableData = this.sessionStorageService.getItem(this.subGroupId) ? JSON.parse(this.sessionStorageService.getItem(this.subGroupId)) : [];
   }
 
   filterFormFields() {
     log.info('field:', this.formFields);
     if (this.formFields) {
-      this.columns = this.formFields?.fields.filter(field => field.subGroupId === this.subGroupId)
+      // this.columns = this.formFields?.fields.filter(field => field.subGroupId === this.subGroupId)
+      this.columns = this.formFields.filter(field => field.subGroupId === this.subGroupId)
         .map(field => ({
           field: field.fieldId,
           header: field.label['en'] || field.fieldId,
@@ -69,7 +70,7 @@ export class DynamicSetupTableComponent implements OnInit {
     if (!this.formFields) return;
     const formControls: any = {};
 
-    this.formFields.fields.forEach(field => {
+    this.formFields.forEach(field => {
       let validators = [];
 
       if (field.validations) {
@@ -82,7 +83,7 @@ export class DynamicSetupTableComponent implements OnInit {
 
       formControls[field.fieldId] = [field.defaultValue || '', validators];
 
-      this.groupFields = this.formFields?.fields.filter(field => field.subGroupId === this.subGroupId);
+      this.groupFields = this.formFields.filter(field => field.subGroupId === this.subGroupId);
 
     });
 
@@ -142,8 +143,10 @@ export class DynamicSetupTableComponent implements OnInit {
 
     this.selectedTableRecordDetails = null;
 
+
     this.sessionStorageService.setItem(
-      'contactPersonDetailsData',
+      /*'contactPersonDetailsData'*/
+      this.subGroupId,
       JSON.stringify(this.tableData)
     );
     return savedFields;
