@@ -1,14 +1,14 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, } from '@angular/forms';
-import { LazyLoadEvent } from 'primeng/api';
-import { ProductsService } from '../../../setups/services/products/products.service';
-import { Logger, UtilService } from '../../../../../../shared/services';
-import { BinderService } from '../../../setups/services/binder/binder.service';
-import { QuotationsService } from '../../services/quotations/quotations.service';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
+import {LazyLoadEvent} from 'primeng/api';
+import {ProductsService} from '../../../setups/services/products/products.service';
+import {Logger, UtilService} from '../../../../../../shared/services';
+import {BinderService} from '../../../setups/services/binder/binder.service';
+import {QuotationsService} from '../../services/quotations/quotations.service';
 
 
-import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
-import { ClientService } from '../../../../../entities/services/client/client.service';
+import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
+import {ClientService} from '../../../../../entities/services/client/client.service';
 import stepData from '../../data/steps.json';
 import {
   Binders,
@@ -20,22 +20,22 @@ import {
   Subclasses,
   VesselType,
 } from '../../../setups/data/gisDTO';
-import { AuthService } from '../../../../../../shared/services/auth.service';
-import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
-import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import { Calendar } from 'primeng/calendar';
-import { SectionsService } from '../../../setups/services/sections/sections.service';
-import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
-import { CountryDto } from '../../../../../../shared/data/common/countryDto';
-import { Table, TableLazyLoadEvent } from 'primeng/table';
+import {AuthService} from '../../../../../../shared/services/auth.service';
+import {SubClassCoverTypesService} from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
+import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
+import {Calendar} from 'primeng/calendar';
+import {SectionsService} from '../../../setups/services/sections/sections.service';
+import {CountryService} from '../../../../../../shared/services/setups/country/country.service';
+import {CountryDto} from '../../../../../../shared/data/common/countryDto';
+import {Table, TableLazyLoadEvent} from 'primeng/table';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import { ClientDTO, } from '../../../../../entities/data/ClientDTO';
-import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
-import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
+import {ClientDTO,} from '../../../../../entities/data/ClientDTO';
+import {BranchService} from '../../../../../../shared/services/setups/branch/branch.service';
+import {OrganizationBranchDto} from '../../../../../../shared/data/common/organization-branch-dto';
 
-import { NgxSpinnerService } from 'ngx-spinner';
+import {NgxSpinnerService} from 'ngx-spinner';
 import {
   DynamicRiskField,
   LimitsOfLiability,
@@ -48,23 +48,23 @@ import {
   TaxInformation,
   UserDetail,
 } from '../../data/quotationsDTO';
-import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
-import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
-import { Router } from '@angular/router';
-import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
+import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
+import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
+import {Router} from '@angular/router';
+import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
 
-import { firstValueFrom, forkJoin, mergeMap, Observable, tap } from 'rxjs';
-import { NgxCurrencyConfig } from 'ngx-currency';
-import { OccupationService } from '../../../../../../shared/services/setups/occupation/occupation.service';
-import { OccupationDTO } from '../../../../../../shared/data/common/occupation-dto';
-import { VesselTypesService } from '../../../setups/services/vessel-types/vessel-types.service';
-import { Pagination } from '../../../../../../shared/data/common/pagination';
-import { TableDetail } from '../../../../../../shared/data/table-detail';
-import { MenuService } from 'src/app/features/base/services/menu.service';
-import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
-import { debounceTime } from "rxjs/internal/operators/debounceTime";
-import { distinctUntilChanged, map } from "rxjs/operators";
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import {firstValueFrom, forkJoin, mergeMap, Observable, tap} from 'rxjs';
+import {NgxCurrencyConfig} from 'ngx-currency';
+import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
+import {OccupationDTO} from '../../../../../../shared/data/common/occupation-dto';
+import {VesselTypesService} from '../../../setups/services/vessel-types/vessel-types.service';
+import {Pagination} from '../../../../../../shared/data/common/pagination';
+import {TableDetail} from '../../../../../../shared/data/table-detail';
+import {MenuService} from 'src/app/features/base/services/menu.service';
+import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
+import {debounceTime} from "rxjs/internal/operators/debounceTime";
+import {distinctUntilChanged, map} from "rxjs/operators";
+import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
 import {
   ComputationPayloadDto,
   CoverType,
@@ -82,7 +82,7 @@ import {ShareQuotesComponent} from '../share-quotes/share-quotes.component';
 import {EmailDto} from "../../../../../../shared/data/common/email-dto";
 import {NotificationService} from "../../services/notification/notification.service";
 import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
-import {OrganizationService} from "../../../../../crm/services/organization.service";
+import {OrganizationDTO} from "../../../../../crm/data/organization-dto";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -325,7 +325,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     private vesselTypesService: VesselTypesService,
     private spinner: NgxSpinnerService,
     private menuService: MenuService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private sessionStorageService: SessionStorageService
   ) {
     this.tableDetails = {
       cols: this.cols,
@@ -358,6 +359,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       products: this.fb.array([])
     });
     this.loadAllCurrencies()
+    const organization = this.sessionStorageService.getItem("organizationDetails") as OrganizationDTO;
+    if (organization){
+      this.organizationId = organization.id
+    }
     this.getuser()
 
     const savedState = sessionStorage.getItem('savedProductsState');
@@ -492,7 +497,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
    * @return {void}
    */
   loadAllproducts() {
-    
+
       this.productService
       .getAllProducts()
       .pipe(
@@ -1059,9 +1064,6 @@ isProductSelected(product: any): boolean {
     log.debug('User Branch Id', this.userBranchId);
     this.userCode = this.userDetails.code
     log.debug('User Code ', this.userCode);
-    if (this.userCode) {
-      this.fetchUserOrgId()
-    }
     this.dateFormat = this.userDetails?.orgDateFormat;
     log.debug('Organization Date Format:', this.dateFormat);
     // Get today's date in yyyy-MM-dd format
@@ -1077,16 +1079,11 @@ isProductSelected(product: any): boolean {
     const day = todaysDate.getDate();
     const month = todaysDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
     const year = todaysDate.getFullYear();
-
-    // Format the date in 'dd-Month-yyyy' format
-    const formattedDate = `${day}-${month}-${year}`;
-
-    this.todaysDate = formattedDate;
+    this.todaysDate = `${day}-${month}-${year}`;
     log.debug('Todays  Date', this.todaysDate);
     log.debug('Cover from  Date(current date)', this.coverFromDate);
 
     this.currencyDelimiter = this.userDetails?.currencyDelimiter;
-    log.debug('Organization currency delimeter', this.currencyDelimiter);
     sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
 
     this.fetchBranches();
@@ -1692,29 +1689,7 @@ isProductSelected(product: any): boolean {
   }
 
   inputName(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['name'] = value;
-  }
-
-  fetchUserOrgId() {
-    this.quotationService
-      .getUserOrgId(this.userCode)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-
-          this.userOrgDetails = response
-          log.debug("User Organization Details  ", this.userOrgDetails);
-          this.organizationId = this.userOrgDetails.organizationId
-          if (this.organizationId) {
-            // this.fetchExchangeRate()
-          }
-        },
-        error: (error) => {
-
-          this.globalMessagingService.displayErrorMessage('Error', error?.error?.message);
-        }
-      });
+    this.filterObject['name'] = (event.target as HTMLInputElement).value;
   }
 
   fetchExchangeRate() {
