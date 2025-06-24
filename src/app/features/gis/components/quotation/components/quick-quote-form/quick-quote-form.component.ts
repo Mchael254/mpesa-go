@@ -81,6 +81,8 @@ import {differenceInCalendarDays, format, parseISO} from 'date-fns';
 import {ShareQuotesComponent} from '../share-quotes/share-quotes.component';
 import {EmailDto} from "../../../../../../shared/data/common/email-dto";
 import {NotificationService} from "../../services/notification/notification.service";
+import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
+import {OrganizationService} from "../../../../../crm/services/organization.service";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -420,8 +422,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     log.debug("Quotation object", this.quotationObject)
     this.quotationNo = this.quotationObject?.quotationNo
     this.quotationCode = this.quotationObject?.code
-
-
   }
 
   ngOnDestroy(): void {
@@ -1988,10 +1988,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.checkCanMoveToNextScreen()
     log.debug('canMoveToNextScreen:', this.canMoveToNextScreen);
   }
+
   checkCanMoveToNextScreen() {
     const premiums = this.premiumComputationResponse?.productLevelPremiums ?? [];
     log.debug("current premiums >>>", premiums)
-    const hasSelectedAllProductCovers =   this.selectedProductCovers &&  this.selectedProductCovers.length === premiums.length;
+    const hasSelectedAllProductCovers = this.selectedProductCovers && this.selectedProductCovers.length === premiums.length;
     const allRisksHaveSelectedCover = premiums
       .flatMap(premium => premium.riskLevelPremiums).every(risk => risk.selectCoverType);
     this.canMoveToNextScreen = hasSelectedAllProductCovers && allRisksHaveSelectedCover;

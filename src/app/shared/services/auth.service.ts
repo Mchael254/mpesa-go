@@ -1,5 +1,5 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {BehaviorSubject, Observable, ReplaySubject, throwError} from 'rxjs';
+import {BehaviorSubject, forkJoin, Observable, ReplaySubject, tap, throwError} from 'rxjs';
 import {concatMap, distinctUntilChanged, take} from 'rxjs/operators';
 import {untilDestroyed} from './until-destroyed';
 import {BrowserStorage} from "./storage";
@@ -25,6 +25,8 @@ import {GlobalMessagingService} from './messaging/global-messaging.service';
 import {ApiService} from './api/api.service';
 import {Profile} from '../data/auth/profile';
 import {SESSION_KEY} from "../../features/lms/util/session_storage_enum";
+import {OrganizationService} from "../../features/crm/services/organization.service";
+import {OrganizationDTO} from "../../features/crm/data/organization-dto";
 
 
 const log = new Logger('AuthService');
@@ -58,6 +60,7 @@ export class AuthService implements OnDestroy {
     private session_storage: SessionStorageService,
     private globalMessagingService: GlobalMessagingService,
     private api: ApiService,
+    private organizationService: OrganizationService
   ) {
     this.isAuthenticated.pipe(
       distinctUntilChanged(),
@@ -126,17 +129,8 @@ export class AuthService implements OnDestroy {
    * @param user {AccountContact | ClientAccountContact | WebAdmin} The user data
    */
   setAuth(user: Profile) {
-    // set current user data into observable
-    // if (this.utilService.isUserAdmin(user)) {
-    //   this.browserStorage.storeObj('activeUser', 'ADMIN');
-    // } else if (this.utilService.isUserAgent(user)) {
-    //   this.browserStorage.storeObj('activeUser', 'AGENT');
-    // } else if (this.utilService.isUserClient(user)) {
-    //   this.browserStorage.storeObj('activeUser', 'CLIENT');
-    // }
     this.localStorageService.setItem('loginUserProfile', user);
     this.currentUserSubject.next(user);
-    // set isAuthenticated
     this.isAuthenticatedSubject.next(!!user);
   }
 
@@ -468,51 +462,55 @@ export class AuthService implements OnDestroy {
   private getAuthToken(
     userCredential: UserCredential,
     headers: HttpHeaders,
-    errorCallback?: (errMsg) => void,
+    errorCallback?: (errMsg: string) => void,
   ) {
     const baseUrl = this.appConfigService.config.contextPath.auth_services;
     const userBaseUrl = this.appConfigService.config.contextPath.users_services;
-    this.http
-      .post(`/${baseUrl}/login`, JSON.stringify(userCredential), {
-        headers: headers,
-        withCredentials: true,
-      })
-      .pipe(
-        concatMap((data: OauthToken) => {
-          // save the token
 
-          this.jwtService.saveToken(data);
+    this.http.post<OauthToken>(`/${baseUrl}/login`, userCredential, {
+      headers,
+      withCredentials: true,
+    })
+      .pipe(
+        concatMap((token: OauthToken) => {
+          this.jwtService.saveToken(token);
           return this.http.get<Profile>(`/${userBaseUrl}/administration/users/entity-profile`, {headers});
         }),
-      )
-      .subscribe(
-        (data: Profile) => {
-          this.setAuth(data);
-          log.info(`logged in user`, data);
-          this.session_storage.set('memberProfile', data);
-
-          const entityCode: number = data.code;
-          const entityIdNo: string = data.idNo;
+        concatMap((profile: Profile) => {
+          this.setAuth(profile);
+          this.session_storage.set('memberProfile', profile);
+          const entityCode = profile.code;
+          const entityIdNo = profile.idNo;
           const entityType = headers.get('entityType');
-
-          this.gotToDashboard(entityType, entityCode, entityIdNo)
+          return this.http.get<any>(`/${userBaseUrl}/administration/users/${entityCode}`).pipe(
+            concatMap((userDetails) => {
+              log.info('User details:', userDetails);
+              const organizationId = userDetails.organizationId;
+              return this.organizationService.getOrganizationByID(organizationId).pipe(
+                tap((orgDetails: OrganizationDTO) => {
+                  this.session_storage.setItem("organizationDetails", orgDetails)
+                  this.gotToDashboard(entityType, entityCode, entityIdNo);
+                })
+              )
+            })
+          );
+        })
+      )
+      .subscribe({
+        next: () => {
         },
-        (error) => {
+        error: (error: HttpErrorResponse) => {
           this.destroyUser();
-          log.debug('Login error response:', error)
-          const errorMessage = error?.error?.message ?? error.message
+          log.debug('Login error response:', error);
+          const errorMessage = error?.error?.message ?? error.message;
           this.globalMessagingService.displayErrorMessage('Error', errorMessage);
-
-          if (errorCallback && error instanceof HttpErrorResponse) {
-            errorCallback(
-              error.error['error_description'] || error.error['message'],
-            );
-          } else {
-            errorCallback(error);
+          if (errorCallback) {
+            errorCallback(error.error?.error_description || error.error?.message || error.message);
           }
-        },
-      );
+        }
+      });
   }
+
 
   gotToDashboard(entityType: string, entityCode?: number, entityIdNo?: string): void {
     switch (entityType) {
