@@ -1,10 +1,19 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
 import {HttpClient} from "@angular/common/http";
 import {FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
 import {Logger, UtilService} from "../../../../../shared/services";
 import {Condition, FieldModel, FormConfig, Group} from "../../../data/form-config.model";
 import {RegexErrorMessages} from "../../../data/field-error.model";
+import {MaritalStatusService} from "../../../../../shared/services/setups/marital-status/marital-status.service";
+import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
+import {PaymentModesService} from "../../../../../shared/services/setups/payment-modes/payment-modes.service";
+import {PaymentModesDto} from "../../../../../shared/data/common/payment-modes-dto";
+import {BankBranchDTO, BankDTO} from "../../../../../shared/data/common/bank-dto";
+import {BankService} from "../../../../../shared/services/setups/bank/bank.service";
+import {CountryDto} from "../../../../../shared/data/common/countryDto";
+import {CountryService} from "../../../../../shared/services/setups/country/country.service";
+import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -43,20 +52,36 @@ export class NewEntityV2Component implements OnInit {
 
   regexErrorMessages: RegexErrorMessages = {};
 
+  maritalStatuses: MaritalStatus[] = [];
+  paymentModes: PaymentModesDto[] = [];
+  banks: BankDTO[] = [];
+  bankBranches: BankBranchDTO[] = [];
+  countries: CountryDto[] = [];
+
+  selectedMaritalStatus: MaritalStatus;
+  selectedPaymentMode: PaymentModesDto;
+  selectedBank: BankDTO;
+  selectedBankBranch: BankBranchDTO;
+  selectedCountry: CountryDto = null;
+
 
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
     private utilService: UtilService,
+    private maritalStatusService: MaritalStatusService,
+    private paymentModesService: PaymentModesService,
+    private bankService: BankService,
+    private countryService: CountryService,
+    private globalMessagingService: GlobalMessagingService,
+    private cdr: ChangeDetectorRef,
   ) {
-
-    this.entityForm = this.fb.group({
-      fields: this.fb.array([])
-    });
 
     this.uploadForm = this.fb.group({
       fields: this.fb.array([]),
     });
+
+    this.createEntityForm();
   }
 
   get fields(): FormArray {
@@ -71,6 +96,12 @@ export class NewEntityV2Component implements OnInit {
     });
   }
 
+  createEntityForm():void {
+    this.entityForm = this.fb.group({
+      fields: this.fb.array([])
+    });
+  }
+
   /**
    * fetches all form categories based on category (individual | corporate)
    * @param category
@@ -78,15 +109,15 @@ export class NewEntityV2Component implements OnInit {
   fetchFormFields(category: string): void {
     this.http.get<any>( 'assets/data/formFields.json').subscribe({
       next: (data: any) => {
-
         data.category.forEach((item) => { // todo: define type for item
           if (item.label === category) {
             this.formFieldPayload = item.category;
             const groups: Group[] = item?.groups;
             const fields: FieldModel[] = item?.fields;
             this.orderFormGroup(groups, fields);
-            this.addField(fields);
+            // this.addField(fields);
             log.info('FormFields loaded', item);
+            // this.cdr.detectChanges();
           }
         })
       },
@@ -118,7 +149,7 @@ export class NewEntityV2Component implements OnInit {
    * add fields to the entity form
    * @param fields
    */
-  addField(fields:FieldModel[]): void {
+  /*addField(fields:FieldModel[]): void {
     const group: { [key: string]: FormControl } = {};
 
     fields.forEach((field: FieldModel) => {
@@ -139,6 +170,28 @@ export class NewEntityV2Component implements OnInit {
     });
 
     this.entityForm = this.fb.group(group);
+  }*/
+
+  addFieldsToSections(formGroupSection: any[]): void {
+    formGroupSection.forEach(section => {
+
+      const group = this.fb.group({});
+
+      section.fields.forEach(field => {
+        const control = field.isMandatory
+          ? this.fb.control('', Validators.required)
+          : this.fb.control('');
+
+        if (field.type === 'text' && field.conditions.length > 0) {
+          this.collateValidations(field.conditions)
+        }
+        group.addControl(field.fieldId, control);
+      });
+
+      this.entityForm.addControl(section.groupId, group);
+    });
+
+    log.info('Adding fields to sections', this.entityForm);
   }
 
   /**
@@ -230,6 +283,7 @@ export class NewEntityV2Component implements OnInit {
     });
 
     this.formGroupSections = formGroupSections;
+    this.addFieldsToSections(formGroupSections);
     log.info(`formGroupSections >>> `, this.formGroupSections);
   }
 
@@ -241,7 +295,6 @@ export class NewEntityV2Component implements OnInit {
    */
   saveDetails() : void {
     const formValues = this.entityForm.getRawValue();
-    log.info('formValues: ', formValues);
 
     // log.info(`pattern validation errors >>>`, this.regexErrorMessages) // todo: travel this and check if any validation failed
     if (this.entityForm.valid) {
@@ -249,31 +302,9 @@ export class NewEntityV2Component implements OnInit {
         Object.entries(formValues).filter(([_, value]) => value != null && value !== '')
       );
 
-      const primeIdentityPayload = {
-        citizenshipCountryId: formValues.citizenshipCountryId,
-        clientTypeId: formValues.clientTypeId,
-        dateOfBirth: formValues.dateOfBirth,
-        gender: formValues.gender,
-        idNumber: formValues.idNumber,
-        lastName: formValues.lastName,
-        maritalStatus: formValues.maritalStatus,
-        modeOfIdentityId: formValues.modeOfIdentityId,
-        otherNames: formValues.otherName,
-        pinNumber: formValues.pinNumber,
-        wef: formValues.wef,
-        wet: formValues.wet,
-      }
-      log.info(`primary identity details >>> `, primeIdentityPayload);
-
-      const contactDetailsPayload = {
-        branchId: formValues.branchId,
-        titleId: formValues.titleId,
-        smsNumber: formValues.smsNumber,
-        telNumber: formValues.telNumber,
-        email: formValues.email,
-        contactChannel: formValues.contactChannel,
-      }
-      log.info(`contactDetailsPayload >>> `, contactDetailsPayload);
+      const primeIdentityPayload = formValues.prime_identity;
+      const contactDetailsPayload = formValues.contact_details;
+      log.info(`form details >>> `, primeIdentityPayload, contactDetailsPayload);
 
     } else {
       this.entityForm.markAllAsTouched(); // show validation errors
@@ -288,22 +319,34 @@ export class NewEntityV2Component implements OnInit {
    * @param fieldId
    */
   processSelectOption(event: any, fieldId: string) : void {
-    log.info(`processSelectOptions >>> `, event.target.value, fieldId);
+    const selectedOption = event.target.value;
+    log.info(`processSelectOptions >>> `, selectedOption, fieldId);
     switch (fieldId) {
       case 'modeOfIdentityId':
-        this.idType = event.target.value;
+        this.idType = selectedOption;
         break;
       case 'idType':
         break;
       case 'language':
-        this.language = event.target.value;
+        this.language = selectedOption;
+        break;
+      case 'maritalStatus':
+        this.selectedMaritalStatus = this.maritalStatuses.find((m: MaritalStatus) => m.name === selectedOption);
+        break;
+      case 'bankId':
+        this.selectedBank = this.banks.find((b: BankDTO) => b.name === selectedOption);
+        break;
+      case 'countryId':
+      case 'citizenshipCountryId':
+        this.selectedCountry = this.countries.find((c: CountryDto) => c.name === selectedOption);
         break;
       case 'category':
       case 'role':
-        log.info(this.uploadForm.getRawValue())
-        this.category = event.target.value;
+        this.createEntityForm();
         const formValues = this.uploadForm.getRawValue();
+        this.category = formValues.category;
         if (formValues.category && formValues.role) this.fetchFormFields(formValues.category);
+        this.updateOrganizationLabel(formValues.category);
         break;
       default:
           log.info(`no fieldId found`)
@@ -311,12 +354,62 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
+  updateOrganizationLabel(category: string) : void {
+    const index: number = this.uploadFormFields.findIndex(field => field.fieldId === "organizationType");
+    if (category === 'corporate') {
+      this.uploadFormFields[index].label = {
+        en: 'organization type',
+        fr: '',
+        ke: ''
+      }
+    } else {
+      this.uploadFormFields[index].label = {
+        en: 'client type',
+        fr: '',
+        ke: ''
+      }
+    }
+  }
+
+
+  fetchSelectOptions(groupId: string, fieldId: string): void {
+    log.info(`field to populate >>> `, fieldId);
+    const sectionIndex: number = this.formGroupSections.findIndex(section => section.groupId === groupId);
+    const fieldIndex: number = this.formGroupSections[sectionIndex].fields.findIndex((field: FieldModel) => field.fieldId === fieldId);
+    if (
+      this.formGroupSections[sectionIndex].fields[fieldIndex].options.length > 0 &&
+      (!['bankId', 'bankBranchCode'].includes(fieldId))
+    ) return // if options already have value, don't call endpoint
+
+    switch (fieldId) {
+      case 'maritalStatus':
+        this.fetchMaritalStatuses(sectionIndex, fieldIndex)
+        break;
+      case 'paymentMethod':
+        this.fetchPaymentModes(sectionIndex, fieldIndex);
+        break;
+      case 'bankId':
+        this.fetchBanks(sectionIndex, fieldIndex);
+        break
+      case 'bankBranchCode':
+        this.fetchBankBranches(sectionIndex, fieldIndex);
+        break
+      case 'countryId':
+      case 'citizenshipCountryId':
+        this.fetchCountries(sectionIndex, fieldIndex);
+        break
+      default:
+        log.info(`no fieldId found`)
+    }
+  }
+
+
   /**
    * validate regex
    * @param field
-   * @param placeholder
+   * @param groupId
    */
-  validateRegex(field: FieldModel, placeholder?: any): void {
+  validateRegex(field: FieldModel, groupId: string): void {
 
     const fieldId = field.fieldId;
     let pattern: RegExp;
@@ -337,19 +430,20 @@ export class NewEntityV2Component implements OnInit {
           ? new RegExp(regexToUse[this.idType][0].value)
           : null;
 
-        input =  this.entityForm.getRawValue()[fieldId];
+        input =  this.entityForm.get(`${groupId}.${fieldId}`)?.value;
         errorMessage = regexToUse[this.idType][0].message[this.language];
         this.generateRegexErrorMessage(pattern, input, errorMessage, fieldId);
+
         break;
 
       default:
         pattern = new RegExp(field.validations[0]?.value);
-        input =  this.entityForm.getRawValue()[fieldId];
+        input =  this.entityForm.getRawValue()[groupId][fieldId];
         errorMessage = field.validations[0]?.message[this.language];
         this.generateRegexErrorMessage(pattern, input, errorMessage, fieldId);
     }
 
-    log.info(`regex to use`, this.regexErrorMessages);
+    log.info(`regex to use`, this.regexErrorMessages, groupId);
 
   }
 
@@ -374,6 +468,116 @@ export class NewEntityV2Component implements OnInit {
     }
   }
 
+
+  /**
+   * get field control to display validation errors
+   * @param groupId
+   * @param fieldId
+   */
+  getFieldControl(groupId: string, fieldId: string) {
+    return this.entityForm.get(`${groupId}.${fieldId}`);
+  }
+
+
+  /**
+   * fetches all marital statuses when required by user.
+   * get the index of the selected section using groupId
+   * get the index of the selected field using fieldId
+   * create an array of strings from marital object and assign to options of the marital status formField
+   */
+  fetchMaritalStatuses(sectionIndex:number, fieldIndex: number): void {
+        this.maritalStatusService.getMaritalStatus().subscribe({
+      next: (data: MaritalStatus[]) => {
+        this.maritalStatuses = data
+        const maritalStatusStringArr: string[] = data.map((status: MaritalStatus) => status.name);
+        this.formGroupSections[sectionIndex].fields[fieldIndex].options = maritalStatusStringArr
+        log.info(`maritalStatus: `, maritalStatusStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch maritalStatus: `, err);
+      }
+    })
+  }
+
+
+  /**
+   * fetches all paymentModes when required by user.
+   * get the index of the selected section using groupId
+   * get the index of the selected field using fieldId
+   * create an array of strings from paymentModes object and assign to options of the paymentModes formField
+   */
+  fetchPaymentModes(sectionIndex:number, fieldIndex: number): void {
+    this.paymentModesService.getPaymentModes().subscribe({
+      next: (data: PaymentModesDto[]) => {
+        this.paymentModes = data
+        const paymentModesStringArr: string[] = data.map((paymentMode: PaymentModesDto) => paymentMode.description);
+        this.formGroupSections[sectionIndex].fields[fieldIndex].options = paymentModesStringArr
+        log.info(`payment Modes: `, paymentModesStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch payment modes: `, err);
+      }
+    })
+  }
+
+  /**
+   * fetches all banks when required by user.
+   * get the index of the selected section using groupId
+   * get the index of the selected field using fieldId
+   * create an array of strings from banks object and assign to options of the banks formField
+   */
+  fetchBanks(sectionIndex:number, fieldIndex: number): void {
+    const countryId: number = this.selectedCountry?.id;
+    this.bankService.getBanks(countryId).subscribe({
+      next: (data: BankDTO[]) => {
+        this.banks = data
+        const bankStringArr: string[] = data.map((bank: BankDTO) => bank.name);
+        this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankStringArr
+        log.info(`banks: `, bankStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch : `, err);
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', 'You have not selected a country!');
+      }
+    })
+  }
+
+
+  fetchBankBranches(sectionIndex:number, fieldIndex: number): void {
+    const bankId: number = this.selectedBank?.id;
+    this.bankBranches = [];
+    log.info(`selected bank >>> `, this.selectedBank)
+    this.bankService.getBankBranchesByBankId(bankId).subscribe({
+      next: (data: BankBranchDTO[]) => {
+        this.bankBranches = data;
+        const bankBranchStringArr: string[] = data.map((branch: BankBranchDTO) => branch.name);
+        this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankBranchStringArr
+        log.info(`bank branches: `, bankBranchStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', 'You have not selected a bank!');
+      }
+    })
+  }
+
+
+  fetchCountries(sectionIndex:number, fieldIndex: number): void {
+    log.info(`selected bank >>> `, this.selectedCountry)
+    this.countryService.getCountries().subscribe({
+      next: (data: CountryDto[]) => {
+        this.countries = data;
+        const countryStringArr: string[] = data.map((country: CountryDto) => country.name);
+        this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+        log.info(`bank branches: `, countryStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+      }
+    })
+  }
 
 }
 
