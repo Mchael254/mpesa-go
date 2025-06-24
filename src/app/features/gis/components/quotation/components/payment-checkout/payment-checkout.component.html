@@ -1,30 +1,30 @@
 <div class="container">
-    <div class="border border-outline-primary w-50 p-3 bg-white rounded-2 z-10 z-10 shadow-lg">
+  <div class="border border-outline-primary w-50 p-3 bg-white rounded-2 z-10 z-10 shadow-lg">
 
-        <div class="d-flex justify-content-between mt-4 text-black">
-            <div class="d-flex justify-content-around align-items-center gap-2">
-                <input type="radio" id="mpesa" name="mobilePayment" value="mpesa" [(ngModel)]="selectedPayment" />
-                <label for="huey">Mpesa</label>
-            </div>
-            <div class="d-flex justify-content-around align-items-center gap-2">
-                <input type="radio" id="airtelMoney" name="mobilePayment" value="airtelMoney"
-                    [(ngModel)]="selectedPayment" />
-                <label for="airtelMoney">Airtel Money</label>
-            </div>
-            <div class="d-flex justify-content-around align-items-center gap-2">
-                <input type="radio" id="Tkash" name="mobilePayment" value="Tkash" [(ngModel)]="selectedPayment" />
-                <label for="Tkash">Tkash</label>
-            </div>
-        </div>
-        <div class="d-flex flex-column  justify-content-around mt-4">
-            <div class="d-flex gap-2 justify-content-between text-black" style="width: 40%;">
-                <p>Amount</p>
-                <p><strong>{{ currencyPrefix }} {{ amount | number:'1.0-0' }}</strong></p>
-            </div>
+    <div class="d-flex justify-content-between mt-4 text-black">
+      <div class="d-flex justify-content-around align-items-center gap-2">
+        <input type="radio" id="mpesa" name="mobilePayment" value="mpesa" [(ngModel)]="selectedPayment"/>
+        <label for="huey">Mpesa</label>
+      </div>
+      <div class="d-flex justify-content-around align-items-center gap-2">
+        <input type="radio" id="airtelMoney" name="mobilePayment" value="airtelMoney"
+               [(ngModel)]="selectedPayment"/>
+        <label for="airtelMoney">Airtel Money</label>
+      </div>
+      <div class="d-flex justify-content-around align-items-center gap-2">
+        <input type="radio" id="Tkash" name="mobilePayment" value="Tkash" [(ngModel)]="selectedPayment"/>
+        <label for="Tkash">Tkash</label>
+      </div>
+    </div>
+    <div class="d-flex flex-column  justify-content-around mt-4">
+      <div class="d-flex gap-2 justify-content-between text-black" style="width: 40%;">
+        <p>Amount</p>
+        <p><strong>{{ currencyPrefix }} {{ amount | number:'1.0-0' }}</strong></p>
+      </div>
 
-            <div class="d-flex gap-2 justify-content-between text-black" style="width: 40%;">
-                <p>Account number</p>
-                <p><strong>{{ipayRefNo}}</strong></p>
+      <div class="d-flex gap-2 justify-content-between text-black" style="width: 40%;">
+        <p>Account number</p>
+        <p><strong>{{ ipayRefNo }}</strong></p>
 
             </div>
         </div>
@@ -38,12 +38,9 @@
             </small>
         </div>
         <div class="d-flex mt-4 mb-3 gap-3 justify-content-end py-2 w-50">
-            <!-- <button type="button" class="btn ml-4 mx-4 text-primary font-bold"
-                data-bs-dismiss="modal">{{'gis.quotation.cancel' |
-                translate}}</button> -->
-            <button type="button" class="btn mx-0 btn-primary" (click)="sendSTK()">Send STK prompt</button>
+            <button type="button" class="btn mx-0 btn-primary" (click)="sendSTK()">{{paymentButtonLabel}}</button>
         </div>
 
-    </div>
+  </div>
 
 </div>
