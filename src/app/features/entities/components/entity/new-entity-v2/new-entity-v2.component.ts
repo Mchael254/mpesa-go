@@ -64,6 +64,9 @@ export class NewEntityV2Component implements OnInit {
   selectedBankBranch: BankBranchDTO;
   selectedCountry: CountryDto = null;
 
+  wealthAmlFormFields: FieldModel[] = [];
+  corporateContactDetailsFormField: FieldModel[] = [];
+
 
   constructor(
     private fb: FormBuilder,
@@ -174,7 +177,6 @@ export class NewEntityV2Component implements OnInit {
 
   addFieldsToSections(formGroupSection: any[]): void {
     formGroupSection.forEach(section => {
-
       const group = this.fb.group({});
 
       section.fields.forEach(field => {
@@ -268,7 +270,8 @@ export class NewEntityV2Component implements OnInit {
    * @param formGroupSections
    */
   assignFieldsToGroupByGroupId(fields: FieldModel[], formGroupSections: any[]): void { // todo: create Model for formGroupSections
-    let visibleFormFields = fields.filter(field => field.visible); // todo: create Model for FormFields
+    let visibleFormFields = fields.filter((field: FieldModel) => field.visible
+      && field.groupId !== 'wealth_aml_details' && field.subGroupId !== 'contact_details'); // todo: create Model for FormFields
 
     formGroupSections.forEach(section => { // initialize fields to empty array
       section.fields = []
@@ -284,6 +287,10 @@ export class NewEntityV2Component implements OnInit {
 
     this.formGroupSections = formGroupSections;
     this.addFieldsToSections(formGroupSections);
+    // const wealthAmlFormFields = formGroupSections.filter(section => section.id === 'wealth_aml_details')[0];
+    this.wealthAmlFormFields = fields.filter(field => field.subGroupId === 'wealth_aml_details');
+    this.corporateContactDetailsFormField = fields.filter(field => field.subGroupId === 'contact_details');
+    log.info(`wealthAmlFormFields >>> `, this.wealthAmlFormFields);
     log.info(`formGroupSections >>> `, this.formGroupSections);
   }
 
@@ -353,7 +360,11 @@ export class NewEntityV2Component implements OnInit {
     }
   }
 
-
+  /**
+   * update organization label based on category.
+   * if category == individual, label = "client type" ELSE label = "organization type"
+   * @param category
+   */
   updateOrganizationLabel(category: string) : void {
     const index: number = this.uploadFormFields.findIndex(field => field.fieldId === "organizationType");
     if (category === 'corporate') {
@@ -372,6 +383,12 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
+  /**
+   * fetch dropdown options from API
+   * check fieldId to determine which API to call
+   * @param groupId
+   * @param fieldId
+   */
   fetchSelectOptions(groupId: string, fieldId: string): void {
     log.info(`field to populate >>> `, fieldId);
     const sectionIndex: number = this.formGroupSections.findIndex(section => section.groupId === groupId);
@@ -544,6 +561,11 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
+  /**
+   * fetch bank branches by bankId
+   * @param sectionIndex
+   * @param fieldIndex
+   */
   fetchBankBranches(sectionIndex:number, fieldIndex: number): void {
     const bankId: number = this.selectedBank?.id;
     this.bankBranches = [];
@@ -564,6 +586,11 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
+  /**
+   * fetch countries
+   * @param sectionIndex
+   * @param fieldIndex
+   */
   fetchCountries(sectionIndex:number, fieldIndex: number): void {
     log.info(`selected bank >>> `, this.selectedCountry)
     this.countryService.getCountries().subscribe({
