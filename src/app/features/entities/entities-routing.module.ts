@@ -18,6 +18,7 @@ import { NewLeadComponent } from './components/lead/new-lead/new-lead.component'
 import { ListProspectComponent } from './components/prospect/list-prospect/list-prospect.component';
 import { NewProspectComponent } from './components/prospect/new-prospect/new-prospect.component';
 import {NewEntityV2Component} from "./components/entity/new-entity-v2/new-entity-v2.component";
+import {CreateEntityComponent} from "./components/entity/create-entity/create-entity.component";
 
 const routes: Routes = [
   {
@@ -125,6 +126,10 @@ const routes: Routes = [
   {
     path: 'edit/:id',
     component: EditComponent,
+  },
+  {
+    path: 'create',
+    component: CreateEntityComponent,
   },
 ];
 
