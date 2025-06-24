@@ -34,12 +34,14 @@
                 pattern="[0-9]{10}" class="border border-outline-primary w-50 p-2 mt-2 form-control"
                 placeholder="e.g. 0712345678" required />
             <small class="text-danger" *ngIf="phoneInput.touched && !isValidPhoneNumber()">
-                Phone number must be exactly 10 digits.
+                Invalid phone number, try again.
             </small>
-            <small *ngIf="validPhoneNumber" class="text-danger"> Enter a valid Phone number.</small>
         </div>
-        <div class="mt-4 mb-3 gap-3 justify-content-around p-2">
-            <button type="button" class="btn mx-4 btn-primary" (click)="sendSTK()">Send STK prompt</button>
+        <div class="d-flex mt-4 mb-3 gap-3 justify-content-end py-2 w-50">
+            <!-- <button type="button" class="btn ml-4 mx-4 text-primary font-bold"
+                data-bs-dismiss="modal">{{'gis.quotation.cancel' |
+                translate}}</button> -->
+            <button type="button" class="btn mx-0 btn-primary" (click)="sendSTK()">Send STK prompt</button>
         </div>
 
     </div>
