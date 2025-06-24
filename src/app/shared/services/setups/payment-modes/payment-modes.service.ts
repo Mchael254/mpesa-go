@@ -16,13 +16,9 @@ export class PaymentModesService {
   constructor(private api: ApiService) {}
 
   getPaymentModes(): Observable<PaymentModesDto[]> {
-    const params = new HttpParams().set('organizationId', null);
-
     return this.api.GET<PaymentModesDto[]>(
       `payment-modes`,
-      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
-      params
-    );
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL);
   }
 
   createPaymentMode(data: PaymentModesDto): Observable<PaymentModesDto> {
