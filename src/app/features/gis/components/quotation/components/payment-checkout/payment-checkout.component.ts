@@ -66,6 +66,18 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
     return /^(01|07)\d{8}$/.test(this.phoneNumber);
   }
 
+  paymentResponse() {
+    this.failed = true
+    this.paymentStatus = true;
+    this.paymentButtonLabel = 'Initiate payment'
+    this.action = 'initiate';
+    this.checkoutId = null
+    setTimeout(() => {
+      this.paymentStatus = false;
+    }, 8000);
+
+  }
+
 
   sendSTK() {
     if (this.phoneNumber === '') {
@@ -133,45 +145,17 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
             if (response._embedded === 'SUCCESS') {
               this.paymentStatus = true
               this.success = true
-              this.successMessage = 'Transaction successful, you can now close the tab'
+              this.successMessage = response.message
               this.paymentButton = false
               this.checkoutId = null
-            } else if (response._embedded === 'CANCELLED') {
-              this.failed = true
-              this.paymentStatus = true;
-              this.failedMessage = 'Transaction  failed, transaction cancelled by user'
-              this.paymentButtonLabel = 'Initiate payment'
-              this.action = 'initiate';
-              this.checkoutId = null
-              setTimeout(() => {
-                this.paymentStatus = false;
-              }, 8000);
-            } else if (response._embedded === 'TIMEOUT') {
-              this.failed = true
-              this.paymentStatus = true;
-              this.failedMessage = 'Transaction  failed, payment did not complete on time'
-              this.paymentButtonLabel = 'Initiate payment'
-             this.action = 'initiate';
-             this.checkoutId = null
-              setTimeout(() => {
-                this.paymentStatus = false;
-              }, 8000);
-
-            } else if (response._embedded === 'WRONG_PIN') {
-              this.failed = true
-              this.paymentStatus = true;
-              this.failedMessage = 'Transaction failed, User entered incorrect M-PESA PIN'
-              this.paymentButtonLabel = 'Initiate payment'
-              this.action = 'initiate';
-              this.checkoutId = null
-              setTimeout(() => {
-                this.paymentStatus = false;
-              }, 8000);
-
+            } else if (response._embedded !== 'SUCCESS') {
+              this.paymentResponse()
+              this.failedMessage = `Transaction failed, ${response.message}`
             }
 
           }),
           error: ((error) => {
+            log.debug(error)
 
           })
         })
