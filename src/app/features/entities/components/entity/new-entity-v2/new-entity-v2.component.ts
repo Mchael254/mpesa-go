@@ -14,6 +14,7 @@ import {BankService} from "../../../../../shared/services/setups/bank/bank.servi
 import {CountryDto} from "../../../../../shared/data/common/countryDto";
 import {CountryService} from "../../../../../shared/services/setups/country/country.service";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
+import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -606,5 +607,8 @@ export class NewEntityV2Component implements OnInit {
     })
   }
 
+  protected readonly PhoneNumberFormat = PhoneNumberFormat;
+  protected readonly CountryISO = CountryISO;
+  protected readonly SearchCountryField = SearchCountryField;
 }
 
