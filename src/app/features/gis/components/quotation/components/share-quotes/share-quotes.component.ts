@@ -4,6 +4,8 @@ import { Logger } from "../../../../../../shared/services";
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { EmailDto } from 'src/app/shared/data/common/email-dto';
 import { NotificationService } from '../../services/notification/notification.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
 
@@ -16,6 +18,7 @@ const log = new Logger('ShareQuotesComponent');
 })
 export class ShareQuotesComponent implements OnInit, OnDestroy {
   constructor(
+    private fb: FormBuilder,
     private globalMessagingService: GlobalMessagingService,
     private notificationService: NotificationService
   ) {
@@ -26,6 +29,9 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
   @Output() sendEvent = new EventEmitter<{ mode: ShareQuoteDTO }>();
 
   @ViewChild('closeButton') closeButton: ElementRef;
+
+  shareForm!: FormGroup;
+
 
 
   shareMethods: { label: string, value: ShareMethod }[] = [
@@ -50,6 +56,12 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.shareForm = this.fb.group({
+      clientName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      
+    });
+    
   }
 
   onDownload() {
@@ -60,9 +72,22 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
   cancel() {
     this.display = false;
   }
+ 
   onSend() {
+    if (this.shareForm.invalid) {
+      this.shareForm.markAllAsTouched();
+      return;
+    }
+  
+    this.shareQuoteData.clientName = this.shareForm.value.clientName;
+    this.shareQuoteData.email = this.shareForm.value.email;
+  
     this.sendEvent.emit({ mode: this.shareQuoteData });
+
+     
+  this.closeButton.nativeElement.click();
   }
+  
 
 
   sendEmail(payload: EmailDto) {

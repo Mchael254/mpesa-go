@@ -910,6 +910,7 @@ isProductSelected(product: any): boolean {
         code: risk.riskCode,
         binderCode: risk?.applicableBinder?.code,
         sumInsured: risk?.selfDeclaredValue || risk?.value,
+        useOfProperty: risk?.useOfProperty?.description,
         withEffectFrom: this.formatDate(new Date(effectiveDate)),
         withEffectTo: this.formatDate(new Date(product.effectiveTo)),
         propertyId: `Risk ${index + 1}`,
@@ -2110,6 +2111,7 @@ isProductSelected(product: any): boolean {
     const formModel = this.quickQuoteForm.getRawValue();
     const coverFrom = format(new Date(formModel.effectiveDate), 'dd MMMM yyyy')
     const coverTo = format(new Date(formModel.products[0]?.effectiveTo), 'dd MMMM yyyy')
+    const organizationDetails = this.sessionStorageService.getItem("organizationDetails") as OrganizationDTO
     return {
       paymentLink: null,
       quotation: {
@@ -2118,10 +2120,12 @@ isProductSelected(product: any): boolean {
         quotationPeriod: `${coverFrom} to ${coverTo}`,
         quotationTime: format(now, 'dd MMMM yyyy HHmm') + ' HRS',
         quotationStatus: 'Draft',
+        
+
       },
       organization: {
-        organizationLogo: null,
-        organizationName: null,
+        organizationLogo: organizationDetails.organizationLogo,
+        organizationName: organizationDetails.name,
       },
       products: this.premiumComputationPayloadToShare.productLevelPremiums.map((product: any) => ({
         code: product.code,

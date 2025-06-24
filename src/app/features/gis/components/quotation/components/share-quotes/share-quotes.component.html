@@ -1,3 +1,5 @@
+<form [formGroup]="shareForm">
+
 <div class="share-quote-page">
 
 
@@ -23,12 +25,33 @@
   <ng-container *ngIf="shareQuoteData.selectedMethod === 'email';else soonComingChannels">
     <div class="p-field p-mb-3">
       <label for="clientName">Client name</label>
-      <input pInputText id="clientName" [(ngModel)]="shareQuoteData.clientName" class="p-inputtext" placeholder=""/>
+      <input
+      pInputText
+      id="clientName"
+      formControlName="clientName"
+      class="p-inputtext"
+      placeholder=""
+    />
+    <div *ngIf="shareForm.get('clientName')?.touched && shareForm.get('clientName')?.invalid" class="text-danger">
+      <small>Client name is required.</small>
+    </div>
+
     </div>
     <label for="email">
       Email address<span class="required"></span>
     </label>
-    <input pInputText id="email" [(ngModel)]="shareQuoteData.email" class="p-inputtext" placeholder=""/>
+    <input
+    pInputText
+    id="email"
+    type="email"
+    formControlName="email"
+    class="p-inputtext"
+    placeholder="e.g. example@email.com"
+  />
+  <div *ngIf="shareForm.get('email')?.touched && shareForm.get('email')?.invalid" class="text-danger mt-1">
+    <small *ngIf="shareForm.get('email')?.errors?.['required']">Email is required.</small>
+    <small *ngIf="shareForm.get('email')?.errors?.['email']">Please enter a valid email address.</small>
+  </div>
   </ng-container>
   <ng-template #soonComingChannels>
     <br>
@@ -36,11 +59,28 @@
     <p>Communication channel coming soon</p>
   </ng-template>
 
+  <!--  &lt;!&ndash; SMS input field &ndash;&gt;-->
+  <!--  <div class="p-field p-mb-3" *ngIf="shareQuoteData.selectedMethod === 'sms'">-->
+  <!--    <label for="smsNumber">-->
+  <!--      Phone number<span class="required"></span>-->
+  <!--    </label>-->
+  <!--    <input pInputText id="smsNumber" [(ngModel)]="shareQuoteData.smsNumber" class="p-inputtext" placeholder="" />-->
+  <!--  </div>-->
+
+  <!--  &lt;!&ndash; WhatsApp input field &ndash;&gt;-->
+  <!--  <div class="p-field p-mb-3" *ngIf="shareQuoteData.selectedMethod === 'whatsapp'">-->
+  <!--    <label for="whatsappNumber">-->
+  <!--      WhatsApp number<span class="required"></span>-->
+  <!--    </label>-->
+  <!--    <input pInputText id="whatsappNumber" [(ngModel)]="shareQuoteData.whatsappNumber" class="p-inputtext"-->
+  <!--      placeholder="" />-->
+  <!--  </div>-->
+
   <div class="d-flex justify-content-end  mt-4">
     <button type="button" class="btn btn-outline-primary me-4" data-bs-dismiss="modal"
             (click)="cancel()">Cancel
     </button>
-    <button type="button" class="btn btn-primary" (click)="onSend()" data-bs-dismiss="modal"
+    <button type="button" class="btn btn-primary" (click)="onSend()"
             *ngIf="shareQuoteData.selectedMethod === 'email'">Send
     </button>
     <button #closeButton type="button" class="btn btn-primary" data-bs-dismiss="modal" style="display: none;"></button>
@@ -48,3 +88,4 @@
   </div>
 
 </div>
+</form>
