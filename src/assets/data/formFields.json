@@ -209,6 +209,66 @@
           },
           "isMandatory": true,
           "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "contact_details",
+          "fieldId": "title",
+          "type": "text",
+          "label": {
+            "en": "title",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "contact_details",
+          "fieldId": "full_name",
+          "type": "text",
+          "label": {
+            "en": "full name",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
         }
       ]
     },
@@ -275,7 +335,29 @@
           "subGroup": [
             {
               "label": "bbb",
-              "subGroupId": "bbb"
+              "subGroupId": "bbb",
+              "addButtonText": {
+                "en": "",
+                "ke": "",
+                "fr": ""
+              }
+            }
+
+          ]
+        },
+        {
+          "label": "wealth and anti-money laundering details",
+          "groupId": "wealth_aml_details",
+          "groupOrder": 2,
+          "subGroup": [
+            {
+              "label": "bbb",
+              "subGroupId": "bbb",
+              "addButtonText": {
+                "en": "add aml details",
+                "ke": "xxxxxx",
+                "fr": "yyyyyy"
+              }
             }
 
           ]
@@ -1559,6 +1641,8 @@
           "isMandatory": true,
           "options": [1, 3, 5]
         },
+
+
         {
           "groupId": "residential_address_details",
           "subGroupId": "",
@@ -1588,6 +1672,96 @@
           },
           "isMandatory": true,
           "options": [1, 3, 5]
+        },
+        {
+          "groupId": "wealth_aml_details",
+          "subGroupId": "wealth_aml_details",
+          "fieldId": "source_of_fund",
+          "type": "text",
+          "label": {
+            "en": "source of fund",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealth_aml_details",
+          "subGroupId": "wealth_aml_details",
+          "fieldId": "type_of_employment",
+          "type": "text",
+          "label": {
+            "en": "type of employment",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealth_aml_details",
+          "subGroupId": "wealth_aml_details",
+          "fieldId": "economic_sector",
+          "type": "text",
+          "label": {
+            "en": "economic sector",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
         }
       ]
     }
