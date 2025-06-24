@@ -40,6 +40,7 @@ export interface Tax {
 }
 
 export interface Risk {
+  useOfProperty?: string
   taxes: Tax[];
   code: string
   binderCode: number
