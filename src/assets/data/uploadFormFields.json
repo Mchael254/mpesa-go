@@ -28,7 +28,7 @@
         "ke": ""
       },
       "isMandatory": true,
-      "options": ["client", "intermediary", "staff", "service provider"]
+      "options": []
     },
     {
       "fieldId": "category",
@@ -82,8 +82,10 @@
         "ke": ""
       },
       "isMandatory": true,
-      "options": ["resident", "foreign"]
-    },
+      "options": []
+    }
+  ],
+  "bck": [
     {
       "fieldId": "national_id_card_btn",
       "type": "button",

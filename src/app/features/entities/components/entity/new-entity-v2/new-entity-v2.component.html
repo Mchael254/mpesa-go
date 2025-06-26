@@ -25,6 +25,7 @@
                       class="form-select"
                       aria-label="Default select example"
                       (change)="processSelectOption($event, field.fieldId)"
+                      (click)="fetchSelectOptions('', field.fieldId)"
                     >
                       <option value="">- Select {{ field.label?.[language] | titlecase }} -</option>
                       <option *ngFor="let option of field.options" [value]="option">
@@ -56,19 +57,20 @@
             </div>
           </div>
 
-          <hr class="my-3 mx-3">
+          <hr *ngIf="uploadGroupSections?.buttons?.length > 0" class="my-3 mx-3">
 
-          <div class="row">
+          <div class="row" *ngIf="uploadGroupSections?.buttons?.length > 0">
             <h6 class="mb-4 ms-md-5">Document upload</h6>
             <ng-container *ngFor="let uploadButton of uploadGroupSections?.buttons">
               <div class="col-sm-6">
                 <div class="row ms-md-5">
                   <div class="col-sm-4 col-6">
-                    <p class="text-muted">{{ uploadButton.label?.[language] | titlecase }}</p>
+                    <p class="text-muted">{{ uploadButton.requiredDocumentName | titlecase }}</p>
                   </div>
                   <div class="col-sm-8 mb-4 col-6">
                     <label class="btn btn-primary btn-sm d-inline-flex align-items-center">
-                      {{ uploadButton.placeholder?.[language] }}
+                      <!--{{ uploadButton.placeholder?.[language] }}-->
+                      Choose file
                       <input type="file" hidden>
                     </label>
                   </div>
@@ -159,22 +161,6 @@
                           formControlName="smsNumber"
                           [style]="{ width: '100%' }">
                         </ngx-intl-tel-input>
-
-                        <!--<input
-                          [type]="field.type"
-                          [formControlName]="field.fieldId"
-                          [placeholder]="field?.placeholder[language]"
-                          [id]="field.fieldId"
-                          class="form-control"
-                          (keyup)="validateRegex(field, group.groupId)"
-
-                          [class.is-invalid]="getFieldControl(group.groupId, field.fieldId)?.invalid &&
-                            getFieldControl(group.groupId, field.fieldId)?.touched"
-
-                          [class.is-valid]="getFieldControl(group.groupId, field.fieldId)?.valid &&
-                            getFieldControl(group.groupId, field.fieldId)?.touched"
-
-                        />-->
                       </ng-container>
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
                           * {{ regexErrorMessages[field.fieldId]?.errorMessage }}
@@ -333,6 +319,10 @@
                 [formFields]="corporateContactDetailsFormField"
                 [subGroupId]="'contact_details'"
               ></app-dynamic-setup-table>
+            </div>
+
+            <div *ngIf="group.groupId === 'privacy_policy'">
+              <app-privacy-policy></app-privacy-policy>
             </div>
 
           </div>
