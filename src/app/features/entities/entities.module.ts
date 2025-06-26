@@ -54,6 +54,8 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import {CreateEntityComponent} from "./components/entity/create-entity/create-entity.component";
 import {DialogModule} from "primeng/dialog";
 import {CheckboxModule} from "primeng/checkbox";
+import { NewEntityV2Component } from './components/entity/new-entity-v2/new-entity-v2.component';
+import { PrivacyPolicyComponent } from './components/entity/new-entity-v2/privacy-policy/privacy-policy.component';
 
 @NgModule({
   declarations: [
@@ -96,6 +98,8 @@ import {CheckboxModule} from "primeng/checkbox";
     NewProspectComponent,
     EditContactAddressFormComponent,
     CreateEntityComponent,
+    NewEntityV2Component,
+    PrivacyPolicyComponent,
   ],
   imports: [
     CommonModule,
