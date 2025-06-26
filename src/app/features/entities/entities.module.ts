@@ -55,6 +55,7 @@ import {CreateEntityComponent} from "./components/entity/create-entity/create-en
 import {DialogModule} from "primeng/dialog";
 import {CheckboxModule} from "primeng/checkbox";
 import { NewEntityV2Component } from './components/entity/new-entity-v2/new-entity-v2.component';
+import { PrivacyPolicyComponent } from './components/entity/new-entity-v2/privacy-policy/privacy-policy.component';
 
 @NgModule({
   declarations: [
@@ -98,6 +99,7 @@ import { NewEntityV2Component } from './components/entity/new-entity-v2/new-enti
     EditContactAddressFormComponent,
     CreateEntityComponent,
     NewEntityV2Component,
+    PrivacyPolicyComponent,
   ],
   imports: [
     CommonModule,
