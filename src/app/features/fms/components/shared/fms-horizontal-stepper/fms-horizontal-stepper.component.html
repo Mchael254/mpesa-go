@@ -1,0 +1,34 @@
+<!-- fms-horizontal-stepper.component.html -->
+
+<!-- Change this section -->
+<section class="rt-container" *ngIf="stepType === 'link'">
+  <div class="container-fluid">
+    <div class="stepper">
+      <!-- The (click) handler is the only thing that changes here -->
+      <ng-container *ngFor="let step of stepperData; let i = index">
+        <div class="step" (click)="setCurrentStep(step.number)">
+          <div class="circle" [ngClass]="getStepClasses(i + 1)">
+            <div>{{ step.number }}</div>
+          </div>
+          <div class="title step-link">{{ step.title }}</div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</section>
+
+<!-- This section for stepType 'tab' is already correct -->
+<section class="rt-container" *ngIf="stepType === 'tab'">
+  <div class="container-fluid">
+    <div class="stepper">
+      <ng-container *ngFor="let step of stepperData; let i = index">
+        <div class="step" (click)="setCurrentStep(step.number)">
+          <div class="circle" [ngClass]="getStepClasses(i + 1)">
+            <div>{{ step.number }}</div>
+          </div>
+          <div class="title step-link">{{ step.title }}</div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</section>
