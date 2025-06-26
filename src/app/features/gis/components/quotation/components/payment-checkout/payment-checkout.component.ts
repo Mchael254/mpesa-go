@@ -1,12 +1,13 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Logger} from 'src/app/shared/services';
-import {GlobalMessagingService} from 'src/app/shared/services/messaging/global-messaging.service';
-import {ActivatedRoute} from '@angular/router';
-import {PaymentService} from '../../services/payment-service/payment.service';
-import {untilDestroyed} from "../../../../../../shared/shared.module";
-import {tap} from "rxjs";
-import {SESSION_KEY} from "../../../../../lms/util/session_storage_enum";
-import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Logger } from 'src/app/shared/services';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { ActivatedRoute } from '@angular/router';
+import { PaymentService } from '../../services/payment-service/payment.service';
+import { untilDestroyed } from "../../../../../../shared/shared.module";
+import { tap } from "rxjs";
+import { SESSION_KEY } from "../../../../../lms/util/session_storage_enum";
+import { SessionStorageService } from "../../../../../../shared/services/session-storage/session-storage.service";
+import { faL } from '@fortawesome/free-solid-svg-icons';
 
 const log = new Logger('PaymentCheckoutComponent');
 
@@ -22,11 +23,12 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
   paymentButtonLabel = "Initiate payment"
   action: 'initiate' | 'confirm' = 'initiate'
   checkoutId: string = null
+  paymentButton: boolean = true
 
   constructor(private globalMessagingService: GlobalMessagingService,
-              private route: ActivatedRoute,
-              private sessionStorageService: SessionStorageService,
-              private paymentService: PaymentService) {
+    private route: ActivatedRoute,
+    private sessionStorageService: SessionStorageService,
+    private paymentService: PaymentService) {
   }
 
   ngOnInit() {
@@ -37,9 +39,15 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
     this.amount = +atob(queryParams.get('amount'))
   }
 
-  validPhoneNumber: boolean = false
+  validPhoneNumber: boolean = true
   phoneNumber: string = ''
   selectedPayment: 'mpesa' | 'airtel' | 'tkash' = 'mpesa';
+  empty: boolean = false;
+  paymentStatus: boolean = false
+  successMessage: string = ''
+  failedMessage: string = ''
+  success: boolean = false
+  failed: boolean = false
 
   formatPhoneNumber = (phoneNumber: string): string => {
     const cleaned = phoneNumber.replace(/\D/g, '');
@@ -58,8 +66,28 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
     return /^(01|07)\d{8}$/.test(this.phoneNumber);
   }
 
+  paymentResponse() {
+    this.failed = true
+    this.paymentStatus = true;
+    this.paymentButtonLabel = 'Initiate payment'
+    this.action = 'initiate';
+    this.checkoutId = null
+    setTimeout(() => {
+      this.paymentStatus = false;
+    }, 8000);
+
+  }
+
 
   sendSTK() {
+    if (this.phoneNumber === '') {
+      this.empty = true;
+      setTimeout(() => {
+        this.empty = false;
+      }, 3000);
+      return;
+    }
+
     if (!this.isValidPhoneNumber()) {
       this.validPhoneNumber = true
       setTimeout(() => {
@@ -115,9 +143,19 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
         .subscribe({
           next: ((response) => {
             if (response._embedded === 'SUCCESS') {
+              this.paymentStatus = true
+              this.success = true
+              this.successMessage = response.message
+              this.paymentButton = false
+              this.checkoutId = null
+            } else if (response._embedded !== 'SUCCESS') {
+              this.paymentResponse()
+              this.failedMessage = `Transaction failed, ${response.message}`
             }
+
           }),
           error: ((error) => {
+            log.debug(error)
 
           })
         })
