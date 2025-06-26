@@ -2120,6 +2120,7 @@ isProductSelected(product: any): boolean {
         quotationPeriod: `${coverFrom} to ${coverTo}`,
         quotationTime: format(now, 'dd MMMM yyyy HHmm') + ' HRS',
         quotationStatus: 'Draft',
+        quotationNo:'N/A'
         
 
       },

@@ -114,7 +114,8 @@ export interface ProductPremium {
   description: string
   code: number
   coverFrom?: string,
-  coverTo?: string
+  coverTo?: string,
+  quotationNo?:string,
 }
 
 export interface RiskLevelPremium {
