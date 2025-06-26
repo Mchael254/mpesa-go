@@ -24,7 +24,11 @@
       </app-dynamic-breadcrumb>
     </div>
   </div>
-  <app-steper [currentStep]="3" [stepperData]="steps"></app-steper>
+  <app-steper
+    [currentStep]="3"
+    [stepperData]="steps"
+    (stepChange)="handleStepNavigation($event)"
+  ></app-steper>
   <div class="main-form">
     <div class="allocation-div">
       <!-- Receipt Allocations Section -->
