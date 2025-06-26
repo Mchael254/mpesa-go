@@ -26,12 +26,14 @@
       </app-dynamic-breadcrumb>
     </div>
   </div>
-  <!-- <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper> -->
   <app-steper
     [currentStep]="1"
     [stepperData]="steps"
-    [isFormValid]="isFormValid"
+    (stepChange)="handleStepNavigation($event)"
   ></app-steper>
+
+  <!-- <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper> -->
+
   <!-- Main Form -->
   <div class="main-form">
     <!-- <div class="scroll-container bg-white" > -->
@@ -581,7 +583,7 @@
       >
         {{ "fms.receipting.clear" | translate }}
       </button>
-      <button type="button" class="btn btn-primary" (click)="validateForm()">
+      <button type="button" class="btn btn-primary" (click)="onNextClick()">
         {{ "fms.receipting.next" | translate }}
       </button>
     </div>

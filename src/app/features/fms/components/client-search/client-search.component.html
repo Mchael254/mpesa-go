@@ -24,7 +24,11 @@
       </app-dynamic-breadcrumb>
     </div>
   </div>
-  <app-steper [currentStep]="2" [stepperData]="steps"></app-steper>
+  <app-steper
+    [currentStep]="2"
+    [stepperData]="steps"
+    (stepChange)="handleStepNavigation($event)"
+  ></app-steper>
 
   <div class="main-form">
     <form [formGroup]="receiptingDetailsForm">
@@ -221,11 +225,8 @@
       </button>
     </div>
     <div class="btn-next" *ngIf="this.selectedClient">
-      <button
-        type="button"
-        class="btn btn-primary"
-        (click)="onClickClient(this.selectedClient)"
-      >
+      <!-- commented out this line:(click)="onClickClient(this.selectedClient)" -->
+      <button type="button" class="btn btn-primary" (click)="onNextClick()">
         {{ "fms.receipting.next" | translate }}
       </button>
       <!-- <button type="button" class="btn-primary" (click)="onNext()">Next</button> -->

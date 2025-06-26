@@ -17,7 +17,7 @@ import {
 
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { ReceiptService } from '../../services/receipt.service';
-
+import { firstValueFrom } from 'rxjs';
 import { StaffService } from '../../../../features/entities/services/staff/staff.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { OrganizationService } from '../../../../features/crm/services/organization.service';
@@ -513,7 +513,88 @@ export class ClientSearchComponent implements OnInit {
         },
       });
   }
+ /**
+   * This is the new central method for handling the logic required to proceed.
+   * It checks for a selected client, fetches transactions, and returns a boolean 
+   * indicating whether navigation to the next step is allowed.
+   * @returns {Promise<boolean>} - True if validation passes and transactions are found, false otherwise.
+   */
+  private async validateAndFetchTransactions(): Promise<boolean> {
+    // 1. Check if a client is selected. This is the primary validation check.
+    if (!this.selectedClient) {
+      this.globalMessagingService.displayErrorMessage('Warning', 'Please select a client before proceeding.');
+      return false;
+    }
 
+    // 2. Set the selected client in the shared service.
+    this.receiptDataService.setSelectedClient(this.selectedClient);
+    
+    // 3. Perform the asynchronous transaction fetch.
+    try {
+      const response = await firstValueFrom(this.receiptService.getTransactions(
+        this.selectedClient.systemShortDesc,
+        this.selectedClient.code,
+        this.selectedClient.accountCode,
+        this.selectedClient.receiptType,
+        this.selectedClient.shortDesc
+      ));
+
+      // 4. Check if the API returned valid data.
+      if (!response.data || response.data.length === 0) {
+        this.globalMessagingService.displayErrorMessage(
+          'No Transactions',
+          'No transactions were found for the selected client.'
+        );
+        return false; // Prevent navigation
+      }
+
+      // 5. Success! Save the data and signal that we can proceed.
+      this.transactions = response.data;
+      this.receiptDataService.setTransactions(this.transactions);
+      return true; // Allow navigation
+
+    } catch (err) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        err.error?.msg || 'An error occurred while fetching transactions.'
+      );
+      return false; // Prevent navigation on API error
+    }
+  }
+
+  /**
+   * Handles the click event from the "Next" button.
+   */
+  async onNextClick(): Promise<void> {
+    const canProceed = await this.validateAndFetchTransactions();
+    if (canProceed) {
+      // The onNext() method now serves as a simple navigator
+      this.onNext();
+    }
+  }
+
+  /**
+   * Handles navigation requests from the stepper component.
+   * @param {number} stepNumber - The step number the user clicked on.
+   */
+  async handleStepNavigation(stepNumber: number): Promise<void> {
+    const targetStep = this.steps.find(s => s.number === stepNumber);
+    if (!targetStep) return;
+
+    // Only perform validation when moving FORWARD to a step beyond the current one.
+    if (stepNumber > 2) { // Current step is 2
+      const canProceed = await this.validateAndFetchTransactions();
+      if (canProceed) {
+        this.router.navigate([targetStep.link]);
+      }
+      // If validation fails, the error is already shown. Do nothing.
+    } else {
+      // Allow navigation to previous steps without validation.
+      this.router.navigate([targetStep.link]);
+    }
+  }
+
+ 
   /**
    * Navigates to the allocation screen.
    */
