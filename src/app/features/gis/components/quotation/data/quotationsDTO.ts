@@ -191,7 +191,6 @@ export interface QuotationProduct {
   productCode: number;
   quotationCode: number;
   productShortDescription: string;
-  quotationNo?: string;
   premium: number;
   wef: string;
   wet: string;
@@ -1125,6 +1124,7 @@ export interface QuotationDetailsDto {
   quotationTime: string
   quotationAgent?: string
   insuredName?: string
+  quotationNo?:string
 }
 
 export interface QuotationReportDto {
