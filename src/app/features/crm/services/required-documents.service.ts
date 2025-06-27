@@ -42,6 +42,29 @@ export class RequiredDocumentsService {
     );
   }
 
+  getAccountTypeRequiredDocument(
+    accountType?: string,
+    category?: string,
+    account_subtype_code?: number,
+    organizationId?: number,
+  ): Observable<RequiredDocumentDTO[]> {
+    const paramsObj: { [param: string]: string } = {};
+    const optionalParams = { accountType, category, account_subtype_code, organizationId };
+    Object.entries(optionalParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        paramsObj[key] = value.toString();
+      }
+    });
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET<RequiredDocumentDTO[]>(
+      `required-documents/assignments/by-account-type`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
+    );
+  }
+
   createRequiredDocument(
     data: RequiredDocumentDTO
   ): Observable<RequiredDocumentDTO> {

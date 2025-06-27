@@ -36,7 +36,7 @@ export class ClientTypeService {
       params
     );
   }
-  
+
   getIdentifierTypes(organizationId?:number): Observable<IdentityModeDTO[]> {
     log.info('Fetching Client Types');
     const paramsObj: { [param: string]: string } = {};
