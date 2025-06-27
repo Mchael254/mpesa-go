@@ -49,7 +49,7 @@ export class ProductsService {
 
   getAllProducts(): Observable<Products[]> {
     let page = 0;
-    let size = 1000;
+    let size = 100;
 
 
     return this.api.GET<Products[]>(`api/v1/products?page=${page}&pageSize=${size}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(

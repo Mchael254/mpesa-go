@@ -1,6 +1,6 @@
 <div class="mx-4 mt-3">
   <p class="title">Quotations:Quotation Details </p>
-  <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+  <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
 
 
   <div class="card mb-4">
@@ -176,47 +176,71 @@
   </div>
 
   <div class="card mb-2">
-    <div class="card-body">
+    <div class="card-body" class="mx-4">
       <div class="row mb-3">
         <div class="col-4">
-          <h6> {{ 'gis.quotation.product_details' | translate }}</h6>
+          <h6
+            style="color: #00529B; font-size: 20px; font-weight: 500; font-family: Roboto; margin-bottom: 0; margin-top: 1.5rem;">
+            {{ 'gis.quotation.product_details' | translate }}
+          </h6>
         </div>
-        <div class="col-8 d-flex justify-content-end">
-          <div class="row">
-            <div class="col-3">
+      </div>
 
-            </div>
-            <div class="col-4">
-              <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
-                data-bs-target="#addProduct" title="Edit">
-                <i class="fa-solid fa-plus"></i>
-              </button>
+      <div class="row mb-3">
+        <div class="col-12 d-flex justify-content-end" style="margin-bottom: 0;">
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-primary no-hover" data-bs-toggle="modal" data-bs-target="#addProduct"
+              title="Add Product"
+              style="font-family: Roboto; font-size: 12px; font-weight: 600; color: #FFFFFF; height: 30px; width: 100px; border-radius: 0; white-space: nowrap; background-color: #00529B; border-color: #00529b;">
+              Add Product
+            </button>
 
-            </div>
-            <div class="col-4">
 
-              <button type="button" id="icon" class="btn btn-danger me-2" title="Delete" id="openProductButtonDelete"
-                [hidden]="true" data-bs-toggle="modal" data-bs-target="#deleteProduct">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-              <button type="button" id="icon" class="btn btn-primary" title="Delete">
-                <i class="fa-solid fa-trash-can" (click)="openProductDeleteModal()"></i>
-              </button>
-            </div>
-            <div class="col-1"></div>
+            <button type="button" class="btn btn-primary" title="drop down"
+              style="font-family: Roboto; font-size: 12px; font-weight: 600;  height: 30px; width: 40px; background-color: #FFFFFF;">
+              <span class="arrow-down" style="color: #000000;">▼</span>
+
+            </button>
           </div>
         </div>
       </div>
 
+
+
       <p-table [value]="productDetails" dataKey="productCode.code" editMode="row" [tableStyle]="{'min-width': '50rem'}">
-        <ng-template pTemplate="header">
+        <ng-template pTemplate="header" style="height: 40px;">
           <tr>
-            <th class="flexible-header">Product</th>
-            <th class="flexible-header">Cover from</th>
-            <th class="flexible-header">Cover to</th>
-            <th class="flexible-header"></th>
+            <th class="flexible-header1">
+              <div class="header-wrapper">
+                <span>Product</span>
+                <span class="sort-icons">
+                  <span class="arrow" (click)="sort('product')">↑</span>
+                  <span class="arrow" (click)="sort('product')">↓</span>
+                </span>
+              </div>
+            </th>
+            <th class="flexible-header1">
+              <div class="header-wrapper">
+                <span>Cover from</span>
+                <span class="sort-icons">
+                  <span class="arrow" (click)="sort('coverFrom')">↑</span>
+                  <span class="arrow" (click)="sort('coverFrom')">↓</span>
+                </span>
+              </div>
+            </th>
+            <th class="flexible-header1">
+              <div class="header-wrapper">
+                <span>Cover to</span>
+                <span class="sort-icons">
+                  <span class="arrow" (click)="sort('coverTo')">↑</span>
+                  <span class="arrow" (click)="sort('coverTo')">↓</span>
+                </span>
+              </div>
+            </th>
+            <th class="flexible-header1"></th>
           </tr>
         </ng-template>
+
 
         <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
           <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRowIndex !== ri"
@@ -237,6 +261,8 @@
                 <ng-template pTemplate="output">
                   {{ product.productCode?.description }}
                 </ng-template>
+
+
               </p-cellEditor>
             </td>
 
@@ -251,6 +277,8 @@
                 <ng-template pTemplate="output">
                   {{ product.coverFrom | date: dateFormat }}
                 </ng-template>
+
+
               </p-cellEditor>
             </td>
 
@@ -265,25 +293,35 @@
                 <ng-template pTemplate="output">
                   {{ product.coverTo | date: dateFormat }}
                 </ng-template>
+
+
               </p-cellEditor>
             </td>
 
-            <!-- Action Buttons -->
             <td class="flexible-header">
-              <div class="flex items-center justify-center gap-2">
-                <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
-                  (click)="onRowEditInits(product)" text rounded severity="secondary">
+              <div class="d-flex justify-content-end gap-2">
+                <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product)"
+                  class="p-button-sm p-button-text p-button-info no-border">
+                  Edit
                 </button>
 
-                <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
-                  (click)="onRowEditSaves(product)" text rounded severity="secondary">
+                <button *ngIf="editing" type="button" pSaveEditableRow (click)="onRowEditSaves(product)"
+                  class="p-button-sm p-button-text p-button-success no-border">
+                  Save
                 </button>
 
-                <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
-                  (click)="onRowEditCancels(product, ri)" text rounded severity="secondary">
+                <button *ngIf="editing" type="button" pCancelEditableRow (click)="onRowEditCancels(product, ri)"
+                  class="p-button-sm p-button-text p-button-secondary no-border">
+                  Cancel
+                </button>
+
+                <button type="button" (click)="openProductDeleteModal(product)"
+                  class="p-button-sm p-button-text p-button-danger no-border">
+                  Delete
                 </button>
               </div>
             </td>
+
           </tr>
         </ng-template>
 
@@ -451,8 +489,7 @@
               <td class="action-cell">
                 <span class="p-button-label p-text-bold"
                   style="color: #00529B;margin-right:16px; margin-left:10px;cursor:pointer;">Edit</span>
-                <span class="p-button-label p-text-bold"
-                  style="color: #00529B;cursor:pointer;">Delete</span>
+                <span class="p-button-label p-text-bold" style="color: #00529B;cursor:pointer;">Delete</span>
               </td>
       </div>
       </td>
