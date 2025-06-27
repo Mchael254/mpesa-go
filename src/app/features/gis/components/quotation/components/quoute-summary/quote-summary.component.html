@@ -272,14 +272,15 @@
           Please leave a comment before continuing
         </small>
         <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-2 mt-2 p-0">
-          <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
-            style="text-decoration: none;">{{
-            'gis.quotation.cancel' | translate
-            }}
-          </button>
+
           <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
           <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
             (click)="reassignQuotation()">{{ 'gis.quotation.reassign' | translate }}
+          </button>
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+            style="text-decoration: none;">{{
+            'gis.quotation.cancel' | translate
+            }}
           </button>
         </div>
       </div>
