@@ -1779,6 +1779,97 @@
           },
           "isMandatory": true,
           "options": []
+        },
+
+        {
+          "groupId": "privacy_policy",
+          "subGroupId": "privacy_policy",
+          "fieldId": "otp_email",
+          "type": "email",
+          "label": {
+            "en": "email address",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "privacy_policy",
+          "subGroupId": "privacy_policy",
+          "fieldId": "otp_sms",
+          "type": "number",
+          "label": {
+            "en": "phone number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "privacy_policy",
+          "subGroupId": "privacy_policy",
+          "fieldId": "enter_otp",
+          "type": "number",
+          "label": {
+            "en": "Enter OTP",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
         }
       ]
     }
