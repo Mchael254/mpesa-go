@@ -53,18 +53,18 @@ import {GlobalMessagingService} from '../../../../../../shared/services/messagin
 import {Router} from '@angular/router';
 import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
 
-import {firstValueFrom, forkJoin, mergeMap, Observable, tap} from 'rxjs';
-import {NgxCurrencyConfig} from 'ngx-currency';
-import {OccupationService} from '../../../../../../shared/services/setups/occupation/occupation.service';
-import {OccupationDTO} from '../../../../../../shared/data/common/occupation-dto';
-import {VesselTypesService} from '../../../setups/services/vessel-types/vessel-types.service';
-import {Pagination} from '../../../../../../shared/data/common/pagination';
-import {TableDetail} from '../../../../../../shared/data/table-detail';
-import {MenuService} from 'src/app/features/base/services/menu.service';
-import {SidebarMenu} from 'src/app/features/base/model/sidebar.menu';
-import {debounceTime} from "rxjs/internal/operators/debounceTime";
-import {distinctUntilChanged, map} from "rxjs/operators";
-import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
+import { firstValueFrom, forkJoin, mergeMap, Observable, Subject, tap } from 'rxjs';
+import { NgxCurrencyConfig } from 'ngx-currency';
+import { OccupationService } from '../../../../../../shared/services/setups/occupation/occupation.service';
+import { OccupationDTO } from '../../../../../../shared/data/common/occupation-dto';
+import { VesselTypesService } from '../../../setups/services/vessel-types/vessel-types.service';
+import { Pagination } from '../../../../../../shared/data/common/pagination';
+import { TableDetail } from '../../../../../../shared/data/table-detail';
+import { MenuService } from 'src/app/features/base/services/menu.service';
+import { SidebarMenu } from 'src/app/features/base/model/sidebar.menu';
+import { debounceTime } from "rxjs/internal/operators/debounceTime";
+import { distinctUntilChanged, map, takeUntil } from "rxjs/operators";
+import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import {
   ComputationPayloadDto,
   CoverType,
@@ -83,6 +83,8 @@ import {EmailDto} from "../../../../../../shared/data/common/email-dto";
 import {NotificationService} from "../../services/notification/notification.service";
 import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
 import {OrganizationDTO} from "../../../../../crm/data/organization-dto";
+
+import { OrganizationService } from "../../../../../crm/services/organization.service";
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -301,6 +303,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   currentExpandedIndex: number | null = null;
   productSearch: string = '';
   filteredProducts: Products[] = [];
+  searchChanged = new Subject<string>();
+  destroy$ = new Subject<void>();
+
 
   constructor(
     public fb: FormBuilder,
@@ -352,6 +357,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   ngOnInit(): void {
     this.LoadAllFormFields();
+    this.loadAllproducts();
     this.quickQuoteForm = this.fb.group({
       product: [[]],
       effectiveDate: [new Date()],
@@ -364,7 +370,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       this.organizationId = organization.id
     }
     this.getuser()
-
+ this.searchChanged.pipe(
+    debounceTime(300),
+    distinctUntilChanged(),
+    takeUntil(this.destroy$)
+  ).subscribe(searchText => {
+    this.filterProducts(searchText);
+  });
     const savedState = sessionStorage.getItem('savedProductsState');
     log.debug("PRODUCT SAVED STATE", savedState)
     if (savedState) {
@@ -430,9 +442,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.quotationCode = this.quotationObject?.code
   }
 
-  ngOnDestroy(): void {
-  }
-
+ngOnDestroy() {
+  this.destroy$.next();
+  this.destroy$.complete();
+}
   dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
     if (sidebarMenu.link.length > 0) {
       this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
@@ -462,7 +475,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         log.debug(this.formContent, 'Form-content');
         this.formData = this.formContent[0]?.fields;
         log.debug(this.formData, 'formData is defined here');
-        this.formData && this.loadAllproducts();
+        // this.formData && this.loadAllproducts();
 
         Object.keys(this.quickQuoteForm.controls).forEach((controlName) => {
           const control = this.quickQuoteForm.get(controlName) as any;
@@ -507,13 +520,24 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.filteredProducts = this.products
       });
   }
-  filterProducts() {
-    const search = this.productSearch.toLowerCase();
-    log.debug("Search product",this.productSearch)
-    this.filteredProducts = this.products.filter(p =>
-      p.description.toLowerCase().includes(search)
-    );
-  }
+  // filterProducts() {
+  //   const search = this.productSearch.toLowerCase();
+  //   log.debug("Search product", this.productSearch)
+  //   this.filteredProducts = this.products.filter(p =>
+  //     p.description.toLowerCase().includes(search)
+  //   );
+  // }
+  onSearchChange(search: string) {
+  this.searchChanged.next(search);
+}
+
+  filterProducts(searchText: string) {
+  const search = searchText.toLowerCase();
+  log.debug("Search product", search);
+  this.filteredProducts = this.products.filter(p =>
+    p.description.toLowerCase().includes(search)
+  );
+}
   get productsFormArray(): FormArray {
     return this.quickQuoteForm.get('products') as FormArray;
   }
@@ -607,23 +631,23 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
     return new FormGroup(group);
   }
-onCheckboxChange(event: Event, product: any) {
-  const checked = (event.target as HTMLInputElement).checked;
+  onCheckboxChange(event: Event, product: any) {
+    const checked = (event.target as HTMLInputElement).checked;
 
-  if (checked) {
-    this.selectedProducts.push(product);
-  } else {
-    this.selectedProducts = this.selectedProducts.filter(p => p !== product);
+    if (checked) {
+      this.selectedProducts.push(product);
+    } else {
+      this.selectedProducts = this.selectedProducts.filter(p => p !== product);
+    }
+
+    // Call the existing method with the same format as p-multiSelect
+    const fakeEvent = { value: this.selectedProducts };
+    this.getSelectedProducts(fakeEvent);
   }
 
-  // Call the existing method with the same format as p-multiSelect
-  const fakeEvent = { value: this.selectedProducts };
-  this.getSelectedProducts(fakeEvent);
-}
-
-isProductSelected(product: any): boolean {
-  return this.selectedProducts.includes(product);
-}
+  isProductSelected(product: any): boolean {
+    return this.selectedProducts.includes(product);
+  }
   // When products are selected from multi-select
   getSelectedProducts(event: any) {
     const currentSelection = event.value as Products[];
