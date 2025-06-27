@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { TransactionDTO } from '../data/receipting-dto'; // Adjust path as needed
 import { retry } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,7 @@ export class ReceiptDataService {
   receiptData$ = this.receiptDataSubject.asObservable();
   private selectedCurrencySubject = new BehaviorSubject<number | null>(null);
   private defaultCurrencySubject = new BehaviorSubject<number | null>(null);
+  constructor(private sessionStorage:SessionStorageService){}
   setReceiptData(data: any) {
     this.receiptData = { ...this.receiptData, ...data
      
@@ -42,16 +44,18 @@ formState$ = this.formState.asObservable();
 
 setFormState(state: any) {
   this.formState.next(state);
-  localStorage.setItem('receiptFormState', JSON.stringify(state)); // Optional persistence
+  this.sessionStorage.setItem('receiptFormState', JSON.stringify(state)); // Optional persistence
+ // localStorage.setItem('receiptFormState', JSON.stringify(state)); // Optional persistence
 }
 
 getFormState() {
-  return this.formState.value || JSON.parse(localStorage.getItem('receiptFormState') || '{}');
+  return this.formState.value || JSON.parse(this.sessionStorage.getItem('receiptFormState') || '{}');
 }
 
 clearFormState() {
   this.formState.next(null);
-  localStorage.removeItem('receiptFormState');
+  this.sessionStorage.removeItem('receiptFormState');
+  //localStorage.removeItem('receiptFormState');
 }
    // New methods to store/retrieve currency and bank
    setSelectedCurrency(currencyId: number) {
@@ -78,23 +82,25 @@ clearFormState() {
   }
   setGlobalAccountTypeSelected(account: any): void {
     this.globalAccountTypeSelected = account;
-    localStorage.setItem('globalAccountTypeSelected', JSON.stringify(account)); // Persist data
+     this.sessionStorage.setItem('globalAccountTypeSelected', JSON.stringify(account)); // Persist data
+   // localStorage.setItem('globalAccountTypeSelected', JSON.stringify(account)); // Persist data
   }
   getGlobalAccountTypeSelected(): any {
     return (
       this.globalAccountTypeSelected ||
-      JSON.parse(localStorage.getItem('globalAccountTypeSelected') || '{}')
+      JSON.parse(this.sessionStorage.getItem('globalAccountTypeSelected') || '{}')
     );
   }
   setSelectedClient(client: any): void {
     this.selectedClient = client;
-    localStorage.setItem('selectedClient', JSON.stringify(client)); // Persist data
+     this.sessionStorage.setItem('selectedClient', JSON.stringify(client)); // Persist data
+   // localStorage.setItem('selectedClient', JSON.stringify(client)); // Persist data
   }
 
   getSelectedClient(): any {
     return (
       this.selectedClient ||
-      JSON.parse(localStorage.getItem('selectedClient') || '{}')
+      JSON.parse(this.sessionStorage.getItem('selectedClient') || '{}')
     );
   }
 
@@ -152,7 +158,7 @@ clearFormState() {
     }
   
     getDefaultBranch() {
-      return this.defaultBranch || JSON.parse(localStorage.getItem('defaultBranch') || 'null');
+      return this.defaultBranch || JSON.parse(this.sessionStorage.getItem('defaultBranch') || 'null');
     }
       // Set Selected Branch
   setSelectedBranch(branch: any) {
@@ -162,7 +168,7 @@ clearFormState() {
   }
 
   getSelectedBranch() {
-    return this.selectedBranch || JSON.parse(localStorage.getItem('selectedBranch') || 'null');
+    return this.selectedBranch || JSON.parse(this.sessionStorage.getItem('selectedBranch') || 'null');
   }
    
   // Clear organization and branch data

@@ -51,7 +51,7 @@ import { LocalStorageService } from '../../../../shared/services/local-storage/l
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { TranslateService } from '@ngx-translate/core';
 import fmsStepsData from '../../data/fms-step.json';
-
+import { forkJoin } from 'rxjs';
 /**
  * @Component({
  *   selector: 'app-receipt-details',
@@ -66,7 +66,8 @@ import fmsStepsData from '../../data/fms-step.json';
   templateUrl: './receipt-capture.component.html',
   styleUrls: ['./receipt-capture.component.css'],
 })
-export class ReceiptCaptureComponent {
+export class ReceiptCaptureComponent  {
+  // Changed from `export class ReceiptCaptureComponent {` to implement OnInit
   /**
    * @description Step data for the FMS workflow.
    */
@@ -409,6 +410,7 @@ export class ReceiptCaptureComponent {
    * It initializes the form, retrieves data from localStorage, and fetches required data from backend services.
    * @returns {void}
    */
+  
   ngOnInit(): void {
     this.captureReceiptForm();
     this.loggedInUser = this.authService.getCurrentUser();
@@ -462,7 +464,15 @@ export class ReceiptCaptureComponent {
     this.fetchCurrencies();
     this.fetchPayments(this.selectedOrg?.id || this.defaultOrg?.id);
     //this.fetchBanks(this.defaultBranchId || this.selectedBranchId,this.defaultCurrencyId);
-    this.restoreFormData(); // Restore saved data
+   
+
+    this.fetchReceiptNumber(
+      this.defaultBranch?.id || this.selectedBranch?.id,
+      this.loggedInUser.code
+    );
+    this.fetchNarrations();
+    this. updateDateRestrictions();
+     this.restoreFormData(); // Restore saved data
     // Initialize form with default values first
 
     // 3. Restore UI state (visibility, requirements)
@@ -484,13 +494,6 @@ export class ReceiptCaptureComponent {
         this.updatePaymentModeFields(savedState.paymentMode);
       }
     }
-
-    this.fetchReceiptNumber(
-      this.defaultBranch?.id || this.selectedBranch?.id,
-      this.loggedInUser.code
-    );
-    this.fetchNarrations();
-    this. updateDateRestrictions();
   }
 
   /**
@@ -1581,79 +1584,170 @@ export class ReceiptCaptureComponent {
    *  to ensure that all required fields are completed correctly.
    * @returns {void}
    */
-  validateForm() {
+  private runValidation(): boolean {
+    // Mark all fields as touched to trigger UI validation messages
+    this.receiptingDetailsForm.markAllAsTouched();
+
+    // Re-use your existing validation logic
     const requiredFields = [
-      'amountIssued',
-      'bankAccount',
-      'paymentMode',
-      'narration',
-      'currency',
-      'receiptDate',
-      'receivedFrom',
+      'amountIssued', 'bankAccount', 'paymentMode', 'narration',
+      'currency', 'receiptDate', 'receivedFrom',
     ];
-    let isValid = true;
-    this.isFormValid = true; // Assume valid
-    const formData = this.receiptingDetailsForm;
-    // Check all required fields first
+
     for (const field of requiredFields) {
-      const control = formData.get(field);
-      if (!control || !control.value) {
-        isValid = false;
+      const control = this.receiptingDetailsForm.get(field);
+      if (control && control.invalid) {
         this.globalMessagingService.displayErrorMessage(
-          'Warning:',
-          'Please fill all required Fields marked with asterisk'
+          'Validation Error',
+          'Please fill all required fields marked with an asterisk (*).'
         );
-        return;
+        this.isFormValid = false;
+        return false;
       }
     }
 
-    // Special validation for payment reference when payment mode is not cash
-    const paymentMode = formData.get('paymentMode')?.value;
-    const paymentRef = formData.get('paymentRef')?.value;
-    const drawersBank = formData.get('drawersBank')?.value;
+    const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
+    const paymentRef = this.receiptingDetailsForm.get('paymentRef')?.value;
+    const drawersBank = this.receiptingDetailsForm.get('drawersBank')?.value;
+    const documentDate = this.receiptingDetailsForm.get('documentDate')?.value;
+
+    if (paymentMode && paymentMode.toLowerCase() !== 'cash') {
+      if (!paymentRef) {
+        this.showValidationError('Payment Reference is required for non-cash payment modes.');
+        this.isFormValid = false;
+        return false;
+      }
+      if (!drawersBank) {
+        this.showValidationError('Drawer’s Bank is required for non-cash payment modes.');
+        this.isFormValid = false;
+        return false;
+      }
+      if (!documentDate) {
+        this.showValidationError('Document Date is required for non-cash payments.');
+        this.isFormValid = false;
+        return false;
+      }
+    }
+    
+    // Add the post-dated cheque validation
     const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
-    const documentDate = formData.get('documentDate')?.value;
-    if (paymentMode && paymentMode.toLowerCase() !== 'cash' && !paymentRef) {
-      isValid = false;
+    if (paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque' && !documentDate) {
+      this.showValidationError('Document Date is required for post-dated cheques.');
       this.isFormValid = false;
-      this.showValidationError(
-        'Payment Reference is required for non-cash payment modes'
-      );
-      return false;
-    }
-    if (paymentMode && paymentMode.toLowerCase() !== 'cash' && !drawersBank) {
-      isValid = false;
-      this.isFormValid = false;
-      this.showValidationError(
-        'Drawer’s Bank is required for non-cash payment modes'
-      );
-      return false;
-    }
-    const selectedDocumentDate =
-      this.receiptingDetailsForm.get('documentDate')?.value;
-    const today = new Date();
-
-    if (
-      paymentMode === 'CHEQUE' &&
-      chequeType === 'post_dated_cheque' &&
-      !documentDate
-    ) {
-      isValid = false;
-      this.isFormValid = false;
-      this.showValidationError(
-        'Document Date is required for post-dated cheques'
-      );
-      return false;
-    }
-    if (paymentMode.toLowerCase() !== 'cash' && !documentDate) {
-      this.showValidationError(
-        'Document Date is required for non cash payments'
-      );
       return false;
     }
 
-    this.onNext();
+    // If all checks pass:
+    this.isFormValid = true;
+    return true;
   }
+
+  /**
+   * Handles the click event from the "Next" button.
+   * It runs validation and navigates if the form is valid.
+   */
+  onNextClick(): void {
+    if (this.runValidation()) {
+      this.onNext(); // This is your existing method that saves state and navigates
+    }
+  }
+
+  /**
+   * Handles navigation requests from the stepper component.
+   * @param {number} stepNumber - The step number the user clicked on.
+   */
+  handleStepNavigation(stepNumber: number): void {
+    const targetStep = this.steps.find(s => s.number === stepNumber);
+    if (!targetStep) return; // Should not happen
+
+    // If the user is trying to navigate to the next step (or any future step)
+    if (stepNumber > 1) { // Current step is 1
+      if (this.runValidation()) {
+         // Ensure the stepper saves state exactly like the 'onNext' button does.
+        this.saveFormState(); // Always save state before navigating
+          this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value); // ✅ ADD THIS LINE
+        this.router.navigate([targetStep.link]);
+      }
+      // If validation fails, runValidation() already showed the error. Do nothing.
+    } else {
+      // Allow navigation to previous steps without validation
+      this.router.navigate([targetStep.link]);
+    }
+  }
+
+  // validateForm() {
+  //   const requiredFields = [
+  //     'amountIssued',
+  //     'bankAccount',
+  //     'paymentMode',
+  //     'narration',
+  //     'currency',
+  //     'receiptDate',
+  //     'receivedFrom',
+  //   ];
+  //   let isValid = true;
+  //   this.isFormValid = true; // Assume valid
+  //   const formData = this.receiptingDetailsForm;
+  //   // Check all required fields first
+  //   for (const field of requiredFields) {
+  //     const control = formData.get(field);
+  //     if (!control || !control.value) {
+  //       isValid = false;
+  //       this.globalMessagingService.displayErrorMessage(
+  //         'Warning:',
+  //         'Please fill all required Fields marked with asterisk'
+  //       );
+  //       return;
+  //     }
+  //   }
+
+  //   // Special validation for payment reference when payment mode is not cash
+  //   const paymentMode = formData.get('paymentMode')?.value;
+  //   const paymentRef = formData.get('paymentRef')?.value;
+  //   const drawersBank = formData.get('drawersBank')?.value;
+  //   const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
+  //   const documentDate = formData.get('documentDate')?.value;
+  //   if (paymentMode && paymentMode.toLowerCase() !== 'cash' && !paymentRef) {
+  //     isValid = false;
+  //     this.isFormValid = false;
+  //     this.showValidationError(
+  //       'Payment Reference is required for non-cash payment modes'
+  //     );
+  //     return false;
+  //   }
+  //   if (paymentMode && paymentMode.toLowerCase() !== 'cash' && !drawersBank) {
+  //     isValid = false;
+  //     this.isFormValid = false;
+  //     this.showValidationError(
+  //       'Drawer’s Bank is required for non-cash payment modes'
+  //     );
+  //     return false;
+  //   }
+  //   const selectedDocumentDate =
+  //     this.receiptingDetailsForm.get('documentDate')?.value;
+  //   const today = new Date();
+
+  //   if (
+  //     paymentMode === 'CHEQUE' &&
+  //     chequeType === 'post_dated_cheque' &&
+  //     !documentDate
+  //   ) {
+  //     isValid = false;
+  //     this.isFormValid = false;
+  //     this.showValidationError(
+  //       'Document Date is required for post-dated cheques'
+  //     );
+  //     return false;
+  //   }
+  //   if (paymentMode.toLowerCase() !== 'cash' && !documentDate) {
+  //     this.showValidationError(
+  //       'Document Date is required for non cash payments'
+  //     );
+  //     return false;
+  //   }
+
+  //   this.onNext();
+  // }
   showValidationError(message: string) {
     this.globalMessagingService.displayErrorMessage('Error', message);
   }
