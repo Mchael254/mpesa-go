@@ -79,6 +79,7 @@ export class NewEntityV2Component implements OnInit {
   wealthAmlFormFields: FieldModel[] = [];
   corporateContactDetailsFormField: FieldModel[] = [];
   requiredDocuments: RequiredDocumentDTO[];
+  privacyPolicyFormFields: FieldModel[] = [];
 
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
   protected readonly CountryISO = CountryISO;
@@ -112,7 +113,6 @@ export class NewEntityV2Component implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.fetchFormFields();
     this.fetchUploadFormFields();
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
@@ -268,7 +268,7 @@ export class NewEntityV2Component implements OnInit {
    */
   assignFieldsToGroupByGroupId(fields: FieldModel[], formGroupSections: any[]): void { // todo: create Model for formGroupSections
     let visibleFormFields = fields.filter((field: FieldModel) => field.visible
-      && field.groupId !== 'wealth_aml_details' && field.subGroupId !== 'contact_details'); // todo: create Model for FormFields
+      && field.groupId !== 'wealth_aml_details' && field.subGroupId !== 'contact_details' && field.subGroupId !== 'privacy_policy'); // todo: create Model for FormFields
 
     formGroupSections.forEach(section => { // initialize fields to empty array
       section.fields = []
@@ -286,8 +286,10 @@ export class NewEntityV2Component implements OnInit {
     this.addFieldsToSections(formGroupSections);
     this.wealthAmlFormFields = fields.filter(field => field.subGroupId === 'wealth_aml_details');
     this.corporateContactDetailsFormField = fields.filter(field => field.subGroupId === 'contact_details');
+    this.privacyPolicyFormFields = fields.filter(field => field.subGroupId === 'privacy_policy');
     log.info(`wealthAmlFormFields >>> `, this.wealthAmlFormFields);
     log.info(`formGroupSections >>> `, this.formGroupSections);
+    log.info(`otpFormFields >>> `, this.privacyPolicyFormFields);
   }
 
 
