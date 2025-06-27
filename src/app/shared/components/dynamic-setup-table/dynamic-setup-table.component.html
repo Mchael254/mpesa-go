@@ -1,38 +1,50 @@
-<div class="card border-0 mt-3">
-  <div class="card-header bg-transparent float-start border-bottom-0">
-    <div class="row mb-3">
-      <div class="col-sm-12 col-md-6 d-flex justify-content-lg-start">
-        <h5 class="my-3">{{tableTitle}}</h5>
-      </div>
-      <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-end gap-2">
-        <button class="btn btn-primary" (click)="openModal()">
-          {{addButtonText}}
-        </button>
-
-        <!-- Caret Dropdown-style Button -->
-        <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-2"
-                (click)="columnDialogVisible = true"
-                style="width: 25px; height: 25px; border-radius: 0.5rem;">
-          <i class="fa-solid fa-caret-down fs-5 text-dark"></i>
-        </button>
-
-        <p-dialog header="Columns" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '330px'}">
-          <div *ngFor="let col of columns">
-            <div class="form-check form-check-inline float-start">
-              <input class="form-check-input" type="checkbox" value="" id="checkChecked" [checked]="col.visible" [(ngModel)]="col.visible">
-              <label class="form-check-label" for="checkChecked">
-                {{ col.header }}
-              </label>
-            </div>
-          </div>
-        </p-dialog>
-
-      </div>
+<div class="row mb-3 mx-md-5">
+  <div class="col-sm-12 col-md-6">
+    <h5 class="my-3 text-dark">{{tableTitle | titlecase}}</h5>
+    <div class="row align-items-center" *ngIf="subGroupId === 'cr12Details'">
+      <label for="category" class="w-auto text-dark">{{"entities.category" | translate | titlecase }}</label>
+      <select
+        id="category"
+        class="form-select w-auto"
+        (change)="onTypeSelect($event)"
+      >
+        <option value="" disabled selected>
+          {{ "entities.category" | translate | titlecase }}
+        </option>
+        <option value="I">
+          {{ "entities.individual" | translate | titlecase }}
+        </option>
+        <option value="C">
+          {{ "entities.corporate" | translate | titlecase }}
+        </option>
+      </select>
     </div>
   </div>
-  <div class="card-body p-0">
+  <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-end gap-2">
+    <button class="btn btn-primary" (click)="openModal()">
+      {{addButtonText | titlecase}}
+    </button>
 
-    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <!-- Caret Dropdown-style Button -->
+    <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-2"
+            (click)="columnDialogVisible = true"
+            style="width: 25px; height: 25px; border-radius: 0.5rem;">
+      <i class="fa-solid fa-caret-down fs-5 text-dark"></i>
+    </button>
+
+    <p-dialog header="Columns" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '330px'}">
+      <div *ngFor="let col of columns">
+        <div class="form-check form-check-inline float-start">
+          <input class="form-check-input" type="checkbox" value="" id="checkChecked" [checked]="col.visible" [(ngModel)]="col.visible">
+          <label class="form-check-label" for="checkChecked">
+            {{ col.header | titlecase }}
+          </label>
+        </div>
+      </div>
+    </p-dialog>
+
+  </div>
+  <div class="mt-3">
     <p-table
       [value]="tableData"
       [paginator]="true"
@@ -44,10 +56,22 @@
       [scrollable]="true"
       [(selection)]= "selectedTableRecordDetails"
       selectionMode="single"
+      [resizableColumns]="true"
+      (onRowSelect)="onRowSelect($event)"
     >
 
       <ng-template pTemplate="header">
-        <tr>
+        <tr *ngIf="subGroupId === 'cr12Details'">
+          <ng-container *ngFor="let col of filteredColumns">
+            <th *ngIf="col.visible"
+                [pSortableColumn]="col.field">
+              {{ col.header | titlecase }}
+              <p-sortIcon [field]="col.field"></p-sortIcon>
+            </th>
+          </ng-container>
+          <th style="width: 2%"></th>
+        </tr>
+        <tr *ngIf="subGroupId !== 'cr12Details'">
           <ng-container *ngFor="let col of columns">
             <th *ngIf="col.visible"
                 [pSortableColumn]="col.field">
@@ -60,7 +84,21 @@
       </ng-template>
 
       <ng-template pTemplate="body" let-rowData>
-        <tr [pSelectableRow]="rowData">
+        <tr *ngIf="subGroupId === 'cr12Details'" [pSelectableRow]="rowData">
+          <ng-container *ngFor="let col of filteredColumns">
+            <td *ngIf="col.visible">
+              {{ rowData[col.field] | titlecase }}
+            </td>
+          </ng-container>
+
+          <td *ngIf="tableData?.length > 0" class="text-center">
+            <div>
+              <a role="button" class="text-primary me-4" (click)="editSelectedRecord()">Edit</a>
+              <a role="button" class="text-primary" (click)="deleteSelectedRecord()">Delete</a>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="subGroupId !== 'cr12Details'" [pSelectableRow]="rowData">
           <ng-container *ngFor="let col of columns">
             <td *ngIf="col.visible">
               {{ rowData[col.field] | titlecase }}
@@ -77,7 +115,7 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6">{{emptyTableMessage | titlecase }}</td>
+          <td>{{emptyTableMessage | titlecase }}</td>
         </tr>
       </ng-template>
     </p-table>
@@ -85,140 +123,331 @@
 </div>
 
 <!--Modal -->
-<div
-  class="modal fade"
-  #dynamicDetailsModal
-  id="dynamicDetailsModal"
-  tabindex="-1"
-  aria-labelledby="exampleModalLabel"
->
-  <div class="modal-dialog align-items-center">
-    <div class="modal-content">
-      <div class="modal-header border-bottom-0">
-        <h5 class="modal-title" id="exampleModalLabel"> Details</h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="closeModal()"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <form [formGroup]="formGroup">
-          <div class="row my-3">
-<!--            <ng-container *ngFor="let field of groupFields; let j = index">-->
-            <ng-container *ngFor="let field of formFields; let j = index">
-              <div *ngIf="field.visible !== false" class="col-md-6" >
-                <div class="mb-3">
-                  <label [for]="field.fieldId" class="form-label">
-                    {{ field?.label['en'] }}
+<ng-container *ngIf="modalVisible">
+  <div
+    class="modal fade"
+    #dynamicDetailsModal
+    id="dynamicDetailsModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+  >
+    <div class="modal-dialog modal-lg align-items-center" style="width: 530px">
+      <div class="modal-content">
+        <div class="modal-header border-bottom-0">
+          <h5 class="modal-title text-primary" id="exampleModalLabel"> {{ tableTitle | titlecase }}</h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="closeModal()"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <!--<form [formGroup]="formGroup">
+            <div class="row">
+              <ng-container *ngFor="let field of formFields; let j = index">
+                <div *ngIf="formGroup.get(field.fieldId)" class="col-md-6">
+                  <div class="mb-3">
+                    <label [for]="field.fieldId" class="form-label">
+                      {{ field?.label['en'] | titlecase }}
 
-                    <i *ngIf="field.tooltip"
-                       class="bi bi-info-circle ms-2 text-muted"
-                       [ngbTooltip]="field.tooltip | translate">
-                    </i>
-                  </label>
+                      <i *ngIf="field.tooltip"
+                         class="bi bi-info-circle ms-2 text-muted"
+                         [ngbTooltip]="field.tooltip | translate">
+                      </i>
+                    </label>
 
-                  <!-- Text Input -->
-                  <input *ngIf="['text', 'email', 'password', 'number'].includes(field.type)"
-                         [id]="field.fieldId"
-                         [type]="field.type"
-                         class="form-control"
-                         [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
-                         [formControlName]="field.fieldId"
-                         [placeholder]="(field.placeholder['en'] || '') | translate"
-                         [attr.min]="field.min || null"
-                         [attr.max]="field.max || null"
-                         [attr.step]="field.type === 'number' ? 'any' : null">
+                    &lt;!&ndash; Text Input &ndash;&gt;
+                    <input *ngIf="['text', 'email', 'password', 'number'].includes(field.type)"
+                           [id]="field.fieldId"
+                           [type]="field.type"
+                           class="form-control"
+                           [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                           [formControlName]="field.fieldId"
+                           [placeholder]="(field.placeholder['en'] || '') | translate"
+                           [attr.min]="field.min || null"
+                           [attr.max]="field.max || null"
+                           [attr.step]="field.type === 'number' ? 'any' : null">
 
-                  <!-- Textarea -->
-                  <textarea *ngIf="field.type === 'textarea'"
-                            [id]="field.fieldId"
-                            class="form-control"
-                            [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
-                            [formControlName]="field.fieldId"
-                            [placeholder]="(field.placeholder['en'] || '') | translate"
-                            [rows]="field.rows || 3"
-                            [cols]="field.cols || undefined">
+                    &lt;!&ndash; Textarea &ndash;&gt;
+                    <textarea *ngIf="field.type === 'textarea'"
+                              [id]="field.fieldId"
+                              class="form-control"
+                              [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                              [formControlName]="field.fieldId"
+                              [placeholder]="(field.placeholder['en'] || '') | translate"
+                              [rows]="field.rows || 3"
+                              [cols]="field.cols || undefined">
                       </textarea>
 
-                  <!-- Select Dropdown -->
-                  <select *ngIf="field.type === 'select'"
-                          [id]="field.fieldId"
-                          class="form-select"
-                          [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
-                          [formControlName]="field.fieldId"
-                          [multiple]="field.multiple || false">
-                    <option [ngValue]="null" [disabled]="true">SELECT OPTION</option>
-                    <ng-container *ngIf="field.options">
-                      <option *ngFor="let option of field.options; let k = index"
-                              [ngValue]="option.value">
-                        {{ option.label ? (option.label | translate) : '' }}
-                      </option>
+                    &lt;!&ndash; Select Dropdown &ndash;&gt;
+                    <ng-container *ngIf="field.fieldId !== 'cr12Category'">
+                      <select *ngIf="field.type === 'select'"
+                              [id]="field.fieldId"
+                              class="form-select"
+                              [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                              [formControlName]="field.fieldId"
+                              [multiple]="field.multiple || false">
+                        <option [ngValue]="null" [disabled]="true">SELECT OPTION</option>
+                        <ng-container *ngIf="field.options">
+                          <option *ngFor="let option of field.options; let k = index"
+                                  [ngValue]="option">
+                            {{ option ? (option | translate) : '' }}
+                          </option>
+                        </ng-container>
+                      </select>
                     </ng-container>
-                  </select>
 
-                  <!-- Radio Buttons -->
-                  <div *ngIf="field.type === 'radio'" class="btn-group" role="group">
-                    <ng-container *ngIf="field.options">
-                      <ng-container *ngFor="let option of field.options; let k = index">
-                        <input type="radio"
-                               class="btn-check"
-                               [id]="field.fieldId + k"
-                               [name]="field.fieldId"
-                               [value]="option.value"
-                               [formControlName]="field.fieldId"
-                               autocomplete="off">
-                        <label class="btn btn-outline-primary" [for]="field.fieldId + k">
-                          {{ (option.label || '') | translate }}
-                        </label>
+
+                    <ng-container *ngIf="field.fieldId === 'cr12Category'">
+                      <select
+                        *ngIf="field.type === 'select'"
+                        [formControlName]="field.fieldId"
+                        [id]="field.fieldId"
+                        class="form-select"
+                        (change)="processSelectOption($event, field.fieldId)"
+                      >
+                        <option value="">- Select {{ field.label?.en | titlecase }} -</option>
+                        <option *ngFor="let option of field.options" [value]="option">
+                          {{ option | titlecase }}
+                        </option>
+                      </select>
+                    </ng-container>
+
+                    &lt;!&ndash; Radio Buttons &ndash;&gt;
+                    <div *ngIf="field.type === 'radio'" class="btn-group" role="group">
+                      <ng-container *ngIf="field.options">
+                        <ng-container *ngFor="let option of field.options; let k = index">
+                          <input type="radio"
+                                 class="btn-check"
+                                 [id]="field.fieldId + k"
+                                 [name]="field.fieldId"
+                                 [value]="option.value"
+                                 [formControlName]="field.fieldId"
+                                 autocomplete="off">
+                          <label class="btn btn-outline-primary" [for]="field.fieldId + k">
+                            {{ (option.label || '') | translate }}
+                          </label>
+                        </ng-container>
                       </ng-container>
-                    </ng-container>
-                  </div>
+                    </div>
 
-                  <!-- Checkbox -->
-                  <div *ngIf="field.type === 'checkbox'" class="form-check">
-                    <input class="form-check-input"
-                           type="checkbox"
+                    &lt;!&ndash; Checkbox &ndash;&gt;
+                    <div *ngIf="field.type === 'checkbox'" class="form-check">
+                      <input class="form-check-input"
+                             type="checkbox"
+                             [id]="field.fieldId"
+                             [formControlName]="field.fieldId">
+                      <label class="form-check-label" [for]="field.fieldId">
+                        {{ field.label | translate }}
+                      </label>
+                    </div>
+
+                    &lt;!&ndash; Date Picker &ndash;&gt;
+                    <input *ngIf="field.type === 'date'"
                            [id]="field.fieldId"
-                           [formControlName]="field.fieldId">
-                    <label class="form-check-label" [for]="field.fieldId">
-                      {{ field.label | translate }}
-                    </label>
-                  </div>
-
-                  <!-- Date Picker -->
-                  <input *ngIf="field.type === 'date'"
-                         [id]="field.fieldId"
-                         type="date"
-                         class="form-control"
-                         [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
-                         [formControlName]="field.fieldId"
-                         [min]="field.min || undefined"
-                         [max]="field.max || undefined">
+                           type="date"
+                           class="form-control"
+                           [class.is-invalid]="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                           [formControlName]="field.fieldId"
+                           [min]="field.min || undefined"
+                           [max]="field.max || undefined">
 
 
-                  <!-- Error Messages -->
-                  <div *ngIf="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)" class="invalid-feedback d-flex align-items-center">
-                    <i class="bi bi-exclamation-circle me-1"></i>
-                    <span>{{ 'Error on ' + field.fieldId }}</span>
+                    &lt;!&ndash; Error Messages &ndash;&gt;
+                    <div *ngIf="form.get(field.fieldId)?.invalid && (form.get(field.fieldId)?.touched || submitted)"
+                         class="invalid-feedback d-flex align-items-center">
+                      <i class="bi bi-exclamation-circle me-1"></i>
+                      <span>{{ 'Error on ' + field.fieldId }}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </ng-container>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveDetails()">{{ 'serviceDesk.saveDetails' | translate }}</button>
+              </ng-container>
+            </div>
+          </form>-->
+
+
+<!--          new form-->
+          <form [formGroup]="dynamicModalForm">
+            <div class="row">
+              <ng-container *ngFor="let field of formFields; let j = index">
+                <div *ngIf="dynamicModalForm.get(field.fieldId)" class="col-md-6">
+                  <div class="mb-3">
+                    <!-- Text / Email / Tel / etc -->
+                    <ng-container *ngIf="field.type === 'text' || field.type === 'email' || field.type==='tel'">
+                      <ng-container *ngIf="!['idNumber', 'smsNumber'].includes(field.fieldId)">
+                        <label class="form-label" [for]="field.fieldId">
+                          {{ field.label?.[language] | titlecase }}
+                          <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        </label>
+                        <input
+                          [type]="field.type"
+                          [formControlName]="field.fieldId"
+                          [placeholder]="field?.placeholder[language]"
+                          [id]="field.fieldId"
+                          class="form-control"
+                          (keyup)="validateRegex(field, field.groupId)"
+
+                          [class.is-invalid]="getFieldControl(field.groupId, field.fieldId)?.invalid && getFieldControl(field.groupId, field.fieldId)?.touched"
+
+                          [class.is-valid]="getFieldControl(field.groupId, field.fieldId)?.invalid && getFieldControl(field.groupId, field.fieldId)?.touched"
+
+                        />
+                      </ng-container>
+
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                          * {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                        </span>
+                    </ng-container>
+
+                    <!-- Textarea -->
+                    <ng-container *ngIf="field.type === 'textarea'">
+                      <label class="form-label" [for]="field.fieldId">
+                        {{ field.label?.[language] | titlecase }}
+                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                      </label>
+                      <textarea
+                        [formControlName]="field.fieldId"
+                        [placeholder]="field.placeholder"
+                        [id]="field.fieldId"
+                        class="form-control"
+                        [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
+                        [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
+                      ></textarea>
+                    </ng-container>
+
+                    <!--Date-->
+                    <ng-container *ngIf="field.type === 'date'">
+                      <label class="form-label" [for]="field.fieldId">
+                        {{ field.label?.[language] | titlecase }}
+                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        [formControlName]="field.fieldId"
+                        [placeholder]="field.placeholder"
+                        [id]="field.fieldId"
+                        class="form-control"
+                        [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
+                        [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
+                      />
+                    </ng-container>
+
+
+                    <!-- Number -->
+                    <ng-container *ngIf="field.type === 'number'">
+                      <label class="form-label" [for]="field.fieldId">
+                        {{ field.label?.[language] | titlecase }}
+                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        [formControlName]="field.fieldId"
+                        [placeholder]="field?.placeholder[language]"
+                        [id]="field.fieldId"
+                        class="form-control"
+                        [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
+                        [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
+                      />
+                    </ng-container>
+
+
+                    <!-- Select -->
+                    <ng-container *ngIf="field.type === 'select'">
+                      <label class="form-label" [for]="field.fieldId">
+                        {{ field.label?.[language] | titlecase }}
+                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                      </label>
+                      <select
+                        [formControlName]="field.fieldId"
+                        [id]="field.fieldId"
+                        class="form-select"
+                        aria-label="Default select example"
+                        (change)="processSelectOption($event, field.fieldId)"
+                        (click)="fetchSelectOptions(field.fieldId)"
+                        [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
+                        [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
+                      >
+                        <option value="">---select {{ field.label?.[language] | lowercase }}---</option>
+                        <option *ngFor="let option of field.options" [value]="option">
+                          {{ option }}
+                        </option>
+                      </select>
+                    </ng-container>
+
+
+                    <!-- radio -->
+                    <ng-container>
+                      <div class="form-check" *ngIf="field.type === 'radio'" [id]="field.fieldId">
+                        <label  class="form-check-label" *ngFor="let option of field.options">
+                          <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            [value]="option"
+                            [formControlName]="field.fieldId"
+                            [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
+                            [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
+                          >
+                          {{ option }}
+                        </label>
+                      </div>
+                    </ng-container>
+
+
+                    <!-- checkbox -->
+                    <ng-container>
+                      <div class="form-check" *ngIf="field.type === 'checkbox'">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="checkDefault"
+                          [formControlName]="field.fieldId"
+                          [id]="field.fieldId"
+                          [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
+                          [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
+                        >
+                        <label class="form-label" [for]="field.fieldId" *ngIf="field.type !== 'checkbox'">
+                          {{ field.label?.[language] | titlecase }}
+                          <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        </label>
+                      </div>
+                    </ng-container>
+
+                    <!--show validation errors-->
+                    <ng-container *ngIf="field.isMandatory">
+                      <div *ngIf="
+                          dynamicModalForm.get(field.fieldId)?.touched &&
+                          dynamicModalForm.get(field.fieldId)?.hasError(field.isMandatory ? 'required' : '')"
+                      >
+                        <span class="text-danger">
+                          * {{ field.label?.[language] }} is required.
+                        </span>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-top-0">
+          <button type="button" class="btn btn-primary"
+                  (click)="saveDetails()">{{ 'serviceDesk.saveDetails' | translate }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</ng-container>
 
-<app-reusable-input
-  [modalId]="'recordDeleteConfirmationModal'"
-  [title]="'Delete Confirmation'"
-  [message]="'Are you sure you want to delete this record?'"
-  (confirmed)="confirmRecordDelete()"
-  #recordDeleteConfirmationModal
-></app-reusable-input>
+
+<ng-container *ngIf="selectedTableRecordDetails">
+  <app-reusable-input
+    [modalId]="'recordDeleteConfirmationModal'"
+    [title]="'Delete Confirmation'"
+    [message]="'Are you sure you want to delete this record?'"
+    (confirmed)="confirmRecordDelete()"
+    #recordDeleteConfirmationModal
+  ></app-reusable-input>
+</ng-container>
+

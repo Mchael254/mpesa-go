@@ -22,8 +22,109 @@
           "groupOrder": 2,
           "subGroup": [
             {
-              "label": "bbb",
-              "subGroupId": "bbb"
+              "label": "company contacts",
+              "subGroupId": "bbb",
+              "addButtonText": {
+                "en": "",
+                "ke": "",
+                "fr": ""
+              }
+            },
+            {
+              "label": "contact person details",
+              "subGroupId": "contactPersonDetails",
+              "addButtonText": {
+                "en": "add contact details",
+                "ke": "",
+                "fr": ""
+              }
+            }
+
+          ]
+        },
+        {
+          "label": "address details",
+          "groupId": "addressDetails",
+          "groupOrder": 3,
+          "subGroup": [
+            {
+              "label": "head office address",
+              "subGroupId": "bbb",
+              "addButtonText": {
+                "en": "",
+                "ke": "",
+                "fr": ""
+              }
+            },
+            {
+              "label": "branch details",
+              "subGroupId": "branchDetails",
+              "addButtonText": {
+                "en": "add branch details",
+                "ke": "",
+                "fr": ""
+              }
+            }
+
+          ]
+        },
+        {
+          "label": "financial details",
+          "groupId": "financialDetails",
+          "groupOrder": 4,
+          "subGroup": [
+            {
+              "label": "banking information",
+              "subGroupId": "bbb",
+              "addButtonText": {
+                "en": "",
+                "ke": "",
+                "fr": ""
+              }
+            },
+            {
+              "label": "payee details",
+              "subGroupId": "payeeDetails",
+              "addButtonText": {
+                "en": "add payee details",
+                "ke": "",
+                "fr": ""
+              }
+            }
+
+          ]
+        },
+        {
+          "label": "wealth and anti-money laundering details",
+          "groupId": "wealthAmlDetails",
+          "groupOrder": 5,
+          "subGroup": [
+            {
+              "label": "aml details",
+              "subGroupId": "amlDetails",
+              "addButtonText": {
+                "en": "add aml details",
+                "ke": "",
+                "fr": ""
+              }
+            },
+            {
+              "label": "cr12 details",
+              "subGroupId": "cr12Details",
+              "addButtonText": {
+                "en": "add cr12 details",
+                "ke": "",
+                "fr": ""
+              }
+            },
+            {
+              "label": "ownership structure",
+              "subGroupId": "ownershipDetails",
+              "addButtonText": {
+                "en": "add ownership details",
+                "ke": "",
+                "fr": ""
+              }
             }
 
           ]
@@ -213,8 +314,158 @@
         {
           "groupId": "contact_details",
           "subGroupId": "contact_details",
-          "fieldId": "title",
+          "fieldId": "telephoneNumber",
           "type": "text",
+          "label": {
+            "en": "telephone number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "contact_details",
+          "fieldId": "emailAddress",
+          "type": "email",
+          "label": {
+            "en": "email address",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "contact_details",
+          "fieldId": "websiteUrl",
+          "type": "text",
+          "label": {
+            "en": "websites url",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "contact_details",
+          "fieldId": "preferredContactChannel",
+          "type": "select",
+          "label": {
+            "en": "preferred contact channel",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "contact_details",
+          "fieldId": "preferredSocialMediaLink",
+          "type": "text",
+          "label": {
+            "en": "preferred social media link",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "contactPersonDetails",
+          "fieldId": "title",
+          "type": "select",
           "label": {
             "en": "title",
             "ke": "",
@@ -242,11 +493,1371 @@
         },
         {
           "groupId": "contact_details",
-          "subGroupId": "contact_details",
-          "fieldId": "full_name",
+          "subGroupId": "contactPersonDetails",
+          "fieldId": "fullName",
           "type": "text",
           "label": {
             "en": "full name",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "contactPersonDetails",
+          "fieldId": "docIdNumber",
+          "type": "text",
+          "label": {
+            "en": "doc id number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "contactPersonDetails",
+          "fieldId": "emailAddress",
+          "type": "text",
+          "label": {
+            "en": "email address",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "contactPersonDetails",
+          "fieldId": "mobileNumber",
+          "type": "text",
+          "label": {
+            "en": "mobile number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "contactPersonDetails",
+          "fieldId": "withEffectFrom",
+          "type": "date",
+          "label": {
+            "en": "with effect from",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "contactPersonDetails",
+          "fieldId": "withEffectTo",
+          "type": "date",
+          "label": {
+            "en": "with effect to",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "addressDetails",
+          "subGroupId": "branchDetails",
+          "fieldId": "id",
+          "type": "text",
+          "label": {
+            "en": "id",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "addressDetails",
+          "subGroupId": "branchDetails",
+          "fieldId": "name",
+          "type": "text",
+          "label": {
+            "en": "name",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "addressDetails",
+          "subGroupId": "branchDetails",
+          "fieldId": "country",
+          "type": "select",
+          "label": {
+            "en": "country",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "addressDetails",
+          "subGroupId": "branchDetails",
+          "fieldId": "county",
+          "type": "select",
+          "label": {
+            "en": "county/state",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "addressDetails",
+          "subGroupId": "branchDetails",
+          "fieldId": "town",
+          "type": "select",
+          "label": {
+            "en": "city/town",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "addressDetails",
+          "subGroupId": "branchDetails",
+          "fieldId": "physicalAddress",
+          "type": "text",
+          "label": {
+            "en": "physical address",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "addressDetails",
+          "subGroupId": "branchDetails",
+          "fieldId": "postalAddress",
+          "type": "text",
+          "label": {
+            "en": "postal address",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "addressDetails",
+          "subGroupId": "branchDetails",
+          "fieldId": "postalCode",
+          "type": "select",
+          "label": {
+            "en": "postal code",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "addressDetails",
+          "subGroupId": "branchDetails",
+          "fieldId": "emailAddress",
+          "type": "text",
+          "label": {
+            "en": "email address",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "addressDetails",
+          "subGroupId": "branchDetails",
+          "fieldId": "landlineNumber",
+          "type": "text",
+          "label": {
+            "en": "landline number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "addressDetails",
+          "subGroupId": "branchDetails",
+          "fieldId": "mobileNumber",
+          "type": "text",
+          "label": {
+            "en": "mobile number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "financialDetails",
+          "subGroupId": "payeeDetails",
+          "fieldId": "name",
+          "type": "text",
+          "label": {
+            "en": "full name",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "financialDetails",
+          "subGroupId": "payeeDetails",
+          "fieldId": "docIdNumber",
+          "type": "text",
+          "label": {
+            "en": "doc id number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "financialDetails",
+          "subGroupId": "payeeDetails",
+          "fieldId": "mobile number",
+          "type": "text",
+          "label": {
+            "en": "mobile number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "financialDetails",
+          "subGroupId": "payeeDetails",
+          "fieldId": "email address",
+          "type": "text",
+          "label": {
+            "en": "email address",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "financialDetails",
+          "subGroupId": "payeeDetails",
+          "fieldId": "bankName",
+          "type": "select",
+          "label": {
+            "en": "bank name",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "financialDetails",
+          "subGroupId": "payeeDetails",
+          "fieldId": "branchName",
+          "type": "select",
+          "label": {
+            "en": "branch name",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "financialDetails",
+          "subGroupId": "payeeDetails",
+          "fieldId": "accountNumber",
+          "type": "text",
+          "label": {
+            "en": "account number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "amlDetails",
+          "fieldId": "tradingName",
+          "type": "text",
+          "label": {
+            "en": "trading name",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "amlDetails",
+          "fieldId": "registeredName",
+          "type": "text",
+          "label": {
+            "en": "registered name",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "amlDetails",
+          "fieldId": "certificateRegistrationNumber",
+          "type": "text",
+          "label": {
+            "en": "certificate registration number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "amlDetails",
+          "fieldId": "certificateRegistrationYear",
+          "type": "text",
+          "label": {
+            "en": "certificate registration year",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "amlDetails",
+          "fieldId": "parentCountry",
+          "type": "select",
+          "label": {
+            "en": "parent country",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "amlDetails",
+          "fieldId": "operatingCountry",
+          "type": "select",
+          "label": {
+            "en": "operating country",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "amlDetails",
+          "fieldId": "sourceOfFundAml",
+          "type": "select",
+          "label": {
+            "en": "source of fund",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "amlDetails",
+          "fieldId": "economicSectorAml",
+          "type": "select",
+          "label": {
+            "en": "economic sector",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "cr12Details",
+          "fieldId": "cr12Category",
+          "type": "select",
+          "label": {
+            "en": "category",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": [
+            "individual",
+            "corporate"
+          ],
+          "appliesTo": "ALL"
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "cr12Details",
+          "fieldId": "name",
+          "type": "text",
+          "label": {
+            "en": "name",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": [],
+          "appliesTo": "ALL"
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "cr12Details",
+          "fieldId": "docIdNumber",
+          "type": "text",
+          "label": {
+            "en": "doc id number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": {
+            "field": "cr12Category",
+            "mapping": {
+              "individual": {
+                "en": "doc id number",
+                "ke": "",
+                "fr": ""
+              },
+              "corporate": {
+                "en": "company registration number",
+                "ke": "",
+                "fr": ""
+              }
+            }
+          },
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": [],
+          "appliesTo": "I"
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "cr12Details",
+          "fieldId": "dateOfBirth",
+          "type": "text",
+          "label": {
+            "en": "date of birth",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": {
+            "field": "cr12Category",
+            "mapping": {
+              "individual": {
+                "en": "date of birth",
+                "ke": "",
+                "fr": ""
+              },
+              "corporate": {
+                "en": "company registration date",
+                "ke": "",
+                "fr": ""
+              }
+            }
+          },
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": [],
+          "appliesTo": "I"
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "cr12Details",
+          "fieldId": "companyRegistrationNumber",
+          "type": "text",
+          "label": {
+            "en": "company registration number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": [],
+          "appliesTo": "C"
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "cr12Details",
+          "fieldId": "companyRegistrationDate",
+          "type": "date",
+          "label": {
+            "en": "company registration date",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": [],
+          "appliesTo": "C"
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "cr12Details",
+          "fieldId": "address",
+          "type": "text",
+          "label": {
+            "en": "address",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": [],
+          "appliesTo": "ALL"
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "cr12Details",
+          "fieldId": "referenceNumber",
+          "type": "text",
+          "label": {
+            "en": "reference number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": [],
+          "appliesTo": "C"
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "cr12Details",
+          "fieldId": "referenceNumberYear",
+          "type": "text",
+          "label": {
+            "en": "reference number year",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": [],
+          "appliesTo": "C"
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "ownershipDetails",
+          "fieldId": "name",
+          "type": "text",
+          "label": {
+            "en": "name",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "ownershipDetails",
+          "fieldId": "docIdNumber",
+          "type": "text",
+          "label": {
+            "en": "doc id number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "ownershipDetails",
+          "fieldId": "mobileNumber",
+          "type": "text",
+          "label": {
+            "en": "mobile number",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealthAmlDetails",
+          "subGroupId": "ownershipDetails",
+          "fieldId": "percentageOwnership",
+          "type": "text",
+          "label": {
+            "en": "percentage ownership",
             "ke": "",
             "fr": ""
           },
@@ -1677,7 +3288,7 @@
           "groupId": "wealth_aml_details",
           "subGroupId": "wealth_aml_details",
           "fieldId": "source_of_fund",
-          "type": "text",
+          "type": "select",
           "label": {
             "en": "source of fund",
             "ke": "",
@@ -1707,9 +3318,43 @@
           "groupId": "wealth_aml_details",
           "subGroupId": "wealth_aml_details",
           "fieldId": "type_of_employment",
-          "type": "text",
+          "type": "select",
           "label": {
             "en": "type of employment",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": [
+            "SELF_EMPLOYED",
+            "EMPLOYED",
+            "NOT_EMPLOYED"
+          ]
+        },
+        {
+          "groupId": "wealth_aml_details",
+          "subGroupId": "wealth_aml_details",
+          "fieldId": "economicSector",
+          "type": "select",
+          "label": {
+            "en": "economic sector",
             "ke": "",
             "fr": ""
           },
@@ -1736,10 +3381,103 @@
         {
           "groupId": "wealth_aml_details",
           "subGroupId": "wealth_aml_details",
-          "fieldId": "economic_sector",
-          "type": "text",
+          "fieldId": "occupation",
+          "type": "select",
           "label": {
-            "en": "economic sector",
+            "en": "occupation",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealth_aml_details",
+          "subGroupId": "wealth_aml_details",
+          "fieldId": "purposeOfInsurance",
+          "type": "select",
+          "label": {
+            "en": "purpose of insurance",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "wealth_aml_details",
+          "subGroupId": "wealth_aml_details",
+          "fieldId": "premiumFrequency",
+          "type": "select",
+          "label": {
+            "en": "premium frequency",
+            "ke": "",
+            "fr": ""
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": [
+            "Annual",
+            "Monthly"
+          ]
+        },
+        {
+          "groupId": "wealth_aml_details",
+          "subGroupId": "wealth_aml_details",
+          "fieldId": "distributionChannel",
+          "type": "select",
+          "label": {
+            "en": "distribution channel",
             "ke": "",
             "fr": ""
           },
