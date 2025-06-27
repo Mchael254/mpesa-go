@@ -1,13 +1,15 @@
-<app-horizontal-stepper
+<!-- stepper.html -->
+<app-fms-horizontal-stepper
   [currentStep]="currentStep"
   [stepperData]="stepperData"
   [dbStep]="dbStep"
   [stepType]="stepType"
-  (stepChange)="validateBeforeStepChange($event)"
+  (stepChange)="stepChange.emit($event)"
   *ngIf="orientation === 'HORIZONTAL'"
 >
-</app-horizontal-stepper>
+</app-fms-horizontal-stepper>
 
+<!-- ... vertical stepper ... -->
 <app-vertical-stepper
   [currentStep]="currentStep"
   [stepperData]="stepperData"
