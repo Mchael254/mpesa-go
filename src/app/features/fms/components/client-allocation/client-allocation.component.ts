@@ -2117,4 +2117,35 @@ export class ClientAllocationComponent {
     //this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
     this.router.navigate(['/home/fms/client-search']); // Navigate to the next screen
   }
+  /**
+   * ✅ NEW METHOD
+   * Handles navigation requests from the stepper component.
+   * @param {number} stepNumber - The step number the user clicked on.
+   */
+  handleStepNavigation(stepNumber: number): void {
+    // Find the step object from the data to get its navigation link
+    const targetStep = this.steps.find(s => s.number === stepNumber);
+    if (!targetStep) {
+     // console.error(`Step ${stepNumber} not found in steps data.`);
+      return;
+    }
+
+    // The current step is 3.
+    // If the user clicks on a step with a number less than 3, it's a backward navigation.
+    if (stepNumber < 3) {
+      // No validation is needed to go back.
+      // Navigate directly to the target step's link.
+      this.router.navigate([targetStep.link]);
+    } else if (stepNumber > 3) {
+      // This is for navigating FORWARD to a hypothetical Step 4.
+      // You would place your validation logic for the client-allocation screen here.
+      // For now, we can just log it.
+      //console.log('Forward navigation from Step 3 attempted. Add validation logic here.');
+      // Example for the future:
+      // if (this.isAllocationFormValid()) {
+      //   this.router.navigate([targetStep.link]);
+      // }
+    }
+    // If stepNumber is 3, do nothing because we're already on that page.
+  }
 }

@@ -1,11 +1,7 @@
 [
+
     {
       "number": 1,
-      "title": "Client details",
-      "link": "/home/gis/quotation/quotations-client-details"
-    },
-    {
-      "number": 2,
       "title": "Quotation Details",
       "link": "/home/gis/quotation/quotation-details"
     },

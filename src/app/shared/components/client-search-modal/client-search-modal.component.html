@@ -1,39 +1,33 @@
-
-<div  #clientSearchModalElement class="modal fade" id="clientSearchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered  modal-fade modal-lg"  >
+<div #clientSearchModalElement class="modal fade" id="clientSearchModal" tabindex="-1"
+  aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 700px;">
     <div class="modal-content">
 
       <div class="modal-body">
-        <button type="button" class="float-end btn-close" (click)="cancel()"
-          aria-label="Close"></button>
+        <button type="button" class="float-end btn-close" (click)="cancel()" aria-label="Close"></button>
         <p class="text-start" id="selectClient"> {{
           'gis.quotation.select_a_client' |
           translate
           }}</p>
-        <p-table  #dt1 (onLazyLoad)="lazyLoadClients($event)" [autoLayout]="true" [lazy]="true" [paginator]="true"
-          [rowHover]="true" [resizableColumns]="true" [showCurrentPageReport]="true" [rows]="pageSize || 5"
+        <p-table #dt1 (onLazyLoad)="lazyLoadClients($event)" [autoLayout]="true" [lazy]="true" [paginator]="true"
+          [rowHover]="true" [resizableColumns]="true" [showCurrentPageReport]="false" [rows]="pageSize || 5"
           [totalRecords]="clientsData?.totalElements" [value]="clientsData?.content"
-          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]" responsiveLayout="stack" [scrollable]="true"
-          scrollHeight="400px" currentPageReportTemplate="{first} - {last} of {totalRecords}"
-          [globalFilterFields]=globalFilterFields  [selection]="selectedClient"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]" responsiveLayout="stack" [scrollable]="true" 
+    scrollHeight="400px" 
+    scrollWidth="659px" 
+         currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]=globalFilterFields [selection]="selectedClient"
           (onRowSelect)="selectedClient = $event.data" [selectionMode]="'single'">
 
 
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="name" class="flexible-header">
-                {{ 'gis.quotation.name' | translate }}
-                <p-sortIcon field="name"></p-sortIcon>
-              </th>
-              <th pSortableColumn="emailAddress" class="flexible-header">
-                {{ 'gis.quotation.email' | translate }}
-                <p-sortIcon field="emailAddress"></p-sortIcon>
-              </th>
-              <th pSortableColumn="phoneNumber" class="flexible-header">
-                {{ 'gis.quotation.phone_number' | translate }}
-                <p-sortIcon field="phoneNumber"></p-sortIcon>
-              </th>
-
+               <th pSortableColumn="name" style="min-width: 220px;">Name</th>
+      <th pSortableColumn="emailAddress" style="min-width: 250px;">Email</th>
+      <th pSortableColumn="phoneNumber" style="min-width: 200px;">Phone</th>
+      <th pSortableColumn="idNumber" style="min-width: 200px;">ID Number</th>
+      <th pSortableColumn="pinNumber" style="min-width: 200px;">Pin</th>
+      <th pSortableColumn="id" style="min-width: 200px;">Internal ID</th>
 
             </tr>
             <tr>
@@ -43,7 +37,13 @@
               </th>
               <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputPhone($event)">
               </th>
-
+              <th><input type="text" class="form-control " (keyup.enter)="filter($event);"
+                  (input)="inputId($event)">
+              </th>
+              <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputPin($event)">
+              </th>
+              <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputInternalId($event)">
+              </th>
             </tr>
           </ng-template>
 
@@ -52,6 +52,9 @@
               <td>{{ utilService.getFullName(clientData) }}</td>
               <td>{{ clientData.emailAddress }}</td>
               <td>{{ clientData.phoneNumber }}</td>
+              <td>{{ clientData.idNumber }}</td>
+              <td>{{ clientData.pinNumber }}</td>
+              <td>{{ clientData.id }}</td>
 
             </tr>
           </ng-template>
@@ -63,12 +66,12 @@
           </ng-template>
         </p-table>
         <div class="d-flex justify-content-end mt-4 mb-3" *ngIf="showActionButtons">
-          <button type="button" class="btn btn-primary px-5 me-2" id="cancel" (click)="cancel()">{{
+          <button type="button" class="btn btn-outline-primary px-5 me-2" id="cancel" (click)="cancel()">{{
             'gis.policy.cancel'
             | translate
             }}
           </button>
-          <button type="button" class="btn btn-outline-primary px-5" (click)="saveSelectedClient()">Save
+          <button type="button" class="btn btn-primary px-5" (click)="saveSelectedClient()">Save
           </button>
         </div>
 

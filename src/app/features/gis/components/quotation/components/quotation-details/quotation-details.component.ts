@@ -33,6 +33,7 @@ const log = new Logger('QuotationDetails');
   styleUrls: ['./quotation-details.component.css']
 })
 export class QuotationDetailsComponent implements OnInit, OnDestroy {
+<<<<<<< HEAD
   dummyClauses = [
     {
       id: 1,
@@ -75,6 +76,11 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   wordingSearch: any
 
 
+=======
+sort(arg0: string) {
+throw new Error('Method not implemented.');
+}
+>>>>>>> origin/develop
   @ViewChild(Table) private dataTable: Table;
   steps = quoteStepsData;
   branch: OrganizationBranchDto[];
@@ -207,6 +213,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     ]
     this.selectedClient = JSON.parse(sessionStorage.getItem('client'))
     log.debug("product Form details", this.productDetails)
+
+
+   
   }
 
   ngOnInit(): void {
@@ -1288,7 +1297,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("selected product :", product)
   }
 
-  openProductDeleteModal() {
+  openProductDeleteModal(product: any) {
     log.debug("Selected product to delete", this.selectedRow)
     if (!this.selectedRow) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select a product  to continue');
