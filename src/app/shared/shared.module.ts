@@ -107,6 +107,7 @@ import { ProductSearchModalComponent } from './components/product-search-modal/p
 import { DynamicReportsComponent } from './components/dynamic-reports/dynamic-reports.component';
 import { DynamicSetupTableComponent } from './components/dynamic-setup-table/dynamic-setup-table.component';
 import {DialogModule} from "primeng/dialog";
+import {NgxIntlTelInputModule} from "ngx-intl-tel-input";
 import { TruncatePipe } from './pipes/truncate/truncate.pipe';
 
 
@@ -225,32 +226,33 @@ const SERVICES = [
     TruncatePipe,
 
   ],
-  imports: [
-    CommonModule,
-    ToastModule,
-    ProgressBarModule,
-    NgOptimizedImage,
-    ReactiveFormsModule,
-    TableModule,
-    ButtonModule,
-    ChipsModule,
-    ChartModule,
-    RouterLink,
-    NgxSpinnerModule,
-    TranslateModule,
-    ReactiveFormsModule,
-    CalendarModule,
-    DropdownModule,
-    HttpClientModule,
-    NgbModule,
-    Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
-    TabViewModule,
-    FileUploadModule,
-    PolicyModule,
-    PdfViewerModule,
-    DialogModule,
-    FormsModule
-  ],
+    imports: [
+        CommonModule,
+        ToastModule,
+        ProgressBarModule,
+        NgOptimizedImage,
+        ReactiveFormsModule,
+        TableModule,
+        ButtonModule,
+        ChipsModule,
+        ChartModule,
+        RouterLink,
+        NgxSpinnerModule,
+        TranslateModule,
+        ReactiveFormsModule,
+        CalendarModule,
+        DropdownModule,
+        HttpClientModule,
+        NgbModule,
+        Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
+        TabViewModule,
+        FileUploadModule,
+        PolicyModule,
+        PdfViewerModule,
+        DialogModule,
+        FormsModule,
+        NgxIntlTelInputModule
+    ],
   exports: [
     ErrorComponent,
     HideMessageDirective,

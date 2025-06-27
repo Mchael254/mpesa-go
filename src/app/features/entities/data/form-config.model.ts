@@ -38,7 +38,6 @@ export interface FieldModel {
   placeholder: TranslatableText;
   isMandatory: boolean;
   options: any[];
-  doc?: any;
 }
 
 export interface Validation {
