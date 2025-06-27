@@ -15,6 +15,7 @@ import {CountryDto} from "../../../../../shared/data/common/countryDto";
 import {CountryService} from "../../../../../shared/services/setups/country/country.service";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
+import {FormField} from "../../../data/form-config";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -67,6 +68,11 @@ export class NewEntityV2Component implements OnInit {
 
   wealthAmlFormFields: FieldModel[] = [];
   corporateContactDetailsFormField: FieldModel[] = [];
+  corporateAddressDetailsFormField: FieldModel[] = [];
+  corporateFinancialDetailsFormField: FieldModel[] = [];
+  corporateWealthAmlFormFieldsDetailsFormField: FieldModel[] = [];
+  corporateWealthCR12DetailsFormField: FieldModel[] = [];
+  corporateWealthOwnershipDetailsFormField: FieldModel[] = [];
 
 
   constructor(
@@ -272,7 +278,7 @@ export class NewEntityV2Component implements OnInit {
    */
   assignFieldsToGroupByGroupId(fields: FieldModel[], formGroupSections: any[]): void { // todo: create Model for formGroupSections
     let visibleFormFields = fields.filter((field: FieldModel) => field.visible
-      && field.groupId !== 'wealth_aml_details' && field.subGroupId !== 'contact_details'); // todo: create Model for FormFields
+      && field.groupId !== 'wealthAmlDetails' && field.groupId !== 'wealth_aml_details'); // todo: create Model for FormFields
 
     formGroupSections.forEach(section => { // initialize fields to empty array
       section.fields = []
@@ -290,7 +296,12 @@ export class NewEntityV2Component implements OnInit {
     this.addFieldsToSections(formGroupSections);
     // const wealthAmlFormFields = formGroupSections.filter(section => section.id === 'wealth_aml_details')[0];
     this.wealthAmlFormFields = fields.filter(field => field.subGroupId === 'wealth_aml_details');
-    this.corporateContactDetailsFormField = fields.filter(field => field.subGroupId === 'contact_details');
+    this.corporateContactDetailsFormField = fields.filter(field => field.subGroupId === 'contactPersonDetails');
+    this.corporateAddressDetailsFormField = fields.filter(field => field.subGroupId === 'branchDetails');
+    this.corporateFinancialDetailsFormField = fields.filter(field => field.subGroupId === 'payeeDetails');
+    this.corporateWealthAmlFormFieldsDetailsFormField = fields.filter(field => field.subGroupId === 'amlDetails');
+    this.corporateWealthCR12DetailsFormField = fields.filter(field => field.subGroupId === 'cr12Details');
+    this.corporateWealthOwnershipDetailsFormField = fields.filter(field => field.subGroupId === 'ownershipDetails');
     log.info(`wealthAmlFormFields >>> `, this.wealthAmlFormFields);
     log.info(`formGroupSections >>> `, this.formGroupSections);
   }
@@ -605,6 +616,10 @@ export class NewEntityV2Component implements OnInit {
         log.error(`could not fetch: `, err);
       }
     })
+  }
+
+  fetchSavedDetails(eventData:any) {
+    log.debug('Event received in Component B:', eventData);
   }
 
   protected readonly PhoneNumberFormat = PhoneNumberFormat;

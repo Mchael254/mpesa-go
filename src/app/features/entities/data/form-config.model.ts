@@ -38,6 +38,7 @@ export interface FieldModel {
   placeholder: TranslatableText;
   isMandatory: boolean;
   options: any[];
+  appliesTo: "I" | "C" | "ALL";
 }
 
 export interface Validation {
