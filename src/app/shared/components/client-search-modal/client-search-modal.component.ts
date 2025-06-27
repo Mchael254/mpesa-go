@@ -8,20 +8,20 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import {Logger, UtilService} from '../../services';
-import {GlobalMessagingService} from '../../services/messaging/global-messaging.service';
-import {QuotationsService} from '../../../features/gis/components/quotation/services/quotations/quotations.service';
-import {Router} from '@angular/router';
-import {QuotationList} from '../../../features/gis/components/quotation/data/quotationsDTO';
-import {untilDestroyed} from '../../shared.module';
-import {TableLazyLoadEvent} from 'primeng/table';
-import {LazyLoadEvent} from 'primeng/api';
-import {ClientService} from '../../../features/entities/services/client/client.service';
-import {tap} from 'rxjs';
-import {Pagination} from '../../data/common/pagination';
-import {ClientDTO} from '../../../features/entities/data/ClientDTO';
-import {NgxSpinnerService} from 'ngx-spinner';
-import {Modal} from 'bootstrap';
+import { Logger, UtilService } from '../../services';
+import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
+import { QuotationsService } from '../../../features/gis/components/quotation/services/quotations/quotations.service';
+import { Router } from '@angular/router';
+import { QuotationList } from '../../../features/gis/components/quotation/data/quotationsDTO';
+import { untilDestroyed } from '../../shared.module';
+import { TableLazyLoadEvent } from 'primeng/table';
+import { LazyLoadEvent } from 'primeng/api';
+import { ClientService } from '../../../features/entities/services/client/client.service';
+import { tap } from 'rxjs';
+import { Pagination } from '../../data/common/pagination';
+import { ClientDTO } from '../../../features/entities/data/ClientDTO';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { Modal } from 'bootstrap';
 
 const log = new Logger('clientSearchComponent');
 
@@ -31,7 +31,7 @@ const log = new Logger('clientSearchComponent');
   styleUrls: ['./client-search-modal.component.css'],
   standalone: false,
 })
-export class ClientSearchModalComponent implements  OnDestroy, OnInit {
+export class ClientSearchModalComponent implements OnDestroy, OnInit {
 
   @ViewChild('closebutton') closebutton;
   @Output() clientSelected = new EventEmitter<{ clientName: string; clientCode: number }>();
@@ -54,8 +54,8 @@ export class ClientSearchModalComponent implements  OnDestroy, OnInit {
   filterObject: {
     name: string, idNumber: string,
   } = {
-    name: '', idNumber: '',
-  };
+      name: '', idNumber: '',
+    };
   clientDetails: ClientDTO;
   globalFilterFields = ['idNumber', 'firstName', 'lastName'];
   clientName: any;
@@ -64,6 +64,8 @@ export class ClientSearchModalComponent implements  OnDestroy, OnInit {
   idValue: string;
   emailValue: string;
   phoneValue: string;
+  internalIdValue: string;
+  pinValue: string;
   selectedClient: ClientDTO;
   showActionButtons: boolean;
 
@@ -107,9 +109,9 @@ export class ClientSearchModalComponent implements  OnDestroy, OnInit {
   }
 
   getClients(pageIndex: number,
-             pageSize: number,
-             sortField: any = 'createdDate',
-             sortOrder: string = 'desc') {
+    pageSize: number,
+    sortField: any = 'createdDate',
+    sortOrder: string = 'desc') {
     return this.clientService
       .getClients(pageIndex, pageSize, sortField, sortOrder)
       .pipe(
@@ -169,6 +171,15 @@ export class ClientSearchModalComponent implements  OnDestroy, OnInit {
     } else if (this.phoneValue) {
       columnName = 'phoneNumber';
       columnValue = this.phoneValue;
+    } else if (this.internalIdValue) {
+      columnName = 'id';
+      columnValue = this.internalIdValue;
+    }else if (this.idValue) {
+      columnName = 'idValue';
+      columnValue = this.idValue;
+    }else if (this.pinValue) {
+      columnName = 'pinValue';
+      columnValue = this.pinValue;
     }
 
     this.isSearching = true;
@@ -262,4 +273,18 @@ export class ClientSearchModalComponent implements  OnDestroy, OnInit {
     this.phoneValue = value;
   }
 
+  inputInternalId(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.internalIdValue = value;
+  }
+
+  inputPin(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.pinValue= value;
+  }
+
+  inputId(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.idValue = value;
+  }
 }
