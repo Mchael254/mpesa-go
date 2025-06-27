@@ -190,32 +190,31 @@
     <div class="card-body" class="mx-4">
       <div class="row mb-3">
         <div class="col-4">
-          <h6 style="color: #00529B; font-size: 20px; font-weight: 500; font-family: Roboto; margin-bottom: 0; margin-top: 1.5rem;">
+          <h6  class="product-title">
             {{ 'gis.quotation.product_details' | translate }}
           </h6>
         </div>
       </div>
       
       <div class="row mb-3">
-        <div class="col-12 d-flex justify-content-end" style="margin-bottom: 0;">
+        <div class="col-12 d-flex justify-content-end mb-0">
           <div class="d-flex gap-2">
             <button
   type="button"
-  class="btn btn-primary no-hover"
+  class="btn btn-primary no-hover add-product-btn"
   data-bs-toggle="modal"
   data-bs-target="#addProduct"
   title="Add Product"
-  style="font-family: Roboto; font-size: 12px; font-weight: 600; color: #FFFFFF; height: 30px; width: 100px; border-radius: 0; white-space: nowrap; background-color: #00529B; border-color: #00529b;"
 >
   Add Product
 </button>
 
+
       
-            <button type="button" class="btn btn-primary" title="drop down"
-              style="font-family: Roboto; font-size: 12px; font-weight: 600;  height: 30px; width: 40px; background-color: #FFFFFF;">
-              <span class="arrow-down" style="color: #000000;">▼</span>
-              
-            </button>
+<button type="button" class="btn btn-primary dropdown-btn" title="drop down">
+  <span class="arrow-down arrow-black">▼</span>
+</button>
+
           </div>
         </div>
       </div>
