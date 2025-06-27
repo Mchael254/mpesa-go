@@ -25,7 +25,6 @@
                       class="form-select"
                       aria-label="Default select example"
                       (change)="processSelectOption($event, field.fieldId)"
-                      (click)="fetchSelectOptions('', field.fieldId)"
                     >
                       <option value="">- Select {{ field.label?.[language] | titlecase }} -</option>
                       <option *ngFor="let option of field.options" [value]="option">
@@ -37,46 +36,41 @@
               </div>
             </ng-container>
 
-            <ng-container *ngIf="uploadGroupSections?.photo?.length > 0 && shouldUploadProfilePhoto">
-              <div *ngFor="let photo of uploadGroupSections.photo" class="col-sm-4">
-                <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
-                  <div class="row" id="upload-image">
-                    <div class="col-sm-12">
-                      <label for="upload-image" class="form-label">{{ photo.label[language] | titlecase }}</label>
-                    </div>
-                    <div class="col-sm-12 text-primary">
-                      <label class="btn btn-outline-primary btn-sm d-inline-flex align-items-center">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> &nbsp; {{ photo.placeholder[language] | titlecase }}
-                        <input type="file" hidden (change)="onFileSelected($event, photo, 'profile')">
-                      </label> &nbsp;
-                      <span class="border-end border-primary border-3"></span> &nbsp;
-                      <i class="fa-solid fa-info-circle"></i>&nbsp;
-                      <span>Note:</span> png, jpeg or jpg
-                    </div>
+            <div class="col-sm-4">
+              <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
+                <div class="row" id="upload-image">
+                  <div class="col-sm-12">
+                    <label for="upload-image" class="form-label">Profile photo</label>
                   </div>
-                  <span *ngIf="photo.file?.name">{{ photo.file?.name }}</span>
+                  <div class="col-sm-12 text-primary">
+                    <label class="btn btn-outline-primary btn-sm d-inline-flex align-items-center">
+                      <i class="fa-solid fa-cloud-arrow-up"></i> &nbsp; Upload Image
+                      <input type="file" hidden>
+                    </label> &nbsp;
+                    <span class="border-end border-primary border-3"></span> &nbsp;
+                    <i class="fa-solid fa-info-circle"></i>&nbsp;
+                    <span>Note:</span> png, jpeg or jpg
+                  </div>
                 </div>
               </div>
-            </ng-container>
+            </div>
           </div>
 
-          <hr *ngIf="uploadGroupSections?.buttons?.length > 0" class="my-3 mx-3">
+          <hr class="my-3 mx-3">
 
-          <div class="row" *ngIf="uploadGroupSections?.docs?.length > 0">
-            <h6 class="mb-4 ms-md-5 mt-3">Document upload</h6>
-            <ng-container *ngFor="let doc of uploadGroupSections?.docs">
+          <div class="row">
+            <h6 class="mb-4 ms-md-5">Document upload</h6>
+            <ng-container *ngFor="let uploadButton of uploadGroupSections?.buttons">
               <div class="col-sm-6">
                 <div class="row ms-md-5">
                   <div class="col-sm-4 col-6">
-                    <p class="text-muted">{{ doc.requiredDocumentName | titlecase }}</p>
+                    <p class="text-muted">{{ uploadButton.label?.[language] | titlecase }}</p>
                   </div>
                   <div class="col-sm-8 mb-4 col-6">
                     <label class="btn btn-primary btn-sm d-inline-flex align-items-center">
-                      <!--{{ uploadButton.placeholder?.[language] }}-->
-                      Choose file
-                      <input type="file" hidden (change)="onFileSelected($event, doc, 'doc')">
+                      {{ uploadButton.placeholder?.[language] }}
+                      <input type="file" hidden>
                     </label>
-                    <span *ngIf="doc.file?.name">{{ doc.file?.name }}</span>
                   </div>
                 </div>
               </div>
@@ -106,7 +100,7 @@
 
                     <!-- Text / Email / Tel / etc -->
                     <ng-container *ngIf="field.type === 'text' || field.type === 'email' || field.type==='tel'">
-                      <ng-container *ngIf="!['idNumber', 'smsNumber', 'telNumber'].includes(field.fieldId)">
+                      <ng-container *ngIf="!['idNumber', 'smsNumber'].includes(field.fieldId)">
                         <label class="form-label" [for]="field.fieldId">
                           {{ field.label?.[language] | titlecase }}
                           <span *ngIf="field.isMandatory" class="text-danger">*</span>
@@ -144,14 +138,14 @@
                           [class.is-valid]="getFieldControl(group.groupId, field.fieldId)?.valid && getFieldControl(group.groupId, field.fieldId)?.touched"
                         />
                       </ng-container>
-                      <ng-container *ngIf="['smsNumber', 'telNumber'].includes(field.fieldId)">
+                      <ng-container *ngIf="field.fieldId==='smsNumber'">
                         <label class="form-label" [for]="field.fieldId">
                           {{ field.label?.[language] | titlecase }}
                           <span *ngIf="field.isMandatory" class="text-danger">*</span>
                         </label>
                         <ngx-intl-tel-input
                           [cssClass]="'form-control form-control-md mb-1'"
-                          [id]="field.fieldId"
+                          id="smsNumber"
                           [preferredCountries]=""
                           [enableAutoCountrySelect]="true"
                           [enablePlaceholder]="true"
@@ -162,9 +156,25 @@
                           [phoneValidation]="true"
                           [separateDialCode]="true"
                           [numberFormat]="PhoneNumberFormat.National"
-                          [formControlName]="field.fieldId"
+                          formControlName="smsNumber"
                           [style]="{ width: '100%' }">
                         </ngx-intl-tel-input>
+
+                        <!--<input
+                          [type]="field.type"
+                          [formControlName]="field.fieldId"
+                          [placeholder]="field?.placeholder[language]"
+                          [id]="field.fieldId"
+                          class="form-control"
+                          (keyup)="validateRegex(field, group.groupId)"
+
+                          [class.is-invalid]="getFieldControl(group.groupId, field.fieldId)?.invalid &&
+                            getFieldControl(group.groupId, field.fieldId)?.touched"
+
+                          [class.is-valid]="getFieldControl(group.groupId, field.fieldId)?.valid &&
+                            getFieldControl(group.groupId, field.fieldId)?.touched"
+
+                        />-->
                       </ng-container>
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
                           * {{ regexErrorMessages[field.fieldId]?.errorMessage }}
@@ -307,46 +317,73 @@
             <!--{{ group | json}}-->
             <div *ngIf="group.groupId === 'wealth_aml_details'">
               <app-dynamic-setup-table
-                [tableTitle]=""
-                [addButtonText]="group.subGroup[0].addButtonText[language]"
+                [tableTitle]="group.subGroup[0]?.label"
+                [addButtonText]="group.subGroup[0]?.addButtonText[language]"
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="wealthAmlFormFields"
                 [subGroupId]="'wealth_aml_details'"
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'contact_details' && category === 'corporate' && corporateContactDetailsFormField.length > 0">
+            <div *ngIf="group.groupId === 'contact_details' && category === 'corporate'">
               <app-dynamic-setup-table
-                [tableTitle]="'contact person details'"
-                [addButtonText]="'Add Contact details'"
+                [tableTitle]="group.subGroup[1]?.label"
+                [addButtonText]="group.subGroup[1]?.addButtonText[language]"
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateContactDetailsFormField"
-                [subGroupId]="'contact_person_details'"
+                [subGroupId]="'contactPersonDetails'"
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'address_details' && category === 'corporate'">
+            <div *ngIf="group.groupId === 'addressDetails' && category === 'corporate'">
               <app-dynamic-setup-table
-                [tableTitle]="'Branch Details'"
-                [addButtonText]="'Add branch'"
+                [tableTitle]="group.subGroup[1]?.label"
+                [addButtonText]="group.subGroup[1]?.addButtonText[language]"
                 [emptyTableMessage]="'No record found!'"
-                [formFields]="branchDetailsFormFields"
-                [subGroupId]="'branch_details'"
+                [formFields]="corporateAddressDetailsFormField"
+                [subGroupId]="'branchDetails'"
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'financial_details' && category === 'corporate'">
+            <div *ngIf="group.groupId === 'financialDetails' && category === 'corporate'">
               <app-dynamic-setup-table
-                [tableTitle]="'Payee Details'"
-                [addButtonText]="'Add payee'"
+                [tableTitle]="group.subGroup[1]?.label"
+                [addButtonText]="group.subGroup[1]?.addButtonText[language]"
                 [emptyTableMessage]="'No record found!'"
-                [formFields]="payeeDetailsFormFields"
-                [subGroupId]="'payee_details'"
+                [formFields]="corporateFinancialDetailsFormField"
+                [subGroupId]="'payeeDetails'"
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'privacy_policy'">
-              <app-privacy-policy [otpFormFields]="privacyPolicyFormFields"></app-privacy-policy>
+            <div *ngIf="group.groupId === 'wealthAmlDetails' && category === 'corporate'">
+              <app-dynamic-setup-table
+                [tableTitle]="group.subGroup[0]?.label"
+                [addButtonText]="group.subGroup[0]?.addButtonText[language]"
+                [emptyTableMessage]="'No record found!'"
+                [formFields]="corporateWealthAmlFormFieldsDetailsFormField"
+                [subGroupId]="'amlDetails'"
+              ></app-dynamic-setup-table>
+            </div>
+
+            <div *ngIf="group.groupId === 'wealthAmlDetails' && category === 'corporate'">
+              <app-dynamic-setup-table
+                [tableTitle]="group.subGroup[1]?.label"
+                [addButtonText]="group.subGroup[1]?.addButtonText[language]"
+                [emptyTableMessage]="'No record found!'"
+                [formFields]="corporateWealthCR12DetailsFormField"
+                [subGroupId]="'cr12Details'"
+              ></app-dynamic-setup-table>
+            </div>
+
+            <div *ngIf="group.groupId === 'wealthAmlDetails' && category === 'corporate'">
+              <app-dynamic-setup-table
+                [tableTitle]="group.subGroup[2]?.label"
+                [addButtonText]="group.subGroup[2]?.addButtonText[language]"
+                [emptyTableMessage]="'No record found!'"
+                [formFields]="corporateWealthOwnershipDetailsFormField"
+                [subGroupId]="'ownershipDetails'"
+                (saveDetailsData)="fetchSavedDetails($event)"
+              ></app-dynamic-setup-table>
             </div>
 
           </div>
