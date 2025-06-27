@@ -21,6 +21,7 @@ import { ReceiptManagementComponent } from './components/receipt-management/rece
 import { DynamicBreadcrumbComponent } from 'src/app/shared/components/dynamic-breadcrumb/dynamic-breadcrumb.component';
 import { StepperComponent } from './components/shared/stepper/stepper.component';
 import { ReceiptPrintPreviewComponent } from './components/receipt-print-preview/receipt-print-preview.component';
+import { FmsHorizontalStepperComponent } from './components/shared/fms-horizontal-stepper/fms-horizontal-stepper.component';
 
 
 
@@ -40,7 +41,8 @@ import { ReceiptPrintPreviewComponent } from './components/receipt-print-preview
     PdSlipPreviewComponent,
     ReceiptManagementComponent,
     StepperComponent,
-    ReceiptPrintPreviewComponent
+    ReceiptPrintPreviewComponent,
+    FmsHorizontalStepperComponent
 
    
   ],
