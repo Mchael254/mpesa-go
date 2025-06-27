@@ -33,7 +33,7 @@ const log = new Logger('QuotationDetails');
   styleUrls: ['./quotation-details.component.css']
 })
 export class QuotationDetailsComponent implements OnInit, OnDestroy {
-<<<<<<< HEAD
+
   dummyClauses = [
     {
       id: 1,
@@ -76,11 +76,11 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   wordingSearch: any
 
 
-=======
+
 sort(arg0: string) {
 throw new Error('Method not implemented.');
 }
->>>>>>> origin/develop
+
   @ViewChild(Table) private dataTable: Table;
   steps = quoteStepsData;
   branch: OrganizationBranchDto[];
