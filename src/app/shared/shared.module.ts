@@ -99,12 +99,13 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { PolicyModule } from '../features/lms/grp/components/policy/policy.module';
 import { NationalityPipe } from '../features/lms/pipe/nationality/nationality.pipe';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
-import {DynamicDocumentModalComponent} from "./components/dynamic-document-modal/dynamic-document-modal.component";
-import {ApiSpinnerInterceptor} from "./services/http/api-spinner.interceptor";
+import { DynamicDocumentModalComponent } from "./components/dynamic-document-modal/dynamic-document-modal.component";
+import { ApiSpinnerInterceptor } from "./services/http/api-spinner.interceptor";
 import { ClientSearchModalComponent } from './components/client-search-modal/client-search-modal.component';
 import { AgentSearchModalComponent } from './components/agent-search-modal/agent-search-modal.component';
 import { ProductSearchModalComponent } from './components/product-search-modal/product-search-modal.component';
 import { DynamicReportsComponent } from './components/dynamic-reports/dynamic-reports.component';
+import { TruncatePipe } from './pipes/truncate/truncate.pipe';
 
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
@@ -217,33 +218,34 @@ const SERVICES = [
     ClientSearchModalComponent,
     AgentSearchModalComponent,
     ProductSearchModalComponent,
-    DynamicReportsComponent
+    DynamicReportsComponent,
+    TruncatePipe,
 
   ],
-    imports: [
-        CommonModule,
-        ToastModule,
-        ProgressBarModule,
-        NgOptimizedImage,
-        ReactiveFormsModule,
-        TableModule,
-        ButtonModule,
-        ChipsModule,
-        ChartModule,
-        RouterLink,
-        NgxSpinnerModule,
-        TranslateModule,
-        ReactiveFormsModule,
-        CalendarModule,
-        DropdownModule,
-        HttpClientModule,
-        NgbModule,
-        Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
-        TabViewModule,
-        FileUploadModule,
-        PolicyModule,
-        PdfViewerModule
-    ],
+  imports: [
+    CommonModule,
+    ToastModule,
+    ProgressBarModule,
+    NgOptimizedImage,
+    ReactiveFormsModule,
+    TableModule,
+    ButtonModule,
+    ChipsModule,
+    ChartModule,
+    RouterLink,
+    NgxSpinnerModule,
+    TranslateModule,
+    ReactiveFormsModule,
+    CalendarModule,
+    DropdownModule,
+    HttpClientModule,
+    NgbModule,
+    Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
+    TabViewModule,
+    FileUploadModule,
+    PolicyModule,
+    PdfViewerModule
+  ],
   exports: [
     ErrorComponent,
     HideMessageDirective,
@@ -294,7 +296,8 @@ const SERVICES = [
     ClientSearchModalComponent,
     AgentSearchModalComponent,
     ProductSearchModalComponent,
-    DynamicReportsComponent
+    DynamicReportsComponent,
+    TruncatePipe,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
@@ -306,3 +309,4 @@ export class SharedModule {
     };
   }
 }
+

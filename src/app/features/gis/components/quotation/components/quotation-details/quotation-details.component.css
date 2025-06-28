@@ -235,3 +235,14 @@
   line-height: normal;
   text-align: center;
 }
+
+
+input.active {
+  border: 1px solid #ccc !important; 
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #2196F3 !important; /* Blue border */
+  box-shadow: 0 0 5px rgba(33, 150, 243, 0.5) !important;
+}
