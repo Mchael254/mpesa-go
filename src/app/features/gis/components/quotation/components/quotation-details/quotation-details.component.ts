@@ -71,6 +71,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       wording: 'No amendment to this agreement shall be effective unless in writing and signed by both parties.'
     }
   ];
+  selectedClauses:any
   idSearch: any
   headingSearch: any
   wordingSearch: any
@@ -105,7 +106,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   isChecked: boolean = false;
   show: boolean = false;
   showProducts: boolean = false;
-  showClauses:boolean = false;
+  showClauses: boolean = false;
   quotationNum: string;
   introducers: introducersDTO[] = [];
   userDetails: any;
@@ -238,9 +239,24 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  addClause(){
+  addClause() {
     this.globalMessagingService.displaySuccessMessage('success', 'clause added successfully')
   }
+
+  selectedDummyClause: any = {
+    id: '',
+    heading: '',
+    wording: ''
+  };
+
+  populateEditClauseModal(clause: any) {
+    this.selectedDummyClause = { ...clause }; 
+  }
+
+  editClause() {
+    this.globalMessagingService.displaySuccessMessage('success', 'clause edited successfully')
+  }
+
 
   ngOnDestroy(): void {
   }
@@ -1041,8 +1057,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.showProducts = !this.showProducts;
   }
 
-  toggleClauses(){
-     this.showClauses = !this.showClauses;
+  toggleClauses() {
+    this.showClauses = !this.showClauses;
 
   }
 
