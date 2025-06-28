@@ -475,15 +475,16 @@
                   style="border-radius: 3px;border:solid gray 1px;width:80%">
               </th>
               <th>
-                <input type="text" [(ngModel)]="headingSearch" style="border-radius: 3px;border:solid gray 1px;">
+                <input class="searchInput" type="text" [(ngModel)]="headingSearch"
+                  style="border-radius: 3px;border:solid gray 1px;">
               </th>
               <th>
-                <input type="text" [(ngModel)]="wordingSearch" style="border-radius: 3px;border:solid gray 1px;">
+                <input class="searchInput" type="text" [(ngModel)]="wordingSearch"
+                  style="border-radius: 3px;border:solid gray 1px;">
               </th>
               <th></th>
             </tr>
           </ng-template>
-
 
           <ng-template pTemplate="body" let-clause>
             <tr>
@@ -498,26 +499,23 @@
                 <span *ngIf="editClauseId !== clause.id">
                   {{ clause.heading}}
                 </span>
-                <input *ngIf="editClauseId === clause.id" type="text" [(ngModel)]="clause.heading" class="active"
-                  style="border-radius: 3px; width: 80%;">
+
               </td>
               <td>
-                <span *ngIf="editClauseId !== clause.id">
+                <span pTooltip={{clause.wording}} tooltipPosition="top">
                   {{ clause.wording | truncate:10 }}
                 </span>
-                <input *ngIf="editClauseId === clause.id" type="text" [(ngModel)]="clause.wording" class="active"
-                  style="border-radius: 3px; width: 80%;">
               </td>
 
               <td style="text-align: right">
                 <div class="flex justify-end gap-2">
                   <span class="p-button-label p-text-bold"
-                    style="color: #00529B; margin-right:16px; margin-left:10px; cursor:pointer;"
-                    (click)="toggleEdit(clause.id)">
-                    {{ editClauseId === clause.id ? 'Cancel' : 'Edit' }}
+                    style="color: #00529B; margin-right:16px; margin-left:10px; cursor:pointer;" data-bs-toggle="modal"
+                    data-bs-target="#editClause" (click)="populateEditClauseModal(clause)">
+                    {{'gis.quotation.edit' | translate}}
                   </span>
                   <span class="p-button-label p-text-bold" style="color: #00529B; cursor:pointer;">
-                    Delete
+                    {{'gis.quotation.delete' | translate}}
                   </span>
                 </div>
               </td>
@@ -542,16 +540,19 @@
           <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X
           </button>
         </div>
-        <div class="row mt-2">
-          <p-table #dt [value]="dummyClauses" [rows]="4" [paginator]="true" [globalFilterFields]="['id', 'heading']"
-            selectionMode="single" stripedRows styleClass="p-datatable-striped" [rowsPerPageOptions]="[5, 10, 20]">
-            <ng-template pTemplate="header">
+        <div class="row mt-3">
+          <p-table #dt [value]="dummyClauses" [(selection)]="selectedClauses" [rows]="4" [paginator]="true"
+            [globalFilterFields]="['id', 'heading']" selectionMode="multiple" stripedRows
+            styleClass="p-datatable-striped" [rowsPerPageOptions]="[5, 10, 20]">
 
+            <ng-template pTemplate="header">
               <tr>
-                <th class="flexible-header1 fw-semibold" pSortableColumn="id">ID <p-sortIcon field="code" /></th>
-                <th class="flexible-header1 fw-semibold" pSortableColumn="heading">Description <p-sortIcon field="code" /></th>
+                <th class="flexible-header1" style="width: 3%"><p-tableHeaderCheckbox /></th>
+                <th class="flexible-header1" style="width: 30%" pSortableColumn="id"> ID <p-sortIcon field="code" /></th>
+                <th class="flexible-header1" style="width: 40%" pSortableColumn="heading"> Description <p-sortIcon field="code" /> </th>
               </tr>
-              <tr styleClass="p-striped">
+              <tr>
+                <th></th>
                 <th>
                   <input type="text" class="searchInput" [(ngModel)]="idSearch"
                     style="border-radius: 3px;border:solid gray 1px;width:80%">
@@ -561,10 +562,13 @@
                     style="border-radius: 3px;border:solid gray 1px;width:80%">
                 </th>
               </tr>
-
             </ng-template>
+
             <ng-template pTemplate="body" let-clause>
-              <tr [pSelectableRow]="user">
+              <tr>
+                <td style="max-width: 10px; min-width: 10px;">
+                  <p-tableCheckbox [value]="clause" />
+                </td>
                 <td>{{ clause.id }}</td>
                 <td>{{ clause.heading }}</td>
               </tr>
@@ -572,10 +576,12 @@
           </p-table>
         </div>
 
+
         <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
           <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
-          <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #00529B;color:white;text-decoration: none;"
-            (click)="addClause()">{{ 'gis.quotation.save' | translate }}
+          <button type="button" class="btn" data-bs-dismiss="modal"
+            style="background-color: #00529B;color:white;text-decoration: none;" (click)="addClause()">{{
+            'gis.quotation.save' | translate }}
           </button>
           <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
             style="text-decoration: none;">{{
@@ -589,6 +595,51 @@
 
   </div>
 
+  <!-- edit clause modal -->
+  <div class="modal fade" id="editClause">
+    <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+      <div class="modal-content ps-4 pt-2 pe-4">
+        <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+          <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+            {{ 'gis.quotation.edit_clause' | translate }}</p>
+          <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X
+          </button>
+        </div>
+
+        <div class="d-flex justify-content-between text-black">
+          <div class="d-flex flex-column">
+            <label for="id">ID</label>
+            <input type="text" class="editInput" [value]="selectedDummyClause.id" readonly>
+
+          </div>
+          <div class="d-flex flex-column">
+            <label for="heading">Heading</label>
+            <input class="editInput" [value]="selectedDummyClause.heading" readonly>
+          </div>
+        </div>
+
+        <div class="d-flex flex-column mt-5">
+          <label class="text-dark mt-0" for="comment">Comment</label>
+          <textarea name="wording" pInputText [(ngModel)]="selectedDummyClause.wording"></textarea>
+        </div>
+
+        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+          <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
+          <button type="button" class="btn" data-bs-dismiss="modal"
+            style="background-color: #00529B;color:white;text-decoration: none;" (click)="editClause()">{{
+            'gis.quotation.save_changes' | translate }}
+          </button>
+          <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+            style="text-decoration: none;">{{
+            'gis.quotation.cancel' | translate
+            }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
 
   <div class="float-end mb-4">
     <button class="btn btn-primary" #openModal data-bs-toggle="modal" data-bs-target="#exampleModal" hidden></button>
