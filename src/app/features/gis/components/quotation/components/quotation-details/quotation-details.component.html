@@ -446,7 +446,8 @@
         <div></div>
 
         <div class="d-flex justify-content-center align-items-center mb-1">
-          <button class="btn btn-primary">Add clauses</button>
+          <button class="btn btn-primary no-hover" data-bs-toggle="modal" data-bs-target="#addClause">Add
+            clauses</button>
           <i class="pi border border-black p-1 rounded-1 text-black"
             [ngClass]="{'pi-caret-up': showClauses, 'pi-caret-down': !showClauses}"
             style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleClauses()"></i>
@@ -461,13 +462,17 @@
           <ng-template pTemplate="header">
             <tr>
               <th class="flexible-header1" style="width: 3%" pSortableColumn="id">ID <p-sortIcon field="code" /></th>
-              <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">Heading <p-sortIcon field="code" /></th>
-              <th class="flexible-header1" style="width: 50%" pSortableColumn="wording">Wording <p-sortIcon field="code" /></th>
-              <th class="flexible-header1" style="width: 15%;" pSortableColumn="actions">Actions <p-sortIcon field="code" /></th>
+              <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">Heading <p-sortIcon
+                  field="code" /></th>
+              <th class="flexible-header1" style="width: 50%" pSortableColumn="wording">Wording <p-sortIcon
+                  field="code" /></th>
+              <th class="flexible-header1" style="width: 15%;" pSortableColumn="actions">Actions <p-sortIcon
+                  field="code" /></th>
             </tr>
             <tr class="searchInput">
               <th>
-                <input class="searchInput" type="text" [(ngModel)]="idSearch" style="border-radius: 3px;border:solid gray 1px;width:80%">
+                <input class="searchInput" type="text" [(ngModel)]="idSearch"
+                  style="border-radius: 3px;border:solid gray 1px;width:80%">
               </th>
               <th>
                 <input type="text" [(ngModel)]="headingSearch" style="border-radius: 3px;border:solid gray 1px;">
@@ -522,7 +527,66 @@
         </p-table>
       </div>
 
+
+
     </div>
+  </div>
+
+  <!-- add clause modal -->
+  <div class="modal fade" id="addClause">
+    <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+      <div class="modal-content ps-4 pt-2 pe-4">
+        <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+          <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+            {{ 'gis.quotation.add_product_cluase' | translate }}</p>
+          <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X
+          </button>
+        </div>
+        <div class="row mt-2">
+          <p-table #dt [value]="dummyClauses" [rows]="4" [paginator]="true" [globalFilterFields]="['id', 'heading']"
+            selectionMode="single" stripedRows styleClass="p-datatable-striped" [rowsPerPageOptions]="[5, 10, 20]">
+            <ng-template pTemplate="header">
+
+              <tr>
+                <th class="flexible-header1 fw-semibold" pSortableColumn="id">ID <p-sortIcon field="code" /></th>
+                <th class="flexible-header1 fw-semibold" pSortableColumn="heading">Description <p-sortIcon field="code" /></th>
+              </tr>
+              <tr styleClass="p-striped">
+                <th>
+                  <input type="text" class="searchInput" [(ngModel)]="idSearch"
+                    style="border-radius: 3px;border:solid gray 1px;width:80%">
+                </th>
+                <th>
+                  <input type="text" class="searchInput" [(ngModel)]="headingSearch"
+                    style="border-radius: 3px;border:solid gray 1px;width:80%">
+                </th>
+              </tr>
+
+            </ng-template>
+            <ng-template pTemplate="body" let-clause>
+              <tr [pSelectableRow]="user">
+                <td>{{ clause.id }}</td>
+                <td>{{ clause.heading }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+          <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
+          <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #00529B;color:white;text-decoration: none;"
+            (click)="addClause()">{{ 'gis.quotation.save' | translate }}
+          </button>
+          <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+            style="text-decoration: none;">{{
+            'gis.quotation.cancel' | translate
+            }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
 

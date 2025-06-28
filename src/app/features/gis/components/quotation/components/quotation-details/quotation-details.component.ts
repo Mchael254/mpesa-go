@@ -238,6 +238,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  addClause(){
+    this.globalMessagingService.displaySuccessMessage('success', 'clause added successfully')
+  }
+
   ngOnDestroy(): void {
   }
 
