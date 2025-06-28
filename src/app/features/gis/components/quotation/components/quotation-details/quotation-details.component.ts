@@ -33,6 +33,7 @@ const log = new Logger('QuotationDetails');
   styleUrls: ['./quotation-details.component.css']
 })
 export class QuotationDetailsComponent implements OnInit, OnDestroy {
+
 sort(arg0: string) {
 throw new Error('Method not implemented.');
 }
@@ -422,7 +423,7 @@ throw new Error('Method not implemented.');
   createQuotationProductForm() {
     this.quotationProductForm = this.fb.group({
       code: [0],
-      productCode: [0, Validators.required],
+      productCode: [[], Validators.required],
       quotationCode: [0],
       productShortDescription: [''],
       quotationNo: [''],
@@ -1201,38 +1202,71 @@ throw new Error('Method not implemented.');
     this.selectedEditRow = null;
   }
 
-  submitForm() {
-    const coverFromDate = new Date(sessionStorage.getItem('selectedCoverFromDate'));
-    const formattedCoverFromDate = this.orgFormatDate(coverFromDate, this.dateFormat);
-    log.debug("cover to date formatted:", formattedCoverFromDate)
 
+  // onProductsChange(event: any) {
+  //   console.log('Selected products:', event.value);
+  //   // Add your custom logic here
+  // }
+
+  // isProductSelected(productCode: string): boolean {
+  //   const selectedProducts = this.quotationProductForm.get('productCodes')?.value || [];
+  //   return selectedProducts.includes(productCode);
+  // }
+
+  
+
+  submitForm() {
+    if (this.quotationProductForm.invalid) {
+      // Mark fields as touched so validation errors show
+      this.quotationProductForm.markAllAsTouched();
+      return; // Stop if the form is invalid
+    }
+  
+    const coverFromDate = new Date(this.quotationProductForm.get('wef')?.value);
+
+    const formattedCoverFromDate = this.orgFormatDate(coverFromDate, this.dateFormat);
+    log.debug("cover from date formatted:", formattedCoverFromDate);
+  
     const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
     const formattedCoverTo = this.orgFormatDate(coverToDate, this.dateFormat);
-    log.debug("cover to date formatted:", formattedCoverTo)
-
-    const selectedProductCode = this.quotationProductForm.value.productCode
-
+    log.debug("cover to date formatted:", formattedCoverTo);
+  
+    const selectedProductCode = this.quotationProductForm.value.productCode;
+  
     const newProductDetail = {
       productCode: selectedProductCode,
+      productName: selectedProductCode.description,
       coverFrom: coverFromDate,
       coverTo: coverToDate
     };
     log.debug("Captured Product Details:", newProductDetail);
-
-    // this.productDetails.push(newProductDetail);
+  
     if (!this.productDetails) {
       this.productDetails = [];
     }
     this.productDetails.push(newProductDetail);
+  
     this.productDetails?.forEach(product => {
       product.coverFrom = new Date(product.coverFrom);
       product.coverTo = new Date(product.coverTo);
+
+      if (!product.productName && product.productCode?.description) {
+        product.productName = product.productCode.description;
+      }
     });
-
+  
     sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+    log.debug("Saved Product Details to sessionStorage:", this.productDetails);
 
-    log.debug("Captured Product Details:", this.productDetails);
+     // ✅ Reset the form fields
+  this.quotationProductForm.reset();
+
+    // ✅ Only close modal now that the form is valid
+  // You can close it programmatically:
+  const closeBtn = document.querySelector('.btn-close') as HTMLElement;
+  closeBtn?.click();
   }
+  
 
   orgFormatDate(date: Date, format: string): string {
     const day = String(date.getDate()).padStart(2, '0');

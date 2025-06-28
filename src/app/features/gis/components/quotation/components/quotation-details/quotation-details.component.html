@@ -382,11 +382,11 @@
         <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
           <div class="modal-content" id="addSectionModal">
             <div class="modal-body">
-              <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{
+              <h5 class="modal-title mt-2 product-details-title" id="editOtherDetailsLabel">{{
                   'gis.quotation.product_details' |
                     translate
                 }}
-                <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
+                <button type="button" class="btn-close float-end red-close" data-bs-dismiss="modal"
                         aria-label="Close"></button>
               </h5>
 
@@ -395,11 +395,37 @@
                   <div class="form-group form-group-sm">
                     <br>
                     <label for="" class="quote-label">Product</label>
-                    <p-dropdown id="quote-input-pdropdown" formControlName="productCode"
-                                value="code" [options]="ProductDescriptionArray" optionLabel="description"
-                                [filterBy]="'description'"
-                                (onChange)="getProductClause(); checkMotorClass()" placeholder=" "
-                                [filter]="true"></p-dropdown>
+                    <p-dropdown                         
+                    id="quote-input-pdropdown"                         
+                    [options]="ProductDescriptionArray"                         
+                    formControlName="productCode"                         
+                    optionLabel="description"    
+                    filterBy="description"                     
+                    [filter]="true"    
+                    [showClear]="true"                     
+                    placeholder="Select Product"   
+                   
+                    (onChange)="getProductClause(); checkMotorClass()">
+                    
+                    <ng-template let-item pTemplate="item">
+                        <div class="d-flex align-items-center" style="pointer-events: none;">
+                            <input
+                                type="checkbox"
+                                [checked]="item.code === quotationProductForm.get('productCode')?.value?.code"
+                                class="me-2"
+                                style="pointer-events: none;"
+                            />
+                            <span style="pointer-events: auto;">{{ item.description }}</span>
+                        </div>                       
+                    </ng-template>      
+                    
+                    <ng-template pTemplate="emptyfilter">
+                      <div class="text-danger px-2 py-1">
+                        No products match your search.
+                      </div>
+                    </ng-template> 
+                </p-dropdown>
+
 
                     <div
                       *ngIf="quotationProductForm.get('productCode').hasError('required') && quotationProductForm.get('productCode').touched"
@@ -444,11 +470,26 @@
 
               </div>
 
-              <div class="mt-4 d-flex justify-content-end">
-                <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal"
-                        (click)="submitForm()">{{ 'gis.quotation.save_details' | translate }}
+              <div class="mt-4 d-flex justify-content-end gap-2">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-lightblue"
+                  data-bs-dismiss="modal"
+                  id="cancelDetails"
+                >
+                  Cancel
+                </button>
+              
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="saveDetails"
+                  (click)="submitForm()"
+                >
+                  {{ 'gis.quotation.save_details' | translate }}
                 </button>
               </div>
+              
             </div>
 
           </div>
