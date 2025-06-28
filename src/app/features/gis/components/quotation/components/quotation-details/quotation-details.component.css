@@ -319,7 +319,11 @@ input.active {
   background-color: rgb(180, 178, 178);
 }
 
-.searchInput:focus {
+
+
+
+
+.productCode:focus {
   outline: none;
   border-color: #2196F3 !important;
   /* Blue border */
