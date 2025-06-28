@@ -179,7 +179,8 @@
     <div class="card-body" class="mx-4">
       <div class="row mb-3">
         <div class="col-4">
-          <h6  class="product-title">
+          <h6
+            style="color: #00529B; font-size: 20px; font-weight: 500; font-family: Roboto; margin-bottom: 0; margin-top: 1.5rem;">
             {{ 'gis.quotation.product_details' | translate }}
           </h6>
         </div>
@@ -187,24 +188,14 @@
 
       <div class="row mb-3">
         <div class="col-12 d-flex justify-content-end" style="margin-bottom: 0;">
-          <div class="d-flex gap-2">
-            <button
-  type="button"
-  class="btn btn-primary no-hover"
-  data-bs-toggle="modal"
-  data-bs-target="#addProduct"
-  title="Add Product"
-  style="font-family: Roboto; font-size: 12px; font-weight: 600; color: #FFFFFF; height: 30px; width: 100px; border-radius: 0; white-space: nowrap; background-color: #00529B; border-color: #00529b;"
->
-  Add Product
-</button>
 
-      
-            <button type="button" class="btn btn-primary" title="drop down"
-              style="font-family: Roboto; font-size: 12px; font-weight: 600;  height: 30px; width: 40px; background-color: #FFFFFF;">
-              <span class="arrow-down" style="color: #000000;">▼</span>
-              
+          <div class="d-flex justify-content-center align-items-center">
+            <button type="button" class="btn btn-primary no-hover" data-bs-toggle="modal" data-bs-target="#addProduct"
+              title="Add Product"> Add Product
             </button>
+            <i class="pi border border-black p-1 rounded-1 text-black"
+              [ngClass]="{'pi-caret-up': showProducts, 'pi-caret-down': !showProducts}"
+              style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleProducts()"></i>
           </div>
 
         </div>
@@ -474,15 +465,15 @@
               <th class="flexible-header1" style="width: 50%" pSortableColumn="wording">Wording <p-sortIcon field="code" /></th>
               <th class="flexible-header1" style="width: 15%;" pSortableColumn="actions">Actions <p-sortIcon field="code" /></th>
             </tr>
-            <tr>
+            <tr class="searchInput">
               <th>
                 <input class="searchInput" type="text" [(ngModel)]="idSearch" style="border-radius: 3px;border:solid gray 1px;width:80%">
               </th>
               <th>
-                <input class="searchInput" type="text" [(ngModel)]="headingSearch" style="border-radius: 3px;border:solid gray 1px;">
+                <input type="text" [(ngModel)]="headingSearch" style="border-radius: 3px;border:solid gray 1px;">
               </th>
               <th>
-                <input class="searchInput" type="text" [(ngModel)]="wordingSearch" style="border-radius: 3px;border:solid gray 1px;">
+                <input type="text" [(ngModel)]="wordingSearch" style="border-radius: 3px;border:solid gray 1px;">
               </th>
               <th></th>
             </tr>
