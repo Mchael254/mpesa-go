@@ -188,151 +188,148 @@
 
       <div class="row mb-3">
         <div class="col-12 d-flex justify-content-end" style="margin-bottom: 0;">
-          <div class="d-flex gap-2">
+
+          <div class="d-flex justify-content-center align-items-center">
             <button type="button" class="btn btn-primary no-hover" data-bs-toggle="modal" data-bs-target="#addProduct"
-              title="Add Product"
-              style="font-family: Roboto; font-size: 12px; font-weight: 600; color: #FFFFFF; height: 30px; width: 100px; border-radius: 0; white-space: nowrap; background-color: #00529B; border-color: #00529b;">
-              Add Product
+              title="Add Product"> Add Product
             </button>
-
-
-            <button type="button" class="btn btn-primary" title="drop down"
-              style="font-family: Roboto; font-size: 12px; font-weight: 600;  height: 30px; width: 40px; background-color: #FFFFFF;">
-              <span class="arrow-down" style="color: #000000;">▼</span>
-
-            </button>
+            <i class="pi border border-black p-1 rounded-1 text-black"
+              [ngClass]="{'pi-caret-up': showProducts, 'pi-caret-down': !showProducts}"
+              style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleProducts()"></i>
           </div>
+
         </div>
       </div>
 
+      <div class="collapse" [ngClass]="{'show': showProducts}" id="collapseProduct">
+        <p-table [value]="productDetails" dataKey="productCode.code" editMode="row"
+          [tableStyle]="{'min-width': '50rem'}">
+          <ng-template pTemplate="header" style="height: 40px;">
+            <tr>
+              <th class="flexible-header1">
+                <div class="header-wrapper">
+                  <span>Product</span>
+                  <span class="sort-icons">
+                    <span class="arrow" (click)="sort('product')">↑</span>
+                    <span class="arrow" (click)="sort('product')">↓</span>
+                  </span>
+                </div>
+              </th>
+              <th class="flexible-header1">
+                <div class="header-wrapper">
+                  <span>Cover from</span>
+                  <span class="sort-icons">
+                    <span class="arrow" (click)="sort('coverFrom')">↑</span>
+                    <span class="arrow" (click)="sort('coverFrom')">↓</span>
+                  </span>
+                </div>
+              </th>
+              <th class="flexible-header1">
+                <div class="header-wrapper">
+                  <span>Cover to</span>
+                  <span class="sort-icons">
+                    <span class="arrow" (click)="sort('coverTo')">↑</span>
+                    <span class="arrow" (click)="sort('coverTo')">↓</span>
+                  </span>
+                </div>
+              </th>
+              <th class="flexible-header1"></th>
+            </tr>
+          </ng-template>
 
 
-      <p-table [value]="productDetails" dataKey="productCode.code" editMode="row" [tableStyle]="{'min-width': '50rem'}">
-        <ng-template pTemplate="header" style="height: 40px;">
-          <tr>
-            <th class="flexible-header1">
-              <div class="header-wrapper">
-                <span>Product</span>
-                <span class="sort-icons">
-                  <span class="arrow" (click)="sort('product')">↑</span>
-                  <span class="arrow" (click)="sort('product')">↓</span>
-                </span>
-              </div>
-            </th>
-            <th class="flexible-header1">
-              <div class="header-wrapper">
-                <span>Cover from</span>
-                <span class="sort-icons">
-                  <span class="arrow" (click)="sort('coverFrom')">↑</span>
-                  <span class="arrow" (click)="sort('coverFrom')">↓</span>
-                </span>
-              </div>
-            </th>
-            <th class="flexible-header1">
-              <div class="header-wrapper">
-                <span>Cover to</span>
-                <span class="sort-icons">
-                  <span class="arrow" (click)="sort('coverTo')">↑</span>
-                  <span class="arrow" (click)="sort('coverTo')">↓</span>
-                </span>
-              </div>
-            </th>
-            <th class="flexible-header1"></th>
-          </tr>
-        </ng-template>
+          <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
+            <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRowIndex !== ri"
+              [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product)">
+
+              <!-- Product Dropdown Column -->
+              <td class="flexible-header">
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <div class="form-group form-group-sm">
+                      <p-dropdown [options]="ProductDescriptionArray" appendTo="body" [(ngModel)]="product.productCode"
+                        optionLabel="description" [style]="{'width':'100%'}"
+                        (onChange)="onProductChange($event.value, ri, product)">
+                      </p-dropdown>
+                    </div>
+
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.productCode?.description }}
+                  </ng-template>
 
 
-        <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
-          <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRowIndex !== ri"
-            [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product)">
+                </p-cellEditor>
+              </td>
 
-            <!-- Product Dropdown Column -->
-            <td class="flexible-header">
-              <p-cellEditor>
-                <ng-template pTemplate="input">
-                  <div class="form-group form-group-sm">
-                    <p-dropdown [options]="ProductDescriptionArray" appendTo="body" [(ngModel)]="product.productCode"
-                      optionLabel="description" [style]="{'width':'100%'}"
-                      (onChange)="onProductChange($event.value, ri, product)">
-                    </p-dropdown>
-                  </div>
-
-                </ng-template>
-                <ng-template pTemplate="output">
-                  {{ product.productCode?.description }}
-                </ng-template>
+              <!-- Cover From Date -->
+              <td class="flexible-header">
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <p-calendar [(ngModel)]="product.coverFrom" appendTo="body" [dateFormat]="dateFormat"
+                      [style]="{'width':'100%'}" (ngModelChange)="updateCoverTo(product)">
+                    </p-calendar>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.coverFrom | date: dateFormat }}
+                  </ng-template>
 
 
-              </p-cellEditor>
-            </td>
+                </p-cellEditor>
+              </td>
 
-            <!-- Cover From Date -->
-            <td class="flexible-header">
-              <p-cellEditor>
-                <ng-template pTemplate="input">
-                  <p-calendar [(ngModel)]="product.coverFrom" appendTo="body" [dateFormat]="dateFormat"
-                    [style]="{'width':'100%'}" (ngModelChange)="updateCoverTo(product)">
-                  </p-calendar>
-                </ng-template>
-                <ng-template pTemplate="output">
-                  {{ product.coverFrom | date: dateFormat }}
-                </ng-template>
-
-
-              </p-cellEditor>
-            </td>
-
-            <!-- Cover To Date -->
-            <td class="flexible-header">
-              <p-cellEditor>
-                <ng-template pTemplate="input">
-                  <p-calendar [(ngModel)]="product.coverTo" appendTo="body" [dateFormat]="dateFormat"
-                    [style]="{'width':'100%'}">
-                  </p-calendar>
-                </ng-template>
-                <ng-template pTemplate="output">
-                  {{ product.coverTo | date: dateFormat }}
-                </ng-template>
+              <!-- Cover To Date -->
+              <td class="flexible-header">
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <p-calendar [(ngModel)]="product.coverTo" appendTo="body" [dateFormat]="dateFormat"
+                      [style]="{'width':'100%'}">
+                    </p-calendar>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.coverTo | date: dateFormat }}
+                  </ng-template>
 
 
-              </p-cellEditor>
-            </td>
+                </p-cellEditor>
+              </td>
 
-            <td class="flexible-header">
-              <div class="d-flex justify-content-end gap-2">
-                <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product)"
-                  class="p-button-sm p-button-text p-button-info no-border">
-                  Edit
-                </button>
+              <td class="flexible-header">
+                <div class="d-flex justify-content-end gap-2">
+                  <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product)"
+                    class="p-button-sm p-button-text p-button-info no-border">
+                    Edit
+                  </button>
 
-                <button *ngIf="editing" type="button" pSaveEditableRow (click)="onRowEditSaves(product)"
-                  class="p-button-sm p-button-text p-button-success no-border">
-                  Save
-                </button>
+                  <button *ngIf="editing" type="button" pSaveEditableRow (click)="onRowEditSaves(product)"
+                    class="p-button-sm p-button-text p-button-success no-border">
+                    Save
+                  </button>
 
-                <button *ngIf="editing" type="button" pCancelEditableRow (click)="onRowEditCancels(product, ri)"
-                  class="p-button-sm p-button-text p-button-secondary no-border">
-                  Cancel
-                </button>
+                  <button *ngIf="editing" type="button" pCancelEditableRow (click)="onRowEditCancels(product, ri)"
+                    class="p-button-sm p-button-text p-button-secondary no-border">
+                    Cancel
+                  </button>
 
-                <button type="button" (click)="openProductDeleteModal(product)"
-                  class="p-button-sm p-button-text p-button-danger no-border">
-                  Delete
-                </button>
-              </div>
-            </td>
+                  <button type="button" (click)="openProductDeleteModal(product)"
+                    class="p-button-sm p-button-text p-button-danger no-border">
+                    Delete
+                  </button>
+                </div>
+              </td>
 
-          </tr>
-        </ng-template>
+            </tr>
+          </ng-template>
 
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="4" style="text-align:center; padding: 20px;">
-              {{ 'gis.quotation.no_data_to_display' | translate }}
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" style="text-align:center; padding: 20px;">
+                {{ 'gis.quotation.no_data_to_display' | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
 
 
       <!-- Add Product Details  Modal -->
@@ -440,160 +437,187 @@
       </div>
       <div class="row mb-4" [formGroup]='quotationForm'>
       </div>
-      <div class="d-flex justify-content-between align-items-center mb-1">
-        <p class="text-primary fw-bold">
-          Product Clauses
 
-        </p>
-        <div class="d-flex justify-content-center align-items-center">
+      <h5 class=""
+        style="color: #00529B; font-size: 20px; font-weight: 500; font-family: Roboto; margin-bottom: 0; margin-top: 1.5rem;">
+        Product Clauses
+      </h5>
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <div></div>
+
+        <div class="d-flex justify-content-center align-items-center mb-1">
           <button class="btn btn-primary">Add clauses</button>
           <i class="pi border border-black p-1 rounded-1 text-black"
-            [ngClass]="{'pi-caret-up': showProduct, 'pi-caret-down': !showProduct}"
-            style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleProduct()"></i>
+            [ngClass]="{'pi-caret-up': showClauses, 'pi-caret-down': !showClauses}"
+            style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleClauses()"></i>
         </div>
 
       </div>
 
-      <div class="collapse" [ngClass]="{'show': showProduct}" id="collapseProductClauses">
+      <div class="collapse" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
 
         <p-table #dt [value]="dummyClauses" [rows]="3" [paginator]="true"
           [globalFilterFields]="['id', 'heading', 'wording']" styleClass="p-datatable-striped p-datatable-gridlines">
           <ng-template pTemplate="header">
             <tr>
-              <th style="width: 15%">ID</th>
-              <th style="width: 30%">Heading</th>
-              <th style="width: 30%">Wording</th>
-              <th style="width: 15%;">Actions</th>
+              <th class="flexible-header1" style="width: 3%" pSortableColumn="id">ID <p-sortIcon field="code" /></th>
+              <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">Heading <p-sortIcon field="code" /></th>
+              <th class="flexible-header1" style="width: 50%" pSortableColumn="wording">Wording <p-sortIcon field="code" /></th>
+              <th class="flexible-header1" style="width: 15%;" pSortableColumn="actions">Actions <p-sortIcon field="code" /></th>
             </tr>
             <tr>
               <th>
-                <input type="text" [(ngModel)]="idSearch">
+                <input class="searchInput" type="text" [(ngModel)]="idSearch" style="border-radius: 3px;border:solid gray 1px;width:80%">
               </th>
               <th>
-                <input type="text" [(ngModel)]="headingSearch">
+                <input class="searchInput" type="text" [(ngModel)]="headingSearch" style="border-radius: 3px;border:solid gray 1px;">
               </th>
               <th>
-                <input type="text" [(ngModel)]="wordingSearch">
+                <input class="searchInput" type="text" [(ngModel)]="wordingSearch" style="border-radius: 3px;border:solid gray 1px;">
               </th>
               <th></th>
             </tr>
           </ng-template>
 
+
           <ng-template pTemplate="body" let-clause>
             <tr>
-              <td>{{ clause.id }}</td>
-              <td>{{ clause.heading }}</td>
-              <td>{{ clause.wording }}</td>
+              <td>
+                <span *ngIf="editClauseId !== clause.id">
+                  {{clause.id}}
+                </span>
+                <input *ngIf="editClauseId === clause.id" type="text" [(ngModel)]="clause.id" class="active"
+                  style="border-radius: 3px; width: 80%;">
+              </td>
+              <td>
+                <span *ngIf="editClauseId !== clause.id">
+                  {{ clause.heading}}
+                </span>
+                <input *ngIf="editClauseId === clause.id" type="text" [(ngModel)]="clause.heading" class="active"
+                  style="border-radius: 3px; width: 80%;">
+              </td>
+              <td>
+                <span *ngIf="editClauseId !== clause.id">
+                  {{ clause.wording | truncate:10 }}
+                </span>
+                <input *ngIf="editClauseId === clause.id" type="text" [(ngModel)]="clause.wording" class="active"
+                  style="border-radius: 3px; width: 80%;">
+              </td>
+
               <td style="text-align: right">
                 <div class="flex justify-end gap-2">
-              <td class="action-cell">
-                <span class="p-button-label p-text-bold"
-                  style="color: #00529B;margin-right:16px; margin-left:10px;cursor:pointer;">Edit</span>
-                <span class="p-button-label p-text-bold" style="color: #00529B;cursor:pointer;">Delete</span>
+                  <span class="p-button-label p-text-bold"
+                    style="color: #00529B; margin-right:16px; margin-left:10px; cursor:pointer;"
+                    (click)="toggleEdit(clause.id)">
+                    {{ editClauseId === clause.id ? 'Cancel' : 'Edit' }}
+                  </span>
+                  <span class="p-button-label p-text-bold" style="color: #00529B; cursor:pointer;">
+                    Delete
+                  </span>
+                </div>
               </td>
+            </tr>
+
+          </ng-template>
+        </p-table>
       </div>
-      </td>
-      </tr>
-      </ng-template>
-      </p-table>
+
     </div>
-
   </div>
-</div>
 
 
-<div class="float-end mb-4">
-  <button class="btn btn-primary" #openModal data-bs-toggle="modal" data-bs-target="#exampleModal" hidden></button>
+  <div class="float-end mb-4">
+    <button class="btn btn-primary" #openModal data-bs-toggle="modal" data-bs-target="#exampleModal" hidden></button>
 
-  <button class="btn btn-primary" (click)="getExistingQuotations()">Next</button>
-</div>
-<!--INTERMEDIARY MODAL -->
-<div class="modal fade" id="selectIntermediary" tabindex="-1" aria-labelledby="selectIntermediaryLabel"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+    <button class="btn btn-primary" (click)="getExistingQuotations()">Next</button>
+  </div>
+  <!--INTERMEDIARY MODAL -->
+  <div class="modal fade" id="selectIntermediary" tabindex="-1" aria-labelledby="selectIntermediaryLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
 
-      <div class="modal-body">
-        <div class="float-start"></div>
-        <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
-        <h5 class="text-start mt-2 mb-4">Select intermediary</h5>
-        <div class="input-group mb-4" id="search-input">
+        <div class="modal-body">
+          <div class="float-start"></div>
+          <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="text-start mt-2 mb-4">Select intermediary</h5>
+          <div class="input-group mb-4" id="search-input">
 
-          <span class="input-group-append" style="background-color: #F5F6F8;">
-            <button class="btn border-end-0 " type="button">
-              <i class="fa fa-search"></i>
+            <span class="input-group-append" style="background-color: #F5F6F8;">
+              <button class="btn border-end-0 " type="button">
+                <i class="fa fa-search"></i>
+              </button>
+            </span>
+            <!-- <input class="form-control py-2 border-start-0" pInputText  (input)="applyFilterGlobal($event, 'contains')"  style="background-color: #F5F6F8;border: 0px;" type="search" placeholder="search...">             -->
+          </div>
+
+
+          <p-table #dt1 [value]="agents" [tableStyle]="{ 'max-width': '100rem' }" [resizableColumns]="true"
+            styleClass="p-datatable-sm" class='ui-datatable' [globalFilterFields]="['shortDesc', 'name', 'accountType']"
+            [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+            currentPageReportTemplate="{first} to {last} of {totalRecords} entries" selectionMode="single"
+            [(selection)]="selectedAgent" dataKey="shortDesc">
+            <ng-template pTemplate="header">
+              <tr>
+                <th field="shortDesc">Code</th>
+                <th field="name">Name</th>
+                <th field="accountType">Intermediary type</th>
+
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-data>
+              <tr [pSelectableRow]="data" style="cursor:pointer" (click)="getAgentById(data)">
+                <td>{{ data.shortDesc }}</td>
+                <td>{{ data.name | sentenceCase }}</td>
+                <td>{{ data.accountType | sentenceCase }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+          <div class="float-start"></div>
+          <button class="btn btn-primary float-end mt-4" data-bs-dismiss="modal">OK</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="min-width:700px">
+        <div class="modal-body">
+          <p class="title1 mb-4">Client's already existing quotations</p>
+          <p-table [value]="clientExistingQuotations" [resizableColumns]="true" styleClass="p-datatable-sm"
+            styleClass="p-datatable-striped" class='ui-datatable' [tableStyle]="{ 'min-width': '50rem' }"
+            [scrollable]="true" scrollHeight="400px">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Quotation number</th>
+                <th>Status</th>
+                <th>Cover from</th>
+                <th>Cover to</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-data>
+              <tr>
+                <td>{{ data.quotationNo }}</td>
+                <td>{{ data.status }}</td>
+                <td>{{ data.coverFrom }}</td>
+                <td>{{ data.coverTo }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+          <p class="title1 mt-4 float-start">Do you wish to continue creating the quotation?</p>
+          <div class="mt-3 float-end">
+            <button class="btn btn-outline-primary" data-bs-dismiss="modal">No,I don't</button>
+            <button class="btn btn-primary" style="margin-left: 10px;" data-bs-dismiss="modal"
+              (click)="saveQuotationDetails()">Yes, continue
             </button>
-          </span>
-          <!-- <input class="form-control py-2 border-start-0" pInputText  (input)="applyFilterGlobal($event, 'contains')"  style="background-color: #F5F6F8;border: 0px;" type="search" placeholder="search...">             -->
-        </div>
-
-
-        <p-table #dt1 [value]="agents" [tableStyle]="{ 'max-width': '100rem' }" [resizableColumns]="true"
-          styleClass="p-datatable-sm" class='ui-datatable' [globalFilterFields]="['shortDesc', 'name', 'accountType']"
-          [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
-          currentPageReportTemplate="{first} to {last} of {totalRecords} entries" selectionMode="single"
-          [(selection)]="selectedAgent" dataKey="shortDesc">
-          <ng-template pTemplate="header">
-            <tr>
-              <th field="shortDesc">Code</th>
-              <th field="name">Name</th>
-              <th field="accountType">Intermediary type</th>
-
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-data>
-            <tr [pSelectableRow]="data" style="cursor:pointer" (click)="getAgentById(data)">
-              <td>{{ data.shortDesc }}</td>
-              <td>{{ data.name | sentenceCase }}</td>
-              <td>{{ data.accountType | sentenceCase }}</td>
-            </tr>
-          </ng-template>
-        </p-table>
-
-        <div class="float-start"></div>
-        <button class="btn btn-primary float-end mt-4" data-bs-dismiss="modal">OK</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="min-width:700px">
-      <div class="modal-body">
-        <p class="title1 mb-4">Client's already existing quotations</p>
-        <p-table [value]="clientExistingQuotations" [resizableColumns]="true" styleClass="p-datatable-sm"
-          styleClass="p-datatable-striped" class='ui-datatable' [tableStyle]="{ 'min-width': '50rem' }"
-          [scrollable]="true" scrollHeight="400px">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Quotation number</th>
-              <th>Status</th>
-              <th>Cover from</th>
-              <th>Cover to</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-data>
-            <tr>
-              <td>{{ data.quotationNo }}</td>
-              <td>{{ data.status }}</td>
-              <td>{{ data.coverFrom }}</td>
-              <td>{{ data.coverTo }}</td>
-            </tr>
-          </ng-template>
-        </p-table>
-
-        <p class="title1 mt-4 float-start">Do you wish to continue creating the quotation?</p>
-        <div class="mt-3 float-end">
-          <button class="btn btn-outline-primary" data-bs-dismiss="modal">No,I don't</button>
-          <button class="btn btn-primary" style="margin-left: 10px;" data-bs-dismiss="modal"
-            (click)="saveQuotationDetails()">Yes, continue
-          </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </div>

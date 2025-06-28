@@ -74,12 +74,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   idSearch: any
   headingSearch: any
   wordingSearch: any
+  editInputs: boolean = false;
+  editClauseId: any = null;
+  toggleEdit(id: any) {
+    this.editClauseId = this.editClauseId === id ? null : id;
+  }
 
 
-
-sort(arg0: string) {
-throw new Error('Method not implemented.');
-}
+  sort(arg0: string) {
+    throw new Error('Method not implemented.');
+  }
 
   @ViewChild(Table) private dataTable: Table;
   steps = quoteStepsData;
@@ -100,7 +104,8 @@ throw new Error('Method not implemented.');
   quotationCode: any;
   isChecked: boolean = false;
   show: boolean = false;
-  showProduct: boolean = true;
+  showProducts: boolean = false;
+  showClauses:boolean = false;
   quotationNum: string;
   introducers: introducersDTO[] = [];
   userDetails: any;
@@ -215,7 +220,7 @@ throw new Error('Method not implemented.');
     log.debug("product Form details", this.productDetails)
 
 
-   
+
   }
 
   ngOnInit(): void {
@@ -1028,8 +1033,13 @@ throw new Error('Method not implemented.');
       })
   }
 
-  toggleProduct() {
-    this.showProduct = !this.showProduct;
+  toggleProducts() {
+    this.showProducts = !this.showProducts;
+  }
+
+  toggleClauses(){
+     this.showClauses = !this.showClauses;
+
   }
 
   toggleDetails() {

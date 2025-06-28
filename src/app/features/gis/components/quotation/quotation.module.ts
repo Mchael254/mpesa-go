@@ -48,6 +48,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 
 
 
+
 @NgModule({
   declarations: [
     ListQuotationsComponent,
@@ -71,8 +72,6 @@ import { MultiSelectModule } from 'primeng/multiselect';
     QuoteSummaryComponent,
     ShareQuotesComponent,
     PaymentAdviceComponent,
-
-
 
 
 
