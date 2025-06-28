@@ -919,7 +919,7 @@
       "cubic_capacity": "Capacidad cúbica",
       "seating_capacity": "Capacidad de asientos",
       "body_type": "Tipo de carrocería",
-      "no_data_to_display": "No hay datos para mostrar.",
+      "no_data_to_display": "No hay producto. Haga clic en “Agregar producto” para agregar un nuevo producto.",
       "edit_motor_private_details": "Editar detalles del motor privado",
       "chasis_number": "Número de chasis",
       "age": "Edad",

@@ -205,6 +205,48 @@
   margin-left: 4px;
 }
 
+.product-title {
+  color: #00529B; 
+  font-size: 20px; 
+  font-weight: 500; 
+  font-family: Roboto;
+   margin-bottom: 0;
+    margin-top: 1.5rem;
+}
+
+.add-product-btn {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  height: 30px;
+  width: 100px;
+  border-radius: 0;
+  white-space: nowrap;
+  background-color: #00529B;
+  border-color: #00529B;
+}
+
+.dropdown-btn {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  height: 30px;
+  width: 40px;
+  background-color: #FFFFFF;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Icon color */
+.arrow-black {
+  color: #000000;
+  font-size: 14px; /* adjust if needed */
+}
+
+
 
 
 
