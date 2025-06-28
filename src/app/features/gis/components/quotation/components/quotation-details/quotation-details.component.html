@@ -206,33 +206,18 @@
           [tableStyle]="{'min-width': '50rem'}">
           <ng-template pTemplate="header" style="height: 40px;">
             <tr>
-              <th class="flexible-header1">
-                <div class="header-wrapper">
-                  <span>Product</span>
-                  <span class="sort-icons">
-                    <span class="arrow" (click)="sort('product')">↑</span>
-                    <span class="arrow" (click)="sort('product')">↓</span>
-                  </span>
-                </div>
+              <th class="flexible-header1" pSortableColumn="productCode.description">
+                Product <p-sortIcon field="productCode.description" />
               </th>
-              <th class="flexible-header1">
-                <div class="header-wrapper">
-                  <span>Cover from</span>
-                  <span class="sort-icons">
-                    <span class="arrow" (click)="sort('coverFrom')">↑</span>
-                    <span class="arrow" (click)="sort('coverFrom')">↓</span>
-                  </span>
-                </div>
+
+              <th class="flexible-header1" pSortableColumn="coverFrom">
+                Cover from <p-sortIcon field="productCode.coverFrom" />
               </th>
-              <th class="flexible-header1">
-                <div class="header-wrapper">
-                  <span>Cover to</span>
-                  <span class="sort-icons">
-                    <span class="arrow" (click)="sort('coverTo')">↑</span>
-                    <span class="arrow" (click)="sort('coverTo')">↓</span>
-                  </span>
-                </div>
+
+              <th class="flexible-header1" pSortableColumn="productCode.description">
+                Cover to <p-sortIcon field="productCode.coverTo" />
               </th>
+
               <th class="flexible-header1"></th>
             </tr>
           </ng-template>
@@ -471,16 +456,16 @@
             </tr>
             <tr class="searchInput">
               <th>
-                <input class="searchInput" type="text" [(ngModel)]="idSearch"
-                  style="border-radius: 3px;border:solid gray 1px;width:80%">
+                <input pInputText class="searchInput" type="text" [(ngModel)]="idSearch"
+                  style="border-radius: 3px; border: solid f5f5f5 1px; width: 80%;height:4vh;">
               </th>
               <th>
-                <input class="searchInput" type="text" [(ngModel)]="headingSearch"
-                  style="border-radius: 3px;border:solid gray 1px;">
+                <input pInputText class="searchInput" type="text" [(ngModel)]="headingSearch"
+                  style="border-radius: 3px; border: solid f5f5f5 1px; width: 80%;height:4vh;">
               </th>
               <th>
-                <input class="searchInput" type="text" [(ngModel)]="wordingSearch"
-                  style="border-radius: 3px;border:solid gray 1px;">
+                <input pInputText class="searchInput" type="text" [(ngModel)]="wordingSearch"
+                  style="border-radius: 3px; border: solid f5f5f5 1px; width: 80%;height:4vh;">
               </th>
               <th></th>
             </tr>
@@ -548,8 +533,10 @@
             <ng-template pTemplate="header">
               <tr>
                 <th class="flexible-header1" style="width: 3%"><p-tableHeaderCheckbox /></th>
-                <th class="flexible-header1" style="width: 30%" pSortableColumn="id"> ID <p-sortIcon field="code" /></th>
-                <th class="flexible-header1" style="width: 40%" pSortableColumn="heading"> Description <p-sortIcon field="code" /> </th>
+                <th class="flexible-header1" style="width: 30%" pSortableColumn="id"> ID <p-sortIcon field="code" />
+                </th>
+                <th class="flexible-header1" style="width: 40%" pSortableColumn="heading"> Description <p-sortIcon
+                    field="code" /> </th>
               </tr>
               <tr>
                 <th></th>
@@ -599,7 +586,7 @@
   <div class="modal fade" id="editClause">
     <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
       <div class="modal-content ps-4 pt-2 pe-4">
-        <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+        <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
           <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
             {{ 'gis.quotation.edit_clause' | translate }}</p>
           <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X
