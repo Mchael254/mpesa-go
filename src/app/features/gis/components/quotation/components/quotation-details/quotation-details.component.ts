@@ -1,29 +1,29 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {SharedQuotationsService} from '../../services/shared-quotations.service';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
-import {QuotationsService} from '../../services/quotations/quotations.service';
-import {introducersDTO} from '../../data/introducersDTO';
-import {ProductSubclassService} from '../../../setups/services/product-subclass/product-subclass.service';
-import {Table} from 'primeng/table';
-import {HttpErrorResponse} from '@angular/common/http';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { SharedQuotationsService } from '../../services/shared-quotations.service';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { QuotationsService } from '../../services/quotations/quotations.service';
+import { introducersDTO } from '../../data/introducersDTO';
+import { ProductSubclassService } from '../../../setups/services/product-subclass/product-subclass.service';
+import { Table } from 'primeng/table';
+import { HttpErrorResponse } from '@angular/common/http';
 
-import {NgxSpinnerService} from 'ngx-spinner';
-import {OrganizationBranchDto} from "../../../../../../shared/data/common/organization-branch-dto";
-import {CurrencyDTO} from "../../../../../../shared/data/common/currency-dto";
-import {BankService} from "../../../../../../shared/services/setups/bank/bank.service";
-import {BranchService} from "../../../../../../shared/services/setups/branch/branch.service";
-import {ClauseService} from "../../../../services/clause/clause.service";
-import {ProductService} from "../../../../services/product/product.service";
-import {AuthService} from "../../../../../../shared/services/auth.service";
-import {IntermediaryService} from "../../../../../entities/services/intermediary/intermediary.service";
-import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
-import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
-import {forkJoin, mergeMap} from 'rxjs';
-import {QuotationList, QuotationSource, UserDetail} from '../../data/quotationsDTO';
-import {Products} from '../../../setups/data/gisDTO';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { OrganizationBranchDto } from "../../../../../../shared/data/common/organization-branch-dto";
+import { CurrencyDTO } from "../../../../../../shared/data/common/currency-dto";
+import { BankService } from "../../../../../../shared/services/setups/bank/bank.service";
+import { BranchService } from "../../../../../../shared/services/setups/branch/branch.service";
+import { ClauseService } from "../../../../services/clause/clause.service";
+import { ProductService } from "../../../../services/product/product.service";
+import { AuthService } from "../../../../../../shared/services/auth.service";
+import { IntermediaryService } from "../../../../../entities/services/intermediary/intermediary.service";
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
+import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
+import { forkJoin, mergeMap } from 'rxjs';
+import { QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
+import { Products } from '../../../setups/data/gisDTO';
 
 const log = new Logger('QuotationDetails');
 
@@ -33,9 +33,59 @@ const log = new Logger('QuotationDetails');
   styleUrls: ['./quotation-details.component.css']
 })
 export class QuotationDetailsComponent implements OnInit, OnDestroy {
-sort(arg0: string) {
-throw new Error('Method not implemented.');
-}
+
+  dummyClauses = [
+    {
+      id: 1,
+      heading: 'Introduction',
+      wording: 'This agreement constitutes a legal contract between the parties.'
+    },
+    {
+      id: 2,
+      heading: 'Definitions',
+      wording: 'For purposes of this agreement, the following terms shall have the meanings set forth below.'
+    },
+    {
+      id: 3,
+      heading: 'Payment Terms',
+      wording: 'All invoices are payable within 30 days of receipt unless otherwise agreed in writing.'
+    },
+    {
+      id: 4,
+      heading: 'Confidentiality',
+      wording: 'Both parties agree to maintain the confidentiality of all proprietary information.'
+    },
+    {
+      id: 5,
+      heading: 'Termination',
+      wording: 'Either party may terminate this agreement with 30 days written notice.'
+    },
+    {
+      id: 6,
+      heading: 'Governing Law',
+      wording: 'This agreement shall be governed by the laws of the State of California.'
+    },
+    {
+      id: 7,
+      heading: 'Amendments',
+      wording: 'No amendment to this agreement shall be effective unless in writing and signed by both parties.'
+    }
+  ];
+  selectedClauses:any
+  idSearch: any
+  headingSearch: any
+  wordingSearch: any
+  editInputs: boolean = false;
+  editClauseId: any = null;
+  toggleEdit(id: any) {
+    this.editClauseId = this.editClauseId === id ? null : id;
+  }
+
+
+  sort(arg0: string) {
+    throw new Error('Method not implemented.');
+  }
+
   @ViewChild(Table) private dataTable: Table;
   steps = quoteStepsData;
   branch: OrganizationBranchDto[];
@@ -55,7 +105,8 @@ throw new Error('Method not implemented.');
   quotationCode: any;
   isChecked: boolean = false;
   show: boolean = false;
-  showProduct: boolean = false;
+  showProducts: boolean = false;
+  showClauses: boolean = false;
   quotationNum: string;
   introducers: introducersDTO[] = [];
   userDetails: any;
@@ -152,25 +203,25 @@ throw new Error('Method not implemented.');
       log.debug("Existing product details >>>", this.productDetails)
     }
     this.paymentFrequencies = [
-      {label: 'Annually', value: 'A'},
-      {label: 'Semi annually', value: 'S'},
-      {label: 'Quarterly', value: 'Q'},
-      {label: 'Monthly', value: 'M'},
-      {label: 'One-off', value: 'O'}
+      { label: 'Annually', value: 'A' },
+      { label: 'Semi annually', value: 'S' },
+      { label: 'Quarterly', value: 'Q' },
+      { label: 'Monthly', value: 'M' },
+      { label: 'One-off', value: 'O' }
     ];
     this.quotationType = [
-      {label: 'Direct', value: 'D'},
-      {label: 'Intermediary', value: 'I'}
+      { label: 'Direct', value: 'D' },
+      { label: 'Intermediary', value: 'I' }
     ]
     this.fromCampaign = [
-      {label: 'Others', value: 'O'},
-      {label: 'Campaign', value: 'C'}
+      { label: 'Others', value: 'O' },
+      { label: 'Campaign', value: 'C' }
     ]
     this.selectedClient = JSON.parse(sessionStorage.getItem('client'))
     log.debug("product Form details", this.productDetails)
 
 
-   
+
   }
 
   ngOnInit(): void {
@@ -187,6 +238,25 @@ throw new Error('Method not implemented.');
       this.loadClientQuotation();
     }
   }
+
+  addClause() {
+    this.globalMessagingService.displaySuccessMessage('success', 'clause added successfully')
+  }
+
+  selectedDummyClause: any = {
+    id: '',
+    heading: '',
+    wording: ''
+  };
+
+  populateEditClauseModal(clause: any) {
+    this.selectedDummyClause = { ...clause }; 
+  }
+
+  editClause() {
+    this.globalMessagingService.displaySuccessMessage('success', 'clause edited successfully')
+  }
+
 
   ngOnDestroy(): void {
   }
@@ -373,7 +443,7 @@ throw new Error('Method not implemented.');
 
     // Extract the day, month, and year
     const day = todaysDate.getDate();
-    const month = todaysDate.toLocaleString('default', {month: 'long'}); // 'long' gives the full month name
+    const month = todaysDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
     const year = todaysDate.getFullYear();
 
     // Format the date in 'dd-Month-yyyy' format
@@ -659,14 +729,14 @@ throw new Error('Method not implemented.');
     log.debug("agent selected", data);
     this.agentDetails = data
     this.agentName = this.agentDetails.name;
-/*    this.quotationForm.controls['agentShortDescription'].setValue(this.agentDetails.shortDesc);
-    this.quotationForm.controls['agentCode'].setValue(this.agentDetails.name);*/
-   /* this.agentService.getAgentById(data).subscribe({
-      next: (res) => {
-
-
-      }
-    })*/
+    /*    this.quotationForm.controls['agentShortDescription'].setValue(this.agentDetails.shortDesc);
+        this.quotationForm.controls['agentCode'].setValue(this.agentDetails.name);*/
+    /* this.agentService.getAgentById(data).subscribe({
+       next: (res) => {
+ 
+ 
+       }
+     })*/
   }
 
   openHelperModal(selectedClause: any) {
@@ -742,12 +812,12 @@ throw new Error('Method not implemented.');
    */
   editRow(details, code) {
     this.clauseService.updateClause(details, code).subscribe(res => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
-      }, (error: HttpErrorResponse) => {
-        log.info(error);
-        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+      this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+    }, (error: HttpErrorResponse) => {
+      log.info(error);
+      this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
 
-      }
+    }
     )
   }
 
@@ -793,7 +863,7 @@ throw new Error('Method not implemented.');
           const coverFromDate = new Date(coverFrom)
           // Extract the day, month, and year
           const day = coverFromDate.getDate();
-          const month = coverFromDate.toLocaleString('default', {month: 'long'}); // 'long' gives the full month name
+          const month = coverFromDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
           const year = coverFromDate.getFullYear();
 
           // Format the date in 'dd-Month-yyyy' format
@@ -877,7 +947,7 @@ throw new Error('Method not implemented.');
 
       // Optional: for display/debug
       const day = selectedDate.getDate();
-      const month = selectedDate.toLocaleString('default', {month: 'long'});
+      const month = selectedDate.toLocaleString('default', { month: 'long' });
       const year = selectedDate.getFullYear();
       this.expiryDate = `${day}-${month}-${year}`;
 
@@ -983,8 +1053,13 @@ throw new Error('Method not implemented.');
       })
   }
 
-  toggleProduct() {
-    this.showProduct = !this.showProduct;
+  toggleProducts() {
+    this.showProducts = !this.showProducts;
+  }
+
+  toggleClauses() {
+    this.showClauses = !this.showClauses;
+
   }
 
   toggleDetails() {
@@ -1033,7 +1108,7 @@ throw new Error('Method not implemented.');
         // CURRENCIES
         this.currency = currencies.map((value) => {
           let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
-          return {...value, name: capitalizedDescription};
+          return { ...value, name: capitalizedDescription };
         });
 
         log.info(this.currency, 'this is a currency list');
@@ -1054,17 +1129,17 @@ throw new Error('Method not implemented.');
         if (this.quotationFormDetails?.currencyCode) {
           const selectedCurrency = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
           if (selectedCurrency) {
-            this.quotationForm.patchValue({currencyCode: selectedCurrency});
+            this.quotationForm.patchValue({ currencyCode: selectedCurrency });
           }
         } else {
-          this.quotationForm.patchValue({currencyCode: this.defaultCurrency});
+          this.quotationForm.patchValue({ currencyCode: this.defaultCurrency });
 
         }
         // QUOTATION SOURCES
         this.quotationSources = sources?.content || [];
         this.quotationSources = this.quotationSources.map((value) => {
           let capitalizedDescription = value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase();
-          return {...value, description: capitalizedDescription};
+          return { ...value, description: capitalizedDescription };
         });
 
         log.debug("SOURCES", this.quotationSources);
@@ -1072,7 +1147,7 @@ throw new Error('Method not implemented.');
         // BRANCHES
         this.branch = branches.map((value) => {
           let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
-          return {...value, name: capitalizedDescription};
+          return { ...value, name: capitalizedDescription };
         });
 
         log.info(this.branch, 'this is a branch list');
@@ -1080,7 +1155,7 @@ throw new Error('Method not implemented.');
         if (this.quotationFormDetails?.branch) {
           const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branch);
           if (selectedBranch) {
-            this.quotationForm.patchValue({branch: selectedBranch});
+            this.quotationForm.patchValue({ branch: selectedBranch });
           }
         }
 
@@ -1097,7 +1172,7 @@ throw new Error('Method not implemented.');
         if (this.quotationFormDetails?.productCode) {
           const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.quotationFormDetails?.productCode);
           if (selectedProduct) {
-            this.quotationForm.patchValue({productCode: selectedProduct});
+            this.quotationForm.patchValue({ productCode: selectedProduct });
           }
         }
 
@@ -1168,12 +1243,12 @@ throw new Error('Method not implemented.');
     product.coverTo = coverToDate; // Assign full object
 
     if (this.selectedProduct) {
-      product.productCode = {...this.selectedProduct}; // Assign full object
+      product.productCode = { ...this.selectedProduct }; // Assign full object
     }
 
     // Ensure the edited product is correctly updated in the array
     this.productDetails = this.productDetails.map(item =>
-      item.productCode.code === product.productCode.code ? {...item, ...product} : item
+      item.productCode.code === product.productCode.code ? { ...item, ...product } : item
     );
 
     log.debug("Updated Product Details:", this.productDetails);
@@ -1312,7 +1387,7 @@ throw new Error('Method not implemented.');
 
 
   onRowEditInits(product: any) {
-    this.clonedProducts[product.productCode.code] = {...product};
+    this.clonedProducts[product.productCode.code] = { ...product };
     console.log('Editing row:', product);
   }
 
@@ -1326,7 +1401,7 @@ throw new Error('Method not implemented.');
       product.coverTo = new Date(coverToDate);
 
       this.productDetails = this.productDetails.map(item =>
-        item.productCode.code === product.productCode.code ? {...item, ...product} : item
+        item.productCode.code === product.productCode.code ? { ...item, ...product } : item
       );
 
       sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));

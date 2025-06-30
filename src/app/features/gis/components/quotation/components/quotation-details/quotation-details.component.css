@@ -1,21 +1,24 @@
-.title{
+.title {
   color: #000;
   font-size: 12px;
   font-style: normal;
   font-weight: 700;
   line-height: 18px;
 }
-.title1{
+
+.title1 {
   color: #000;
   font-size: 14px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
 }
-.required{
-  color:red
+
+.required {
+  color: red
 }
-.more{
+
+.more {
   color: #00529B;
   font-family: Roboto;
   font-size: 16px;
@@ -24,7 +27,8 @@
   line-height: normal;
   text-decoration-line: underline;
 }
-.quote-label{
+
+.quote-label {
   color: #000;
   font-family: Roboto;
   font-size: 14px;
@@ -33,7 +37,8 @@
   line-height: normal;
   margin-bottom: 15px;
 }
-.import_risks{
+
+.import_risks {
   color: #000;
   font-family: Roboto;
   font-size: 15px;
@@ -41,50 +46,57 @@
   font-weight: 400;
   line-height: normal;
 }
-.quote-btn{
+
+.quote-btn {
   padding-left: 16px;
   padding-right: 13px;
   white-space: nowrap;
 }
 
-::ng-deep .p-calendar{
+::ng-deep .p-calendar {
   height: 33px !important;
   width: 100%;
   border-radius: 4px !important;
 
 
 }
+
 ::ng-deep .p-calendar-w-btn .p-inputtext {
   color: #000;
   font-size: 14px;
 }
-::ng-deep
-.p-datepicker table td > span {
-  width:1.5rem;
+
+::ng-deep .p-datepicker table td>span {
+  width: 1.5rem;
   height: 1.5rem;
   font-size: 14px;
 }
+
 ::ng-deep .p-datepicker .p-datepicker-header .p-datepicker-title .p-datepicker-year {
   font-size: 14px;
 }
-::ng-deep .p-datepicker .p-datepicker-header .p-datepicker-title .p-datepicker-month{
+
+::ng-deep .p-datepicker .p-datepicker-header .p-datepicker-title .p-datepicker-month {
   font-size: 14px;
 }
-::ng-deep .p-datepicker table th > span{
+
+::ng-deep .p-datepicker table th>span {
   font-size: 14px;
 }
-::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead > tr > th{
-  padding:8px;
+
+::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead>tr>th {
+  padding: 8px;
 }
 
 
-#quote-input{
+#quote-input {
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.20);
   /* height: 50%; */
   font-size: 14px;
 }
-#quote-input-pdropdown{
+
+#quote-input-pdropdown {
   font-size: 14px;
 
 }
@@ -102,7 +114,8 @@
 }
 
 .collapse.show {
-  max-height: 2000px; /* Adjust this value based on your content height */
+  max-height: 2000px;
+  /* Adjust this value based on your content height */
   opacity: 1;
 }
 
@@ -118,6 +131,7 @@
 .pi-angle-double-down {
   transform: rotate(0deg);
 }
+
 .greyed-out {
   /* background-color: #e0e0e0 !important; */
   pointer-events: none;
@@ -164,16 +178,19 @@
   font-weight: 400;
   line-height: normal;
 }
+
 .card {
   border: none;
   border-radius: 5px;
 
 }
-.form-check-label{
+
+.form-check-label {
   color: #000;
   font-family: Roboto;
   font-size: 14px;
 }
+
 .flexible-header1 {
   white-space: nowrap;
   width: auto;
@@ -184,20 +201,26 @@
   font-size: 16px;
   font-weight: 500;
 
-  
+
 
 }
+
 .no-border {
   border: none !important;
   box-shadow: none !important;
   background: none !important;
   color: #00529B;
 }
+
 .arrow {
-  font-weight: 900;        /* Makes the icon bolder */
-  font-size: 0.9rem;       /* Optional: increase size slightly */
-  color: #000;             /* Optional: ensure it's fully black */
-  line-height: 1;          /* Align better vertically */
+  font-weight: 900;
+  /* Makes the icon bolder */
+  font-size: 0.9rem;
+  /* Optional: increase size slightly */
+  color: #000;
+  /* Optional: ensure it's fully black */
+  line-height: 1;
+  /* Align better vertically */
   font-family: 'Arial Black', 'Segoe UI Symbol', sans-serif;
 }
 
@@ -206,12 +229,12 @@
 }
 
 .product-title {
-  color: #00529B; 
-  font-size: 20px; 
-  font-weight: 500; 
+  color: #00529B;
+  font-size: 20px;
+  font-weight: 500;
   font-family: Roboto;
-   margin-bottom: 0;
-    margin-top: 1.5rem;
+  margin-bottom: 0;
+  margin-top: 1.5rem;
 }
 
 .add-product-btn {
@@ -243,7 +266,8 @@
 /* Icon color */
 .arrow-black {
   color: #000000;
-  font-size: 14px; /* adjust if needed */
+  font-size: 14px;
+  /* adjust if needed */
 }
 
 
@@ -259,16 +283,20 @@
   border-radius: 100px;
   border: none;
 }
+
 #icon {
   background-color: #E4E7EB;
   border-radius: 100px;
   border: none;
 }
+
 .highlighted-row {
-  background-color: #e0f7fa !important; /* Light blue background */
+  background-color: #e0f7fa !important;
+  /* Light blue background */
   font-weight: bold;
 }
-.deleteMessage{
+
+.deleteMessage {
   color: #000;
   font-size: 16px;
   font-family: Roboto;
@@ -277,3 +305,35 @@
   line-height: normal;
   text-align: center;
 }
+
+
+input.active {
+  border: 1px solid #ccc !important;
+}
+
+.editInput {
+  outline: none;
+  padding: 5px;
+  border-radius: 3px;
+  border: solid rgb(185, 178, 178) 1px;
+  background-color: rgb(180, 178, 178);
+}
+
+
+
+
+
+.productCode:focus {
+  outline: none;
+  border-color: #2196F3 !important;
+  /* Blue border */
+  box-shadow: 0 0 5px rgba(33, 150, 243, 0.5) !important;
+}
+
+textarea {
+  padding: 5px;
+  border-radius: 3px;
+}
+
+
+
