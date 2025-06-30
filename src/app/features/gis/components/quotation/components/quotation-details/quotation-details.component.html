@@ -314,16 +314,6 @@
 
 
       <!-- Add Product Details  Modal -->
-      <div class="modal fade " id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
-           aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
-          <div class="modal-content" id="addSectionModal">
-            <div class="modal-body">
-              <h5 class="modal-title mt-2 product-details-title" id="editOtherDetailsLabel">
-                {{ 'gis.quotation.add_product' | translate }}
-                <button type="button" class="btn-close float-end red-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-              </h5>
       <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
@@ -364,7 +354,7 @@
                 </p-multiSelect>
                 
 
-                    <p-dropdown id="quote-input-pdropdown" [options]="ProductDescriptionArray"
+                    <!-- <p-dropdown id="quote-input-pdropdown" [options]="ProductDescriptionArray"
                       formControlName="productCode" optionLabel="description" filterBy="description" [filter]="true"
                       [showClear]="true" placeholder="Select Product"
                       (onChange)="getProductClause(); checkMotorClass()">
@@ -383,7 +373,7 @@
                           No products match your search.
                         </div>
                       </ng-template>
-                    </p-dropdown>
+                    </p-dropdown> -->
                     <!-- <p-dropdown id="quote-input-pdropdown" formControlName="productCode" value="code"
                       [options]="ProductDescriptionArray" optionLabel="description"   [filterBy]="'description,code'"
                       (onChange)="getProductClause(); checkMotorClass()" placeholder=" " [filter]="true"></p-dropdown> -->
