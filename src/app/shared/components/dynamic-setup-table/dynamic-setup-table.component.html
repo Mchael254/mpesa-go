@@ -369,7 +369,7 @@
                       >
                         <option value="">---select {{ field.label?.[language] | lowercase }}---</option>
                         <option *ngFor="let option of field.options" [value]="option">
-                          {{ option }}
+                          {{ option | titlecase }}
                         </option>
                       </select>
                     </ng-container>
