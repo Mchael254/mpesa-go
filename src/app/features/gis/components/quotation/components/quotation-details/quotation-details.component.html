@@ -12,11 +12,11 @@
           <div class="form-group form-group-sm">
             <br>
             <label for="source" class="quote-label">Source<span class="required"></span></label>
-            <p-dropdown id="source" formControlName="source" [options]="quotationSources"
-                        optionLabel="description" placeholder=" " [filterBy]="'description'" [filter]="true"
-                        (onChange)="onSourceChange($event)"></p-dropdown>
+            <p-dropdown id="source" formControlName="source" [options]="quotationSources" optionLabel="description"
+              placeholder=" " [filterBy]="'description'" [filter]="true"
+              (onChange)="onSourceChange($event)"></p-dropdown>
             <div *ngIf="quotationForm.get('source').hasError('required') && quotationForm.get('source').touched"
-                 class="form-text text-danger">
+              class="form-text text-danger">
               Source is required.
             </div>
           </div>
@@ -25,11 +25,8 @@
           <div class="form-group form-group-sm">
             <br>
             <label for="quotationType" class="quote-label">Quotation type</label>
-            <p-dropdown id="quotationType" [options]="quotationType" optionLabel="label"
-                        optionValue="value"
-                        placeholder=" "
-                        [filterBy]="'label'"
-                        [filter]="true">
+            <p-dropdown id="quotationType" [options]="quotationType" optionLabel="label" optionValue="value"
+              placeholder=" " [filterBy]="'label'" [filter]="true">
             </p-dropdown>
           </div>
         </div>
@@ -37,11 +34,10 @@
           <div class="form-group form-group-sm">
             <br>
             <label for="agent" class="quote-label">Intermediary<span class="required"></span></label>
-            <input type="text" id="agent" class="form-control form-control-sm mb-1"
-                   formControlName="agent" data-bs-toggle="modal" data-bs-target="#selectIntermediary"
-                   autocomplete="off" [value]="agentName">
+            <input type="text" id="agent" class="form-control form-control-sm mb-1" formControlName="agent"
+              data-bs-toggle="modal" data-bs-target="#selectIntermediary" autocomplete="off" [value]="agentName">
             <div *ngIf="quotationForm.get('agent').hasError('required') && quotationForm.get('agent').touched"
-                 class="form-text text-danger">
+              class="form-text text-danger">
               Intermediary is required.
             </div>
           </div>
@@ -50,11 +46,10 @@
           <div class="form-group form-group-sm">
             <br>
             <label for="branch" class="quote-label">Branch<span class="required"></span></label>
-            <p-dropdown id="branch" formControlName="branch" [options]="branch"
-                        optionLabel="name" placeholder=" " value="id" [filterBy]="'name'"
-                        [filter]="true"></p-dropdown>
+            <p-dropdown id="branch" formControlName="branch" [options]="branch" optionLabel="name" placeholder=" "
+              value="id" [filterBy]="'name'" [filter]="true"></p-dropdown>
             <div *ngIf="quotationForm.get('branch').hasError('required') && quotationForm.get('branch').touched"
-                 class="form-text text-danger">
+              class="form-text text-danger">
               Branch is required.
             </div>
           </div>
@@ -64,9 +59,8 @@
           <div class="form-group form-group-sm">
             <br>
             <label for="currencyCode" class="quote-label">Currency<span class="required"></span></label><br>
-            <p-dropdown id="currencyCode" formControlName="currencyCode" [options]="currency"
-                        optionLabel="name" value="id" [filterBy]="'name'" [filter]="true"
-                        (onChange)="fetchUserOrgId()"></p-dropdown>
+            <p-dropdown id="currencyCode" formControlName="currencyCode" [options]="currency" optionLabel="name"
+              value="id" [filterBy]="'name'" [filter]="true" (onChange)="fetchUserOrgId()"></p-dropdown>
             <div
               *ngIf="quotationForm.get('currencyCode').hasError('required') && quotationForm.get('currencyCode').touched"
               class="form-text text-danger">
@@ -78,12 +72,11 @@
           <div class="form-group form-group-sm">
             <br>
             <label for="rfqDate" class="quote-label">Request for quote date</label>
-            <p-calendar id="rfqDate" inputId="rfqDate" [dateFormat]="dateFormat"
-                        formControlName="RFQDate" [minDate]="minDate"
-                        (onSelect)="updateQuotationExpiryDate($event)">
+            <p-calendar id="rfqDate" inputId="rfqDate" [dateFormat]="dateFormat" formControlName="RFQDate"
+              [minDate]="minDate" (onSelect)="updateQuotationExpiryDate($event)">
             </p-calendar>
             <div *ngIf="quotationForm.get('RFQDate').hasError('required') && quotationForm.get('RFQDate').touched"
-                 class="form-text text-danger">
+              class="form-text text-danger">
               Request for quote date is required.
             </div>
           </div>
@@ -92,11 +85,11 @@
           <div class="form-group form-group-sm">
             <br>
             <label for="expiryDate" class="quote-label">Quotation expiry date</label>
-            <p-calendar id="expiryDate" inputId="expiryDate" [dateFormat]="dateFormat"
-                        formControlName="expiryDate" [minDate]="minDate">
+            <p-calendar id="expiryDate" inputId="expiryDate" [dateFormat]="dateFormat" formControlName="expiryDate"
+              [minDate]="minDate">
             </p-calendar>
             <div *ngIf="quotationForm.get('expiryDate').hasError('required') && quotationForm.get('expiryDate').touched"
-                 class="form-text text-danger">
+              class="form-text text-danger">
               Quotation expiry date is required.
             </div>
           </div>
@@ -107,8 +100,7 @@
               <br>
               <label for="introducerCode" class="quote-label">Introducer</label>
               <p-dropdown id="introducerCode" formControlName="introducerCode" [options]="introducers"
-                          optionValue="code" optionLabel="surName" [filterBy]="'surName'"
-                          [filter]="true">
+                optionValue="code" optionLabel="surName" [filterBy]="'surName'" [filter]="true">
               </p-dropdown>
             </div>
           </div>
@@ -116,17 +108,16 @@
             <div class="form-group form-group-sm">
               <br>
               <label for="fromCampaign" class="quote-label">Results from campaign</label>
-              <p-dropdown id="fromCampaign" formControlName="fromCampaign" [options]="fromCampaign"
-                          optionValue="value" optionLabel="label" [filterBy]="'label'"
-                          [filter]="true"></p-dropdown>
+              <p-dropdown id="fromCampaign" formControlName="fromCampaign" [options]="fromCampaign" optionValue="value"
+                optionLabel="label" [filterBy]="'label'" [filter]="true"></p-dropdown>
             </div>
           </div>
           <div class="col-sm-4 col-6" *ngIf="showCampaignField">
             <div class="form-group form-group-sm">
               <br>
               <label for="campaignName" class="quote-label">Campaign</label>
-              <p-dropdown id="campaignName" [options]="campaignList" optionLabel="campaignName"
-                          placeholder=" " [filterBy]="'campaignName'" [filter]="true"></p-dropdown>
+              <p-dropdown id="campaignName" [options]="campaignList" optionLabel="campaignName" placeholder=" "
+                [filterBy]="'campaignName'" [filter]="true"></p-dropdown>
             </div>
           </div>
           <div class="col-sm-4 col-6">
@@ -135,13 +126,13 @@
               <label for="multiUser" class="quote-label">Multi-user entry</label>
               <br>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser"
-                       id="multiUser" value="Y">
+                <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser" id="multiUser"
+                  value="Y">
                 <label class="form-check-label" for="multiUser">Yes</label>
               </div>
               <div class="form-check form-check-inline ms-4">
-                <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser"
-                       id="multiUser" value="N">
+                <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser" id="multiUser"
+                  value="N">
                 <label class="form-check-label" for="multiUser">No</label>
               </div>
             </div>
@@ -151,24 +142,22 @@
               <br>
               <label for="internalComments" class="quote-label">Internal comments </label>
               <input type="text" id="internalComments" class="form-control form-control-sm mb-1"
-                     formControlName="internalComments">
+                formControlName="internalComments">
             </div>
           </div>
           <div class="col-sm-4 col-6">
             <div class="form-group form-group-sm">
               <br>
               <label for="comments" class="quote-label">External comments </label>
-              <input type="text" id="comments" class="form-control form-control-sm mb-1"
-                     formControlName="comments">
+              <input type="text" id="comments" class="form-control form-control-sm mb-1" formControlName="comments">
             </div>
           </div>
           <div class="col-sm-4 col-6">
             <div class="form-group form-group-sm">
               <br>
               <label for="paymentFrequencies" class="quote-label">Payment Frequencies</label><br>
-              <p-dropdown formControlName="frequencyOfPayment" id="paymentFrequencies"
-                          [options]="paymentFrequencies" optionLabel="label"
-                          [filterBy]="'label'" [filter]="true">
+              <p-dropdown formControlName="frequencyOfPayment" id="paymentFrequencies" [options]="paymentFrequencies"
+                optionLabel="label" [filterBy]="'label'" [filter]="true">
               </p-dropdown>
 
             </div>
@@ -179,9 +168,9 @@
       <p class="more " (click)="toggleDetails()" style="cursor: pointer">
         More Details
         <span class="ml-1">
-                    <i class="pi" [ngClass]="{'pi-angle-double-up': show, 'pi-angle-double-down': !show}"
-                       style="font-size: 13px"></i>
-                </span>
+          <i class="pi" [ngClass]="{'pi-angle-double-up': show, 'pi-angle-double-down': !show}"
+            style="font-size: 13px"></i>
+        </span>
       </p>
     </div>
   </div>
@@ -190,204 +179,151 @@
     <div class="card-body" class="mx-4">
       <div class="row mb-3">
         <div class="col-4">
-          <h6  class="product-title">
+          <h6
+            style="color: #00529B; font-size: 20px; font-weight: 500; font-family: Roboto; margin-bottom: 0; margin-top: 1.5rem;">
             {{ 'gis.quotation.product_details' | translate }}
           </h6>
         </div>
       </div>
-      
+
       <div class="row mb-3">
-        <div class="col-12 d-flex justify-content-end mb-0">
-          <div class="d-flex gap-2">
-            <button
-  type="button"
-  class="btn btn-primary no-hover add-product-btn"
-  data-bs-toggle="modal"
-  data-bs-target="#addProduct"
-  title="Add Product"
->
-  Add Product
-</button>
+        <div class="col-12 d-flex justify-content-end" style="margin-bottom: 0;">
 
-
-      
-<button type="button" class="btn btn-primary dropdown-btn" title="drop down">
-  <span class="arrow-down arrow-black">▼</span>
-</button>
-
+          <div class="d-flex justify-content-center align-items-center">
+            <button type="button" class="btn btn-primary no-hover" data-bs-toggle="modal" data-bs-target="#addProduct"
+              title="Add Product"> Add Product
+            </button>
+            <i class="pi border border-black p-1 rounded-1 text-black"
+              [ngClass]="{'pi-caret-up': showProducts, 'pi-caret-down': !showProducts}"
+              style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleProducts()"></i>
           </div>
+
         </div>
       </div>
-      
-      
 
-      <p-table [value]="productDetails" dataKey="productCode.code" editMode="row" [tableStyle]="{'min-width': '50rem'}">
-        <ng-template pTemplate="header" style="height: 40px;">
-          <tr>
-            <th class="flexible-header1">
-              <div class="header-wrapper">
-                <span>Product</span>
-                <span class="sort-icons">
-                  <span class="arrow" (click)="sort('product')">↑</span>
-                  <span class="arrow" (click)="sort('product')">↓</span>
-                </span>
-              </div>
-            </th>
-            <th class="flexible-header1">
-              <div class="header-wrapper">
-                <span>Cover from</span>
-                <span class="sort-icons">
-                  <span class="arrow" (click)="sort('coverFrom')">↑</span>
-                  <span class="arrow" (click)="sort('coverFrom')">↓</span>
-                </span>
-              </div>
-            </th>
-            <th class="flexible-header1">
-              <div class="header-wrapper">
-                <span>Cover to</span>
-                <span class="sort-icons">
-                  <span class="arrow" (click)="sort('coverTo')">↑</span>
-                  <span class="arrow" (click)="sort('coverTo')">↓</span>
-                </span>
-              </div>
-            </th>
-            <th class="flexible-header1"></th>
-          </tr>
-        </ng-template>
-        
+      <div class="collapse" [ngClass]="{'show': showProducts}" id="collapseProduct">
+        <p-table [value]="productDetails" dataKey="productCode.code" editMode="row"
+          [tableStyle]="{'min-width': '50rem'}">
+          <ng-template pTemplate="header" style="height: 40px;">
+            <tr>
+              <th class="flexible-header1" pSortableColumn="productCode.description">
+                Product <p-sortIcon field="productCode.description" />
+              </th>
 
-        <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
-          <tr [pEditableRow]="product"
-              [pEditableRowDisabled]="selectedEditRowIndex !== ri"
-              [class.p-highlight]="product === selectedRow"
-              (click)="onRowSelect(product)">
+              <th class="flexible-header1" pSortableColumn="coverFrom">
+                Cover from <p-sortIcon field="productCode.coverFrom" />
+              </th>
 
-            <!-- Product Dropdown Column -->
-            <td class="flexible-header">
-              <p-cellEditor>
-                <ng-template pTemplate="input">
-                  <div class="form-group form-group-sm">
-                    <p-dropdown
-                      [options]="ProductDescriptionArray"
-                      appendTo="body"
-                      [(ngModel)]="product.productCode"
-                      optionLabel="description"
-                      [style]="{'width':'100%'}"
-                      (onChange)="onProductChange($event.value, ri, product)">
-                    </p-dropdown>
-                  </div>
+              <th class="flexible-header1" pSortableColumn="productCode.description">
+                Cover to <p-sortIcon field="productCode.coverTo" />
+              </th>
 
-                </ng-template>
-                <ng-template pTemplate="output">
-                  {{ product.productCode?.description }}
-                </ng-template>
-                
-                
-              </p-cellEditor>
-            </td>
+              <th class="flexible-header1"></th>
+            </tr>
+          </ng-template>
 
-            <!-- Cover From Date -->
-            <td class="flexible-header">
-              <p-cellEditor>
-                <ng-template pTemplate="input">
-                  <p-calendar
-                    [(ngModel)]="product.coverFrom"
-                    appendTo="body"
-                    [dateFormat]="dateFormat"
-                    [style]="{'width':'100%'}"
-                    (ngModelChange)="updateCoverTo(product)">
-                  </p-calendar>
-                </ng-template>
-                <ng-template pTemplate="output">
-                  {{ product.coverFrom | date: dateFormat }}
-                </ng-template>
-                
-                
-              </p-cellEditor>
-            </td>
 
-            <!-- Cover To Date -->
-            <td class="flexible-header">
-              <p-cellEditor>
-                <ng-template pTemplate="input">
-                  <p-calendar
-                    [(ngModel)]="product.coverTo"
-                    appendTo="body"
-                    [dateFormat]="dateFormat"
-                    [style]="{'width':'100%'}">
-                  </p-calendar>
-                </ng-template>
-                <ng-template pTemplate="output">
-                  {{ product.coverTo | date: dateFormat }}
-                </ng-template>
-                
-                
-              </p-cellEditor>
-            </td>
+          <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
+            <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRowIndex !== ri"
+              [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product)">
 
-            <td class="flexible-header">
-              <div class="d-flex justify-content-end gap-2">
-                <button
-                  *ngIf="!editing"
-                  type="button"
-                  pInitEditableRow
-                  (click)="onRowEditInits(product)"
-                  class="p-button-sm p-button-text p-button-info no-border">
-                  Edit
-                </button>
-            
-                <button
-                  *ngIf="editing"
-                  type="button"
-                  pSaveEditableRow
-                  (click)="onRowEditSaves(product)"
-                  class="p-button-sm p-button-text p-button-success no-border">
-                  Save
-                </button>
-            
-                <button
-                  *ngIf="editing"
-                  type="button"
-                  pCancelEditableRow
-                  (click)="onRowEditCancels(product, ri)"
-                  class="p-button-sm p-button-text p-button-secondary no-border">
-                  Cancel
-                </button>
-            
-                <button
-                  type="button"
-                  (click)="openProductDeleteModal(product)"
-                  class="p-button-sm p-button-text p-button-danger no-border">
-                  Delete
-                </button>
-              </div>
-            </td>
-            
-          </tr>
-        </ng-template>
+              <!-- Product Dropdown Column -->
+              <td class="flexible-header">
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <div class="form-group form-group-sm">
+                      <p-dropdown [options]="ProductDescriptionArray" appendTo="body" [(ngModel)]="product.productCode"
+                        optionLabel="description" [style]="{'width':'100%'}"
+                        (onChange)="onProductChange($event.value, ri, product)">
+                      </p-dropdown>
+                    </div>
 
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="4" style="text-align:center; padding: 20px;">
-              {{ 'gis.quotation.no_data_to_display' | translate }}
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.productCode?.description }}
+                  </ng-template>
+
+                </p-cellEditor>
+              </td>
+
+              <!-- Cover From Date -->
+              <td class="flexible-header">
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <p-calendar [(ngModel)]="product.coverFrom" appendTo="body" [dateFormat]="dateFormat"
+                      [style]="{'width':'100%'}" (ngModelChange)="updateCoverTo(product)">
+                    </p-calendar>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.coverFrom | date: dateFormat }}
+                  </ng-template>
+
+                </p-cellEditor>
+              </td>
+
+              <!-- Cover To Date -->
+              <td class="flexible-header">
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <p-calendar [(ngModel)]="product.coverTo" appendTo="body" [dateFormat]="dateFormat"
+                      [style]="{'width':'100%'}">
+                    </p-calendar>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.coverTo | date: dateFormat }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+
+              <td class="flexible-header">
+                <div class="d-flex justify-content-end gap-2">
+                  <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product)"
+                    class="p-button-sm p-button-text p-button-info no-border">
+                    Edit
+                  </button>
+
+                  <button *ngIf="editing" type="button" pSaveEditableRow (click)="onRowEditSaves(product)"
+                    class="p-button-sm p-button-text p-button-success no-border">
+                    Save
+                  </button>
+
+                  <button *ngIf="editing" type="button" pCancelEditableRow (click)="onRowEditCancels(product, ri)"
+                    class="p-button-sm p-button-text p-button-secondary no-border">
+                    Cancel
+                  </button>
+
+                  <button type="button" (click)="openProductDeleteModal(product)"
+                    class="p-button-sm p-button-text p-button-danger no-border">
+                    Delete
+                  </button>
+                </div>
+              </td>
+
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" style="text-align:center; padding: 20px;">
+                {{ 'gis.quotation.no_data_to_display' | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
 
 
       <!-- Add Product Details  Modal -->
       <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
-           aria-hidden="true">
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
           <div class="modal-content" id="addSectionModal">
             <div class="modal-body">
               <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{
-                  'gis.quotation.product_details' |
-                    translate
+                'gis.quotation.product_details' |
+                translate
                 }}
-                <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
               </h5>
 
               <div class="row mb-4" [formGroup]='quotationProductForm'>
@@ -395,11 +331,9 @@
                   <div class="form-group form-group-sm">
                     <br>
                     <label for="" class="quote-label">Product</label>
-                    <p-dropdown id="quote-input-pdropdown" formControlName="productCode"
-                                value="code" [options]="ProductDescriptionArray" optionLabel="description"
-                                [filterBy]="'description'"
-                                (onChange)="getProductClause(); checkMotorClass()" placeholder=" "
-                                [filter]="true"></p-dropdown>
+                    <p-dropdown id="quote-input-pdropdown" formControlName="productCode" value="code"
+                      [options]="ProductDescriptionArray" optionLabel="description" [filterBy]="'description'"
+                      (onChange)="getProductClause(); checkMotorClass()" placeholder=" " [filter]="true"></p-dropdown>
 
                     <div
                       *ngIf="quotationProductForm.get('productCode').hasError('required') && quotationProductForm.get('productCode').touched"
@@ -414,10 +348,9 @@
                     <br>
                     <label for="coverFromDate" class="quote-label">Cover From</label><br>
 
-                    <p-calendar formControlName="wef" name="wefDate" id="coverFromDate"
-                                inputId="coverFromDate" [dateFormat]="dateFormat"
-                                inputStyleClass='form-control'
-                                (onSelect)="updateCoverToDate($event)" [minDate]="minDate">
+                    <p-calendar formControlName="wef" name="wefDate" id="coverFromDate" inputId="coverFromDate"
+                      [dateFormat]="dateFormat" inputStyleClass='form-control' (onSelect)="updateCoverToDate($event)"
+                      [minDate]="minDate">
                     </p-calendar>
                     <div
                       *ngIf="quotationProductForm.get('wef').hasError('required') && quotationProductForm.get('wef').touched"
@@ -430,9 +363,8 @@
                   <div class="form-group form-group-sm">
                     <br>
                     <label for="coverToDate" class="quote-label">Cover to</label><br>
-                    <p-calendar formControlName="wet" name="wetDate" id="coverToDate"
-                                inputId="coverToDate" [dateFormat]="dateFormat"
-                                inputStyleClass='form-control' [minDate]="minDate">
+                    <p-calendar formControlName="wet" name="wetDate" id="coverToDate" inputId="coverToDate"
+                      [dateFormat]="dateFormat" inputStyleClass='form-control' [minDate]="minDate">
                     </p-calendar>
                     <div
                       *ngIf="quotationProductForm.get('wet').hasError('required') && quotationProductForm.get('wet').touched"
@@ -446,7 +378,7 @@
 
               <div class="mt-4 d-flex justify-content-end">
                 <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal"
-                        (click)="submitForm()">{{ 'gis.quotation.save_details' | translate }}
+                  (click)="submitForm()">{{ 'gis.quotation.save_details' | translate }}
                 </button>
               </div>
             </div>
@@ -456,26 +388,26 @@
       </div>
       <!-- Delete Product Modal -->
 
-      <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog"
-           aria-labelledby="deleteProduct" aria-hidden="true">
+      <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content" id="deleteProduct">
             <div class="modal-body ">
               <p class="deleteMessage mt-4 mb-4">{{
-                  'gis.policy.are_you_sure_you_want_to_delete' |
-                    translate
+                'gis.policy.are_you_sure_you_want_to_delete' |
+                translate
                 }}</p>
               <div class="d-flex justify-content-center mb-3">
-                <button type="button" class="btn btn-primary px-5" id="delete"
-                        data-bs-dismiss="modal" (click)="deleteProduct()">{{
-                    'gis.policy.yes_delete'
-                      | translate
+                <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
+                  (click)="deleteProduct()">{{
+                  'gis.policy.yes_delete'
+                  | translate
                   }}
                 </button>
               </div>
               <div class="d-flex justify-content-center mb-2">
-                <button type="button" class="btn btn-outline-primary px-5"
-                        data-bs-dismiss="modal">{{ 'gis.policy.no_im_not' | translate }}
+                <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">{{
+                  'gis.policy.no_im_not' | translate }}
                 </button>
               </div>
 
@@ -487,96 +419,96 @@
       <div class="row mb-4" [formGroup]='quotationForm'>
       </div>
 
-      <p class="more" (click)="toggleProduct()" style="cursor: pointer">
+      <h5 class=""
+        style="color: #00529B; font-size: 20px; font-weight: 500; font-family: Roboto; margin-bottom: 0; margin-top: 1.5rem;">
         Product Clauses
-        <span class="ml-1">
-                    <i class="pi" [ngClass]="{'pi-angle-double-up': showProduct, 'pi-angle-double-down': !showProduct}"
-                       style="font-size: 13px"></i>
-                </span>
-      </p>
-      <div class="collapse" [ngClass]="{'show': showProduct}" id="collapseProductClauses">
+      </h5>
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <div></div>
 
-        <p-table [value]="clauses" dataKey="code" editMode="row" [tableStyle]="{'min-width': '50rem'}"
-                 styleClass="p-datatable-sm" responsiveLayout="scroll" [(selection)]="selectedClause"
-                 class='ui-datatable' selectionMode="multiple" [autoLayout]="true" [paginator]="true" [rows]="5"
-                 [showCurrentPageReport]="true"
-                 currentPageReportTemplate="{first} to {last} of {totalRecords} entries">
+        <div class="d-flex justify-content-center align-items-center mb-1">
+          <button class="btn btn-primary no-hover" data-bs-toggle="modal" data-bs-target="#addClause">Add
+            clauses</button>
+          <i class="pi border border-black p-1 rounded-1 text-black"
+            [ngClass]="{'pi-caret-up': showClauses, 'pi-caret-down': !showClauses}"
+            style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleClauses()"></i>
+        </div>
+
+      </div>
+
+      <div class="collapse" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
+
+        <p-table #dt [value]="dummyClauses" [rows]="3" [paginator]="true"
+          [globalFilterFields]="['id', 'heading', 'wording']" styleClass="p-datatable-striped p-datatable-gridlines">
           <ng-template pTemplate="header">
             <tr>
-              <th style="width: 5%;padding-right: 50px;">
-                select
+              <th class="flexible-header1" style="width: 3%" pSortableColumn="id">ID <p-sortIcon field="code" /></th>
+              <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">Heading <p-sortIcon
+                  field="code" /></th>
+              <th class="flexible-header1" style="width: 50%" pSortableColumn="wording">Wording <p-sortIcon
+                  field="code" /></th>
+              <th class="flexible-header1" style="width: 15%;" pSortableColumn="actions">Actions <p-sortIcon
+                  field="code" /></th>
+            </tr>
+            <tr class="searchInput">
+              <th>
+                <input pInputText class="searchInput" type="text" [(ngModel)]="idSearch"
+                  style="border-radius: 3px; border: solid f5f5f5 1px; width: 80%;height:4vh;">
               </th>
-              <th style="width: 25%;padding-right: 50px;">Heading</th>
-              <th style="width: 40%;">Wording</th>
-              <th style="width: 5%;"></th>
-              <th style="width: 5%;">Editable</th>
+              <th>
+                <input pInputText class="searchInput" type="text" [(ngModel)]="headingSearch"
+                  style="border-radius: 3px; border: solid f5f5f5 1px; width: 80%;height:4vh;">
+              </th>
+              <th>
+                <input pInputText class="searchInput" type="text" [(ngModel)]="wordingSearch"
+                  style="border-radius: 3px; border: solid f5f5f5 1px; width: 80%;height:4vh;">
+              </th>
+              <th></th>
             </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-selectedClauseList let-editing="editing" let-ri="rowIndex">
-            <tr [pEditableRow]="selectedClauseList">
+
+          <ng-template pTemplate="body" let-clause>
+            <tr>
               <td>
-                <p-checkbox [(ngModel)]="selectedClauseList.checked" [binary]="true"
-                            [disabled]="selectedClauseList.isMandatory === 'Y'"
-                            (onChange)="onClauseSelectionChange(selectedClauseList)">
-                </p-checkbox>
+                <span *ngIf="editClauseId !== clause.id">
+                  {{clause.id}}
+                </span>
+                <input *ngIf="editClauseId === clause.id" type="text" [(ngModel)]="clause.id" class="active"
+                  style="border-radius: 3px; width: 80%;">
+              </td>
+              <td>
+                <span *ngIf="editClauseId !== clause.id">
+                  {{ clause.heading}}
+                </span>
+
+              </td>
+              <td>
+                <span pTooltip={{clause.wording}} tooltipPosition="top">
+                  {{ clause.wording | truncate:10 }}
+                </span>
               </td>
 
-              <td style=" white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    overflow-y: auto;
-                    max-width: 250px;" pTooltip="{{selectedClauseList.heading }}" tooltipPosition="top">
-                <p-cellEditor>
-                  <ng-template pTemplate="input" *ngIf="selectedClauseList.isEditable  === 'Y'">
-                    <input pInputText type="text" [(ngModel)]="selectedClauseList.heading"
-                           class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ selectedClauseList.heading }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td
-                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <input pInputText type="text" [(ngModel)]="selectedClauseList.wording"
-                           class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ selectedClauseList.wording }}
-                  </ng-template>
-                  <!-- Helper icon added next to the wording column -->
-                </p-cellEditor>
-              </td>
-              <td>
-                <button pButton pRipple type="button" (click)="openHelperModal(selectedClauseList)"
-                        icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
-              </td>
-              <td *ngIf="selectedClauseList.isEditable  !== 'Y'" style="padding-left: 24px;"> --</td>
-              <td *ngIf="selectedClauseList.isEditable  === 'Y'">
-                <div class="flex align-items-center justify-content-center gap-2">
-                  <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
-                          icon="pi pi-pencil" class="p-button-rounded p-button-text"></button>
-                  <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
-                          icon="pi pi-check"
-                          class="p-button-rounded p-button-text p-button-success mr-2"></button>
-                  <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
-                          icon="pi pi-times"
-                          class="p-button-rounded p-button-text p-button-danger"></button>
+              <td style="text-align: right">
+                <div class="flex justify-end gap-2">
+                  <span class="p-button-label p-text-bold"
+                    style="color: #00529B; margin-right:16px; margin-left:10px; cursor:pointer;" data-bs-toggle="modal"
+                    data-bs-target="#editClause" (click)="populateEditClauseModal(clause)">
+                    {{'gis.quotation.edit' | translate}}
+                  </span>
+                  <span class="p-button-label p-text-bold" style="color: #00529B; cursor:pointer;">
+                    {{'gis.quotation.delete' | translate}}
+                  </span>
                 </div>
               </td>
             </tr>
-            <!-- Modal for each row -->
-            <p-dialog [(visible)]="selectedClauseList.showHelperModal" [modal]="false"
-                      [style]="{ 'width': '700px'}">
-              <ng-container *ngIf="selectedClauseList">
-                <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
-                     (onResize)="onResize($event)">
-                  <p>{{ selectedClauseList.wording }}</p>
-                </div>
-              </ng-container>
-            </p-dialog>
+
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" style="text-align:center; padding: 20px;">
+                {{ 'gis.quotation.no_clause_to_display' | translate }}
+              </td>
+            </tr>
           </ng-template>
         </p-table>
       </div>
@@ -584,41 +516,150 @@
     </div>
   </div>
 
+  <!-- add clause modal -->
+  <div class="modal fade" id="addClause">
+    <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+      <div class="modal-content ps-4 pt-2 pe-4">
+        <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+          <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+            {{ 'gis.quotation.add_product_cluase' | translate }}</p>
+          <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X
+          </button>
+        </div>
+        <div class="row mt-3">
+          <p-table #dt [value]="dummyClauses" [(selection)]="selectedClauses" [rows]="4" [paginator]="true"
+            [globalFilterFields]="['id', 'heading']" selectionMode="multiple" stripedRows
+            styleClass="p-datatable-striped" [rowsPerPageOptions]="[5, 10, 20]">
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="flexible-header1" style="width: 3%"><p-tableHeaderCheckbox /></th>
+                <th class="flexible-header1" style="width: 30%" pSortableColumn="id"> ID <p-sortIcon field="code" />
+                </th>
+                <th class="flexible-header1" style="width: 40%" pSortableColumn="heading"> Description <p-sortIcon
+                    field="code" /> </th>
+              </tr>
+              <tr>
+                <th></th>
+                <th>
+                  <input type="text" class="searchInput" [(ngModel)]="idSearch"
+                    style="border-radius: 3px;border:solid gray 1px;width:80%">
+                </th>
+                <th>
+                  <input type="text" class="searchInput" [(ngModel)]="headingSearch"
+                    style="border-radius: 3px;border:solid gray 1px;width:80%">
+                </th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-clause>
+              <tr>
+                <td style="max-width: 10px; min-width: 10px;">
+                  <p-tableCheckbox [value]="clause" />
+                </td>
+                <td>{{ clause.id }}</td>
+                <td>{{ clause.heading }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+
+        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+          <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
+          <button type="button" class="btn" data-bs-dismiss="modal"
+            style="background-color: #00529B;color:white;text-decoration: none;" (click)="addClause()">{{
+            'gis.quotation.save' | translate }}
+          </button>
+          <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+            style="text-decoration: none;">{{
+            'gis.quotation.cancel' | translate
+            }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- edit clause modal -->
+  <div class="modal fade" id="editClause">
+    <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+      <div class="modal-content ps-4 pt-2 pe-4">
+        <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+          <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+            {{ 'gis.quotation.edit_clause' | translate }}</p>
+          <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X
+          </button>
+        </div>
+
+        <div class="d-flex justify-content-between text-black">
+          <div class="d-flex flex-column">
+            <label for="id">ID</label>
+            <input type="text" class="editInput" [value]="selectedDummyClause.id" readonly>
+
+          </div>
+          <div class="d-flex flex-column">
+            <label for="heading">Heading</label>
+            <input class="editInput" [value]="selectedDummyClause.heading" readonly>
+          </div>
+        </div>
+
+        <div class="d-flex flex-column mt-5">
+          <label class="text-dark mt-0" for="comment">Comment</label>
+          <textarea name="wording" pInputText [(ngModel)]="selectedDummyClause.wording"></textarea>
+        </div>
+
+        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+          <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
+          <button type="button" class="btn" data-bs-dismiss="modal"
+            style="background-color: #00529B;color:white;text-decoration: none;" (click)="editClause()">{{
+            'gis.quotation.save_changes' | translate }}
+          </button>
+          <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+            style="text-decoration: none;">{{
+            'gis.quotation.cancel' | translate
+            }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
 
   <div class="float-end mb-4">
-    <button class="btn btn-primary" #openModal data-bs-toggle="modal" data-bs-target="#exampleModal"
-            hidden></button>
+    <button class="btn btn-primary" #openModal data-bs-toggle="modal" data-bs-target="#exampleModal" hidden></button>
 
     <button class="btn btn-primary" (click)="getExistingQuotations()">Next</button>
   </div>
   <!--INTERMEDIARY MODAL -->
   <div class="modal fade" id="selectIntermediary" tabindex="-1" aria-labelledby="selectIntermediaryLabel"
-       aria-hidden="true">
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
 
         <div class="modal-body">
           <div class="float-start"></div>
-          <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
-                  aria-label="Close"></button>
+          <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
           <h5 class="text-start mt-2 mb-4">Select intermediary</h5>
           <div class="input-group mb-4" id="search-input">
 
-                        <span class="input-group-append" style="background-color: #F5F6F8;">
-                            <button class="btn border-end-0 " type="button">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </span>
+            <span class="input-group-append" style="background-color: #F5F6F8;">
+              <button class="btn border-end-0 " type="button">
+                <i class="fa fa-search"></i>
+              </button>
+            </span>
             <!-- <input class="form-control py-2 border-start-0" pInputText  (input)="applyFilterGlobal($event, 'contains')"  style="background-color: #F5F6F8;border: 0px;" type="search" placeholder="search...">             -->
           </div>
 
 
           <p-table #dt1 [value]="agents" [tableStyle]="{ 'max-width': '100rem' }" [resizableColumns]="true"
-                   styleClass="p-datatable-sm" class='ui-datatable'
-                   [globalFilterFields]="['shortDesc', 'name', 'accountType']" [paginator]="true" [rows]="5"
-                   [showCurrentPageReport]="true"
-                   currentPageReportTemplate="{first} to {last} of {totalRecords} entries" selectionMode="single"
-                   [(selection)]="selectedAgent" dataKey="shortDesc">
+            styleClass="p-datatable-sm" class='ui-datatable' [globalFilterFields]="['shortDesc', 'name', 'accountType']"
+            [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+            currentPageReportTemplate="{first} to {last} of {totalRecords} entries" selectionMode="single"
+            [(selection)]="selectedAgent" dataKey="shortDesc">
             <ng-template pTemplate="header">
               <tr>
                 <th field="shortDesc">Code</th>
@@ -651,8 +692,8 @@
         <div class="modal-body">
           <p class="title1 mb-4">Client's already existing quotations</p>
           <p-table [value]="clientExistingQuotations" [resizableColumns]="true" styleClass="p-datatable-sm"
-                   styleClass="p-datatable-striped" class='ui-datatable' [tableStyle]="{ 'min-width': '50rem' }"
-                   [scrollable]="true" scrollHeight="400px">
+            styleClass="p-datatable-striped" class='ui-datatable' [tableStyle]="{ 'min-width': '50rem' }"
+            [scrollable]="true" scrollHeight="400px">
             <ng-template pTemplate="header">
               <tr>
                 <th>Quotation number</th>
@@ -675,7 +716,7 @@
           <div class="mt-3 float-end">
             <button class="btn btn-outline-primary" data-bs-dismiss="modal">No,I don't</button>
             <button class="btn btn-primary" style="margin-left: 10px;" data-bs-dismiss="modal"
-                    (click)="saveQuotationDetails()">Yes, continue
+              (click)="saveQuotationDetails()">Yes, continue
             </button>
           </div>
         </div>
