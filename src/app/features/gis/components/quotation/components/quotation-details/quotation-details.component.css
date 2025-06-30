@@ -270,6 +270,16 @@
   /* adjust if needed */
 }
 
+::ng-deep .small-checkboxes .p-multiselect-panel .p-checkbox {
+  transform: scale(0.8); /* scale down the checkbox */
+}
+
+::ng-deep .small-checkboxes .p-checkbox-box {
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+
 
 
 
@@ -305,7 +315,35 @@
   line-height: normal;
   text-align: center;
 }
+.btn-lightblue{
+  background-color: #ffff;
+  color: #00529B;
+  border-color: #00529B;
+}
 
+.btn-close.red-close {
+  filter: invert(20%) sepia(90%) saturate(500%) hue-rotate(330deg);
+}
+
+::ng-deep .p-multiselect.form-control {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.product-details-title {
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'Roboto', sans-serif;
+  color: #00529B; /* or your preferred color */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 1rem; /* space between text and close button */
+}
+
+.p-dropdown-panel {
+  z-index: 1050 !important;
+}
 
 input.active {
   border: 1px solid #ccc !important;
@@ -334,6 +372,7 @@ textarea {
   padding: 5px;
   border-radius: 3px;
 }
+
 
 
 
