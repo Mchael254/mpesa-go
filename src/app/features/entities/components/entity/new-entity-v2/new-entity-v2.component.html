@@ -322,6 +322,7 @@
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="wealthAmlFormFields"
                 [subGroupId]="'wealth_aml_details'"
+                (saveDetailsData)="fetchSavedDetails($event)"
               ></app-dynamic-setup-table>
             </div>
 
@@ -332,6 +333,7 @@
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateContactDetailsFormField"
                 [subGroupId]="'contactPersonDetails'"
+                (saveDetailsData)="fetchSavedDetails($event)"
               ></app-dynamic-setup-table>
             </div>
 
@@ -342,6 +344,7 @@
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateAddressDetailsFormField"
                 [subGroupId]="'branchDetails'"
+                (saveDetailsData)="fetchSavedDetails($event)"
               ></app-dynamic-setup-table>
             </div>
 
@@ -352,6 +355,7 @@
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateFinancialDetailsFormField"
                 [subGroupId]="'payeeDetails'"
+                (saveDetailsData)="fetchSavedDetails($event)"
               ></app-dynamic-setup-table>
             </div>
 
@@ -362,6 +366,7 @@
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateWealthAmlFormFieldsDetailsFormField"
                 [subGroupId]="'amlDetails'"
+                (saveDetailsData)="fetchSavedDetails($event)"
               ></app-dynamic-setup-table>
             </div>
 
@@ -372,6 +377,7 @@
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateWealthCR12DetailsFormField"
                 [subGroupId]="'cr12Details'"
+                (saveDetailsData)="fetchSavedDetails($event)"
               ></app-dynamic-setup-table>
             </div>
 
