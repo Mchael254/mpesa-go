@@ -177,7 +177,7 @@
 
   <div class="card mb-2">
     <div class="card-body" class="mx-4">
-      <div class="row mb-3">
+      <div class="row ">
         <div class="col-4">
           <h6
             style="color: #00529B; font-size: 20px; font-weight: 500; font-family: Roboto; margin-bottom: 0; margin-top: 1.5rem;">
@@ -186,7 +186,7 @@
         </div>
       </div>
 
-      <div class="row mb-3">
+      <div class="row mb-1">
         <div class="col-12 d-flex justify-content-end" style="margin-bottom: 0;">
 
           <div class="d-flex justify-content-center align-items-center">
@@ -319,14 +319,6 @@
         <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
           <div class="modal-content" id="addSectionModal">
             <div class="modal-body">
-
-              <h5 class="modal-title mt-2 product-details-title" id="editOtherDetailsLabel">{{
-                  'gis.quotation.product_details' |
-                    translate
-                }}
-                <button type="button" class="btn-close float-end red-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-
               <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{
                 'gis.quotation.product_details' |
                 translate
@@ -334,49 +326,35 @@
                 <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
 
               </h5>
-
               <div class="row mb-4" [formGroup]='quotationProductForm'>
                 <div class="col-sm-6 col-12">
                   <div class="form-group form-group-sm">
                     <br>
                     <label for="" class="quote-label">Product</label>
 
-                    <p-dropdown                         
-                    id="quote-input-pdropdown"                         
-                    [options]="ProductDescriptionArray"                         
-                    formControlName="productCode"                         
-                    optionLabel="description"    
-                    filterBy="description"                     
-                    [filter]="true"    
-                    [showClear]="true"                     
-                    placeholder="Select Product"   
-                   
-                    (onChange)="getProductClause(); checkMotorClass()">
-                    
-                    <ng-template let-item pTemplate="item">
+                    <p-dropdown id="quote-input-pdropdown" [options]="ProductDescriptionArray"
+                      formControlName="productCode" optionLabel="description" filterBy="description" [filter]="true"
+                      [showClear]="true" placeholder="Select Product"
+                      (onChange)="getProductClause(); checkMotorClass()">
+
+                      <ng-template let-item pTemplate="item">
                         <div class="d-flex align-items-center" style="pointer-events: none;">
-                            <input
-                                type="checkbox"
-                                [checked]="item.code === quotationProductForm.get('productCode')?.value?.code"
-                                class="me-2"
-                                style="pointer-events: none;"
-                            />
-                            <span style="pointer-events: auto;">{{ item.description }}</span>
-                        </div>                       
-                    </ng-template>      
-                    
-                    <ng-template pTemplate="emptyfilter">
-                      <div class="text-danger px-2 py-1">
-                        No products match your search.
-                      </div>
-                    </ng-template> 
-                </p-dropdown>
+                          <input type="checkbox"
+                            [checked]="item.code === quotationProductForm.get('productCode')?.value?.code" class="me-2"
+                            style="pointer-events: none;" />
+                          <span style="pointer-events: auto;">{{ item.description }}</span>
+                        </div>
+                      </ng-template>
 
-
-                    <p-dropdown id="quote-input-pdropdown" formControlName="productCode" value="code"
-                      [options]="ProductDescriptionArray" optionLabel="description" [filterBy]="'description'"
-                      (onChange)="getProductClause(); checkMotorClass()" placeholder=" " [filter]="true"></p-dropdown>
-
+                      <ng-template pTemplate="emptyfilter">
+                        <div class="text-danger px-2 py-1">
+                          No products match your search.
+                        </div>
+                      </ng-template>
+                    </p-dropdown>
+                    <!-- <p-dropdown id="quote-input-pdropdown" formControlName="productCode" value="code"
+                      [options]="ProductDescriptionArray" optionLabel="description"   [filterBy]="'description,code'"
+                      (onChange)="getProductClause(); checkMotorClass()" placeholder=" " [filter]="true"></p-dropdown> -->
 
                     <div
                       *ngIf="quotationProductForm.get('productCode').hasError('required') && quotationProductForm.get('productCode').touched"
@@ -385,12 +363,10 @@
                     </div>
                   </div>
                 </div>
-
                 <div class="col-sm-6 col-12">
                   <div class="form-group form-group-sm">
                     <br>
                     <label for="coverFromDate" class="quote-label">Cover From</label><br>
-
                     <p-calendar formControlName="wef" name="wefDate" id="coverFromDate" inputId="coverFromDate"
                       [dateFormat]="dateFormat" inputStyleClass='form-control' (onSelect)="updateCoverToDate($event)"
                       [minDate]="minDate">
@@ -416,70 +392,205 @@
                     </div>
                   </div>
                 </div>
-
               </div>
-
-
               <div class="mt-4 d-flex justify-content-end gap-2">
-                <button
-                  type="button"
-                  class="btn btn-secondary btn-lightblue"
-                  data-bs-dismiss="modal"
-                  id="cancelDetails"
-                >
+                <button type="button" class="btn btn-secondary btn-lightblue" data-bs-dismiss="modal"
+                  id="cancelDetails">
                   Cancel
                 </button>
-              
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  id="saveDetails"
-                  (click)="submitForm()"
-                >
+                <button type="button" class="btn btn-primary" id="saveDetails" (click)="submitForm()">
                   {{ 'gis.quotation.save_details' | translate }}
-           
-              
+                </button>
+              </div>
             </div>
+          </div>
+        </div>
+        <!-- Delete Product Modal -->
+
+        <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
+          aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" id="deleteProduct">
+              <div class="modal-body ">
+                <p class="deleteMessage mt-4 mb-4">{{
+                  'gis.policy.are_you_sure_you_want_to_delete' |
+                  translate
+                  }}</p>
+                <div class="d-flex justify-content-center mb-3">
+                  <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
+                    (click)="deleteProduct()">{{
+                    'gis.policy.yes_delete'
+                    | translate
+                    }}
+                  </button>
+                </div>
+                <div class="d-flex justify-content-center mb-2">
+                  <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">{{
+                    'gis.policy.no_im_not' | translate }}
+                  </button>
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-4" [formGroup]='quotationForm'>
+        </div>
+
+        <h5 class=""
+          style="color: #00529B; font-size: 20px; font-weight: 500; font-family: Roboto; margin-bottom: 0; margin-top: 1.5rem;">
+          Product Clauses
+        </h5>
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <div></div>
+
+          <div class="d-flex justify-content-center align-items-center mb-1">
+            <button class="btn btn-primary no-hover" data-bs-toggle="modal" data-bs-target="#addClause">Add
+              clauses</button>
+            <i class="pi border border-black p-1 rounded-1 text-black"
+              [ngClass]="{'pi-caret-up': showClauses, 'pi-caret-down': !showClauses}"
+              style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleClauses()"></i>
+          </div>
+
+        </div>
+
+        <div class="collapse" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
+
+          <p-table #dt [value]="dummyClauses" [rows]="3" [paginator]="true"
+            [globalFilterFields]="['id', 'heading', 'wording']" styleClass="p-datatable-striped p-datatable-gridlines">
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="flexible-header1" style="width: 3%" pSortableColumn="id">ID <p-sortIcon field="code" /></th>
+                <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">Heading <p-sortIcon
+                    field="code" /></th>
+                <th class="flexible-header1" style="width: 50%" pSortableColumn="wording">Wording <p-sortIcon
+                    field="code" /></th>
+                <th class="flexible-header1" style="width: 15%;" pSortableColumn="actions">Actions <p-sortIcon
+                    field="code" /></th>
+              </tr>
+              <tr class="searchInput">
+                <th>
+                  <input pInputText class="searchInput" type="text" [(ngModel)]="idSearch"
+                    style="border-radius: 3px; border: solid f5f5f5 1px; width: 80%;height:4vh;">
+                </th>
+                <th>
+                  <input pInputText class="searchInput" type="text" [(ngModel)]="headingSearch"
+                    style="border-radius: 3px; border: solid f5f5f5 1px; width: 80%;height:4vh;">
+                </th>
+                <th>
+                  <input pInputText class="searchInput" type="text" [(ngModel)]="wordingSearch"
+                    style="border-radius: 3px; border: solid f5f5f5 1px; width: 80%;height:4vh;">
+                </th>
+                <th></th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-clause>
+              <tr>
+                <td>
+                  <span *ngIf="editClauseId !== clause.id">
+                    {{clause.id}}
+                  </span>
+                  <input *ngIf="editClauseId === clause.id" type="text" [(ngModel)]="clause.id" class="active"
+                    style="border-radius: 3px; width: 80%;">
+                </td>
+                <td>
+                  <span *ngIf="editClauseId !== clause.id">
+                    {{ clause.heading}}
+                  </span>
+
+                </td>
+                <td>
+                  <span pTooltip={{clause.wording}} tooltipPosition="top">
+                    {{ clause.wording | truncate:10 }}
+                  </span>
+                </td>
+
+                <td style="text-align: right">
+                  <div class="flex justify-end gap-2">
+                    <span class="p-button-label p-text-bold"
+                      style="color: #00529B; margin-right:16px; margin-left:10px; cursor:pointer;"
+                      data-bs-toggle="modal" data-bs-target="#editClause" (click)="populateEditClauseModal(clause)">
+                      {{'gis.quotation.edit' | translate}}
+                    </span>
+                    <span class="p-button-label p-text-bold" style="color: #00529B; cursor:pointer;">
+                      {{'gis.quotation.delete' | translate}}
+                    </span>
+                  </div>
+                </td>
+              </tr>
+
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="4" style="text-align:center; padding: 20px;">
+                  {{ 'gis.quotation.no_clause_to_display' | translate }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+      </div>
+   
+    <!-- Delete Product Modal -->
+    <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" id="deleteProduct">
+          <div class="modal-body ">
+            <p class="deleteMessage mt-4 mb-4">{{
+              'gis.policy.are_you_sure_you_want_to_delete' |
+              translate
+              }}</p>
+            <div class="d-flex justify-content-center mb-3">
+              <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
+                (click)="deleteProduct()">{{
+                'gis.policy.yes_delete'
+                | translate
+                }}
+              </button>
+            </div>
+            <div class="d-flex justify-content-center mb-2">
+              <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">{{
+                'gis.policy.no_im_not' | translate }}
+              </button>
+            </div>
+
 
           </div>
         </div>
       </div>
-      <!-- Delete Product Modal -->
-
-      <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content" id="deleteProduct">
-            <div class="modal-body ">
-              <p class="deleteMessage mt-4 mb-4">{{
-                'gis.policy.are_you_sure_you_want_to_delete' |
-                translate
-                }}</p>
-              <div class="d-flex justify-content-center mb-3">
-                <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
-                  (click)="deleteProduct()">{{
-                  'gis.policy.yes_delete'
-                  | translate
-                  }}
-                </button>
-              </div>
-              <div class="d-flex justify-content-center mb-2">
-                <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">{{
-                  'gis.policy.no_im_not' | translate }}
-                </button>
-              </div>
-
-
-            </div>
-          </div>
+    </div>
+ 
+       <div class="row ">
+        <div class="col-4">
+          <h6
+            style="color: #00529B; font-size: 20px; font-weight: 500; font-family: Roboto; margin-bottom: 0; margin-top: 1.5rem;">
+            Product clauses
+          </h6>
         </div>
       </div>
-      <div class="row mb-4" [formGroup]='quotationForm'>
+
+      <div class="row mb-1">
+        <div class="col-12 d-flex justify-content-end" style="margin-bottom: 0;">
+
+          <div class="d-flex justify-content-center align-items-center">
+            <button type="button" class="btn btn-primary no-hover" data-bs-toggle="modal" data-bs-target="#addClause"
+              title="Add Product"> Add clauses
+            </button>
+            <i class="pi border border-black p-1 rounded-1 text-black"
+            [ngClass]="{'pi-caret-up': showClauses, 'pi-caret-down': !showClauses}"
+            style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleClauses()"></i>
+          </div>
+
+        </div>
       </div>
 
-      <h5 class=""
+      <!-- <h5 class=""
         style="color: #00529B; font-size: 20px; font-weight: 500; font-family: Roboto; margin-bottom: 0; margin-top: 1.5rem;">
-        Product Clauses
+        Product clauses
       </h5>
       <div class="d-flex justify-content-between align-items-center mb-1">
         <div></div>
@@ -490,9 +601,9 @@
           <i class="pi border border-black p-1 rounded-1 text-black"
             [ngClass]="{'pi-caret-up': showClauses, 'pi-caret-down': !showClauses}"
             style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleClauses()"></i>
-        </div>
+        </div> -->
 
-      </div>
+      <!-- </div> -->
 
       <div class="collapse" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
 
@@ -571,214 +682,215 @@
         </p-table>
       </div>
 
-    </div>
-  </div>
+    
+    <!-- add clause modal -->
+    <div class="modal fade" id="addClause">
+      <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+        <div class="modal-content ps-4 pt-2 pe-4">
+          <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+            <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+              {{ 'gis.quotation.add_product_cluase' | translate }}</p>
+            <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X
+            </button>
+          </div>
+          <div class="row mt-3">
+            <p-table #dt [value]="dummyClauses" [(selection)]="selectedClauses" [rows]="4" [paginator]="true"
+              [globalFilterFields]="['id', 'heading']" selectionMode="multiple" stripedRows
+              styleClass="p-datatable-striped" [rowsPerPageOptions]="[5, 10, 20]">
 
-  <!-- add clause modal -->
-  <div class="modal fade" id="addClause">
-    <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
-      <div class="modal-content ps-4 pt-2 pe-4">
-        <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
-          <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-            {{ 'gis.quotation.add_product_cluase' | translate }}</p>
-          <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X
-          </button>
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="flexible-header1" style="width: 3%"><p-tableHeaderCheckbox /></th>
+                  <th class="flexible-header1" style="width: 30%" pSortableColumn="id"> ID <p-sortIcon field="code" />
+                  </th>
+                  <th class="flexible-header1" style="width: 40%" pSortableColumn="heading"> Description <p-sortIcon
+                      field="code" /> </th>
+                </tr>
+                <tr>
+                  <th></th>
+                  <th>
+                    <input type="text" class="searchInput" [(ngModel)]="idSearch"
+                      style="border-radius: 3px;border:solid gray 1px;width:80%">
+                  </th>
+                  <th>
+                    <input type="text" class="searchInput" [(ngModel)]="headingSearch"
+                      style="border-radius: 3px;border:solid gray 1px;width:80%">
+                  </th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-clause>
+                <tr>
+                  <td style="max-width: 10px; min-width: 10px;">
+                    <p-tableCheckbox [value]="clause" />
+                  </td>
+                  <td>{{ clause.id }}</td>
+                  <td>{{ clause.heading }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+
+
+          <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+            <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
+            <button type="button" class="btn" data-bs-dismiss="modal"
+              style="background-color: #00529B;color:white;text-decoration: none;" (click)="addClause()">{{
+              'gis.quotation.save' | translate }}
+            </button>
+            <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+              style="text-decoration: none;">{{
+              'gis.quotation.cancel' | translate
+              }}
+            </button>
+          </div>
         </div>
-        <div class="row mt-3">
-          <p-table #dt [value]="dummyClauses" [(selection)]="selectedClauses" [rows]="4" [paginator]="true"
-            [globalFilterFields]="['id', 'heading']" selectionMode="multiple" stripedRows
-            styleClass="p-datatable-striped" [rowsPerPageOptions]="[5, 10, 20]">
 
-            <ng-template pTemplate="header">
-              <tr>
-                <th class="flexible-header1" style="width: 3%"><p-tableHeaderCheckbox /></th>
-                <th class="flexible-header1" style="width: 30%" pSortableColumn="id"> ID <p-sortIcon field="code" />
-                </th>
-                <th class="flexible-header1" style="width: 40%" pSortableColumn="heading"> Description <p-sortIcon
-                    field="code" /> </th>
-              </tr>
-              <tr>
-                <th></th>
-                <th>
-                  <input type="text" class="searchInput" [(ngModel)]="idSearch"
-                    style="border-radius: 3px;border:solid gray 1px;width:80%">
-                </th>
-                <th>
-                  <input type="text" class="searchInput" [(ngModel)]="headingSearch"
-                    style="border-radius: 3px;border:solid gray 1px;width:80%">
-                </th>
-              </tr>
-            </ng-template>
-
-            <ng-template pTemplate="body" let-clause>
-              <tr>
-                <td style="max-width: 10px; min-width: 10px;">
-                  <p-tableCheckbox [value]="clause" />
-                </td>
-                <td>{{ clause.id }}</td>
-                <td>{{ clause.heading }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
-
-
-        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
-          <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
-          <button type="button" class="btn" data-bs-dismiss="modal"
-            style="background-color: #00529B;color:white;text-decoration: none;" (click)="addClause()">{{
-            'gis.quotation.save' | translate }}
-          </button>
-          <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
-            style="text-decoration: none;">{{
-            'gis.quotation.cancel' | translate
-            }}
-          </button>
-        </div>
       </div>
 
     </div>
 
-  </div>
-
-  <!-- edit clause modal -->
-  <div class="modal fade" id="editClause">
-    <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
-      <div class="modal-content ps-4 pt-2 pe-4">
-        <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
-          <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-            {{ 'gis.quotation.edit_clause' | translate }}</p>
-          <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X
-          </button>
-        </div>
-
-        <div class="d-flex justify-content-between text-black">
-          <div class="d-flex flex-column">
-            <label for="id">ID</label>
-            <input type="text" class="editInput" [value]="selectedDummyClause.id" readonly>
-
+    <!-- edit clause modal -->
+    <div class="modal fade" id="editClause">
+      <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+        <div class="modal-content ps-4 pt-2 pe-4">
+          <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+            <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+              {{ 'gis.quotation.edit_clause' | translate }}</p>
+            <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X
+            </button>
           </div>
-          <div class="d-flex flex-column">
-            <label for="heading">Heading</label>
-            <input class="editInput" [value]="selectedDummyClause.heading" readonly>
+
+          <div class="d-flex justify-content-between text-black">
+            <div class="d-flex flex-column">
+              <label for="id">ID</label>
+              <input type="text" class="editInput" [value]="selectedDummyClause.id" readonly>
+
+            </div>
+            <div class="d-flex flex-column">
+              <label for="heading">Heading</label>
+              <input class="editInput" [value]="selectedDummyClause.heading" readonly>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column mt-5">
+            <label class="text-dark mt-0" for="comment">Comment</label>
+            <textarea name="wording" pInputText [(ngModel)]="selectedDummyClause.wording"></textarea>
+          </div>
+
+          <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+            <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
+            <button type="button" class="btn" data-bs-dismiss="modal"
+              style="background-color: #00529B;color:white;text-decoration: none;" (click)="editClause()">{{
+              'gis.quotation.save_changes' | translate }}
+            </button>
+            <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+              style="text-decoration: none;">{{
+              'gis.quotation.cancel' | translate
+              }}
+            </button>
           </div>
         </div>
 
-        <div class="d-flex flex-column mt-5">
-          <label class="text-dark mt-0" for="comment">Comment</label>
-          <textarea name="wording" pInputText [(ngModel)]="selectedDummyClause.wording"></textarea>
-        </div>
-
-        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
-          <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
-          <button type="button" class="btn" data-bs-dismiss="modal"
-            style="background-color: #00529B;color:white;text-decoration: none;" (click)="editClause()">{{
-            'gis.quotation.save_changes' | translate }}
-          </button>
-          <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
-            style="text-decoration: none;">{{
-            'gis.quotation.cancel' | translate
-            }}
-          </button>
-        </div>
       </div>
 
     </div>
 
+ </div>
   </div>
+    <!--INTERMEDIARY MODAL -->
+    <div class="modal fade" id="selectIntermediary" tabindex="-1" aria-labelledby="selectIntermediaryLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
 
+          <div class="modal-body">
+            <div class="float-start"></div>
+            <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h5 class="text-start mt-2 mb-4">Select intermediary</h5>
+            <div class="input-group mb-4" id="search-input">
+
+              <span class="input-group-append" style="background-color: #F5F6F8;">
+                <button class="btn border-end-0 " type="button">
+                  <i class="fa fa-search"></i>
+                </button>
+              </span>
+              <!-- <input class="form-control py-2 border-start-0" pInputText  (input)="applyFilterGlobal($event, 'contains')"  style="background-color: #F5F6F8;border: 0px;" type="search" placeholder="search...">             -->
+            </div>
+
+
+            <p-table #dt1 [value]="agents" [tableStyle]="{ 'max-width': '100rem' }" [resizableColumns]="true"
+              styleClass="p-datatable-sm" class='ui-datatable'
+              [globalFilterFields]="['shortDesc', 'name', 'accountType']" [paginator]="true" [rows]="5"
+              [showCurrentPageReport]="true" currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
+              selectionMode="single" [(selection)]="selectedAgent" dataKey="shortDesc">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th field="shortDesc">Code</th>
+                  <th field="name">Name</th>
+                  <th field="accountType">Intermediary type</th>
+
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-data>
+                <tr [pSelectableRow]="data" style="cursor:pointer" (click)="getAgentById(data)">
+                  <td>{{ data.shortDesc }}</td>
+                  <td>{{ data.name | sentenceCase }}</td>
+                  <td>{{ data.accountType | sentenceCase }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+
+            <div class="float-start"></div>
+            <button class="btn btn-primary float-end mt-4" data-bs-dismiss="modal">OK</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="min-width:700px">
+          <div class="modal-body">
+            <p class="title1 mb-4">Client's already existing quotations</p>
+            <p-table [value]="clientExistingQuotations" [resizableColumns]="true" styleClass="p-datatable-sm"
+              styleClass="p-datatable-striped" class='ui-datatable' [tableStyle]="{ 'min-width': '50rem' }"
+              [scrollable]="true" scrollHeight="400px">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Quotation number</th>
+                  <th>Status</th>
+                  <th>Cover from</th>
+                  <th>Cover to</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-data>
+                <tr>
+                  <td>{{ data.quotationNo }}</td>
+                  <td>{{ data.status }}</td>
+                  <td>{{ data.coverFrom }}</td>
+                  <td>{{ data.coverTo }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+
+            <p class="title1 mt-4 float-start">Do you wish to continue creating the quotation?</p>
+            <div class="mt-3 float-end">
+              <button class="btn btn-outline-primary" data-bs-dismiss="modal">No,I don't</button>
+              <button class="btn btn-primary" style="margin-left: 10px;" data-bs-dismiss="modal"
+                (click)="saveQuotationDetails()">Yes, continue
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
   <div class="float-end mb-4">
     <button class="btn btn-primary" #openModal data-bs-toggle="modal" data-bs-target="#exampleModal" hidden></button>
 
     <button class="btn btn-primary" (click)="getExistingQuotations()">Next</button>
-  </div>
-  <!--INTERMEDIARY MODAL -->
-  <div class="modal fade" id="selectIntermediary" tabindex="-1" aria-labelledby="selectIntermediaryLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-
-        <div class="modal-body">
-          <div class="float-start"></div>
-          <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
-          <h5 class="text-start mt-2 mb-4">Select intermediary</h5>
-          <div class="input-group mb-4" id="search-input">
-
-            <span class="input-group-append" style="background-color: #F5F6F8;">
-              <button class="btn border-end-0 " type="button">
-                <i class="fa fa-search"></i>
-              </button>
-            </span>
-            <!-- <input class="form-control py-2 border-start-0" pInputText  (input)="applyFilterGlobal($event, 'contains')"  style="background-color: #F5F6F8;border: 0px;" type="search" placeholder="search...">             -->
-          </div>
-
-
-          <p-table #dt1 [value]="agents" [tableStyle]="{ 'max-width': '100rem' }" [resizableColumns]="true"
-            styleClass="p-datatable-sm" class='ui-datatable' [globalFilterFields]="['shortDesc', 'name', 'accountType']"
-            [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
-            currentPageReportTemplate="{first} to {last} of {totalRecords} entries" selectionMode="single"
-            [(selection)]="selectedAgent" dataKey="shortDesc">
-            <ng-template pTemplate="header">
-              <tr>
-                <th field="shortDesc">Code</th>
-                <th field="name">Name</th>
-                <th field="accountType">Intermediary type</th>
-
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-data>
-              <tr [pSelectableRow]="data" style="cursor:pointer" (click)="getAgentById(data)">
-                <td>{{ data.shortDesc }}</td>
-                <td>{{ data.name | sentenceCase }}</td>
-                <td>{{ data.accountType | sentenceCase }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-
-          <div class="float-start"></div>
-          <button class="btn btn-primary float-end mt-4" data-bs-dismiss="modal">OK</button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="min-width:700px">
-        <div class="modal-body">
-          <p class="title1 mb-4">Client's already existing quotations</p>
-          <p-table [value]="clientExistingQuotations" [resizableColumns]="true" styleClass="p-datatable-sm"
-            styleClass="p-datatable-striped" class='ui-datatable' [tableStyle]="{ 'min-width': '50rem' }"
-            [scrollable]="true" scrollHeight="400px">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Quotation number</th>
-                <th>Status</th>
-                <th>Cover from</th>
-                <th>Cover to</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-data>
-              <tr>
-                <td>{{ data.quotationNo }}</td>
-                <td>{{ data.status }}</td>
-                <td>{{ data.coverFrom }}</td>
-                <td>{{ data.coverTo }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-
-          <p class="title1 mt-4 float-start">Do you wish to continue creating the quotation?</p>
-          <div class="mt-3 float-end">
-            <button class="btn btn-outline-primary" data-bs-dismiss="modal">No,I don't</button>
-            <button class="btn btn-primary" style="margin-left: 10px;" data-bs-dismiss="modal"
-              (click)="saveQuotationDetails()">Yes, continue
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
