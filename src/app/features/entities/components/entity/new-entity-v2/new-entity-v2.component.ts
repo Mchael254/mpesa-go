@@ -80,6 +80,8 @@ export class NewEntityV2Component implements OnInit {
   corporateContactDetailsFormField: FieldModel[] = [];
   requiredDocuments: RequiredDocumentDTO[];
   privacyPolicyFormFields: FieldModel[] = [];
+  payeeDetailsFormFields: FieldModel[] = [];
+  branchDetailsFormFields: FieldModel[] = [];
 
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
   protected readonly CountryISO = CountryISO;
@@ -267,17 +269,28 @@ export class NewEntityV2Component implements OnInit {
    * @param formGroupSections
    */
   assignFieldsToGroupByGroupId(fields: FieldModel[], formGroupSections: any[]): void { // todo: create Model for formGroupSections
-    let visibleFormFields = fields.filter((field: FieldModel) => field.visible
-      && field.groupId !== 'wealth_aml_details' && field.subGroupId !== 'contact_details' && field.subGroupId !== 'privacy_policy'); // todo: create Model for FormFields
+    let visibleFormFields: FieldModel[];
+    const formValues = this.uploadForm.getRawValue();
+
+    if (formValues.role === 'client' && formValues.category === 'individual') {
+      visibleFormFields = fields.filter((field: FieldModel) => field.visible
+        && field.groupId !== 'wealth_aml_details' && field.subGroupId !== 'contact_details' && field.subGroupId !== 'privacy_policy'); // todo: add contact person details
+
+    } else if(formValues.role === 'client' && formValues.category === 'corporate') {
+      visibleFormFields = fields.filter((field: FieldModel) => field.visible &&
+        field.subGroupId !== 'contact_person_details' && field.subGroupId !== 'privacy_policy' &&
+        field.subGroupId !== 'payee_details' && field.subGroupId !== 'branch_details');
+    }
+
 
     formGroupSections.forEach(section => { // initialize fields to empty array
-      section.fields = []
+      section.fields = [];
     })
 
     visibleFormFields.forEach(field => {
       formGroupSections.forEach(section => {
         if (field.groupId === section.groupId) {
-          section.fields.push(field)
+          section.fields.push(field);
         }
       })
     });
@@ -285,11 +298,16 @@ export class NewEntityV2Component implements OnInit {
     this.formGroupSections = formGroupSections;
     this.addFieldsToSections(formGroupSections);
     this.wealthAmlFormFields = fields.filter(field => field.subGroupId === 'wealth_aml_details');
-    this.corporateContactDetailsFormField = fields.filter(field => field.subGroupId === 'contact_details');
+    this.corporateContactDetailsFormField = fields.filter(field => field.subGroupId === 'contact_person_details');
     this.privacyPolicyFormFields = fields.filter(field => field.subGroupId === 'privacy_policy');
+    this.payeeDetailsFormFields = fields.filter(field => field.subGroupId === 'payee_details');
+    this.branchDetailsFormFields = fields.filter(field => field.subGroupId === 'branch_details');
+
     log.info(`wealthAmlFormFields >>> `, this.wealthAmlFormFields);
     log.info(`formGroupSections >>> `, this.formGroupSections);
     log.info(`otpFormFields >>> `, this.privacyPolicyFormFields);
+    log.info(`payeeDetailsFormFields >>> `, this.payeeDetailsFormFields);
+    log.info(`branchDetailsFormFields >>> `, this.branchDetailsFormFields);
   }
 
 
@@ -366,9 +384,12 @@ export class NewEntityV2Component implements OnInit {
 
   fetchRequiredDocuments(formValues) : void {
     if (formValues.category && formValues.role && formValues.organizationType) {
-      const accountType: PartyTypeDto = this.roles.filter((r:PartyTypeDto) => r.partyTypeName === formValues.role)[0];
+      const accountType: PartyTypeDto = this.roles.filter(
+        (r:PartyTypeDto) => r.partyTypeName.toLowerCase() === formValues.role.toLowerCase())[0];
+
       const category: string = formValues.category;
-      const accountSubType: ClientTypeDTO = this.clientTypes.filter((c: ClientTypeDTO) => c.clientTypeName === formValues.organizationType)[0];
+      const accountSubType: ClientTypeDTO = this.clientTypes.filter(
+        (c: ClientTypeDTO) => c.clientTypeName.toLowerCase() === formValues.organizationType.toLowerCase())[0];
       log.info(`accountSubType >>> `, accountSubType, this.clientTypes);
 
       this.requiredDocumentsService.getAccountTypeRequiredDocument(accountType.partyTypeShtDesc, category, accountSubType.code, null).subscribe({
@@ -646,8 +667,8 @@ export class NewEntityV2Component implements OnInit {
     this.entityService.getPartiesType().subscribe({
       next: (data: PartyTypeDto[]) => {
         this.roles = data;
-        const roleStringArr: string[] = data.map((role: PartyTypeDto) => role.partyTypeName);
-        const index: number = this.uploadGroupSections.selects.findIndex(field => field.fieldId === "role");
+        const roleStringArr: string[] = data.map((role: PartyTypeDto) => role.partyTypeName.toLowerCase());
+        const index: number = this.uploadGroupSections.selects.findIndex((field: FieldModel) => field.fieldId === "role");
         this.uploadGroupSections.selects[index].options = roleStringArr;
         log.info(`roles: `, roleStringArr);
       },
@@ -661,7 +682,6 @@ export class NewEntityV2Component implements OnInit {
   fetchOrganizationTypes(): void {
     const role = this.uploadForm.getRawValue().role.toLowerCase();
     log.info(`role to fetch with >>> `, role);
-
     switch (role) {
       case 'client':
         this.fetchClientTypes()
