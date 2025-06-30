@@ -34,9 +34,7 @@ const log = new Logger('QuotationDetails');
 })
 export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
-sort(arg0: string) {
-throw new Error('Method not implemented.');
-}
+
 
   dummyClauses = [
     {
@@ -110,8 +108,8 @@ throw new Error('Method not implemented.');
   quotationCode: any;
   isChecked: boolean = false;
   show: boolean = false;
-  showProducts: boolean = false;
-  showClauses: boolean = false;
+  showProducts: boolean = true;
+  showClauses: boolean = true;
   quotationNum: string;
   introducers: introducersDTO[] = [];
   userDetails: any;
