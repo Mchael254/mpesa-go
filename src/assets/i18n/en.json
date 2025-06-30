@@ -1002,6 +1002,7 @@
       "no_client_found": "No client found",
       "no_contact_information_available": "No contact information available",
       "no_data": "No Data To Display",
+      "no_clause_to_display":"No clauses.Click on “Add clauses” to add a new clause",
       "no_data_to_display": "No product.Click on “Add product” to add a new product",
       "no_im_not": "No, I'm not",
       "no_policy_found": "No Policy Found",

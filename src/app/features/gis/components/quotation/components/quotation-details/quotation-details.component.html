@@ -243,7 +243,6 @@
                     {{ product.productCode?.description }}
                   </ng-template>
 
-
                 </p-cellEditor>
               </td>
 
@@ -259,7 +258,6 @@
                     {{ product.coverFrom | date: dateFormat }}
                   </ng-template>
 
-
                 </p-cellEditor>
               </td>
 
@@ -274,8 +272,6 @@
                   <ng-template pTemplate="output">
                     {{ product.coverTo | date: dateFormat }}
                   </ng-template>
-
-
                 </p-cellEditor>
               </td>
 
@@ -507,10 +503,15 @@
             </tr>
 
           </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" style="text-align:center; padding: 20px;">
+                {{ 'gis.quotation.no_clause_to_display' | translate }}
+              </td>
+            </tr>
+          </ng-template>
         </p-table>
       </div>
-
-
 
     </div>
   </div>
