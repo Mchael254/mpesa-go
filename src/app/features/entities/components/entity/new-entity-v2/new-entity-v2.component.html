@@ -102,7 +102,7 @@
 
                     <!-- Text / Email / Tel / etc -->
                     <ng-container *ngIf="field.type === 'text' || field.type === 'email' || field.type==='tel'">
-                      <ng-container *ngIf="!['idNumber', 'smsNumber'].includes(field.fieldId)">
+                      <ng-container *ngIf="!['idNumber', 'smsNumber', 'telNumber'].includes(field.fieldId)">
                         <label class="form-label" [for]="field.fieldId">
                           {{ field.label?.[language] | titlecase }}
                           <span *ngIf="field.isMandatory" class="text-danger">*</span>
@@ -140,14 +140,14 @@
                           [class.is-valid]="getFieldControl(group.groupId, field.fieldId)?.valid && getFieldControl(group.groupId, field.fieldId)?.touched"
                         />
                       </ng-container>
-                      <ng-container *ngIf="field.fieldId==='smsNumber'">
+                      <ng-container *ngIf="['smsNumber', 'telNumber'].includes(field.fieldId)">
                         <label class="form-label" [for]="field.fieldId">
                           {{ field.label?.[language] | titlecase }}
                           <span *ngIf="field.isMandatory" class="text-danger">*</span>
                         </label>
                         <ngx-intl-tel-input
                           [cssClass]="'form-control form-control-md mb-1'"
-                          id="smsNumber"
+                          [id]="field.fieldId"
                           [preferredCountries]=""
                           [enableAutoCountrySelect]="true"
                           [enablePlaceholder]="true"
@@ -158,7 +158,7 @@
                           [phoneValidation]="true"
                           [separateDialCode]="true"
                           [numberFormat]="PhoneNumberFormat.National"
-                          formControlName="smsNumber"
+                          [formControlName]="field.fieldId"
                           [style]="{ width: '100%' }">
                         </ngx-intl-tel-input>
                       </ng-container>
@@ -311,13 +311,33 @@
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'contact_details' && category === 'corporate'">
+            <div *ngIf="group.groupId === 'contact_details' && category === 'corporate' && corporateContactDetailsFormField.length > 0">
               <app-dynamic-setup-table
-                [tableTitle]=""
+                [tableTitle]="'contact person details'"
                 [addButtonText]="'Add Contact details'"
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateContactDetailsFormField"
-                [subGroupId]="'contact_details'"
+                [subGroupId]="'contact_person_details'"
+              ></app-dynamic-setup-table>
+            </div>
+
+            <div *ngIf="group.groupId === 'address_details' && category === 'corporate'">
+              <app-dynamic-setup-table
+                [tableTitle]="'Branch Details'"
+                [addButtonText]="'Add branch'"
+                [emptyTableMessage]="'No record found!'"
+                [formFields]="branchDetailsFormFields"
+                [subGroupId]="'branch_details'"
+              ></app-dynamic-setup-table>
+            </div>
+
+            <div *ngIf="group.groupId === 'financial_details' && category === 'corporate'">
+              <app-dynamic-setup-table
+                [tableTitle]="'Payee Details'"
+                [addButtonText]="'Add payee'"
+                [emptyTableMessage]="'No record found!'"
+                [formFields]="payeeDetailsFormFields"
+                [subGroupId]="'payee_details'"
               ></app-dynamic-setup-table>
             </div>
 
