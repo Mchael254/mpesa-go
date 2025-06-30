@@ -1,0 +1,18 @@
+[
+    {
+        "productCode": {
+            "code": 8173,
+            "description": "Marine cargo"
+        },
+        "coverFrom": "1970-01-01T00:00:00.000Z",
+        "coverTo": "2025-06-28T21:00:00.000Z"
+    },
+    {
+        "productCode": {
+            "code": 7305,
+            "description": "Fire and special perils"
+        },
+        "coverFrom": "1970-01-01T00:00:00.000Z",
+        "coverTo": "2025-07-02T21:00:00.000Z"
+    }
+]
