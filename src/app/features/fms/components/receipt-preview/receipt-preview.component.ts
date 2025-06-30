@@ -145,7 +145,7 @@ export class ReceiptPreviewComponent implements OnInit {
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage(
-          'Error',
+          'Error getting receipt to print',
           err.error.status
         );
       },
