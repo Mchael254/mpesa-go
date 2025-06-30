@@ -377,15 +377,13 @@
 
 
       <!-- Add Product Details  Modal -->
-      <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
+      <div class="modal fade " id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
            aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
           <div class="modal-content" id="addSectionModal">
             <div class="modal-body">
-              <h5 class="modal-title mt-2 product-details-title" id="editOtherDetailsLabel">{{
-                  'gis.quotation.product_details' |
-                    translate
-                }}
+              <h5 class="modal-title mt-2 product-details-title" id="editOtherDetailsLabel">
+                {{ 'gis.quotation.add_product' | translate }}
                 <button type="button" class="btn-close float-end red-close" data-bs-dismiss="modal"
                         aria-label="Close"></button>
               </h5>
@@ -395,40 +393,32 @@
                   <div class="form-group form-group-sm">
                     <br>
                     <label for="" class="quote-label">Product</label>
-                    <p-dropdown                         
-                    id="quote-input-pdropdown"                         
-                    [options]="ProductDescriptionArray"                         
-                    formControlName="productCode"                         
-                    optionLabel="description"    
-                    filterBy="description"                     
-                    [filter]="true"    
-                    [showClear]="true"                     
-                    placeholder="Select Product"   
+                    <p-multiSelect 
+                    [options]="ProductDescriptionArray"
+                    formControlName="productCodes"
+                    optionLabel="filterText"
+                    filterBy="filterText"
+                    display="chip"
+                    [filter]="true"
+                    [showClear]="true"
+                    placeholder="Select Product"
                    
-                    (onChange)="getProductClause(); checkMotorClass()">
-                    
-                    <ng-template let-item pTemplate="item">
-                        <div class="d-flex align-items-center" style="pointer-events: none;">
-                            <input
-                                type="checkbox"
-                                [checked]="item.code === quotationProductForm.get('productCode')?.value?.code"
-                                class="me-2"
-                                style="pointer-events: none;"
-                            />
-                            <span style="pointer-events: auto;">{{ item.description }}</span>
-                        </div>                       
-                    </ng-template>      
-                    
-                    <ng-template pTemplate="emptyfilter">
-                      <div class="text-danger px-2 py-1">
-                        No products match your search.
-                      </div>
-                    </ng-template> 
-                </p-dropdown>
+                >
+  
+               
+                
+                
+                        <ng-template pTemplate="emptyfilter">
+                        <div class="text-danger px-2 py-1">
+                            No products match your search.
+                        </div>
+                    </ng-template>
+                </p-multiSelect>
+                
 
 
                     <div
-                      *ngIf="quotationProductForm.get('productCode').hasError('required') && quotationProductForm.get('productCode').touched"
+                      *ngIf="quotationProductForm.get('productCodes')?.hasError('required') && quotationProductForm.get('productCodes')?.touched"
                       class="form-text text-danger">
                       Product is required.
                     </div>
@@ -470,7 +460,7 @@
 
               </div>
 
-              <div class="mt-4 d-flex justify-content-end gap-2">
+              <div class="mt-4 d-flex justify-content-end gap-4">
                 <button
                   type="button"
                   class="btn btn-secondary btn-lightblue"
