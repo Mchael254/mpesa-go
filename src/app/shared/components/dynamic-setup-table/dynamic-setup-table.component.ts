@@ -19,6 +19,7 @@ import {OccupationDTO} from "../../data/common/occupation-dto";
 import {ClientTitleDTO} from "../../data/common/client-title-dto";
 import {CountryDto, PostalCodesDTO, StateDto, TownDto} from "../../data/common/countryDto";
 import {BankBranchDTO, BankDTO, FundSourceDTO} from "../../data/common/bank-dto";
+import {AccountsEnum} from "../../../features/entities/data/enums/accounts-enum";
 
 const log = new Logger("DynamicSetupTableComponent");
 @Component({
@@ -76,6 +77,12 @@ export class DynamicSetupTableComponent implements OnInit {
   selectedCity: StateDto;
   selectedTown: TownDto;
   selectedBank: BankDTO;
+  selectedCr12Category: any;
+
+  premiumFrequenciesData: AccountsEnum[];
+  employmentTypesData: AccountsEnum[];
+  communicationChannelsData: AccountsEnum[];
+  insurancePurposeData: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -173,6 +180,10 @@ export class DynamicSetupTableComponent implements OnInit {
     });
 
     this.dynamicModalForm = this.fb.group(formControls);
+
+    if (this.selectedCr12Category && this.dynamicModalForm.contains('cr12Category')) {
+      this.dynamicModalForm.controls['cr12Category'].setValue(this.selectedCr12Category);
+    }
 
     log.info('[createForm] Controls created:', Object.keys(this.dynamicModalForm.controls));
 
@@ -319,8 +330,8 @@ export class DynamicSetupTableComponent implements OnInit {
           field.appliesTo === (selectedOption === 'corporate' ? 'C' : 'I') ||
           field.appliesTo === 'ALL'
         );
+        this.selectedCr12Category = selectedOption;
         this.createForm();
-        log.info(`here`, this.filteredCr12FormFields);
         this.cdr.detectChanges();
         break;
       case 'country':
@@ -423,6 +434,18 @@ export class DynamicSetupTableComponent implements OnInit {
         break;
       case 'branchName':
         this.fetchBankBranches(fieldIndex);
+        break;
+      case 'type_of_employment':
+        this.fetchEmploymentTypes(fieldIndex);
+        break;
+      case 'purposeOfInsurance':
+        this.fetchInsurancePurpose(fieldIndex);
+        break;
+      case 'premiumFrequency':
+        this.fetchPremiumFrequencies(fieldIndex);
+        break;
+      case 'distributionChannel':
+        this.fetchPreferredCommunicationChannels(fieldIndex);
         break;
       default:
         log.info(`no fieldId found`)
@@ -585,6 +608,70 @@ export class DynamicSetupTableComponent implements OnInit {
         log.error(`could not fetch: `, err);
         let errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', 'You have not selected a bank!');
+      }
+    })
+  }
+
+  fetchPremiumFrequencies(fieldIndex: number) {
+    this.accountService.getPremiumFrequencies().subscribe({
+      next: (data: AccountsEnum[]) => {
+        this.premiumFrequenciesData = data;
+        const premiumFrequenciesStringArr: string[] = data.map((branch: AccountsEnum) => branch.value);
+        this.formFields[fieldIndex].options = premiumFrequenciesStringArr
+        log.info(`premium frequencies: `, premiumFrequenciesStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    })
+  }
+
+  fetchEmploymentTypes(fieldIndex: number) {
+    this.accountService.getEmploymentTypes().subscribe({
+      next: (data: AccountsEnum[]) => {
+        this.employmentTypesData = data;
+        const employmentTypesStringArr: string[] = data.map((type: AccountsEnum) => type.value);
+        this.formFields[fieldIndex].options = employmentTypesStringArr
+        log.info(`employment types: `, employmentTypesStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    })
+  }
+
+  fetchPreferredCommunicationChannels(fieldIndex: number) {
+    this.accountService.getPreferredCommunicationChannels().subscribe({
+      next: (data: AccountsEnum[]) => {
+        this.communicationChannelsData = data;
+        const communicationChannelsStringArr: string[] = data.map((channel: AccountsEnum) => channel.value);
+        this.formFields[fieldIndex].options = communicationChannelsStringArr
+        log.info(`communication channels: `, communicationChannelsStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    })
+  }
+
+  fetchInsurancePurpose(fieldIndex: number) {
+    this.accountService.getInsurancePurpose().subscribe({
+      next: (data: any[]) => {
+        this.insurancePurposeData = data;
+        const insurancePurposeStringArr: string[] = data.map((purpose: any) => purpose.name);
+        this.formFields[fieldIndex].options = insurancePurposeStringArr
+        log.info(`insurance purposes: `, insurancePurposeStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
       }
     })
   }

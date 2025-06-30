@@ -619,7 +619,7 @@ export class NewEntityV2Component implements OnInit {
   }
 
   fetchSavedDetails(eventData:any) {
-    log.debug('Event received in Component B:', eventData);
+    log.debug('Save details modal data:', eventData);
   }
 
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
