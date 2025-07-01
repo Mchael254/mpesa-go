@@ -16,12 +16,15 @@
 
 
   <!-- Download -->
-  <div *ngIf="shareQuoteData.selectedMethod === 'email'"
-       class="btn btn-outline-primary d-inline-flex align-items-center my-3" (click)="onDownload()" role="button"
-       tabindex="0">
-    <i class="pi pi-download me-2"></i>
-    <span>Download</span>
-  </div>
+  <div *ngIf="shareQuoteData.selectedMethod === 'email'" 
+  (click)="onDownload()" 
+  class="download-link my-3" 
+  role="button" 
+  tabindex="0">
+<i class="pi pi-download me-2"></i>
+<span>Download</span>
+</div>
+
   <ng-container *ngIf="shareQuoteData.selectedMethod === 'email';else soonComingChannels">
     <div class="p-field p-mb-3">
       <label for="clientName">Client name</label>
@@ -37,7 +40,7 @@
     </div>
 
     </div>
-    <label for="email">
+    <label for="email" class="label">
       Email address<span class="required"></span>
     </label>
     <input

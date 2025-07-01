@@ -355,3 +355,13 @@ button {
   white-space: nowrap;
   /* color: #000; */
 }
+
+.custom-close-style {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  filter: brightness(0) saturate(100%) invert(12%) sepia(93%) saturate(5425%) hue-rotate(357deg) brightness(92%) contrast(115%);
+}
+.custom-margin {
+  margin-left: 15px; 
+}

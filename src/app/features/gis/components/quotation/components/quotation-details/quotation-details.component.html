@@ -225,7 +225,7 @@
 
           <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
             <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRowIndex !== ri"
-              [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product)">
+              [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product) ">
 
               <!-- Product Dropdown Column -->
               <td class="flexible-header">

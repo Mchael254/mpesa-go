@@ -1218,6 +1218,7 @@ throw new Error('Method not implemented.');
       }
     }
   }
+  editingRowIndex: number | null = null;
 
   onRowEditInit(index: number, row: any) {
     log.debug('onRowEditInit - selectedEditRowIndex before edit:', this.selectedEditRowIndex);
@@ -1229,19 +1230,21 @@ throw new Error('Method not implemented.');
     log.debug('Editing row:', row);
   }
 
-  onProductChange(event: any, rowIndex: number, product: any) {
-    // Get the selected product from the event
-    const selectedProduct = this.ProductDescriptionArray.find(p => p.code === event.code);
-
-    if (selectedProduct) {
-      // Manually update the product with the selected product
-      product.productCode = selectedProduct;
+  onProductChange(selected: any, rowIndex: number, product: any) {
+    // Only update if the product actually changed
+    if (product.productCode?.code !== selected.code) {
+      product.productCode = selected;
+  
+      // Optional: save to session storage
+      sessionStorage.setItem(`product_${rowIndex}`, JSON.stringify(product));
       console.log("Updated product:", product);
-
-      // Ensure the row is marked as editable
-      this.selectedEditRowIndex = rowIndex;
     }
   }
+  
+
+  
+  
+  
 
 
   onRowEditSave(product: any) {
