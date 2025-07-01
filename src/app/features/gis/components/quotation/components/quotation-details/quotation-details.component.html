@@ -461,69 +461,72 @@
 
     </div>
 
+    <!-- clauses table -->
     <div class="collapse" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
-      <!-- clause table -->
       <p-table #dt [value]="dummyClauses" [rows]="3" [paginator]="true"
-        [globalFilterFields]="['id', 'heading', 'wording']" selectionMode="single" [(selection)]="selectedUser"
-        styleClass="p-datatable-striped" (onRowSelect)="onUserSelect()" (onRowUnselect)="onUserUnselect()">
+        [globalFilterFields]="['id', 'heading', 'wording']" styleClass="p-datatable-striped">
 
         <ng-template pTemplate="header">
           <tr>
-            <th class="flexible-header1" style="width: 3%" pSortableColumn="id">ID <p-sortIcon field="id" /></th>
-            <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">Heading <p-sortIcon
-                field="heading" /></th>
-            <th class="flexible-header1" style="width: 50%" pSortableColumn="wording">Wording <p-sortIcon
-                field="wording" /></th>
+            <th class="flexible-header1" style="width: 3%" pSortableColumn="id">
+              ID <p-sortIcon field="id" />
+            </th>
+            <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">
+              Heading <p-sortIcon field="heading" />
+            </th>
+            <th class="flexible-header1" style="width: 50%" pSortableColumn="wording">
+              Wording <p-sortIcon field="wording" />
+            </th>
             <th class="flexible-header1" style="width: 15%">Actions</th>
           </tr>
-          <tr styleClass="p-striped">
-            <th>
-              <input type="text" class="form-control form-control-sm" [(ngModel)]="globalSearch"
-                (input)="filterGlobal($event)">
-            </th>
-            <th>
-              <input type="text" class="form-control form-control-sm" [(ngModel)]="headingSearch"
-                (input)="filterByHeading($event)">
-            </th>
-            <th>
-              <input type="text" class="form-control form-control-sm" [(ngModel)]="wordingSearch"
-                (input)="filterByWording($event)">
-            </th>
+          <tr>
+            <th><input type="text" class="form-control form-control-sm" [(ngModel)]="idSearch"
+                (input)="filterById($event)" placeholder="Search ID"></th>
+            <th><input type="text" class="form-control form-control-sm" [(ngModel)]="headingSearch"
+                (input)="filterByHeading($event)" placeholder="Search Heading"></th>
+            <th><input type="text" class="form-control form-control-sm" [(ngModel)]="wordingSearch"
+                (input)="filterByWording($event)" placeholder="Search Wording"></th>
             <th></th>
           </tr>
         </ng-template>
 
         <ng-template pTemplate="body" let-clause>
           <tr [pSelectableRow]="clause">
-            <td>{{clause.id }}</td>
-            <td>{{clause.heading }}</td>
-            <td pTooltip="{{clause.wording}}" tooltipPosition="top">{{clause.wording | truncate:10 }}</td>
+            <td>{{ clause.id }}</td>
+            <td>{{ clause.heading }}</td>
+            <td pTooltip="{{ clause.wording }}" tooltipPosition="top">
+              {{ clause.wording | truncate:10 }}
+            </td>
             <td style="text-align: right">
               <div class="flex justify-end gap-2">
                 <span class="p-button-label p-text-bold"
                   style="color: #00529B; margin-right:16px; margin-left:10px; cursor:pointer;" data-bs-toggle="modal"
                   data-bs-target="#editClause" (click)="populateEditClauseModal(clause)">
-                  {{'gis.quotation.edit' | translate}}
+                  {{ 'gis.quotation.edit' | translate }}
                 </span>
                 <span class="p-button-label p-text-bold" style="color: #00529B; cursor:pointer;">
-                  {{'gis.quotation.delete' | translate}}
+                  {{ 'gis.quotation.delete' | translate }}
                 </span>
               </div>
             </td>
           </tr>
         </ng-template>
 
-        <!-- No clauses found-->
+        <!-- empty/search states -->
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="4" style="text-align: center; padding: 20px;">
-              <p style="margin: 0; color: #6c757d; font-size: 14px;">
-                No clauses found matching your search
-              </p>
+              <div style="color: #6c757d; font-size: 15px;">
+                <ng-container *ngIf="dummyClauses.length === 0">
+                  No clause available. Click on “Add clauses” to add a new clause.
+                </ng-container>
+                <ng-container *ngIf="dummyClauses.length > 0">
+                  No clauses found matching your search
+                </ng-container>
+              </div>
             </td>
           </tr>
         </ng-template>
-
       </p-table>
 
       <!-- add clause modal -->
