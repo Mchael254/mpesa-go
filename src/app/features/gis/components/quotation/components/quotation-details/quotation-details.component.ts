@@ -1229,6 +1229,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }
     }
   }
+  editingRowIndex: number | null = null;
 
   onRowEditInit(index: number, row: any) {
     log.debug('onRowEditInit - selectedEditRowIndex before edit:', this.selectedEditRowIndex);
@@ -1240,19 +1241,21 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug('Editing row:', row);
   }
 
-  onProductChange(event: any, rowIndex: number, product: any) {
-    // Get the selected product from the event
-    const selectedProduct = this.ProductDescriptionArray.find(p => p.code === event.code);
-
-    if (selectedProduct) {
-      // Manually update the product with the selected product
-      product.productCode = selectedProduct;
+  onProductChange(selected: any, rowIndex: number, product: any) {
+    // Only update if the product actually changed
+    if (product.productCode?.code !== selected.code) {
+      product.productCode = selected;
+  
+      // Optional: save to session storage
+      sessionStorage.setItem(`product_${rowIndex}`, JSON.stringify(product));
       console.log("Updated product:", product);
-
-      // Ensure the row is marked as editable
-      this.selectedEditRowIndex = rowIndex;
     }
   }
+  
+
+  
+  
+  
 
 
   onRowEditSave(product: any) {
@@ -1385,33 +1388,53 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   openProductDeleteModal(product: any) {
-    log.debug("Selected product to delete", this.selectedRow)
-    if (!this.selectedRow) {
-      this.globalMessagingService.displayInfoMessage('Error', 'Select a product  to continue');
-    } else {
-      document.getElementById("openProductButtonDelete").click();
+    if (!product) {
+      this.globalMessagingService.displayInfoMessage('Error', 'Select a product to continue');
+      return;
     }
+  
+    this.selectedRow = product;
+  
+    setTimeout(() => {
+      const deleteBtn = document.getElementById("openProductButtonDelete");
+      if (deleteBtn) {
+        deleteBtn.click(); // opens the modal
+      } else {
+        console.error("❌ Button with ID 'openProductButtonDelete' not found in DOM.");
+      }
+    }, 0);
   }
+  
 
   deleteProduct() {
-    log.debug("selected Product:", this.selectedRow)
-    // Find the index of the product
+    if (!this.selectedRow || !this.selectedRow.productCode?.code) {
+      this.globalMessagingService.displayInfoMessage('Error', 'No product selected for deletion.');
+      return;
+    }
+  
     const productIndex = this.productDetails.findIndex(
-      (product: any) => product.productCode.code === this.selectedRow?.productCode.code
+      (product: any) => product.productCode.code === this.selectedRow.productCode.code
     );
-
-    // If the product is found, remove it from the array
+  
     if (productIndex !== -1) {
       this.productDetails.splice(productIndex, 1);
-      this.productDetails?.forEach(product => {
+  
+      // Optional: Convert dates again if needed
+      this.productDetails.forEach(product => {
         product.coverFrom = new Date(product.coverFrom);
         product.coverTo = new Date(product.coverTo);
       });
-      log.debug('Product details array after deleting:', this.productDetails)
+  
+      // Update session storage
       sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
-
+  
+      this.globalMessagingService.displaySuccessMessage('Success', 'Product removed successfully.');
+      log.debug('✅ Product deleted:', this.productDetails);
+    } else {
+      this.globalMessagingService.displayInfoMessage('Info', 'Product not found.');
     }
   }
+  
 
   updateCoverTo(product: any) {
     if (product.coverFrom) {
@@ -1445,7 +1468,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   onRowEditInits(product: any) {
     this.clonedProducts[product.productCode.code] = { ...product };
-    console.log('Editing row:', product);
+    log.debug('Editing row:', product);
   }
 
   onRowEditSaves(product: any) {
@@ -1457,11 +1480,27 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       product.coverFrom = new Date(coverFromDate);
       product.coverTo = new Date(coverToDate);
 
-      this.productDetails = this.productDetails.map(item =>
-        item.productCode.code === product.productCode.code ? { ...item, ...product } : item
-      );
+
+      product.productName = product.productCode.description;
+
+
+      this.productDetails = this.productDetails.map(item => {
+        if (item.productCode.code === product.productCode.code) {
+          return {
+            ...item,
+            ...product,
+            productCode: {
+              ...item.productCode,
+              ...product.productCode
+            }
+          };
+        }
+        return item;
+      });
 
       sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+      log.debug("Saved to sessionStorage:", JSON.parse(sessionStorage.getItem('productFormDetails')));
+
       delete this.clonedProducts[product.productCode.code];
 
       // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Row updated successfully' });
@@ -1482,7 +1521,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const selectedProduct = this.ProductDescriptionArray.find(p => p.code === event.code);
     if (selectedProduct) {
       product.productCode = selectedProduct;
-      console.log("Updated product after dropdown change:", product);
+    log.debug("Updated product after dropdown change:", product);
     }
   }
 

@@ -389,3 +389,14 @@ color: #000;
   max-width: 100%;
   margin: 0;
 }
+.page-title{
+  margin-left: 15px; 
+   font-size: 20px; 
+   font-weight:600;
+}
+.custom-close-btn {
+  width: 2rem;
+  height: 2rem;
+  filter: brightness(0) saturate(100%) invert(12%) sepia(93%) saturate(5425%) hue-rotate(357deg) brightness(92%) contrast(115%);
+  border: none;
+}
