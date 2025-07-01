@@ -33,12 +33,10 @@ const log = new Logger('QuotationDetails');
   styleUrls: ['./quotation-details.component.css']
 })
 export class QuotationDetailsComponent implements OnInit, OnDestroy {
-onProductSelectionChange() {
-throw new Error('Method not implemented.');
-}
-
-
-
+  onProductSelectionChange() {
+    throw new Error('Method not implemented.');
+  }
+  @ViewChild('dt') table!: Table;
   dummyClauses = [
     {
       id: 1,
@@ -76,15 +74,47 @@ throw new Error('Method not implemented.');
       wording: 'No amendment to this agreement shall be effective unless in writing and signed by both parties.'
     }
   ];
-  selectedClauses:any
-  idSearch: any
-  headingSearch: any
-  wordingSearch: any
-  editInputs: boolean = false;
-  editClauseId: any = null;
-  toggleEdit(id: any) {
-    this.editClauseId = this.editClauseId === id ? null : id;
+
+
+  selectedUser: any;
+  headingSearch: string = '';
+  globalSearch: string = '';
+  wordingSearch:string = '';
+
+
+  //search member to reassign
+  filterGlobal(event: any): void {
+    const value = event.target.value;
+    this.globalSearch = value;
+    this.table.filterGlobal(value, 'contains');
   }
+
+  filterByHeading(event: any): void {
+    const value = event.target.value;
+    this.table.filter(value, 'heading', 'contains');
+  }
+
+  filterByWording(event: any): void {
+    const value = event.target.value;
+    this.table.filter(value, 'wording', 'contains');
+  }
+
+  onUserSelect(): void {
+    if (this.selectedUser) {
+      this.globalSearch = this.selectedUser.id;
+      this.headingSearch = this.selectedUser.name;
+
+    }
+
+  }
+
+  onUserUnselect(): void {
+    this.selectedUser = null;
+    this.globalSearch = '';
+    this.headingSearch = '';
+  }
+
+
 
 
   sort(arg0: string) {
@@ -256,7 +286,7 @@ throw new Error('Method not implemented.');
   };
 
   populateEditClauseModal(clause: any) {
-    this.selectedDummyClause = { ...clause }; 
+    this.selectedDummyClause = { ...clause };
   }
 
   editClause() {
@@ -1303,57 +1333,57 @@ throw new Error('Method not implemented.');
 
 
 
-  
-submitForm() {
-  if (this.quotationProductForm.invalid) {
-    this.quotationProductForm.markAllAsTouched();
-    return;
-  }
 
-  const coverFromDate = new Date(this.quotationProductForm.get('wef')?.value);
-  const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
-
-  const selectedProducts = (this.quotationProductForm.get('productCodes')?.value || []).filter(p => p && p.description);
-
-  if (!this.productDetails) {
-    this.productDetails = [];
-  }
-
-  selectedProducts.forEach((product: any) => {
-    this.productDetails.push({
-      productCode: product,
-      productName: product.description,
-      coverFrom: coverFromDate,
-      coverTo: coverToDate
-    });
-  });
-
-  
-  this.productDetails = this.productDetails.filter(p => p?.productCode?.description);
-  this.productDetails.forEach(product => {
-    product.coverFrom = new Date(product.coverFrom);
-    product.coverTo = new Date(product.coverTo);
-    if (!product.productName && product.productCode?.description) {
-      product.productName = product.productCode.description;
+  submitForm() {
+    if (this.quotationProductForm.invalid) {
+      this.quotationProductForm.markAllAsTouched();
+      return;
     }
-  });
 
-  sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
-  log.debug("Saved Product Details to sessionStorage:", this.productDetails);
+    const coverFromDate = new Date(this.quotationProductForm.get('wef')?.value);
+    const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
 
-  
-  this.quotationProductForm.reset({
-    productCodes: [],
-    wef: this.todaysDate,
-    wet: this.coverToDate
-  });
+    const selectedProducts = (this.quotationProductForm.get('productCodes')?.value || []).filter(p => p && p.description);
 
-  // Close modal
-  const closeBtn = document.querySelector('.btn-close') as HTMLElement;
-  closeBtn?.click();
-}
+    if (!this.productDetails) {
+      this.productDetails = [];
+    }
 
-  
+    selectedProducts.forEach((product: any) => {
+      this.productDetails.push({
+        productCode: product,
+        productName: product.description,
+        coverFrom: coverFromDate,
+        coverTo: coverToDate
+      });
+    });
+
+
+    this.productDetails = this.productDetails.filter(p => p?.productCode?.description);
+    this.productDetails.forEach(product => {
+      product.coverFrom = new Date(product.coverFrom);
+      product.coverTo = new Date(product.coverTo);
+      if (!product.productName && product.productCode?.description) {
+        product.productName = product.productCode.description;
+      }
+    });
+
+    sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+    log.debug("Saved Product Details to sessionStorage:", this.productDetails);
+
+
+    this.quotationProductForm.reset({
+      productCodes: [],
+      wef: this.todaysDate,
+      wet: this.coverToDate
+    });
+
+    // Close modal
+    const closeBtn = document.querySelector('.btn-close') as HTMLElement;
+    closeBtn?.click();
+  }
+
+
 
   orgFormatDate(date: Date, format: string): string {
     const day = String(date.getDate()).padStart(2, '0');
