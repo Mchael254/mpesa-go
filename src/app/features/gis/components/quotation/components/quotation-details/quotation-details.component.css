@@ -363,15 +363,6 @@ input.active {
   border: 1px solid #ccc !important;
 }
 
-.editInput {
-  outline: none;
-  padding: 5px;
-  border-radius: 3px;
-  border: solid rgb(185, 178, 178) 1px;
-  background-color: rgb(180, 178, 178);
-}
-
-
 
 
 
