@@ -177,6 +177,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   quotationProductForm: FormGroup
   existingQuotationDetails: any = undefined
   selectedClient: any = undefined
+  mandatoryProductClause:any;
+  productClause:any;
 
   constructor(
     public bankService: BankService,
@@ -509,7 +511,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   createQuotationProductForm() {
     this.quotationProductForm = this.fb.group({
       code: [0],
-      productCodes: [[], Validators.required],
+      productCodes: [, Validators.required],
       quotationCode: [0],
       productShortDescription: [''],
       quotationNo: [''],
@@ -992,7 +994,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.quotationService.getProductClauses(this.productCode).subscribe(res => {
       this.clauses = res
       // ✅ Ensure all mandatory clauses are selected on load
-      this.selectedClause = this.clauses.filter(clause => clause.isMandatory === 'Y');
+      this.mandatoryProductClause = this.clauses.filter(clause => clause.isMandatory === 'Y');
 
       // ✅ Mark mandatory clauses as checked
       this.clauses.forEach(clause => {
@@ -1231,6 +1233,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
   editingRowIndex: number | null = null;
 
+  
+
   onRowEditInit(index: number, row: any) {
     log.debug('onRowEditInit - selectedEditRowIndex before edit:', this.selectedEditRowIndex);
 
@@ -1327,20 +1331,20 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const coverFromDate = new Date(this.quotationProductForm.get('wef')?.value);
     const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
 
-    const selectedProducts = (this.quotationProductForm.get('productCodes')?.value || []).filter(p => p && p.description);
+    const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
 
     if (!this.productDetails) {
       this.productDetails = [];
     }
 
-    selectedProducts.forEach((product: any) => {
-      this.productDetails.push({
-        productCode: product,
-        productName: product.description,
-        coverFrom: coverFromDate,
-        coverTo: coverToDate
-      });
-    });
+    if (selectedProduct && selectedProduct.description) {
+    this.productDetails.push({
+    productCode: selectedProduct,
+    productName: selectedProduct.description,
+    coverFrom: coverFromDate,
+    coverTo: coverToDate
+  });
+}
 
 
     this.productDetails = this.productDetails.filter(p => p?.productCode?.description);
@@ -1361,6 +1365,19 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       wef: this.todaysDate,
       wet: this.coverToDate
     });
+
+    this.quotationService.getProductClauses(this.productCode).subscribe(res => {
+      this.clauses = res
+      // ✅ Ensure all mandatory clauses are selected on load
+      this.mandatoryProductClause = this.clauses.filter(clause => clause.isMandatory === 'Y');
+      this.productClause=this.mandatoryProductClause
+
+      // ✅ Mark mandatory clauses as checked
+      this.clauses.forEach(clause => {
+        clause.checked = clause.isMandatory === 'Y';
+      });
+    })
+
 
     // Close modal
     const closeBtn = document.querySelector('.btn-close') as HTMLElement;
