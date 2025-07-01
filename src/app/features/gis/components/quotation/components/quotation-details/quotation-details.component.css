@@ -408,3 +408,24 @@ textarea {
   overflow-x: none;
   white-space: nowrap;
 }
+.modal-title{
+  color: #00529B;
+}
+
+.custom-close {
+  filter: brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(7451%) hue-rotate(357deg) brightness(102%) contrast(122%);
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.custom-close:hover,
+.custom-close:active,
+.custom-close:focus {
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  filter: brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(7451%) hue-rotate(357deg) brightness(102%) contrast(122%) !important;
+}

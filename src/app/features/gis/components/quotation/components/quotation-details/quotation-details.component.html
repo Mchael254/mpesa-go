@@ -322,11 +322,8 @@
         <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
           <div class="modal-content" id="addSectionModal">
             <div class="modal-body">
-              <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{
-                'gis.quotation.product_details' |
-                translate
-                }}
-                <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+              <h5 class="modal-title mt-2" id="editOtherDetailsLabel">Add product
+                <button type="button" class="btn-close float-end custom-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </h5>
               <div class="row mb-4" [formGroup]='quotationProductForm'>
                 <div class="col-sm-6 col-12">
@@ -334,8 +331,8 @@
                     <br>
                     <label for="" class="quote-label">Product</label>
                     <p-multiSelect [options]="ProductDescriptionArray" formControlName="productCodes"
-                      optionLabel="filterText" filterBy="filterText" display="chip" [filter]="true" [showClear]="true"
-                      placeholder="Select Product">
+                      optionLabel="description"filterBy="filterText" display="chip" [filter]="true" [showClear]="true"
+                      placeholder="Select Product" class="custom-multiselect">
                       <ng-template pTemplate="emptyfilter">
                         <div class="text-danger px-2 py-1">
                           No products match your search.
