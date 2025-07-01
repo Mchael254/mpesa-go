@@ -175,10 +175,10 @@
     <div class="modal-dialog modal-dialog-centered modal-md">
       <div class="modal-content w-[40vw] h-[40vh] p-3">
         <div class="modal-body">
-          <button type="button" class="float-end btn-close" data-bs-dismiss="modal" aria-label="Close"
-            style="border:none; color: red;"></button>
-          <p class="text-start" id="shareQuote"> {{ 'gis.quotation.share_quotation' | translate }}</p>
-
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <p class="mb-0 custom-margin" id="shareQuote">Share quote</p>
+            <button type="button" class="btn-close custom-close-style" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
           <app-share-quotes (sendEvent)="listenToSendEvent($event)"
             (downloadRequested)="onDownloadRequested()"></app-share-quotes>
 
