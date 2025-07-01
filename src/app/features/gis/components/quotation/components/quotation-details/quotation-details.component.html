@@ -293,7 +293,7 @@
                   </button>
 
                   <button type="button" (click)="openProductDeleteModal(product)"
-                    class="p-button-sm p-button-text p-button-danger no-border">
+                    class="p-button-sm p-button-text p-button-danger no-border" >
                     Delete
                   </button>
                 </div>
@@ -319,11 +319,11 @@
         <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
           <div class="modal-content" id="addSectionModal">
             <div class="modal-body">
-              <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{
-                'gis.quotation.product_details' |
+              <h5 class="modal-title mt-2 add-product-title" id="editOtherDetailsLabel">{{
+                'gis.quotation.add_product' |
                 translate
                 }}
-                <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
 
               </h5>
               <div class="row mb-4" [formGroup]='quotationProductForm'>
@@ -332,14 +332,19 @@
                     <br>
                     <label for="" class="quote-label">Product</label>
                     <p-multiSelect 
+                    class="custom-multiselect"
                     [options]="ProductDescriptionArray"
                     formControlName="productCodes"
-                    optionLabel="filterText"
+                    optionLabel="description"
                     filterBy="filterText"
-                    display="chip"
+                    
                     [filter]="true"
                     [showClear]="true"
                     placeholder="Select Product"
+
+                  
+                    
+                    
                    
                 >
   
@@ -351,6 +356,7 @@
                             No products match your search.
                         </div>
                     </ng-template>
+                    
                 </p-multiSelect>
                 
 
@@ -405,6 +411,9 @@
             </div>
           </div>
         </div>
+
+        <button id="openProductButtonDelete" type="button" data-bs-toggle="modal" data-bs-target="#deleteProduct" hidden></button>
+
         <!-- Delete Product Modal -->
 
         <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
