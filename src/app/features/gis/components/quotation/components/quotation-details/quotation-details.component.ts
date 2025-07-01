@@ -73,20 +73,18 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       heading: 'Amendments',
       wording: 'No amendment to this agreement shall be effective unless in writing and signed by both parties.'
     }
+
   ];
 
-
-  selectedUser: any;
   headingSearch: string = '';
-  globalSearch: string = '';
-  wordingSearch:string = '';
-
+  idSearch: string = '';
+  wordingSearch: string = '';
 
   //search member to reassign
-  filterGlobal(event: any): void {
+  filterById(event: any): void {
     const value = event.target.value;
-    this.globalSearch = value;
-    this.table.filterGlobal(value, 'contains');
+    this.idSearch = value;
+    this.table.filter(value, 'id', 'contains');
   }
 
   filterByHeading(event: any): void {
@@ -98,23 +96,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const value = event.target.value;
     this.table.filter(value, 'wording', 'contains');
   }
-
-  onUserSelect(): void {
-    if (this.selectedUser) {
-      this.globalSearch = this.selectedUser.id;
-      this.headingSearch = this.selectedUser.name;
-
-    }
-
-  }
-
-  onUserUnselect(): void {
-    this.selectedUser = null;
-    this.globalSearch = '';
-    this.headingSearch = '';
-  }
-
-
 
 
   sort(arg0: string) {

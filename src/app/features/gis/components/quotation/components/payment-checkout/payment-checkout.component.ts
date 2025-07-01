@@ -19,8 +19,8 @@ const log = new Logger('PaymentCheckoutComponent');
 export class PaymentCheckoutComponent implements OnInit, OnDestroy {
   ipayRefNo: string
   currencyPrefix: string;
-  amount: number
-  paymentButtonLabel = "Initiate payment"
+  amount: number=50000
+  paymentButtonLabel = "Send STK push"
   action: 'initiate' | 'confirm' = 'initiate'
   checkoutId: string = null
   paymentButton: boolean = true
@@ -36,7 +36,7 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
     this.currencyPrefix = queryParams.get('currencyPrefix') || '';
     this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, atob(queryParams.get('tenant')));
     this.ipayRefNo = atob(queryParams.get('reference'))
-    this.amount = +atob(queryParams.get('amount'))
+    // this.amount = +atob(queryParams.get('amount'))
   }
 
   validPhoneNumber: boolean = true
@@ -69,7 +69,7 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
   paymentResponse() {
     this.failed = true
     this.paymentStatus = true;
-    this.paymentButtonLabel = 'Initiate payment'
+    this.paymentButtonLabel = 'Send STK push'
     this.action = 'initiate';
     this.checkoutId = null
     setTimeout(() => {
