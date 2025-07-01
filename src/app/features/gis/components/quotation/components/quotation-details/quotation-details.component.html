@@ -1,3 +1,4 @@
+
 <div class="mx-4 mt-3">
   <p class="title">Quotations:Quotation Details </p>
   <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
@@ -228,7 +229,7 @@
 
           <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
             <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRowIndex !== ri"
-              [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product) ">
+              [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product)">
 
               <!-- Product Dropdown Column -->
               <td class="flexible-header">
@@ -296,7 +297,7 @@
                   </button>
 
                   <button type="button" (click)="openProductDeleteModal(product)"
-                    class="p-button-sm p-button-text p-button-danger no-border" >
+                    class="p-button-sm p-button-text p-button-danger no-border">
                     Delete
                   </button>
                 </div>
@@ -321,41 +322,17 @@
         <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
           <div class="modal-content" id="addSectionModal">
             <div class="modal-body">
-              <h5 class="modal-title mt-2 add-product-title" id="editOtherDetailsLabel">{{
-                'gis.quotation.add_product' |
+              <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{
+                'gis.quotation.product_details' |
                 translate
                 }}
-
-                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
-
-
+                <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
               </h5>
               <div class="row mb-4" [formGroup]='quotationProductForm'>
                 <div class="col-sm-6 col-12">
                   <div class="form-group form-group-sm">
                     <br>
                     <label for="" class="quote-label">Product</label>
-                    <p-multiSelect 
-                    class="custom-multiselect"
-                    [options]="ProductDescriptionArray"
-                    formControlName="productCodes"
-                    optionLabel="description"
-                    filterBy="filterText"
-                    
-                    [filter]="true"
-                    [showClear]="true"
-                    placeholder="Select Product"
-
-                  
-                    
-                    
-                   
-                >
-  
-               
-                
-                
-                        <ng-template pTemplate="emptyfilter">
                     <p-multiSelect [options]="ProductDescriptionArray" formControlName="productCodes"
                       optionLabel="filterText" filterBy="filterText" display="chip" [filter]="true" [showClear]="true"
                       placeholder="Select Product">
@@ -363,7 +340,8 @@
                         <div class="text-danger px-2 py-1">
                           No products match your search.
                         </div>
-
+                      </ng-template>
+                    </p-multiSelect>
 
                     <div
                       *ngIf="quotationProductForm.get('productCodes')?.hasError('required') && quotationProductForm.get('productCodes')?.touched"
@@ -371,8 +349,8 @@
                       Product is required.
                     </div>
 
-                  
-
+                  </div>
+                </div>
 
                 <div class="col-sm-6 col-12">
                   <div class="form-group form-group-sm">
@@ -404,25 +382,8 @@
                     </div>
                   </div>
                 </div>
-              
-              <div class="mt-4 d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-secondary btn-lightblue" data-bs-dismiss="modal"
-                  id="cancelDetails">
-                  Cancel
-                </button>
-                <button type="button" class="btn btn-primary" id="saveDetails" (click)="submitForm()">
-                  {{ 'gis.quotation.save_details' | translate }}
-                </button>
-              </div>
-            
-          
-        
 
-        <button id="openProductButtonDelete" type="button" data-bs-toggle="modal" data-bs-target="#deleteProduct" hidden></button>
-
-        <!-- Delete Product Modal -->
-
-                <!-- <div class="mt-4 d-flex justify-content-end gap-2">
+                <div class="mt-4 d-flex justify-content-end gap-2">
                   <button type="button" class="btn btn-secondary btn-lightblue" data-bs-dismiss="modal"
                     id="cancelDetails">
                     Cancel
@@ -430,14 +391,14 @@
                   <button type="button" class="btn btn-primary" id="saveDetails" (click)="submitForm()">
                     {{ 'gis.quotation.save_details' | translate }}
                   </button>
-                </div> -->
+                </div>
 
-              
-            
+              </div>
+            </div>
 
-          
-        
-    
+          </div>
+        </div>
+      </div>
 
       <!-- Delete Product Modal -->
       <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
@@ -472,8 +433,8 @@
       </div>
 
 
-    <!-- </div>
-  </div> -->
+    </div>
+  </div>
 
 
   <!-- Clauses section -->
@@ -779,3 +740,4 @@
 
     <button class="btn btn-primary" (click)="getExistingQuotations()">Next</button>
   </div>
+</div>
