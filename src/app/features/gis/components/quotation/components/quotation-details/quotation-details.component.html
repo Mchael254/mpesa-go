@@ -330,15 +330,25 @@
                   <div class="form-group form-group-sm">
                     <br>
                     <label for="" class="quote-label">Product</label>
-                    <p-multiSelect [options]="ProductDescriptionArray" formControlName="productCodes"
-                      optionLabel="description"filterBy="filterText" display="chip" [filter]="true" [showClear]="true"
-                      placeholder="Select Product" class="custom-multiselect">
-                      <ng-template pTemplate="emptyfilter">
+                    <p-dropdown 
+                   [options]="ProductDescriptionArray" 
+                   formControlName="productCodes"
+                   optionLabel="description" 
+                   filterBy="filterText"
+                   [filter]="true"
+                   [showClear]="true"
+                   placeholder="Select Product"
+                   class="custom-multiselect">
+
+                    
+
+
+                      <ng-template pTemplate="empty">
                         <div class="text-danger px-2 py-1">
                           No products match your search.
                         </div>
                       </ng-template>
-                    </p-multiSelect>
+                    </p-dropdown>
 
                     <div
                       *ngIf="quotationProductForm.get('productCodes')?.hasError('required') && quotationProductForm.get('productCodes')?.touched"
@@ -461,7 +471,7 @@
 
     <!-- clauses table -->
     <div class="collapse" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
-      <p-table #dt [value]="dummyClauses" [rows]="3" [paginator]="true"
+      <p-table #dt [value]="productClause" [rows]="3" [paginator]="true"
         [globalFilterFields]="['id', 'heading', 'wording']" styleClass="p-datatable-striped">
 
         <ng-template pTemplate="header">
