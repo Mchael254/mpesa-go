@@ -585,7 +585,7 @@
           "groupId": "contact_details",
           "subGroupId": "contactPersonDetails",
           "fieldId": "mobileNumber",
-          "type": "text",
+          "type": "tel",
           "label": {
             "en": "mobile number",
             "ke": "",
@@ -945,7 +945,7 @@
           "groupId": "addressDetails",
           "subGroupId": "branchDetails",
           "fieldId": "landlineNumber",
-          "type": "text",
+          "type": "tel",
           "label": {
             "en": "landline number",
             "ke": "",
@@ -975,7 +975,7 @@
           "groupId": "addressDetails",
           "subGroupId": "branchDetails",
           "fieldId": "mobileNumber",
-          "type": "text",
+          "type": "tel",
           "label": {
             "en": "mobile number",
             "ke": "",
@@ -1065,7 +1065,7 @@
           "groupId": "financialDetails",
           "subGroupId": "payeeDetails",
           "fieldId": "mobile number",
-          "type": "text",
+          "type": "tel",
           "label": {
             "en": "mobile number",
             "ke": "",
@@ -1565,7 +1565,7 @@
           "groupId": "wealthAmlDetails",
           "subGroupId": "cr12Details",
           "fieldId": "dateOfBirth",
-          "type": "text",
+          "type": "date",
           "label": {
             "en": "date of birth",
             "ke": "",
@@ -1825,7 +1825,7 @@
           "groupId": "wealthAmlDetails",
           "subGroupId": "ownershipDetails",
           "fieldId": "mobileNumber",
-          "type": "text",
+          "type": "tel",
           "label": {
             "en": "mobile number",
             "ke": "",
@@ -3483,10 +3483,7 @@
             "ke": ""
           },
           "isMandatory": true,
-          "options": [
-            "Annual",
-            "Monthly"
-          ]
+          "options": []
         },
         {
           "groupId": "wealth_aml_details",
