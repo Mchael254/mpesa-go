@@ -98,9 +98,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
 
-  sort(arg0: string) {
-    throw new Error('Method not implemented.');
-  }
+  // sort(arg0: string) {
+  //   throw new Error('Method not implemented.');
+  // }
 
 
   @ViewChild(Table) private dataTable: Table;
@@ -866,11 +866,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
    */
   updateCoverToDate(date) {
     log.debug("Cover from date:", date)
+        const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
+    log.debug("Selected product:", selectedProduct)
+
     const coverFromDate = date;
     const formattedCoverFromDate = this.formatDate(coverFromDate);
     sessionStorage.setItem("selectedCoverFromDate", formattedCoverFromDate);
     log.debug('FORMATTED cover from DATE:', formattedCoverFromDate);
-    const productCode = this.quotationProductForm.value.productCode.code || this.selectedProduct?.code
+    const productCode = this.quotationProductForm.value.productCodes.code || this.selectedProduct?.code
     log.debug('Product code:', productCode);
     this.producSetupService.getCoverToDate(formattedCoverFromDate, productCode)
       .subscribe({
@@ -1332,7 +1335,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
 
     const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
-
+    const selectedProductCode = selectedProduct.code
+    log.debug('Selected product CODE',selectedProductCode)
     if (!this.productDetails) {
       this.productDetails = [];
     }
@@ -1366,7 +1370,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       wet: this.coverToDate
     });
 
-    this.quotationService.getProductClauses(this.productCode).subscribe(res => {
+    this.quotationService.getProductClauses(selectedProductCode).subscribe(res => {
       this.clauses = res
       // ✅ Ensure all mandatory clauses are selected on load
       this.mandatoryProductClause = this.clauses.filter(clause => clause.isMandatory === 'Y');
