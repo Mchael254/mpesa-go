@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
@@ -23,7 +23,7 @@ import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { forkJoin, mergeMap } from 'rxjs';
 import { QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
-import { Products } from '../../../setups/data/gisDTO';
+import { ProductClauseDTO, Products } from '../../../setups/data/gisDTO';
 
 const log = new Logger('QuotationDetails');
 
@@ -37,44 +37,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     throw new Error('Method not implemented.');
   }
   @ViewChild('dt') table!: Table;
-  dummyClauses = [
-    {
-      id: 1,
-      heading: 'Introduction',
-      wording: 'This agreement constitutes a legal contract between the parties.'
-    },
-    {
-      id: 2,
-      heading: 'Definitions',
-      wording: 'For purposes of this agreement, the following terms shall have the meanings set forth below.'
-    },
-    {
-      id: 3,
-      heading: 'Payment Terms',
-      wording: 'All invoices are payable within 30 days of receipt unless otherwise agreed in writing.'
-    },
-    {
-      id: 4,
-      heading: 'Confidentiality',
-      wording: 'Both parties agree to maintain the confidentiality of all proprietary information.'
-    },
-    {
-      id: 5,
-      heading: 'Termination',
-      wording: 'Either party may terminate this agreement with 30 days written notice.'
-    },
-    {
-      id: 6,
-      heading: 'Governing Law',
-      wording: 'This agreement shall be governed by the laws of the State of California.'
-    },
-    {
-      id: 7,
-      heading: 'Amendments',
-      wording: 'No amendment to this agreement shall be effective unless in writing and signed by both parties.'
-    }
-
-  ];
 
   headingSearch: string = '';
   idSearch: string = '';
@@ -177,8 +139,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   quotationProductForm: FormGroup
   existingQuotationDetails: any = undefined
   selectedClient: any = undefined
-  mandatoryProductClause:any;
-  productClause:any;
+  mandatoryProductClause: ProductClauseDTO[] = [];
+  nonMandatoryProductClause: ProductClauseDTO[] = [];
+  productClause: ProductClauseDTO[] = [];
 
   constructor(
     public bankService: BankService,
@@ -238,9 +201,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     ]
     this.selectedClient = JSON.parse(sessionStorage.getItem('client'))
     log.debug("product Form details", this.productDetails)
-
-
-
   }
 
   ngOnInit(): void {
@@ -256,10 +216,116 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       log.debug("load quotation details: ", this.quoteToEditData);
       this.loadClientQuotation();
     }
+
+    this.loadPersistedClauses();
   }
 
-  addClause() {
-    this.globalMessagingService.displaySuccessMessage('success', 'clause added successfully')
+  // Product Clauses
+  sessionClauses: any
+  getProductClause(product: any) {
+    const productCode = product.code || this.productCode;
+    this.productCode = productCode;
+    sessionStorage.setItem("selectedProductCode", productCode);
+
+    const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+    const productSessionData = allClausesMap[productCode];
+
+    if (productSessionData) {
+      log.debug("Loading clauses from session for product:", productCode);
+      this.productClause = productSessionData.productClause;
+      this.nonMandatoryProductClause = productSessionData.nonMandatoryProductClause;
+      this.clausesModified = productSessionData.clausesModified;
+      this.sessionClauses = [...this.productClause];
+      return;
+    }
+
+    this.quotationService.getProductClauses(productCode).subscribe(res => {
+      this.clauses = res;
+      this.mandatoryProductClause = res.filter(c => c.isMandatory === 'Y');
+      this.nonMandatoryProductClause = res.filter(c => c.isMandatory === 'N');
+      this.productClause = this.mandatoryProductClause;
+      this.sessionClauses = [...this.productClause];
+
+      allClausesMap[productCode] = {
+        productClause: this.productClause,
+        nonMandatoryProductClause: this.nonMandatoryProductClause,
+        clausesModified: false
+      };
+      sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+    });
+  }
+
+  private loadPersistedClauses() {
+    const storedProductCode = sessionStorage.getItem("selectedProductCode");
+    const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+
+    if (storedProductCode && allClausesMap[storedProductCode]) {
+      const productSessionData = allClausesMap[storedProductCode];
+
+      this.productCode = storedProductCode;
+      this.selectedRow = storedProductCode;
+
+      this.productClause = productSessionData.productClause;
+      this.nonMandatoryProductClause = productSessionData.nonMandatoryProductClause;
+      this.clausesModified = productSessionData.clausesModified;
+      this.sessionClauses = [...this.productClause];
+
+      log.debug("Loaded persisted data from allClausesMap:", {
+        productCode: this.productCode,
+        sessionClauses: this.sessionClauses,
+        nonMandatoryProductClause: this.nonMandatoryProductClause,
+        clausesModified: this.clausesModified
+      });
+    } else {
+      log.debug("No persisted data found for product:", storedProductCode);
+    }
+  }
+
+  showClauseModal: boolean = false;
+  clausesModified: boolean = false;
+  openClauseModal() {
+    const storedProductCode = sessionStorage.getItem("selectedProductCode");
+
+    if (storedProductCode) {
+      if ((!this.clauses || this.clauses.length === 0) && !this.clausesModified) {
+        this.getProductClause({ code: storedProductCode });
+      }
+
+      this.showClauseModal = true;
+      const modalElement = document.getElementById('addClause');
+      if (modalElement) {
+        const modal = new (window as any).bootstrap.Modal(modalElement);
+        modal.show();
+      }
+    } else {
+      this.globalMessagingService.displayErrorMessage('warning', 'You need to select a product first');
+    }
+  }
+  closeClauseModal() {
+    this.showClauseModal = false;
+  }
+
+  selectedClauses: any
+  addProductClauses() {
+    if (this.selectedClauses?.length) {
+      this.productClause = [...this.productClause, ...this.selectedClauses];
+      this.sessionClauses = [...this.productClause];
+      this.nonMandatoryProductClause = this.nonMandatoryProductClause.filter(
+        clause => !this.selectedClauses.some(sel => sel.shortDescription === clause.shortDescription)
+      );
+      this.clausesModified = true;
+
+      const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+      allClausesMap[this.productCode] = {
+        productClause: this.productClause,
+        nonMandatoryProductClause: this.nonMandatoryProductClause,
+        clausesModified: this.clausesModified
+      };
+      sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+
+      this.selectedClauses = [];
+      this.globalMessagingService.displaySuccessMessage("success", "Product clause added successfully")
+    }
   }
 
   selectedDummyClause: any = {
@@ -345,7 +411,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         }) => product.code === res?.code);
         if (selectedProduct) {
           this.quotationForm.controls['productCode'].setValue(selectedProduct);
-          this.getProductClause();
+          this.getProductClause(selectedProduct);
           this.checkMotorClass();
         }
       });
@@ -408,7 +474,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           }) => product.code === res?.code);
           if (selectedProduct) {
             this.quotationForm.controls['productCode'].setValue(selectedProduct);
-            this.getProductClause();
+            this.getProductClause(selectedProduct);
             this.checkMotorClass();
           }
         });
@@ -988,20 +1054,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
    * @param {Event} productCode - The event containing the target value representing the product code.
    * @return {void}
    */
-  getProductClause() {
-    this.productCode = this.quotationProductForm.value.productCode.code
-    sessionStorage.setItem("selectedProductCode", this.productCode);
-    this.quotationService.getProductClauses(this.productCode).subscribe(res => {
-      this.clauses = res
-      // ✅ Ensure all mandatory clauses are selected on load
-      this.mandatoryProductClause = this.clauses.filter(clause => clause.isMandatory === 'Y');
 
-      // ✅ Mark mandatory clauses as checked
-      this.clauses.forEach(clause => {
-        clause.checked = clause.isMandatory === 'Y';
-      });
-    })
-  }
+
 
   // 🔹 Function called when a checkbox is checked/unchecked
   onClauseSelectionChange(selectedClauseList: any) {
@@ -1233,7 +1287,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
   editingRowIndex: number | null = null;
 
-  
+
 
   onRowEditInit(index: number, row: any) {
     log.debug('onRowEditInit - selectedEditRowIndex before edit:', this.selectedEditRowIndex);
@@ -1249,17 +1303,17 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     // Only update if the product actually changed
     if (product.productCode?.code !== selected.code) {
       product.productCode = selected;
-  
+
       // Optional: save to session storage
       sessionStorage.setItem(`product_${rowIndex}`, JSON.stringify(product));
       console.log("Updated product:", product);
     }
   }
-  
 
-  
-  
-  
+
+
+
+
 
 
   onRowEditSave(product: any) {
@@ -1338,13 +1392,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
 
     if (selectedProduct && selectedProduct.description) {
-    this.productDetails.push({
-    productCode: selectedProduct,
-    productName: selectedProduct.description,
-    coverFrom: coverFromDate,
-    coverTo: coverToDate
-  });
-}
+      this.productDetails.push({
+        productCode: selectedProduct,
+        productName: selectedProduct.description,
+        coverFrom: coverFromDate,
+        coverTo: coverToDate
+      });
+    }
 
 
     this.productDetails = this.productDetails.filter(p => p?.productCode?.description);
@@ -1370,7 +1424,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       this.clauses = res
       // ✅ Ensure all mandatory clauses are selected on load
       this.mandatoryProductClause = this.clauses.filter(clause => clause.isMandatory === 'Y');
-      this.productClause=this.mandatoryProductClause
+      this.productClause = this.mandatoryProductClause
 
       // ✅ Mark mandatory clauses as checked
       this.clauses.forEach(clause => {
@@ -1400,18 +1454,25 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   onRowSelect(product: any) {
-    this.selectedRow = product;
-    log.debug("selected product :", product)
+    this.selectedRow = product.productCode;
+
+    // Reset modification flag when switching products
+    this.clausesModified = false;
+    sessionStorage.removeItem("clausesModified");
+
+    log.debug("selected product:", product.productCode);
+    this.getProductClause(this.selectedRow);
   }
+
 
   openProductDeleteModal(product: any) {
     if (!product) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select a product to continue');
       return;
     }
-  
+
     this.selectedRow = product;
-  
+
     setTimeout(() => {
       const deleteBtn = document.getElementById("openProductButtonDelete");
       if (deleteBtn) {
@@ -1421,37 +1482,37 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }
     }, 0);
   }
-  
+
 
   deleteProduct() {
     if (!this.selectedRow || !this.selectedRow.productCode?.code) {
       this.globalMessagingService.displayInfoMessage('Error', 'No product selected for deletion.');
       return;
     }
-  
+
     const productIndex = this.productDetails.findIndex(
       (product: any) => product.productCode.code === this.selectedRow.productCode.code
     );
-  
+
     if (productIndex !== -1) {
       this.productDetails.splice(productIndex, 1);
-  
+
       // Optional: Convert dates again if needed
       this.productDetails.forEach(product => {
         product.coverFrom = new Date(product.coverFrom);
         product.coverTo = new Date(product.coverTo);
       });
-  
+
       // Update session storage
       sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
-  
+
       this.globalMessagingService.displaySuccessMessage('Success', 'Product removed successfully.');
       log.debug('✅ Product deleted:', this.productDetails);
     } else {
       this.globalMessagingService.displayInfoMessage('Info', 'Product not found.');
     }
   }
-  
+
 
   updateCoverTo(product: any) {
     if (product.coverFrom) {
@@ -1538,7 +1599,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const selectedProduct = this.ProductDescriptionArray.find(p => p.code === event.code);
     if (selectedProduct) {
       product.productCode = selectedProduct;
-    log.debug("Updated product after dropdown change:", product);
+      log.debug("Updated product after dropdown change:", product);
     }
   }
 
