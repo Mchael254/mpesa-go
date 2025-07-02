@@ -147,10 +147,24 @@ export class PdSlipPreviewComponent implements OnInit {
         this.filePath = window.URL.createObjectURL(blob);
       },
       error: (err) => {
+        // Display a clear, reassuring message to the user.
+        // We use a success message because the SAVE part was successful.
+          // 1. Safely extract the backend error message. It checks for the most common
+        //    formats and provides a generic fallback.
+        const backendError = err.error?.msg || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        // 2. Combine your user-friendly message with the backend error using a template literal.
+        //    Using `\n\n` creates a nice line break for readability in the message box.
+        const fullMessage = `The receipt was saved successfully, but the acknowledgment slip could not be generated. You can find and print it later from the system.\n\nReason: ${backendError}`;
+         // 3. Use `displayErrorMessage` for this specific failure and pass the combined message.
+          // 3. Use `displayErrorMessage` for this specific failure and pass the combined message.
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.status || 'an error occured processing your request'
+          'Error Generating Acknowledgment slip ', // A more accurate title
+          fullMessage
         );
+        // 4. Clean up and navigate the user to a safe screen (this part remains the same)
+        this.receiptDataService.clearReceiptData();
+        this.receiptDataService.clearFormState();
+        this.router.navigate(['/home/fms/receipt-capture']);
       },
     });
   }
