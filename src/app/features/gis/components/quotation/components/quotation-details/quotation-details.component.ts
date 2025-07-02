@@ -60,9 +60,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
 
-  sort(arg0: string) {
-    throw new Error('Method not implemented.');
-  }
+  // sort(arg0: string) {
+  //   throw new Error('Method not implemented.');
+  // }
 
 
   @ViewChild(Table) private dataTable: Table;
@@ -932,11 +932,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
    */
   updateCoverToDate(date) {
     log.debug("Cover from date:", date)
+        const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
+    log.debug("Selected product:", selectedProduct)
+
     const coverFromDate = date;
     const formattedCoverFromDate = this.formatDate(coverFromDate);
     sessionStorage.setItem("selectedCoverFromDate", formattedCoverFromDate);
     log.debug('FORMATTED cover from DATE:', formattedCoverFromDate);
-    const productCode = this.quotationProductForm.value.productCode.code || this.selectedProduct?.code
+    const productCode = this.quotationProductForm.value.productCodes.code || this.selectedProduct?.code
     log.debug('Product code:', productCode);
     this.producSetupService.getCoverToDate(formattedCoverFromDate, productCode)
       .subscribe({
@@ -1386,7 +1389,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
 
     const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
-
+    const selectedProductCode = selectedProduct.code
+    log.debug('Selected product CODE',selectedProductCode)
     if (!this.productDetails) {
       this.productDetails = [];
     }
@@ -1420,7 +1424,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       wet: this.coverToDate
     });
 
-    this.quotationService.getProductClauses(this.productCode).subscribe(res => {
+    this.quotationService.getProductClauses(selectedProductCode).subscribe(res => {
       this.clauses = res
       // ✅ Ensure all mandatory clauses are selected on load
       this.mandatoryProductClause = this.clauses.filter(clause => clause.isMandatory === 'Y');
@@ -1463,26 +1467,26 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("selected product:", product.productCode);
     this.getProductClause(this.selectedRow);
   }
-
-
-  openProductDeleteModal(product: any) {
-    if (!product) {
-      this.globalMessagingService.displayInfoMessage('Error', 'Select a product to continue');
-      return;
-    }
-
-    this.selectedRow = product;
-
-    setTimeout(() => {
-      const deleteBtn = document.getElementById("openProductButtonDelete");
-      if (deleteBtn) {
-        deleteBtn.click(); // opens the modal
-      } else {
-        console.error("❌ Button with ID 'openProductButtonDelete' not found in DOM.");
-      }
-    }, 0);
+  
+  
+openProductDeleteModal(product: any) {
+  if (!product) {
+    this.globalMessagingService.displayInfoMessage('Error', 'Select a product to continue');
+    return;
   }
-
+  
+  this.selectedRow = product;
+  
+  // Directly open the modal using Bootstrap
+  const modalElement = document.getElementById('deleteProduct');
+  if (modalElement) {
+    const modal = new (window as any).bootstrap.Modal(modalElement);
+    modal.show();
+  } else {
+    console.error("❌ Modal with ID 'deleteProduct' not found in DOM.");
+  }
+}
+  
 
   deleteProduct() {
     if (!this.selectedRow || !this.selectedRow.productCode?.code) {

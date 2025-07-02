@@ -148,7 +148,7 @@ export class QuotationsService {
   }
 
   generateQuotationReport(data: QuotationReportDto): Observable<any> {
-    return this.api.POST<any>(`v1/reports/quotation-report`, JSON.stringify(data), API_CONFIG.REPORT_SERVICE_BASE_URL);
+    return this.api.POST<any>(`api/v1/reports/quotation-report`, JSON.stringify(data), API_CONFIG.REPORT_SERVICE_BASE_URL);
   }
 
   /**

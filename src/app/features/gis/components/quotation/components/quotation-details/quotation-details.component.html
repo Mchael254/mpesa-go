@@ -359,7 +359,7 @@
                     <label for="coverFromDate" class="quote-label">Cover From</label><br>
                     <p-calendar formControlName="wef" name="wefDate" id="coverFromDate" inputId="coverFromDate"
                       [dateFormat]="dateFormat" inputStyleClass='form-control' (onSelect)="updateCoverToDate($event)"
-                      [minDate]="minDate">
+                      [minDate]="minDate"  [showIcon]="true">
                     </p-calendar>
                     <div
                       *ngIf="quotationProductForm.get('wef').hasError('required') && quotationProductForm.get('wef').touched"
@@ -374,7 +374,7 @@
                     <br>
                     <label for="coverToDate" class="quote-label">Cover to</label><br>
                     <p-calendar formControlName="wet" name="wetDate" id="coverToDate" inputId="coverToDate"
-                      [dateFormat]="dateFormat" inputStyleClass='form-control' [minDate]="minDate">
+                      [dateFormat]="dateFormat" inputStyleClass='form-control' [minDate]="minDate"   [showIcon]="true">
                     </p-calendar>
                     <div
                       *ngIf="quotationProductForm.get('wet').hasError('required') && quotationProductForm.get('wet').touched"
@@ -405,7 +405,10 @@
       <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content" id="deleteProduct">
+          <div class="modal-content position-relative" id="deleteProduct">
+             <!-- Close button -->
+             <button type="button" class="btn-close  custom-close  position-absolute top-0 end-0 m-3 z-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      
             <div class="modal-body ">
               <p class="deleteMessage mt-4 mb-4">{{
                 'gis.policy.are_you_sure_you_want_to_delete' |
