@@ -1407,24 +1407,25 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.selectedRow = product;
     log.debug("selected product :", product)
   }
-
-  openProductDeleteModal(product: any) {
-    if (!product) {
-      this.globalMessagingService.displayInfoMessage('Error', 'Select a product to continue');
-      return;
-    }
   
-    this.selectedRow = product;
   
-    setTimeout(() => {
-      const deleteBtn = document.getElementById("openProductButtonDelete");
-      if (deleteBtn) {
-        deleteBtn.click(); // opens the modal
-      } else {
-        console.error("❌ Button with ID 'openProductButtonDelete' not found in DOM.");
-      }
-    }, 0);
+openProductDeleteModal(product: any) {
+  if (!product) {
+    this.globalMessagingService.displayInfoMessage('Error', 'Select a product to continue');
+    return;
   }
+  
+  this.selectedRow = product;
+  
+  // Directly open the modal using Bootstrap
+  const modalElement = document.getElementById('deleteProduct');
+  if (modalElement) {
+    const modal = new (window as any).bootstrap.Modal(modalElement);
+    modal.show();
+  } else {
+    console.error("❌ Modal with ID 'deleteProduct' not found in DOM.");
+  }
+}
   
 
   deleteProduct() {
