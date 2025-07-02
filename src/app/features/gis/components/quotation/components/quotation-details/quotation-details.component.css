@@ -54,16 +54,42 @@
 }
 
 ::ng-deep .p-calendar {
-  height: 33px !important;
+  position: relative;
   width: 100%;
-  border-radius: 4px !important;
-
-
 }
 
-::ng-deep .p-calendar-w-btn .p-inputtext {
-  color: #000;
-  font-size: 14px;
+::ng-deep .p-calendar .p-inputtext {
+  padding-right: 2.5rem;
+  /* Add space for the icon */
+}
+
+::ng-deep .p-calendar .p-datepicker-trigger {
+  position: absolute;
+  top: 50%;
+  right: 0.01rem;
+  transform: translateY(-50%);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #00529B;
+  /* Blue icon */
+  padding: 0;
+  z-index: 2;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+::ng-deep .p-calendar .p-datepicker-trigger .p-button-icon {
+  font-size: 2rem;
+}
+
+
+::ng-deep .p-calendar {
+  height: 30px !important;
+  width: 350px;
+
 }
 
 ::ng-deep .p-datepicker table td>span {
