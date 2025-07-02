@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -20,13 +20,14 @@ import { VehicleModelService } from '../../../setups/services/vehicle-model/vehi
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, QuotationDetails, quotationRisk, RiskInformation, riskSection } from '../../data/quotationsDTO';
+import { Clause, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, riskSection } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { forkJoin, switchMap } from 'rxjs';
+import { forkJoin, map, Observable, switchMap } from 'rxjs';
 import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from "ngx-currency";
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import * as bootstrap from 'bootstrap';
 
 const log = new Logger('RiskClausesDetailsComponent');
 
@@ -56,6 +57,8 @@ export class RiskDetailsComponent {
   @Input() selectedProduct!: any;
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
   @ViewChild('sectionTable') sectionTable!: Table;
+  @ViewChild('addRiskModal') modalElementRef!: ElementRef;
+  private modalInstance: any;
 
   riskDetails: RiskInformation[] = [];
   riskDetailsForm: FormGroup;
@@ -151,6 +154,19 @@ export class RiskDetailsComponent {
     selectProductCode: any
     showOtherSscheduleDetails: boolean = false;
     editRiskDetailsForm: FormGroup;
+      formContent: any;
+  formData: {
+    type: string;
+    name: string;
+    max: number
+    min: number
+    isMandatory: string;
+    disabled: boolean;
+    readonly: boolean;
+    regexPattern: string;
+    placeholder: string;
+    label: string;
+  }[];
 
   constructor(
     private router: Router,
@@ -201,6 +217,7 @@ export class RiskDetailsComponent {
       console.log("Selected Product-risk details:", this.selectedProduct);
       const selectedProductCode = this.selectedProduct.productCode
       this.selectedProductCode = selectedProductCode
+      this.loadSelectedProductRiskFields(selectedProductCode)
       this.getProductSubclass(selectedProductCode)
       this.checkMotorClass()
       const quoatationNo = this.selectedProduct.quotationNo
@@ -214,11 +231,12 @@ export class RiskDetailsComponent {
     }
   }
   ngOnInit(): void {
+    this.riskDetailsForm = new FormGroup({});
+
     this.dateFormat = sessionStorage.getItem('dateFormat');
     log.debug("Date Formart", this.dateFormat)
     this.getVehicleMake();
-    this.createRiskDetailsForm();
-    this.updateRiskDetailsForm();
+    // this.updateRiskDetailsForm();
     this.createScheduleDetailsForm();
     this.createSectionDetailsForm();
     const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
@@ -238,6 +256,13 @@ export class RiskDetailsComponent {
     };
   }
   ngOnDestroy(): void { }
+    ngAfterViewInit() {
+    this.modalInstance = new bootstrap.Modal(this.modalElementRef.nativeElement, {
+      backdrop: 'static',
+      keyboard: false
+    });
+  }
+
   fetchQuotationDetails(quotationCode: number) {
     log.debug("Quotation Number tot use:", quotationCode)
     this.quotationService.getQuotationDetails(quotationCode)
@@ -276,6 +301,47 @@ export class RiskDetailsComponent {
 
       })
   }
+  openAddRiskModal() {
+    this.modalInstance?.show();
+  }
+   
+loadSelectedProductRiskFields(productCode: number): void {
+  const formFieldDescription = `detailed-quotation-risk-${productCode}`;
+
+  this.quotationService.getFormFields(formFieldDescription).subscribe({
+    next: (response) => {
+      const fields = response?.[0]?.fields || [];
+
+      this.formContent = response;
+      this.formData = fields;
+
+      log.debug(this.formContent, 'Form-content');
+      log.debug(this.formData, 'formData is defined here');
+
+      // Remove existing dynamic controls
+      Object.keys(this.riskDetailsForm.controls).forEach((controlName) => {
+        const control = this.riskDetailsForm.get(controlName) as any;
+        if (control?.metadata?.dynamic) {
+          this.riskDetailsForm.removeControl(controlName);
+          log.debug(`Removed dynamic control: ${controlName}`);
+        }
+      });
+
+      // Add new dynamic controls
+      this.formData.forEach((field) => {
+        const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
+        const formControl = new FormControl('', validators);
+        (formControl as any).metadata = { dynamic: true };
+        this.riskDetailsForm.addControl(field.name, formControl);
+      });
+
+      log.debug(this.riskDetailsForm.value, 'Final Form Value');
+    },
+    error: (err) => {
+      log.error(err, 'Failed to load risk fields');
+    }
+  });
+}
 
   loadClientDetails() {
     this.clientService.getClientById(this.insuredCode).subscribe((data: any) => {
@@ -306,43 +372,7 @@ export class RiskDetailsComponent {
 
     });
   }
-  createRiskDetailsForm() {
 
-    this.riskDetailsForm = this.fb.group({
-      insuredCode: [null],
-      location: [''],
-      town: [''],
-      ncdLevel: [null],
-      coverTypeCode: [null, Validators.required],
-      addEdit: [''],
-      quotationRevisionNumber: [null],
-      code: [null],
-      quotationProductCode: [null],
-      quotationRiskNo: [''],
-      quotationCode: [null],
-      productCode: [null],
-      propertyId: [this.storedRiskFormDetails ? this.storedRiskFormDetails.propertyId : '', Validators.required],
-      value: [null],
-      coverTypeShortDescription: [''],
-      premium: [null],
-      subclassCode: [null, Validators.required],
-      itemDesc: [this.storedRiskFormDetails ? this.storedRiskFormDetails.itemDesc : '', Validators.required],
-      binderCode: [null, Validators.required],
-      wef: ['', Validators.required],
-      wet: ['', Validators.required],
-      commissionRate: [null],
-      commissionAmount: [null],
-      prpCode: [null],
-      clientShortDescription: [''],
-      annualPremium: [null],
-      coverDays: [null],
-      clientType: [''],
-      prospectCode: [null],
-      coverTypeDescription: [''],
-      vehicleMake: [''],
-      vehicleModel: ['']
-    });
-  }
   updateRiskDetailsForm() {
 
     this.editRiskDetailsForm = this.fb.group({

@@ -22,7 +22,7 @@ import { QuotationsService } from '../../services/quotations/quotations.service'
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { QuotationDetails, QuotationProduct } from '../../data/quotationsDTO';
-
+import {RiskDetailsComponent} from '../risk-details/risk-details.component'
 
 const log = new Logger('RiskCentreComponent');
 
@@ -33,6 +33,7 @@ const log = new Logger('RiskCentreComponent');
 })
 export class RiskCentreComponent {
   @ViewChild('scrollContainer', { static: false }) scrollContainer!: ElementRef;
+  @ViewChild(RiskDetailsComponent) RiskDetailsComponent!: RiskDetailsComponent;
 
 
   steps = quoteStepsData;
@@ -42,6 +43,8 @@ export class RiskCentreComponent {
   insuredCode: number;
   passedProductList: QuotationProduct[] = [];
   selectedProduct: any;
+      isCollapsed = false;
+
   constructor(
     private router: Router,
     private messageService: MessageService,
@@ -77,6 +80,67 @@ export class RiskCentreComponent {
       this.fetchQuotationDetails(this.quotationCode)
     }
   }
+    ngOnInit(): void {
+this.passedProductList= [
+  {
+    code: 1,
+    productCode: 8293,
+    quotationCode: 2001,
+    productShortDescription: 'Private Motor',
+    premium: 12000,
+    wef: '2025-07-01',
+    wet: '2026-06-30',
+    totalSumInsured: 500000,
+    binder: 'BIND123',
+    agentShortDescription: 'Agent A',
+    productName: 'Comprehensive Motor',
+    converted: 'No',
+    taxInformation: [],
+    riskInformation: [],
+    limitsOfLiability: []
+  },
+  {
+    code: 2,
+    productCode: 8173,
+    quotationCode: 2002,
+    productShortDescription: 'Domestic Package',
+    premium: 8000,
+    wef: '2025-07-01',
+    wet: '2026-06-30',
+    totalSumInsured: 300000,
+    binder: 'BIND456',
+    agentShortDescription: 'Agent B',
+    productName: 'Home Insurance',
+    converted: 'Yes',
+    taxInformation: [],
+    riskInformation: [],
+    limitsOfLiability: []
+  },
+  {
+    code: 3,
+    productCode: 1003,
+    quotationCode: 2003,
+    productShortDescription: 'Travel Cover',
+    premium: 2500,
+    wef: '2025-07-01',
+    wet: '2025-12-31',
+    totalSumInsured: 100000,
+    binder: 'BIND789',
+    agentShortDescription: 'Agent C',
+    productName: 'Travel Insurance',
+    converted: 'No',
+    taxInformation: [],
+    riskInformation: [],
+    limitsOfLiability: []
+  }
+];
+            this.selectedProduct = this.passedProductList[0];
+
+    }
+
+toggleSection() {
+  this.isCollapsed = !this.isCollapsed;
+}
   fetchQuotationDetails(quoatationCode: number) {
     log.debug("Quotation code tot use:", quoatationCode)
     this.quotationService.getQuotationDetails(quoatationCode)
@@ -115,4 +179,6 @@ export class RiskCentreComponent {
   scrollRight(): void {
     this.scrollContainer.nativeElement.scrollBy({ left: 150, behavior: 'smooth' });
   }
+    showAddRiskModal() {
+  this.RiskDetailsComponent.openAddRiskModal();  }
 }

@@ -7,12 +7,12 @@
     },
   
     {
-      "number": 3,
+      "number": 2,
       "title": "Risk-section details",
       "link": "/home/gis/quotation/risk-center"
     },
     {
-        "number": 4,
+        "number": 3,
         "title": "Quotation summary",
         "link": "/home/gis/quotation/quotation-summary"
       }
