@@ -39,6 +39,7 @@ export interface FieldModel {
   isMandatory: boolean;
   options: any[];
   doc?: any;
+  appliesTo: "I" | "C" | "ALL";
 }
 
 export interface Validation {

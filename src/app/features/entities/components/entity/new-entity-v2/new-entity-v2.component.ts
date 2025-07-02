@@ -81,6 +81,11 @@ export class NewEntityV2Component implements OnInit {
 
   wealthAmlFormFields: FieldModel[] = [];
   corporateContactDetailsFormField: FieldModel[] = [];
+  corporateAddressDetailsFormField: FieldModel[] = [];
+  corporateFinancialDetailsFormField: FieldModel[] = [];
+  corporateWealthAmlFormFieldsDetailsFormField: FieldModel[] = [];
+  corporateWealthCR12DetailsFormField: FieldModel[] = [];
+  corporateWealthOwnershipDetailsFormField: FieldModel[] = [];
   requiredDocuments: RequiredDocumentDTO[];
   privacyPolicyFormFields: FieldModel[] = [];
   payeeDetailsFormFields: FieldModel[] = [];
@@ -310,7 +315,12 @@ export class NewEntityV2Component implements OnInit {
     this.formGroupSections = formGroupSections;
     this.addFieldsToSections(formGroupSections);
     this.wealthAmlFormFields = fields.filter(field => field.subGroupId === 'wealth_aml_details');
-    this.corporateContactDetailsFormField = fields.filter(field => field.subGroupId === 'contact_person_details');
+    this.corporateContactDetailsFormField = fields.filter(field => field.subGroupId === 'contactPersonDetails');
+    this.corporateAddressDetailsFormField = fields.filter(field => field.subGroupId === 'branchDetails');
+    this.corporateFinancialDetailsFormField = fields.filter(field => field.subGroupId === 'payeeDetails');
+    this.corporateWealthAmlFormFieldsDetailsFormField = fields.filter(field => field.subGroupId === 'amlDetails');
+    this.corporateWealthCR12DetailsFormField = fields.filter(field => field.subGroupId === 'cr12Details');
+    this.corporateWealthOwnershipDetailsFormField = fields.filter(field => field.subGroupId === 'ownershipDetails');
     this.privacyPolicyFormFields = fields.filter(field => field.subGroupId === 'privacy_policy');
     this.payeeDetailsFormFields = fields.filter(field => field.subGroupId === 'payee_details');
     this.branchDetailsFormFields = fields.filter(field => field.subGroupId === 'branch_details');
@@ -830,6 +840,10 @@ export class NewEntityV2Component implements OnInit {
         log.error(`could not fetch: `, err);
       }
     })
+  }
+
+  fetchSavedDetails(eventData:any) {
+    log.debug('Save details modal data:', eventData);
   }
 
 

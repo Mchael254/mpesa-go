@@ -17,6 +17,7 @@ import { IdentityModeDTO } from '../../data/entityDto';
 import { ApiService } from '../../../../shared/services/api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
 import { AccountTypeDTO } from '../../data/AgentDTO';
+import {AccountsEnum} from "../../data/enums/accounts-enum";
 
 const log = new Logger('AccountService');
 
@@ -516,6 +517,34 @@ export class AccountService {
       `identity-modes`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
       params
+    );
+  }
+
+  getPremiumFrequencies(): Observable<AccountsEnum[]> {
+    return this.api.GET<AccountsEnum[]>(
+      `/reference-enum/premium-frequencies`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  getEmploymentTypes(): Observable<AccountsEnum[]> {
+    return this.api.GET<AccountsEnum[]>(
+      `/reference-enum/employment-types`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  getPreferredCommunicationChannels(): Observable<AccountsEnum[]> {
+    return this.api.GET<AccountsEnum[]>(
+      `/reference-enum/preferred-communication-channels`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  getInsurancePurpose(): Observable<any> {
+    return this.api.GET<any>(
+      `/insurance-purposes`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
 }
