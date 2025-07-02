@@ -307,41 +307,78 @@
             <!--{{ group | json}}-->
             <div *ngIf="group.groupId === 'wealth_aml_details'">
               <app-dynamic-setup-table
-                [tableTitle]=""
-                [addButtonText]="group.subGroup[0].addButtonText[language]"
+                [tableTitle]="group.subGroup[0]?.label"
+                [addButtonText]="group.subGroup[0]?.addButtonText[language]"
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="wealthAmlFormFields"
                 [subGroupId]="'wealth_aml_details'"
+                (saveDetailsData)="fetchSavedDetails($event)"
               ></app-dynamic-setup-table>
             </div>
 
             <div *ngIf="group.groupId === 'contact_details' && category === 'corporate' && corporateContactDetailsFormField.length > 0">
               <app-dynamic-setup-table
-                [tableTitle]="'contact person details'"
-                [addButtonText]="'Add Contact details'"
+                [tableTitle]="group.subGroup[1]?.label"
+                [addButtonText]="group.subGroup[1]?.addButtonText[language]"
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateContactDetailsFormField"
-                [subGroupId]="'contact_person_details'"
+                [subGroupId]="'contactPersonDetails'"
+                (saveDetailsData)="fetchSavedDetails($event)"
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'address_details' && category === 'corporate'">
+            <div *ngIf="group.groupId === 'addressDetails' && category === 'corporate'">
               <app-dynamic-setup-table
-                [tableTitle]="'Branch Details'"
-                [addButtonText]="'Add branch'"
+                [tableTitle]="group.subGroup[1]?.label"
+                [addButtonText]="group.subGroup[1]?.addButtonText[language]"
                 [emptyTableMessage]="'No record found!'"
-                [formFields]="branchDetailsFormFields"
-                [subGroupId]="'branch_details'"
+                [formFields]="corporateAddressDetailsFormField"
+                [subGroupId]="'branchDetails'"
+                (saveDetailsData)="fetchSavedDetails($event)"
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'financial_details' && category === 'corporate'">
+            <div *ngIf="group.groupId === 'financialDetails' && category === 'corporate'">
               <app-dynamic-setup-table
-                [tableTitle]="'Payee Details'"
-                [addButtonText]="'Add payee'"
+                [tableTitle]="group.subGroup[1]?.label"
+                [addButtonText]="group.subGroup[1]?.addButtonText[language]"
                 [emptyTableMessage]="'No record found!'"
-                [formFields]="payeeDetailsFormFields"
-                [subGroupId]="'payee_details'"
+                [formFields]="corporateFinancialDetailsFormField"
+                [subGroupId]="'payeeDetails'"
+                (saveDetailsData)="fetchSavedDetails($event)"
+              ></app-dynamic-setup-table>
+            </div>
+
+            <div *ngIf="group.groupId === 'wealthAmlDetails' && category === 'corporate'">
+              <app-dynamic-setup-table
+                [tableTitle]="group.subGroup[0]?.label"
+                [addButtonText]="group.subGroup[0]?.addButtonText[language]"
+                [emptyTableMessage]="'No record found!'"
+                [formFields]="corporateWealthAmlFormFieldsDetailsFormField"
+                [subGroupId]="'amlDetails'"
+                (saveDetailsData)="fetchSavedDetails($event)"
+              ></app-dynamic-setup-table>
+            </div>
+
+            <div *ngIf="group.groupId === 'wealthAmlDetails' && category === 'corporate'">
+              <app-dynamic-setup-table
+                [tableTitle]="group.subGroup[1]?.label"
+                [addButtonText]="group.subGroup[1]?.addButtonText[language]"
+                [emptyTableMessage]="'No record found!'"
+                [formFields]="corporateWealthCR12DetailsFormField"
+                [subGroupId]="'cr12Details'"
+                (saveDetailsData)="fetchSavedDetails($event)"
+              ></app-dynamic-setup-table>
+            </div>
+
+            <div *ngIf="group.groupId === 'wealthAmlDetails' && category === 'corporate'">
+              <app-dynamic-setup-table
+                [tableTitle]="group.subGroup[2]?.label"
+                [addButtonText]="group.subGroup[2]?.addButtonText[language]"
+                [emptyTableMessage]="'No record found!'"
+                [formFields]="corporateWealthOwnershipDetailsFormField"
+                [subGroupId]="'ownershipDetails'"
+                (saveDetailsData)="fetchSavedDetails($event)"
               ></app-dynamic-setup-table>
             </div>
 
