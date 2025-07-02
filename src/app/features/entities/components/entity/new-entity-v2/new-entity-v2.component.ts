@@ -3,7 +3,7 @@ import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
 import {HttpClient} from "@angular/common/http";
 import {FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
 import {Logger, UtilService} from "../../../../../shared/services";
-import {Condition, FieldModel, FormConfig, Group} from "../../../data/form-config.model";
+import { FieldModel, FormConfig, Group} from "../../../data/form-config.model";
 import {RegexErrorMessages} from "../../../data/field-error.model";
 import {MaritalStatusService} from "../../../../../shared/services/setups/marital-status/marital-status.service";
 import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
@@ -18,11 +18,10 @@ import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-in
 import {RequiredDocumentDTO} from "../../../../crm/data/required-document";
 import {RequiredDocumentsService} from "../../../../crm/services/required-documents.service";
 import {ClientTypeService} from "../../../../../shared/services/setups/client-type/client-type.service";
-import {ClientTypeDTO} from "../../../data/ClientDTO";
-import {SystemsService} from "../../../../../shared/services/setups/systems/systems.service";
-import {SystemRole} from "../../../../../shared/data/common/system-role";
+import { ClientTitlesDto, ClientTypeDTO} from "../../../data/ClientDTO";
 import {EntityService} from "../../../services/entity/entity.service";
 import {PartyTypeDto} from "../../../data/partyTypeDto";
+import {ClientService} from "../../../services/client/client.service";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -68,13 +67,17 @@ export class NewEntityV2Component implements OnInit {
   countries: CountryDto[] = [];
   roles: PartyTypeDto[] = [];
   clientTypes: ClientTypeDTO[] = [];
+  clientTitles: ClientTitlesDto[] = [];
 
-  selectedMaritalStatus: MaritalStatus;
+  selectedMaritalStatus: MaritalStatus = null;
   selectedPaymentMode: PaymentModesDto;
-  selectedBank: BankDTO;
+  selectedBank: BankDTO = null;
   selectedBankBranch: BankBranchDTO;
-  selectedCountry: CountryDto = null;
-  selectedRole: PartyTypeDto;
+  selectedAddressCountry: CountryDto = null;
+  selectedCitizenshipCountry: CountryDto = null;
+  selectedRole: PartyTypeDto = null;
+  selectedClientTitle: ClientTitlesDto = null;
+  // selectedIdType: ClientTitlesDto = null;
 
   wealthAmlFormFields: FieldModel[] = [];
   corporateContactDetailsFormField: FieldModel[] = [];
@@ -82,6 +85,8 @@ export class NewEntityV2Component implements OnInit {
   privacyPolicyFormFields: FieldModel[] = [];
   payeeDetailsFormFields: FieldModel[] = [];
   branchDetailsFormFields: FieldModel[] = [];
+
+  shouldUploadProfilePhoto: boolean = false;
 
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
   protected readonly CountryISO = CountryISO;
@@ -99,8 +104,8 @@ export class NewEntityV2Component implements OnInit {
     private globalMessagingService: GlobalMessagingService,
     private requiredDocumentsService: RequiredDocumentsService,
     private clientTypeService: ClientTypeService,
-    private systemsService: SystemsService,
-    private entityService: EntityService
+    private entityService: EntityService,
+    private clientService: ClientService,
   ) {
 
     this.uploadForm = this.fb.group({
@@ -221,17 +226,24 @@ export class NewEntityV2Component implements OnInit {
    * @param fields
    */
   assignUploadFieldsToGroupByType(fields: FieldModel[]): void {
-    let visibleFormFields = fields.filter(field => field.visible); // todo: create Model for FormFields
+    let visibleFormFields = fields.filter((field: FieldModel) => field.visible);
 
-    this.uploadGroupSections = { selects: [], buttons: []}
+    this.uploadGroupSections = {
+      selects: [],
+      docs: [],
+      photo: []
+    }
 
-    visibleFormFields.forEach(field => {
+    visibleFormFields.forEach((field: FieldModel) => {
       if (field.type === 'select') {
         this.uploadGroupSections.selects.push(field);
       } else if (field.type === 'button') {
-       this.uploadGroupSections.buttons.push(field);
+       this.uploadGroupSections.docs.push(field);
+      } else if (field.type === 'photo') {
+        this.uploadGroupSections.photo.push(field);
       }
     });
+    log.info(`upload group sections >>> `, this.uploadGroupSections)
   }
 
 
@@ -318,21 +330,132 @@ export class NewEntityV2Component implements OnInit {
    */
   saveDetails() : void {
     const formValues = this.entityForm.getRawValue();
+    const uploadFormValues = this.uploadForm.getRawValue();
+
+    const requiredDocs = this.uploadGroupSections.docs.map((doc) => {
+      return {
+        name: doc.requiredDocumentName,
+        code: doc.requiredDocumentCode,
+        file: doc.file
+      }
+    });
+
+    const upperDetails = {
+      ...uploadFormValues,
+      profileImage: this.uploadGroupSections.photo[0].file,
+      requiredDocs
+    }
+
 
     // log.info(`pattern validation errors >>>`, this.regexErrorMessages) // todo: traverse this and check if any validation failed
-    if (this.entityForm.valid) {
-      const filtered = Object.fromEntries(
+    if (this.entityForm.valid || true) {
+      /*const filtered = Object.fromEntries(
         Object.entries(formValues).filter(([_, value]) => value != null && value !== '')
-      );
+      );*/
 
-      const primeIdentityPayload = formValues.prime_identity;
-      const contactDetailsPayload = formValues.contact_details;
-      log.info(`form details >>> `, primeIdentityPayload, contactDetailsPayload);
+      if (uploadFormValues.category === 'individual') {
+        this.saveIndividualClient(formValues, upperDetails);
+      } else if (uploadFormValues.category === 'corporate') {}
 
     } else {
       this.entityForm.markAllAsTouched(); // show validation errors
     }
 
+  }
+
+  saveIndividualClient(formValues, upperDetails): void {
+
+    const payloadObject = {
+      ...formValues.prime_identity,
+      ...formValues.contact_details,
+      ...formValues.privacy_policy,
+      ...formValues.residential_address_details,
+      ...formValues.wealth_aml_details,
+      ...formValues.address_details,
+      ...formValues.financial_details,
+      ...upperDetails
+    }
+
+    const address = {
+      boxNumber: "10300",
+      countryId: this.selectedAddressCountry?.id,
+      houseNumber: payloadObject.houseNo,
+      physicalAddress: payloadObject.physicalAddress,
+      postalCode: payloadObject.postalCode,
+      road: payloadObject.road,
+      townId: payloadObject.cityTown,
+      stateId: payloadObject.countyState,
+      utilityAddressProof: null,
+      isUtilityAddress: "N"
+    }
+
+    const contactDetails = {
+      emailAddress: payloadObject.email,
+      phoneNumber: payloadObject.telNumber?.internationalNumber,
+      smsNumber: payloadObject.smsNumber?.internationalNumber,
+      titleId: this.selectedClientTitle.id,
+      contactChannel: payloadObject.preferedChannel,
+      websiteUrl: payloadObject.websiteUrl,
+      socialMediaUrl: payloadObject.socialMediaUrl,
+    }
+
+    const paymentDetails = {
+      accountNumber: payloadObject.accountNumber,
+      bankBranchId: payloadObject.branchId,
+      currencyId: payloadObject.currencyId,
+      preferedChannel: this.selectedPaymentMode?.description,
+      mpayno: null,
+      iban: null,
+      swiftCode: null
+    }
+
+    const wealthAmlDetails = [ // todo: add wealthAml details
+      {
+        fundsSource: "1",
+        employmentStatus: "SELF_EMPLOYED",
+        sectorId: 458,
+        occupationId: 187,
+        insurancePurpose: "future",
+        premiumFrequency: "ad-hoc",
+        distributeChannel: "email"
+      }
+    ]
+
+
+    const client: any = { // todo: update Model (ClientDTO)
+      address,
+      contactDetails,
+      paymentDetails,
+      wealthAmlDetails,
+      branches: [],
+      contactPersons: [],
+      payee: [],
+      ownershipDetails: [],
+      withEffectFromDate: payloadObject.wef,
+      withEffectToDate: payloadObject.wet,
+      firstName: payloadObject.otherNames,
+      gender: payloadObject.gender,
+      lastName: payloadObject.lastName,
+      pinNumber: payloadObject.pinNumber,
+      category: payloadObject.category,
+      countryId: this.selectedAddressCountry?.id,
+      clientTypeId: "13",
+      dateOfBirth: payloadObject.dateOfBirth,
+      modeOfIdentityId: "1",
+      idNumber: payloadObject.idNumber /*"37678960"*/,
+      branchId: 338,
+      maritalStatus: this.selectedMaritalStatus?.value/*"S"*/
+    };
+
+
+    this.clientService.saveClientDetails2(client).subscribe({
+      next: (response) => {
+        log.info(`client saved >>> `, response);
+      },
+      error: (error) => {}
+    })
+
+    log.info(`clientDto >>> `, client);
   }
 
 
@@ -351,6 +474,7 @@ export class NewEntityV2Component implements OnInit {
         this.idType = selectedOption;
         break;
       case 'idType':
+        // this.
         break;
       case 'language':
         this.language = selectedOption;
@@ -362,8 +486,13 @@ export class NewEntityV2Component implements OnInit {
         this.selectedBank = this.banks.find((b: BankDTO) => b.name === selectedOption);
         break;
       case 'countryId':
+        this.selectedAddressCountry = this.countries.find((c: CountryDto) => c.name === selectedOption);
+        break;
       case 'citizenshipCountryId':
-        this.selectedCountry = this.countries.find((c: CountryDto) => c.name === selectedOption);
+        this.selectedCitizenshipCountry = this.countries.find((c: CountryDto) => c.name === selectedOption);
+        break;
+      case 'titleId':
+        this.selectedClientTitle = this.clientTitles.find((t: ClientTitlesDto) => t.description === selectedOption);
         break;
       case 'category':
       case 'role':
@@ -396,7 +525,7 @@ export class NewEntityV2Component implements OnInit {
         next: (data: RequiredDocumentDTO[]) => {
           this.requiredDocuments = data;
           log.info(`requiredDocuments >>> `, data);
-          this.uploadGroupSections.buttons = data
+          this.uploadGroupSections.docs = data
         },
         error: (err) => {
           log.error(`could not fetch >>> `, err)
@@ -412,10 +541,17 @@ export class NewEntityV2Component implements OnInit {
    * @param category
    */
   updateOrganizationLabel(category: string) : void {
+    this.shouldUploadProfilePhoto = true;
     const index: number = this.uploadFormFields.findIndex(field => field.fieldId === "organizationType");
     if (category === 'corporate') {
       this.uploadFormFields[index].label = {
         en: 'organization type',
+        fr: '',
+        ke: ''
+      }
+
+      this.uploadGroupSections.photo[0].label = {
+        en: 'logo',
         fr: '',
         ke: ''
       }
@@ -470,6 +606,9 @@ export class NewEntityV2Component implements OnInit {
         break;
       case 'role':
         this.fetchSystemRoles()
+        break;
+      case 'titleId':
+        this.fetchClientTitles(sectionIndex, fieldIndex)
         break;
       default:
         log.info(`no fieldId found`)
@@ -600,7 +739,7 @@ export class NewEntityV2Component implements OnInit {
    * create an array of strings from banks object and assign to options of the banks formField
    */
   fetchBanks(sectionIndex:number, fieldIndex: number): void {
-    const countryId: number = this.selectedCountry?.id;
+    const countryId: number = this.selectedAddressCountry?.id;
     this.bankService.getBanks(countryId).subscribe({
       next: (data: BankDTO[]) => {
         this.banks = data
@@ -648,13 +787,28 @@ export class NewEntityV2Component implements OnInit {
    * @param fieldIndex
    */
   fetchCountries(sectionIndex:number, fieldIndex: number): void {
-    log.info(`selected bank >>> `, this.selectedCountry)
+    log.info(`selected bank >>> `, this.selectedAddressCountry)
     this.countryService.getCountries().subscribe({
       next: (data: CountryDto[]) => {
         this.countries = data;
         const countryStringArr: string[] = data.map((country: CountryDto) => country.name);
         this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
         log.info(`bank bank: `, countryStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+      }
+    })
+  }
+
+
+  fetchClientTitles(sectionIndex:number, fieldIndex: number): void {
+    this.clientService.getClientTitles().subscribe({
+      next: (data: ClientTitlesDto[]) => {
+        this.clientTitles = data;
+        const titleStringArr: string[] = data.map((title: ClientTitlesDto) => title.description.toLowerCase());
+        this.formGroupSections[sectionIndex].fields[fieldIndex].options = titleStringArr;
+        log.info(`client titles >>> `, titleStringArr)
       },
       error: err => {
         log.error(`could not fetch: `, err);
@@ -708,5 +862,25 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
-}
+  /**
+   * process file selection
+   * @param event
+   * @param docToUpload
+   */
+  onFileSelected(event: Event, docToUpload: RequiredDocumentDTO, uploadType: string): void {
+    const input = event.target as HTMLInputElement;
 
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+
+      if (uploadType === 'doc') {
+        const index = this.uploadGroupSections.docs.findIndex((doc: RequiredDocumentDTO) => doc.id === docToUpload.id);
+        this.uploadGroupSections.docs[index].file = file;
+      } else if (uploadType === 'profile') {
+        this.uploadGroupSections.photo[0].file = file;
+      }
+    }
+  }
+
+
+}

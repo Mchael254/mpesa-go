@@ -147,6 +147,14 @@ export class ClientService {
     );
   }
 
+  saveClientDetails2(clientData: any): Observable<any> {
+    return this.api.POST<any>(
+      `v2/api/clients`,
+      JSON.stringify(clientData),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
   createClient(client: {}): Observable<ClientDTO> {
     console.log('CREATE CLIENT:' + client);
     return;

@@ -1113,7 +1113,7 @@
         {
           "groupId": "address_details",
           "subGroupId": "",
-          "fieldId": "county_state",
+          "fieldId": "countyState",
           "type": "select",
           "label": {
             "en": "county / state",
@@ -1357,7 +1357,7 @@
         {
           "label": "financial details",
           "groupId": "financial_details",
-          "groupOrder": 3,
+          "groupOrder": 5,
           "subGroup": [
             {
               "label": "bbb",
@@ -1369,7 +1369,7 @@
         {
           "label": "address details",
           "groupId": "address_details",
-          "groupOrder": 4,
+          "groupOrder": 3,
           "subGroup": [
             {
               "label": "bbb",
@@ -1398,7 +1398,7 @@
         {
           "label": "wealth and anti-money laundering details",
           "groupId": "wealth_aml_details",
-          "groupOrder": 2,
+          "groupOrder": 6,
           "subGroup": [
             {
               "label": "bbb",
@@ -1412,11 +1412,10 @@
 
           ]
         },
-
         {
           "label": "privacy policy and consent",
           "groupId": "privacy_policy",
-          "groupOrder": 2,
+          "groupOrder": 7,
           "subGroup": [
             {
               "label": "bbb",
@@ -1445,7 +1444,7 @@
           },
           "dynamicLabel": null,
           "defaultValue": null,
-          "visible": true,
+          "visible": false,
           "disabled": false,
           "validations": [],
           "conditions": [],
@@ -1961,7 +1960,7 @@
             "ke": ""
           },
           "isMandatory": true,
-          "options": [1,2,3]
+          "options": []
         },
         {
           "groupId": "contact_details",
@@ -2531,7 +2530,7 @@
         {
           "groupId": "address_details",
           "subGroupId": "",
-          "fieldId": "city_town",
+          "fieldId": "cityTown",
           "type": "select",
           "label": {
             "en": "city / town",
@@ -2713,7 +2712,7 @@
         {
           "groupId": "residential_address_details",
           "subGroupId": "",
-          "fieldId": "house_no",
+          "fieldId": "houseNo",
           "type": "text",
           "label": {
             "en": "house name / number",

@@ -83,6 +83,33 @@
       },
       "isMandatory": true,
       "options": []
+    },
+    {
+      "fieldId": "profileImage",
+      "type": "photo",
+      "label": {
+        "en": "profile photo",
+        "ke": "",
+        "fr": ""
+      },
+      "defaultValue": null,
+      "visible": true,
+      "disabled": false,
+      "validations": [],
+      "groupId": "",
+      "order": 3,
+      "tooltip": {
+        "en": "",
+        "fr": "",
+        "ke": ""
+      },
+      "placeholder": {
+        "en": "upload image",
+        "fr": "",
+        "ke": ""
+      },
+      "isMandatory": true,
+      "options": []
     }
   ],
   "bck": [

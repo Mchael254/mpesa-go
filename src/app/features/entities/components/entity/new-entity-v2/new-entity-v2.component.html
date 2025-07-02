@@ -37,42 +37,46 @@
               </div>
             </ng-container>
 
-            <div class="col-sm-4">
-              <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
-                <div class="row" id="upload-image">
-                  <div class="col-sm-12">
-                    <label for="upload-image" class="form-label">Profile photo</label>
+            <ng-container *ngIf="uploadGroupSections?.photo?.length > 0 && shouldUploadProfilePhoto">
+              <div *ngFor="let photo of uploadGroupSections.photo" class="col-sm-4">
+                <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
+                  <div class="row" id="upload-image">
+                    <div class="col-sm-12">
+                      <label for="upload-image" class="form-label">{{ photo.label[language] | titlecase }}</label>
+                    </div>
+                    <div class="col-sm-12 text-primary">
+                      <label class="btn btn-outline-primary btn-sm d-inline-flex align-items-center">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> &nbsp; {{ photo.placeholder[language] | titlecase }}
+                        <input type="file" hidden (change)="onFileSelected($event, photo, 'profile')">
+                      </label> &nbsp;
+                      <span class="border-end border-primary border-3"></span> &nbsp;
+                      <i class="fa-solid fa-info-circle"></i>&nbsp;
+                      <span>Note:</span> png, jpeg or jpg
+                    </div>
                   </div>
-                  <div class="col-sm-12 text-primary">
-                    <label class="btn btn-outline-primary btn-sm d-inline-flex align-items-center">
-                      <i class="fa-solid fa-cloud-arrow-up"></i> &nbsp; Upload Image
-                      <input type="file" hidden>
-                    </label> &nbsp;
-                    <span class="border-end border-primary border-3"></span> &nbsp;
-                    <i class="fa-solid fa-info-circle"></i>&nbsp;
-                    <span>Note:</span> png, jpeg or jpg
-                  </div>
+                  <span *ngIf="photo.file?.name">{{ photo.file?.name }}</span>
                 </div>
               </div>
-            </div>
+            </ng-container>
           </div>
 
           <hr *ngIf="uploadGroupSections?.buttons?.length > 0" class="my-3 mx-3">
 
-          <div class="row" *ngIf="uploadGroupSections?.buttons?.length > 0">
-            <h6 class="mb-4 ms-md-5">Document upload</h6>
-            <ng-container *ngFor="let uploadButton of uploadGroupSections?.buttons">
+          <div class="row" *ngIf="uploadGroupSections?.docs?.length > 0">
+            <h6 class="mb-4 ms-md-5 mt-3">Document upload</h6>
+            <ng-container *ngFor="let doc of uploadGroupSections?.docs">
               <div class="col-sm-6">
                 <div class="row ms-md-5">
                   <div class="col-sm-4 col-6">
-                    <p class="text-muted">{{ uploadButton.requiredDocumentName | titlecase }}</p>
+                    <p class="text-muted">{{ doc.requiredDocumentName | titlecase }}</p>
                   </div>
                   <div class="col-sm-8 mb-4 col-6">
                     <label class="btn btn-primary btn-sm d-inline-flex align-items-center">
                       <!--{{ uploadButton.placeholder?.[language] }}-->
                       Choose file
-                      <input type="file" hidden>
+                      <input type="file" hidden (change)="onFileSelected($event, doc, 'doc')">
                     </label>
+                    <span *ngIf="doc.file?.name">{{ doc.file?.name }}</span>
                   </div>
                 </div>
               </div>
