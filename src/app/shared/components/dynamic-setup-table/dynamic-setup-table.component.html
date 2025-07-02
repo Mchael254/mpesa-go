@@ -273,7 +273,7 @@
                 <div *ngIf="dynamicModalForm.get(field.fieldId)" class="col-md-6">
                   <div class="mb-3">
                     <!-- Text / Email / Tel / etc -->
-                    <ng-container *ngIf="field.type === 'text' || field.type === 'email' || field.type==='tel'">
+                    <ng-container *ngIf="field.type === 'text' || field.type === 'email'">
                       <ng-container *ngIf="!['idNumber', 'smsNumber'].includes(field.fieldId)">
                         <label class="form-label" [for]="field.fieldId">
                           {{ field.label?.[language] | titlecase }}
@@ -297,6 +297,35 @@
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
                           * {{ regexErrorMessages[field.fieldId]?.errorMessage }}
                         </span>
+                    </ng-container>
+
+                    <ng-container *ngIf="field.type === 'tel'">
+                      <label class="form-label" [for]="field.fieldId">
+                        {{ field.label?.[language] | titlecase }}
+                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                      </label>
+
+                      <ngx-intl-tel-input
+                        [cssClass]="'form-control'"
+                        [id]="field.fieldId"
+                        [preferredCountries]="preferredCountries"
+                        [enableAutoCountrySelect]="true"
+                        [enablePlaceholder]="true"
+                        [searchCountryFlag]="true"
+                        [selectFirstCountry]="true"
+                        [selectedCountryISO]="CountryISO.Kenya"
+                        [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                        [phoneValidation]="true"
+                        [separateDialCode]="true"
+                        [numberFormat]="PhoneNumberFormat.National"
+                        [formControlName]="field.fieldId"
+                        [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
+                        [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
+                      >
+                      </ngx-intl-tel-input>
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        * {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!-- Textarea -->
