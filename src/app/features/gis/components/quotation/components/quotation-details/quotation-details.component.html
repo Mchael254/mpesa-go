@@ -365,7 +365,7 @@
                     <label for="coverFromDate" class="quote-label">Cover From</label><br>
                     <p-calendar formControlName="wef" name="wefDate" id="coverFromDate" inputId="coverFromDate"
                       [dateFormat]="dateFormat" inputStyleClass='form-control' (onSelect)="updateCoverToDate($event)"
-                      [minDate]="minDate">
+                      [minDate]="minDate"  [showIcon]="true">
                     </p-calendar>
                     <div
                       *ngIf="quotationProductForm.get('wef').hasError('required') && quotationProductForm.get('wef').touched"
@@ -380,7 +380,7 @@
                     <br>
                     <label for="coverToDate" class="quote-label">Cover to</label><br>
                     <p-calendar formControlName="wet" name="wetDate" id="coverToDate" inputId="coverToDate"
-                      [dateFormat]="dateFormat" inputStyleClass='form-control' [minDate]="minDate">
+                      [dateFormat]="dateFormat" inputStyleClass='form-control' [minDate]="minDate"   [showIcon]="true">
                     </p-calendar>
                     <div
                       *ngIf="quotationProductForm.get('wet').hasError('required') && quotationProductForm.get('wet').touched"
@@ -528,10 +528,10 @@
           <tr>
             <td colspan="4" style="text-align: center; padding: 20px;">
               <div style="color: #6c757d; font-size: 15px;">
-                <ng-container *ngIf="dummyClauses.length === 0">
+                <ng-container *ngIf="productClause.length === 0">
                   No clause available. Click on “Add clauses” to add a new clause.
                 </ng-container>
-                <ng-container *ngIf="dummyClauses.length > 0">
+                <ng-container *ngIf="productClause.length > 0">
                   No clauses found matching your search
                 </ng-container>
               </div>

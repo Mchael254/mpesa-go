@@ -1,38 +1,50 @@
 <div class="mx-4 mt-3">
     <p class="screenTitle">{{'gis.quotation.quotation_risk_detail' | translate}} </p>
-    <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+    <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+
     <div class="card">
         <div class="card-body">
-            <p class="section-title ms-3 mb-4">{{ 'gis.quotation.risk_details' | translate }}</p>
+            <p class="section-title ms-3 mb-3">
+                {{ 'gis.quotation.risk_details' | translate }}
+            </p>
 
-            <div class="position-relative">
-                <!-- Left Arrow -->
-                <button class="scroll-btn left" (click)="scrollLeft()">
-                    &#8249;
-                </button>
+            <!-- Scrollable Tabs and Action Buttons -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap ">
 
-                <!-- Scrollable Pills -->
-                <div class="scroll-container mb-2" #scrollContainer>
-                    <ul class="nav nav-pills flex-nowrap">
+                <!-- Scrollable Tabs -->
+                <div class="nav-tabs-wrapper overflow-auto flex-grow-1 me-3">
+                    <ul class="nav nav-tabs flex-nowrap mb-0" style="min-width: max-content;">
                         <li class="nav-item" *ngFor="let product of passedProductList">
-                            <a class="nav-link" [class.active]="selectedProduct === product"
+                            <a class="nav-link" [ngClass]="{ 'active-tab': selectedProduct === product }"
                                 (click)="selectProduct(product)">
-                                {{ product.productName | sentenceCase }}
+                                {{ product.productName }}
                             </a>
                         </li>
                     </ul>
                 </div>
 
-                <!-- Right Arrow -->
-                <button class="scroll-btn right" (click)="scrollRight()">
-                    &#8250;
-                </button>
+                <!-- Action Buttons -->
+                <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#deleteRisk">
+                        Import risk
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" (click)="showAddRiskModal()">
+                        Add risk
+                    </button>
+                    <!-- <button type="button" class="btn btn-sm btn-outline-secondary" (click)="toggleSection()">
+                        <i [ngClass]="isCollapsed ? 'pi-caret-up' : 'pi-caret-down'"></i>
+                       
+                    </button> -->
+                     <i class="pi border border-black p-1 rounded-1 text-black"
+              [ngClass]="{'pi-caret-up': isCollapsed, 'pi-caret-down': !isCollapsed}"
+              style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleSection()" ></i>
+                </div>
+            </div>
+
+            <!-- Dynamic Content -->
+            <div class="tab-content">
+                <app-risk-details [selectedProduct]="selectedProduct"></app-risk-details>
             </div>
         </div>
-    </div>
-
-    <!-- Dynamic Tab Content -->
-    <div class="tab-content ">
-        <app-risk-details [selectedProduct]="selectedProduct"></app-risk-details>
-
     </div>
