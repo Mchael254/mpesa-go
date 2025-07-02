@@ -1282,7 +1282,8 @@
       "wording": "Wording",
       "year_of_manufacture": "Year of Manufacture",
       "yes_delete": "Yes,delete",
-      "quotation_data_entry": "Quotations: Quotation Data Entry"
+      "quotation_data_entry": "Quotations: Quotation Data Entry",
+      "delete_clause":"Delete product clause"
     },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",
