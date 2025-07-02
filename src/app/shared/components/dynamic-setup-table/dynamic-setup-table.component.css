@@ -1,3 +1,10 @@
 .form-check {
   clear: both; /* Ensures each item starts on a new line */
 }
+
+::ng-deep .iti--allow-dropdown input,
+.iti--allow-dropdown input[type="tel"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}

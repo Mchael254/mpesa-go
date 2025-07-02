@@ -58,6 +58,12 @@ export class DynamicSetupTableComponent implements OnInit {
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
   protected readonly CountryISO = CountryISO;
   protected readonly SearchCountryField = SearchCountryField;
+  preferredCountries: CountryISO[] = [
+    CountryISO.Kenya,
+    CountryISO.Nigeria,
+    CountryISO.UnitedStates,
+    CountryISO.UnitedKingdom,
+  ];
 
   language: string = 'en';
   validationObject = {};
@@ -224,12 +230,17 @@ export class DynamicSetupTableComponent implements OnInit {
 
     if (this.formFields) {
       this.formFields.forEach(field => {
-        if (filtered[field.fieldId] !== undefined) {
-          // field.value = filtered[field.fieldId];
-          // savedFields[field.fieldId] = field.value;
-          // const fieldValue = field.value;
-          savedFields[field.fieldId] = filtered[field.fieldId];
-          log.info(`Field ${field.fieldId} value updated to:`, filtered[field.fieldId]);
+        const fieldValue = filtered[field.fieldId];
+
+        if (fieldValue !== undefined) {
+          // Check if value is a phone number object with e164Number
+          if (fieldValue && typeof fieldValue === 'object' && 'e164Number' in fieldValue) {
+            savedFields[field.fieldId] = fieldValue.e164Number;
+            log.info(`Field ${field.fieldId} (tel) value updated to:`, fieldValue.e164Number);
+          } else {
+            savedFields[field.fieldId] = fieldValue;
+            log.info(`Field ${field.fieldId} value updated to:`, fieldValue);
+          }
         }
       });
     }
@@ -244,7 +255,7 @@ export class DynamicSetupTableComponent implements OnInit {
       this.tableData = [];
     }
 
-    if (this.editMode && this.selectedTableRecordIndex !== null) {
+    if (this.editMode === true && this.selectedTableRecordIndex !== null) {
       this.tableData[this.selectedTableRecordIndex] = savedFields;
     } else {
       this.tableData.push(savedFields);
