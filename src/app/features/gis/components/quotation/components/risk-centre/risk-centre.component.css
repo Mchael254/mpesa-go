@@ -1,74 +1,85 @@
 .nav-pills .nav-link {
-    color: #495057;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    margin-right: 5px;
-    transition: all 0.3s ease;
+  color: #495057;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  margin-right: 5px;
+  transition: all 0.3s ease;
 }
 
 .nav-pills .nav-link:hover {
-    color: #00529B;
-    font-weight: 400px;
+  color: #00529B;
+  font-weight: 400px;
 }
 
 .nav-pills .nav-link.active {
-    color: #00529B;
-    border-color: #DCDCDCD9;
-    border-bottom: none;
-    background-color: white;
+  color: #00529B;
+  border-color: #DCDCDCD9;
+  border-bottom: none;
+  background-color: white;
 }
 
 .nav-pills {
-    border-bottom: 2px solid #ddd;
-    /* Add a line under the tabs */
-    /* padding-bottom: 10px;  Optional: Adjust the padding between the tabs and the line */
+  border-bottom: 2px solid #ddd;
+  /* Add a line under the tabs */
+  /* padding-bottom: 10px;  Optional: Adjust the padding between the tabs and the line */
 }
 
 .section-title {
-    font-family: Roboto;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 100%;
-    letter-spacing: 0%;
-    color: #000;
+  font-family: Roboto;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 19.89px;
+  letter-spacing: 0%;
+  color: #00529B;
 
-}
-.tab-content{
-    background-color: transparent;
-    margin-top: -14px;
+
 }
 
 
-.scroll-container {
-    overflow-x: auto;
-    white-space: nowrap;
-    scroll-behavior: smooth;
-    margin: 0 2rem; /* Space for scroll buttons */
+
+.active-tab {
+  color: #00529B;
+   border: 1px solid #DCDCDCD9;
+  border-bottom: none;
+  color: #00529B !important;
+  background-color: #fff; /* Optional: to contrast with border */
+  z-index: 1; 
+}
+/* Style on hover */
+.nav-tabs .nav-link:hover {
+  font-weight: bold;
+  border: 1px solid #DCDCDCD9;
+  border-bottom: none;
+}
+
+
+
+/* 
+.nav-tabs-wrapper {
+  max-width: 150px;
+  overflow-x: auto;
+  white-space: nowrap;
+} */
+/* Custom Scrollbar Styles */
+.nav-tabs-wrapper {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #ccc transparent; /* Firefox */
+
+  /* Chrome, Edge, Safari */
+  &::-webkit-scrollbar {
+    height: 6px;
   }
-  
-  .scroll-container::-webkit-scrollbar {
-    display: none; /* Hide scrollbar if desired */
-  }
-  
-  .scroll-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1;
+
+  &::-webkit-scrollbar-track {
     background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0.3rem 0.6rem;
-    /* box-shadow: 0 0 5px rgba(0,0,0,0.3);
-    border-radius: 50%; */
   }
-  
-  .scroll-btn.left {
-    left: 0;
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #999;
+    border-radius: 10px;
   }
-  
-  .scroll-btn.right {
-    right: 0;
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #666;
   }
-  
+}
