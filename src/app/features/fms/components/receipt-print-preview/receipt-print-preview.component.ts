@@ -8,6 +8,7 @@ import { GlobalMessagingService } from '../../../../shared/services/messaging/gl
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { ReceiptService } from '../../services/receipt.service';
 import { ReportsService } from '../../../../shared/services/reports/reports.service';
+import { ReceiptDataService } from '../../services/receipt-data.service';
 /**
  * @Component ReceiptPrintPreviewComponent
  * @description
@@ -64,7 +65,10 @@ export class ReceiptPrintPreviewComponent {
     private globalMessagingService: GlobalMessagingService,
     private reportService: ReportsService,
     private router: Router,
-    private receiptService: ReceiptService
+    private receiptService: ReceiptService,
+    private receiptDataService: ReceiptDataService,
+        
+        
   ) {}
   /**
    * @method ngOnInit
@@ -115,10 +119,27 @@ export class ReceiptPrintPreviewComponent {
         //this.downlaod(this.filePath,'receiptpdf');
       },
       error: (err) => {
+       
+          // Display a clear, reassuring message to the user.
+        // We use a success message because the SAVE part was successful.
+          // 1. Safely extract the backend error message. It checks for the most common
+        //    formats and provides a generic fallback.
+        const backendError = err.error?.msg || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        // 2. Combine your user-friendly message with the backend error using a template literal.
+        //    Using `\n\n` creates a nice line break for readability in the message box.
+        const fullMessage = `The preview could not be generated. You can find and print it later from the receipt management screen.\n\nReason: ${backendError}`;
+         // 3. Use `displayErrorMessage` for this specific failure and pass the combined message.
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.status || 'failed to fetch receipt details for printing'
+          'Error Generating Preview', // A more accurate title
+          fullMessage
         );
+       
+        
+        
+
+        // Navigate the user to a safe and stable screen
+        this.router.navigate(['/home/fms/receipt-management']);
+       
       },
     });
   }
