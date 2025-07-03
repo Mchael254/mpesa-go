@@ -374,6 +374,29 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.globalMessagingService.displaySuccessMessage('success', 'Clause edited successfully');
   }
 
+  //delete product clause
+  clauseToDelete: any = null;
+  prepareDeleteClause(clause: any) {
+    this.clauseToDelete = clause;
+  }
+
+  deleteProductClause() {
+    if (!this.clauseToDelete) return;
+    this.sessionClauses = this.sessionClauses.filter(c => c.shortDescription !== this.clauseToDelete.shortDescription);
+    this.productClause = this.productClause.filter(c => c.shortDescription !== this.clauseToDelete.shortDescription);
+
+    const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+    if (allClausesMap[this.productCode]) {
+      allClausesMap[this.productCode].productClause = this.productClause;
+      allClausesMap[this.productCode].clausesModified = true;
+      sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+      this.clauseToDelete = null;
+    }
+    this.globalMessagingService.displaySuccessMessage('success', 'Clause deleted successfully');
+
+
+  }
+
 
 
   ngOnDestroy(): void {
