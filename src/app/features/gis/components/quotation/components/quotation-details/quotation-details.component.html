@@ -256,7 +256,7 @@
                 <p-cellEditor>
                   <ng-template pTemplate="input">
                     <p-calendar [(ngModel)]="product.coverFrom" appendTo="body" [dateFormat]="dateFormat"
-                      [style]="{'width':'100%'}" (ngModelChange)="updateCoverTo(product)">
+                      [style]="{'width':'100%'}" (ngModelChange)="updateCoverTo(product)" [showIcon]="true">
                     </p-calendar>
                   </ng-template>
                   <ng-template pTemplate="output">
@@ -270,7 +270,7 @@
                 <p-cellEditor>
                   <ng-template pTemplate="input">
                     <p-calendar [(ngModel)]="product.coverTo" appendTo="body" [dateFormat]="dateFormat"
-                      [style]="{'width':'100%'}">
+                      [style]="{'width':'100%'}" [showIcon]="true">
                     </p-calendar>
                   </ng-template>
                   <ng-template pTemplate="output">
