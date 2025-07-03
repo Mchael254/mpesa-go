@@ -236,7 +236,7 @@
                 <p-cellEditor>
                   <ng-template pTemplate="input">
                     <div class="form-group form-group-sm">
-                      <p-dropdown [options]="ProductDescriptionArray" appendTo="body" [(ngModel)]="product.productCode"
+                      <p-dropdown [options]="ProductDescriptionArray" appendTo="body" [ngModel]="product.productCode"
                         optionLabel="description" [style]="{'width':'100%'}"
                         (onChange)="onProductChange($event.value, ri, product)">
                       </p-dropdown>
@@ -281,7 +281,7 @@
 
               <td class="flexible-header">
                 <div class="d-flex justify-content-end gap-2">
-                  <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product)"
+                  <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product,ri)"
                     class="p-button-sm p-button-text p-button-info no-border">
                     Edit
                   </button>
