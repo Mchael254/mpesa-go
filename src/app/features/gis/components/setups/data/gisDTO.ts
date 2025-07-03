@@ -1247,6 +1247,26 @@ export interface VesselType {
   organizationCode: string | null;
 }
 
+export interface ProductClauseDTO {
+  code: number;
+  shortDescription: string;
+  heading: string;
+  wording: string;
+  type: string;
+  isEditable:string;
+  isCurrent: string;
+  isLien: string;
+  ins: string;
+  merge: string;
+  organizationCode: string | null;
+  version: string | null;
+  updatedAt: number;  // epoch milliseconds
+  updatedBy: string;
+  isMandatory: string;
+  links: any[]; // you can tighten this if links ever have a type
+  checked: boolean;
+}
+
 
 
 
