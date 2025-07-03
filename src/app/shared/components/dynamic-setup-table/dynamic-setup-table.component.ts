@@ -6,7 +6,7 @@ import {SessionStorageService} from "../../services/session-storage/session-stor
 import {ReusableInputComponent} from "../reusable-input/reusable-input.component";
 import * as bootstrap from 'bootstrap';
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
-import {FieldModel} from "../../../features/entities/data/form-config.model";
+import {AppliesToEnum, FieldModel} from "../../../features/entities/data/form-config.model";
 import {RegexErrorMessages} from "../../../features/entities/data/field-error.model";
 import {DynamicColumns} from "../../data/dynamic-columns";
 import {SectorService} from "../../services/setups/sector/sector.service";
@@ -90,6 +90,8 @@ export class DynamicSetupTableComponent implements OnInit {
   communicationChannelsData: AccountsEnum[];
   insurancePurposeData: any[] = [];
 
+  appliesToEnum: typeof AppliesToEnum;
+
   constructor(
     private fb: FormBuilder,
     private globalMessagingService: GlobalMessagingService,
@@ -112,6 +114,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
     });
+    this.appliesToEnum = AppliesToEnum;
   }
 
   filterFormFields() {
@@ -324,7 +327,7 @@ export class DynamicSetupTableComponent implements OnInit {
 
   onTypeSelect($event: Event) {
     this.filteredColumns = this.columns.filter(column =>
-      column.appliesTo === 'ALL' || column.appliesTo === $event.target['value']
+      column.appliesTo === AppliesToEnum.ALL || column.appliesTo === $event.target['value']
     );
 
     log.info('filtered columns', this.filteredColumns);
@@ -339,7 +342,7 @@ export class DynamicSetupTableComponent implements OnInit {
         const backupFields = [...this.formFields];
         this.filteredCr12FormFields = backupFields.filter(field =>
           field.appliesTo === (selectedOption === 'corporate' ? 'C' : 'I') ||
-          field.appliesTo === 'ALL'
+          field.appliesTo === this.appliesToEnum?.ALL
         );
         this.selectedCr12Category = selectedOption;
         this.createForm();
