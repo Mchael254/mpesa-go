@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -23,11 +23,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Clause, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, riskSection } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { forkJoin, map, Observable, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
 import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from "ngx-currency";
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import * as bootstrap from 'bootstrap';
+import { Pagination } from 'src/app/shared/data/common/pagination';
 
 const log = new Logger('RiskClausesDetailsComponent');
 
@@ -141,20 +142,20 @@ export class RiskDetailsComponent {
   sectionToBeRemoved: number[] = [];
   public currencyObj: NgxCurrencyConfig;
 
-    editing = false; // Add other properties as needed
-    modalHeight: number = 200; // Initial height
+  editing = false; // Add other properties as needed
+  modalHeight: number = 200; // Initial height
   clauseList: Clause[];
-    // selectedClauseList: Clause[];
-    SubclauseList: any;
-    selectedSubClauseList: subclassClauses[];
-    selectedClauseCode: any;
-    // clauseDetail:any;
-    selectedClause!: any;
-  
-    selectProductCode: any
-    showOtherSscheduleDetails: boolean = false;
-    editRiskDetailsForm: FormGroup;
-      formContent: any;
+  // selectedClauseList: Clause[];
+  SubclauseList: any;
+  selectedSubClauseList: subclassClauses[];
+  selectedClauseCode: any;
+  // clauseDetail:any;
+  selectedClause!: any;
+
+  selectProductCode: any
+  showOtherSscheduleDetails: boolean = false;
+  editRiskDetailsForm: FormGroup;
+  formContent: any;
   formData: {
     type: string;
     name: string;
@@ -167,6 +168,23 @@ export class RiskDetailsComponent {
     placeholder: string;
     label: string;
   }[];
+  subclassFormContent: any
+  subclassFormData: {
+    type: string;
+    name: string;
+    max: number
+    min: number
+    isMandatory: string;
+    disabled: boolean;
+    readonly: boolean;
+    regexPattern: string;
+    placeholder: string;
+    label: string;
+    scheduleLevel:string
+  }[];
+  existingPropertyIds: string[] = [];
+  dynamicRegexPattern: string;
+ clientsData: ClientDTO[] = [];
 
   constructor(
     private router: Router,
@@ -232,7 +250,7 @@ export class RiskDetailsComponent {
   }
   ngOnInit(): void {
     this.riskDetailsForm = new FormGroup({});
-
+this.loadAllClients();
     this.dateFormat = sessionStorage.getItem('dateFormat');
     log.debug("Date Formart", this.dateFormat)
     this.getVehicleMake();
@@ -256,7 +274,7 @@ export class RiskDetailsComponent {
     };
   }
   ngOnDestroy(): void { }
-    ngAfterViewInit() {
+  ngAfterViewInit() {
     this.modalInstance = new bootstrap.Modal(this.modalElementRef.nativeElement, {
       backdrop: 'static',
       keyboard: false
@@ -285,9 +303,9 @@ export class RiskDetailsComponent {
           log.debug("Schedule information specific to the selected product:", this.scheduleList)
           if (this.scheduleList[0]?.details?.level2) {
             this.showOtherSscheduleDetails = true;
-          }else{
+          } else {
             this.showOtherSscheduleDetails = false;
- 
+
           }
         },
         error: (error: HttpErrorResponse) => {
@@ -304,45 +322,60 @@ export class RiskDetailsComponent {
   openAddRiskModal() {
     this.modalInstance?.show();
   }
-   
-loadSelectedProductRiskFields(productCode: number): void {
-  const formFieldDescription = `detailed-quotation-risk-${productCode}`;
 
-  this.quotationService.getFormFields(formFieldDescription).subscribe({
-    next: (response) => {
-      const fields = response?.[0]?.fields || [];
+  loadSelectedProductRiskFields(productCode: number): void {
+    const formFieldDescription = `detailed-quotation-risk-${productCode}`;
 
-      this.formContent = response;
-      this.formData = fields;
+    this.quotationService.getFormFields(formFieldDescription).subscribe({
+      next: (response) => {
+        const fields = response?.[0]?.fields || [];
 
-      log.debug(this.formContent, 'Form-content');
-      log.debug(this.formData, 'formData is defined here');
+        this.formContent = response;
+        this.formData = fields;
 
-      // Remove existing dynamic controls
-      Object.keys(this.riskDetailsForm.controls).forEach((controlName) => {
-        const control = this.riskDetailsForm.get(controlName) as any;
-        if (control?.metadata?.dynamic) {
-          this.riskDetailsForm.removeControl(controlName);
-          log.debug(`Removed dynamic control: ${controlName}`);
-        }
-      });
+        log.debug(this.formContent, 'Form-content');
+        log.debug(this.formData, 'formData is defined here');
 
-      // Add new dynamic controls
-      this.formData.forEach((field) => {
-        const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
-        const formControl = new FormControl('', validators);
-        (formControl as any).metadata = { dynamic: true };
-        this.riskDetailsForm.addControl(field.name, formControl);
-      });
+        // Remove existing dynamic controls
+        Object.keys(this.riskDetailsForm.controls).forEach((controlName) => {
+          const control = this.riskDetailsForm.get(controlName) as any;
+          if (control?.metadata?.dynamic) {
+            this.riskDetailsForm.removeControl(controlName);
+            log.debug(`Removed dynamic control: ${controlName}`);
+          }
+        });
 
-      log.debug(this.riskDetailsForm.value, 'Final Form Value');
-    },
-    error: (err) => {
-      log.error(err, 'Failed to load risk fields');
-    }
-  });
-}
+        // Add new dynamic controls
+        this.formData.forEach((field) => {
+          const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
+          const formControl = new FormControl('', validators);
+          (formControl as any).metadata = { dynamic: true };
+          this.riskDetailsForm.addControl(field.name, formControl);
+        });
 
+        log.debug(this.riskDetailsForm.value, 'Final Form Value');
+      },
+      error: (err) => {
+        log.error(err, 'Failed to load risk fields');
+      }
+    });
+  }
+ loadAllClients(){
+      this.clientService.getClients()
+        .subscribe({
+          next: (data: any) => {
+            data.content.forEach(client => {
+              client.clientTypeName = client.clientType.clientTypeName;
+              client.clientFullName = client.firstName + ' ' + (client.lastName || '');
+            });
+            this.clientsData = data.content;
+           
+          },
+          error: (err) => {
+            log.error('Failed to fetch clients', err);
+          }
+        });
+ }
   loadClientDetails() {
     this.clientService.getClientById(this.insuredCode).subscribe((data: any) => {
       this.selectedClientList = data;
@@ -662,13 +695,13 @@ loadSelectedProductRiskFields(productCode: number): void {
     // If it's another type, implement the conversion accordingly
     return parseInt(value, 10); // Adjust based on your actual data type
   }
-  transformToUpperCase(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const upperCaseValue = input.value.toUpperCase();
-    this.riskDetailsForm
-      .get('propertyId')
-      ?.setValue(upperCaseValue, { emitEvent: false });
-  }
+  // transformToUpperCase(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   const upperCaseValue = input.value.toUpperCase();
+  //   this.riskDetailsForm
+  //     .get('propertyId')
+  //     ?.setValue(upperCaseValue, { emitEvent: false });
+  // }
   riskIdPassed(event: any): void {
 
 
@@ -736,12 +769,14 @@ loadSelectedProductRiskFields(productCode: number): void {
     if (this.selectedSubclassCode) {
       this.fetchRegexPattern();
       this.fetchTaxes();
+      this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
+      this.loadAllBinders();
+      this.loadSubclassClauses(this.selectedSubclassCode);
+
     }
 
-    this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
-    this.loadAllBinders();
-    this.loadSubclassClauses(this.selectedSubclassCode);
   }
+ 
   capitalizeWord(value: String): string {
     return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
   }
@@ -778,7 +813,7 @@ loadSelectedProductRiskFields(productCode: number): void {
         if (this.storedRiskFormDetails) {
           const selectedBinder = this.binderListDetails.find(binder => binder.code === this.storedRiskFormDetails?.binderCode);
           if (selectedBinder) {
-            this.riskDetailsForm.patchValue({ binderCode: selectedBinder });
+            this.riskDetailsForm.patchValue({ premiumBand: selectedBinder });
 
           }
         }
@@ -795,27 +830,38 @@ loadSelectedProductRiskFields(productCode: number): void {
       }
     );
   }
+ 
   fetchRegexPattern() {
-    this.quotationService
-      .getRegexPatterns(this.selectedSubclassCode)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          this.regexPattern = response._embedded?.riskIdFormat;
-          log.debug('New Regex Pattern', this.regexPattern);
-          this.riskDetailsForm
-            ?.get('propertyId')
-            .addValidators(Validators.pattern(this.regexPattern));
-          this.riskDetailsForm?.get('propertyId').updateValueAndValidity();
-        },
-        error: (error) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
-        },
-      });
-  }
+      this.quotationService
+        .getRegexPatterns(this.selectedSubclassCode)
+        .pipe(untilDestroyed(this))
+        .subscribe({
+          next: (response: any) => {
+            this.regexPattern = response._embedded?.riskIdFormat;
+            log.debug('New Regex Pattern', this.regexPattern);
+  
+            this.dynamicRegexPattern = this.regexPattern;
+  
+            const control = this.riskDetailsForm.get('registrationNumber') as FormControl;
+  
+            if (control) {
+              // Add your required validators here
+              control.setValidators([
+                Validators.required,
+                Validators.pattern(this.dynamicRegexPattern)
+              ]);
+  
+              control.updateValueAndValidity();
+            }
+          },
+          error: (error) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              error.error.message
+            );
+          },
+        });
+    }
   fetchTaxes() {
     this.quotationService
       .getTaxes(this.selectedProductCode, this.selectedSubclassCode)
@@ -1331,7 +1377,7 @@ loadSelectedProductRiskFields(productCode: number): void {
           console.error('Error fetching premium rates:', error);
         }
       );
-      this.loadSubclassClauses(riskSelectedData.subclassCode);
+    this.loadSubclassClauses(riskSelectedData.subclassCode);
 
   }
   /**
@@ -1688,12 +1734,12 @@ loadSelectedProductRiskFields(productCode: number): void {
   }
   onRiskEdit(risk: any) {
     this.selectedRisk = risk;
-   const binderList = JSON.parse(sessionStorage.getItem('binderList'));
-   
-   const selectedVehicleMake = JSON.parse(sessionStorage.getItem('selectedVehicleMake'));
-   const selectedVehicleModel = JSON.parse(sessionStorage.getItem('selectedVehicleModel'));
+    const binderList = JSON.parse(sessionStorage.getItem('binderList'));
+
+    const selectedVehicleMake = JSON.parse(sessionStorage.getItem('selectedVehicleMake'));
+    const selectedVehicleModel = JSON.parse(sessionStorage.getItem('selectedVehicleModel'));
     const patchData = {
-    
+
       propertyId: risk.propertyId ?? '', // Assuming propertyId is a form field in the HTML
       itemDesc: risk.itemDesc ?? '', // Assuming itemDesc is a form field in the HTML
       coverTypeDescription: risk.coverTypeDescription ?? '', // Assuming coverTypeDescription is in the HTML
@@ -1701,7 +1747,7 @@ loadSelectedProductRiskFields(productCode: number): void {
       wef: risk.wef ? new Date(risk.wef) : '', // Assuming wef is part of the form
       wet: risk.wet ? new Date(risk.wet) : '' // Assuming wet is part of the form
     };
-  
+
     // Patch only the fields that are in the form
     const subClassCodeToUse = risk.subclassCode
     const selectedSubclass = this.allMatchingSubclasses.find(subclass => subclass.code === subClassCodeToUse);
@@ -1712,22 +1758,22 @@ loadSelectedProductRiskFields(productCode: number): void {
     const binderCodeToUse = risk.binderCode
     const selectedBinder = this.binderListDetails.find(binder => binder.code === binderCodeToUse);
 
-    if(binderCodeToUse){
+    if (binderCodeToUse) {
       this.editRiskDetailsForm.patchValue({ binderCode: selectedBinder });
     }
     this.editRiskDetailsForm.patchValue({ vehicleMake: selectedVehicleMake });
     this.editRiskDetailsForm.patchValue({ vehicleModel: selectedVehicleModel });
 
-    
+
     this.editRiskDetailsForm.patchValue(patchData);
 
     log.info("Patched Risk", patchData);
     log.info("Patched Risk whole", this.editRiskDetailsForm.value);
   }
-  
-  updateRiskDetails(){
-const quotationCode = this.selectedRisk.quotationCode
-log.debug("quotation code:", quotationCode)
+
+  updateRiskDetails() {
+    const quotationCode = this.selectedRisk.quotationCode
+    log.debug("quotation code:", quotationCode)
 
     log.debug("Currency code-quote creation", this.editRiskDetailsForm.value.propertyId)
     log.debug("Selected Cover", this.editRiskDetailsForm.value.coverTypeDescription)
@@ -1751,7 +1797,7 @@ log.debug("quotation code:", quotationCode)
       coverTypeCode: this.selectedCoverType.coverTypeCode,
       action: "E", // Set action to "A" (Add) or "E" (Edit) based on the condition
       quotationCode: JSON.parse(this.quotationCode),
-      code:this.selectedRisk.code,
+      code: this.selectedRisk.code,
       productCode: this.selectedProductCode,
       propertyId: this.editRiskDetailsForm.value.propertyId,
       // value: this.sumInsuredValue, // TODO attach this to individual risk
@@ -1772,27 +1818,27 @@ log.debug("quotation code:", quotationCode)
         code: tax.code,
         premium: tax.premium
       })),
-        // ✅ Now adding the **missing required fields** from your interface
-  insuredCode: this.insuredCode,
-  location: this.selectedRisk.location,
-  town: this.selectedRisk.town,
-  ncdLevel: this.selectedRisk.ncdLevel,
-  quotationRevisionNumber: this.selectedRisk.quotationRevisionNumber ,
-  quotationRiskNo: this.selectedRisk.quotationRiskNo, // or generate one if needed
-  value: this.selectedRisk.value || 0,
-  commissionRate: this.selectedRisk.commissionRate || 0,
-  commissionAmount: this.selectedRisk.commissionAmount || 0,
-  clientShortDescription: this.selectedRisk.clientShortDescription || '',
-  annualPremium: this.selectedRisk.annualPremium || 0,
-  coverDays: this.selectedRisk.coverDays || 0,
-  clientType: this.selectedRisk.clientType || '',
-  prospectCode: this.selectedRisk.prospectCode || 0,
-  vehicleModel: this.editRiskDetailsForm.value.vehicleModel,
-  vehicleMake: this.editRiskDetailsForm.value.vehicleMake,
+      // ✅ Now adding the **missing required fields** from your interface
+      insuredCode: this.insuredCode,
+      location: this.selectedRisk.location,
+      town: this.selectedRisk.town,
+      ncdLevel: this.selectedRisk.ncdLevel,
+      quotationRevisionNumber: this.selectedRisk.quotationRevisionNumber,
+      quotationRiskNo: this.selectedRisk.quotationRiskNo, // or generate one if needed
+      value: this.selectedRisk.value || 0,
+      commissionRate: this.selectedRisk.commissionRate || 0,
+      commissionAmount: this.selectedRisk.commissionAmount || 0,
+      clientShortDescription: this.selectedRisk.clientShortDescription || '',
+      annualPremium: this.selectedRisk.annualPremium || 0,
+      coverDays: this.selectedRisk.coverDays || 0,
+      clientType: this.selectedRisk.clientType || '',
+      prospectCode: this.selectedRisk.prospectCode || 0,
+      vehicleModel: this.editRiskDetailsForm.value.vehicleModel,
+      vehicleMake: this.editRiskDetailsForm.value.vehicleMake,
     }
-    const riskPayload =[risk]
-    this.quotationService.createQuotationRisk(quotationCode,riskPayload).pipe(
-     
+    const riskPayload = [risk]
+    this.quotationService.createQuotationRisk(quotationCode, riskPayload).pipe(
+
     ).subscribe({
       next: (data: any) => {
         const response = data._embedded;
@@ -1803,9 +1849,9 @@ log.debug("quotation code:", quotationCode)
         this.globalMessagingService.displayErrorMessage('Error', error.error.message);
       }
     });
-    
+
   }
-  
+
   openRiskDeleteModal() {
     log.debug("Selected Risk  to delete", this.selectedRisk)
     if (!this.selectedRisk) {
@@ -1814,29 +1860,100 @@ log.debug("quotation code:", quotationCode)
       document.getElementById("openRiskModalButtonDelete").click();
     }
   }
-    deleteRisk() {
-      log.debug("Selected Risk to be deleted", this.selectedRisk)
-      this.quotationService
-        .deleteRisk(this.selectedRisk.code)
-        .pipe(untilDestroyed(this))
-        .subscribe({
-          next: (response: any) => {
-            log.debug("Response after deleting a risk ", response);
-            this.globalMessagingService.displaySuccessMessage('Success', 'Risk deleted successfully');
-  
-            // Remove the deleted risk from the riskDetails array
-            const index = this.riskDetails.findIndex(risk => risk.code === this.selectedRisk.code);
-            if (index !== -1) {
-              this.riskDetails.splice(index, 1);
-            }
-            // Clear the selected risk
-            this.selectedRisk = null;
-  
-          },
-          error: (error) => {
-  
-            this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete risk. Try again later');
+  deleteRisk() {
+    log.debug("Selected Risk to be deleted", this.selectedRisk)
+    this.quotationService
+      .deleteRisk(this.selectedRisk.code)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          log.debug("Response after deleting a risk ", response);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Risk deleted successfully');
+
+          // Remove the deleted risk from the riskDetails array
+          const index = this.riskDetails.findIndex(risk => risk.code === this.selectedRisk.code);
+          if (index !== -1) {
+            this.riskDetails.splice(index, 1);
           }
-        });
+          // Clear the selected risk
+          this.selectedRisk = null;
+
+        },
+        error: (error) => {
+
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete risk. Try again later');
+        }
+      });
+  }
+  validateCarRegNo() {
+    const control = this.riskDetailsForm.get('registrationNumber') as FormControl;
+    log.debug("Keyed In value>>>", control);
+    const input = event.target as HTMLInputElement;
+    log.debug("Keyed In value event>>>", input);
+
+    if (!control) return;
+
+    const value = control.value;
+    log.debug("Keyed In value>>>", value);
+
+    // Exit early if there's a pattern error or no value
+    if (control.hasError('pattern') || !value) return;
+
+    // Remove validator before making the service call
+    control.removeValidators([this.uniqueValidator]);
+    control.updateValueAndValidity({ emitEvent: false });
+
+    this.quotationService.validateRiskExistence({
+      propertyId: value,
+      subClassCode: this.selectedSubclassCode,
+      withEffectFrom: "2024-01-01",
+      withEffectTo: "2024-01-01",
+      addOrEdit: 'A'
+    }).pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      untilDestroyed(this)
+    ).subscribe((response) => {
+      const canProceed = response?._embedded?.duplicateAllowed;
+      log.debug("Risk allowed>>>", canProceed);
+
+      const isDuplicate = this.existingPropertyIds?.some(
+        (existingValue) =>
+          existingValue.replace(/\s+/g, '').toUpperCase() === value.replace(/\s+/g, '').toUpperCase()
+      );
+
+      log.debug("Existing risk>>>", isDuplicate);
+
+      if (isDuplicate || !canProceed) {
+        control.addValidators([this.uniqueValidator]);
+      } else {
+        control.removeValidators([this.uniqueValidator]);
+      }
+
+      control.updateValueAndValidity({ emitEvent: false });
+    });
+  }
+
+  uniqueValidator(control: AbstractControl) {
+    return { unique: true };
+  }
+  transformToUpperCase(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const upperCaseValue = input.value.toUpperCase();
+    log.debug("RISK FORM VALUE",this.riskDetailsForm)
+    const control = this.riskDetailsForm.get('registrationNumber') as FormControl;
+
+    if (!control) {
+      console.warn('Could not find control for carRegNo at given indexes');
+      return;
+    }
+
+    log.debug("Keyed In value>>>", control.value);
+
+    control.setValue(upperCaseValue, { emitEvent: false });
+  }
+  getCarRegNoControl(): FormControl {
+      return this.riskDetailsForm.get('registrationNumber') as FormControl;
+
     }
 }

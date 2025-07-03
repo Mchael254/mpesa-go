@@ -102,13 +102,6 @@
 }
 
 
-
-.dynamic-field {
-    box-sizing: border-box;
-    /* padding-left: 15px; */
-    padding-right: 15px;
-}
-
 .addRiskTitle {
     font-family: Roboto;
     font-weight: 600;
@@ -116,4 +109,8 @@
     line-height: 100%;
     letter-spacing: 0%;
     color: #00529B;
+}
+.btn-close{
+    color: #EE3945;
+    font-size: 12px;
 }
