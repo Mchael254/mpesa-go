@@ -33,31 +33,14 @@ const log = new Logger('QuotationDetails');
   styleUrls: ['./quotation-details.component.css']
 })
 export class QuotationDetailsComponent implements OnInit, OnDestroy {
-  onProductSelectionChange() {
-    throw new Error('Method not implemented.');
-  }
+
+
   @ViewChild('dt') table!: Table;
 
   headingSearch: string = '';
-  idSearch: string = '';
+  shortDescriptionSearch: string = '';
   wordingSearch: string = '';
 
-  //search member to reassign
-  filterById(event: any): void {
-    const value = event.target.value;
-    this.idSearch = value;
-    this.table.filter(value, 'id', 'contains');
-  }
-
-  filterByHeading(event: any): void {
-    const value = event.target.value;
-    this.table.filter(value, 'heading', 'contains');
-  }
-
-  filterByWording(event: any): void {
-    const value = event.target.value;
-    this.table.filter(value, 'wording', 'contains');
-  }
 
 
   // sort(arg0: string) {
@@ -221,6 +204,24 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     this.loadPersistedClauses();
   }
+
+  //search clause
+  filterByshortDescription(event: any): void {
+    const value = event.target.value;
+    this.shortDescriptionSearch = value;
+    this.table.filter(value, 'shortDescription', 'contains');
+  }
+
+  filterByHeading(event: any): void {
+    const value = event.target.value;
+    this.table.filter(value, 'heading', 'contains');
+  }
+
+  filterByWording(event: any): void {
+    const value = event.target.value;
+    this.table.filter(value, 'wording', 'contains');
+  }
+
 
   // Product Clauses
   sessionClauses: any
@@ -1442,7 +1443,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
 
-  submitForm() {
+  submitAddProductForm() {
     if (this.quotationProductForm.invalid) {
       this.quotationProductForm.markAllAsTouched();
       return;
@@ -1487,22 +1488,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       wet: this.coverToDate
     });
 
-    this.quotationService.getProductClauses(selectedProductCode).subscribe(res => {
-      this.clauses = res
-      // ✅ Ensure all mandatory clauses are selected on load
-      this.mandatoryProductClause = this.clauses.filter(clause => clause.isMandatory === 'Y');
-      this.productClause = this.mandatoryProductClause
-
-      // ✅ Mark mandatory clauses as checked
-      this.clauses.forEach(clause => {
-        clause.checked = clause.isMandatory === 'Y';
-      });
-    })
-
+    this.getProductClause({ code: selectedProductCode });
 
     // Close modal
     const closeBtn = document.querySelector('.btn-close') as HTMLElement;
     closeBtn?.click();
+
   }
 
 
@@ -1522,12 +1513,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   onRowSelect(product: any) {
     this.selectedRow = product.productCode;
-
-    // Reset modification flag when switching products
-    this.clausesModified = false;
-    sessionStorage.removeItem("clausesModified");
-
-    log.debug("selected product:", product.productCode);
     this.getProductClause(this.selectedRow);
   }
 
@@ -1574,7 +1559,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
 
       this.globalMessagingService.displaySuccessMessage('Success', 'Product removed successfully.');
-      log.debug('✅ Product deleted:', this.productDetails);
+      log.debug('✅ Product:', this.productDetails);
     } else {
       this.globalMessagingService.displayInfoMessage('Info', 'Product not found.');
     }
