@@ -228,24 +228,27 @@
 
           <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
             <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRowIndex !== ri"
-              [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product)">
+              [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product)"
+              class="hover:!bg-gray-50 !cursor-pointer transition-colors" title="Click to select row">
 
-              <!-- Product Dropdown Column -->
+              <!-- Product Dropdown Column (now with icon) -->
               <td class="flexible-header">
                 <p-cellEditor>
                   <ng-template pTemplate="input">
-                    <div class="form-group form-group-sm">
+                    <div class="form-group form-group-sm flex items-center gap-2">
+                      <i class="pi pi-hand-pointer text-gray-400"></i>
                       <p-dropdown [options]="ProductDescriptionArray" appendTo="body" [(ngModel)]="product.productCode"
                         optionLabel="description" [style]="{'width':'100%'}"
                         (onChange)="onProductChange($event.value, ri, product)">
                       </p-dropdown>
                     </div>
-
                   </ng-template>
                   <ng-template pTemplate="output">
-                    {{ product.productCode?.description }}
+                    <div class="flex items-center gap-2">
+                      <i class="pi pi-hand-pointer text-gray-400"></i>
+                      {{ product.productCode?.description }}
+                    </div>
                   </ng-template>
-
                 </p-cellEditor>
               </td>
 
@@ -260,7 +263,6 @@
                   <ng-template pTemplate="output">
                     {{ product.coverFrom | date: dateFormat }}
                   </ng-template>
-
                 </p-cellEditor>
               </td>
 
@@ -278,32 +280,30 @@
                 </p-cellEditor>
               </td>
 
+              <!-- Action Buttons -->
               <td class="flexible-header">
                 <div class="d-flex justify-content-end gap-2">
                   <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product)"
                     class="p-button-sm p-button-text p-button-info no-border">
                     Edit
                   </button>
-
                   <button *ngIf="editing" type="button" pSaveEditableRow (click)="onRowEditSaves(product)"
                     class="p-button-sm p-button-text p-button-success no-border">
                     Save
                   </button>
-
                   <button *ngIf="editing" type="button" pCancelEditableRow (click)="onRowEditCancels(product, ri)"
                     class="p-button-sm p-button-text p-button-secondary no-border">
                     Cancel
                   </button>
-
                   <button type="button" (click)="openProductDeleteModal(product)"
                     class="p-button-sm p-button-text p-button-danger no-border">
                     Delete
                   </button>
                 </div>
               </td>
-
             </tr>
           </ng-template>
+
 
           <ng-template pTemplate="emptymessage">
             <tr>
@@ -315,7 +315,7 @@
         </p-table>
       </div>
 
-      <!-- Add Product Details  Modal -->
+      <!-- Add Product Modal -->
       <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
@@ -333,8 +333,6 @@
                     <p-dropdown [options]="ProductDescriptionArray" formControlName="productCodes"
                       optionLabel="description" filterBy="filterText" [filter]="true" [showClear]="true"
                       placeholder="Select Product" class="custom-multiselect">
-
-
 
 
                       <ng-template pTemplate="empty">
@@ -389,7 +387,7 @@
                     id="cancelDetails">
                     Cancel
                   </button>
-                  <button type="button" class="btn btn-primary" id="saveDetails" (click)="submitForm()">
+                  <button type="button" class="btn btn-primary" id="saveDetails" (click)="submitAddProductForm()">
                     {{ 'gis.quotation.save_details' | translate }}
                   </button>
                 </div>
@@ -476,20 +474,20 @@
 
         <ng-template pTemplate="header">
           <tr>
-            <th class="flexible-header1" style="width: 3%" pSortableColumn="id">
+            <th class="flexible-header1" style="width: 18%" pSortableColumn="id">
               ID <p-sortIcon field="id" />
             </th>
-            <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">
+            <th class="flexible-header1" style="width: 18%" pSortableColumn="heading">
               Heading <p-sortIcon field="heading" />
             </th>
-            <th class="flexible-header1" style="width: 50%" pSortableColumn="wording">
+            <th class="flexible-header1" style="width: 45%" pSortableColumn="wording">
               Wording <p-sortIcon field="wording" />
             </th>
             <th class="flexible-header1" style="width: 15%">Actions</th>
           </tr>
           <tr>
-            <th><input type="text" class="form-control form-control-sm" [(ngModel)]="idSearch"
-                (input)="filterById($event)" placeholder="Search ID"></th>
+            <th><input type="text" class="form-control form-control-sm" [(ngModel)]="shortDescriptionSearch"
+                (input)="filterByshortDescription($event)" placeholder="Search Short description"></th>
             <th><input type="text" class="form-control form-control-sm" [(ngModel)]="headingSearch"
                 (input)="filterByHeading($event)" placeholder="Search Heading"></th>
             <th><input type="text" class="form-control form-control-sm" [(ngModel)]="wordingSearch"
@@ -511,6 +509,9 @@
                   style="color: #00529B; margin-right:16px; margin-left:10px; cursor:pointer;" data-bs-toggle="modal"
                   data-bs-target="#editClause" (click)="populateEditClauseModal(clause)">
                   {{ 'gis.quotation.edit' | translate }}
+                </span>
+                <span *ngIf="clause.isEditable === 'N'" class="fw-bold text-xl">
+                  --
                 </span>
                 <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold"
                   style="color: #00529B; cursor:pointer;" data-bs-toggle="modal" data-bs-target="#deleteClause"
