@@ -331,11 +331,18 @@
                     <br>
                     <label for="" class="quote-label">Product</label>
                     <p-dropdown [options]="ProductDescriptionArray" formControlName="productCodes"
-                      optionLabel="description" filterBy="filterText" [filter]="true" [showClear]="true"
+                      optionLabel="filterText" filterBy="filterText" [filter]="true" [showClear]="true"
                       placeholder="Select Product" class="custom-multiselect">
 
+                             
+                     <ng-template let-product pTemplate="item">
+                     <div>{{ product?.description }}</div>
+                      </ng-template>
 
-
+                          
+                       <ng-template let-product pTemplate="selectedItem">
+                       <div>{{ product?.description }}</div>
+                       </ng-template>          
 
                       <ng-template pTemplate="empty">
                         <div class="text-danger px-2 py-1">
