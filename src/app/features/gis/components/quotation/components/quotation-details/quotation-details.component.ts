@@ -142,6 +142,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   mandatoryProductClause: ProductClauseDTO[] = [];
   nonMandatoryProductClause: ProductClauseDTO[] = [];
   productClause: ProductClauseDTO[] = [];
+  deleteCandidateProductCode: string | null = null;
+
 
   constructor(
     public bankService: BankService,
@@ -1531,12 +1533,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   openProductDeleteModal(product: any) {
-    if (!product) {
+    if (!product ||!product.productCode?.code) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select a product to continue');
       return;
     }
 
-    this.selectedRow = product;
+    this.deleteCandidateProductCode = product.productCode.code;
 
     // Directly open the modal using Bootstrap
     const modalElement = document.getElementById('deleteProduct');
@@ -1550,13 +1552,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   deleteProduct() {
-    if (!this.selectedRow || !this.selectedRow.productCode?.code) {
+    if (!this.deleteCandidateProductCode) {
       this.globalMessagingService.displayInfoMessage('Error', 'No product selected for deletion.');
       return;
     }
 
     const productIndex = this.productDetails.findIndex(
-      (product: any) => product.productCode.code === this.selectedRow.productCode.code
+      (product: any) => product.productCode.code === this.deleteCandidateProductCode
     );
 
     if (productIndex !== -1) {
@@ -1576,6 +1578,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     } else {
       this.globalMessagingService.displayInfoMessage('Info', 'Product not found.');
     }
+    this.deleteCandidateProductCode = null;
   }
 
 
