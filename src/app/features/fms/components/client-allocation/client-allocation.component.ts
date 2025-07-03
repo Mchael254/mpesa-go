@@ -1444,17 +1444,19 @@ export class ClientAllocationComponent {
           this.fileIsUploaded = true;
           this.fetchDocByDocId(this.globalDocId);
         },
-        error: (error) => {
+        error: (err) => {
+          const backendError =  err.error?.status || err.error?.msg || err.statusText || 'The specific reason is unavailable.';
+           const fullMessage = `The document could not be posted to DMS.\n\nReason: ${backendError}`;
           this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error?.error || 'Failed to upload receipt'
+            `Failed to upload receipt document`,fullMessage
+           
           );
         },
       });
     } catch (error) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'Error preparing file upload'
+        'Failed to prepare file for upload'
       );
     }
   }
