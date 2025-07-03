@@ -249,7 +249,7 @@ export class DynamicSetupTableComponent implements OnInit {
     }
 
     this.saveDetailsData.emit({
-      data: savedFields,
+      data: this.tableData,
       subGroupId: this.subGroupId
     });
 
