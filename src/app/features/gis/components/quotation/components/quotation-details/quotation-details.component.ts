@@ -142,6 +142,11 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   mandatoryProductClause: ProductClauseDTO[] = [];
   nonMandatoryProductClause: ProductClauseDTO[] = [];
   productClause: ProductClauseDTO[] = [];
+  deleteCandidateProductCode: string | null = null;
+
+
+  
+  
 
   constructor(
     public bankService: BankService,
@@ -244,7 +249,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       this.mandatoryProductClause = res.filter(c => c.isMandatory === 'Y');
       this.nonMandatoryProductClause = res.filter(c => c.isMandatory === 'N');
       this.productClause = this.mandatoryProductClause;
-      log.debug("mandatory clauses", this.productClause)
       this.sessionClauses = [...this.productClause];
 
       allClausesMap[productCode] = {
@@ -329,74 +333,19 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectedProductClause: any = {
+  selectedDummyClause: any = {
     id: '',
     heading: '',
     wording: ''
   };
-  originalClauseBeforeEdit: any = null;
-
-  wasModified(): boolean {
-    if (!this.selectedProductClause || !this.originalClauseBeforeEdit) return false;
-
-    const newWording = this.selectedProductClause.wording?.trim();
-    const oldWording = this.originalClauseBeforeEdit.wording?.trim();
-
-    return newWording !== oldWording && newWording.length > 0;
-  }
-
 
   populateEditClauseModal(clause: any) {
-    this.selectedProductClause = { ...clause };
-    this.originalClauseBeforeEdit = { ...clause };
+    this.selectedDummyClause = { ...clause };
   }
 
   editClause() {
-    if (!this.selectedProductClause) return;
-
-    const replaceClause = (list: any[]) =>
-      list.map(c => c.shortDescription === this.selectedProductClause.shortDescription ? { ...this.selectedProductClause } : c);
-
-    this.sessionClauses = replaceClause(this.sessionClauses);
-    this.productClause = replaceClause(this.productClause);
-
-    const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
-    if (allClausesMap[this.productCode]) {
-      allClausesMap[this.productCode] = {
-        ...allClausesMap[this.productCode],
-        productClause: this.productClause,
-        clausesModified: true
-      };
-      sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
-    }
-
-    this.selectedProductClause = { id: '', heading: '', wording: '' };
-    this.globalMessagingService.displaySuccessMessage('success', 'Clause edited successfully');
+    this.globalMessagingService.displaySuccessMessage('success', 'clause edited successfully')
   }
-
-  //delete product clause
-  clauseToDelete: any = null;
-  prepareDeleteClause(clause: any) {
-    this.clauseToDelete = clause;
-  }
-
-  deleteProductClause() {
-    if (!this.clauseToDelete) return;
-    this.sessionClauses = this.sessionClauses.filter(c => c.shortDescription !== this.clauseToDelete.shortDescription);
-    this.productClause = this.productClause.filter(c => c.shortDescription !== this.clauseToDelete.shortDescription);
-
-    const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
-    if (allClausesMap[this.productCode]) {
-      allClausesMap[this.productCode].productClause = this.productClause;
-      allClausesMap[this.productCode].clausesModified = true;
-      sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
-      this.clauseToDelete = null;
-    }
-    this.globalMessagingService.displaySuccessMessage('success', 'Clause deleted successfully');
-
-
-  }
-
 
 
   ngOnDestroy(): void {
@@ -988,7 +937,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
    */
   updateCoverToDate(date) {
     log.debug("Cover from date:", date)
-    const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
+        const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
     log.debug("Selected product:", selectedProduct)
 
     const coverFromDate = date;
@@ -1451,7 +1400,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
     const selectedProductCode = selectedProduct.code
-    log.debug('Selected product CODE', selectedProductCode)
+    log.debug('Selected product CODE',selectedProductCode)
     if (!this.productDetails) {
       this.productDetails = [];
     }
@@ -1520,6 +1469,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   onRowSelect(product: any) {
     this.selectedRow = product.productCode;
+    this.selectedProduct=product;
 
     // Reset modification flag when switching products
     this.clausesModified = false;
@@ -1528,35 +1478,35 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("selected product:", product.productCode);
     this.getProductClause(this.selectedRow);
   }
-
-
-  openProductDeleteModal(product: any) {
-    if (!product) {
-      this.globalMessagingService.displayInfoMessage('Error', 'Select a product to continue');
-      return;
-    }
-
-    this.selectedRow = product;
-
-    // Directly open the modal using Bootstrap
-    const modalElement = document.getElementById('deleteProduct');
-    if (modalElement) {
-      const modal = new (window as any).bootstrap.Modal(modalElement);
-      modal.show();
-    } else {
-      console.error("❌ Modal with ID 'deleteProduct' not found in DOM.");
-    }
+  
+  
+openProductDeleteModal(product: any) {
+  if (!product ||!product.productCode?.code) {
+    this.globalMessagingService.displayInfoMessage('Error', 'Select a product to continue');
+    return;
   }
-
+  
+  this.deleteCandidateProductCode  = product.productCode.code;
+  
+  // Directly open the modal using Bootstrap
+  const modalElement = document.getElementById('deleteProduct');
+  if (modalElement) {
+    const modal = new (window as any).bootstrap.Modal(modalElement);
+    modal.show();
+  } else {
+    console.error("❌ Modal with ID 'deleteProduct' not found in DOM.");
+  }
+}
+  
 
   deleteProduct() {
-    if (!this.selectedRow || !this.selectedRow.productCode?.code) {
+    if (!this.deleteCandidateProductCode) {
       this.globalMessagingService.displayInfoMessage('Error', 'No product selected for deletion.');
       return;
     }
 
     const productIndex = this.productDetails.findIndex(
-      (product: any) => product.productCode.code === this.selectedRow.productCode.code
+      (product: any) => product.productCode.code === this.deleteCandidateProductCode
     );
 
     if (productIndex !== -1) {
@@ -1576,6 +1526,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     } else {
       this.globalMessagingService.displayInfoMessage('Info', 'Product not found.');
     }
+    this.deleteCandidateProductCode = null;
   }
 
 
