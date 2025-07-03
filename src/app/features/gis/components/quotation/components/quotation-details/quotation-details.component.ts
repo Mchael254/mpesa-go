@@ -125,6 +125,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   mandatoryProductClause: ProductClauseDTO[] = [];
   nonMandatoryProductClause: ProductClauseDTO[] = [];
   productClause: ProductClauseDTO[] = [];
+  deleteCandidateProductCode: string | null = null;
+
 
   constructor(
     public bankService: BankService,
@@ -1361,13 +1363,18 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   onProductChange(selected: any, rowIndex: number, product: any) {
     // Only update if the product actually changed
-    if (product.productCode?.code !== selected.code) {
-      product.productCode = selected;
 
-      // Optional: save to session storage
-      sessionStorage.setItem(`product_${rowIndex}`, JSON.stringify(product));
-      console.log("Updated product:", product);
-    }
+    // if (product.productCode?.code !== selected.code) {
+    //   product.productCode = selected;
+    product._pendingProductCode = selected;
+    console.log("Product change pending - will apply on save");
+
+  
+    //   // Optional: save to session storage
+    //   sessionStorage.setItem(`product_${rowIndex}`, JSON.stringify(product));
+    //   console.log("Updated product:", product);
+    // }
+
   }
 
 
@@ -1511,12 +1518,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   openProductDeleteModal(product: any) {
-    if (!product) {
+    if (!product ||!product.productCode?.code) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select a product to continue');
       return;
     }
 
-    this.selectedRow = product;
+    this.deleteCandidateProductCode = product.productCode.code;
 
     // Directly open the modal using Bootstrap
     const modalElement = document.getElementById('deleteProduct');
@@ -1530,13 +1537,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   deleteProduct() {
-    if (!this.selectedRow || !this.selectedRow.productCode?.code) {
+    if (!this.deleteCandidateProductCode) {
       this.globalMessagingService.displayInfoMessage('Error', 'No product selected for deletion.');
       return;
     }
 
     const productIndex = this.productDetails.findIndex(
-      (product: any) => product.productCode.code === this.selectedRow.productCode.code
+      (product: any) => product.productCode.code === this.deleteCandidateProductCode
     );
 
     if (productIndex !== -1) {
@@ -1556,6 +1563,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     } else {
       this.globalMessagingService.displayInfoMessage('Info', 'Product not found.');
     }
+    this.deleteCandidateProductCode = null;
   }
 
 
@@ -1589,48 +1597,47 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
 
-  onRowEditInits(product: any) {
+  onRowEditInits(product: any,index:any) {
     this.clonedProducts[product.productCode.code] = { ...product };
+    this.selectedEditRowIndex = index;
+
     log.debug('Editing row:', product);
   }
 
   onRowEditSaves(product: any) {
     const coverFromDate = product.coverFrom;
     const coverToDate = product.coverTo;
-
+  
+    // If there's a pending product code from dropdown selection, finalize it
+    if (product._pendingProductCode) {
+      product.productCode = product._pendingProductCode;
+      product.productName = product._pendingProductCode.description;
+      delete product._pendingProductCode;
+    }
+  
+    // Ensure required values exist
     if (coverFromDate && coverToDate && product.productCode?.code) {
-      // Clean assignment (optional, if values are changed before save)
       product.coverFrom = new Date(coverFromDate);
       product.coverTo = new Date(coverToDate);
-
-
-      product.productName = product.productCode.description;
-
-
-      this.productDetails = this.productDetails.map(item => {
-        if (item.productCode.code === product.productCode.code) {
-          return {
-            ...item,
-            ...product,
-            productCode: {
-              ...item.productCode,
-              ...product.productCode
-            }
-          };
-        }
-        return item;
-      });
-
+  
+      // ✅ Update using row index instead of matching by productCode
+      if (this.selectedEditRowIndex !== undefined) {
+        this.productDetails[this.selectedEditRowIndex] = {
+          ...product,
+          productCode: { ...product.productCode }
+        };
+      }
+  
       sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
       log.debug("Saved to sessionStorage:", JSON.parse(sessionStorage.getItem('productFormDetails')));
-
+  
       delete this.clonedProducts[product.productCode.code];
-
-      // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Row updated successfully' });
     } else {
+      // Optionally show validation errors
       // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill in all required fields' });
     }
   }
+  
 
   onRowEditCancels(product: any, index: number) {
     const code = product.productCode.code;

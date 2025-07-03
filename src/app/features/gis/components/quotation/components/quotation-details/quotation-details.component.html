@@ -235,9 +235,8 @@
               <td class="flexible-header">
                 <p-cellEditor>
                   <ng-template pTemplate="input">
-                    <div class="form-group form-group-sm flex items-center gap-2">
-                      <i class="pi pi-hand-pointer text-gray-400"></i>
-                      <p-dropdown [options]="ProductDescriptionArray" appendTo="body" [(ngModel)]="product.productCode"
+                    <div class="form-group form-group-sm">
+                      <p-dropdown [options]="ProductDescriptionArray" appendTo="body" [ngModel]="product.productCode"
                         optionLabel="description" [style]="{'width':'100%'}"
                         (onChange)="onProductChange($event.value, ri, product)">
                       </p-dropdown>
@@ -283,7 +282,7 @@
               <!-- Action Buttons -->
               <td class="flexible-header">
                 <div class="d-flex justify-content-end gap-2">
-                  <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product)"
+                  <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product,ri)"
                     class="p-button-sm p-button-text p-button-info no-border">
                     Edit
                   </button>
@@ -331,9 +330,18 @@
                     <br>
                     <label for="" class="quote-label">Product</label>
                     <p-dropdown [options]="ProductDescriptionArray" formControlName="productCodes"
-                      optionLabel="description" filterBy="filterText" [filter]="true" [showClear]="true"
+                      optionLabel="filterText" filterBy="filterText" [filter]="true" [showClear]="true"
                       placeholder="Select Product" class="custom-multiselect">
 
+                             
+                     <ng-template let-product pTemplate="item">
+                     <div>{{ product?.description }}</div>
+                      </ng-template>
+
+                          
+                       <ng-template let-product pTemplate="selectedItem">
+                       <div>{{ product?.description }}</div>
+                       </ng-template>          
 
                       <ng-template pTemplate="empty">
                         <div class="text-danger px-2 py-1">
