@@ -282,7 +282,7 @@
               <!-- Action Buttons -->
               <td class="flexible-header">
                 <div class="d-flex justify-content-end gap-2">
-                  <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product,ri)"
+                  <button *ngIf="!editing" type="button" pInitEditableRow (click)="  onRowEditInits(product,ri)"
                     class="p-button-sm p-button-text p-button-info no-border">
                     Edit
                   </button>
@@ -295,9 +295,11 @@
                     Cancel
                   </button>
                   <button type="button" (click)="openProductDeleteModal(product)"
-                    class="p-button-sm p-button-text p-button-danger no-border">
+                    class="p-button-sm p-button-text p-button-danger no-border" data-bs-toggle="modal"
+                    data-bs-target="#deleteProductModal">
                     Delete
                   </button>
+
                 </div>
               </td>
             </tr>
@@ -333,15 +335,15 @@
                       optionLabel="filterText" filterBy="filterText" [filter]="true" [showClear]="true"
                       placeholder="Select Product" class="custom-multiselect">
 
-                             
-                     <ng-template let-product pTemplate="item">
-                     <div>{{ product?.description }}</div>
+
+                      <ng-template let-product pTemplate="item">
+                        <div>{{ product?.description }}</div>
                       </ng-template>
 
-                          
-                       <ng-template let-product pTemplate="selectedItem">
-                       <div>{{ product?.description }}</div>
-                       </ng-template>          
+
+                      <ng-template let-product pTemplate="selectedItem">
+                        <div>{{ product?.description }}</div>
+                      </ng-template>
 
                       <ng-template pTemplate="empty">
                         <div class="text-danger px-2 py-1">
@@ -408,20 +410,24 @@
       </div>
 
       <!-- Delete Product Modal -->
-      <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content position-relative" id="deleteProduct">
-            <!-- Close button -->
-            <button type="button" class="btn-close  custom-close  position-absolute top-0 end-0 m-3 z-3"
-              data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+          <div class="modal-content ps-4 pt-2 pe-4">
+            <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+              <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                Delete product
+              </p>
+              <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                style="border: none;">X</button>
+            </div>
 
-            <div class="modal-body ">
-              <p class="deleteMessage mt-4 mb-4">{{
-                'gis.policy.are_you_sure_you_want_to_delete' |
-                translate
-                }}</p>
-              <div class="d-flex justify-content-center mb-3">
+            <div class="d-flex justify-content-between text-black">
+              <p>Are you sure you want to delete product
+                <strong>{{ productToDelete?.productName }}</strong>?
+              </p>
+            </div>
+
+            <div class="d-flex justify-content-center mb-3">
                 <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
                   (click)="deleteProduct()">{{
                   'gis.policy.yes_delete'
@@ -434,11 +440,10 @@
                   'gis.policy.no_im_not' | translate }}
                 </button>
               </div>
-            </div>
-
           </div>
         </div>
       </div>
+
 
       <div class="row mb-4" [formGroup]='quotationForm'>
       </div>
@@ -512,21 +517,32 @@
               {{ clause.wording | truncate:10 }}
             </td>
             <td style="text-align: right">
-              <div class="flex justify-end gap-2">
-                <span *ngIf="clause.isEditable === 'Y'" class="p-button-label p-text-bold"
-                  style="color: #00529B; margin-right:16px; margin-left:10px; cursor:pointer;" data-bs-toggle="modal"
-                  data-bs-target="#editClause" (click)="populateEditClauseModal(clause)">
-                  {{ 'gis.quotation.edit' | translate }}
+              <div class="flex justify-end items-center gap-2">
+                <!-- Edit -->
+                <span class="p-button-label p-text-bold text-center" [ngStyle]="{
+                    color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280', 
+                    marginRight: '16px',
+                    marginLeft: '10px',
+                    cursor: clause.isEditable === 'Y' ? 'pointer' : 'default',
+                    display: 'inline-block',
+                    width: '60px'  
+                    }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
+                  [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
+                  (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
+                  {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
                 </span>
-                <span *ngIf="clause.isEditable === 'N'" class="fw-bold text-xl">
-                  --
-                </span>
-                <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold"
-                  style="color: #00529B; cursor:pointer;" data-bs-toggle="modal" data-bs-target="#deleteClause"
-                  (click)="prepareDeleteClause(clause)">
+
+                <!-- Delete -->
+                <span class="p-button-label p-text-bold text-center" [ngStyle]="{
+                    color: clause.isMandatory === 'N' ? '#00529B' : '#9CA3AF', 
+                    cursor: clause.isMandatory === 'N' ? 'pointer' : 'not-allowed'
+                  }" [attr.data-bs-toggle]="clause.isMandatory === 'N' ? 'modal' : null"
+                  [attr.data-bs-target]="clause.isMandatory === 'N' ? '#deleteClause' : null"
+                  (click)="clause.isMandatory === 'N' && prepareDeleteClause(clause)">
                   {{ 'gis.quotation.delete' | translate }}
                 </span>
               </div>
+
             </td>
           </tr>
         </ng-template>
