@@ -190,13 +190,30 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.minDate = new Date();
-    this.todaysDate = new Date();
-    this.coverToDate = new Date(this.todaysDate);
-     this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);
+    // this.todaysDate = new Date();
+    // this.coverToDate = new Date(this.todaysDate);
+    //  this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);
     this.fetchQuotationRelatedData()
     this.getuser();
     this.createQuotationForm();
     this.createQuotationProductForm();
+
+
+    this.quotationProductForm.get('productCodes')?.valueChanges.subscribe(product => {
+      if (product) {
+        const today = new Date();
+        const oneYearLater = new Date(today);
+        oneYearLater.setFullYear(today.getFullYear() + 1);
+  
+        this.quotationProductForm.patchValue({
+          wef: today,
+          wet: oneYearLater
+        });
+  
+        
+        this.updateCoverToDate(today);
+      }
+    });
     this.quoteToEditData = JSON.parse(sessionStorage.getItem("quoteToEditData"));
     log.debug("quote data to edit: ", this.quoteToEditData);
 
@@ -647,8 +664,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       productShortDescription: [''],
       quotationNo: [''],
       premium: [0],
-      wef: [this.todaysDate, Validators.required],
-      wet: [this.coverToDate, Validators.required],
+      wef: [null, Validators.required],
+      wet: [null, Validators.required],
       revisionNo: [0],
       totalSumInsured: [0],
       commission: [0],
