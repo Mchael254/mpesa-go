@@ -38,8 +38,8 @@ export interface FieldModel {
   placeholder: TranslatableText;
   isMandatory: boolean;
   options: any[];
+  appliesTo: AppliesToEnum;
   doc?: any;
-  appliesTo: "I" | "C" | "ALL";
 }
 
 export interface Validation {
@@ -58,4 +58,10 @@ export interface TranslatableText {
   en: string;
   ke: string;
   fr: string;
+}
+
+export enum AppliesToEnum {
+  Individual = "I",
+  Corporate = "C",
+  ALL = "ALL",
 }
