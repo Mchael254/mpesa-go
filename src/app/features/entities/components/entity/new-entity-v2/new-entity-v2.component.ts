@@ -9,9 +9,9 @@ import {MaritalStatusService} from "../../../../../shared/services/setups/marita
 import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
 import {PaymentModesService} from "../../../../../shared/services/setups/payment-modes/payment-modes.service";
 import {PaymentModesDto} from "../../../../../shared/data/common/payment-modes-dto";
-import {BankBranchDTO, BankDTO} from "../../../../../shared/data/common/bank-dto";
+import {BankBranchDTO, BankDTO, CurrencyDTO} from "../../../../../shared/data/common/bank-dto";
 import {BankService} from "../../../../../shared/services/setups/bank/bank.service";
-import {CountryDto} from "../../../../../shared/data/common/countryDto";
+import {CountryDto, PostalCodesDTO, StateDto, TownDto} from "../../../../../shared/data/common/countryDto";
 import {CountryService} from "../../../../../shared/services/setups/country/country.service";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
@@ -22,6 +22,8 @@ import { ClientTitlesDto, ClientTypeDTO} from "../../../data/ClientDTO";
 import {EntityService} from "../../../services/entity/entity.service";
 import {PartyTypeDto} from "../../../data/partyTypeDto";
 import {ClientService} from "../../../services/client/client.service";
+import {IdentityModeDTO} from "../../../data/entityDto";
+import {CurrencyService} from "../../../../../shared/services/setups/currency/currency.service";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -65,9 +67,14 @@ export class NewEntityV2Component implements OnInit {
   banks: BankDTO[] = [];
   bankBranches: BankBranchDTO[] = [];
   countries: CountryDto[] = [];
+  states: StateDto[] = [];
+  towns: TownDto[] = [];
+  postalCodes: PostalCodesDTO[] = []
   roles: PartyTypeDto[] = [];
   clientTypes: ClientTypeDTO[] = [];
   clientTitles: ClientTitlesDto[] = [];
+  idTypes: IdentityModeDTO[] = [];
+  currencies: CurrencyDTO[] = [];
 
   selectedMaritalStatus: MaritalStatus = null;
   selectedPaymentMode: PaymentModesDto;
@@ -75,9 +82,13 @@ export class NewEntityV2Component implements OnInit {
   selectedBankBranch: BankBranchDTO;
   selectedAddressCountry: CountryDto = null;
   selectedCitizenshipCountry: CountryDto = null;
+  selectedState: StateDto = null;
+  selectedTown: TownDto = null;
+  selectedPostalCode: PostalCodesDTO = null;
   selectedRole: PartyTypeDto = null;
   selectedClientTitle: ClientTitlesDto = null;
-  // selectedIdType: ClientTitlesDto = null;
+  selectedIdType: IdentityModeDTO = null;
+  selectedCurrency: CurrencyDTO = null;
 
   wealthAmlFormFields: FieldModel[] = [];
   corporateContactDetailsFormField: FieldModel[] = [];
@@ -90,6 +101,13 @@ export class NewEntityV2Component implements OnInit {
   privacyPolicyFormFields: FieldModel[] = [];
   payeeDetailsFormFields: FieldModel[] = [];
   branchDetailsFormFields: FieldModel[] = [];
+
+  wealthAmlDetails: any[] = [];
+  contactPersonDetails: any[] = [];
+  branchDetails: any[] = [];
+  payeeDetails: any[] = [];
+  ownershipDetails: any[] = [];
+  cr12Details: any[] = [];
 
   shouldUploadProfilePhoto: boolean = false;
 
@@ -111,6 +129,7 @@ export class NewEntityV2Component implements OnInit {
     private clientTypeService: ClientTypeService,
     private entityService: EntityService,
     private clientService: ClientService,
+    private currencyService: CurrencyService,
   ) {
 
     this.uploadForm = this.fb.group({
@@ -201,9 +220,9 @@ export class NewEntityV2Component implements OnInit {
 
       this.entityForm.addControl(section.groupId, group);
     });
-
     log.info('Adding fields to sections', this.entityForm);
   }
+
 
   /**
    * add fields to the upload form section
@@ -296,7 +315,8 @@ export class NewEntityV2Component implements OnInit {
     } else if(formValues.role === 'client' && formValues.category === 'corporate') {
       visibleFormFields = fields.filter((field: FieldModel) => field.visible &&
         field.subGroupId !== 'contact_person_details' && field.subGroupId !== 'privacy_policy' &&
-        field.subGroupId !== 'payee_details' && field.subGroupId !== 'branch_details');
+        field.subGroupId !== 'payee_details' && field.subGroupId !== 'branch_details' &&
+        field.groupId !== 'wealth_aml_details');
     }
 
 
@@ -315,12 +335,12 @@ export class NewEntityV2Component implements OnInit {
     this.formGroupSections = formGroupSections;
     this.addFieldsToSections(formGroupSections);
     this.wealthAmlFormFields = fields.filter(field => field.subGroupId === 'wealth_aml_details');
-    this.corporateContactDetailsFormField = fields.filter(field => field.subGroupId === 'contactPersonDetails');
-    this.corporateAddressDetailsFormField = fields.filter(field => field.subGroupId === 'branchDetails');
+    this.corporateContactDetailsFormField = fields.filter(field => field.subGroupId === 'contact_person_details');
+    this.corporateAddressDetailsFormField = fields.filter(field => field.subGroupId === 'branch_details');
     this.corporateFinancialDetailsFormField = fields.filter(field => field.subGroupId === 'payeeDetails');
-    this.corporateWealthAmlFormFieldsDetailsFormField = fields.filter(field => field.subGroupId === 'amlDetails');
-    this.corporateWealthCR12DetailsFormField = fields.filter(field => field.subGroupId === 'cr12Details');
-    this.corporateWealthOwnershipDetailsFormField = fields.filter(field => field.subGroupId === 'ownershipDetails');
+    this.corporateWealthAmlFormFieldsDetailsFormField = fields.filter(field => field.subGroupId === 'aml_details');
+    this.corporateWealthCR12DetailsFormField = fields.filter(field => field.subGroupId === 'cr12_details');
+    this.corporateWealthOwnershipDetailsFormField = fields.filter(field => field.subGroupId === 'ownership_details');
     this.privacyPolicyFormFields = fields.filter(field => field.subGroupId === 'privacy_policy');
     this.payeeDetailsFormFields = fields.filter(field => field.subGroupId === 'payee_details');
     this.branchDetailsFormFields = fields.filter(field => field.subGroupId === 'branch_details');
@@ -363,9 +383,12 @@ export class NewEntityV2Component implements OnInit {
         Object.entries(formValues).filter(([_, value]) => value != null && value !== '')
       );*/
 
+      this.saveIndividualClient(formValues, upperDetails);
       if (uploadFormValues.category === 'individual') {
         this.saveIndividualClient(formValues, upperDetails);
-      } else if (uploadFormValues.category === 'corporate') {}
+      } else if (uploadFormValues.category === 'corporate') {
+
+      }
 
     } else {
       this.entityForm.markAllAsTouched(); // show validation errors
@@ -373,8 +396,8 @@ export class NewEntityV2Component implements OnInit {
 
   }
 
-  saveIndividualClient(formValues, upperDetails): void {
 
+  saveIndividualClient(formValues, upperDetails): void {
     const payloadObject = {
       ...formValues.prime_identity,
       ...formValues.contact_details,
@@ -391,10 +414,10 @@ export class NewEntityV2Component implements OnInit {
       countryId: this.selectedAddressCountry?.id,
       houseNumber: payloadObject.houseNo,
       physicalAddress: payloadObject.physicalAddress,
-      postalCode: payloadObject.postalCode,
+      postalCode: 22001 /*parseInt(payloadObject.postalCode)*/,
       road: payloadObject.road,
-      townId: payloadObject.cityTown,
-      stateId: payloadObject.countyState,
+      townId: this.selectedTown?.id,
+      stateId: this.selectedState?.id,
       utilityAddressProof: null,
       isUtilityAddress: "N"
     }
@@ -403,7 +426,7 @@ export class NewEntityV2Component implements OnInit {
       emailAddress: payloadObject.email,
       phoneNumber: payloadObject.telNumber?.internationalNumber,
       smsNumber: payloadObject.smsNumber?.internationalNumber,
-      titleId: this.selectedClientTitle.id,
+      titleId: this.selectedClientTitle?.id,
       contactChannel: payloadObject.preferedChannel,
       websiteUrl: payloadObject.websiteUrl,
       socialMediaUrl: payloadObject.socialMediaUrl,
@@ -412,14 +435,15 @@ export class NewEntityV2Component implements OnInit {
     const paymentDetails = {
       accountNumber: payloadObject.accountNumber,
       bankBranchId: payloadObject.branchId,
-      currencyId: payloadObject.currencyId,
+      currencyId: this.selectedCurrency?.id,
       preferedChannel: this.selectedPaymentMode?.description,
       mpayno: null,
-      iban: null,
-      swiftCode: null
+      iban: payloadObject.intlBankAccountNumber,
+      swiftCode: payloadObject.swiftCode
     }
 
-    const wealthAmlDetails = [ // todo: add wealthAml details
+    const wealthAmlDetails = this.wealthAmlDetails;
+      /*[ // todo: add wealthAml details
       {
         fundsSource: "1",
         employmentStatus: "SELF_EMPLOYED",
@@ -429,7 +453,13 @@ export class NewEntityV2Component implements OnInit {
         premiumFrequency: "ad-hoc",
         distributeChannel: "email"
       }
-    ]
+    ]*/
+
+    const branches = this.branchDetails;
+    const contactPersons = this.contactPersonDetails;
+    const payee = this.payeeDetails;
+    const ownershipDetails = this.ownershipDetails;
+    const cr12Details = this.cr12Details;
 
 
     const client: any = { // todo: update Model (ClientDTO)
@@ -437,26 +467,29 @@ export class NewEntityV2Component implements OnInit {
       contactDetails,
       paymentDetails,
       wealthAmlDetails,
-      branches: [],
-      contactPersons: [],
-      payee: [],
-      ownershipDetails: [],
+      branches,
+      contactPersons,
+      payee,
+      ownershipDetails,
+      cr12Details,
       withEffectFromDate: payloadObject.wef,
       withEffectToDate: payloadObject.wet,
       firstName: payloadObject.otherNames,
       gender: payloadObject.gender,
       lastName: payloadObject.lastName,
-      pinNumber: payloadObject.pinNumber,
+      pinNumber: payloadObject.pinNumber /*A487438114W*/,
       category: payloadObject.category,
       countryId: this.selectedAddressCountry?.id,
-      clientTypeId: "13",
+      clientTypeId: "13" || "14",
       dateOfBirth: payloadObject.dateOfBirth,
-      modeOfIdentityId: "1",
-      idNumber: payloadObject.idNumber /*"37678960"*/,
+      modeOfIdentityId: this.selectedIdType?.id,
+      idNumber: payloadObject.idNumber /*"37678960"*/ /*99245/6789Z*/,
       branchId: 338,
-      maritalStatus: this.selectedMaritalStatus?.value/*"S"*/
+      maritalStatus: this.selectedMaritalStatus?.value/*"S"*/,
+      partyId: 3661
     };
 
+    log.info(`clientDto >>> `, client, this.selectedClientTitle);
 
     this.clientService.saveClientDetails2(client).subscribe({
       next: (response) => {
@@ -465,7 +498,7 @@ export class NewEntityV2Component implements OnInit {
       error: (error) => {}
     })
 
-    log.info(`clientDto >>> `, client);
+
   }
 
 
@@ -477,10 +510,11 @@ export class NewEntityV2Component implements OnInit {
   processSelectOption(event: any, fieldId: string) : void {
     const selectedOption = event.target.value;
     const formValues = this.uploadForm.getRawValue();
-    log.info(`processSelectOptions >>> `, selectedOption, fieldId, this.uploadForm.getRawValue());
+    log.info(`processSelectOptions >>> `, selectedOption, fieldId);
 
     switch (fieldId) {
       case 'modeOfIdentityId':
+        this.selectedIdType = this.idTypes.find((type) => type.name === selectedOption);
         this.idType = selectedOption;
         break;
       case 'idType':
@@ -501,14 +535,29 @@ export class NewEntityV2Component implements OnInit {
       case 'citizenshipCountryId':
         this.selectedCitizenshipCountry = this.countries.find((c: CountryDto) => c.name === selectedOption);
         break;
+      case 'countyState':
+        this.selectedState = this.states.find((state: StateDto) => state.name === selectedOption);
+        break;
+      case 'cityTown':
+        this.selectedTown = this.towns.find((town: TownDto) => town.name === selectedOption);
+        break;
+      case 'postalCode':
+        this.selectedPostalCode = this.postalCodes.find((postalCode: PostalCodesDTO) => postalCode.zipCode === selectedOption);
+        break;
       case 'titleId':
         this.selectedClientTitle = this.clientTitles.find((t: ClientTitlesDto) => t.description === selectedOption);
+        log.info(`selectedClientTitle >>> `, selectedOption, this.selectedClientTitle);
+        break;
+      case 'currencyId':
+        this.selectedCurrency = this.currencies.find((c: CurrencyDTO) => c.name === selectedOption);
+        log.info(`selectedCurrency >>> `, selectedOption, this.selectedClientTitle);
         break;
       case 'category':
       case 'role':
         this.createEntityForm();
         this.category = formValues.category;
         if (formValues.category && formValues.role) this.fetchFormFields(formValues.category);
+        this.idType = this.category ==='corporate' ? 'CERT_OF_INCOP_NUMBER' : 'NATIONAL_ID';
         this.updateOrganizationLabel(formValues.category);
         break;
       case 'organizationType':
@@ -603,14 +652,23 @@ export class NewEntityV2Component implements OnInit {
         break;
       case 'bankId':
         this.fetchBanks(sectionIndex, fieldIndex);
-        break
+        break;
       case 'bankBranchCode':
         this.fetchBankBranches(sectionIndex, fieldIndex);
-        break
+        break;
       case 'countryId':
       case 'citizenshipCountryId':
         this.fetchCountries(sectionIndex, fieldIndex);
-        break
+        break;
+      case 'countyState':
+        this.fetchStatesByCountryCode(sectionIndex, fieldIndex);
+        break;
+      case 'cityTown':
+        this.fetchTownsByStateCode(sectionIndex, fieldIndex);
+        break;
+      case 'postalCode':
+        this.fetchPostalCodeByTownCode(sectionIndex, fieldIndex);
+        break;
       case 'organizationType':
         this.fetchOrganizationTypes();
         break;
@@ -619,6 +677,12 @@ export class NewEntityV2Component implements OnInit {
         break;
       case 'titleId':
         this.fetchClientTitles(sectionIndex, fieldIndex)
+        break;
+      case 'modeOfIdentityId':
+        this.fetchIdTypes(sectionIndex, fieldIndex)
+        break;
+      case 'currencyId':
+        this.fetchCurrencies(sectionIndex, fieldIndex)
         break;
       default:
         log.info(`no fieldId found`)
@@ -708,17 +772,19 @@ export class NewEntityV2Component implements OnInit {
    * create an array of strings from marital object and assign to options of the marital status formField
    */
   fetchMaritalStatuses(sectionIndex:number, fieldIndex: number): void {
-        this.maritalStatusService.getMaritalStatus().subscribe({
-      next: (data: MaritalStatus[]) => {
-        this.maritalStatuses = data
-        const maritalStatusStringArr: string[] = data.map((status: MaritalStatus) => status.name);
-        this.formGroupSections[sectionIndex].fields[fieldIndex].options = maritalStatusStringArr
-        log.info(`maritalStatus: `, maritalStatusStringArr);
-      },
-      error: err => {
-        log.error(`could not fetch maritalStatus: `, err);
-      }
-    })
+    if (!(this.maritalStatuses.length > 0)) {
+      this.maritalStatusService.getMaritalStatus().subscribe({
+        next: (data: MaritalStatus[]) => {
+          this.maritalStatuses = data
+          const maritalStatusStringArr: string[] = data.map((status: MaritalStatus) => status.name);
+          this.formGroupSections[sectionIndex].fields[fieldIndex].options = maritalStatusStringArr
+          log.info(`maritalStatus: `, maritalStatusStringArr);
+        },
+        error: err => {
+          log.error(`could not fetch maritalStatus: `, err);
+        }
+      })
+    }
   }
 
 
@@ -729,17 +795,19 @@ export class NewEntityV2Component implements OnInit {
    * create an array of strings from paymentModes object and assign to options of the paymentModes formField
    */
   fetchPaymentModes(sectionIndex:number, fieldIndex: number): void {
-    this.paymentModesService.getPaymentModes().subscribe({
-      next: (data: PaymentModesDto[]) => {
-        this.paymentModes = data
-        const paymentModesStringArr: string[] = data.map((paymentMode: PaymentModesDto) => paymentMode.description);
-        this.formGroupSections[sectionIndex].fields[fieldIndex].options = paymentModesStringArr
-        log.info(`payment Modes: `, paymentModesStringArr);
-      },
-      error: err => {
-        log.error(`could not fetch payment modes: `, err);
-      }
-    })
+    if (!(this.paymentModes.length > 0)) {
+      this.paymentModesService.getPaymentModes().subscribe({
+        next: (data: PaymentModesDto[]) => {
+          this.paymentModes = data
+          const paymentModesStringArr: string[] = data.map((paymentMode: PaymentModesDto) => paymentMode.description);
+          this.formGroupSections[sectionIndex].fields[fieldIndex].options = paymentModesStringArr
+          log.info(`payment Modes: `, paymentModesStringArr);
+        },
+        error: err => {
+          log.error(`could not fetch payment modes: `, err);
+        }
+      })
+    }
   }
 
   /**
@@ -749,20 +817,22 @@ export class NewEntityV2Component implements OnInit {
    * create an array of strings from banks object and assign to options of the banks formField
    */
   fetchBanks(sectionIndex:number, fieldIndex: number): void {
-    const countryId: number = this.selectedAddressCountry?.id;
-    this.bankService.getBanks(countryId).subscribe({
-      next: (data: BankDTO[]) => {
-        this.banks = data
-        const bankStringArr: string[] = data.map((bank: BankDTO) => bank.name);
-        this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankStringArr
-        log.info(`banks: `, bankStringArr);
-      },
-      error: err => {
-        log.error(`could not fetch : `, err);
-        let errorMessage = err?.error?.message ?? err.message;
-        this.globalMessagingService.displayErrorMessage('Error', 'You have not selected a country!');
-      }
-    })
+    if(!(this.banks.length > 0)) {
+      const countryId: number = this.selectedAddressCountry?.id;
+      this.bankService.getBanks(countryId).subscribe({
+        next: (data: BankDTO[]) => {
+          this.banks = data
+          const bankStringArr: string[] = data.map((bank: BankDTO) => bank.name);
+          this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankStringArr
+          log.info(`banks: `, bankStringArr);
+        },
+        error: err => {
+          log.error(`could not fetch : `, err);
+          let errorMessage = err?.error?.message ?? err.message;
+          this.globalMessagingService.displayErrorMessage('Error', 'You have not selected a country!');
+        }
+      })
+    }
   }
 
 
@@ -772,22 +842,24 @@ export class NewEntityV2Component implements OnInit {
    * @param fieldIndex
    */
   fetchBankBranches(sectionIndex:number, fieldIndex: number): void {
-    const bankId: number = this.selectedBank?.id;
-    this.bankBranches = [];
-    log.info(`selected bank >>> `, this.selectedBank)
-    this.bankService.getBankBranchesByBankId(bankId).subscribe({
-      next: (data: BankBranchDTO[]) => {
-        this.bankBranches = data;
-        const bankBranchStringArr: string[] = data.map((branch: BankBranchDTO) => branch.name);
-        this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankBranchStringArr
-        log.info(`bank branches: `, bankBranchStringArr);
-      },
-      error: err => {
-        log.error(`could not fetch: `, err);
-        let errorMessage = err?.error?.message ?? err.message;
-        this.globalMessagingService.displayErrorMessage('Error', 'You have not selected a bank!');
-      }
-    })
+    if(!(this.bankBranches.length > 0)) {
+      const bankId: number = this.selectedBank?.id;
+      this.bankBranches = [];
+      log.info(`selected bank >>> `, this.selectedBank)
+      this.bankService.getBankBranchesByBankId(bankId).subscribe({
+        next: (data: BankBranchDTO[]) => {
+          this.bankBranches = data;
+          const bankBranchStringArr: string[] = data.map((branch: BankBranchDTO) => branch.name);
+          this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankBranchStringArr
+          log.info(`bank branches: `, bankBranchStringArr);
+        },
+        error: err => {
+          log.error(`could not fetch: `, err);
+          let errorMessage = err?.error?.message ?? err.message;
+          this.globalMessagingService.displayErrorMessage('Error', 'You have not selected a bank!');
+        }
+      })
+    }
   }
 
 
@@ -797,53 +869,174 @@ export class NewEntityV2Component implements OnInit {
    * @param fieldIndex
    */
   fetchCountries(sectionIndex:number, fieldIndex: number): void {
-    log.info(`selected bank >>> `, this.selectedAddressCountry)
-    this.countryService.getCountries().subscribe({
-      next: (data: CountryDto[]) => {
-        this.countries = data;
-        const countryStringArr: string[] = data.map((country: CountryDto) => country.name);
-        this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
-        log.info(`bank bank: `, countryStringArr);
-      },
-      error: err => {
-        log.error(`could not fetch: `, err);
-      }
-    })
+    if(!(this.countries.length > 0)) {
+      this.countryService.getCountries().subscribe({
+        next: (data: CountryDto[]) => {
+          this.countries = data;
+          const countryStringArr: string[] = data.map((country: CountryDto) => country.name);
+          this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+          log.info(`countryStringArr >>> `, countryStringArr);
+        },
+        error: err => {
+          log.error(`could not fetch: `, err);
+        }
+      })
+    } else {
+      const countryStringArr: string[] = this.countries.map((country: CountryDto) => country.name);
+      this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+    }
+  }
+
+  fetchStatesByCountryCode(sectionIndex:number, fieldIndex: number): void {
+    if (this.selectedAddressCountry) {
+      this.countryService.getMainCityStatesByCountry(this.selectedAddressCountry?.id).subscribe({
+        next: (data: StateDto[]) => {
+          this.states = data;
+          const stateStringArr: string[] = data.map((state: StateDto) => state.name);
+          this.formGroupSections[sectionIndex].fields[fieldIndex].options = stateStringArr
+          log.info(`countryStringArr >>> `, stateStringArr);
+        },
+        error: err => {
+          log.info(`could not fetch`)
+        }
+      })
+    } else {
+      log.info(`You must select country first`)
+    }
   }
 
 
+  fetchTownsByStateCode(sectionIndex:number, fieldIndex: number): void {
+    if (this.selectedState) {
+      this.countryService.getTownsByMainCityState(this.selectedState?.id).subscribe({
+        next: (data: TownDto[]) => {
+          this.towns = data;
+          const townStringArr: string[] = data.map((state: TownDto) => state.name);
+          this.formGroupSections[sectionIndex].fields[fieldIndex].options = townStringArr
+          log.info(`townStringArr >>> `, townStringArr);
+        },
+        error: err => {
+          log.info(`could not fetch`)
+        }
+      })
+    } else {
+      log.info(`You must select state first`)
+    }
+  }
+
+
+  fetchPostalCodeByTownCode(sectionIndex:number, fieldIndex: number): void {
+    if (this.selectedTown) {
+      this.countryService.getPostalCodes(this.selectedTown?.id).subscribe({
+        next: (data: PostalCodesDTO[]) => {
+          this.postalCodes = data;
+          const postalCodeNumArr: number[] = data.map((postalCode: PostalCodesDTO) => postalCode.zipCode);
+          this.formGroupSections[sectionIndex].fields[fieldIndex].options = postalCodeNumArr
+          log.info(`postalCodeNumArr >>> `, postalCodeNumArr);
+        },
+        error: err => {
+          log.info(`could not fetch`)
+        }
+      })
+    } else {
+      log.info(`You must select state first`)
+    }
+  }
+
+
+  fetchIdTypes(sectionIndex:number, fieldIndex: number): void {
+    if (!(this.idTypes.length > 0)) {
+      this.entityService.getIdentityType().subscribe({
+        next: (data: IdentityModeDTO[]) => {
+          this.idTypes = data;
+          const idTypeStringArr: string[] = data.map((id: IdentityModeDTO) => id.name);
+          this.formGroupSections[sectionIndex].fields[fieldIndex].options = idTypeStringArr;
+          log.info(`identity types >>> `, idTypeStringArr)
+        },
+        error: err => {
+          log.error(`could not fetch: `, err);
+        }
+      });
+    }
+  }
+
+  fetchCurrencies(sectionIndex:number, fieldIndex: number): void {
+    if (!(this.currencies.length > 0)) {
+      this.currencyService.getCurrencies().subscribe({
+        next: (data: CurrencyDTO[]) => {
+          this.currencies = data;
+          const currencyStringArr: string[] = data.map((id: CurrencyDTO) => id.name);
+          this.formGroupSections[sectionIndex].fields[fieldIndex].options = currencyStringArr;
+          log.info(`currencyStringArr >>> `, currencyStringArr)
+        },
+        error: err => {
+          log.error(`could not fetch: `, err);
+        }
+      });
+    }
+  }
+
   fetchClientTitles(sectionIndex:number, fieldIndex: number): void {
-    this.clientService.getClientTitles().subscribe({
-      next: (data: ClientTitlesDto[]) => {
-        this.clientTitles = data;
-        const titleStringArr: string[] = data.map((title: ClientTitlesDto) => title.description.toLowerCase());
-        this.formGroupSections[sectionIndex].fields[fieldIndex].options = titleStringArr;
-        log.info(`client titles >>> `, titleStringArr)
-      },
-      error: err => {
-        log.error(`could not fetch: `, err);
-      }
-    })
+    if(!(this.clientTitles.length > 0)) {
+      this.clientService.getClientTitles().subscribe({
+        next: (data: ClientTitlesDto[]) => {
+          this.clientTitles = data;
+          const titleStringArr: string[] = data.map((title: ClientTitlesDto) => title.description);
+          this.formGroupSections[sectionIndex].fields[fieldIndex].options = titleStringArr;
+          log.info(`client titles >>> `, titleStringArr)
+        },
+        error: err => {
+          log.error(`could not fetch: `, err);
+        }
+      });
+    }
   }
 
 
   fetchSystemRoles(): void {
-    this.entityService.getPartiesType().subscribe({
-      next: (data: PartyTypeDto[]) => {
-        this.roles = data;
-        const roleStringArr: string[] = data.map((role: PartyTypeDto) => role.partyTypeName.toLowerCase());
-        const index: number = this.uploadGroupSections.selects.findIndex((field: FieldModel) => field.fieldId === "role");
-        this.uploadGroupSections.selects[index].options = roleStringArr;
-        log.info(`roles: `, roleStringArr);
-      },
-      error: err => {
-        log.error(`could not fetch: `, err);
-      }
-    })
+    if (!(this.roles.length > 0)) {
+      this.entityService.getPartiesType().subscribe({
+        next: (data: PartyTypeDto[]) => {
+          this.roles = data;
+          const roleStringArr: string[] = data.map((role: PartyTypeDto) => role.partyTypeName.toLowerCase());
+          const index: number = this.uploadGroupSections.selects.findIndex((field: FieldModel) => field.fieldId === "role");
+          this.uploadGroupSections.selects[index].options = roleStringArr;
+          log.info(`roles: `, roleStringArr);
+        },
+        error: err => {
+          log.error(`could not fetch: `, err);
+        }
+      });
+    }
   }
 
   fetchSavedDetails(eventData:any) {
     log.debug('Save details modal data:', eventData);
+    const subgroup = eventData.subGroupId;
+    const dataToSave = eventData.data;
+
+    switch (subgroup) {
+      case 'wealth_aml_details':
+        this.wealthAmlDetails = dataToSave;
+        break;
+      case 'contact_person_details':
+        this.contactPersonDetails = dataToSave;
+        break;
+      case 'branch_details':
+        this.branchDetails = dataToSave;
+        break;
+      case 'payee_details':
+        this.payeeDetails = dataToSave;
+        break;
+      case 'ownership_details':
+        this.ownershipDetails = dataToSave;
+        break;
+      case 'cr12_details':
+        this.cr12Details = dataToSave;
+        break;
+      default:
+        //do nothing; Ownership Structure Cr12 Details
+    }
   }
 
 
@@ -861,18 +1054,20 @@ export class NewEntityV2Component implements OnInit {
   }
 
   fetchClientTypes(): void {
-    this.clientTypeService.getClientTypes().subscribe({
-      next: (data: ClientTypeDTO[]) => {
-        this.clientTypes = data;
-        const clientTypesArr: string[] = data.map((clientType: ClientTypeDTO) => clientType.clientTypeName);
-        log.info(`clientTypesArr>>> `, clientTypesArr);
-        const index: number = this.uploadGroupSections.selects.findIndex(field => field.fieldId === "organizationType");
-        this.uploadGroupSections.selects[index].options = clientTypesArr;
-      },
-      error: err => {
-        log.error(`could not fetch `, err);
-      }
-    });
+    if(!(this.clientTypes.length > 0)) {
+      this.clientTypeService.getClientTypes().subscribe({
+        next: (data: ClientTypeDTO[]) => {
+          this.clientTypes = data;
+          const clientTypesArr: string[] = data.map((clientType: ClientTypeDTO) => clientType.clientTypeName);
+          log.info(`clientTypesArr>>> `, clientTypesArr);
+          const index: number = this.uploadGroupSections.selects.findIndex(field => field.fieldId === "organizationType");
+          this.uploadGroupSections.selects[index].options = clientTypesArr;
+        },
+        error: err => {
+          log.error(`could not fetch `, err);
+        }
+      });
+    }
   }
 
 
@@ -893,7 +1088,39 @@ export class NewEntityV2Component implements OnInit {
       } else if (uploadType === 'profile') {
         this.uploadGroupSections.photo[0].file = file;
       }
+
+      switch (uploadType) {
+        case 'profile':
+          this.uploadImage(file, 111)
+          break;
+        default:
+        //do nothing
+      }
     }
+
+  }
+
+
+  /**
+   * The function `uploadImage` uploads an image file to the server and updates the profile picture and
+   * image of an entity, then displays a success message and navigates to the next page.
+   * @param {number} entityId - The entityId parameter is a number that represents the unique
+   * identifier of an entity.
+   */
+  uploadImage(file, entityId: number) {
+    this.entityService
+      .uploadProfileImage(entityId, file)
+      .subscribe((res) => {
+        log.info(res);
+        /*this.savedEntity.profilePicture = res.file;
+        this.savedEntity.profileImage = res.file;
+        this.entityService.setCurrentEntity(this.savedEntity);*/
+        this.globalMessagingService.clearMessages();
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Successfully Created an Entity'
+        );
+      });
   }
 
 
