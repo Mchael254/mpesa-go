@@ -1369,7 +1369,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     product._pendingProductCode = selected;
     console.log("Product change pending - will apply on save");
 
-  
+
     //   // Optional: save to session storage
     //   sessionStorage.setItem(`product_${rowIndex}`, JSON.stringify(product));
     //   console.log("Updated product:", product);
@@ -1442,7 +1442,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
 
-
   submitAddProductForm() {
     if (this.quotationProductForm.invalid) {
       this.quotationProductForm.markAllAsTouched();
@@ -1453,12 +1452,24 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
 
     const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
-    const selectedProductCode = selectedProduct.code
-    log.debug('Selected product CODE', selectedProductCode)
+    const selectedProductCode = selectedProduct.code;
+    log.debug('Selected product CODE', selectedProductCode);
+
     if (!this.productDetails) {
       this.productDetails = [];
     }
 
+    // ✅ Check if product code already exists
+    const alreadyExists = this.productDetails.some(
+      p => p.productCode.code === selectedProductCode
+    );
+
+    if (alreadyExists) {
+      this.globalMessagingService.displayErrorMessage('warning', 'This product has already been added');
+      return;
+    }
+
+    // If new, add it
     if (selectedProduct && selectedProduct.description) {
       this.productDetails.push({
         productCode: selectedProduct,
@@ -1467,7 +1478,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         coverTo: coverToDate
       });
     }
-
 
     this.productDetails = this.productDetails.filter(p => p?.productCode?.description);
     this.productDetails.forEach(product => {
@@ -1481,7 +1491,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
     log.debug("Saved Product Details to sessionStorage:", this.productDetails);
 
-
     this.quotationProductForm.reset({
       productCodes: [],
       wef: this.todaysDate,
@@ -1493,7 +1502,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     // Close modal
     const closeBtn = document.querySelector('.btn-close') as HTMLElement;
     closeBtn?.click();
-
   }
 
 
@@ -1518,7 +1526,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   openProductDeleteModal(product: any) {
-    if (!product ||!product.productCode?.code) {
+    this.productToDelete = product;
+    if (!product || !product.productCode?.code) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select a product to continue');
       return;
     }
@@ -1535,36 +1544,39 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-
+  productToDelete: any = null;
   deleteProduct() {
-    if (!this.deleteCandidateProductCode) {
-      this.globalMessagingService.displayInfoMessage('Error', 'No product selected for deletion.');
-      return;
-    }
+    if (!this.productToDelete) return;
 
-    const productIndex = this.productDetails.findIndex(
-      (product: any) => product.productCode.code === this.deleteCandidateProductCode
+    this.productDetails = this.productDetails.filter(
+      p => p.productCode.code !== this.productToDelete.productCode.code
     );
+    sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
 
-    if (productIndex !== -1) {
-      this.productDetails.splice(productIndex, 1);
+    //remove related clauses from allClausesMap
+    const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+    delete allClausesMap[this.productToDelete.productCode.code];
+    sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
 
-      // Optional: Convert dates again if needed
-      this.productDetails.forEach(product => {
-        product.coverFrom = new Date(product.coverFrom);
-        product.coverTo = new Date(product.coverTo);
-      });
-
-      // Update session storage
-      sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
-
-      this.globalMessagingService.displaySuccessMessage('Success', 'Product removed successfully.');
-      log.debug('✅ Product:', this.productDetails);
-    } else {
-      this.globalMessagingService.displayInfoMessage('Info', 'Product not found.');
+    if (this.productCode === this.productToDelete.productCode.code) {
+      const nextProduct = this.productDetails[0];
+      if (nextProduct) {
+        this.getProductClause({ code: nextProduct.productCode.code });
+        this.productCode = nextProduct.productCode.code;
+      } else {
+        this.productCode = null;
+        this.sessionClauses = [];
+        this.productClause = [];
+        this.nonMandatoryProductClause = [];
+        this.clausesModified = false;
+      }
     }
-    this.deleteCandidateProductCode = null;
+
+    this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
+
+    this.productToDelete = null;
   }
+
 
 
   updateCoverTo(product: any) {
@@ -1597,7 +1609,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
 
-  onRowEditInits(product: any,index:any) {
+  onRowEditInits(product: any, index: any) {
     this.clonedProducts[product.productCode.code] = { ...product };
     this.selectedEditRowIndex = index;
 
@@ -1607,19 +1619,19 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   onRowEditSaves(product: any) {
     const coverFromDate = product.coverFrom;
     const coverToDate = product.coverTo;
-  
+
     // If there's a pending product code from dropdown selection, finalize it
     if (product._pendingProductCode) {
       product.productCode = product._pendingProductCode;
       product.productName = product._pendingProductCode.description;
       delete product._pendingProductCode;
     }
-  
+
     // Ensure required values exist
     if (coverFromDate && coverToDate && product.productCode?.code) {
       product.coverFrom = new Date(coverFromDate);
       product.coverTo = new Date(coverToDate);
-  
+
       // ✅ Update using row index instead of matching by productCode
       if (this.selectedEditRowIndex !== undefined) {
         this.productDetails[this.selectedEditRowIndex] = {
@@ -1627,17 +1639,17 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           productCode: { ...product.productCode }
         };
       }
-  
+
       sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
       log.debug("Saved to sessionStorage:", JSON.parse(sessionStorage.getItem('productFormDetails')));
-  
+
       delete this.clonedProducts[product.productCode.code];
     } else {
       // Optionally show validation errors
       // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill in all required fields' });
     }
   }
-  
+
 
   onRowEditCancels(product: any, index: number) {
     const code = product.productCode.code;
