@@ -96,9 +96,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   dateFormat: any;
   minDate: Date | undefined;
 
-  todaysDate: string;
+  todaysDate: Date;
   expiryDate: string;
-  coverToDate: string;
+  coverToDate: Date;
   defaultCurrencyName: string;
   defaultCurrencySymbol: string;
   organizationId: number;
@@ -190,10 +190,30 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.minDate = new Date();
+    // this.todaysDate = new Date();
+    // this.coverToDate = new Date(this.todaysDate);
+    //  this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);
     this.fetchQuotationRelatedData()
     this.getuser();
     this.createQuotationForm();
     this.createQuotationProductForm();
+
+
+    this.quotationProductForm.get('productCodes')?.valueChanges.subscribe(product => {
+      if (product) {
+        const today = new Date();
+        const oneYearLater = new Date(today);
+        oneYearLater.setFullYear(today.getFullYear() + 1);
+  
+        this.quotationProductForm.patchValue({
+          wef: today,
+          wet: oneYearLater
+        });
+  
+        
+        this.updateCoverToDate(today);
+      }
+    });
     this.quoteToEditData = JSON.parse(sessionStorage.getItem("quoteToEditData"));
     log.debug("quote data to edit: ", this.quoteToEditData);
 
@@ -575,32 +595,35 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.user = this.authService.getCurrentUserName();
     this.userDetails = this.authService.getCurrentUser();
     log.info('Login UserDetails', this.userDetails);
-
-    this.userCode = this.userDetails.code
+  
+    this.userCode = this.userDetails.code;
     log.debug('User Code ', this.userCode);
+  
     this.dateFormat = this.userDetails?.orgDateFormat;
     log.debug('Organization Date Format:', this.dateFormat);
     sessionStorage.setItem('dateFormat', this.dateFormat);
-
+  
     const todaysDate = new Date();
-    log.debug(' todays date before being formatted', todaysDate);
-
-    // Extract the day, month, and year
+    log.debug('todays date before being formatted', todaysDate);
+  
+    
+    this.todaysDate = todaysDate;
+  
+    
     const day = todaysDate.getDate();
-    const month = todaysDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+    const month = todaysDate.toLocaleString('default', { month: 'long' });
     const year = todaysDate.getFullYear();
-
-    // Format the date in 'dd-Month-yyyy' format
     const formattedDate = `${day}-${month}-${year}`;
-
-    this.todaysDate = formattedDate;
-    log.debug('Todays  Date', this.todaysDate);
-    this.updateQuotationExpiryDate(this.todaysDate)
-
+  
+    log.debug('Formatted Todays Date (for display):', formattedDate);
+  
+    this.updateQuotationExpiryDate(this.todaysDate);
+  
     this.currencyDelimiter = this.userDetails?.currencyDelimiter;
-    log.debug('Organization currency delimeter', this.currencyDelimiter);
+    log.debug('Organization currency delimiter', this.currencyDelimiter);
     sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
   }
+  
 
   createQuotationForm() {
     this.quotationForm = this.fb.group({
@@ -641,8 +664,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       productShortDescription: [''],
       quotationNo: [''],
       premium: [0],
-      wef: [this.todaysDate, Validators.required],
-      wet: [this.coverToDate, Validators.required],
+      wef: [null, Validators.required],
+      wet: [null, Validators.required],
       revisionNo: [0],
       totalSumInsured: [0],
       commission: [0],
@@ -1015,8 +1038,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
           // Format the date in 'dd-Month-yyyy' format
           const formattedDate = `${day}-${month}-${year}`;
+          this.coverToDate = coverFromDate;
 
-          this.coverToDate = formattedDate;
+          // this.coverToDate = formattedDate;
           log.debug('Cover to  Date', this.coverToDate);
           sessionStorage.setItem("selectedCoverToDate", this.formatDate(this.coverToDate))
           // this.quotationProductForm.controls['wet'].setValue(this.coverToDate)
