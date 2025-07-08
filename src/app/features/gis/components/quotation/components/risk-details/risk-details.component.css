@@ -145,6 +145,18 @@
   .ui-paginator .ui-paginator-rpp-options {
     margin-left: auto;
   }
+  .narrow-input {
+    width: 100px;
+  }
+
+  .modal-title{
+    margin-bottom: 15px;
+    color: #00529B;
+  }
+  .btn-close.red-close {
+    font-weight: 600;
+    filter: invert(29%) sepia(96%) saturate(7476%) hue-rotate(354deg) brightness(94%) contrast(123%);
+  }
   
   
  
