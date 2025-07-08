@@ -319,6 +319,78 @@ this.loadAllClients();
 
       })
   }
+  sectionPremiums = [
+    {
+      sectionCode: 'SC001',
+      benefit: 'Accidental Death',
+      freeLimit: 100000,
+      limitAmount: 500000,
+      rate: 2.5,
+      sectionShortDescription: 'Accidental Death Benefit',
+      isChecked: false
+    },
+    {
+      sectionCode: 'SC002',
+      benefit: 'Medical Expenses',
+      freeLimit: 20000,
+      limitAmount: 100000,
+      rate: 1.8,
+      sectionShortDescription: 'Covers hospital bills',
+      isChecked: false
+    },
+    {
+      sectionCode: 'SC003',
+      benefit: 'Permanent Disability',
+      freeLimit: 50000,
+      limitAmount: 250000,
+      rate: 2.0,
+      sectionShortDescription: 'Disability Coverage',
+      isChecked: false
+    },
+    {
+      sectionCode: 'SC003',
+      benefit: 'Permanent Disability',
+      freeLimit: 50000,
+      limitAmount: 250000,
+      rate: 2.0,
+      sectionShortDescription: 'Disability Coverage',
+      isChecked: false
+    },
+    {
+      sectionCode: 'SC003',
+      benefit: 'Permanent Disability',
+      freeLimit: 50000,
+      limitAmount: 250000,
+      rate: 2.0,
+      sectionShortDescription: 'Disability Coverage',
+      isChecked: false
+    }
+  ];
+  
+  selectAll: boolean = false;
+
+  toggleSelectAll(event: any) {
+    const checked = event.target.checked;
+    this.sectionPremiums.forEach((section: any) => {
+      section.isChecked = checked;
+    });
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   openAddRiskModal() {
     this.modalInstance?.show();
   }
