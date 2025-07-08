@@ -1,0 +1,55 @@
+[33mcommit cfa945a01e54aca25eadd6740275d59e28b4c220[m[33m ([m[1;36mHEAD -> [m[1;32mVQ-4246[m[33m)[m
+Author: briankipchirchir <kbrianngetich@gmail.com>
+Date:   Fri Jul 4 11:19:14 2025 +0300
+
+    setting cover to and cover from default
+
+[1mdiff --git a/src/app/features/gis/components/quotation/components/quotation-details/quotation-details.component.ts b/src/app/features/gis/components/quotation/components/quotation-details/quotation-details.component.ts[m
+[1mindex a57534af..7c01e929 100644[m
+[1m--- a/src/app/features/gis/components/quotation/components/quotation-details/quotation-details.component.ts[m
+[1m+++ b/src/app/features/gis/components/quotation/components/quotation-details/quotation-details.component.ts[m
+[36m@@ -190,13 +190,30 @@[m [mexport class QuotationDetailsComponent implements OnInit, OnDestroy {[m
+ [m
+   ngOnInit(): void {[m
+     this.minDate = new Date();[m
+[31m-    this.todaysDate = new Date();[m
+[31m-    this.coverToDate = new Date(this.todaysDate);[m
+[31m-     this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);[m
+[32m+[m[32m    // this.todaysDate = new Date();[m
+[32m+[m[32m    // this.coverToDate = new Date(this.todaysDate);[m
+[32m+[m[32m    //  this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);[m
+     this.fetchQuotationRelatedData()[m
+     this.getuser();[m
+     this.createQuotationForm();[m
+     this.createQuotationProductForm();[m
+[32m+[m
+[32m+[m
+[32m+[m[32m    this.quotationProductForm.get('productCodes')?.valueChanges.subscribe(product => {[m
+[32m+[m[32m      if (product) {[m
+[32m+[m[32m        const today = new Date();[m
+[32m+[m[32m        const oneYearLater = new Date(today);[m
+[32m+[m[32m        oneYearLater.setFullYear(today.getFullYear() + 1);[m
+[32m+[m[41m  [m
+[32m+[m[32m        this.quotationProductForm.patchValue({[m
+[32m+[m[32m          wef: today,[m
+[32m+[m[32m          wet: oneYearLater[m
+[32m+[m[32m        });[m
+[32m+[m[41m  [m
+[32m+[m[41m        [m
+[32m+[m[32m        this.updateCoverToDate(today);[m
+[32m+[m[32m      }[m
+[32m+[m[32m    });[m
+     this.quoteToEditData = JSON.parse(sessionStorage.getItem("quoteToEditData"));[m
+     log.debug("quote data to edit: ", this.quoteToEditData);[m
+ [m
+[36m@@ -647,8 +664,8 @@[m [mexport class QuotationDetailsComponent implements OnInit, OnDestroy {[m
+       productShortDescription: [''],[m
+       quotationNo: [''],[m
+       premium: [0],[m
+[31m-      wef: [this.todaysDate, Validators.required],[m
+[31m-      wet: [this.coverToDate, Validators.required],[m
+[32m+[m[32m      wef: [null, Validators.required],[m
+[32m+[m[32m      wet: [null, Validators.required],[m
+       revisionNo: [0],[m
+       totalSumInsured: [0],[m
+       commission: [0],[m

@@ -862,6 +862,24 @@ this.loadAllClients();
           },
         });
     }
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   fetchTaxes() {
     this.quotationService
       .getTaxes(this.selectedProductCode, this.selectedSubclassCode)
@@ -1078,6 +1096,13 @@ this.loadAllClients();
       authorisedDriver: ['']
     });
   }
+
+  showSections: boolean = false;
+
+toggleSections() {
+  this.showSections = !this.showSections;
+}
+
 
   // This method Clears the Schedule Detail form by resetting the form model
   clearForm() {
@@ -1332,6 +1357,69 @@ this.loadAllClients();
 
       })
   }
+
+  sectiondetails = [
+    {
+      code: '001',
+      calculationGroup: 'Group A',
+      rowNumber: 12,
+      sectionShortDescription: 'New',
+      sectionDescription: 'me',
+      limitAmount: 'Good',
+      premiumRate: 'premium',
+      rateType: 'rate'
+    },
+    {
+      code: '002', 
+      calculationGroup: 'Group B',
+      rowNumber: 13,
+      sectionShortDescription: 'Another',
+      sectionDescription: 'test',
+      limitAmount: 'data',
+      premiumRate: 'test premium',
+      rateType: 'test rate'
+    },
+    {
+      code: '002', 
+      calculationGroup: 'Group B',
+      rowNumber: 13,
+      sectionShortDescription: 'Another',
+      sectionDescription: 'test',
+      limitAmount: 'data',
+      premiumRate: 'test premium',
+      rateType: 'test rate'
+    },
+    {
+      code: '002', 
+      calculationGroup: 'Group B',
+      rowNumber: 13,
+      sectionShortDescription: 'Another',
+      sectionDescription: 'test',
+      limitAmount: 'data',
+      premiumRate: 'test premium',
+      rateType: 'test rate'
+    }
+  ];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   handleRowClick(data: any) {
     if (!data?.code) {
       log.debug('Invalid data for row click:', data);
