@@ -19,11 +19,15 @@ const log = new Logger('PaymentCheckoutComponent');
 export class PaymentCheckoutComponent implements OnInit, OnDestroy {
   ipayRefNo: string
   currencyPrefix: string;
-  amount:number;
+  amount: number;
   paymentButtonLabel = "Send STK push"
   action: 'initiate' | 'confirm' = 'initiate'
   checkoutId: string = null
   paymentButton: boolean = true
+
+  // Payment completion state
+  paymentCompleted: boolean = false
+  completionMessage: string = ''
 
   constructor(private globalMessagingService: GlobalMessagingService,
     private route: ActivatedRoute,
@@ -37,6 +41,12 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
     this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, atob(queryParams.get('tenant')));
     this.ipayRefNo = atob(queryParams.get('reference'))
     this.amount = +atob(queryParams.get('amount'))
+
+    // Check if payment was already completed
+    this.checkPaymentCompletion();
+    
+    // Restore payment state from session storage
+    this.restorePaymentState();
   }
 
   validPhoneNumber: boolean = true
@@ -48,6 +58,52 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
   failedMessage: string = ''
   success: boolean = false
   failed: boolean = false
+
+  private checkPaymentCompletion() {
+    const completedPayment = this.sessionStorageService.get(`payment_completed_${this.ipayRefNo}`);
+    if (completedPayment) {
+      this.paymentCompleted = true;
+      this.completionMessage = completedPayment.message || 'Payment completed successfully';
+    }
+  }
+
+  private restorePaymentState() {
+    if (this.paymentCompleted) return;
+
+    const savedState = this.sessionStorageService.get(`payment_state_${this.ipayRefNo}`);
+    if (savedState) {
+      this.phoneNumber = savedState.phoneNumber || '';
+      this.selectedPayment = savedState.selectedPayment || 'mpesa';
+      this.action = savedState.action || 'initiate';
+      this.checkoutId = savedState.checkoutId || null;
+      this.paymentButtonLabel = savedState.paymentButtonLabel || 'Send STK push';
+    }
+  }
+
+  private savePaymentState() {
+    const state = {
+      phoneNumber: this.phoneNumber,
+      selectedPayment: this.selectedPayment,
+      action: this.action,
+      checkoutId: this.checkoutId,
+      paymentButtonLabel: this.paymentButtonLabel
+    };
+    this.sessionStorageService.set(`payment_state_${this.ipayRefNo}`, state);
+  }
+
+  private markPaymentCompleted(message: string) {
+    const completionData = {
+      message: message,
+      timestamp: new Date().toISOString()
+    };
+    this.sessionStorageService.set(`payment_completed_${this.ipayRefNo}`, completionData);
+    
+    // Clear the payment state 
+    this.sessionStorageService.remove(`payment_state_${this.ipayRefNo}`);
+    
+    this.paymentCompleted = true;
+    this.completionMessage = message;
+  }
 
   formatPhoneNumber = (phoneNumber: string): string => {
     const cleaned = phoneNumber.replace(/\D/g, '');
@@ -72,12 +128,14 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
     this.paymentButtonLabel = 'Send STK push'
     this.action = 'initiate';
     this.checkoutId = null
+    
+    // Save state after failure
+    this.savePaymentState();
+    
     setTimeout(() => {
       this.paymentStatus = false;
     }, 8000);
-
   }
-
 
   sendSTK() {
     if (this.phoneNumber === '') {
@@ -103,16 +161,7 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
     }
 
     log.debug('this is payment payload>>>', paymentPayload)
-    /**
-     * Initiate payment
-     * send STK push
-     * if success
-     *  change button to Confirm payment, a user clicks the button
-     *    if success suggesting payment was made,
-     *        display the success and tell a user to close the browser tab
-     *  if error:
-     *    display the error messages and tell the user to try again or seek help
-     */
+  
     if (this.action === 'initiate') {
       this.paymentService.initiatePayment(paymentPayload)
         .pipe(
@@ -127,6 +176,9 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
               this.paymentButtonLabel = 'Confirm payment'
               this.action = 'confirm'
               this.checkoutId = response._embedded.CheckoutRequestID
+              
+              // Save state after successful initiation
+              this.savePaymentState();
             } else {
               this.checkoutId = null
             }
@@ -148,21 +200,25 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
               this.successMessage = response.message
               this.paymentButton = false
               this.checkoutId = null
+              
+              // Mark payment as completed
+              this.markPaymentCompleted(response.message || 'Payment completed successfully');
+              
             } else if (response._embedded !== 'SUCCESS') {
               this.paymentResponse()
               this.failedMessage = `Transaction failed, ${response.message}`
             }
-
           }),
           error: ((error) => {
             log.debug(error)
-
           })
         })
     }
   }
 
   ngOnDestroy(): void {
+    if (!this.paymentCompleted) {
+      this.savePaymentState();
+    }
   }
-
 }
