@@ -91,6 +91,26 @@
     background-color: #BAD0E4;
     /* 150% */
 }
+::ng-deep .custom-subclause-table .p-datatable-thead > tr > th {
+    color: #000000B2;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    background-color: #BAD0E4 !important;
+    
+  }
+  ::ng-deep .p-datatable-wrapper {
+    width: 100% !important;
+  }
+  
+  ::ng-deep .p-datatable table {
+    width: 100% !important;
+    table-layout: auto !important;
+  }
+  
+  
 
 .deleteMessage {
     color: #000;
@@ -139,11 +159,30 @@
   .custom-button{
     color: #00529B;
     font-family: Roboto;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 14px;
   }
   .ui-paginator .ui-paginator-rpp-options {
     margin-left: auto;
+  }
+  .narrow-input {
+    width: 100px;
+  }
+
+  .modal-title{
+    margin-bottom: 15px;
+    color: #00529B;
+  }
+  .btn-close.red-close {
+    font-weight: 600;
+    filter: invert(29%) sepia(96%) saturate(7476%) hue-rotate(354deg) brightness(94%) contrast(123%);
+  }
+  .clause-title{
+    font-family: Roboto;
+    font-weight: 500;
+    font-size: 20px;
+    color: #00529B;
+
   }
   
   
