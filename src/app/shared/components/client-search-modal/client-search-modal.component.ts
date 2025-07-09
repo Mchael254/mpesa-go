@@ -86,6 +86,7 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
     log.debug("Convert to policy flag:", this.convertToPolicy)
     this.showActionButtons = !!this.convertToPolicy;
   }
+  
   private showModal(): void {
     if (!this.modalInstance) {
       this.modalInstance = new Modal(this.modalElementRef.nativeElement);
@@ -106,7 +107,11 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
     if (this.modalInstance) {
       this.modalInstance.dispose();
     }
+     if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
   }
+  }
+
 
   getClients(pageIndex: number,
     pageSize: number,
@@ -175,10 +180,10 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
       columnName = 'id';
       columnValue = this.internalIdValue;
     }else if (this.idValue) {
-      columnName = 'idValue';
+      columnName = 'idNumber';
       columnValue = this.idValue;
     }else if (this.pinValue) {
-      columnName = 'pinValue';
+      columnName = 'pinNumber';
       columnValue = this.pinValue;
     }
 
