@@ -2,7 +2,6 @@
 
 <div class="card  mb-3 border-0">
     <div class="card-body border-0" style="padding-top: 0px;">
-
         <p-table [value]="riskDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single" dataKey="code">
             <ng-template pTemplate="header">
                 <tr>
@@ -38,11 +37,11 @@
         <!-- Add Risk  Modal -->
         <div class="modal fade" id="addRisk" #addRiskModal tabindex="-1" role="dialog" aria-labelledby="addRiskLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 700px;">
+            <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 60vw; min-width:30vw">
                 <div class="modal-content" id="addRiskModal">
-                    <div class="modal-body" style="max-height: 504px; overflow-y: auto;">
+                    <div class="modal-body" style="max-height: 75vh;min-height:40vh; overflow-y: auto;">
                         <h5 class="modal-title mt-2 mb-2 addRiskTitle ">Add risk
-                            <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
+                            <button type="button" class="btn-close float-end text-red-500" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </h5>
 
@@ -58,7 +57,7 @@
                                             </label>
 
                                             <ng-container [ngSwitch]="field.type">
-                                                    <!-- SELECT INPUT -->
+                                                <!-- SELECT INPUT -->
                                                 <ng-container *ngSwitchCase="'select'">
                                                     <!-- <ng-container *ngIf="field.name === 'insureds'">
                                                         <p-dropdown formControlName="insureds"
@@ -87,19 +86,61 @@
                                         </div>
                                     </div>
                                 </ng-container>
-                               
+
+                                <!-- dynamic subclass fields -->
+                                <ng-container *ngFor="let field of subclassFormData; let j = index">
+                                    <div class="col-sm-6 col-6 mb-4">
+                                        <div class="form-group form-group-sm">
+                                            <label *ngIf="field.name" [attr.for]="j + field.name" id="quote-label"
+                                                [ngClass]="{ 'required': field.isMandatory === 'Y' }">
+                                                {{ field.label | translate }}
+                                            </label>
+
+                                            <!-- text input fields -->
+                                            <input *ngIf="field.type === 'text'" type="text" class="form-control"
+                                                [formControlName]="field.name"
+                                                [attr.placeholder]="field.label | translate" />
+                                            <div *ngIf="riskDetailsForm.get(field.name)?.invalid && riskDetailsForm.get(field.name)?.touched"
+                                                class="text-danger small mt-1">
+                                                {{ field.label | translate }} is required.
+                                            </div>
+
+                                            <!-- select fields -->
+                                            <p-dropdown *ngIf="field.type === 'select'" [formControlName]="field.name"
+                                                [options]="field.selectOptions" optionLabel="label" optionValue="value"
+                                                [filter]="true" [showClear]="true"
+                                                [attr.placeholder]="field.label | translate">
+                                            </p-dropdown>
+
+
+
+                                            <!-- DATE -->
+                                            <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
+                                                dateFormat="yy-mm-dd" [showIcon]="true"
+                                                [attr.placeholder]="field.label | translate">
+                                            </p-calendar>
+
+                                            <!-- number -->
+                                            <input *ngIf="field.type === 'number'" type="text" class="form-control"
+                                                [formControlName]="field.name"
+                                                [attr.placeholder]="field.label | translate" />
+
+                                            <!-- currency -->
+                                            <input *ngIf="field.type === 'currency'" type="text" class="form-control"
+                                                currencyMask [options]="currencyObj" [formControlName]="field.name"
+                                                [attr.placeholder]="field.label | translate" />
+
+                                        </div>
+                                    </div>
+                                </ng-container>
+
                             </div>
                         </form>
-
-
-
-
-
 
                         <div class="mt-4 d-flex justify-content-end">
                             <button type="button" class="btn btn-outline-primary mx-2" id="saveDetails"
                                 data-bs-dismiss="modal">{{'gis.policy.cancel' | translate}}</button>
-                            <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal"
+                            <button type="button" class="btn btn-primary " id="saveDetails"
                                 (click)="createRiskDetail()">{{'gis.quotation.save_details' | translate}}</button>
                         </div>
                     </div>
