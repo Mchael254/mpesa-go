@@ -1,14 +1,14 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators,} from '@angular/forms';
-import {LazyLoadEvent} from 'primeng/api';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {Logger, UtilService} from '../../../../../../shared/services';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, } from '@angular/forms';
+import { LazyLoadEvent } from 'primeng/api';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { Logger, UtilService } from '../../../../../../shared/services';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
 
-import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
-import {ClientService} from '../../../../../entities/services/client/client.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { ClientService } from '../../../../../entities/services/client/client.service';
 import stepData from '../../data/steps.json';
 import {
   Binders,
@@ -20,22 +20,22 @@ import {
   Subclasses,
   VesselType,
 } from '../../../setups/data/gisDTO';
-import {AuthService} from '../../../../../../shared/services/auth.service';
-import {SubClassCoverTypesService} from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {Calendar} from 'primeng/calendar';
-import {SectionsService} from '../../../setups/services/sections/sections.service';
-import {CountryService} from '../../../../../../shared/services/setups/country/country.service';
-import {CountryDto} from '../../../../../../shared/data/common/countryDto';
-import {Table, TableLazyLoadEvent} from 'primeng/table';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { Calendar } from 'primeng/calendar';
+import { SectionsService } from '../../../setups/services/sections/sections.service';
+import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
+import { CountryDto } from '../../../../../../shared/data/common/countryDto';
+import { Table, TableLazyLoadEvent } from 'primeng/table';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import {ClientDTO,} from '../../../../../entities/data/ClientDTO';
-import {BranchService} from '../../../../../../shared/services/setups/branch/branch.service';
-import {OrganizationBranchDto} from '../../../../../../shared/data/common/organization-branch-dto';
+import { ClientDTO, } from '../../../../../entities/data/ClientDTO';
+import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
+import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
 
-import {NgxSpinnerService} from 'ngx-spinner';
+import { NgxSpinnerService } from 'ngx-spinner';
 import {
   DynamicRiskField,
   LimitsOfLiability,
@@ -48,10 +48,10 @@ import {
   TaxInformation,
   UserDetail,
 } from '../../data/quotationsDTO';
-import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
-import {Router} from '@angular/router';
-import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+import { Router } from '@angular/router';
+import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
 import { firstValueFrom, forkJoin, mergeMap, Observable, Subject, tap } from 'rxjs';
 import { NgxCurrencyConfig } from 'ngx-currency';
@@ -76,13 +76,13 @@ import {
   Risk,
   RiskLevelPremium
 } from "../../data/premium-computation";
-import {QuotationDetailsRequestDto} from "../../data/quotation-details";
-import {differenceInCalendarDays, format, parseISO} from 'date-fns';
-import {ShareQuotesComponent} from '../share-quotes/share-quotes.component';
-import {EmailDto} from "../../../../../../shared/data/common/email-dto";
-import {NotificationService} from "../../services/notification/notification.service";
-import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
-import {OrganizationDTO} from "../../../../../crm/data/organization-dto";
+import { QuotationDetailsRequestDto } from "../../data/quotation-details";
+import { differenceInCalendarDays, format, parseISO } from 'date-fns';
+import { ShareQuotesComponent } from '../share-quotes/share-quotes.component';
+import { EmailDto } from "../../../../../../shared/data/common/email-dto";
+import { NotificationService } from "../../services/notification/notification.service";
+import { SessionStorageService } from "../../../../../../shared/services/session-storage/session-storage.service";
+import { OrganizationDTO } from "../../../../../crm/data/organization-dto";
 
 import { OrganizationService } from "../../../../../crm/services/organization.service";
 
@@ -366,23 +366,24 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     });
     this.loadAllCurrencies()
     const organization = this.sessionStorageService.getItem("organizationDetails") as OrganizationDTO;
-    if (organization){
+    if (organization) {
       this.organizationId = organization.id
     }
     this.getuser()
- this.searchChanged.pipe(
-    debounceTime(300),
-    distinctUntilChanged(),
-    takeUntil(this.destroy$)
-  ).subscribe(searchText => {
-    this.filterProducts(searchText);
-  });
+    this.searchChanged.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(searchText => {
+      this.filterProducts(searchText);
+    });
     const savedState = sessionStorage.getItem('savedProductsState');
     log.debug("PRODUCT SAVED STATE", savedState)
     if (savedState) {
       const parsed = JSON.parse(savedState);
       this.selectedProducts = parsed.selectedProducts;
       log.debug("Form array ", parsed.formArray);
+      log.debug("product array ", this.selectedProducts);
       // Patch top-level fields
       this.quickQuoteForm.patchValue({
         product: parsed.formArray.product || [],
@@ -442,10 +443,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.quotationCode = this.quotationObject?.code
   }
 
-ngOnDestroy() {
-  this.destroy$.next();
-  this.destroy$.complete();
-}
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
   dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
     if (sidebarMenu.link.length > 0) {
       this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
@@ -511,7 +512,7 @@ ngOnDestroy() {
    */
   loadAllproducts() {
 
-      this.productService
+    this.productService
       .getAllProducts()
       .pipe(
         untilDestroyed(this))
@@ -528,16 +529,16 @@ ngOnDestroy() {
   //   );
   // }
   onSearchChange(search: string) {
-  this.searchChanged.next(search);
-}
+    this.searchChanged.next(search);
+  }
 
   filterProducts(searchText: string) {
-  const search = searchText.toLowerCase();
-  log.debug("Search product", search);
-  this.filteredProducts = this.products.filter(p =>
-    p.description.toLowerCase().includes(search)
-  );
-}
+    const search = searchText.toLowerCase();
+    log.debug("Search product", search);
+    this.filteredProducts = this.products.filter(p =>
+      p.description.toLowerCase().includes(search)
+    );
+  }
   get productsFormArray(): FormArray {
     return this.quickQuoteForm.get('products') as FormArray;
   }
@@ -596,7 +597,10 @@ ngOnDestroy() {
     ).subscribe(([taxes, coverTypeSections]) => {
       const taxList = taxes._embedded as Tax[];
       this.taxList = taxList;
+      log.debug("CoverTypeSections",coverTypeSections)
       group['applicableTaxes'].setValue(taxList);
+            log.debug("Tax list",taxList)
+
       group['applicableCoverTypes'].setValue(coverTypeSections._embedded);
     });
   }
@@ -645,9 +649,13 @@ ngOnDestroy() {
     this.getSelectedProducts(fakeEvent);
   }
 
+  // isProductSelected(product: any): boolean {
+  //   return this.selectedProducts.includes(product);
+  // }
   isProductSelected(product: any): boolean {
-    return this.selectedProducts.includes(product);
-  }
+  return this.selectedProducts.some(p => p.code === product.code);
+}
+
   // When products are selected from multi-select
   getSelectedProducts(event: any) {
     const currentSelection = event.value as Products[];
@@ -841,6 +849,7 @@ ngOnDestroy() {
       next: (response) => {
         const riskLevelPremiums = this.selectedProductCovers.flatMap(value => value.riskLevelPremiums);
         this.premiumComputationResponse = response;
+        log.debug("Premium computation response:", this.premiumComputationResponse)
         const productLevelPremiums = response.productLevelPremiums;
         this.expandedComparisonStates = productLevelPremiums.map(() => true);
         this.expandedCoverTypeIndexes = productLevelPremiums.map(product =>
@@ -949,7 +958,8 @@ ngOnDestroy() {
             taxCode: tax.taxCode,
             divisionFactor: tax.divisionFactor,
             applicationLevel: tax.applicationLevel,
-            taxRateType: tax.taxRateType
+            taxRateType: tax.taxRateType,
+            description:tax.description
           }
         }),
         itemDescription: risk.description,
@@ -971,8 +981,10 @@ ngOnDestroy() {
   getCoverTypePayload(risk): CoverType[] {
     let coverTypes: CoverType[] = []
     for (let coverType of risk.applicableCoverTypes) {
+      log.debug("COVERSSS",coverType)
       coverTypes.push({
         subclassCode: coverType?.subClassCode,
+        subClassDescription:coverType?.applicableRates[0].subClassDescription,
         coverTypeCode: coverType?.coverTypeCode,
         minimumAnnualPremium: null,
         minimumPremium: coverType?.minimumPremium,
@@ -1478,6 +1490,8 @@ ngOnDestroy() {
       untilDestroyed(this)
     ).subscribe(([taxes, coverTypeSections]) => {
       this.taxList = taxes._embedded as Tax[]
+            log.debug("CoverTypeSections",coverTypeSections)
+
       riskFormGroup.get('applicableTaxes')?.setValue(taxes._embedded)
       riskFormGroup.get('applicableCoverTypes')?.setValue(coverTypeSections._embedded)
       log.debug("Taxes:::", taxes, this.applicablePremiumRates)
@@ -1899,6 +1913,7 @@ ngOnDestroy() {
       const riskId = `Risk ${index + 1}`
       const formRisk = formRisks.find(value => value.riskCode === risk.code)
       const matchingRisk = existingRisks?.find((value) => value.propertyId?.replace(/\s/g, '') === riskId?.replace(/\s/g, ''))
+      log.debug("Mathching Risk", matchingRisk)
       log.debug("Processing Risk>>>, formRisk", risk, formRisk)
       riskInformation.push({
         code: matchingRisk ? matchingRisk.code : null,
@@ -1916,7 +1931,7 @@ ngOnDestroy() {
         propertyId: riskId,
         annualPremium: risk.selectCoverType.computedPremium,
         sectionsDetails: null,
-        action: "A",
+        action: this.quotationCode ? 'E' : 'A',
         clauseCodes: Array.from(new Set(risk.coverTypeDetails.flatMap(cover =>
           (cover.clauses ?? []).map(clause => clause.code)
         )
@@ -1924,6 +1939,10 @@ ngOnDestroy() {
         subclassCode: risk.selectCoverType.subclassCode,
         binderCode: risk.binderCode,
         riskLimits: risk.selectCoverType.limitPremium.map((limit) => {
+          const matchingLimit = matchingRisk?.riskLimits?.find(
+            (ml) => ml.sectionCode === limit.sectCode
+          );
+          log.debug("matching limit:",matchingLimit)
           return {
             sectionCode: limit.sectCode,
             quotationCode: null,
@@ -1944,7 +1963,7 @@ ngOnDestroy() {
             periodType: null,
             maxPremiumRate: null,
             calcGroup: limit.calculationGroup,
-            code: limit.sectCode,
+            code: matchingLimit?.code ?? null,
             compute: "Y",
             description: limit.description,
             freeLimit: limit?.freeLimit || 0,
@@ -2131,6 +2150,7 @@ ngOnDestroy() {
   @ViewChild(ShareQuotesComponent) shareQuotes!: ShareQuotesComponent;
 
   notificationPayload(): QuotationReportDto {
+    log.debug("SELECTED COVERS", this.premiumComputationPayloadToShare)
     const now = new Date();
     const formModel = this.quickQuoteForm.getRawValue();
     const coverFrom = format(new Date(formModel.effectiveDate), 'dd MMMM yyyy')
@@ -2144,8 +2164,8 @@ ngOnDestroy() {
         quotationPeriod: `${coverFrom} to ${coverTo}`,
         quotationTime: format(now, 'dd MMMM yyyy HHmm') + ' HRS',
         quotationStatus: 'Draft',
-        quotationNo:'N/A'
-        
+        quotationNo: 'N/A'
+
 
       },
       organization: {
@@ -2156,7 +2176,12 @@ ngOnDestroy() {
         code: product.code,
         description: product.description,
         riskLevelPremiums: product.riskLevelPremiums.map((risk: any) => ({
+          sumInsured: risk.sumInsured,
+          propertyId: risk.propertyId,
           coverTypeDetails: risk.coverTypeDetails.map((cover: any) => ({
+            subclassCode: cover?.subclassCode,
+             subclassDescription: cover.description || null,
+            propertyId: cover.propertyId,
             coverTypeShortDescription: cover.coverTypeShortDescription,
             coverTypeDescription: cover.coverTypeDescription,
             limits: cover.limits?.map((limit: any) => ({
@@ -2168,6 +2193,7 @@ ngOnDestroy() {
               (acc: any, tax: any) => {
                 acc.premium += tax.premium;
                 acc.code = tax.code;
+                acc.description = tax.description
                 return acc;
               },
               { premium: 0, code: 0 }
@@ -2183,6 +2209,25 @@ ngOnDestroy() {
             excesses: cover.excesses?.map((excess: any) => ({
               narration: excess.narration?.trim(),
               value: excess.value
+            })) || [],
+            limitPremium: cover.limitPremium?.map((limit: any) => ({
+              sectCode: limit.sectCode,
+              premium: limit.premium,
+              description: limit.description,
+              limitAmount: limit.limitAmount,
+              isMandatory: limit.isMandatory,
+              calculationGroup: limit.calculationGroup,
+              compute: limit.compute,
+              dualBasis: limit.dualBasis,
+              rateDivisionFactor: limit.rateDivisionFactor,
+              rateType: limit.rateType,
+              rowNumber: limit.rowNumber,
+              premiumRate: limit.premiumRate,
+              multiplierDivisionFactor: limit.multiplierDivisionFactor,
+              multiplierRate: limit.multiplierRate,
+              sectionType: limit.sectionType,
+              shortDescription: limit.shortDescription,
+              freeLimit: limit.freeLimit,
             })) || []
           }))
         }))
