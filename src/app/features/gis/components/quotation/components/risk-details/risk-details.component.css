@@ -88,6 +88,7 @@
     font-style: normal;
     font-weight: 500;
     line-height: 24px;
+    background-color: #BAD0E4;
     /* 150% */
 }
 
@@ -114,3 +115,42 @@
     color: #EE3945;
     font-size: 12px;
 }
+
+.section-title{
+    font-family: Roboto;
+    font-weight: 500;
+    font-size: 20px;
+    color: #00529B;
+
+}
+
+#openModalButtonAdd {
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-weight: 500;
+    background-color: #00529B;
+    color: #ffffff;
+  }
+  button:focus {
+    outline: none;
+    box-shadow: none;
+    background: none;
+  }
+  .custom-button{
+    color: #00529B;
+    font-family: Roboto;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .ui-paginator .ui-paginator-rpp-options {
+    margin-left: auto;
+  }
+  
+  
+ 
+  
+
+
+  
+  
+  

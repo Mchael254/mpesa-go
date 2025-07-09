@@ -1128,31 +1128,31 @@
     <div class="card-body">
         <div>
             <div class="row">
-                <div class="col-4">
+                <div class="col-4 section-title">
                     <strong> {{'gis.quotation.section_details' | translate}}</strong>
                 </div>
                 <div class="col-8 d-flex justify-content-end">
                     <div class="row">
-                        <div class="col-4" *ngIf="isSectionDetailsOpen">
-                            <button id="openModalButtonAdd" [hidden]="true" data-bs-toggle="modal"
-                                data-bs-target="#addSection">add</button>
-                            <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
+                        <!-- <div class="col-4" *ngIf="isSectionDetailsOpen">
+                            <button id="openModalButtonAdd"  data-bs-toggle="modal"
+                                data-bs-target="#addSection">Add section</button>
+                             <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#addSection" title="Edit">
                                 <i class="fa-solid fa-plus"></i>
-                            </button>
-                        </div>
+                            </button> -->
+                        <!-- </div>  -->
                         <!-- <div class="col-3" *ngIf="isSectionDetailsOpen">
                   <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editSection" title="Edit">
                     <i class="fa-solid fa-pencil"></i>
                   </button>
                 </div> -->
-                        <div class="col-4" *ngIf="isSectionDetailsOpen">
+                        <!-- <div class="col-4" *ngIf="isSectionDetailsOpen">
                             <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#deleteSection" title="Delete">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
-                        </div>
-                        <div class="col-4">
+                        </div> -->
+                        <div class="col-4 ">
                             <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse"
                                 data-bs-target="#sectionDetails" aria-expanded="false"
                                 [attr.aria-expanded]="isSectionDetailsOpen" (click)="toggleSectionDetails()">
@@ -1163,6 +1163,29 @@
                     </div>
 
                 </div>
+                <!-- ADD SECTION BUTTON ROW -->
+                <div class="row mt-3" *ngIf="isSectionDetailsOpen">
+                <div class="col-12 d-flex justify-content-end">
+                 <button
+                 id="openModalButtonAdd"
+                 class="btn btn-primary btn-sm"
+                 data-bs-toggle="modal"
+                 data-bs-target="#addSection"
+                  > Add Section
+                 </button>
+
+                 <i
+                 class="pi border border-black p-1 rounded-1 text-black"
+                 [ngClass]="{
+                   'pi-caret-up': showSections,
+                   'pi-caret-down': !showSections
+                 }"
+                 style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                 (click)="toggleSections()"
+               ></i>
+                 
+                  </div>
+                 </div>
             </div>
 
         </div>
@@ -1539,43 +1562,118 @@
             </div>
 
             <p-table [value]="sectionDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single"
-                [(selection)]="selectedSection" dataKey="code" editMode="row">
+                [(selection)]="selectedSection" dataKey="code" editMode="row" 
+                [paginator]="true"
+                [rows]="2"
+                [rowsPerPageOptions]="[2, 4, 6]"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="{first} to {last} of {totalRecords}">
                 <ng-template pTemplate="header">
                     <tr>
-                        <th class="flexible-header">{{'gis.quotation.group' | translate}}</th>
-                        <th class="flexible-header"> {{'gis.quotation.row_num' | translate}}</th>
-                        <th class="flexible-header"> {{'gis.quotation.short_description' | translate}}</th>
-                        <th class="flexible-header">{{'gis.quotation.description' | translate}}</th>
-                        <th class="flexible-header">{{'gis.quotation.limit_amount' | translate}}</th>
-                        <th class="flexible-header"> {{'gis.quotation.premium_rate' | translate}}</th>
-                        <th class="flexible-header">{{'gis.quotation.rate_type' | translate}}</th>
-                        <th class="flexible-header"></th>
+
+                      
+                      <th class="flexible-header" pSortableColumn="rowNum">
+                        {{ 'gis.quotation.row_num' | translate }}
+                        <p-sortIcon field="rowNum" />
+                      </th>
+                      <th class="flexible-header" pSortableColumn="group">
+                        {{ 'gis.quotation.group' | translate }}
+                        <p-sortIcon field="group" />
+                      </th>
+                      
+                      <th class="flexible-header" pSortableColumn="shortDescription">
+                        {{ 'gis.quotation.code' | translate }}
+                        <p-sortIcon field="code" />
+                      </th>
+                      
+                      <th class="flexible-header" pSortableColumn="description">
+                        {{ 'gis.quotation.benefit' | translate }}
+                        <p-sortIcon field="benefit" />
+                      </th>
+                      
+                      <th class="flexible-header" pSortableColumn="limitAmount">
+                        {{ 'gis.quotation.limit_amount' | translate }}
+                        <p-sortIcon field="limitAmount" />
+                      </th>
+                      
+                      <th class="flexible-header" pSortableColumn="premiumRate">
+                        {{ 'gis.quotation.premium_rate' | translate }}
+                        <p-sortIcon field="premiumRate" />
+                      </th>
+                      
+                      <th class="flexible-header" pSortableColumn="rateType">
+                        {{ 'gis.quotation.rate_type' | translate }}
+                        <p-sortIcon field="rateType" />
+                      </th>
+                      <th class="flexible-header" pSortableColumn="actions">
+                        {{ 'gis.quotation.actions' | translate }}
+                        <p-sortIcon field="actions" />
+                      </th>
+                  
+                    
                     </tr>
-                </ng-template>
+                  </ng-template>
+                  
                 <ng-template pTemplate="body" let-sectionArray let-editing="editing" let-ri="rowIndex">
                     <tr (click)="onSelectSection(sectionArray)" [pEditableRow]="sectionArray">
-                        <td class="flexible-header">{{sectionArray.calculationGroup}}</td>
                         <td class="flexible-header">{{sectionArray.rowNumber}}</td>
-                        <td class="flexible-header">{{sectionArray.sectionShortDescription}}</td>
-                        <td class="flexible-header">{{sectionArray.sectionDescription}}</td>
+                        <td class="flexible-header">{{sectionArray.calculationGroup}}</td>
+                        <td class="flexible-header">{{sectionArray.sectioncode}}</td>
+                        <td class="flexible-header">{{sectionArray.sectionbenefit}}</td>
                         <td class="flexible-header" appCommaFormat>{{sectionArray.limitAmount}}</td>
-                        <td class="flexible-header">{{sectionArray.premiumRate || sectionArray.rate}}</td>
+                        <td class="flexible-header">{{sectionArray.premiumRate}}</td>
                         <td class="flexible-header">{{sectionArray.rateType}}</td>
+                        <td class="flexible-header">{{sectionArray.actions}}</td>
                         <td class="flexible-header">
                             <!-- Edit Button -->
                             <button pButton pRipple type="button" pInitEditableRow
-                                class="p-button-rounded p-button-text" (click)="onEditButtonClick(sectionArray)">
-                                <i class="fas fa-pencil"></i>
+                                class="p-button-rounded p-button-text custom-button " (click)="onEditButtonClick(sectionArray)">
+                                Edit
                             </button>
+
+                             <!-- Delete Button -->
+                              <button pButton pRipple type="button" 
+                               class="p-button-rounded p-button-text custom-button  " 
+                               >
+                                Delete
+                                </button>
                         </td>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td colspan="8" style="padding: 20px; text-align:center" id="empty">
-                            {{'gis.quotation.no_data_to_display' | translate}}</td>
+                      <td colspan="8" style="padding: 30px; text-align: center;">
+                        <div class="d-flex align-items-center justify-content-center gap-3 flex-wrap">
+                          <!-- Icon + Message -->
+                          <div class="d-flex align-items-center text-muted gap-2">
+                        
+                            <span>No items added yet</span>
+                          </div>
+                  
+                          <!-- Action buttons -->
+                          <button
+                            pButton
+                            type="button"
+                            class="p-button-rounded p-button-text custom-button p-button-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#addSection"
+                          >
+                            <i class="pi pi-plus me-1"></i> Add
+                          </button>
+                  
+                          <button
+                            pButton
+                            type="button"
+                            class="p-button-rounded p-button-text custom-button p-button-sm"
+                            
+                          >
+                            <i class="pi pi-pencil me-1"></i> Edit
+                          </button>
+                        </div>
+                      </td>
                     </tr>
-                </ng-template>
+                  </ng-template>
+                  
             </p-table>
 
         </div>
