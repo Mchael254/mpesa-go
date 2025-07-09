@@ -61,6 +61,8 @@ export class RiskDetailsComponent {
   @ViewChild('sectionTable') sectionTable!: Table;
   @ViewChild('addRiskModal') modalElementRef!: ElementRef;
   @ViewChild('addRiskModal') addRiskModal: ElementRef;
+  @ViewChild('riskClauseTable') riskClauseTable: any;
+
   private modalInstance: any;
 
   riskDetails: RiskInformation[] = [];
@@ -381,6 +383,19 @@ export class RiskDetailsComponent {
     this.sectionPremiums.forEach((section: any) => {
       section.isChecked = checked;
     });
+  }
+  filterHeading(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.riskClauseTable.filter(input.value, 'heading', 'contains');
+  }
+
+  filterId(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.riskClauseTable.filter(input.value, 'id', 'contains');
+  }
+  filterWording(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.riskClauseTable.filter(input.value, 'wording', 'contains');
   }
   
 
@@ -1223,6 +1238,16 @@ export class RiskDetailsComponent {
       authorisedDriver: ['']
     });
   }
+
+
+  SubclauseLists = [
+    { id: 1111, heading: 'Fire Insurance', wording: 'Covers fire-related damages.', isMandatory: 'Y', isEditable: 'N' },
+    { id: 2222, heading: 'Theft Cover', wording: 'Protects against theft.', isMandatory: 'Y', isEditable: 'N' },
+    { id: 3333, heading: 'Accident Protection', wording: 'For accidental loss or damage.', isMandatory: 'N', isEditable: 'Y' },
+    { id: 4444, heading: 'Medical Expenses', wording: 'Covers hospital bills.', isMandatory: 'N', isEditable: 'Y' }
+  ];
+  
+  
 
   showSections: boolean = false;
 
