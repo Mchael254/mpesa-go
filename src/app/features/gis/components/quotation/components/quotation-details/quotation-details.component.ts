@@ -421,7 +421,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
 
-
   ngOnDestroy(): void {
   }
 

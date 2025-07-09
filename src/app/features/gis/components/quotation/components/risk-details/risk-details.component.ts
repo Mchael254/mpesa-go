@@ -54,11 +54,13 @@ const log = new Logger('RiskClausesDetailsComponent');
     ]),
   ],
 })
+
 export class RiskDetailsComponent {
   @Input() selectedProduct!: any;
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
   @ViewChild('sectionTable') sectionTable!: Table;
   @ViewChild('addRiskModal') modalElementRef!: ElementRef;
+  @ViewChild('addRiskModal') addRiskModal: ElementRef;
   private modalInstance: any;
 
   riskDetails: RiskInformation[] = [];
@@ -167,6 +169,7 @@ export class RiskDetailsComponent {
     regexPattern: string;
     placeholder: string;
     label: string;
+    selectOptions?: { label: string; value: any }[];
   }[];
   subclassFormContent: any
   subclassFormData: {
@@ -180,11 +183,13 @@ export class RiskDetailsComponent {
     regexPattern: string;
     placeholder: string;
     label: string;
-    scheduleLevel:string
+    scheduleLevel: string
+    selectOptions?: { label: string; value: any }[];
   }[];
   existingPropertyIds: string[] = [];
   dynamicRegexPattern: string;
- clientsData: ClientDTO[] = [];
+  clientsData: ClientDTO[] = [];
+
 
   constructor(
     private router: Router,
@@ -249,8 +254,10 @@ export class RiskDetailsComponent {
     }
   }
   ngOnInit(): void {
-    this.riskDetailsForm = new FormGroup({});
-this.loadAllClients();
+    this.riskDetailsForm = new FormGroup({
+      subclass: new FormControl(null)
+    });
+    this.loadAllClients();
     this.dateFormat = sessionStorage.getItem('dateFormat');
     log.debug("Date Formart", this.dateFormat)
     this.getVehicleMake();
@@ -323,6 +330,53 @@ this.loadAllClients();
     this.modalInstance?.show();
   }
 
+  loadSelectedSubclassRiskFields(subclassCode: number): void {
+    const riskFieldDescription = `detailed-risk-subclass-form-${subclassCode}`;
+
+    this.quotationService.getFormFields(riskFieldDescription).subscribe({
+      next: (response) => {
+        const fields = response?.[0]?.fields || [];
+        this.subclassFormContent = response;
+        log.debug('this is the subClass risk content', this.subclassFormContent)
+        this.subclassFormData = fields.filter(field => field.scheduleLevel === "L1");
+
+        log.debug('this is the subClass risk fields', this.subclassFormData)
+
+
+        // Remove existing dynamic controls
+        Object.keys(this.riskDetailsForm.controls).forEach((controlName) => {
+          const control = this.riskDetailsForm.get(controlName) as any;
+          if (control?.metadata?.dynamic) {
+            this.riskDetailsForm.removeControl(controlName);
+            log.debug(`Removed dynamic control: ${controlName}`);
+          }
+        });
+
+
+        this.subclassFormData.forEach((field) => {
+          if (!this.riskDetailsForm.get(field.name)) {
+            const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
+            const control = new FormControl(this.getDefaultValue(field), validators);
+            (control as any).metadata = { dynamicSubclass: true };
+            this.riskDetailsForm.addControl(field.name, control);
+          }
+        });
+
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', 'unable to load subclass risks');
+      }
+    })
+
+  }
+
+  getDefaultValue(field: any): any {
+    if (field.type === 'date') {
+      return new Date();
+    }
+    return '';
+  }
+
   loadSelectedProductRiskFields(productCode: number): void {
     const formFieldDescription = `detailed-quotation-risk-${productCode}`;
 
@@ -360,22 +414,22 @@ this.loadAllClients();
       }
     });
   }
- loadAllClients(){
-      this.clientService.getClients()
-        .subscribe({
-          next: (data: any) => {
-            data.content.forEach(client => {
-              client.clientTypeName = client.clientType.clientTypeName;
-              client.clientFullName = client.firstName + ' ' + (client.lastName || '');
-            });
-            this.clientsData = data.content;
-           
-          },
-          error: (err) => {
-            log.error('Failed to fetch clients', err);
-          }
-        });
- }
+  loadAllClients() {
+    this.clientService.getClients()
+      .subscribe({
+        next: (data: any) => {
+          data.content.forEach(client => {
+            client.clientTypeName = client.clientType.clientTypeName;
+            client.clientFullName = client.firstName + ' ' + (client.lastName || '');
+          });
+          this.clientsData = data.content;
+
+        },
+        error: (err) => {
+          log.error('Failed to fetch clients', err);
+        }
+      });
+  }
   loadClientDetails() {
     this.clientService.getClientById(this.insuredCode).subscribe((data: any) => {
       this.selectedClientList = data;
@@ -539,35 +593,39 @@ this.loadAllClients();
  * Load cover types by subclass code
  * @param code {number} subclass code
  */
-  loadCovertypeBySubclassCode(code: number) {
-    this.subclassCoverTypesService.getSubclassCovertypeBySCode(code).subscribe(data => {
-      // this.subclassCoverType = data;
-      this.subclassCoverType = data.map((value) => {
-        let capitalizedDescription =
-          value.description.charAt(0).toUpperCase() +
-          value.description.slice(1).toLowerCase();
+ loadCovertypeBySubclassCode(code: number) {
+  this.subclassCoverTypesService.getSubclassCovertypeBySCode(code).subscribe(data => {
+    this.subclassCoverType = data.map(value => ({
+      ...value,
+      description: value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase()
+    }));
+    log.debug('Processed covertypes:', this.subclassCoverType);
+
+    // Inject into the formData
+    this.subclassFormData = this.subclassFormData.map(field => {
+      if (field.name === 'coverType') {
         return {
-          ...value,
-          description: capitalizedDescription,
+          ...field,
+          selectOptions: this.subclassCoverType.map(cover => ({
+            label: cover.description,
+            value: cover.coverTypeCode
+          }))
         };
-      });
-      this.coverTypeCode = this.subclassCoverType[0]?.coverTypeCode;
-      log.debug(this.subclassCoverType, 'filtered covertype');
-      log.debug(this.coverTypeCode, 'filtered covertype code');
-
-      const coverTypeCodeToUse = this.storedRiskFormDetails?.coverTypeCode || this.passedCoverTypeCode;
-
-      if (coverTypeCodeToUse) {
-        this.selectedCoverType = this.subclassCoverType.find(coverType => coverType.coverTypeCode === coverTypeCodeToUse);
-        if (this.selectedCoverType) {
-          this.riskDetailsForm.patchValue({ coverTypeDescription: this.selectedCoverType });
-
-        }
       }
-      this.cdr.detectChanges();
-    })
+      return field;
+    });
 
-  }
+    const coverTypeCodeToUse = this.storedRiskFormDetails?.coverTypeCode || this.passedCoverTypeCode;
+    if (coverTypeCodeToUse) {
+      this.riskDetailsForm.patchValue({
+        covertype: coverTypeCodeToUse
+      });
+    }
+
+    this.cdr.detectChanges();
+  });
+}
+
   getVehicleMake() {
     this.vehicleMakeService.getAllVehicleMake().subscribe(data => {
       // this.vehicleMakeList = data;
@@ -759,6 +817,7 @@ this.loadAllClients();
       }
     })
   }
+
   onSubclassSelected(event: any) {
 
     const selectedValue = event.value // Get the selected value
@@ -767,6 +826,7 @@ this.loadAllClients();
     log.debug("Selected value:", selectedValue);
     log.debug(this.selectedSubclassCode, 'Sekected Subclass Code')
     if (this.selectedSubclassCode) {
+      this.loadSelectedSubclassRiskFields(this.selectedSubclassCode)
       this.fetchRegexPattern();
       this.fetchTaxes();
       this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
@@ -776,7 +836,7 @@ this.loadAllClients();
     }
 
   }
- 
+
   capitalizeWord(value: String): string {
     return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
   }
@@ -830,56 +890,38 @@ this.loadAllClients();
       }
     );
   }
- 
+
   fetchRegexPattern() {
-      this.quotationService
-        .getRegexPatterns(this.selectedSubclassCode)
-        .pipe(untilDestroyed(this))
-        .subscribe({
-          next: (response: any) => {
-            this.regexPattern = response._embedded?.riskIdFormat;
-            log.debug('New Regex Pattern', this.regexPattern);
-  
-            this.dynamicRegexPattern = this.regexPattern;
-  
-            const control = this.riskDetailsForm.get('registrationNumber') as FormControl;
-  
-            if (control) {
-              // Add your required validators here
-              control.setValidators([
-                Validators.required,
-                Validators.pattern(this.dynamicRegexPattern)
-              ]);
-  
-              control.updateValueAndValidity();
-            }
-          },
-          error: (error) => {
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              error.error.message
-            );
-          },
-        });
-    }
+    this.quotationService
+      .getRegexPatterns(this.selectedSubclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          this.regexPattern = response._embedded?.riskIdFormat;
+          log.debug('New Regex Pattern', this.regexPattern);
 
+          this.dynamicRegexPattern = this.regexPattern;
 
+          const control = this.riskDetailsForm.get('registrationNumber') as FormControl;
 
-    
+          if (control) {
+            // Add your required validators here
+            control.setValidators([
+              Validators.required,
+              Validators.pattern(this.dynamicRegexPattern)
+            ]);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+            control.updateValueAndValidity();
+          }
+        },
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error.message
+          );
+        },
+      });
+  }
   fetchTaxes() {
     this.quotationService
       .getTaxes(this.selectedProductCode, this.selectedSubclassCode)
@@ -897,7 +939,20 @@ this.loadAllClients();
         },
       });
   }
+
+
   createRiskDetail() {
+    // validate inputs
+    if (this.riskDetailsForm.invalid) {
+      Object.keys(this.riskDetailsForm.controls).forEach(field => {
+        const control = this.riskDetailsForm.get(field);
+        control?.markAsTouched({ onlySelf: true });
+      });
+      return;
+    }
+    // if valid
+    const modal = bootstrap.Modal.getInstance(this.addRiskModal.nativeElement);
+    modal.hide();
 
     const currentFormValues = this.riskDetailsForm ? { ...this.riskDetailsForm.value } : null;
 
@@ -2028,7 +2083,7 @@ toggleSections() {
   transformToUpperCase(event: Event): void {
     const input = event.target as HTMLInputElement;
     const upperCaseValue = input.value.toUpperCase();
-    log.debug("RISK FORM VALUE",this.riskDetailsForm)
+    log.debug("RISK FORM VALUE", this.riskDetailsForm)
     const control = this.riskDetailsForm.get('registrationNumber') as FormControl;
 
     if (!control) {
@@ -2041,7 +2096,7 @@ toggleSections() {
     control.setValue(upperCaseValue, { emitEvent: false });
   }
   getCarRegNoControl(): FormControl {
-      return this.riskDetailsForm.get('registrationNumber') as FormControl;
+    return this.riskDetailsForm.get('registrationNumber') as FormControl;
 
-    }
+  }
 }
