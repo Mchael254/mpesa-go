@@ -2,7 +2,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { introducersDTO } from '../../data/introducersDTO';
@@ -24,6 +24,7 @@ import { GlobalMessagingService } from "../../../../../../shared/services/messag
 import { forkJoin, mergeMap } from 'rxjs';
 import { QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
 import { ProductClauseDTO, Products } from '../../../setups/data/gisDTO';
+import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
 
 const log = new Logger('QuotationDetails');
 
@@ -36,19 +37,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   @ViewChild('dt') table!: Table;
+  @ViewChild(Table) private dataTable: Table;
+  quotationForm: FormGroup;
+  newClient: boolean = false;
+  selectedClientType = 'existing';
+  showClientSearchModal = false;
+  selectedClientName = '';
 
   headingSearch: string = '';
   shortDescriptionSearch: string = '';
   wordingSearch: string = '';
-
-
-
-  // sort(arg0: string) {
-  //   throw new Error('Method not implemented.');
-  // }
-
-
-  @ViewChild(Table) private dataTable: Table;
   steps = quoteStepsData;
   branch: OrganizationBranchDto[];
   currency: CurrencyDTO[]
@@ -58,7 +56,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   user: any;
   formData: any;
-  quotationForm: FormGroup;
+
   agents: any
   agentDetails: any
   quotationsList: any;
@@ -126,8 +124,31 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   nonMandatoryProductClause: ProductClauseDTO[] = [];
   productClause: ProductClauseDTO[] = [];
   deleteCandidateProductCode: string | null = null;
-
-
+  quotationFormContent: any
+  detailedQuotationFormData: {
+    type: string;
+    name: string;
+    max: number
+    min: number
+    isMandatory: string;
+    disabled: boolean;
+    readonly: boolean;
+    regexPattern: string;
+    placeholder: string;
+    label: string;
+    scheduleLevel: string
+    isPriority: string;
+  }[];
+  SearchCountryField = SearchCountryField;
+  CountryISO = CountryISO;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries: CountryISO[] = [
+    CountryISO.Kenya,
+    CountryISO.Nigeria,
+    CountryISO.UnitedStates,
+    CountryISO.UnitedKingdom,
+  ];
+  emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -189,13 +210,18 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.quotationForm = this.fb.group({
+      email: ['', [Validators.required, Validators.pattern(this.emailPattern)]],
+      phone: ['', [Validators.required]],
+      clientName: ['', [Validators.required, Validators.minLength(2)]]
+    });
+    this.loadDetailedQuotationFields();
+
     this.minDate = new Date();
     // this.todaysDate = new Date();
     // this.coverToDate = new Date(this.todaysDate);
     //  this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);
-    this.fetchQuotationRelatedData()
     this.getuser();
-    this.createQuotationForm();
     this.createQuotationProductForm();
 
 
@@ -204,13 +230,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         const today = new Date();
         const oneYearLater = new Date(today);
         oneYearLater.setFullYear(today.getFullYear() + 1);
-  
+
         this.quotationProductForm.patchValue({
           wef: today,
           wet: oneYearLater
         });
-  
-        
+
+
         this.updateCoverToDate(today);
       }
     });
@@ -225,6 +251,62 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.loadPersistedClauses();
   }
 
+
+
+  loadDetailedQuotationFields(): void {
+    const formFieldDescription = `detailed-quotation-details`;
+
+    this.quotationService.getFormFields(formFieldDescription).subscribe({
+      next: (response) => {
+        const fields = response?.[0]?.fields || [];
+
+        this.quotationFormContent = response;
+        // this.subclassFormData = fields.filter(fields => fields.scheduleLevel === 'L1');
+        this.detailedQuotationFormData = fields
+        log.debug(this.quotationFormContent, ' Quotation Form-content');
+        log.debug(this.detailedQuotationFormData, 'Quotation formData is defined here');
+        this.fetchQuotationRelatedData()
+
+        // Remove existing dynamic controls
+        // Object.keys(this.riskDetailsForm.controls).forEach((controlName) => {
+        //   const control = this.riskDetailsForm.get(controlName) as any;
+        //   if (control?.metadata?.dynamic) {
+        //     this.riskDetailsForm.removeControl(controlName);
+        //     log.debug(`Removed dynamic control: ${controlName}`);
+        //   }
+        // });
+
+        // Add new dynamic controls
+        this.detailedQuotationFormData.forEach((field) => {
+          const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
+          const formControl = new FormControl('', validators);
+          (formControl as any).metadata = { dynamic: true };
+          this.quotationForm.addControl(field.name, formControl);
+        });
+
+        log.debug(this.quotationForm.value, 'Final Form Value');
+      },
+      error: (err) => {
+        log.error(err, 'Failed to load risk fields');
+      }
+    });
+  }
+
+  setClientType(value: 'new' | 'existing') {
+    this.selectedClientType = value;
+    this.newClient = value === 'new';
+    log.debug("New client status", this.newClient)
+  }
+  handleSaveClient(eventData: any) {
+    log.debug('Event received from Client search comp', eventData);
+    const clientCode = eventData.id;
+    this.selectedClientName = eventData.clientFullName
+if (document.activeElement instanceof HTMLElement) {
+  document.activeElement.blur();
+}
+
+    this.showClientSearchModal = false;
+  }
   //search clause
   filterByshortDescription(event: any): void {
     const value = event.target.value;
@@ -307,6 +389,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   showClauseModal: boolean = false;
   clausesModified: boolean = false;
+
   openClauseModal() {
     const storedProductCode = sessionStorage.getItem("selectedProductCode");
 
@@ -594,66 +677,36 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.user = this.authService.getCurrentUserName();
     this.userDetails = this.authService.getCurrentUser();
     log.info('Login UserDetails', this.userDetails);
-  
+
     this.userCode = this.userDetails.code;
     log.debug('User Code ', this.userCode);
-  
+
     this.dateFormat = this.userDetails?.orgDateFormat;
     log.debug('Organization Date Format:', this.dateFormat);
     sessionStorage.setItem('dateFormat', this.dateFormat);
-  
+
     const todaysDate = new Date();
     log.debug('todays date before being formatted', todaysDate);
-  
-    
+
+
     this.todaysDate = todaysDate;
-  
-    
+
+
     const day = todaysDate.getDate();
     const month = todaysDate.toLocaleString('default', { month: 'long' });
     const year = todaysDate.getFullYear();
     const formattedDate = `${day}-${month}-${year}`;
-  
+
     log.debug('Formatted Todays Date (for display):', formattedDate);
-  
+
     this.updateQuotationExpiryDate(this.todaysDate);
-  
+
     this.currencyDelimiter = this.userDetails?.currencyDelimiter;
     log.debug('Organization currency delimiter', this.currencyDelimiter);
     sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
   }
-  
 
-  createQuotationForm() {
-    this.quotationForm = this.fb.group({
-      fromCampaign: [],
-      frequencyOfPayment: [],
-      source: ['', Validators.required],
-      user: [''],
-      currencyCode: [0, Validators.required],
-      agent: [0, Validators.required],
-      multiUser: [''],
-      wefDate: [
-        this.quotationFormDetails ? new Date(this.quotationFormDetails.wefDate) : this.todaysDate,
-        Validators.required
-      ],
-      wetDate: [
-        this.quotationFormDetails ? new Date(this.quotationFormDetails.wetDate) : this.coverToDate,
-        Validators.required
-      ],
-      branch: [Validators.required],
-      marketerAgentCode: [0],
-      comments: [''],
-      introducerCode: [0],
-      internalComments: [''],
-      RFQDate: [this.quotationFormDetails ?
-        new Date(this.quotationFormDetails?.RFQDate) : new Date(this.todaysDate)],
-      expiryDate: [this.quotationFormDetails ?
-        new Date(this.quotationFormDetails?.expiryDate) : this.expiryDate],
-      quotationType: [null]
-    });
 
-  }
 
   createQuotationProductForm() {
     this.quotationProductForm = this.fb.group({

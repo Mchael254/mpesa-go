@@ -900,10 +900,10 @@ export class RiskDetailsComponent {
           this.riskDetailsForm.patchValue({ subclassCode: selectedSubclass });
 
           // Manually call onSubclassSelected to handle the selected subclass
-          this.onSubclassSelected({ value: selectedSubclass });
+          // this.onSubclassSelected({ value: selectedSubclass });
 
-          this.selectedSubclassCode = subClassCodeToUse; // Update the selected subclass code
-          this.loadAllBinders(); // Load all binders
+          // this.selectedSubclassCode = subClassCodeToUse; // Update the selected subclass code
+          // this.loadAllBinders(); // Load all binders
         }
       } else {
         // If no subclass code is found, patch the form with the first subclass in the list
@@ -912,10 +912,10 @@ export class RiskDetailsComponent {
           // this.riskDetailsForm.patchValue({ subclassCode: firstSubclass });
 
           // Manually call onSubclassSelected to handle the first subclass
-          this.onSubclassSelected({ value: firstSubclass });
+          // this.onSubclassSelected({ value: firstSubclass });
 
           this.selectedSubclassCode = firstSubclass.code; // Update the selected subclass code
-          this.loadAllBinders(); // Load all binders
+          // this.loadAllBinders(); // Load all binders
         }
       }
     })
@@ -1000,7 +1000,7 @@ export class RiskDetailsComponent {
 
         // Update form control value with default binder
         if (this.riskDetailsForm && this.defaultBinder && this.defaultBinder.length > 0) {
-          this.riskDetailsForm.get('binderCode').setValue(this.defaultBinder[0]);
+          this.riskDetailsForm.get('premiumBand').setValue(this.defaultBinder[0]);
         }
       },
       (error) => {

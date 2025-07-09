@@ -1,5 +1,5 @@
-import {ClientDTO} from "src/app/features/entities/data/ClientDTO";
-import {ProductLevelPremium, ProductPremium} from "./premium-computation";
+import { ClientDTO } from "src/app/features/entities/data/ClientDTO";
+import { ProductLevelPremium, ProductPremium } from "./premium-computation";
 
 export interface quotationDTO {
   actionType: string,
@@ -1124,7 +1124,8 @@ export interface QuotationDetailsDto {
   quotationTime: string
   quotationAgent?: string
   insuredName?: string
-  quotationNo?:string
+  quotationNo?: string
+  ipayReferenceNumber?: string
 }
 
 export interface QuotationReportDto {
@@ -1133,6 +1134,7 @@ export interface QuotationReportDto {
     code: number
     description: string
     riskLevelPremiums: {
+      sumInsured:number
       coverTypeDetails: {
         coverTypeShortDescription: string;
         coverTypeDescription: string,
@@ -1157,6 +1159,26 @@ export interface QuotationReportDto {
           narration: string,
           value: string
         }[]
+        limitPremium: {
+          sectCode: number;
+          premium: number;
+          description: string;
+          limitAmount: number;
+          isMandatory: string;
+          calculationGroup?: number;
+          compute?: string;
+          dualBasis?: string;
+          rateDivisionFactor?: number;
+          rateType?: string;
+          rowNumber?: number;
+          premiumRate?: number;
+          multiplierDivisionFactor?: number
+          multiplierRate?: number
+          sectionType?: string
+          shortDescription?: string
+          freeLimit?: number
+        }
+
       }
     }[]
   }[]
