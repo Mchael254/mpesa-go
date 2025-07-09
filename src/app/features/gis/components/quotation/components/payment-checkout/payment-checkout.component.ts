@@ -7,7 +7,7 @@ import { untilDestroyed } from "../../../../../../shared/shared.module";
 import { tap } from "rxjs";
 import { SESSION_KEY } from "../../../../../lms/util/session_storage_enum";
 import { SessionStorageService } from "../../../../../../shared/services/session-storage/session-storage.service";
-import { faL } from '@fortawesome/free-solid-svg-icons';
+
 
 const log = new Logger('PaymentCheckoutComponent');
 
@@ -42,10 +42,7 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
     this.ipayRefNo = atob(queryParams.get('reference'))
     this.amount = +atob(queryParams.get('amount'))
 
-    // Check if payment was already completed
     this.checkPaymentCompletion();
-    
-    // Restore payment state from session storage
     this.restorePaymentState();
   }
 
@@ -177,7 +174,6 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
               this.action = 'confirm'
               this.checkoutId = response._embedded.CheckoutRequestID
               
-              // Save state after successful initiation
               this.savePaymentState();
             } else {
               this.checkoutId = null
