@@ -1,6 +1,6 @@
 <div class="container d-flex align-items-center">
  
-  <div class="paymentCard border border-outline-primary py-2 px-4 bg-white mb-0 rounded-2 z-10 z-10 shadow-lg">
+  <div class="paymentCard border border-outline-primary py-2 px-4 bg-white mb-0 rounded-2 z-10 z-10 shadow-lg" style="height:auto">
      <p class="fw-semibold mt-2">Payment details</p>
     <div [class.invisible]="!paymentStatus" class="text-center">
       <p *ngIf="success" class="text-center text-success fw-bold">{{ successMessage }}</p>

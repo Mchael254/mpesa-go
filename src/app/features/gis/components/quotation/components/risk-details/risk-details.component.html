@@ -37,14 +37,12 @@
         <!-- Add Risk  Modal -->
         <div class="modal fade" id="addRisk" #addRiskModal tabindex="-1" role="dialog" aria-labelledby="addRiskLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 60vw; min-width:30vw">
+            <div class="modal-dialog modal-dialog-centered" role="document" style="width:700px">
                 <div class="modal-content" id="addRiskModal">
                     <div class="modal-body" style="max-height: 75vh;min-height:40vh; overflow-y: auto;">
-                        <h5 class="modal-title mt-2 mb-2 addRiskTitle ">Add risk
-                            <button type="button" class="btn-close float-end text-red-500" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                        <h5 class="modal-title mt-0 mb-2 addRiskTitle ">Add risk
+                            <button type="button" class="float-end text-danger bg-white" style="border:none" data-bs-dismiss="modal">X</button>
                         </h5>
-
 
                         <form [formGroup]="riskDetailsForm">
                             <div class="row ">
@@ -1206,27 +1204,19 @@
                 </div>
                 <!-- ADD SECTION BUTTON ROW -->
                 <div class="row mt-3" *ngIf="isSectionDetailsOpen">
-                <div class="col-12 d-flex justify-content-end">
-                 <button
-                 id="openModalButtonAdd"
-                 class="btn btn-primary btn-sm"
-                 data-bs-toggle="modal"
-                 data-bs-target="#addSection"
-                  > Add Section
-                 </button>
+                    <div class="col-12 d-flex justify-content-end">
+                        <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#addSection"> Add Section
+                        </button>
 
-                 <i
-                 class="pi border border-black p-1 rounded-1 text-black"
-                 [ngClass]="{
+                        <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
                    'pi-caret-up': showSections,
                    'pi-caret-down': !showSections
-                 }"
-                 style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                 (click)="toggleSections()"
-               ></i>
-                 
-                  </div>
-                 </div>
+                 }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                            (click)="toggleSections()"></i>
+
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -1603,58 +1593,55 @@
             </div>
 
             <p-table [value]="sectionDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single"
-                [(selection)]="selectedSection" dataKey="code" editMode="row" 
-                [paginator]="true"
-                [rows]="2"
-                [rowsPerPageOptions]="[2, 4, 6]"
-                [showCurrentPageReport]="true"
+                [(selection)]="selectedSection" dataKey="code" editMode="row" [paginator]="true" [rows]="2"
+                [rowsPerPageOptions]="[2, 4, 6]" [showCurrentPageReport]="true"
                 currentPageReportTemplate="{first} to {last} of {totalRecords}">
                 <ng-template pTemplate="header">
                     <tr>
 
-                      
-                      <th class="flexible-header" pSortableColumn="rowNum">
-                        {{ 'gis.quotation.row_num' | translate }}
-                        <p-sortIcon field="rowNum" />
-                      </th>
-                      <th class="flexible-header" pSortableColumn="group">
-                        {{ 'gis.quotation.group' | translate }}
-                        <p-sortIcon field="group" />
-                      </th>
-                      
-                      <th class="flexible-header" pSortableColumn="shortDescription">
-                        {{ 'gis.quotation.code' | translate }}
-                        <p-sortIcon field="code" />
-                      </th>
-                      
-                      <th class="flexible-header" pSortableColumn="description">
-                        {{ 'gis.quotation.benefit' | translate }}
-                        <p-sortIcon field="benefit" />
-                      </th>
-                      
-                      <th class="flexible-header" pSortableColumn="limitAmount">
-                        {{ 'gis.quotation.limit_amount' | translate }}
-                        <p-sortIcon field="limitAmount" />
-                      </th>
-                      
-                      <th class="flexible-header" pSortableColumn="premiumRate">
-                        {{ 'gis.quotation.premium_rate' | translate }}
-                        <p-sortIcon field="premiumRate" />
-                      </th>
-                      
-                      <th class="flexible-header" pSortableColumn="rateType">
-                        {{ 'gis.quotation.rate_type' | translate }}
-                        <p-sortIcon field="rateType" />
-                      </th>
-                      <th class="flexible-header" pSortableColumn="actions">
-                        {{ 'gis.quotation.actions' | translate }}
-                        <p-sortIcon field="actions" />
-                      </th>
-                  
-                    
+
+                        <th class="flexible-header" pSortableColumn="rowNum">
+                            {{ 'gis.quotation.row_num' | translate }}
+                            <p-sortIcon field="rowNum" />
+                        </th>
+                        <th class="flexible-header" pSortableColumn="group">
+                            {{ 'gis.quotation.group' | translate }}
+                            <p-sortIcon field="group" />
+                        </th>
+
+                        <th class="flexible-header" pSortableColumn="shortDescription">
+                            {{ 'gis.quotation.code' | translate }}
+                            <p-sortIcon field="code" />
+                        </th>
+
+                        <th class="flexible-header" pSortableColumn="description">
+                            {{ 'gis.quotation.benefit' | translate }}
+                            <p-sortIcon field="benefit" />
+                        </th>
+
+                        <th class="flexible-header" pSortableColumn="limitAmount">
+                            {{ 'gis.quotation.limit_amount' | translate }}
+                            <p-sortIcon field="limitAmount" />
+                        </th>
+
+                        <th class="flexible-header" pSortableColumn="premiumRate">
+                            {{ 'gis.quotation.premium_rate' | translate }}
+                            <p-sortIcon field="premiumRate" />
+                        </th>
+
+                        <th class="flexible-header" pSortableColumn="rateType">
+                            {{ 'gis.quotation.rate_type' | translate }}
+                            <p-sortIcon field="rateType" />
+                        </th>
+                        <th class="flexible-header" pSortableColumn="actions">
+                            {{ 'gis.quotation.actions' | translate }}
+                            <p-sortIcon field="actions" />
+                        </th>
+
+
                     </tr>
-                  </ng-template>
-                  
+                </ng-template>
+
                 <ng-template pTemplate="body" let-sectionArray let-editing="editing" let-ri="rowIndex">
                     <tr (click)="onSelectSection(sectionArray)" [pEditableRow]="sectionArray">
                         <td class="flexible-header">{{sectionArray.rowNumber}}</td>
@@ -1668,53 +1655,45 @@
                         <td class="flexible-header">
                             <!-- Edit Button -->
                             <button pButton pRipple type="button" pInitEditableRow
-                                class="p-button-rounded p-button-text custom-button " (click)="onEditButtonClick(sectionArray)">
+                                class="p-button-rounded p-button-text custom-button "
+                                (click)="onEditButtonClick(sectionArray)">
                                 Edit
                             </button>
 
-                             <!-- Delete Button -->
-                              <button pButton pRipple type="button" 
-                               class="p-button-rounded p-button-text custom-button  " 
-                               >
+                            <!-- Delete Button -->
+                            <button pButton pRipple type="button"
+                                class="p-button-rounded p-button-text custom-button  ">
                                 Delete
-                                </button>
+                            </button>
                         </td>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                      <td colspan="8" style="padding: 30px; text-align: center;">
-                        <div class="d-flex align-items-center justify-content-center gap-3 flex-wrap">
-                          <!-- Icon + Message -->
-                          <div class="d-flex align-items-center text-muted gap-2">
-                        
-                            <span>No items added yet</span>
-                          </div>
-                  
-                          <!-- Action buttons -->
-                          <button
-                            pButton
-                            type="button"
-                            class="p-button-rounded p-button-text custom-button p-button-sm"
-                            data-bs-toggle="modal"
-                            data-bs-target="#addSection"
-                          >
-                            <i class="pi pi-plus me-1"></i> Add
-                          </button>
-                  
-                          <button
-                            pButton
-                            type="button"
-                            class="p-button-rounded p-button-text custom-button p-button-sm"
-                            
-                          >
-                            <i class="pi pi-pencil me-1"></i> Edit
-                          </button>
-                        </div>
-                      </td>
+                        <td colspan="8" style="padding: 30px; text-align: center;">
+                            <div class="d-flex align-items-center justify-content-center gap-3 flex-wrap">
+                                <!-- Icon + Message -->
+                                <div class="d-flex align-items-center text-muted gap-2">
+
+                                    <span>No items added yet</span>
+                                </div>
+
+                                <!-- Action buttons -->
+                                <button pButton type="button"
+                                    class="p-button-rounded p-button-text custom-button p-button-sm"
+                                    data-bs-toggle="modal" data-bs-target="#addSection">
+                                    <i class="pi pi-plus me-1"></i> Add
+                                </button>
+
+                                <button pButton type="button"
+                                    class="p-button-rounded p-button-text custom-button p-button-sm">
+                                    <i class="pi pi-pencil me-1"></i> Edit
+                                </button>
+                            </div>
+                        </td>
                     </tr>
-                  </ng-template>
-                  
+                </ng-template>
+
             </p-table>
 
         </div>

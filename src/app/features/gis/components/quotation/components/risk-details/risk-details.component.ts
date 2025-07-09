@@ -593,38 +593,38 @@ export class RiskDetailsComponent {
  * Load cover types by subclass code
  * @param code {number} subclass code
  */
- loadCovertypeBySubclassCode(code: number) {
-  this.subclassCoverTypesService.getSubclassCovertypeBySCode(code).subscribe(data => {
-    this.subclassCoverType = data.map(value => ({
-      ...value,
-      description: value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase()
-    }));
-    log.debug('Processed covertypes:', this.subclassCoverType);
+  loadCovertypeBySubclassCode(code: number) {
+    this.subclassCoverTypesService.getSubclassCovertypeBySCode(code).subscribe(data => {
+      this.subclassCoverType = data.map(value => ({
+        ...value,
+        description: value.description.charAt(0).toUpperCase() + value.description.slice(1).toLowerCase()
+      }));
+      log.debug('Processed covertypes:', this.subclassCoverType);
 
-    // Inject into the formData
-    this.subclassFormData = this.subclassFormData.map(field => {
-      if (field.name === 'coverType') {
-        return {
-          ...field,
-          selectOptions: this.subclassCoverType.map(cover => ({
-            label: cover.description,
-            value: cover.coverTypeCode
-          }))
-        };
-      }
-      return field;
-    });
-
-    const coverTypeCodeToUse = this.storedRiskFormDetails?.coverTypeCode || this.passedCoverTypeCode;
-    if (coverTypeCodeToUse) {
-      this.riskDetailsForm.patchValue({
-        covertype: coverTypeCodeToUse
+      // Inject into the subclass formData
+      this.subclassFormData = this.subclassFormData.map(field => {
+        if (field.name === 'coverType') {
+          return {
+            ...field,
+            selectOptions: this.subclassCoverType.map(cover => ({
+              label: cover.description,
+              value: cover.coverTypeCode
+            }))
+          };
+        }
+        return field;
       });
-    }
 
-    this.cdr.detectChanges();
-  });
-}
+      const coverTypeCodeToUse = this.storedRiskFormDetails?.coverTypeCode || this.passedCoverTypeCode;
+      if (coverTypeCodeToUse) {
+        this.riskDetailsForm.patchValue({
+          covertype: coverTypeCodeToUse
+        });
+      }
+
+      this.cdr.detectChanges();
+    });
+  }
 
   getVehicleMake() {
     this.vehicleMakeService.getAllVehicleMake().subscribe(data => {
@@ -638,6 +638,22 @@ export class RiskDetailsComponent {
           name: capitalizedDescription,
         };
       });
+
+      // Inject into the subclass formData
+      this.subclassFormData = this.subclassFormData.map(field => {
+        if (field.name === 'vehicleMake') {
+          return {
+            ...field,
+            selectOptions: this.vehicleMakeList.map(make => ({
+              label: make.name,
+              value: make.code
+            }))
+          };
+        }
+        return field;
+      });
+
+
       log.debug("VehicleMake", this.vehicleMakeList)
       if (this.storedRiskFormDetails) {
         const selectedVehicleMake = this.vehicleMakeList.find(make => make.code === this.storedRiskFormDetails?.vehicleMake);
@@ -832,6 +848,7 @@ export class RiskDetailsComponent {
       this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
       this.loadAllBinders();
       this.loadSubclassClauses(this.selectedSubclassCode);
+      this.getVehicleMake()
 
     }
 
@@ -840,6 +857,7 @@ export class RiskDetailsComponent {
   capitalizeWord(value: String): string {
     return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
   }
+
   loadAllBinders() {
     this.binderService.getAllBindersQuick(this.selectedSubclassCode).subscribe(
       (data) => {
@@ -853,6 +871,20 @@ export class RiskDetailsComponent {
             ...value,
             binder_name: capitalizedDescription,
           };
+        });
+
+        // Inject into the subclass formData
+        this.subclassFormData = this.subclassFormData.map(field => {
+          if (field.name === 'vehicleMake') {
+            return {
+              ...field,
+              selectOptions: this.binderListDetails.map(binder => ({
+                label: binder.binder_short_description,
+                value: binder.code
+              }))
+            };
+          }
+          return field;
         });
 
         log.debug("All Binders Details:", this.binderListDetails);
@@ -1154,9 +1186,9 @@ export class RiskDetailsComponent {
 
   showSections: boolean = false;
 
-toggleSections() {
-  this.showSections = !this.showSections;
-}
+  toggleSections() {
+    this.showSections = !this.showSections;
+  }
 
 
   // This method Clears the Schedule Detail form by resetting the form model
@@ -1425,7 +1457,7 @@ toggleSections() {
       rateType: 'rate'
     },
     {
-      code: '002', 
+      code: '002',
       calculationGroup: 'Group B',
       rowNumber: 13,
       sectionShortDescription: 'Another',
@@ -1435,7 +1467,7 @@ toggleSections() {
       rateType: 'test rate'
     },
     {
-      code: '002', 
+      code: '002',
       calculationGroup: 'Group B',
       rowNumber: 13,
       sectionShortDescription: 'Another',
@@ -1445,7 +1477,7 @@ toggleSections() {
       rateType: 'test rate'
     },
     {
-      code: '002', 
+      code: '002',
       calculationGroup: 'Group B',
       rowNumber: 13,
       sectionShortDescription: 'Another',
