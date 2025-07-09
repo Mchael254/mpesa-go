@@ -350,7 +350,7 @@
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'wealth_aml_details' && category === 'corporate'">
+            <div *ngIf="group.groupId === 'wealth_aml_details'">
               <app-dynamic-setup-table
                 [tableTitle]="group.subGroup[0]?.label"
                 [addButtonText]="group.subGroup[0]?.addButtonText[language]"
