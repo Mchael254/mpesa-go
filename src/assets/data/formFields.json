@@ -2717,7 +2717,7 @@
           "subGroup": [
             {
               "label": "wealth and anti-money laundering details",
-              "subGroupId": "bbb",
+              "subGroupId": "aml_details",
               "addButtonText": {
                 "en": "add aml details",
                 "ke": "xxxxxx",
@@ -3932,7 +3932,7 @@
 
         {
           "groupId": "wealth_aml_details",
-          "subGroupId": "wealth_aml_details",
+          "subGroupId": "aml_details",
           "fieldId": "source_of_fund",
           "type": "select",
           "label": {
@@ -3962,7 +3962,7 @@
         },
         {
           "groupId": "wealth_aml_details",
-          "subGroupId": "wealth_aml_details",
+          "subGroupId": "aml_details",
           "fieldId": "type_of_employment",
           "type": "select",
           "label": {
@@ -3996,7 +3996,7 @@
         },
         {
           "groupId": "wealth_aml_details",
-          "subGroupId": "wealth_aml_details",
+          "subGroupId": "aml_details",
           "fieldId": "economicSector",
           "type": "select",
           "label": {
@@ -4026,7 +4026,7 @@
         },
         {
           "groupId": "wealth_aml_details",
-          "subGroupId": "wealth_aml_details",
+          "subGroupId": "aml_details",
           "fieldId": "occupation",
           "type": "select",
           "label": {
@@ -4056,7 +4056,7 @@
         },
         {
           "groupId": "wealth_aml_details",
-          "subGroupId": "wealth_aml_details",
+          "subGroupId": "aml_details",
           "fieldId": "purposeOfInsurance",
           "type": "select",
           "label": {
@@ -4086,7 +4086,7 @@
         },
         {
           "groupId": "wealth_aml_details",
-          "subGroupId": "wealth_aml_details",
+          "subGroupId": "aml_details",
           "fieldId": "premiumFrequency",
           "type": "select",
           "label": {
@@ -4116,7 +4116,7 @@
         },
         {
           "groupId": "wealth_aml_details",
-          "subGroupId": "wealth_aml_details",
+          "subGroupId": "aml_details",
           "fieldId": "distributionChannel",
           "type": "select",
           "label": {
