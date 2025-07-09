@@ -86,7 +86,7 @@ export class DashboardComponent implements OnInit {
       },
       error: (err) => {
         const errorMessage = err?.error?.message ?? err.message;
-        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        // this.globalMessagingService.displayErrorMessage('Error', errorMessage);
         this.isQuotationDataReady = true;
       },
     });

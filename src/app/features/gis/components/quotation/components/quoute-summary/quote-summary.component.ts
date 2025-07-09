@@ -1,23 +1,23 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {QuotationDetails, QuotationReportDto, ShareQuoteDTO} from '../../data/quotationsDTO';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { QuotationDetails, QuotationReportDto, ShareQuoteDTO } from '../../data/quotationsDTO';
 
-import {QuotationsService} from "../../services/quotations/quotations.service";
-import {Logger, untilDestroyed, UtilService} from "../../../../../../shared/shared.module";
-import {Table} from 'primeng/table';
-import {BreadCrumbItem} from 'src/app/shared/data/common/BreadCrumbItem';
+import { QuotationsService } from "../../services/quotations/quotations.service";
+import { Logger, untilDestroyed, UtilService } from "../../../../../../shared/shared.module";
+import { Table } from 'primeng/table';
+import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
-import {Router} from '@angular/router';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service';
-import {ClaimsService} from '../../../claim/services/claims.service';
-import {ProductLevelPremium} from "../../data/premium-computation";
-import {ShareQuotesComponent} from '../share-quotes/share-quotes.component';
-import {format} from "date-fns";
-import {mergeMap} from "rxjs";
-import {EmailDto} from "../../../../../../shared/data/common/email-dto";
-import {NotificationService} from "../../services/notification/notification.service";
-import {StringManipulation} from "../../../../../lms/util/string_manipulation";
-import {SESSION_KEY} from "../../../../../lms/util/session_storage_enum";
-import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
+import { Router } from '@angular/router';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+import { ClaimsService } from '../../../claim/services/claims.service';
+import { ProductLevelPremium } from "../../data/premium-computation";
+import { ShareQuotesComponent } from '../share-quotes/share-quotes.component';
+import { format } from "date-fns";
+import { mergeMap } from "rxjs";
+import { EmailDto } from "../../../../../../shared/data/common/email-dto";
+import { NotificationService } from "../../services/notification/notification.service";
+import { StringManipulation } from "../../../../../lms/util/string_manipulation";
+import { SESSION_KEY } from "../../../../../lms/util/session_storage_enum";
+import { SessionStorageService } from "../../../../../../shared/services/session-storage/session-storage.service";
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -41,6 +41,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closeButton') closeButton: ElementRef;
   @ViewChild('closeReassignButton') closeReassignButton: ElementRef;
+  @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
+  @ViewChild(ShareQuotesComponent) shareQuotes!: ShareQuotesComponent;
+
 
 
   quotationDetails: QuotationDetails;
@@ -105,16 +108,16 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.quotationService.getQuotationDetails(JSON.parse(sessionStorage.getItem('quotationCode')))
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
-      log.debug("Quotation details>>>", response)
-      this.quotationDetails = response
-      const quotationProducts = this.quotationDetails.quotationProducts
-      this.flattenQuotationProducts(quotationProducts)
-      this.totalSumInsured = this.quotationDetails.premium
-      this.comments = this.quotationDetails?.comments
-      if ('Rejected' === response.status) {
-        this.afterRejectQuote = true
-      }
-    });
+        log.debug("Quotation details>>>", response)
+        this.quotationDetails = response
+        const quotationProducts = this.quotationDetails.quotationProducts
+        this.flattenQuotationProducts(quotationProducts)
+        this.totalSumInsured = this.quotationDetails.premium
+        this.comments = this.quotationDetails?.comments
+        if ('Rejected' === response.status) {
+          this.afterRejectQuote = true
+        }
+      });
 
   }
 
@@ -300,10 +303,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     this.quotationService
       .convertToNormalQuote(quotationCode)
       .subscribe((data: any) => {
-          log.debug("Response after converting quote to a normalQuote:", data)
-          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        log.debug("Response after converting quote to a normalQuote:", data)
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
 
-        }
+      }
       );
   }
 
@@ -359,29 +362,45 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     this.quotationService.updateQuotation(payload).subscribe({
       next: (response) => {
         log.debug('Quotation update response:', response);
-        if (response) {
-          // Now call convertQuoteToPolicy
-          const quotationCode = this.quotationDetails?.code;
-          const quoteProductCode = this.quotationDetails?.quotationProducts[0]?.code;
+        if (response && this.quotationDetails?.quotationProducts?.length) {
+          const quotationCode = this.quotationDetails.code;
+          const products = this.quotationDetails.quotationProducts;
           const conversionFlag = true;
           sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
 
-          this.quotationService.convertQuoteToPolicy(quotationCode, quoteProductCode).subscribe({
-            next: (data: any) => {
-              log.debug("Response after converting quote to a policy:", data);
-              this.closeButton.nativeElement.click();
-              this.batchNo = data._embedded.batchNo;
-              log.debug("Batch number", this.batchNo);
-              const convertedQuoteBatchNo = JSON.stringify(this.batchNo);
-              sessionStorage.setItem('convertedQuoteBatchNo', convertedQuoteBatchNo);
+          const convertNextProduct = (index: number) => {
+            if (index >= products.length) {
+              // All done, navigate to summary
               this.router.navigate(['/home/gis/policy/policy-summary']);
-            },
-            error: (err) => {
-              log.debug('Error while converting quote to policy:', err);
-              this.globalMessagingService.displayErrorMessage('error', 'Failed to convert quote to policy.');
+              return;
             }
-          });
+
+            const quoteProductCode = products[index].code;
+
+            this.quotationService.convertQuoteToPolicy(quotationCode, quoteProductCode).subscribe({
+              next: (data: any) => {
+                log.debug(`Converted product ${quoteProductCode}:`, data);
+
+                if (index === 0) {
+                  // Store batchNo from the first response
+                  this.batchNo = data._embedded.batchNo;
+                  sessionStorage.setItem('convertedQuoteBatchNo', JSON.stringify(this.batchNo));
+                }
+
+                convertNextProduct(index + 1); // Convert next product
+              },
+              error: (err) => {
+                log.debug('Error converting quote to policy:', err);
+                this.globalMessagingService.displayErrorMessage('error', `Failed to convert product ${quoteProductCode}.`);
+                // Optionally continue with next product even on error
+                convertNextProduct(index + 1);
+              }
+            });
+          };
+
+          convertNextProduct(0); // Start conversion
         }
+
       },
       error: (error) => {
         this.globalMessagingService.displayErrorMessage('error', error.error.message);
@@ -393,11 +412,9 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   //pdf functionality
-  @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
-  @ViewChild(ShareQuotesComponent) shareQuotes!: ShareQuotesComponent;
-
 
   notificationPayload(): QuotationReportDto {
+    log.debug("SELECTED COVERS", this.selectedCovers)
     const now = new Date();
     const coverFrom = format(new Date(this.quotationDetails.coverFrom), 'dd MMMM yyyy')
     const coverTo = format(new Date(this.quotationDetails.coverTo), 'dd MMMM yyyy')
@@ -415,13 +432,15 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
     return {
-      paymentLink:  `${baseUrl}${urlTree}`,
+      paymentLink: `${baseUrl}${urlTree}`,
       quotation: {
         quotationAgent: 'N/A',
         insuredName: 'N/A',
         quotationPeriod: `${coverFrom} to ${coverTo}`,
         quotationTime: format(now, 'dd MMMM yyyy HHmm') + ' HRS',
         quotationStatus: 'Draft',
+        quotationNo: this.quotationDetails?.quotationNo,
+        ipayReferenceNumber: this.quotationDetails?.ipayReferenceNumber
       },
       organization: {
         organizationLogo: null,
@@ -431,7 +450,13 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
         code: product.code,
         description: product.description,
         riskLevelPremiums: product.riskLevelPremiums.map((risk: any) => ({
+          sumInsured: risk.sumInsured,
+          propertyId: risk.propertyId,
+
           coverTypeDetails: risk.coverTypeDetails.map((cover: any) => ({
+            subclassCode: cover.subclassCode,
+             subclassDescription: cover.description || null,
+            propertyId: cover.propertyId,
             coverTypeShortDescription: cover.coverTypeShortDescription,
             coverTypeDescription: cover.coverTypeDescription,
             limits: cover.limits?.map((limit: any) => ({
@@ -445,7 +470,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
                 acc.code = tax.code;
                 return acc;
               },
-              {premium: 0, code: 0}
+              { premium: 0, code: 0 }
             ),
             clauses: cover.clauses?.map((clause: any) => ({
               heading: clause.heading,
@@ -458,6 +483,25 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
             excesses: cover.excesses?.map((excess: any) => ({
               narration: excess.narration?.trim(),
               value: excess.value
+            })) || [],
+            limitPremium: cover.limitPremium?.map((limit: any) => ({
+              sectCode: limit.sectCode,
+              premium: limit.premium,
+              description: limit.description,
+              limitAmount: limit.limitAmount,
+              isMandatory: limit.isMandatory,
+              calculationGroup: limit.calculationGroup,
+              compute: limit.compute,
+              dualBasis: limit.dualBasis,
+              rateDivisionFactor: limit.rateDivisionFactor,
+              rateType: limit.rateType,
+              rowNumber: limit.rowNumber,
+              premiumRate: limit.premiumRate,
+              multiplierDivisionFactor: limit.multiplierDivisionFactor,
+              multiplierRate: limit.multiplierRate,
+              sectionType: limit.sectionType,
+              shortDescription: limit.shortDescription,
+              freeLimit: limit.freeLimit,
             })) || []
           }))
         }))
@@ -467,6 +511,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onDownloadRequested() {
     const payload = this.notificationPayload();
+    log.debug("Payload", payload)
     this.quotationService.generateQuotationReport(payload).pipe(
       untilDestroyed(this)
     ).subscribe((response) => {
@@ -517,7 +562,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       })
   }
-  openClientSearchModal(){
+  openClientSearchModal() {
     this.isClientSearchModalVisible = true;
   }
 
