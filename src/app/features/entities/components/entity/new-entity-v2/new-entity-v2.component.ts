@@ -24,6 +24,7 @@ import {PartyTypeDto} from "../../../data/partyTypeDto";
 import {ClientService} from "../../../services/client/client.service";
 import {IdentityModeDTO} from "../../../data/entityDto";
 import {CurrencyService} from "../../../../../shared/services/setups/currency/currency.service";
+import {Branch, ContactDetails, Payee, WealthAmlDTO} from "../../../data/accountDTO";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -51,7 +52,7 @@ export class NewEntityV2Component implements OnInit {
 
   formFieldPayload!: FormConfig;
   uploadFormFields!: FieldModel[]
-  formGroupSections!: any[];
+  formGroupSections!: any[]; // {}
   uploadGroupSections: any/*{ selects: FieldModel[], buttons: FieldModel[] }*/;
   entityForm!: FormGroup;
   uploadForm!: FormGroup;
@@ -102,14 +103,15 @@ export class NewEntityV2Component implements OnInit {
   payeeDetailsFormFields: FieldModel[] = [];
   branchDetailsFormFields: FieldModel[] = [];
 
-  wealthAmlDetails: any[] = [];
-  contactPersonDetails: any[] = [];
-  branchDetails: any[] = [];
-  payeeDetails: any[] = [];
-  ownershipDetails: any[] = [];
-  cr12Details: any[] = [];
+  wealthAmlDetails: WealthAmlDTO[] = [];
+  contactPersonDetails: ContactDetails[] = [];
+  branchDetails: Branch[] = [];
+  payeeDetails: Payee[] = [];
+  ownershipDetails: any[] = []; // todo: define types
+  cr12Details: any[] = []; // todo: define types
 
   shouldUploadProfilePhoto: boolean = false;
+  profilePicture: any; // todo: define types
 
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
   protected readonly CountryISO = CountryISO;
@@ -163,15 +165,13 @@ export class NewEntityV2Component implements OnInit {
   fetchFormFields(category: string): void {
     this.http.get<any>( 'assets/data/formFields.json').subscribe({
       next: (data: any) => {
-        data.category.forEach((item) => { // todo: define type for item
+        data.category.forEach(item => {
           if (item.label === category) {
             this.formFieldPayload = item.category;
             const groups: Group[] = item?.groups;
             const fields: FieldModel[] = item?.fields;
             this.orderFormGroup(groups, fields);
-            // this.addField(fields);
             log.info('FormFields loaded', item);
-            // this.cdr.detectChanges();
           }
         })
       },
@@ -310,7 +310,7 @@ export class NewEntityV2Component implements OnInit {
 
     if (formValues.role === 'client' && formValues.category === 'individual') {
       visibleFormFields = fields.filter((field: FieldModel) => field.visible
-        && field.groupId !== 'wealth_aml_details' && field.subGroupId !== 'contact_details' && field.subGroupId !== 'privacy_policy'); // todo: add contact person details
+        && field.groupId !== 'wealth_aml_details' && field.subGroupId !== 'contact_details' && field.subGroupId !== 'privacy_policy');
 
     } else if(formValues.role === 'client' && formValues.category === 'corporate') {
       visibleFormFields = fields.filter((field: FieldModel) => field.visible &&
@@ -376,20 +376,9 @@ export class NewEntityV2Component implements OnInit {
       requiredDocs
     }
 
-
-    // log.info(`pattern validation errors >>>`, this.regexErrorMessages) // todo: traverse this and check if any validation failed
-    if (this.entityForm.valid || true) {
-      /*const filtered = Object.fromEntries(
-        Object.entries(formValues).filter(([_, value]) => value != null && value !== '')
-      );*/
-
-      this.saveIndividualClient(formValues, upperDetails);
-      if (uploadFormValues.category === 'individual') {
-        this.saveIndividualClient(formValues, upperDetails);
-      } else if (uploadFormValues.category === 'corporate') {
-
-      }
-
+    log.info(`pattern validation errors >>>`, this.regexErrorMessages) // todo: traverse this and check if any regex validation failed
+    if (this.entityForm.valid) {
+      this.saveToDatabase(formValues, upperDetails);
     } else {
       this.entityForm.markAllAsTouched(); // show validation errors
     }
@@ -397,7 +386,7 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
-  saveIndividualClient(formValues, upperDetails): void {
+  saveToDatabase(formValues, upperDetails): void {
     const payloadObject = {
       ...formValues.prime_identity,
       ...formValues.contact_details,
@@ -443,18 +432,6 @@ export class NewEntityV2Component implements OnInit {
     }
 
     const wealthAmlDetails = this.wealthAmlDetails;
-      /*[ // todo: add wealthAml details
-      {
-        fundsSource: "1",
-        employmentStatus: "SELF_EMPLOYED",
-        sectorId: 458,
-        occupationId: 187,
-        insurancePurpose: "future",
-        premiumFrequency: "ad-hoc",
-        distributeChannel: "email"
-      }
-    ]*/
-
     const branches = this.branchDetails;
     const contactPersons = this.contactPersonDetails;
     const payee = this.payeeDetails;
@@ -494,8 +471,11 @@ export class NewEntityV2Component implements OnInit {
     this.clientService.saveClientDetails2(client).subscribe({
       next: (response) => {
         log.info(`client saved >>> `, response);
+        this.uploadImage(this.profilePicture, response.partyId)
       },
-      error: (error) => {}
+      error: (error) => {
+        log.info(`could not save`)
+      }
     })
 
 
@@ -1091,7 +1071,7 @@ export class NewEntityV2Component implements OnInit {
 
       switch (uploadType) {
         case 'profile':
-          this.uploadImage(file, 111)
+          this.profilePicture = file;
           break;
         default:
         //do nothing

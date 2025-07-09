@@ -533,3 +533,26 @@ export interface ClientTitleDTO {
   gender: string;
   organizationId: number;
 }
+
+export interface Branch {
+  shortDesc: string;
+  branchName: string;
+  countryId: number;
+  stateId: number;
+  townId: number;
+  physicalAddress: string;
+  postalAddress: string;
+  postalCode: string;
+  email: string;
+  landlineNumber: string;
+  mobileNumber: string;
+}
+
+export interface Payee {
+  name: string;
+  idNo: string;
+  mobileNo: string;
+  email: string;
+  bankBranchCode: number;
+  accountNumber: string;
+}
