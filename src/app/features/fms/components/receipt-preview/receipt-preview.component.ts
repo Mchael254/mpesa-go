@@ -144,33 +144,23 @@ export class ReceiptPreviewComponent implements OnInit {
         //this.downlaod(this.filePath,'receiptpdf');
       },
       error: (err) => {
-        
-       
-           // Display a clear, reassuring message to the user.
-        // We use a success message because the SAVE part was successful.
-          // 1. Safely extract the backend error message. It checks for the most common
-        //    formats and provides a generic fallback.
-        const backendError = err.error?.msg || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        // 2. Combine your user-friendly message with the backend error using a template literal.
-        //    Using `\n\n` creates a nice line break for readability in the message box.
-        const fullMessage = `The receipt was saved successfully, but the preview could not be generated. You can find and print it later from the receipt management screen.\n\nReason: ${backendError}`;
-         // 3. Use `displayErrorMessage` for this specific failure and pass the combined message.
-          // 3. Use `displayErrorMessage` for this specific failure and pass the combined message.
-        this.globalMessagingService.displayErrorMessage(
-          'Error Generating Preview', // A more accurate title
-          fullMessage
-        );
-       
+        const customMessage = this.translate.instant('fms.rctPrintError');
 
-         // Clean up any session data to prevent inconsistent state
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
+        );
+
+        // Clean up any session data to prevent inconsistent state
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
-//this.sessionStorage.clear();
+        //this.sessionStorage.clear();
         // Navigate the user to a safe and stable screen
         this.router.navigate(['/home/fms/receipt-capture']);
-       
-      
-       },
+      },
     });
   }
   download() {
@@ -210,23 +200,31 @@ export class ReceiptPreviewComponent implements OnInit {
     this.receiptService.updateReceiptStatus(payload).subscribe({
       next: (response) => {
         this.globalMessagingService.displaySuccessMessage(
-          'success:',
-          response.message
+         '',
+          response?.msg ||
+            response?.error ||
+            response?.status 
+            
         );
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
-       //this.sessionStorage.clear();
+        //this.sessionStorage.clear();
         this.router.navigate(['/home/fms/receipt-capture']);
       },
 
       error: (err) => {
+        const customMessage = this.translate.instant('fms.errorMessage');
+
         this.globalMessagingService.displayErrorMessage(
-          'failed',
-          err.error.msg
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
-      // this.sessionStorage.clear();
+        // this.sessionStorage.clear();
       },
     });
   }
@@ -234,7 +232,7 @@ export class ReceiptPreviewComponent implements OnInit {
   navigateToReceiptCapture(): void {
     this.receiptDataService.clearReceiptData();
     this.receiptDataService.clearFormState();
-   // this.sessionStorage.clear();
+    // this.sessionStorage.clear();
     this.router.navigate(['/home/fms/receipt-capture']);
   }
 
@@ -243,9 +241,8 @@ export class ReceiptPreviewComponent implements OnInit {
    * @returns {void}
    */
   onBack() {
-     
     this.receiptDataService.clearFormState();
-   // this.sessionStorage.clear();
+    // this.sessionStorage.clear();
     this.receiptDataService.clearReceiptData(); // Clear but keep currency
     this.router.navigate(['/home/fms/receipt-capture']); // Navigate to the next screen
   }

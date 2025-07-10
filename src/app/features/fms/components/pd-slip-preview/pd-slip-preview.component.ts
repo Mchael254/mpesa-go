@@ -147,19 +147,14 @@ export class PdSlipPreviewComponent implements OnInit {
         this.filePath = window.URL.createObjectURL(blob);
       },
       error: (err) => {
-        // Display a clear, reassuring message to the user.
-        // We use a success message because the SAVE part was successful.
-          // 1. Safely extract the backend error message. It checks for the most common
-        //    formats and provides a generic fallback.
-        const backendError = err.error?.msg || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        // 2. Combine your user-friendly message with the backend error using a template literal.
-        //    Using `\n\n` creates a nice line break for readability in the message box.
-        const fullMessage = `The receipt was saved successfully, but the acknowledgment slip could not be generated. You can find and print it later from the system.\n\nReason: ${backendError}`;
-         // 3. Use `displayErrorMessage` for this specific failure and pass the combined message.
-          // 3. Use `displayErrorMessage` for this specific failure and pass the combined message.
+        const customMessage = this.translate.instant('fms.pdPrintError');
+
         this.globalMessagingService.displayErrorMessage(
-          'Error Generating Acknowledgment slip ', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
         // 4. Clean up and navigate the user to a safe screen (this part remains the same)
         this.receiptDataService.clearReceiptData();
@@ -202,7 +197,7 @@ export class PdSlipPreviewComponent implements OnInit {
   navigateToReceiptCapture(): void {
     this.receiptDataService.clearReceiptData();
     this.receiptDataService.clearFormState();
-   // this.sessionStorage.clear();
+    // this.sessionStorage.clear();
     this.router.navigate(['/home/fms/receipt-capture']);
   }
   updatePrintStatus() {
@@ -213,27 +208,31 @@ export class PdSlipPreviewComponent implements OnInit {
     this.receiptService.updateSlipStatus(payload).subscribe({
       next: (response) => {
         this.globalMessagingService.displaySuccessMessage(
-          'success:',
-          response.message
+         '',
+          response?.msg ||
+            response?.error ||
+            response?.status 
+            
         );
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
-       //this.sessionStorage.clear();
+        //this.sessionStorage.clear();
         this.router.navigate(['/home/fms/receipt-capture']);
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to update slip status. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-       
+
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
-       //this.sessionStorage.clear();
+        //this.sessionStorage.clear();
       },
     });
   }
@@ -242,9 +241,8 @@ export class PdSlipPreviewComponent implements OnInit {
    * @returns {void}
    */
   onBack() {
-     
-        this.receiptDataService.clearFormState();
-       //this.sessionStorage.clear();
+    this.receiptDataService.clearFormState();
+    //this.sessionStorage.clear();
     this.receiptDataService.clearReceiptData(); // Clear but keep currency
     this.router.navigate(['/home/fms/receipt-capture']); // Navigate to the next screen
   }

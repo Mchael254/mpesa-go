@@ -66,7 +66,7 @@ import { forkJoin } from 'rxjs';
   templateUrl: './receipt-capture.component.html',
   styleUrls: ['./receipt-capture.component.css'],
 })
-export class ReceiptCaptureComponent  {
+export class ReceiptCaptureComponent {
   // Changed from `export class ReceiptCaptureComponent {` to implement OnInit
   /**
    * @description Step data for the FMS workflow.
@@ -153,7 +153,7 @@ export class ReceiptCaptureComponent  {
    * @property {BanksDTO} selectedBank - The selected bank details.
    */
   selectedBank: BanksDTO;
-  defaultPaymentMethod:string='CASH';
+  defaultPaymentMethod: string = 'CASH';
   /**
    * @property {boolean} backdatingEnabled - Flag to enable backdating (adjust this based on business logic).
    */
@@ -204,7 +204,7 @@ export class ReceiptCaptureComponent  {
    */
   //payment mode details
   paymentModes: PaymentModesDTO[] = [];
-  selectedPaymentMethod:string='';
+  selectedPaymentMethod: string = '';
   /**
    * @property {boolean} showChequeOptions - Flag to control the visibility of cheque options.
    */
@@ -410,7 +410,7 @@ export class ReceiptCaptureComponent  {
    * It initializes the form, retrieves data from localStorage, and fetches required data from backend services.
    * @returns {void}
    */
-  
+
   ngOnInit(): void {
     this.captureReceiptForm();
     this.loggedInUser = this.authService.getCurrentUser();
@@ -464,15 +464,14 @@ export class ReceiptCaptureComponent  {
     this.fetchCurrencies();
     this.fetchPayments(this.selectedOrg?.id || this.defaultOrg?.id);
     //this.fetchBanks(this.defaultBranchId || this.selectedBranchId,this.defaultCurrencyId);
-   
 
     this.fetchReceiptNumber(
       this.defaultBranch?.id || this.selectedBranch?.id,
       this.loggedInUser.code
     );
     this.fetchNarrations();
-    this. updateDateRestrictions();
-     this.restoreFormData(); // Restore saved data
+    this.updateDateRestrictions();
+    this.restoreFormData(); // Restore saved data
     // Initialize form with default values first
 
     // 3. Restore UI state (visibility, requirements)
@@ -546,7 +545,7 @@ export class ReceiptCaptureComponent  {
         this.currencies = currencies;
         // Check if user has previously selected a currency
         const savedCurrencyId = this.receiptDataService.getSelectedCurrency();
-      
+
         // Find the default currency - using string literal 'Y' directly
         if (savedCurrencyId) {
           this.selectedCurrencyCode = savedCurrencyId;
@@ -554,7 +553,8 @@ export class ReceiptCaptureComponent  {
           // Fetch banks for the selected currency
           this.fetchBanks(
             this.defaultBranch?.id || this.selectedBranch?.id,
-            savedCurrencyId,this.defaultPaymentMethod
+            savedCurrencyId,
+            this.defaultPaymentMethod
           );
           return;
         }
@@ -578,20 +578,21 @@ export class ReceiptCaptureComponent  {
 
           this.fetchBanks(
             this.defaultBranch?.id || this.selectedBranch?.id,
-            this.defaultCurrencyId,this.defaultPaymentMethod
+            this.defaultCurrencyId,
+            this.defaultPaymentMethod
           );
         }
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch currencies. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-       
       },
     });
   }
@@ -612,7 +613,8 @@ export class ReceiptCaptureComponent  {
     this.receiptDataService.setSelectedCurrency(this.selectedCurrencyCode);
     this.fetchBanks(
       this.defaultBranch?.id || this.selectedBranch?.id,
-      this.selectedCurrencyCode,this.defaultPaymentMethod || this.selectedPaymentMethod
+      this.selectedCurrencyCode,
+      this.defaultPaymentMethod || this.selectedPaymentMethod
     );
 
     // Find the currency from the list
@@ -690,15 +692,15 @@ export class ReceiptCaptureComponent  {
           }
         },
         error: (err) => {
-             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch Currency Rates. Please try again.\n\nReason: ${backendError}`;
+          const customMessage = this.translate.instant('fms.errorMessage');
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-         
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText
+          );
         },
       });
   }
@@ -739,15 +741,15 @@ export class ReceiptCaptureComponent  {
             this.closeModal2();
           },
           error: (err) => {
-               const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to save exchange rate:. Please try again.\n\nReason: ${backendError}`;
+            const customMessage = this.translate.instant('fms.errorMessage');
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-           
+            this.globalMessagingService.displayErrorMessage(
+              customMessage,
+              err.error?.msg ||
+                err.error?.error ||
+                err.error?.status ||
+                err.statusText
+            );
           },
         });
     } else {
@@ -829,15 +831,15 @@ export class ReceiptCaptureComponent  {
         this.paymentModes = response.data;
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch payment methods. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-       
       },
     });
   }
@@ -911,10 +913,11 @@ export class ReceiptCaptureComponent  {
    */
   onPaymentModeSelected(event: any): void {
     const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
-    this.selectedPaymentMethod=paymentMode;
+    this.selectedPaymentMethod = paymentMode;
     this.fetchBanks(
       this.defaultBranch?.id || this.selectedBranch?.id,
-     this.selectedCurrencyCode || this.defaultCurrencyId,this.selectedPaymentMethod
+      this.selectedCurrencyCode || this.defaultCurrencyId,
+      this.selectedPaymentMethod
     );
     this.selectedPaymentMode = paymentMode;
     this.updatePaymentModeFields(paymentMode);
@@ -965,8 +968,6 @@ export class ReceiptCaptureComponent  {
   updatePaymentModeFields(paymentMode: string): void {
     if (!paymentMode) {
       paymentMode = 'CASH'; // Default if undefined
-      
-      
     }
 
     const drawersBankControl = this.receiptingDetailsForm.get('drawersBank');
@@ -980,7 +981,6 @@ export class ReceiptCaptureComponent  {
     documentDateControl?.enable();
 
     if (paymentMode.toUpperCase() === 'CASH') {
-    
       // Clear values for CASH mode
       drawersBankControl?.setValue(null);
       paymentRefControl?.setValue(null);
@@ -997,7 +997,6 @@ export class ReceiptCaptureComponent  {
       this.showfields = false;
       this.showChequeOptions = false;
     } else if (paymentMode.toUpperCase() === 'CHEQUE') {
-     
       this.showfields = true;
       this.showChequeOptions = true;
       this.makeFieldRequired = true;
@@ -1012,9 +1011,7 @@ export class ReceiptCaptureComponent  {
       if (chequeType === 'post_dated_cheque') {
         this.makeFieldRequired = true;
       }
-    } 
-    
-    else {
+    } else {
       // Handle other payment modes
       this.showfields = true;
       this.makeFieldRequired = true;
@@ -1024,11 +1021,9 @@ export class ReceiptCaptureComponent  {
       paymentRefControl?.enable();
       documentDateControl?.enable();
       chequeTypeControl?.setValue(null);
-      
     }
     // Save the current state
     this.saveFormState();
-    
   }
   updateDateRestrictions(): void {
     const paymentMode = this.receiptingDetailsForm.get('paymentMode')?.value;
@@ -1066,7 +1061,7 @@ export class ReceiptCaptureComponent  {
     } else {
       const todayDate = new Date();
       todayDate.setDate(todayDate.getDate());
-      
+
       this.dateInput.nativeElement.min = this.formatDate(todayDate);
       //dateInput.min = ''; // Clear restrictions
     }
@@ -1082,49 +1077,51 @@ export class ReceiptCaptureComponent  {
    * @param {number} currCode - The currency code.
    * @returns {void}
    */
-  fetchBanks(branchCode: number, currCode: number,paymentMethodCode:string) {
-    this.receiptService.getBanks(branchCode, currCode,paymentMethodCode).subscribe({
-      next: (response) => {
-        this.bankAccounts = response.data;
-        // Check if user has previously selected a bank
-        const savedBankCode = this.receiptDataService.getSelectedBank();
-        if (
-          savedBankCode &&
-          this.bankAccounts.some((bank) => bank.code === savedBankCode)
-        ) {
-          this.selectedBankCode = savedBankCode;
-          return;
-        } else {
-          // Clear bank selection if previous selection is invalid
-          this.selectedBankCode = null;
+  fetchBanks(branchCode: number, currCode: number, paymentMethodCode: string) {
+    this.receiptService
+      .getBanks(branchCode, currCode, paymentMethodCode)
+      .subscribe({
+        next: (response) => {
+          this.bankAccounts = response.data;
+          // Check if user has previously selected a bank
+          const savedBankCode = this.receiptDataService.getSelectedBank();
+          if (
+            savedBankCode &&
+            this.bankAccounts.some((bank) => bank.code === savedBankCode)
+          ) {
+            this.selectedBankCode = savedBankCode;
+            return;
+          } else {
+            // Clear bank selection if previous selection is invalid
+            this.selectedBankCode = null;
+            this.receiptingDetailsForm.patchValue({
+              bankAccount: null,
+            });
+          }
+
+          this.selectedBank = null;
+
           this.receiptingDetailsForm.patchValue({
             bankAccount: null,
+            bankAccountType: null,
           });
-        }
 
-        this.selectedBank = null;
+          // Ensure `onBankSelected` is reset to false
+          this.onBankSelected = false;
+          //this.filteredBankAccounts = this.bankAccounts; // Initialize filtered list
+        },
+        error: (err) => {
+          const customMessage = this.translate.instant('fms.errorMessage');
 
-        this.receiptingDetailsForm.patchValue({
-          bankAccount: null,
-          bankAccountType: null,
-        });
-
-        // Ensure `onBankSelected` is reset to false
-        this.onBankSelected = false;
-        //this.filteredBankAccounts = this.bankAccounts; // Initialize filtered list
-      },
-      error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch List of Banks. Please try again.\n\nReason: ${backendError}`;
-
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', 
-          fullMessage
-        );
-       
-      },
-    });
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText
+          );
+        },
+      });
   }
   /**
    * Handles the selection of a bank, fetching receipting points and the receipt number for the selected bank.
@@ -1200,15 +1197,19 @@ export class ReceiptCaptureComponent  {
             }
           },
           error: (err) => {
-               const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch receipting points. Please try again.\n\nReason: ${backendError}`;
+            const backendError =
+              err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText ||
+              'The specific reason is unavailable.';
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-           
+            const fullMessage = `Failed to fetch receipting points. Please try again.\n\nReason: ${backendError}`;
+
+            this.globalMessagingService.displayErrorMessage(
+              'Error occurred!', // A more accurate title
+              fullMessage
+            );
           },
         });
 
@@ -1246,15 +1247,15 @@ export class ReceiptCaptureComponent  {
         }
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch receipt number. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-        
       },
     });
   }
@@ -1271,15 +1272,15 @@ export class ReceiptCaptureComponent  {
         this.drawersBanks = data;
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch drawer banks. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-        
       },
     });
   }
@@ -1295,15 +1296,15 @@ export class ReceiptCaptureComponent  {
         this.filteredNarrations = [...this.narrations]; // Copy for display
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `failed to fetch narrations. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-       
       },
     });
   }
@@ -1364,15 +1365,15 @@ export class ReceiptCaptureComponent  {
           this.charges = response.data;
         },
         error: (err) => {
-            const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch charge. Please try again.\n\nReason: ${backendError}`;
+          const customMessage = this.translate.instant('fms.errorMessage');
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-       
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText
+          );
         },
       });
   }
@@ -1387,15 +1388,15 @@ export class ReceiptCaptureComponent  {
         this.chargeList = response.data;
       },
       error: (err) => {
-          const backendError = err.error?.msg || err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch Existing charges.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-     
       },
     });
   }
@@ -1484,15 +1485,15 @@ export class ReceiptCaptureComponent  {
         }, 1000);
       },
       error: (err) => {
-          const backendError = err.error?.msg || err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to post charge management. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-        
       },
     });
   }
@@ -1523,15 +1524,15 @@ export class ReceiptCaptureComponent  {
         this.chargeList.splice(index, 1); // Remove from list
       },
       error: (err) => {
-          const backendError = err.error?.msg || err.error?.error ||  err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to delete charge. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-        
       },
     });
   }
@@ -1625,16 +1626,15 @@ export class ReceiptCaptureComponent  {
         this.refreshCharges();
       },
       error: (err) => {
-        
-             const backendError = err.error?.msg ||err.error?.error ||  err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to update charge. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-      
       },
     });
     this.receiptingDetailsForm.patchValue(chargeAmount);
@@ -1662,8 +1662,13 @@ export class ReceiptCaptureComponent  {
 
     // Re-use your existing validation logic
     const requiredFields = [
-      'amountIssued', 'bankAccount', 'paymentMode', 'narration',
-      'currency', 'receiptDate', 'receivedFrom',
+      'amountIssued',
+      'bankAccount',
+      'paymentMode',
+      'narration',
+      'currency',
+      'receiptDate',
+      'receivedFrom',
     ];
 
     for (const field of requiredFields) {
@@ -1685,26 +1690,38 @@ export class ReceiptCaptureComponent  {
 
     if (paymentMode && paymentMode.toLowerCase() !== 'cash') {
       if (!paymentRef) {
-        this.showValidationError('Payment Reference is required for non-cash payment modes.');
+        this.showValidationError(
+          'Payment Reference is required for non-cash payment modes.'
+        );
         this.isFormValid = false;
         return false;
       }
       if (!drawersBank) {
-        this.showValidationError('Drawer’s Bank is required for non-cash payment modes.');
+        this.showValidationError(
+          'Drawer’s Bank is required for non-cash payment modes.'
+        );
         this.isFormValid = false;
         return false;
       }
       if (!documentDate) {
-        this.showValidationError('Document Date is required for non-cash payments.');
+        this.showValidationError(
+          'Document Date is required for non-cash payments.'
+        );
         this.isFormValid = false;
         return false;
       }
     }
-    
+
     // Add the post-dated cheque validation
     const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
-    if (paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque' && !documentDate) {
-      this.showValidationError('Document Date is required for post-dated cheques.');
+    if (
+      paymentMode === 'CHEQUE' &&
+      chequeType === 'post_dated_cheque' &&
+      !documentDate
+    ) {
+      this.showValidationError(
+        'Document Date is required for post-dated cheques.'
+      );
       this.isFormValid = false;
       return false;
     }
@@ -1729,15 +1746,18 @@ export class ReceiptCaptureComponent  {
    * @param {number} stepNumber - The step number the user clicked on.
    */
   handleStepNavigation(stepNumber: number): void {
-    const targetStep = this.steps.find(s => s.number === stepNumber);
+    const targetStep = this.steps.find((s) => s.number === stepNumber);
     if (!targetStep) return; // Should not happen
 
     // If the user is trying to navigate to the next step (or any future step)
-    if (stepNumber > 1) { // Current step is 1
+    if (stepNumber > 1) {
+      // Current step is 1
       if (this.runValidation()) {
-         // Ensure the stepper saves state exactly like the 'onNext' button does.
+        // Ensure the stepper saves state exactly like the 'onNext' button does.
         this.saveFormState(); // Always save state before navigating
-          this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value); // ✅ ADD THIS LINE
+        this.receiptDataService.setReceiptData(
+          this.receiptingDetailsForm.value
+        ); // ✅ ADD THIS LINE
         this.router.navigate([targetStep.link]);
       }
       // If validation fails, runValidation() already showed the error. Do nothing.
