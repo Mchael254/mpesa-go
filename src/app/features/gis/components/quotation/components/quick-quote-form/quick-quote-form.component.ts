@@ -598,9 +598,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     ).subscribe(([taxes, coverTypeSections]) => {
       const taxList = taxes._embedded as Tax[];
       this.taxList = taxList;
-      log.debug("CoverTypeSections",coverTypeSections)
+      log.debug("CoverTypeSections", coverTypeSections)
       group['applicableTaxes'].setValue(taxList);
-            log.debug("Tax list",taxList)
+      log.debug("Tax list", taxList)
 
       group['applicableCoverTypes'].setValue(coverTypeSections._embedded);
     });
@@ -666,6 +666,7 @@ log.debug("checked",checked)
   this.getSelectedProducts(fakeEvent);
 }
 
+  
 
   // When products are selected from multi-select
   getSelectedProducts(event: any) {
@@ -997,7 +998,7 @@ log.debug("removedProduct",removedProduct)
   getCoverTypePayload(risk): CoverType[] {
     let coverTypes: CoverType[] = []
     for (let coverType of risk.applicableCoverTypes) {
-      log.debug("COVERSSS",coverType)
+      log.debug("COVERSSS", coverType)
       coverTypes.push({
         subclassCode: coverType?.subClassCode,
         description:coverType?.applicableRates[0].subClassDescription,
@@ -1506,7 +1507,7 @@ log.debug("removedProduct",removedProduct)
       untilDestroyed(this)
     ).subscribe(([taxes, coverTypeSections]) => {
       this.taxList = taxes._embedded as Tax[]
-            log.debug("CoverTypeSections",coverTypeSections)
+      log.debug("CoverTypeSections", coverTypeSections)
 
       riskFormGroup.get('applicableTaxes')?.setValue(taxes._embedded)
       riskFormGroup.get('applicableCoverTypes')?.setValue(coverTypeSections._embedded)
@@ -1930,6 +1931,8 @@ log.debug("removedProduct",removedProduct)
       const formRisk = formRisks.find(value => value.riskCode === risk.code)
       const matchingRisk = existingRisks?.find((value) => value.propertyId?.replace(/\s/g, '') === riskId?.replace(/\s/g, ''))
       log.debug("Mathching Risk", matchingRisk)
+      log.debug("Existing Risk", existingRisks)
+      log.debug("Form Risk", formRisk)
       log.debug("Processing Risk>>>, formRisk", risk, formRisk)
       riskInformation.push({
         code: matchingRisk ? matchingRisk.code : null,
@@ -1947,7 +1950,7 @@ log.debug("removedProduct",removedProduct)
         propertyId: riskId,
         annualPremium: risk.selectCoverType.computedPremium,
         sectionsDetails: null,
-        action: this.quotationCode ? 'E' : 'A',
+action: matchingRisk ? 'E' : 'A',
         clauseCodes: Array.from(new Set(risk.coverTypeDetails.flatMap(cover =>
           (cover.clauses ?? []).map(clause => clause.code)
         )
@@ -1958,7 +1961,7 @@ log.debug("removedProduct",removedProduct)
           const matchingLimit = matchingRisk?.riskLimits?.find(
             (ml) => ml.sectionCode === limit.sectCode
           );
-          log.debug("matching limit:",matchingLimit)
+          log.debug("matching limit:", matchingLimit)
           return {
             sectionCode: limit.sectCode,
             quotationCode: null,
@@ -2205,15 +2208,7 @@ log.debug("removedProduct",removedProduct)
               value: limit.value
             })) || [],
             computedPremium: cover.computedPremium,
-            taxComputation: cover.taxComputation?.reduce(
-              (acc: any, tax: any) => {
-                acc.premium += tax.premium;
-                acc.code = tax.code;
-                acc.rateDescription = tax.description
-                return acc;
-              },
-              { premium: 0, code: 0 }
-            ),
+            taxComputation: cover.taxComputation ?? [],
             clauses: cover.clauses?.map((clause: any) => ({
               heading: clause.heading,
               wording: clause.wording

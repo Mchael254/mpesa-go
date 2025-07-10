@@ -474,15 +474,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
               value: limit.value
             })) || [],
             computedPremium: cover.computedPremium,
-            taxComputation: cover.taxComputation?.reduce(
-              (acc: any, tax: any) => {
-                acc.premium += tax.premium;
-                acc.code = tax.code;
-                acc.rateDescription = tax.description
-                return acc;
-              },
-              { premium: 0, code: 0 }
-            ),
+            taxComputation: cover.taxComputation ?? [],
+
             clauses: cover.clauses?.map((clause: any) => ({
               heading: clause.heading,
               wording: clause.wording
