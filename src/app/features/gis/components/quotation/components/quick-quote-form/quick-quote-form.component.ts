@@ -382,6 +382,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     if (savedState) {
       const parsed = JSON.parse(savedState);
       this.selectedProducts = parsed.selectedProducts;
+      this.previousSelected = this.selectedProducts
       log.debug("Form array ", parsed.formArray);
       log.debug("product array ", this.selectedProducts);
       // Patch top-level fields
@@ -635,19 +636,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
     return new FormGroup(group);
   }
-  onCheckboxChange(event: Event, product: any) {
-    const checked = (event.target as HTMLInputElement).checked;
-
-    if (checked) {
-      this.selectedProducts.push(product);
-    } else {
-      this.selectedProducts = this.selectedProducts.filter(p => p !== product);
-    }
-
-    // Call the existing method with the same format as p-multiSelect
-    const fakeEvent = { value: this.selectedProducts };
-    this.getSelectedProducts(fakeEvent);
-  }
+ 
 
   // isProductSelected(product: any): boolean {
   //   return this.selectedProducts.includes(product);
@@ -655,16 +644,43 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   isProductSelected(product: any): boolean {
   return this.selectedProducts.some(p => p.code === product.code);
 }
+onCheckboxChange(event: Event, product: any) {
+  const checked = (event.target as HTMLInputElement).checked;
+log.debug("checked",checked)
+  if (checked) {
+    // Avoid duplicate entries
+    log.debug("checked",this.selectedProducts)
+
+    const exists = this.selectedProducts.some(p => p.code === product.code);
+    if (!exists) {
+      this.selectedProducts.push(product);
+    }
+  } else {
+    // Remove by code instead of reference
+    this.selectedProducts = this.selectedProducts.filter(p => p.code !== product.code);
+        log.debug("checked",this.selectedProducts)
+
+  }
+
+  const fakeEvent = { value: this.selectedProducts };
+  this.getSelectedProducts(fakeEvent);
+}
+
 
   // When products are selected from multi-select
   getSelectedProducts(event: any) {
     const currentSelection = event.value as Products[];
     const currentCodes = currentSelection.map(p => p.code);
     const previousCodes = this.previousSelected.map(p => p.code);
+log.debug("currentCodest",currentCodes)
+log.debug("previousCodes",previousCodes)
+log.debug("previousSelected",this.previousSelected)
 
     // Find added and removed products
     const addedProduct = currentSelection.find(p => !previousCodes.includes(p.code));
     const removedProduct = this.previousSelected.find(p => !currentCodes.includes(p.code));
+log.debug("added product",addedProduct)
+log.debug("removedProduct",removedProduct)
 
     if (removedProduct) {
       // Remove unselected products from FormArray
@@ -959,7 +975,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
             divisionFactor: tax.divisionFactor,
             applicationLevel: tax.applicationLevel,
             taxRateType: tax.taxRateType,
-            description:tax.description
+            rateDescription:tax.description
           }
         }),
         itemDescription: risk.description,
@@ -984,7 +1000,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       log.debug("COVERSSS",coverType)
       coverTypes.push({
         subclassCode: coverType?.subClassCode,
-        subClassDescription:coverType?.applicableRates[0].subClassDescription,
+        description:coverType?.applicableRates[0].subClassDescription,
         coverTypeCode: coverType?.coverTypeCode,
         minimumAnnualPremium: null,
         minimumPremium: coverType?.minimumPremium,
@@ -2180,7 +2196,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           propertyId: risk.propertyId,
           coverTypeDetails: risk.coverTypeDetails.map((cover: any) => ({
             subclassCode: cover?.subclassCode,
-             subclassDescription: cover.description || null,
+             description: cover.description || null,
             propertyId: cover.propertyId,
             coverTypeShortDescription: cover.coverTypeShortDescription,
             coverTypeDescription: cover.coverTypeDescription,
@@ -2193,7 +2209,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
               (acc: any, tax: any) => {
                 acc.premium += tax.premium;
                 acc.code = tax.code;
-                acc.description = tax.description
+                acc.rateDescription = tax.description
                 return acc;
               },
               { premium: 0, code: 0 }
