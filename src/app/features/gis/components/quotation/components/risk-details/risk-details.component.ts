@@ -281,6 +281,7 @@ export class RiskDetailsComponent {
       nullable: true,
       align: 'left',
     };
+    
   }
   ngOnDestroy(): void { }
   ngAfterViewInit() {

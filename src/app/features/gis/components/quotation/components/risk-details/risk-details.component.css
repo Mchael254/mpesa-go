@@ -173,6 +173,10 @@
     margin-bottom: 15px;
     color: #00529B;
   }
+  .delete-title{
+    color: #00529B;
+    margin-left: 4.5rem;
+  }
   .btn-close.red-close {
     font-weight: 600;
     filter: invert(29%) sepia(96%) saturate(7476%) hue-rotate(354deg) brightness(94%) contrast(123%);
@@ -186,7 +190,20 @@
   }
   
   
- 
+  .custom-close {
+    filter: brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(7451%) hue-rotate(357deg) brightness(102%) contrast(122%);
+    background-color: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    width: 1.75rem;         /* Adjust width */
+    height: 1.75rem;        /* Adjust height */
+    font-size: 1.2rem;      /* Makes the "×" icon bigger */
+    line-height: 1.75rem; 
+  }
+  ::ng-deep .p-datatable table {
+    width: 100% !important;
+  }
   
 
 
