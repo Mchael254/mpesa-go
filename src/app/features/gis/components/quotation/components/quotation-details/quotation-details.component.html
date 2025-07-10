@@ -5,9 +5,231 @@
   <!-- quotation section -->
   <div class="card mb-4">
     <div class="card-body">
-      <h6 style="color: #00529B; font-size: 20px; font-weight: 500;">Quotation</h6>
+      <h6 class="subheading mt-2 mb-3">Quotation details </h6>
       <p *ngIf="quickQuotationDetails">Quotation number :<strong> {{ quotationNumber }}</strong></p>
-      <div class="row mb-4" [formGroup]='quotationForm'>
+      <div class="d-flex gap-4 mb-3">
+        <div class="method-option" (click)="setClientType('new')" [class.selected]="selectedClientType === 'new'">
+          <i class="far fa-circle" *ngIf="selectedClientType !== 'new'"></i>
+          <i class="fas fa-dot-circle" *ngIf="selectedClientType === 'new'"></i>
+          <span>New client</span>
+        </div>
+
+        <div class="method-option" (click)="setClientType('existing')"
+          [class.selected]="selectedClientType === 'existing'">
+          <i class="far fa-circle" *ngIf="selectedClientType !== 'existing'"></i>
+          <i class="fas fa-dot-circle" *ngIf="selectedClientType === 'existing'"></i>
+          <span>Existing client</span>
+        </div>
+      </div>
+
+      <form [formGroup]="quotationForm">
+
+        <!-- New Client Form -->
+        <div *ngIf="newClient" class="row">
+          <!-- Client Name -->
+          <div class="col-sm-4 col-6 mb-3">
+            <label class="quote-label">Client name</label>
+            <input type="text" class="form-control" />
+          </div>
+
+          <!-- Email Address -->
+          <div class="col-sm-4 col-6 mb-3">
+            <div class="form-group">
+            <label class="quote-label">Email address</label>
+              <input type="email" id="email" class="form-control" formControlName="email"
+                placeholder="Enter your email" />
+              <div *ngIf="quotationForm.get('email')?.touched && quotationForm.get('email')?.invalid"
+                class="text-danger form-text">
+                <div *ngIf="quotationForm.get('email')?.errors?.['required']">
+                  Email is required.
+                </div>
+                <div *ngIf="quotationForm.get('email')?.errors?.['pattern']">
+                  Enter a valid email address.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="col-sm-4 col-6 mb-3">
+            <label class="quote-label">Phone number</label>
+            <ngx-intl-tel-input id="phoneNumber" [cssClass]="'form-control form-control-sm mb-1'"
+              [preferredCountries]="preferredCountries" [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
+              [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+              [selectFirstCountry]="false" [style]="{ width: '100%' }" [selectedCountryISO]="CountryISO.Kenya"
+              [phoneValidation]="true" [separateDialCode]="true" [numberFormat]="PhoneNumberFormat.National"
+              formControlName="phoneNumber">
+            </ngx-intl-tel-input>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <ng-container *ngFor="let field of detailedQuotationFormData">
+            <div *ngIf="field.isPriority === 'Y' && !(newClient && field.name === 'client')" class="col-sm-4 col-6">
+              <div class="form-group form-group-sm">
+                <!-- Label -->
+                <label *ngIf="field.name " class="quote-label" [ngClass]="{ 'required': field.isMandatory === 'Y' }">
+                  {{ field.label | translate }}
+                </label>
+
+                <!-- Input field based on type -->
+                <ng-container [ngSwitch]="field.type">
+                  <!-- SELECT -->
+                  <ng-container *ngSwitchCase="'select'">
+
+                    <!-- CLIENT SEARCH -->
+                    <ng-container *ngIf="field.name === 'client' && !newClient">
+                      <div class="position-relative" style="cursor: pointer;">
+                        <input type="text" class="form-control form-control-sm pe-5" [value]="selectedClientName"
+                          readonly placeholder="Search client..." (click)="showClientSearchModal = true" />
+                        <i class="pi pi-search position-absolute"
+                          style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
+                      </div>
+                      <app-client-search-modal *ngIf="showClientSearchModal"  (onClickSaveClient)="handleSaveClient($event)"></app-client-search-modal>
+                    </ng-container>
+
+                    <!-- SOURCE -->
+                    <ng-container *ngIf="field.name === 'source'">
+                      <p-dropdown formControlName="source" [options]="quotationSources" optionLabel="description"
+                        placeholder=" " [filter]="true" [filterBy]="'description'" (onChange)="onSourceChange($event)">
+                      </p-dropdown>
+                      <div
+                        *ngIf="quotationForm.get('source')?.hasError('required') && quotationForm.get('source')?.touched"
+                        class="form-text text-danger">Source is required.</div>
+                    </ng-container>
+
+                    <!-- QUOTATION TYPE -->
+                    <ng-container *ngIf="field.name === 'quotationType'">
+                      <p-dropdown formControlName="quotationType" [options]="quotationType" optionLabel="label"
+                        optionValue="value" placeholder=" " [filter]="true" [filterBy]="'label'">
+                      </p-dropdown>
+                      <div
+                        *ngIf="quotationForm.get('quotationType')?.hasError('required') && quotationForm.get('quotationType')?.touched"
+                        class="form-text text-danger">Quotation type is required.</div>
+                    </ng-container>
+
+                    <!-- BRANCH -->
+                    <ng-container *ngIf="field.name === 'branch'">
+                      <p-dropdown formControlName="branch" [options]="branch" optionLabel="name" placeholder=" "
+                        value="id" [filter]="true" [filterBy]="'name'">
+                      </p-dropdown>
+                      <div
+                        *ngIf="quotationForm.get('branch')?.hasError('required') && quotationForm.get('branch')?.touched"
+                        class="form-text text-danger">Branch is required.</div>
+                    </ng-container>
+
+                    <!-- CURRENCY -->
+                    <ng-container *ngIf="field.name === 'currency'">
+                      <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" value="id"
+                        placeholder=" " [filter]="true" [filterBy]="'name'" (onChange)="fetchUserOrgId()">
+                      </p-dropdown>
+                      <div
+                        *ngIf="quotationForm.get('currencyCode')?.hasError('required') && quotationForm.get('currencyCode')?.touched"
+                        class="form-text text-danger">Currency is required.</div>
+                    </ng-container>
+
+                    <!-- INTRODUCER -->
+                    <ng-container *ngIf="field.name === 'introducer'">
+                      <p-dropdown formControlName="introducer" [options]="introducers" optionLabel="surName"
+                        optionValue="code" placeholder=" " [filter]="true" [filterBy]="'surName'">
+                      </p-dropdown>
+                      <div
+                        *ngIf="quotationForm.get('introducer')?.hasError('required') && quotationForm.get('introducer')?.touched"
+                        class="form-text text-danger">Introducer is required.</div>
+                    </ng-container>
+
+                    <!-- PAYMENT FREQUENCY -->
+                    <ng-container *ngIf="field.name === 'paymentFrequency'">
+                      <p-dropdown formControlName="paymentFrequency" [options]="introducers" optionLabel="surName"
+                        optionValue="code" placeholder=" " [filter]="true" [filterBy]="'surName'">
+                      </p-dropdown>
+                      <div
+                        *ngIf="quotationForm.get('paymentFrequency')?.hasError('required') && quotationForm.get('paymentFrequency')?.touched"
+                        class="form-text text-danger">Payment frequency is required.</div>
+                    </ng-container>
+
+                  </ng-container>
+
+                  <!-- DATE -->
+                  <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [dateFormat]="dateFormat"
+                    inputStyleClass="form-control" [showButtonBar]="true" [dataType]="'string'" [showIcon]="true">
+                  </p-calendar>
+
+                  <!-- TEXT -->
+                  <ng-container *ngSwitchCase="'text'">
+                    <div *ngIf="field.name === 'multiUserEntry'">
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser"
+                          id="multiUserYes" value="Y">
+                        <label class="form-check-label quote-label" for="multiUserYes">Yes</label>
+                      </div>
+                      <div class="form-check form-check-inline ms-4">
+                        <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser"
+                          id="multiUserNo" value="N">
+                        <label class="form-check-label quote-label" for="multiUserNo">No</label>
+                      </div>
+                    </div>
+
+                    <input *ngIf="field.name !== 'multiUserEntry'" type="text" id="quote-input"
+                      class="form-control form-control-sm" [formControlName]="field.name">
+                  </ng-container>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- NON-PRIORITY FIELDS (toggle with show) -->
+        <div class="row mt-2" *ngIf="show">
+          <ng-container *ngFor="let field of detailedQuotationFormData">
+            <ng-container *ngIf="field.isPriority === 'N'">
+              <div class="col-sm-4 col-6 mb-4">
+                <div class="form-group form-group-sm">
+                  <label *ngIf="field.name && !(newClient && field.name === 'client')" class="quote-label"
+                    [ngClass]="{ 'required': field.isMandatory === 'Y' }">
+                    {{ field.label | translate }}
+                  </label>
+
+                  <ng-container [ngSwitch]="field.type">
+                    <ng-container *ngSwitchCase="'select'">
+                      <!-- INTRODUCER -->
+                      <ng-container *ngIf="field.name === 'introducer'">
+                        <p-dropdown formControlName="introducer" [options]="introducers" optionLabel="surName"
+                          optionValue="code" placeholder=" " [filter]="true" [filterBy]="'surName'">
+                        </p-dropdown>
+                        <div
+                          *ngIf="quotationForm.get('introducer')?.hasError('required') && quotationForm.get('introducer')?.touched"
+                          class="form-text text-danger">Introducer is required.</div>
+                      </ng-container>
+
+                      <!-- PAYMENT FREQUENCY -->
+                      <ng-container *ngIf="field.name === 'paymentFrequency'">
+                        <p-dropdown formControlName="paymentFrequency" [options]="introducers" optionLabel="surName"
+                          optionValue="code" placeholder=" " [filter]="true" [filterBy]="'surName'">
+                        </p-dropdown>
+                        <div
+                          *ngIf="quotationForm.get('paymentFrequency')?.hasError('required') && quotationForm.get('paymentFrequency')?.touched"
+                          class="form-text text-danger">Payment frequency is required.</div>
+                      </ng-container>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'text'">
+
+
+                      <input type="text" id="quote-input" class="form-control form-control-sm"
+                        [formControlName]="field.name">
+
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+
+
+      </form>
+
+      <!-- <div class="row mb-4" [formGroup]='quotationForm'>
         <div class="col-sm-4 col-6">
           <div class="form-group form-group-sm">
             <br>
@@ -163,7 +385,7 @@
             </div>
           </div>
         </ng-container>
-      </div>
+      </div> -->
 
       <p class="more " (click)="toggleDetails()" style="cursor: pointer">
         More Details
@@ -428,18 +650,18 @@
             </div>
 
             <div class="d-flex justify-content-center mb-3">
-                <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
-                  (click)="deleteProduct()">{{
-                  'gis.policy.yes_delete'
-                  | translate
-                  }}
-                </button>
-              </div>
-              <div class="d-flex justify-content-center mb-2">
-                <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">{{
-                  'gis.policy.no_im_not' | translate }}
-                </button>
-              </div>
+              <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
+                (click)="deleteProduct()">{{
+                'gis.policy.yes_delete'
+                | translate
+                }}
+              </button>
+            </div>
+            <div class="d-flex justify-content-center mb-2">
+              <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">{{
+                'gis.policy.no_im_not' | translate }}
+              </button>
+            </div>
           </div>
         </div>
       </div>

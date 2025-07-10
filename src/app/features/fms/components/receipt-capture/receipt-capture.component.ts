@@ -583,10 +583,15 @@ export class ReceiptCaptureComponent  {
         }
       },
       error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch currencies. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.status || 'Failed to fetch currencies'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+       
       },
     });
   }
@@ -685,10 +690,15 @@ export class ReceiptCaptureComponent  {
           }
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            err.error.status
-          );
+             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch Currency Rates. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
+         
         },
       });
   }
@@ -729,12 +739,15 @@ export class ReceiptCaptureComponent  {
             this.closeModal2();
           },
           error: (err) => {
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              `Failed to save exchange rate: ${
-                err.error?.message || err.message || 'Unknown error'
-              }`
-            );
+               const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to save exchange rate:. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
+           
           },
         });
     } else {
@@ -815,11 +828,16 @@ export class ReceiptCaptureComponent  {
       next: (response) => {
         this.paymentModes = response.data;
       },
-      error: (error) => {
+      error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch payment methods. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'error',
-          error.error.msg || 'error fetching payments modes'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+       
       },
     });
   }
@@ -1096,7 +1114,15 @@ export class ReceiptCaptureComponent  {
         //this.filteredBankAccounts = this.bankAccounts; // Initialize filtered list
       },
       error: (err) => {
-        this.globalMessagingService.displayErrorMessage('Error', err.error.msg);
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch List of Banks. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', 
+          fullMessage
+        );
+       
       },
     });
   }
@@ -1174,10 +1200,15 @@ export class ReceiptCaptureComponent  {
             }
           },
           error: (err) => {
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              err.error?.message || 'Failed to fetch receipting points.'
-            );
+               const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch receipting points. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
+           
           },
         });
 
@@ -1215,10 +1246,15 @@ export class ReceiptCaptureComponent  {
         }
       },
       error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch receipt number. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.msg || 'Failed to fetch receipt number'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+        
       },
     });
   }
@@ -1235,10 +1271,15 @@ export class ReceiptCaptureComponent  {
         this.drawersBanks = data;
       },
       error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch drawer banks. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.msg || 'Failed to fetch drawer banks'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+        
       },
     });
   }
@@ -1254,10 +1295,15 @@ export class ReceiptCaptureComponent  {
         this.filteredNarrations = [...this.narrations]; // Copy for display
       },
       error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `failed to fetch narrations. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.error || 'failed to fetch narrations'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+       
       },
     });
   }
@@ -1318,10 +1364,15 @@ export class ReceiptCaptureComponent  {
           this.charges = response.data;
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            err.error.error
-          );
+            const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch charge. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
+       
         },
       });
   }
@@ -1336,10 +1387,15 @@ export class ReceiptCaptureComponent  {
         this.chargeList = response.data;
       },
       error: (err) => {
+          const backendError = err.error?.msg || err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch Existing charges.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.error
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+     
       },
     });
   }
@@ -1428,10 +1484,15 @@ export class ReceiptCaptureComponent  {
         }, 1000);
       },
       error: (err) => {
+          const backendError = err.error?.msg || err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to post charge management. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          'Failed to post charge management. Please try again.'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+        
       },
     });
   }
@@ -1462,10 +1523,15 @@ export class ReceiptCaptureComponent  {
         this.chargeList.splice(index, 1); // Remove from list
       },
       error: (err) => {
+          const backendError = err.error?.msg || err.error?.error ||  err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to delete charge. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          'Failed to delete charge. Please try again.'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+        
       },
     });
   }
@@ -1559,10 +1625,16 @@ export class ReceiptCaptureComponent  {
         this.refreshCharges();
       },
       error: (err) => {
+        
+             const backendError = err.error?.msg ||err.error?.error ||  err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to update charge. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          'Failed to update charge. Please try again.'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+      
       },
     });
     this.receiptingDetailsForm.patchValue(chargeAmount);
