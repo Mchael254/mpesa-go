@@ -164,6 +164,7 @@ export class PdSlipPreviewComponent implements OnInit {
         // 4. Clean up and navigate the user to a safe screen (this part remains the same)
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
+        //this.sessionStorage.clear();
         this.router.navigate(['/home/fms/receipt-capture']);
       },
     });
@@ -201,7 +202,7 @@ export class PdSlipPreviewComponent implements OnInit {
   navigateToReceiptCapture(): void {
     this.receiptDataService.clearReceiptData();
     this.receiptDataService.clearFormState();
-    //this.sessionStorage.clear();
+   // this.sessionStorage.clear();
     this.router.navigate(['/home/fms/receipt-capture']);
   }
   updatePrintStatus() {
@@ -217,14 +218,22 @@ export class PdSlipPreviewComponent implements OnInit {
         );
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
-       // this.sessionStorage.clear();
+       //this.sessionStorage.clear();
         this.router.navigate(['/home/fms/receipt-capture']);
       },
       error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to update slip status. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'failed',
-          err.error.msg || 'failed to update slip status'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+       
+        this.receiptDataService.clearReceiptData();
+        this.receiptDataService.clearFormState();
+       //this.sessionStorage.clear();
       },
     });
   }
@@ -233,6 +242,9 @@ export class PdSlipPreviewComponent implements OnInit {
    * @returns {void}
    */
   onBack() {
+     
+        this.receiptDataService.clearFormState();
+       //this.sessionStorage.clear();
     this.receiptDataService.clearReceiptData(); // Clear but keep currency
     this.router.navigate(['/home/fms/receipt-capture']); // Navigate to the next screen
   }

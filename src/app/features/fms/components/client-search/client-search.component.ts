@@ -246,10 +246,15 @@ export class ClientSearchComponent implements OnInit {
           this.accountTypeArray = response.data;
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            err.error.msg
-          );
+             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch account types. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
+         
         },
       });
   }
@@ -384,10 +389,15 @@ export class ClientSearchComponent implements OnInit {
           }
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            err.error.msg
-          );
+             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch Transactions. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
+         
         },
       });
   }
@@ -506,10 +516,14 @@ export class ClientSearchComponent implements OnInit {
           }
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage(
-            'error fetched',
-            err.error?.msg || 'Failed to fetch Allocation'
-          );
+             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch allocations. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
         },
       });
   }
