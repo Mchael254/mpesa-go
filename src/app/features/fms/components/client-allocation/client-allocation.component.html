@@ -354,7 +354,8 @@
           class="row mt-3"
           *ngIf="canShowUploadFileBtn && getAllocation.length > 0"
         >
-          <div class="col-md-4">
+          <!-- divided the row into 4 columns inorder to fit post file column -->
+          <div class="col-md-3">
             <!-- Upload Button -->
             <input
               type="file"
@@ -373,7 +374,7 @@
               {{ "fms.receipting.uploadFiles" | translate }}
             </button>
           </div>
-          <div class="col-md-4 mt-2">
+          <div class="col-md-3 mt-2">
             <div *ngFor="let fileDesc of fileDescriptions; let i = index">
               <span>{{ fileDesc.file.name }}</span> -
 
@@ -388,7 +389,7 @@
           </div>
 
           <!-- Display Uploaded Files in Vertical List -->
-          <div class="col-md-4 mt-2">
+          <div class="col-md-3 mt-2">
             <div class="uploaded-files-container">
               <div
                 *ngFor="let file of uploadedFiles; let i = index"
@@ -417,6 +418,22 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div
+            class="col-md-3 mt-2"
+            *ngIf="
+              fileDescriptions.length > 0 &&
+              canShowUploadFileBtn &&
+              getAllocation.length > 0
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="uploadFile()"
+            >
+              {{ "fms.receipting.postFile" | translate }}
+            </button>
           </div>
         </div>
 
@@ -476,7 +493,8 @@
         </div>
       </form>
     </div>
-    <div class="postbtn">
+    <!-- commented this div class as it has been included in the row above -->
+    <!-- <div class="postbtn">
       <div
         class="sub_postbtn"
         *ngIf="
@@ -489,7 +507,7 @@
           {{ "fms.receipting.postFile" | translate }}
         </button>
       </div>
-    </div>
+    </div> -->
   </div>
   <div class="nav-btn">
     <div class="back-btn">

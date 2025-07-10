@@ -172,10 +172,15 @@ export class ReceiptPrintPreviewComponent {
       },
 
       error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to update print status. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'failed',
-          err.error.msg
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+       
       },
     });
   }

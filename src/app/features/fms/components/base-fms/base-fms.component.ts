@@ -99,7 +99,15 @@ export class BaseFmsComponent {
         this.sessionStorage.setItem('user', JSON.stringify(this.userDetails));
       },
       error: (err) => {
-        this.globalMessagingService.displayErrorMessage('Error', err.err.err);
+           const backendError = err.error?.msg ||  err.err?.err|| err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch user details. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
+        
       },
     });
   }
@@ -158,10 +166,15 @@ export class BaseFmsComponent {
         }
       },
       error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch organizations. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.error
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+      
       },
     });
   }
@@ -262,10 +275,15 @@ export class BaseFmsComponent {
         }
       },
       error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch branches. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.error
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+        
       },
     });
   }
@@ -341,10 +359,15 @@ export class BaseFmsComponent {
         }
       },
       error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch periods . Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error fetching periods',
-          err.error.error
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+       
       },
     });
   }

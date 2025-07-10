@@ -187,7 +187,7 @@ clearFormState() {
   clearReceiptData() {
     // Preserve required fields
     const preservedData = {
-        currency: this.receiptData.currency || '',
+        // currency: this.receiptData.currency || '',
         receiptDate: this.receiptData.receiptDate || '',
         documentDate: this.receiptData.documentDate || ''
     };
