@@ -44,9 +44,8 @@
         </div>
         <div class="col-sm-4 col-12 ">
           <p id="quote-label">
-            {{ 'gis.quotation.notes' | translate }}: <span class="notes-preview" id="quote-input">{{
-              quotationDetails?.comments
-              }}</span>
+            {{ 'gis.quotation.notes' | translate }}: <span class="notes-preview" id="quote-input" pTooltip="{{ quotationDetails?.comments }}" tooltipPosition="top">
+              {{quotationDetails?.comments}}</span>
 
             <i class="fa fa-pencil edit-icon" data-bs-toggle="modal" data-bs-target="#notesModal"
               (click)="storeCurrentComment()"></i>
