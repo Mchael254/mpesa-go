@@ -2699,6 +2699,9 @@
     "signSelect": "Signer la sélection",
     "correction": "Envoyer pour correction",
     "reject": "Rejeter",
+    "errorMessage": "Une erreur s'est produite !",
+      "rctPrintError": "Risiti imehifadhiwa kwa mafanikio lakini imeshindikana kuchapisha",
+    "pdPrintError": "Risiti imehifadhiwa kwa mafanikio lakini slip imeshindikana kuchapishwa",
     "base-fms": {
       "parameters": "Paramètres",
       "reconciliation": "Rapprochement",

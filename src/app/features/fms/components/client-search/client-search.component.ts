@@ -246,15 +246,15 @@ export class ClientSearchComponent implements OnInit {
           this.accountTypeArray = response.data;
         },
         error: (err) => {
-             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch account types. Please try again.\n\nReason: ${backendError}`;
+          const customMessage = this.translate.instant('fms.errorMessage');
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-         
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText
+          );
         },
       });
   }
@@ -389,15 +389,23 @@ export class ClientSearchComponent implements OnInit {
           }
         },
         error: (err) => {
-             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch Transactions. Please try again.\n\nReason: ${backendError}`;
+          //      const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-         
+          // const fullMessage = `Failed to fetch Transactions. Please try again.\n\nReason: ${backendError}`;
+
+          // this.globalMessagingService.displayErrorMessage(
+          //   'Error occurred!', // A more accurate title
+          //   fullMessage
+          // );
+          const customMessage = this.translate.instant('fms.errorMessage');
+
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText
+          );
         },
       });
   }
@@ -516,42 +524,52 @@ export class ClientSearchComponent implements OnInit {
           }
         },
         error: (err) => {
-             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch allocations. Please try again.\n\nReason: ${backendError}`;
+          const backendError =
+            err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText ||
+            'The specific reason is unavailable.';
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
+          const fullMessage = `Failed to fetch allocations. Please try again.\n\nReason: ${backendError}`;
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error occurred!', // A more accurate title
+            fullMessage
+          );
         },
       });
   }
- /**
+  /**
    * This is the new central method for handling the logic required to proceed.
-   * It checks for a selected client, fetches transactions, and returns a boolean 
+   * It checks for a selected client, fetches transactions, and returns a boolean
    * indicating whether navigation to the next step is allowed.
    * @returns {Promise<boolean>} - True if validation passes and transactions are found, false otherwise.
    */
   private async validateAndFetchTransactions(): Promise<boolean> {
     // 1. Check if a client is selected. This is the primary validation check.
     if (!this.selectedClient) {
-      this.globalMessagingService.displayErrorMessage('Warning', 'Please select a client before proceeding.');
+      this.globalMessagingService.displayErrorMessage(
+        'Warning',
+        'Please select a client before proceeding.'
+      );
       return false;
     }
 
     // 2. Set the selected client in the shared service.
     this.receiptDataService.setSelectedClient(this.selectedClient);
-    
+
     // 3. Perform the asynchronous transaction fetch.
     try {
-      const response = await firstValueFrom(this.receiptService.getTransactions(
-        this.selectedClient.systemShortDesc,
-        this.selectedClient.code,
-        this.selectedClient.accountCode,
-        this.selectedClient.receiptType,
-        this.selectedClient.shortDesc
-      ));
+      const response = await firstValueFrom(
+        this.receiptService.getTransactions(
+          this.selectedClient.systemShortDesc,
+          this.selectedClient.code,
+          this.selectedClient.accountCode,
+          this.selectedClient.receiptType,
+          this.selectedClient.shortDesc
+        )
+      );
 
       // 4. Check if the API returned valid data.
       if (!response.data || response.data.length === 0) {
@@ -566,7 +584,6 @@ export class ClientSearchComponent implements OnInit {
       this.transactions = response.data;
       this.receiptDataService.setTransactions(this.transactions);
       return true; // Allow navigation
-
     } catch (err) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -592,11 +609,12 @@ export class ClientSearchComponent implements OnInit {
    * @param {number} stepNumber - The step number the user clicked on.
    */
   async handleStepNavigation(stepNumber: number): Promise<void> {
-    const targetStep = this.steps.find(s => s.number === stepNumber);
+    const targetStep = this.steps.find((s) => s.number === stepNumber);
     if (!targetStep) return;
 
     // Only perform validation when moving FORWARD to a step beyond the current one.
-    if (stepNumber > 2) { // Current step is 2
+    if (stepNumber > 2) {
+      // Current step is 2
       const canProceed = await this.validateAndFetchTransactions();
       if (canProceed) {
         this.router.navigate([targetStep.link]);
@@ -608,7 +626,6 @@ export class ClientSearchComponent implements OnInit {
     }
   }
 
- 
   /**
    * Navigates to the allocation screen.
    */

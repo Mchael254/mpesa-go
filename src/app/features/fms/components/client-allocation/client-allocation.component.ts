@@ -1026,15 +1026,15 @@ export class ClientAllocationComponent {
           this.getAllocations();
         },
         error: (err) => {
-             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to save allocations. Please try again.\n\nReason: ${backendError}`;
+          const customMessage = this.translate.instant('fms.errorMessage');
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-         
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText
+          );
         },
       });
   }
@@ -1069,15 +1069,15 @@ export class ClientAllocationComponent {
         },
         error: (err) => {
           this.isEmptyAllocationPosted = true;
-             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to post allocations. Please try again.\n\nReason: ${backendError}`;
+          const customMessage = this.translate.instant('fms.errorMessage');
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-          
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText
+          );
         },
       });
   }
@@ -1166,15 +1166,15 @@ export class ClientAllocationComponent {
           this.globalGetAllocation = this.getAllocation;
         },
         error: (err) => {
-             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch Allocation. Please try again.\n\nReason: ${backendError}`;
+          const customMessage = this.translate.instant('fms.errorMessage');
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-          
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText
+          );
         },
       });
   }
@@ -1240,15 +1240,15 @@ export class ClientAllocationComponent {
         }
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to delete allocation. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-        
       },
     });
   }
@@ -1339,12 +1339,12 @@ export class ClientAllocationComponent {
           this.base64Output = base64String;
         }
       };
-  //     reader.onload = (e: any) => {
-  // const fullBase64 = e.target.result as string;
-  
-  // This is the critical line. You MUST remove the metadata prefix.
-//   this.base64Output = fullBase64.split(',')[1]; 
-// };
+      //     reader.onload = (e: any) => {
+      // const fullBase64 = e.target.result as string;
+
+      // This is the critical line. You MUST remove the metadata prefix.
+      //   this.base64Output = fullBase64.split(',')[1];
+      // };
 
       reader.readAsDataURL(this.selectedFile);
       //this.openModal(this.fileDescriptions.length - 1); // Open modal for the last added file
@@ -1428,7 +1428,7 @@ export class ClientAllocationComponent {
               module: 'CB-RECEIPTS',
               originalFileName: this.selectedFile.name,
               filename: this.selectedFile.name,
-              
+
               //I fed the referenceNo: field with values of policy number to match the expected string format
               //i.e replaced referenceNo:detail.referenceNumber with referenceNo:detail.policyNumber
               referenceNo: detail.policyNumber,
@@ -1445,7 +1445,7 @@ export class ClientAllocationComponent {
       this.receiptService.uploadFiles(requests).subscribe({
         next: (response) => {
           this.globalDocId = response.docId;
-          
+
           this.globalMessagingService.displaySuccessMessage(
             'Success',
             'Receipt uploaded successfully'
@@ -1474,24 +1474,32 @@ export class ClientAllocationComponent {
         },
         error: (err) => {
           //console.log('payload request:>>',requests);
-          const backendError =  err.error?.status || err.error?.msg || err.statusText || 'The specific reason is unavailable.';
-           const fullMessage = `The document could not be posted to DMS.\n\nReason: ${backendError}`;
+          const backendError =
+            err.error?.status ||
+            err.error?.msg ||
+            err.statusText ||
+            'The specific reason is unavailable.';
+          const fullMessage = `The document could not be posted to DMS.\n\nReason: ${backendError}`;
           this.globalMessagingService.displayErrorMessage(
-            `Failed to upload receipt document`,fullMessage
-           
+            `Failed to upload receipt document`,
+            fullMessage
           );
         },
       });
     } catch (err) {
-         const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to prepare file for upload. Please try again.\n\nReason: ${backendError}`;
+      const backendError =
+        err.error?.msg ||
+        err.error?.error ||
+        err.error?.status ||
+        err.statusText ||
+        'The specific reason is unavailable.';
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-      
+      const fullMessage = `Failed to prepare file for upload. Please try again.\n\nReason: ${backendError}`;
+
+      this.globalMessagingService.displayErrorMessage(
+        'Error occurred!', // A more accurate title
+        fullMessage
+      );
     }
   }
 
@@ -1510,15 +1518,15 @@ export class ClientAllocationComponent {
         );
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to retrieve  a document. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-       
       },
     });
   }
@@ -1606,15 +1614,15 @@ export class ClientAllocationComponent {
       },
       error: (err) => {
         //console.error('Error deleting file:', error);
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to delete a file. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-       
       },
     });
   }
@@ -1631,15 +1639,15 @@ export class ClientAllocationComponent {
           this.parameterStatus = response.data;
         },
         error: (err) => {
-             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `ailed to fetch Param Status. Please try again.\n\nReason: ${backendError}`;
+          const customMessage = this.translate.instant('fms.errorMessage');
 
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-         
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText
+          );
         },
       });
   }
@@ -1817,7 +1825,7 @@ export class ClientAllocationComponent {
           this.receiptResponse.receiptNumber
         );
         this.globalMessagingService.displaySuccessMessage(
-          this.message,
+          '',
           this.receiptResponse.message
         );
         //this.sessionStorage.clear();
@@ -1829,15 +1837,15 @@ export class ClientAllocationComponent {
         //prepare receipt upload payload
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to save a receipt. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-        
       },
     });
   }
@@ -1976,21 +1984,21 @@ export class ClientAllocationComponent {
           this.receiptResponse.receiptNumber
         );
         this.globalMessagingService.displaySuccessMessage(
-          'Success',
-          'Receipt saved successfully'
+          '',
+          this.receiptResponse.message
         );
         this.router.navigate(['/home/fms/receipt-preview']);
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to save a receipt. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-        
       },
     });
   }
@@ -2131,23 +2139,23 @@ export class ClientAllocationComponent {
           this.receiptResponse.receiptNumber
         );
         this.globalMessagingService.displaySuccessMessage(
-          'Success',
-          'Receipt saved successfully'
+          '',
+          this.receiptResponse.message
         );
         setTimeout(() => {
           this.router.navigate(['/home/fms/slip-preview']);
         }, 100);
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to save a receipt. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-       
       },
     });
   }
@@ -2161,17 +2169,22 @@ export class ClientAllocationComponent {
       next: (response) => {
         this.receiptSlipResponse = response.data;
         this.globalMessagingService.displaySuccessMessage(
-          'Success',
-          'slip generated successfully'
+          '',
+          this.receiptSlipResponse.message
         );
         //this.sessionStorage.setItem('receiptSlipResponse',this.receiptSlipResponse.receiptNo);
         //this.router.navigate(['/home/fms/slip-preview']);
       },
 
       error: (err) => {
+        const customMessage = this.translate.instant('fms.errorMessage');
+
         this.globalMessagingService.displayErrorMessage(
-          'Failed to save receipt',
-          err.error.msg || 'an error occured'
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
       },
     });
@@ -2190,9 +2203,9 @@ export class ClientAllocationComponent {
    */
   handleStepNavigation(stepNumber: number): void {
     // Find the step object from the data to get its navigation link
-    const targetStep = this.steps.find(s => s.number === stepNumber);
+    const targetStep = this.steps.find((s) => s.number === stepNumber);
     if (!targetStep) {
-     // console.error(`Step ${stepNumber} not found in steps data.`);
+      // console.error(`Step ${stepNumber} not found in steps data.`);
       return;
     }
 
