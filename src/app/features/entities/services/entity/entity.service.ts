@@ -339,12 +339,22 @@ export class EntityService {
     );
   }
 
-  fetchGisQuotationsByUser(user: string): Observable<Quotation> {
-    return this.api.GET<Quotation>(
-      `v2/quotation/${user}`,
-      API_CONFIG.GIS_QUOTATIONS_BASE_URL
-    );
-  }
+ fetchGisQuotationsByUser(
+  user: string,
+  pageNo: number | null = 0,
+  pageSize: number | null = 20
+): Observable<Quotation> {
+  const params = new HttpParams()
+    .set('page', String(pageNo))
+    .set('size', String(pageSize));
+
+  return this.api.GET<Quotation>(
+    `v2/quotation/${user}?pageNo=${pageNo}&pageSize=${pageSize}`,
+    API_CONFIG.GIS_QUOTATIONS_BASE_URL,
+    
+  );
+}
+
 
   fetchGisPoliciesByUser(user: string): Observable<any> {
     return this.api.GET<any>(
