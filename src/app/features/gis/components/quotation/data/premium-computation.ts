@@ -67,7 +67,7 @@ export interface Risk {
 
 export interface CoverType {
   subclassCode: number;
-  subClassDescription:string;
+  description:string;
   coverTypeCode: number;
   minimumAnnualPremium: number;
   minimumPremium: number | null;

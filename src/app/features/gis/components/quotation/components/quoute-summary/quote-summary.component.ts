@@ -18,6 +18,7 @@ import { NotificationService } from "../../services/notification/notification.se
 import { StringManipulation } from "../../../../../lms/util/string_manipulation";
 import { SESSION_KEY } from "../../../../../lms/util/session_storage_enum";
 import { SessionStorageService } from "../../../../../../shared/services/session-storage/session-storage.service";
+import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -64,6 +65,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   searchTerm = '';
   comments: string;
   isClientSearchModalVisible = false;
+  organizationId: number;
 
   constructor(
     private quotationService: QuotationsService,
@@ -74,6 +76,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     public utilService: UtilService,
     public cdr: ChangeDetectorRef,
     private session_storage: SessionStorageService,
+    private sessionStorageService: SessionStorageService
+
   ) {
     this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
 
@@ -118,6 +122,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
           this.afterRejectQuote = true
         }
       });
+    const organization = this.sessionStorageService.getItem("organizationDetails") as OrganizationDTO;
+  if (organization) {
+      this.organizationId = organization.id
+    }
 
   }
 
@@ -431,6 +439,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
         tenant: btoa(tenantId)
       }
     });
+    const organizationDetails = this.sessionStorageService.getItem("organizationDetails") as OrganizationDTO
+
     return {
       paymentLink: `${baseUrl}${urlTree}`,
       quotation: {
@@ -443,8 +453,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
         ipayReferenceNumber: this.quotationDetails?.ipayReferenceNumber
       },
       organization: {
-        organizationLogo: null,
-        organizationName: null,
+        organizationLogo: organizationDetails.organizationLogo,
+        organizationName: organizationDetails.name,
       },
       products: this.selectedCovers.productLevelPremiums.map((product: any) => ({
         code: product.code,
@@ -455,7 +465,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
           coverTypeDetails: risk.coverTypeDetails.map((cover: any) => ({
             subclassCode: cover.subclassCode,
-             subclassDescription: cover.description || null,
+            description: cover.description || null,
             propertyId: cover.propertyId,
             coverTypeShortDescription: cover.coverTypeShortDescription,
             coverTypeDescription: cover.coverTypeDescription,
@@ -468,6 +478,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
               (acc: any, tax: any) => {
                 acc.premium += tax.premium;
                 acc.code = tax.code;
+                acc.rateDescription = tax.description
                 return acc;
               },
               { premium: 0, code: 0 }
