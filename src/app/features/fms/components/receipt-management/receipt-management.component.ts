@@ -224,10 +224,15 @@ export class ReceiptManagementComponent {
       },
 
       error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch receipts to print. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.status || 'failed to load data'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+       
       },
     });
   }
@@ -453,10 +458,15 @@ this.filteredtabledata = filteredData;
          this.totalRecords = this.filteredReceipts.length;
       },
       error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch receipts to cancel. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.status || 'failed to load receipts'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+       
       },
     });
   }
@@ -529,8 +539,8 @@ this.filteredtabledata = filteredData;
     this.receiptManagementService.cancelReceipt(body).subscribe({
       next: (response) => {
         this.globalMessagingService.displaySuccessMessage(
-          'success',
-          response.msg || 'receipt successfully cancelled'
+          'receipt successfully cancelled',
+          response.msg || 'success'
         );
         this.closeModal();
         this.fetchReceiptsToCancel(

@@ -165,7 +165,7 @@ export class ReceiptPreviewComponent implements OnInit {
          // Clean up any session data to prevent inconsistent state
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
-
+//this.sessionStorage.clear();
         // Navigate the user to a safe and stable screen
         this.router.navigate(['/home/fms/receipt-capture']);
        
@@ -215,7 +215,7 @@ export class ReceiptPreviewComponent implements OnInit {
         );
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
-       // this.sessionStorage.clear();
+       //this.sessionStorage.clear();
         this.router.navigate(['/home/fms/receipt-capture']);
       },
 
@@ -224,6 +224,9 @@ export class ReceiptPreviewComponent implements OnInit {
           'failed',
           err.error.msg
         );
+        this.receiptDataService.clearReceiptData();
+        this.receiptDataService.clearFormState();
+      // this.sessionStorage.clear();
       },
     });
   }
@@ -231,7 +234,7 @@ export class ReceiptPreviewComponent implements OnInit {
   navigateToReceiptCapture(): void {
     this.receiptDataService.clearReceiptData();
     this.receiptDataService.clearFormState();
-    //this.sessionStorage.clear();
+   // this.sessionStorage.clear();
     this.router.navigate(['/home/fms/receipt-capture']);
   }
 
@@ -240,6 +243,9 @@ export class ReceiptPreviewComponent implements OnInit {
    * @returns {void}
    */
   onBack() {
+     
+    this.receiptDataService.clearFormState();
+   // this.sessionStorage.clear();
     this.receiptDataService.clearReceiptData(); // Clear but keep currency
     this.router.navigate(['/home/fms/receipt-capture']); // Navigate to the next screen
   }

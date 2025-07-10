@@ -1026,10 +1026,15 @@ export class ClientAllocationComponent {
           this.getAllocations();
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            err.error?.msg || 'Failed to post allocations'
-          );
+             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to save allocations. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
+         
         },
       });
   }
@@ -1064,10 +1069,15 @@ export class ClientAllocationComponent {
         },
         error: (err) => {
           this.isEmptyAllocationPosted = true;
-          this.globalMessagingService.displayErrorMessage(
-            'Failed!',
-            err.error?.msg || 'Unable to post allocations'
-          );
+             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to post allocations. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
+          
         },
       });
   }
@@ -1156,10 +1166,15 @@ export class ClientAllocationComponent {
           this.globalGetAllocation = this.getAllocation;
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage(
-            'error fetched',
-            err.error?.msg || 'Failed to fetch Allocation'
-          );
+             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to fetch Allocation. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
+          
         },
       });
   }
@@ -1225,10 +1240,15 @@ export class ClientAllocationComponent {
         }
       },
       error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to delete allocation. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error?.msg || 'Failed to delete allocation'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+        
       },
     });
   }
@@ -1319,6 +1339,13 @@ export class ClientAllocationComponent {
           this.base64Output = base64String;
         }
       };
+  //     reader.onload = (e: any) => {
+  // const fullBase64 = e.target.result as string;
+  
+  // This is the critical line. You MUST remove the metadata prefix.
+//   this.base64Output = fullBase64.split(',')[1]; 
+// };
+
       reader.readAsDataURL(this.selectedFile);
       //this.openModal(this.fileDescriptions.length - 1); // Open modal for the last added file
       setTimeout(() => {
@@ -1418,6 +1445,7 @@ export class ClientAllocationComponent {
       this.receiptService.uploadFiles(requests).subscribe({
         next: (response) => {
           this.globalDocId = response.docId;
+          
           this.globalMessagingService.displaySuccessMessage(
             'Success',
             'Receipt uploaded successfully'
@@ -1445,6 +1473,7 @@ export class ClientAllocationComponent {
           this.fetchDocByDocId(this.globalDocId);
         },
         error: (err) => {
+          //console.log('payload request:>>',requests);
           const backendError =  err.error?.status || err.error?.msg || err.statusText || 'The specific reason is unavailable.';
            const fullMessage = `The document could not be posted to DMS.\n\nReason: ${backendError}`;
           this.globalMessagingService.displayErrorMessage(
@@ -1453,11 +1482,16 @@ export class ClientAllocationComponent {
           );
         },
       });
-    } catch (error) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Failed to prepare file for upload'
-      );
+    } catch (err) {
+         const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to prepare file for upload. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
+      
     }
   }
 
@@ -1475,11 +1509,16 @@ export class ClientAllocationComponent {
           'Doc retrieved successfullly'
         );
       },
-      error: (error) => {
+      error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to retrieve  a document. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          error.error?.error || 'failed to fetch doc'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+       
       },
     });
   }
@@ -1565,12 +1604,17 @@ export class ClientAllocationComponent {
           this.globalDocId = null;
         }
       },
-      error: (error) => {
-        console.error('Error deleting file:', error);
+      error: (err) => {
+        //console.error('Error deleting file:', error);
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to delete a file. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Error',
-          error.error?.error || 'failed to delete file'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+       
       },
     });
   }
@@ -1587,10 +1631,15 @@ export class ClientAllocationComponent {
           this.parameterStatus = response.data;
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error:Failed to fetch Param Status',
-            err.err.error
-          );
+             const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `ailed to fetch Param Status. Please try again.\n\nReason: ${backendError}`;
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error occurred!', // A more accurate title
+          fullMessage
+        );
+         
         },
       });
   }
@@ -1779,11 +1828,16 @@ export class ClientAllocationComponent {
 
         //prepare receipt upload payload
       },
-      error: (error) => {
+      error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to save a receipt. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Failed to save receipt',
-          error.error.msg
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+        
       },
     });
   }
@@ -1927,11 +1981,16 @@ export class ClientAllocationComponent {
         );
         this.router.navigate(['/home/fms/receipt-preview']);
       },
-      error: (error) => {
+      error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to save a receipt. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Failed to save receipt',
-          error.error.msg || 'an error occured'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+        
       },
     });
   }
@@ -2079,11 +2138,16 @@ export class ClientAllocationComponent {
           this.router.navigate(['/home/fms/slip-preview']);
         }, 100);
       },
-      error: (error) => {
+      error: (err) => {
+           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
+        
+        const fullMessage = `Failed to save a receipt. Please try again.\n\nReason: ${backendError}`;
+
         this.globalMessagingService.displayErrorMessage(
-          'Failed to save receipt',
-          error.error.msg || 'an error occured'
+          'Error occurred!', // A more accurate title
+          fullMessage
         );
+       
       },
     });
   }
