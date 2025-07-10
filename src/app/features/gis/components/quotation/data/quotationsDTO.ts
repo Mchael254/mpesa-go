@@ -942,6 +942,7 @@ export interface LimitPremium {
 export interface TaxComputation {
   code: number;
   premium: number;
+  rateDescription:string
 }
 
 
@@ -1136,6 +1137,8 @@ export interface QuotationReportDto {
     riskLevelPremiums: {
       sumInsured:number
       coverTypeDetails: {
+        subclasscode:number,
+        description:string,
         coverTypeShortDescription: string;
         coverTypeDescription: string,
         limits: {
@@ -1146,7 +1149,8 @@ export interface QuotationReportDto {
         taxComputation: {
           premium: number,
           code: number
-        }
+          rateDescription:string
+        }[]
         clauses: {
           heading: string,
           wording: string
