@@ -66,7 +66,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   comments: string;
   isClientSearchModalVisible = false;
   organizationId: number;
-
+isModalLoading = false;
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
@@ -474,8 +474,11 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
               value: limit.value
             })) || [],
             computedPremium: cover.computedPremium,
-            taxComputation: cover.taxComputation ?? [],
-
+            taxComputation: (cover.taxComputation ?? []).map((tax: any) => ({
+              code: tax.code,
+              rateDescription: tax.description?.trim() || 'N/A',
+              premium: tax.premium || 0
+            })),
             clauses: cover.clauses?.map((clause: any) => ({
               heading: clause.heading,
               wording: clause.wording
