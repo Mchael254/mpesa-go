@@ -53,6 +53,7 @@ export class DynamicSetupTableComponent implements OnInit {
   @Input() emptyTableMessage: string;
   @Input() formFields: FieldModel[] = [];
   @Input() subGroupId: string;
+  @Input() selectedAddressCountry: CountryDto;
   @Output() saveDetailsData: EventEmitter<any> = new EventEmitter<any>();
 
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
@@ -595,7 +596,7 @@ export class DynamicSetupTableComponent implements OnInit {
   }
 
   fetchBanks(fieldIndex: number) {
-    this.bankService.getBanks(this.selectedCountry?.id).subscribe({
+    this.bankService.getBanks(this.selectedAddressCountry?.id).subscribe({
       next: (data: BankDTO[]) => {
         this.banksData = data;
         const bankStringArr: string[] = data.map((bank: BankDTO) => bank.name);
