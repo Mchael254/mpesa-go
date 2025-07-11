@@ -39,6 +39,7 @@ export interface FieldModel {
   isMandatory: boolean;
   options: any[];
   appliesTo: AppliesToEnum;
+  doc?: any;
 }
 
 export interface Validation {
