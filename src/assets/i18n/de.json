@@ -2159,6 +2159,9 @@
     "signSelect": "Auswahl unterschreiben",
     "correction": "Zur Korrektur senden",
     "reject": "Ablehnen",
+    "errorMessage": "Ein Fehler ist aufgetreten!",
+    "rctPrintError":"Beleg wurde erfolgreich gespeichert, konnte jedoch nicht gedruckt werden",
+    "pdPrintError":"Beleg wurde erfolgreich gespeichert, aber der Bon konnte nicht gedruckt werden",
     "base-fms": {
       "parameters": "Parameter",
       "reconciliation": "Abstimmung",

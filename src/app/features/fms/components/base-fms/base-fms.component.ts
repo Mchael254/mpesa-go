@@ -99,15 +99,15 @@ export class BaseFmsComponent {
         this.sessionStorage.setItem('user', JSON.stringify(this.userDetails));
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.err?.err|| err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch user details. Please try again.\n\nReason: ${backendError}`;
-
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-        
+        const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -166,15 +166,15 @@ export class BaseFmsComponent {
         }
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch organizations. Please try again.\n\nReason: ${backendError}`;
-
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-      
+       const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -275,15 +275,15 @@ export class BaseFmsComponent {
         }
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch branches. Please try again.\n\nReason: ${backendError}`;
-
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-        
+        const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -359,15 +359,15 @@ export class BaseFmsComponent {
         }
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch periods . Please try again.\n\nReason: ${backendError}`;
-
-        this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
-        );
-       
+        const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -403,34 +403,33 @@ export class BaseFmsComponent {
 
   /* The `items` property is an array of objects. Each object represents a menu item in a CRM (Customer
 Relationship Management) application. Each object has the following properties: */
-setups: Array<{
-  label: string;
-  link?: string;
-  showSubItems: boolean;
-  subItems?: Array<{ label: string; link?: string }>;
-}> = [
-  {
-    label: this.translate.instant('base.GL Parameters'),
-    showSubItems: false,
-    subItems: [{ label: '', link: '' }],
-  },
-  {
-    label: this.translate.instant('base.CB Parameters'),
-    showSubItems: false,
-    subItems: [{ label: '', link: '' }],
-  },
-  {
-    label: this.translate.instant('base.DB Parameters'),
-    showSubItems: false,
-    subItems: [{ label: '', link: '' }],
-  },
-  {
-    label: this.translate.instant('base.CR Parameters'),
-    showSubItems: false,
-    subItems: [{ label: '', link: '' }],
-  },
-];
-
+  setups: Array<{
+    label: string;
+    link?: string;
+    showSubItems: boolean;
+    subItems?: Array<{ label: string; link?: string }>;
+  }> = [
+    {
+      label: this.translate.instant('base.GL Parameters'),
+      showSubItems: false,
+      subItems: [{ label: '', link: '' }],
+    },
+    {
+      label: this.translate.instant('base.CB Parameters'),
+      showSubItems: false,
+      subItems: [{ label: '', link: '' }],
+    },
+    {
+      label: this.translate.instant('base.DB Parameters'),
+      showSubItems: false,
+      subItems: [{ label: '', link: '' }],
+    },
+    {
+      label: this.translate.instant('base.CR Parameters'),
+      showSubItems: false,
+      subItems: [{ label: '', link: '' }],
+    },
+  ];
 
   GLledger: Array<{
     label: string;
@@ -459,7 +458,7 @@ setups: Array<{
       subItems: [{ label: '', link: '' }],
     },
   ];
-  
+
   creditors: Array<{
     label: string;
     link?: string;

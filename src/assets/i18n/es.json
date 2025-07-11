@@ -941,7 +941,7 @@
       "driver_relation_insured": "Relación del conductor asegurado",
       "driver_email_address": "Dirección de correo electrónico del conductor",
       "clear": "Borrar",
-      "add_product":"Añadir producto",
+      "add_product": "Añadir producto",
       "save_details": "Guardar",
       "are_you_sure_you_want_to_delete_schedule": "¿Está seguro de que desea eliminar esta programación?",
       "no_im_not": "No, no lo estoy",
@@ -2698,6 +2698,9 @@
     "signSelect": "Firmar selección",
     "correction": "Enviar para corrección",
     "reject": "Rechazar",
+    "errorMessage": "¡Ocurrió un error!",
+    "rctPrintError": "Recibo guardado correctamente, pero no se pudo imprimir el comprobante",
+    "pdPrintError": "Recibo guardado correctamente, pero no se pudo imprimir el comprobante",
     "base-fms": {
       "parameters": "Parámetros",
       "reconciliation": "Conciliación",

@@ -2164,7 +2164,9 @@
     "signSelect": "签署选择",
     "correction": "发送以更正",
     "reject": "拒绝",
-
+"errorMessage": "发生错误",
+ "rctPrintError":"收据已成功保存，但无法打印",
+    "pdPrintError":"收据已成功保存，但无法打印小票",
     "base-fms": {
       "parameters": "参数",
       "reconciliation": "对账",
