@@ -530,12 +530,14 @@ export class ReceiptManagementComponent {
 
     this.receiptManagementService.cancelReceipt(body).subscribe({
       next: (response) => {
-        
+      
+const backendResponse= response?.msg ||
+            response?.error ||
+            response?.status ;
+          
         this.globalMessagingService.displaySuccessMessage(
          '',
-          response?.msg ||
-            response?.error ||
-            response?.status 
+          backendResponse
             
         );
         // this.globalMessagingService.displaySuccessMessage(
@@ -548,15 +550,15 @@ export class ReceiptManagementComponent {
         ); // Refresh list
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+       const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -571,14 +573,14 @@ export class ReceiptManagementComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }

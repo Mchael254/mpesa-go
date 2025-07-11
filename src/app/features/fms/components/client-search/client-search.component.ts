@@ -247,13 +247,14 @@ export class ClientSearchComponent implements OnInit {
         },
         error: (err) => {
           const customMessage = this.translate.instant('fms.errorMessage');
-
+          const backendError =
+            err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText;
           this.globalMessagingService.displayErrorMessage(
             customMessage,
-            err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText
+            backendError
           );
         },
       });
@@ -389,22 +390,15 @@ export class ClientSearchComponent implements OnInit {
           }
         },
         error: (err) => {
-          //      const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-
-          // const fullMessage = `Failed to fetch Transactions. Please try again.\n\nReason: ${backendError}`;
-
-          // this.globalMessagingService.displayErrorMessage(
-          //   'Error occurred!', // A more accurate title
-          //   fullMessage
-          // );
           const customMessage = this.translate.instant('fms.errorMessage');
-
+          const backendError =
+            err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText;
           this.globalMessagingService.displayErrorMessage(
             customMessage,
-            err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText
+            backendError
           );
         },
       });
@@ -441,9 +435,15 @@ export class ClientSearchComponent implements OnInit {
             }
           },
           error: (err) => {
+            const customMessage = this.translate.instant('fms.errorMessage');
+            const backendError =
+              err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
             this.globalMessagingService.displayErrorMessage(
-              'Error',
-              err.error.msg
+              customMessage,
+              backendError
             );
           },
           complete: () => {
@@ -524,18 +524,15 @@ export class ClientSearchComponent implements OnInit {
           }
         },
         error: (err) => {
+          const customMessage = this.translate.instant('fms.errorMessage');
           const backendError =
             err.error?.msg ||
             err.error?.error ||
             err.error?.status ||
-            err.statusText ||
-            'The specific reason is unavailable.';
-
-          const fullMessage = `Failed to fetch allocations. Please try again.\n\nReason: ${backendError}`;
-
+            err.statusText;
           this.globalMessagingService.displayErrorMessage(
-            'Error occurred!', // A more accurate title
-            fullMessage
+            customMessage,
+            backendError
           );
         },
       });

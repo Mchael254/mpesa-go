@@ -100,14 +100,14 @@ export class BaseFmsComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -166,15 +166,15 @@ export class BaseFmsComponent {
         }
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+       const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -276,14 +276,14 @@ export class BaseFmsComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -360,14 +360,14 @@ export class BaseFmsComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }

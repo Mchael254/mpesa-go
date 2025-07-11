@@ -584,15 +584,15 @@ export class ReceiptCaptureComponent {
         }
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+      const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -692,14 +692,14 @@ export class ReceiptCaptureComponent {
           }
         },
         error: (err) => {
-          const customMessage = this.translate.instant('fms.errorMessage');
-
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            err.error?.msg ||
+         const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
               err.error?.error ||
               err.error?.status ||
-              err.statusText
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
           );
         },
       });
@@ -832,14 +832,14 @@ export class ReceiptCaptureComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -1111,14 +1111,14 @@ export class ReceiptCaptureComponent {
           //this.filteredBankAccounts = this.bankAccounts; // Initialize filtered list
         },
         error: (err) => {
-          const customMessage = this.translate.instant('fms.errorMessage');
-
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            err.error?.msg ||
+         const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
               err.error?.error ||
               err.error?.status ||
-              err.statusText
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
           );
         },
       });
@@ -1197,19 +1197,15 @@ export class ReceiptCaptureComponent {
             }
           },
           error: (err) => {
-            const backendError =
-              err.error?.msg ||
+           const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
               err.error?.error ||
               err.error?.status ||
-              err.statusText ||
-              'The specific reason is unavailable.';
-
-            const fullMessage = `Failed to fetch receipting points. Please try again.\n\nReason: ${backendError}`;
-
-            this.globalMessagingService.displayErrorMessage(
-              'Error occurred!', // A more accurate title
-              fullMessage
-            );
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
           },
         });
 
@@ -1248,14 +1244,14 @@ export class ReceiptCaptureComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -1272,15 +1268,17 @@ export class ReceiptCaptureComponent {
         this.drawersBanks = data;
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
+       const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
 
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+        
       },
     });
   }
@@ -1297,14 +1295,14 @@ export class ReceiptCaptureComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -1366,13 +1364,13 @@ export class ReceiptCaptureComponent {
         },
         error: (err) => {
           const customMessage = this.translate.instant('fms.errorMessage');
-
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            err.error?.msg ||
+const backendError= err.error?.msg ||
               err.error?.error ||
               err.error?.status ||
-              err.statusText
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
           );
         },
       });
@@ -1388,15 +1386,15 @@ export class ReceiptCaptureComponent {
         this.chargeList = response.data;
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+       const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -1486,14 +1484,14 @@ export class ReceiptCaptureComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -1524,15 +1522,15 @@ export class ReceiptCaptureComponent {
         this.chargeList.splice(index, 1); // Remove from list
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+       const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -1627,14 +1625,14 @@ export class ReceiptCaptureComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
     this.receiptingDetailsForm.patchValue(chargeAmount);

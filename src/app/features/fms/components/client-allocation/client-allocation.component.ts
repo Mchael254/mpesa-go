@@ -999,9 +999,10 @@ export class ClientAllocationComponent {
       .postAllocation(this.loggedInUser.code, allocationData)
       .subscribe({
         next: (response) => {
+          const responseMessage = response?.msg || response?.success;
           this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Allocations posted successfully'
+            '',
+            responseMessage
           );
 
           // ✅ Preserve previous allocated values
@@ -1027,13 +1028,14 @@ export class ClientAllocationComponent {
         },
         error: (err) => {
           const customMessage = this.translate.instant('fms.errorMessage');
-
+          const backendError =
+            err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText;
           this.globalMessagingService.displayErrorMessage(
             customMessage,
-            err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText
+            backendError
           );
         },
       });
@@ -1061,22 +1063,20 @@ export class ClientAllocationComponent {
       .postEmptyAllocation(this.loggedInUser.code, receiptParticulars)
       .subscribe({
         next: (response) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            response.msg
-          );
+          this.globalMessagingService.displaySuccessMessage('', response.msg);
           this.isEmptyAllocationPosted = true;
         },
         error: (err) => {
           this.isEmptyAllocationPosted = true;
           const customMessage = this.translate.instant('fms.errorMessage');
-
+          const backendError =
+            err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText;
           this.globalMessagingService.displayErrorMessage(
             customMessage,
-            err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText
+            backendError
           );
         },
       });
@@ -1167,13 +1167,14 @@ export class ClientAllocationComponent {
         },
         error: (err) => {
           const customMessage = this.translate.instant('fms.errorMessage');
-
+          const backendError =
+            err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText;
           this.globalMessagingService.displayErrorMessage(
             customMessage,
-            err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText
+            backendError
           );
         },
       });
@@ -1241,13 +1242,14 @@ export class ClientAllocationComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
         this.globalMessagingService.displayErrorMessage(
           customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
+          backendError
         );
       },
     });
@@ -1473,16 +1475,15 @@ export class ClientAllocationComponent {
           this.fetchDocByDocId(this.globalDocId);
         },
         error: (err) => {
-          //console.log('payload request:>>',requests);
+          const customMessage = this.translate.instant('fms.errorMessage');
           const backendError =
-            err.error?.status ||
             err.error?.msg ||
-            err.statusText ||
-            'The specific reason is unavailable.';
-          const fullMessage = `The document could not be posted to DMS.\n\nReason: ${backendError}`;
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText;
           this.globalMessagingService.displayErrorMessage(
-            `Failed to upload receipt document`,
-            fullMessage
+            customMessage,
+            backendError
           );
         },
       });
@@ -1519,13 +1520,14 @@ export class ClientAllocationComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
         this.globalMessagingService.displayErrorMessage(
           customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
+          backendError
         );
       },
     });
@@ -1613,15 +1615,15 @@ export class ClientAllocationComponent {
         }
       },
       error: (err) => {
-        //console.error('Error deleting file:', error);
         const customMessage = this.translate.instant('fms.errorMessage');
-
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
         this.globalMessagingService.displayErrorMessage(
           customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
+          backendError
         );
       },
     });
@@ -1640,13 +1642,14 @@ export class ClientAllocationComponent {
         },
         error: (err) => {
           const customMessage = this.translate.instant('fms.errorMessage');
-
+          const backendError =
+            err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText;
           this.globalMessagingService.displayErrorMessage(
             customMessage,
-            err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText
+            backendError
           );
         },
       });
@@ -1838,13 +1841,14 @@ export class ClientAllocationComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
         this.globalMessagingService.displayErrorMessage(
           customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
+          backendError
         );
       },
     });
@@ -1991,13 +1995,14 @@ export class ClientAllocationComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
         this.globalMessagingService.displayErrorMessage(
           customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
+          backendError
         );
       },
     });
@@ -2148,13 +2153,14 @@ export class ClientAllocationComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
         this.globalMessagingService.displayErrorMessage(
           customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
+          backendError
         );
       },
     });
@@ -2178,13 +2184,14 @@ export class ClientAllocationComponent {
 
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
         this.globalMessagingService.displayErrorMessage(
           customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
+          backendError
         );
       },
     });
