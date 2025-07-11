@@ -9,6 +9,7 @@ import { SessionStorageService } from '../../../../shared/services/session-stora
 import { ReceiptService } from '../../services/receipt.service';
 import { ReportsService } from '../../../../shared/services/reports/reports.service';
 import { ReceiptDataService } from '../../services/receipt-data.service';
+import { TranslateService } from '@ngx-translate/core';
 /**
  * @Component ReceiptPrintPreviewComponent
  * @description
@@ -67,8 +68,7 @@ export class ReceiptPrintPreviewComponent {
     private router: Router,
     private receiptService: ReceiptService,
     private receiptDataService: ReceiptDataService,
-        
-        
+    private translate: TranslateService
   ) {}
   /**
    * @method ngOnInit
@@ -119,27 +119,19 @@ export class ReceiptPrintPreviewComponent {
         //this.downlaod(this.filePath,'receiptpdf');
       },
       error: (err) => {
-       
-          // Display a clear, reassuring message to the user.
-        // We use a success message because the SAVE part was successful.
-          // 1. Safely extract the backend error message. It checks for the most common
-        //    formats and provides a generic fallback.
-        const backendError = err.error?.msg || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        // 2. Combine your user-friendly message with the backend error using a template literal.
-        //    Using `\n\n` creates a nice line break for readability in the message box.
-        const fullMessage = `The preview could not be generated. You can find and print it later from the receipt management screen.\n\nReason: ${backendError}`;
-         // 3. Use `displayErrorMessage` for this specific failure and pass the combined message.
-        this.globalMessagingService.displayErrorMessage(
-          'Error Generating Preview', // A more accurate title
-          fullMessage
-        );
-       
-        
-        
+        const customMessage = this.translate.instant('fms.rctPrintError');
 
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
         // Navigate the user to a safe and stable screen
         this.router.navigate(['/home/fms/receipt-management']);
-       
       },
     });
   }
@@ -164,23 +156,24 @@ export class ReceiptPrintPreviewComponent {
     this.receiptService.updateReceiptStatus(payload).subscribe({
       next: (response) => {
         this.globalMessagingService.displaySuccessMessage(
-          'success:',
-          response.message
+          '',
+          response?.msg || response?.error || response?.status
         );
 
         this.router.navigate(['/home/fms/receipt-management']);
       },
 
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to update print status. Please try again.\n\nReason: ${backendError}`;
-
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          backendError
         );
-       
       },
     });
   }

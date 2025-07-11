@@ -2948,6 +2948,10 @@
     "signSelect": "Sign selected",
     "correction": "Send for correction",
     "reject": "Reject",
+    "errorMessage":"An Error Occurred!",
+    "rctPrintError":"Receipt saved successfully but unable to print",
+    "pdPrintError":"Receipt saved successfully but unable to print slip",
+
     "receipting": {
       "receipting": "Receipting",
       "cbReceipting": "CB-Receipting",

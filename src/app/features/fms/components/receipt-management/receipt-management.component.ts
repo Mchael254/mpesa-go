@@ -50,12 +50,12 @@ export class ReceiptManagementComponent {
   /** @property {unPrintedReceiptsDTO | null} unPrintedReceiptData - Holds the complete API response for unprinted receipts. */
 
   unPrintedReceiptData: Pagination<unPrintedReceiptContentDTO> =
-  {} as Pagination<unPrintedReceiptContentDTO>; 
+    {} as Pagination<unPrintedReceiptContentDTO>;
   /** @property {unPrintedReceiptContentDTO[]} unPrintedReceiptContent - Holds the actual list/array of receipt details extracted from the API response. This should be the source for filtering. */
 
   unPrintedReceiptContent: unPrintedReceiptContentDTO[] = []; // Stores just the content array
   /** @property {unPrintedReceiptContentDTO[]} filteredtabledata - Holds the data currently displayed in the table after filtering. Should be typed correctly. */
- // tabledata: unPrintedReceiptContentDTO[] = [];
+  // tabledata: unPrintedReceiptContentDTO[] = [];
   filteredtabledata: unPrintedReceiptContentDTO[] = [];
   unPrintedReceiptsdata: unPrintedReceiptContentDTO[] = [];
   printedReceiptsdata: unPrintedReceiptContentDTO[] = [];
@@ -87,15 +87,15 @@ export class ReceiptManagementComponent {
   receiptNumber: number | null = null; // Initialize as null
   receiptData: unPrintedReceiptContentDTO[] = [];
   //cancellation section
- // receiptsToCancel: ReceiptToCancelDTO;
-  receiptsToCancelPagination:Pagination<ReceiptsToCancelContentDTO> =
-  {} as Pagination<ReceiptsToCancelContentDTO>; // This holds full pagination data
+  // receiptsToCancel: ReceiptToCancelDTO;
+  receiptsToCancelPagination: Pagination<ReceiptsToCancelContentDTO> =
+    {} as Pagination<ReceiptsToCancelContentDTO>; // This holds full pagination data
   receiptsToCancelList: ReceiptsToCancelContentDTO[] = [];
   unCancelledReceipts: ReceiptsToCancelContentDTO[] = [];
   selectedReceipt: any = null;
   glAccountPagination: Pagination<glContentDTO> =
     {} as Pagination<glContentDTO>; // This holds full pagination data
-    filteredReceipts:ReceiptsToCancelContentDTO[] = [];
+  filteredReceipts: ReceiptsToCancelContentDTO[] = [];
   glAccountContent: glContentDTO[] = []; // This will hold just the content array
 
   loggedInUser: any;
@@ -151,8 +151,8 @@ export class ReceiptManagementComponent {
       remarks: ['', Validators.required],
       cancellationDate: ['', Validators.required],
       raiseBankCharge: ['N', Validators.required], // 'no' is the default value
-      bankCharges:[''],
-      clientCharges:['']
+      bankCharges: [''],
+      clientCharges: [''],
     });
     //Add conditional validation
     this.cancelForm.get('raiseBankCharge')?.valueChanges.subscribe((value) => {
@@ -214,25 +214,24 @@ export class ReceiptManagementComponent {
    */
   fetchUnprintedReceipts(branchCode: number) {
     this.receiptManagementService.getUnprintedReceipts(branchCode).subscribe({
-      next: (response: GenericResponse<Pagination<unPrintedReceiptContentDTO>>) => {
+      next: (
+        response: GenericResponse<Pagination<unPrintedReceiptContentDTO>>
+      ) => {
         this.unPrintedReceiptData = response.data;
         this.unPrintedReceiptContent = response.data.content; // Stores just the content array
         this.filteredtabledata = this.unPrintedReceiptContent;
-       
-        
-        
       },
 
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch receipts to print. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-       
       },
     });
   }
@@ -244,17 +243,17 @@ export class ReceiptManagementComponent {
    * @param {Event} event - The input event object.
    * @param {'receiptNumber' | 'receiptDate' | 'receivedFrom' | 'amount' | 'paymentMethod'} field - The data field being filtered.
    */
-  filter(event:Event,field:string):void{
-const inputElement = event.target as HTMLInputElement;
-const filterValue =  inputElement.value;
-switch(field){
-  case "receiptNumber":
-    this.receiptNumberFilter  = filterValue;
-    break;
-    case "receiptDate":
-      this.receiptDateFilter = filterValue;
-      break;
-      case "receivedFrom":
+  filter(event: Event, field: string): void {
+    const inputElement = event.target as HTMLInputElement;
+    const filterValue = inputElement.value;
+    switch (field) {
+      case 'receiptNumber':
+        this.receiptNumberFilter = filterValue;
+        break;
+      case 'receiptDate':
+        this.receiptDateFilter = filterValue;
+        break;
+      case 'receivedFrom':
         this.receivedFromFilter = filterValue;
         break;
       case 'amount':
@@ -262,27 +261,25 @@ switch(field){
         break;
       case 'paymentMethod':
         this.paymentMethodFilter = filterValue;
-        break; 
-}
+        break;
+    }
 
-this.filterAllReceipts(); // Ensure this is called
-
+    this.filterAllReceipts(); // Ensure this is called
   }
-  filterAllReceipts():void{
+  filterAllReceipts(): void {
     if (!this.receiptsToCancelList) return;
-   
+
     // Always start with the full dataset
     let filteredData = [...this.unCancelledReceipts];
-  
-     // Apply filters only if they have values
-    if(this.receiptNumberFilter.trim()){
+
+    // Apply filters only if they have values
+    if (this.receiptNumberFilter.trim()) {
       const searchTerm = this.receiptNumberFilter.toLowerCase();
       filteredData = filteredData.filter((item) =>
         item.branchReceiptCode?.toLowerCase().includes(searchTerm)
       );
-
     }
-    
+
     if (this.receiptDateFilter?.trim()) {
       const searchTerm = this.receiptDateFilter.toLowerCase();
       filteredData = filteredData.filter((item) =>
@@ -309,22 +306,20 @@ this.filterAllReceipts(); // Ensure this is called
         item.paymentMode?.toLowerCase().includes(searchTerm)
       );
     }
-   // console.log('Filtered results:', this.filteredReceipts);
+    // console.log('Filtered results:', this.filteredReceipts);
     this.filteredReceipts = filteredData;
     this.totalRecords = this.filteredReceipts.length;
-   
-      }
-      clearFilters() {
-        let filteredData = [...this.unCancelledReceipts];
-  this.receiptNumberFilter = '';
-  this.receiptDateFilter = '';
-  this.receivedFromFilter = '';
-  this.amountFilter = null;
-  this.paymentMethodFilter = '';
-this.filteredReceipts = filteredData;
+  }
+  clearFilters() {
+    let filteredData = [...this.unCancelledReceipts];
+    this.receiptNumberFilter = '';
+    this.receiptDateFilter = '';
+    this.receivedFromFilter = '';
+    this.amountFilter = null;
+    this.paymentMethodFilter = '';
+    this.filteredReceipts = filteredData;
     this.totalRecords = this.filteredReceipts.length;
- 
-}
+  }
   applyFilter(event: Event, field: string): void {
     const inputElement = event.target as HTMLInputElement;
     const filterValue = inputElement.value;
@@ -349,7 +344,7 @@ this.filteredReceipts = filteredData;
 
     this.filterReceipts(); // Ensure this is called
   }
-  
+
   /**
    * @method filterReceipts
    * @description Filters the main `unPrintedReceiptContent` array based on the current
@@ -410,17 +405,16 @@ this.filteredReceipts = filteredData;
       this.paymentMethodFilter?.trim()
     );
   }
-   clearFilter() {
-         let filteredData = [...this.unPrintedReceiptContent];
-  this.receiptNumberFilter = '';
-  this.receiptDateFilter = '';
-  this.receivedFromFilter = '';
-  this.amountFilter = null;
-  this.paymentMethodFilter = '';
-this.filteredtabledata = filteredData;
+  clearFilter() {
+    let filteredData = [...this.unPrintedReceiptContent];
+    this.receiptNumberFilter = '';
+    this.receiptDateFilter = '';
+    this.receivedFromFilter = '';
+    this.amountFilter = null;
+    this.paymentMethodFilter = '';
+    this.filteredtabledata = filteredData;
     this.totalRecords = this.filteredtabledata.length;
- 
-}
+  }
   /**
    * @method printReceipt
    * @description Stores the selected receipt number in session storage and navigates
@@ -439,34 +433,32 @@ this.filteredtabledata = filteredData;
   //cancellation section
   fetchReceiptsToCancel(branchCode: number) {
     this.receiptManagementService.getReceiptsToCancel(branchCode).subscribe({
-      next: (response: GenericResponse<Pagination<ReceiptsToCancelContentDTO>>) => {
+      next: (
+        response: GenericResponse<Pagination<ReceiptsToCancelContentDTO>>
+      ) => {
         this.receiptsToCancelPagination = response.data;
 
-
         this.receiptsToCancelList = response.data.content;
-      
-   
-      
-      
+
         //this.globalMessagingService.displaySuccessMessage('success','successfully retrieved reeipts to cancel');
         this.unCancelledReceipts = this.receiptsToCancelList.filter((list) => {
           return list.cancelled == 'N';
         });
-       // this.filteredReceipts = [...this.receiptsToCancelList]; // Make a copy
-     
+        // this.filteredReceipts = [...this.receiptsToCancelList]; // Make a copy
+
         this.filteredReceipts = [...this.unCancelledReceipts]; // Make a copy
-         this.totalRecords = this.filteredReceipts.length;
+        this.totalRecords = this.filteredReceipts.length;
       },
       error: (err) => {
-           const backendError = err.error?.msg ||  err.error?.error || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-        
-        const fullMessage = `Failed to fetch receipts to cancel. Please try again.\n\nReason: ${backendError}`;
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         this.globalMessagingService.displayErrorMessage(
-          'Error occurred!', // A more accurate title
-          fullMessage
+          customMessage,
+          err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText
         );
-       
       },
     });
   }
@@ -535,23 +527,38 @@ this.filteredtabledata = filteredData;
       bankChargesGlAcc: formValues?.accountCharged || null,
       otherChargesGlAcc: formValues?.glAccount || null,
     };
-//console.log('account number>',formValues.accountCharged);
+
     this.receiptManagementService.cancelReceipt(body).subscribe({
       next: (response) => {
+      
+const backendResponse= response?.msg ||
+            response?.error ||
+            response?.status ;
+          
         this.globalMessagingService.displaySuccessMessage(
-          'receipt successfully cancelled',
-          response.msg || 'success'
+         '',
+          backendResponse
+            
         );
+        // this.globalMessagingService.displaySuccessMessage(
+        //   'receipt successfully cancelled',
+        //   response.msg || 'success'
+        // );
         this.closeModal();
         this.fetchReceiptsToCancel(
           this.defaultBranch?.id || this.selectedBranch?.id
         ); // Refresh list
       },
       error: (err) => {
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err.error.status || 'failed to cancel the receipt'
-        );
+       const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
@@ -565,10 +572,15 @@ this.filteredtabledata = filteredData;
         // this.globalMessagingService.displaySuccessMessage('success','successfully retrieve gl accounts');
       },
       error: (err) => {
-        this.globalMessagingService.displayErrorMessage(
-          'error',
-          err.error.status || 'failed to fetch gl accounts'
-        );
+        const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
       },
     });
   }
