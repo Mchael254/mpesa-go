@@ -33,12 +33,11 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
   shareForm!: FormGroup;
 
 
-
-  shareMethods: { label: string, value: ShareMethod }[] = [
-    { label: 'Email', value: 'email' },
-    { label: 'SMS', value: 'sms' },
-    { label: 'Whatsapp', value: 'whatsapp' }
-  ];
+shareMethods: { label: string; value: ShareMethod; disabled: boolean; tooltip?: string }[] = [
+  { label: 'Email', value: 'email', disabled: false },
+  { label: 'SMS', value: 'sms', disabled: true, tooltip: 'SMS sharing coming soon' },
+  { label: 'WhatsApp', value: 'whatsapp', disabled: true, tooltip: 'WhatsApp sharing coming soon' }
+];
 
 
   shareQuoteData: ShareQuoteDTO = {

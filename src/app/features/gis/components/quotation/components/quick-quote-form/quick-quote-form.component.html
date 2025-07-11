@@ -1,70 +1,60 @@
-<div class="container  ">
-  <div class="mt-4" style="display: flex; justify-content: start">
-    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
-    </app-dynamic-breadcrumb>
-  </div>
-  <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+<div class="d-flex my-4 ms-4" style="display: flex; justify-content: start">
+  <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+  </app-dynamic-breadcrumb>
+</div>
+<app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
 
-  <div class="card my-0 border-0 py-0">
-    <div class="card-body mx-4 my-0 py-0 ">
-      <p class="subtitle ">Let’s start your quote</p>
-      <p class="tagline ">Select a product to start your quote</p>
-      <!-- <input type="text" class="form-control search-input mx-auto" placeholder="Search for a product..."
+<div class="card mx-4 mb-2" style=" position: relative; border: none; border-radius: 5px;">
+  <div class="card-body  my-4 ms-4 ">
+    <p class="subtitle ">Let’s start your quote</p>
+    <p class="tagline ">Select a product to start your quote</p>
+    <!-- <input type="text" class="form-control search-input mx-auto" placeholder="Search for a product..."
         [(ngModel)]="productSearch" (keydown.enter)="filterProducts()" /> -->
-        <input type="text" class="form-control search-input mx-auto"
-       placeholder="Search for a product..."
-       [(ngModel)]="productSearch"
-       (ngModelChange)="onSearchChange($event)" />
+    <form [formGroup]="quickQuoteForm">
 
-    </div>
-  </div>
-  <form [formGroup]="quickQuoteForm">
-    <div class="card mb-2" style=" position: relative; border: none; border-radius: 5px;">
-      <div class="card-body mx-4">
-
-        <div class="row mb-4">
-          <ng-container *ngIf="products?.length">
-            <!-- Scrollable Products -->
-            <div class="product-scroll-container">
-              <div class="row mb-4 justify-content-start">
-                <div class="col-md-2 col-6 mb-3" *ngFor="let product of filteredProducts">
-                  <div class="card products-card position-relative mx-4" style="width: 143px; height: 193px;">
-                    <input type="checkbox" class="product-checkbox" [checked]="isProductSelected(product)"
-                      (change)="onCheckboxChange($event, product)" />
+      <input type="text" class="form-control search-input mx-auto mb-4" placeholder="Search for a product..."
+        [(ngModel)]="productSearch" (ngModelChange)="onSearchChange($event)" />
+      <div class="row mb-4" style=" position: relative; border: none; border-radius: 5px;">
+        <ng-container *ngIf="products?.length">
+          <!-- Scrollable Products -->
+          <div class="product-scroll-container">
+            <div class="row mb-4 justify-content-start">
+              <div class="col-md-2 col-6 mb-3" *ngFor="let product of filteredProducts">
+                <div class="card products-card position-relative mx-4" style="width: 143px; height: 193px;">
+                  <input type="checkbox" class="product-checkbox" [checked]="isProductSelected(product)"
+                    (change)="onCheckboxChange($event, product)" />
 
 
-                    <div class="productLogo d-flex align-items-center justify-content-center">
-<img *ngIf="product.productImage" 
-       [src]="'data:image/png;base64,' + product.productImage" 
-       alt="Product Image"
-       style="max-width: 90px; max-height: 67px;" />
-                           </div>
+                  <div class="productLogo d-flex align-items-center justify-content-center">
+                    <img *ngIf="product.productImage" [src]="'data:image/png;base64,' + product.productImage"
+                      alt="Product Image" style="max-width: 90px; max-height: 67px;" />
+                  </div>
 
-                    <div class="card-body d-flex align-items-center justify-content-center text-center p-2 mt-2">
-                      <h5 class="productTitle mb-0">{{ product.description |sentenceCase }}</h5>
-                    </div>
+                  <div class="card-body d-flex align-items-center justify-content-center text-center p-2 mt-2">
+                    <h5 class="productTitle mb-0">{{ product.description |sentenceCase }}</h5>
                   </div>
                 </div>
               </div>
             </div>
-          </ng-container>
+          </div>
+        </ng-container>
 
 
-          <ng-container *ngIf="formData">
-            <ng-container *ngFor="let field of formData; let i = index">
-              <ng-container *ngIf="field.name !== 'product'">
+        <ng-container *ngIf="formData">
+          <ng-container *ngFor="let field of formData; let i = index">
+            <ng-container *ngIf="field.name !== 'product'">
 
-                <div class="col-sm-4 col-6">
-                  <div class="form-group">
+              <div class="col-sm-4 col-6">
+                <div class="form-group">
 
-                    <label *ngIf="field.name !== 'product'" for="{{i}}{{field.name}}" class="quote-label"
-                      [ngClass]="{ 'required': field.isMandatory === 'Y' }">
-                      {{ field.label | translate }}
-                    </label>
+                  <label *ngIf="field.name !== 'product'" for="{{i}}{{field.name}}" class="quote-label"
+                    [ngClass]="{ 'required': field.isMandatory === 'Y' }">
+                    {{ field.label | translate }}
+                  </label>
 
-                    <ng-container [ngSwitch]="field.type">
-                      <ng-container *ngSwitchCase="'select'">
-                        <!-- <ng-container *ngIf="field.name === 'product'">
+                  <ng-container [ngSwitch]="field.type">
+                    <ng-container *ngSwitchCase="'select'">
+                      <!-- <ng-container *ngIf="field.name === 'product'">
                         <p-multiSelect [formControlName]="field.name" [name]="field.name" [options]="products"
                           optionLabel="description" [filterBy]="'description'" [filter]="true" display="comma"
                           [showToggleAll]="false" (onChange)="getSelectedProducts($event)">
@@ -72,337 +62,343 @@
                       </ng-container> -->
 
 
-                      </ng-container>
-                      <ng-container *ngSwitchCase="'date'">
-                        <ng-container *ngIf="field.name === 'effectiveDate'">
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'date'">
+                      <ng-container *ngIf="field.name === 'effectiveDate'">
 
-                          <p-calendar [formControlName]="field.name" [name]="field.name" [dateFormat]="dateFormat"
-                            inputStyleClass="form-control-sm" [showButtonBar]="true" [minDate]="selectedEffectiveDate"
-                            [dataType]="'string'" [style]="{ width: '100%' }" [showIcon]="true">
-                          </p-calendar>
-
-                        </ng-container>
+                        <p-calendar [formControlName]="field.name" [name]="field.name" [dateFormat]="dateFormat"
+                          inputStyleClass="form-control-sm" [showButtonBar]="true" [minDate]="selectedEffectiveDate"
+                          [dataType]="'string'" [style]="{ width: '100%' }" [showIcon]="true">
+                        </p-calendar>
 
                       </ng-container>
-                      <ng-container *ngSwitchCase="'textarea'">
-                        <ng-container *ngIf="field.name === 'quotComment'">
-                          <textarea id="quote-textarea" class="form-control quote-input" [formControlName]="field.name"
-                            rows="3" style="resize:none" [placeholder]="field.placeholder"></textarea>
-                        </ng-container>
-
-                      </ng-container>
-
 
                     </ng-container>
-                  </div>
+                    <ng-container *ngSwitchCase="'textarea'">
+                      <ng-container *ngIf="field.name === 'quotComment'">
+                        <textarea id="quote-textarea" class="form-control quote-input" [formControlName]="field.name"
+                          rows="3" style="resize:none" [placeholder]="field.placeholder"></textarea>
+                      </ng-container>
 
+                    </ng-container>
+
+
+                  </ng-container>
                 </div>
-              </ng-container>
+
+              </div>
             </ng-container>
           </ng-container>
+        </ng-container>
+      </div>
+    </form>
+  </div>
+</div>
+<form [formGroup]="quickQuoteForm">
+  <!-- <div class="card mb-2" style=" position: relative; border: none; border-radius: 5px;">
+    <div class="card-body  my-4 ms-4">
+
+    </div>
+  </div> -->
+  <div>
+    <div class="mb-4 mx-4 " style="background-color: #fff; border: none;border-radius: 5px;"
+      *ngIf="productsFormArray.controls.length > 0">
+      <div formArrayName="products">
+        <div *ngFor="let productGroup of productsFormArray.controls; let i = index" [formGroupName]="i" class="mb-2">
+          <!-- Collapsible Header -->
+          <div class="card-header mx-4 d-flex justify-content-between align-items-center"
+            style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;"
+            (click)="toggleQuoteExpand(i)">
+
+            <!-- Title and icons container -->
+            <div class="d-flex align-items-center w-100">
+              <span style="font-size: 20px;">
+                {{ productGroup.value.description |sentenceCase}}
+              </span>
+
+              <!-- Icons container - only show when expanded -->
+              <div *ngIf="expandedQuoteStates[i]" class="d-flex align-items-center" style="margin-left: 20px;">
+                <i class="fas fa-plus" style="font-size:15px;border: 2px solid #00529B; border-radius: 100px; padding: 2px;padding-right: 3px;
+  padding-left: 3px; margin-right: 8px; color: #00529B; cursor: pointer;" title="Add risk"
+                  (click)="addRisk(i); $event.stopPropagation()">
+                </i>
+
+                <i class="fa-solid fa-trash-can"
+                  style="font-size:17px; color:#EE3945; cursor: pointer; margin-right: 8px;" title="Delete product"
+                  data-bs-toggle="modal" data-bs-target="#deleteProduct" (click)="$event.stopPropagation()">
+                </i>
+              </div>
+            </div>
+
+            <!-- Chevron button -->
+            <button type="button" id="icon-chevron" class="btn btn-primary" style="margin-left: auto;">
+              <i class="fa" [ngClass]="expandedQuoteStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'">
+              </i>
+            </button>
+
+          </div>
+
+          <!-- Expanded Content -->
+          <div class="card-body mx-4 collapsible-body" *ngIf="expandedQuoteStates[i]">
+
+            <!-- DELETE PRODUCT MODAL -->
+            <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
+              aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content" id="deleteProduct">
+                  <div class="modal-body ">
+
+                    <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+                      <p class="modal-title fw-bold">{{ 'gis.quotation.delete_product' | translate }}</p>
+                      <button type="button" class="custom-close" id="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close">
+                        &times;
+                      </button>
+                    </div>
+                    <p class="deleteMessage mt-2 ">
+                      {{ 'gis.quotation.sure_deleting_product' | translate }}
+                    </p>
+                    <p class="deleteBody mt-2 mb-4">
+                      {{ 'gis.quotation.deleting_associated_risk' | translate }}
+                    </p>
+                    <div class="d-flex justify-content-end mb-3">
+                      <button type="button" class="btn btn-outline-primary px-5 me-4" id="delete"
+                        data-bs-dismiss="modal">{{
+                        'gis.policy.cancel'
+                        | translate
+                        }}
+                      </button>
+                      <button type="button" class="btn btn-primary px-5" data-bs-dismiss="modal"
+                        (click)="deleteProduct(productGroup, i)">
+                        {{ 'gis.quotation.delete'| translate }}
+                      </button>
+                    </div>
+
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Risk Fields -->
+            <div formArrayName="risks">
+              <div *ngFor="let riskGroup of getRisks(i).controls; let j = index" [formGroupName]="j">
+                <p class="riskTitle">{{ 'gis.quotation.risk'| translate }} {{ j + 1 }}
+                  <i *ngIf="getRisks(i).length > 1" class="fa-solid fa-trash-can text-danger ms-2" title="Delete risk"
+                    style="color:#EE3945;" (click)="fetchProductRiskIndex(riskGroup, i, j)" data-bs-toggle="modal"
+                    data-bs-target="#deleteRisk">
+                  </i>
+                </p>
+                <!-- DELETE RISK MODAL -->
+                <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
+                  aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content" id="deleteProduct">
+                      <div class="modal-body ">
+
+                        <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+                          <p class="modal-title fw-bold">{{ 'gis.quotation.delete_risk' | translate }}</p>
+                          <button type="button" class="custom-close" id="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close">
+                            &times;
+                          </button>
+                        </div>
+                        <p class="deleteMessage mt-2 mb-4">
+
+                          {{ 'gis.quotation.sure_deleting_risk' | translate }}?
+                        </p>
+
+                        <div class="d-flex justify-content-end mb-3">
+                          <button type="button" class="btn btn-outline-primary px-5 me-4" id="delete"
+                            data-bs-dismiss="modal">
+                            {{ 'gis.policy.cancel' | translate }}
+                          </button>
+                          <button type="button" class="btn btn-primary px-5" data-bs-dismiss="modal"
+                            (click)="deleteRisk()"> {{ 'gis.quotation.delete' | translate }}
+
+                          </button>
+                        </div>
+
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <!-- Loop over risk fields -->
+                  <ng-container *ngFor="let field of productRiskFields[i]">
+                    <div class="col-sm-4 col-6 dynamic-field mb-3">
+                      <div class="form-group form-group-sm">
+                        <label [for]="field.name" class="quote-label"
+                          [ngClass]="{ 'required': field.isMandatory === 'Y' }">{{ field.label | translate }}</label>
+
+                        <ng-container [ngSwitch]="field.type">
+
+                          <!-- Text input -->
+                          <ng-container *ngSwitchCase="'text'">
+                            <ng-container *ngIf="field.name==='carRegNo';else inputField">
+                              <input type="text" id="quote-input" class="form-control form-control-sm"
+                                (input)="validateCarRegNo(i, j); transformToUpperCase($event,i, j)"
+                                [formControlName]="field.name">
+
+                              <!-- Error message -->
+                              <div class="form-text text-danger" style="font-size: 14px;"
+                                *ngIf="getCarRegNoControl(i, j)?.invalid && (getCarRegNoControl(i, j)?.touched || getCarRegNoControl(i, j)?.dirty)">
+
+                                <div *ngIf="getCarRegNoControl(i, j)?.errors?.['pattern']">
+                                  Invalid registration number format.
+                                </div>
+                                <div *ngIf="getCarRegNoControl(i, j)?.errors?.['unique']">
+                                  {{ 'gis.quotation.this_property_id_is_duplicated' | translate }}
+                                </div>
+
+                              </div>
+                            </ng-container>
+                            <ng-template #inputField>
+                              <input type="text" id="quote-input" class="form-control form-control-sm"
+                                [formControlName]="field.name">
+                            </ng-template>
+                          </ng-container>
+                          <!-- Number input -->
+                          <ng-container *ngSwitchCase="'number'">
+                            <input type="number" id="quote-input" class="form-control form-control-sm"
+                              [max]="field?.max" [min]="field?.min" [formControlName]="field.name">
+                          </ng-container>
+
+                          <!-- Currency input -->
+                          <input *ngSwitchCase="'currency'" type="text" class="form-control form-control-sm"
+                            [formControlName]="field.name" currencyMask [options]="currencyObj">
+
+                          <!-- Date picker -->
+                          <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [dateFormat]="dateFormat"
+                            inputStyleClass="form-control" [showButtonBar]="true" [dataType]="'string'"></p-calendar>
+
+                          <!-- Years -->
+                          <ng-container *ngIf="field.name === 'yearOfManufacture'">
+                            <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="years"
+                              [filter]="true"></p-dropdown>
+                          </ng-container>
+                          <!-- Subclass -->
+                          <ng-container *ngIf="field.name === 'useOfProperty'">
+                            <p-dropdown formControlName="useOfProperty"
+                              [options]="productSubclassesMap[productGroup.value.code] || []"
+                              (onChange)="onSubclassSelected($event.value,i, j, productGroup.value.code)"
+                              optionLabel="description" [filterBy]="'description'" [filter]="true"></p-dropdown>
+
+                          </ng-container>
+                          <!-- Add other field types as needed -->
+                          <ng-container *ngIf="field.name === 'vesselType'">
+                            <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="vesselTypeList"
+                              optionLabel="name" dataKey="code" [filter]="true"></p-dropdown>
+                          </ng-container>
+                          <ng-container *ngIf="field.name === 'modeOfTransport'">
+                            <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="modeOfTransport"
+                              optionLabel="description" dataKey="code" [filterBy]="'description'"
+                              [filter]="true"></p-dropdown>
+                          </ng-container>
+                          <ng-container *ngIf="field.name === 'occupation'">
+                            <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="occupationData"
+                              optionLabel="name" dataKey="id" [filterBy]="'name'" [filter]="true"></p-dropdown>
+                          </ng-container>
+
+                        </ng-container>
+
+                        <!-- Validation error -->
+                        <div
+                          *ngIf="riskGroup.get(field.name)?.hasError('required') && riskGroup.get(field.name).touched"
+                          class="form-text text-danger">
+                          {{ field.label }} is required
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+
         </div>
 
+      </div>
+      <div class="row mt-2 mb-4 mx-4" *ngIf="selectedProducts && selectedProducts.length > 0">
+        <div class="col-6"></div>
+        <div class="col-6 d-flex justify-content-end">
+          <button type="button" class="btn btn-outline-primary btn-lg mb-5 mx-2" id="compute" (click)="onSubmit()">
+            {{ 'gis.quotation.compute' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<ng-container *ngIf="premiumComputationResponse">
+  <div *ngFor="let product of premiumComputationResponse.productLevelPremiums; let i = index" class="mb-2 mx-4">
+    <!-- Card Header -->
+    <div class="card-header d-flex justify-content-between align-items-center"
+      style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;" (click)="toggleCoverExpand(i)"
+      *ngIf="product.riskLevelPremiums.length > 0">
+
+      <div class="product-comparison-title mx-4">
+        {{ product.description }} <span>- {{ 'gis.quotation.cover_types' | translate }}</span>
+      </div>
+      <button type="button" id="icon-chevron" class="btn btn-primary">
+        <i class="fa" [ngClass]="expandedComparisonStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+      </button>
+    </div>
+
+    <!-- Card Body -->
+    <div *ngIf="expandedComparisonStates[i]" class="card-body collapsible-body">
+      <div *ngFor="let risk of product.riskLevelPremiums; let j = index">
+        <p class="mb-3 mx-4 m-0 d-flex align-items-center">
+          <i class="fa me-2" [ngClass]="expandedCoverTypeIndexes[i] === j ? 'fa-chevron-up' : 'fa-chevron-down'"
+            (click)="toggleCoverType(i, j)" style="cursor: pointer;">
+          </i>
+          {{ risk?.propertyId }} {{ risk?.sumInsured | currency: selectedCurrencySymbol || '' : 'symbol' }}
+        </p>
+        <app-cover-types-comparison [isExpanded]="expandedCoverTypeIndexes[i] === j"
+          (additionalBenefitsEvent)="listenToBenefitsAddition($event)"
+          (additionalBenefitsRemovedEvent)="removeBenefit($event)" (selectedCoverEvent)="selectCovers(product, $event)"
+          [riskLevelPremium]="risk">
+        </app-cover-types-comparison>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<div class="row  mx-4" *ngIf="premiumComputationResponse">
+  <div class="col-6"></div>
+  <div class="col-6 d-flex justify-content-end">
+    <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal" (click)="fetchCoverRelatedData()"
+      data-bs-target="#shareQuoteModal">
+      {{ 'gis.quotation.share_quotation' | translate }}
+    </button>
+    <div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-md ">
+        <div class="modal-content  p-4">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h3 class="page-title  mb-0 mt-0">Share
+              quote</h3>
+            <button type="button" class="btn-close custom-close-btn" data-bs-dismiss="modal"
+              aria-label="Close"></button>
+
+          </div>
+          <app-share-quotes (sendEvent)="listenToSendEvent($event)" (downloadRequested)="onDownloadRequested()">
+
+          </app-share-quotes>
+
+        </div>
       </div>
     </div>
     <div>
-      <div class="mb-4 " style="background-color: #fff; border: none;border-radius: 5px;"
-        *ngIf="productsFormArray.controls.length > 0">
-        <div formArrayName="products">
-          <div *ngFor="let productGroup of productsFormArray.controls; let i = index" [formGroupName]="i" class="mb-2">
-            <!-- Collapsible Header -->
-            <div class="card-header mx-4 d-flex justify-content-between align-items-center"
-              style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;"
-              (click)="toggleQuoteExpand(i)">
 
-              <!-- Title and icons container -->
-              <div class="d-flex align-items-center w-100">
-                <span style="font-size: 20px;">
-                  {{ productGroup.value.description |sentenceCase}}
-                </span>
-
-                <!-- Icons container - only show when expanded -->
-                <div *ngIf="expandedQuoteStates[i]" class="d-flex align-items-center" style="margin-left: 20px;">
-                  <i class="fas fa-plus" style="font-size:15px;border: 2px solid #00529B; border-radius: 100px; padding: 2px;padding-right: 3px;
-  padding-left: 3px; margin-right: 8px; color: #00529B; cursor: pointer;" title="Add risk"
-                    (click)="addRisk(i); $event.stopPropagation()">
-                  </i>
-
-                  <i class="fa-solid fa-trash-can"
-                    style="font-size:17px; color:#EE3945; cursor: pointer; margin-right: 8px;" title="Delete product"
-                    data-bs-toggle="modal" data-bs-target="#deleteProduct" (click)="$event.stopPropagation()">
-                  </i>
-                </div>
-              </div>
-
-              <!-- Chevron button -->
-              <button type="button" id="icon-chevron" class="btn btn-primary" style="margin-left: auto;">
-                <i class="fa" [ngClass]="expandedQuoteStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'">
-                </i>
-              </button>
-
-            </div>
-
-            <!-- Expanded Content -->
-            <div class="card-body mx-4 collapsible-body" *ngIf="expandedQuoteStates[i]">
-
-              <!-- DELETE PRODUCT MODAL -->
-              <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                  <div class="modal-content" id="deleteProduct">
-                    <div class="modal-body ">
-
-                      <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
-                        <p class="modal-title fw-bold">{{ 'gis.quotation.delete_product' | translate }}</p>
-                        <button type="button" class="custom-close" id="btn-close" data-bs-dismiss="modal"
-                          aria-label="Close">
-                          &times;
-                        </button>
-                      </div>
-                      <p class="deleteMessage mt-2 ">
-                        {{ 'gis.quotation.sure_deleting_product' | translate }}
-                      </p>
-                      <p class="deleteBody mt-2 mb-4">
-                        {{ 'gis.quotation.deleting_associated_risk' | translate }}
-                      </p>
-                      <div class="d-flex justify-content-end mb-3">
-                        <button type="button" class="btn btn-outline-primary px-5 me-4" id="delete"
-                          data-bs-dismiss="modal">{{
-                          'gis.policy.cancel'
-                          | translate
-                          }}
-                        </button>
-                        <button type="button" class="btn btn-primary px-5" data-bs-dismiss="modal"
-                          (click)="deleteProduct(productGroup, i)">
-                          {{ 'gis.quotation.delete'| translate }}
-                        </button>
-                      </div>
-
-
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Risk Fields -->
-              <div formArrayName="risks">
-                <div *ngFor="let riskGroup of getRisks(i).controls; let j = index" [formGroupName]="j">
-                  <p class="riskTitle">{{ 'gis.quotation.risk'| translate }} {{ j + 1 }}
-                    <i *ngIf="getRisks(i).length > 1" class="fa-solid fa-trash-can text-danger ms-2"
-                      style="color:#EE3945;" (click)="fetchProductRiskIndex(riskGroup, i, j)" data-bs-toggle="modal"
-                      data-bs-target="#deleteRisk">
-                    </i>
-                  </p>
-                  <!-- DELETE RISK MODAL -->
-                  <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                      <div class="modal-content" id="deleteProduct">
-                        <div class="modal-body ">
-
-                          <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
-                            <p class="modal-title fw-bold">{{ 'gis.quotation.delete_risk' | translate }}</p>
-                            <button type="button" class="custom-close" id="btn-close" data-bs-dismiss="modal"
-                              aria-label="Close">
-                              &times;
-                            </button>
-                          </div>
-                          <p class="deleteMessage mt-2 mb-4">
-
-                            {{ 'gis.quotation.sure_deleting_risk' | translate }}?
-                          </p>
-
-                          <div class="d-flex justify-content-end mb-3">
-                            <button type="button" class="btn btn-outline-primary px-5 me-4" id="delete"
-                              data-bs-dismiss="modal">
-                              {{ 'gis.policy.cancel' | translate }}
-                            </button>
-                            <button type="button" class="btn btn-primary px-5" data-bs-dismiss="modal"
-                              (click)="deleteRisk()"> {{ 'gis.quotation.delete' | translate }}
-
-                            </button>
-                          </div>
-
-
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <!-- Loop over risk fields -->
-                    <ng-container *ngFor="let field of productRiskFields[i]">
-                      <div class="col-sm-4 col-6 dynamic-field mb-3">
-                        <div class="form-group form-group-sm">
-                          <label [for]="field.name" class="quote-label"
-                            [ngClass]="{ 'required': field.isMandatory === 'Y' }">{{ field.label | translate }}</label>
-
-                          <ng-container [ngSwitch]="field.type">
-
-                            <!-- Text input -->
-                            <ng-container *ngSwitchCase="'text'">
-                              <ng-container *ngIf="field.name==='carRegNo';else inputField">
-                                <input type="text" id="quote-input" class="form-control form-control-sm"
-                                  (input)="validateCarRegNo(i, j); transformToUpperCase($event,i, j)"
-                                  [formControlName]="field.name">
-
-                                <!-- Error message -->
-                                <div class="form-text text-danger" style="font-size: 14px;"
-                                  *ngIf="getCarRegNoControl(i, j)?.invalid && (getCarRegNoControl(i, j)?.touched || getCarRegNoControl(i, j)?.dirty)">
-
-                                  <div *ngIf="getCarRegNoControl(i, j)?.errors?.['pattern']">
-                                    Invalid registration number format.
-                                  </div>
-                                  <div *ngIf="getCarRegNoControl(i, j)?.errors?.['unique']">
-                                    {{ 'gis.quotation.this_property_id_is_duplicated' | translate }}
-                                  </div>
-
-                                </div>
-                              </ng-container>
-                              <ng-template #inputField>
-                                <input type="text" id="quote-input" class="form-control form-control-sm"
-                                  [formControlName]="field.name">
-                              </ng-template>
-                            </ng-container>
-                            <!-- Number input -->
-                            <ng-container *ngSwitchCase="'number'">
-                              <input type="number" id="quote-input" class="form-control form-control-sm"
-                                [max]="field?.max" [min]="field?.min" [formControlName]="field.name">
-                            </ng-container>
-
-                            <!-- Currency input -->
-                            <input *ngSwitchCase="'currency'" type="text" class="form-control form-control-sm"
-                              [formControlName]="field.name" currencyMask [options]="currencyObj">
-
-                            <!-- Date picker -->
-                            <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [dateFormat]="dateFormat"
-                              inputStyleClass="form-control" [showButtonBar]="true" [dataType]="'string'"></p-calendar>
-
-                            <!-- Years -->
-                            <ng-container *ngIf="field.name === 'yearOfManufacture'">
-                              <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="years"
-                                [filter]="true"></p-dropdown>
-                            </ng-container>
-                            <!-- Subclass -->
-                            <ng-container *ngIf="field.name === 'useOfProperty'">
-                              <p-dropdown formControlName="useOfProperty"
-                                [options]="productSubclassesMap[productGroup.value.code] || []"
-                                (onChange)="onSubclassSelected($event.value,i, j, productGroup.value.code)"
-                                optionLabel="description" [filterBy]="'description'" [filter]="true"></p-dropdown>
-
-                            </ng-container>
-                            <!-- Add other field types as needed -->
-                            <ng-container *ngIf="field.name === 'vesselType'">
-                              <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="vesselTypeList"
-                                optionLabel="name" dataKey="code" [filter]="true"></p-dropdown>
-                            </ng-container>
-                            <ng-container *ngIf="field.name === 'modeOfTransport'">
-                              <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="modeOfTransport"
-                                optionLabel="description" dataKey="code" [filterBy]="'description'"
-                                [filter]="true"></p-dropdown>
-                            </ng-container>
-                            <ng-container *ngIf="field.name === 'occupation'">
-                              <p-dropdown [formControlName]="field.name" [name]="field.name" [options]="occupationData"
-                                optionLabel="name" dataKey="id" [filterBy]="'name'" [filter]="true"></p-dropdown>
-                            </ng-container>
-
-                          </ng-container>
-
-                          <!-- Validation error -->
-                          <div
-                            *ngIf="riskGroup.get(field.name)?.hasError('required') && riskGroup.get(field.name).touched"
-                            class="form-text text-danger">
-                            {{ field.label }} is required
-                          </div>
-                        </div>
-                      </div>
-                    </ng-container>
-
-                  </div>
-
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-        <div class="row mt-2 mb-4 mx-4" *ngIf="selectedProducts && selectedProducts.length > 0">
-          <div class="col-6"></div>
-          <div class="col-6 d-flex justify-content-end">
-            <button type="button" class="btn btn-outline-primary btn-lg mb-5 mx-2" id="compute" (click)="onSubmit()">
-              {{ 'gis.quotation.compute' | translate }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-  <ng-container *ngIf="premiumComputationResponse">
-    <div *ngFor="let product of premiumComputationResponse.productLevelPremiums; let i = index" class="mb-2">
-      <!-- Card Header -->
-      <div class="card-header d-flex justify-content-between align-items-center"
-        style="cursor: pointer; background-color: #fff; padding: 10px; border-radius: 5px;"
-        (click)="toggleCoverExpand(i)" *ngIf="product.riskLevelPremiums.length > 0">
-
-        <div class="product-comparison-title mx-4">
-          {{ product.description }} <span>- {{ 'gis.quotation.cover_types' | translate }}</span>
-        </div>
-        <button type="button" id="icon-chevron" class="btn btn-primary">
-          <i class="fa" [ngClass]="expandedComparisonStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+      <ng-container *ngIf="canMoveToNextScreen">
+        <button type="button" class="btn btn-primary " id="save-quotation" (click)="saveQuotationDetails()">
+          {{ 'gis.quotation.next' | translate }}
         </button>
-      </div>
-
-      <!-- Card Body -->
-      <div *ngIf="expandedComparisonStates[i]" class="card-body collapsible-body">
-        <div *ngFor="let risk of product.riskLevelPremiums; let j = index">
-          <p class="mb-3 mx-4 m-0 d-flex align-items-center">
-            <i class="fa me-2" [ngClass]="expandedCoverTypeIndexes[i] === j ? 'fa-chevron-up' : 'fa-chevron-down'"
-              (click)="toggleCoverType(i, j)" style="cursor: pointer;">
-            </i>
-            {{ risk?.propertyId }} {{ risk?.sumInsured | currency: selectedCurrencySymbol || '' : 'symbol' }}
-          </p>
-          <app-cover-types-comparison [isExpanded]="expandedCoverTypeIndexes[i] === j"
-            (additionalBenefitsEvent)="listenToBenefitsAddition($event)"
-            (additionalBenefitsRemovedEvent)="removeBenefit($event)"
-            (selectedCoverEvent)="selectCovers(product, $event)" [riskLevelPremium]="risk">
-          </app-cover-types-comparison>
-        </div>
-      </div>
+      </ng-container>
     </div>
-  </ng-container>
-
-  <div class="row " *ngIf="premiumComputationResponse">
-    <div class="col-6"></div>
-    <div class="col-6 d-flex justify-content-end">
-      <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
-        (click)="fetchCoverRelatedData()" data-bs-target="#shareQuoteModal">
-        {{ 'gis.quotation.share_quotation' | translate }}
-      </button>
-      <div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-md ">
-          <div class="modal-content  p-4">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <h3 class="page-title  mb-0 mt-0" >Share
-                quote</h3>
-                <button type="button" class="btn-close custom-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
-
-            </div>
-            <app-share-quotes (sendEvent)="listenToSendEvent($event)" (downloadRequested)="onDownloadRequested()">
-
-            </app-share-quotes>
-
-          </div>
-        </div>
-      </div>
-      <div>
-
-        <ng-container *ngIf="canMoveToNextScreen">
-          <button type="button" class="btn btn-outline-primary " id="save-quotation" (click)="saveQuotationDetails()">
-            {{ 'gis.quotation.next' | translate }}
-          </button>
-        </ng-container>
-      </div>
 
 
-    </div>
   </div>
 </div>

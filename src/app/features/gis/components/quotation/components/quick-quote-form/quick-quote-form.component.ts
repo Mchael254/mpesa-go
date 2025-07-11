@@ -382,7 +382,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     if (savedState) {
       const parsed = JSON.parse(savedState);
       this.selectedProducts = parsed.selectedProducts;
-      this.previousSelected = this.selectedProducts
+      this.previousSelected = JSON.parse(JSON.stringify(parsed.selectedProducts));
+
+      log.debug("selectedProducts === previousSelected?", this.selectedProducts === this.previousSelected); // should be false
+
+      log.debug("previous selected ", this.previousSelected);
       log.debug("Form array ", parsed.formArray);
       log.debug("product array ", this.selectedProducts);
       // Patch top-level fields
@@ -636,52 +640,57 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
     return new FormGroup(group);
   }
- 
+
 
   // isProductSelected(product: any): boolean {
   //   return this.selectedProducts.includes(product);
   // }
   isProductSelected(product: any): boolean {
-  return this.selectedProducts.some(p => p.code === product.code);
-}
-onCheckboxChange(event: Event, product: any) {
-  const checked = (event.target as HTMLInputElement).checked;
-log.debug("checked",checked)
-  if (checked) {
-    // Avoid duplicate entries
-    log.debug("checked",this.selectedProducts)
+    return this.selectedProducts.some(p => p.code === product.code);
+  }
+  onCheckboxChange(event: Event, product: any) {
+    log.debug("previousSelected on check", this.previousSelected)
 
-    const exists = this.selectedProducts.some(p => p.code === product.code);
-    if (!exists) {
-      this.selectedProducts.push(product);
+    const checked = (event.target as HTMLInputElement).checked;
+    log.debug("checked", checked)
+    if (checked) {
+      // Avoid duplicate entries
+      log.debug("checked", this.selectedProducts)
+
+      const exists = this.selectedProducts.some(p => p.code === product.code);
+      if (!exists) {
+        this.selectedProducts.push(product);
+      }
+    } else {
+      // Remove by code instead of reference
+      this.selectedProducts = this.selectedProducts.filter(p => p.code !== product.code);
+      log.debug("checked", this.selectedProducts)
+
     }
-  } else {
-    // Remove by code instead of reference
-    this.selectedProducts = this.selectedProducts.filter(p => p.code !== product.code);
-        log.debug("checked",this.selectedProducts)
 
+    const fakeEvent = { value: this.selectedProducts };
+    this.getSelectedProducts(fakeEvent);
   }
 
-  const fakeEvent = { value: this.selectedProducts };
-  this.getSelectedProducts(fakeEvent);
-}
 
-  
 
   // When products are selected from multi-select
   getSelectedProducts(event: any) {
+
+    const previousCodes = this.previousSelected.map(p => p.code);
+    log.debug("previousCodes", previousCodes)
+    log.debug("previousSelected", this.previousSelected)
+
     const currentSelection = event.value as Products[];
     const currentCodes = currentSelection.map(p => p.code);
-    const previousCodes = this.previousSelected.map(p => p.code);
-log.debug("currentCodest",currentCodes)
-log.debug("previousCodes",previousCodes)
-log.debug("previousSelected",this.previousSelected)
+    log.debug("currentCodest", currentCodes)
+    log.debug("previousSelected", this.previousSelected)
 
     // Find added and removed products
     const addedProduct = currentSelection.find(p => !previousCodes.includes(p.code));
     const removedProduct = this.previousSelected.find(p => !currentCodes.includes(p.code));
-log.debug("added product",addedProduct)
-log.debug("removedProduct",removedProduct)
+    log.debug("added product", addedProduct)
+    log.debug("removedProduct", removedProduct)
 
     if (removedProduct) {
       // Remove unselected products from FormArray
@@ -976,7 +985,7 @@ log.debug("removedProduct",removedProduct)
             divisionFactor: tax.divisionFactor,
             applicationLevel: tax.applicationLevel,
             taxRateType: tax.taxRateType,
-            rateDescription:tax.description
+            rateDescription: tax.description
           }
         }),
         itemDescription: risk.description,
@@ -1001,7 +1010,7 @@ log.debug("removedProduct",removedProduct)
       log.debug("COVERSSS", coverType)
       coverTypes.push({
         subclassCode: coverType?.subClassCode,
-        description:coverType?.applicableRates[0].subClassDescription,
+        description: coverType?.applicableRates[0].subClassDescription,
         coverTypeCode: coverType?.coverTypeCode,
         minimumAnnualPremium: null,
         minimumPremium: coverType?.minimumPremium,
@@ -1950,7 +1959,7 @@ log.debug("removedProduct",removedProduct)
         propertyId: riskId,
         annualPremium: risk.selectCoverType.computedPremium,
         sectionsDetails: null,
-action: matchingRisk ? 'E' : 'A',
+        action: matchingRisk ? 'E' : 'A',
         clauseCodes: Array.from(new Set(risk.coverTypeDetails.flatMap(cover =>
           (cover.clauses ?? []).map(clause => clause.code)
         )
@@ -2199,7 +2208,7 @@ action: matchingRisk ? 'E' : 'A',
           propertyId: risk.propertyId,
           coverTypeDetails: risk.coverTypeDetails.map((cover: any) => ({
             subclassCode: cover?.subclassCode,
-             description: cover.description || null,
+            description: cover.description || null,
             propertyId: cover.propertyId,
             coverTypeShortDescription: cover.coverTypeShortDescription,
             coverTypeDescription: cover.coverTypeDescription,
@@ -2208,7 +2217,11 @@ action: matchingRisk ? 'E' : 'A',
               value: limit.value
             })) || [],
             computedPremium: cover.computedPremium,
-            taxComputation: cover.taxComputation ?? [],
+            taxComputation: (cover.taxComputation ?? []).map((tax: any) => ({
+              code: tax.code,
+              rateDescription: tax.description?.trim() || 'N/A',
+              premium: tax.premium || 0
+            })),
             clauses: cover.clauses?.map((clause: any) => ({
               heading: clause.heading,
               wording: clause.wording
@@ -2307,7 +2320,7 @@ action: matchingRisk ? 'E' : 'A',
           code: null,
           address: [sendEvent.mode.email],
           subject: 'Quotation Report',
-          message: 'Please find the attached quotation report.',
+          message: `Dear ${sendEvent.mode.clientName},\nPlease find the attached quotation report.`,
           status: 'D',
           emailAggregator: 'N',
           response: '524L',
