@@ -1,13 +1,12 @@
-<div class="container">
-  <div class="mt-4" style="display: flex; justify-content: start">
+<div class="d-flex my-4 ms-4" style="display: flex; justify-content: start">
     <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
     </app-dynamic-breadcrumb>
   </div>
   <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
   <!-- Subcard: Quotation Details & Table -->
-  <div class="card mb-4" style=" position: relative; border: none; border-radius: 5px;">
+  <div class="card mb-4 mx-4" style=" position: relative; border: none; border-radius: 5px;">
 
-    <div class="card-body mx-4">
+    <div class="card-body ">
       <p class="subtitle ">{{ 'gis.quotation.quotation_summmary' | translate }}</p>
 
       <!-- Quotation Details -->
@@ -130,7 +129,7 @@
 
     </div>
   </div>
-  <div class="row mb-4">
+  <div class="row mb-4 mx-4">
     <div class="col-md-4  col-12 mt-2 d-flex justify-content-start gap-2">
       <button type="button" class="btn btn-text me-2 " style="border: none;" (click)="navigateToQuoteDetails()">
         {{ 'gis.quotation.back' | translate }}
@@ -285,4 +284,3 @@
       </div>
     </div>
   </div>
-</div>

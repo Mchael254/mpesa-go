@@ -38,6 +38,7 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
   @Input() convertToPolicy: boolean;
   @Output() onClickSaveClient: EventEmitter<any> = new EventEmitter<any>();
   @Output() modalClosed = new EventEmitter<void>();
+  @ViewChild('dt1') table: any;
 
   private modalInstance: Modal;
   @ViewChild('clientSearchModalElement') modalElementRef: ElementRef;
@@ -68,7 +69,8 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
   pinValue: string;
   selectedClient: ClientDTO;
   showActionButtons: boolean;
-
+  shouldLoadClients = false;
+  hasTriggeredReset = false;
   constructor(
     private router: Router,
     public quotationService: QuotationsService,
@@ -86,43 +88,68 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
     log.debug("Convert to policy flag:", this.convertToPolicy)
     this.showActionButtons = !!this.convertToPolicy;
   }
-  
-  private showModal(): void {
-    if (!this.modalInstance) {
-      this.modalInstance = new Modal(this.modalElementRef.nativeElement);
-      this.modalElementRef.nativeElement.addEventListener('hidden.bs.modal', () => {
-        this.modalClosed.emit();
+  ngAfterViewInit(): void {
+    const modalElement = this.modalElementRef?.nativeElement;
+    if (modalElement) {
+         this.modalInstance = new Modal(modalElement);
+      modalElement.addEventListener('shown.bs.modal', () => {
+        this.shouldLoadClients = true;
+        // Only reset the table the first time it's shown
+        if (!this.hasTriggeredReset) {
+          this.hasTriggeredReset = true;
+          this.cdr.detectChanges(); // make sure DOM is ready
+          this.table?.reset();
+        }
+      });
+      modalElement.addEventListener('hidden.bs.modal', () => {
+        this.shouldLoadClients = false; // Reset so it doesn’t load on next open unless triggered again
       });
     }
-    this.modalInstance.show();
   }
 
-  private hideModal(): void {
-    if (this.modalInstance) {
-      this.modalInstance.hide();
-    }
+
+  private showModal(): void {
+    // if (!this.modalInstance) {
+    //   this.modalInstance = new Modal(this.modalElementRef.nativeElement);
+    //   this.modalElementRef.nativeElement.addEventListener('hidden.bs.modal', () => {
+    //     this.shouldLoadClients = false; // Reset when modal is closed
+    //     this.modalClosed.emit();
+    //   });
+
+    //   this.modalElementRef.nativeElement.addEventListener('shown.bs.modal', () => {
+    //     this.shouldLoadClients = true;  // Allow lazy load only after modal is opened
+    //     this.table?.reset(); // This will re-trigger onLazyLoad with updated flag
+    //   });
+    // }
+
+    // this.modalInstance.show();
   }
+
+
+  private hideModal(): void {
+  if (this.modalInstance) {
+    this.modalInstance.hide();         
+    this.shouldLoadClients = false;   
+  }
+
+  // Optional: remove focus from any active input (e.g., for accessibility)
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
+}
+
 
   ngOnDestroy(): void {
     if (this.modalInstance) {
       this.modalInstance.dispose();
     }
-     if (document.activeElement instanceof HTMLElement) {
-    document.activeElement.blur();
-  }
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
   }
 
 
-  getClients(pageIndex: number,
-    pageSize: number,
-    sortField: any = 'createdDate',
-    sortOrder: string = 'desc') {
-    return this.clientService
-      .getClients(pageIndex, pageSize, sortField, sortOrder)
-      .pipe(
-        untilDestroyed(this),
-      );
-  }
+
 
   /**
    * The function "lazyLoadClients" is used to fetch clients data with pagination, sorting, and filtering options.
@@ -130,14 +157,17 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
    * `TableLazyLoadEvent`. It is used to determine the pagination, sorting, and filtering options for fetching clients.
    */
   lazyLoadClients(event: LazyLoadEvent | TableLazyLoadEvent) {
+    if (!this.shouldLoadClients) {
+      return;
+    }
     const pageIndex = event.first / event.rows;
-    const sortField = event.sortField;
+    const sortField = "createdDate";
     const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
     const pageSize = event.rows;
 
     this.spinner.show();
 
-    this.getClients(pageIndex, pageSize, sortField, sortOrder)
+    this.clientService.getClients(pageIndex, pageSize, sortField, sortOrder)
       .pipe(
         untilDestroyed(this),
         tap((data) => log.info(`Fetching Clients>>>`, data))
@@ -179,10 +209,10 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
     } else if (this.internalIdValue) {
       columnName = 'id';
       columnValue = this.internalIdValue;
-    }else if (this.idValue) {
+    } else if (this.idValue) {
       columnName = 'idNumber';
       columnValue = this.idValue;
-    }else if (this.pinValue) {
+    } else if (this.pinValue) {
       columnName = 'pinNumber';
       columnValue = this.pinValue;
     }
@@ -285,11 +315,21 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
 
   inputPin(event) {
     const value = (event.target as HTMLInputElement).value;
-    this.pinValue= value;
+    this.pinValue = value;
   }
 
   inputId(event) {
     const value = (event.target as HTMLInputElement).value;
     this.idValue = value;
   }
+//  fetchClientsAndShow() {
+//   const event = {
+//     first: 0,
+//     rows: this.pageSize,
+//     sortField: 'createdDate',
+//     sortOrder: -1, // or 1 depending on direction
+//   };
+
+//   this.lazyLoadClients(event);
+// }
 }

@@ -1,15 +1,15 @@
-import {ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
-import {SessionStorageService} from '../../services/session-storage/session-storage.service';
-import {SESSION_KEY} from '../../../features/lms/util/session_storage_enum';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { SessionStorageService } from '../../services/session-storage/session-storage.service';
+import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 
-import {ActivatedRoute, Router} from '@angular/router';
-import {MessageService} from 'primeng/api';
-import {GroupQuotationsListDTO} from '../../../features/lms/models';
-import {MenuService} from '../../../features/base/services/menu.service';
-import {SidebarMenu} from '../../../features/base/model/sidebar.menu';
-import {untilDestroyed, UtilService} from '../../shared.module';
-import {QuotationList} from '../../../features/gis/components/quotation/data/quotationsDTO';
-import {GlobalMessagingService} from '../../services/messaging/global-messaging.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { GroupQuotationsListDTO } from '../../../features/lms/models';
+import { MenuService } from '../../../features/base/services/menu.service';
+import { SidebarMenu } from '../../../features/base/model/sidebar.menu';
+import { untilDestroyed, UtilService } from '../../shared.module';
+import { QuotationList } from '../../../features/gis/components/quotation/data/quotationsDTO';
+import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
 import { QuotationsService } from '../../../features/gis/components/quotation/services/quotations/quotations.service';
 
 // const log = new Logger('QuotationLandingScreenComponent');
@@ -42,11 +42,13 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   };
   pageSize: number = 5;
   quotationSubMenuList: SidebarMenu[];
+  sortField: string = '';
+  sortOrder: number = 1;
 
 
   constructor(
     private session_service:
-    SessionStorageService,
+      SessionStorageService,
     private utilService: UtilService,
     private router: Router,
     private route: ActivatedRoute,
@@ -129,17 +131,17 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
   grpQuotationsColumns = [
-    {field: 'clear', label: 'Clear Filters'},
-    {field: 'quotation_number', label: 'Quotation No.'},
-    {field: 'product', label: 'Product'},
-    {field: 'client_name', label: 'Client'},
-    {field: 'agency_name', label: 'Intermediary'},
-    {field: 'sum_assured', label: 'Sum Assured'},
-    {field: 'total_premium', label: 'Premium'},
-    {field: 'cover_from_date', label: 'Cover from'},
-    {field: 'cover_to_date', label: 'Cover to'},
-    {field: 'quotation_date', label: 'Date Created'},
-    {field: 'quotation_status', label: 'Status'}
+    { field: 'clear', label: 'Clear Filters' },
+    { field: 'quotation_number', label: 'Quotation No.' },
+    { field: 'product', label: 'Product' },
+    { field: 'client_name', label: 'Client' },
+    { field: 'agency_name', label: 'Intermediary' },
+    { field: 'sum_assured', label: 'Sum Assured' },
+    { field: 'total_premium', label: 'Premium' },
+    { field: 'cover_from_date', label: 'Cover from' },
+    { field: 'cover_to_date', label: 'Cover to' },
+    { field: 'quotation_date', label: 'Date Created' },
+    { field: 'quotation_status', label: 'Status' }
   ];
 
   // This method is triggered when the user types in the search box
@@ -209,13 +211,13 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   // Validate filter selections
   validateFilter(): void {
     if (this.filterValue && !this.selectedColumn) {
-      this.messageService.add({severity: 'info', summary: 'Information', detail: 'Please select a option first.'});
+      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Please select a option first.' });
       this.filterValue = '';
       return;
     }
 
     if (this.filterValue && this.isNumericField(this.selectedColumn) && !this.selectedCondition) {
-      this.messageService.add({severity: 'info', summary: 'Information', detail: 'Please select a condition first.'});
+      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Please select a condition first.' });
       return;
     }
 
@@ -364,37 +366,83 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   onReassign() {
   }
 
-  fetchGISQuotations(event: any) {
-    console.log("FETCHING GIS QUOTATIONS LIST")
-    const pageIndex = event.first / event.rows;
-    const pageSize = event.rows;
+  // fetchGISQuotations(event: any) {
+  //   console.log("FETCHING GIS QUOTATIONS LIST")
+  //   const pageIndex = event.first / event.rows;
+  //   const pageSize = event.rows;
 
-    // Call the API without sorting parameters
-    this.quotationService.searchQuotations(
-      pageIndex,
-      pageSize
-    ).pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          // Assuming response._embedded holds the list of quotations
-          this.gisQuotationList = response._embedded;
+  //   // Call the API without sorting parameters
+  //   this.quotationService.searchQuotations(
+  //     pageIndex,
+  //     pageSize
+  //   ).pipe(untilDestroyed(this))
+  //     .subscribe({
+  //       next: (response: any) => {
+  //         // Assuming response._embedded holds the list of quotations
+  //         this.gisQuotationList = response._embedded;
 
 
-          // Set the table data (including rows and totalElements)
-          this.tableDetails = {
-            rows: this.gisQuotationList,  // List of quotations to display
-            totalElements: this.gisQuotationList.length  // Total records (current page data length)
-          };
+  //         // Set the table data (including rows and totalElements)
+  //         this.tableDetails = {
+  //           rows: this.gisQuotationList,  // List of quotations to display
+  //           totalElements: this.gisQuotationList.length  // Total records (current page data length)
+  //         };
 
-          this.cdr.detectChanges();
-          // this.spinner.hide(); // Hide the loading spinner
-        },
-        error: (error) => {
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch quotations. Please try again later.');
-          // this.spinner.hide();
+  //         this.cdr.detectChanges();
+  //         // this.spinner.hide(); // Hide the loading spinner
+  //       },
+  //       error: (error) => {
+  //         this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch quotations. Please try again later.');
+  //         // this.spinner.hide();
+  //       }
+  //     });
+  // }
+
+fetchGISQuotations(event: any) {
+  console.log("FETCHING GIS QUOTATIONS LIST");
+
+  const pageIndex = event.first / event.rows;
+  const pageSize = event.rows;
+  const sortField = event.sortField;
+  const sortOrder = event.sortOrder; // 1 (asc), -1 (desc)
+
+  this.quotationService.searchQuotations(pageIndex, pageSize)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        const quotations = response._embedded || [];
+
+        // ✅ Sort manually if sortField is defined
+        if (sortField) {
+          quotations.sort((a: any, b: any) => {
+            const valueA = a[sortField];
+            const valueB = b[sortField];
+
+            if (valueA == null) return sortOrder === 1 ? -1 : 1;
+            if (valueB == null) return sortOrder === 1 ? 1 : -1;
+
+            if (typeof valueA === 'string' && typeof valueB === 'string') {
+              return valueA.localeCompare(valueB) * sortOrder;
+            }
+
+            return (valueA < valueB ? -1 : valueA > valueB ? 1 : 0) * sortOrder;
+          });
         }
-      });
-  }
+
+        this.gisQuotationList = quotations;
+
+        this.tableDetails = {
+          rows: this.gisQuotationList,
+          totalElements: this.gisQuotationList.length
+        };
+
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch quotations. Please try again later.');
+      }
+    });
+}
 
 
   onRevise() {
@@ -410,7 +458,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
         [],
         {
           relativeTo: this.route,
-          queryParams: {tab: 'general'},
+          queryParams: { tab: 'general' },
           queryParamsHandling: 'merge'
         }
       );
@@ -421,7 +469,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
         [],
         {
           relativeTo: this.route,
-          queryParams: {tab: null},
+          queryParams: { tab: null },
           queryParamsHandling: 'merge'
         }
       );
