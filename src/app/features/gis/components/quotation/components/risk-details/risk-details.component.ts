@@ -191,6 +191,8 @@ export class RiskDetailsComponent {
   existingPropertyIds: string[] = [];
   dynamicRegexPattern: string;
   clientsData: ClientDTO[] = [];
+  sectionToDelete: any = null;
+
 
 
   constructor(
@@ -291,6 +293,18 @@ export class RiskDetailsComponent {
     });
   }
 
+setSectionToDelete(section: any) {
+  this.sectionToDelete = section;
+  }
+  confirmDelete() {
+  if (this.sectionToDelete) {
+  this.sectionDetails = this.sectionDetails.filter(
+  (section) => section.sectioncode !== this.sectionToDelete.sectioncode
+  );
+  this.sectionToDelete = null; 
+  }
+  }
+
   fetchQuotationDetails(quotationCode: number) {
     log.debug("Quotation Number tot use:", quotationCode)
     this.quotationService.getQuotationDetails(quotationCode)
@@ -329,6 +343,18 @@ export class RiskDetailsComponent {
 
       })
   }
+  sectionDetailss = [
+    {
+      rowNumber: 1,
+      calculationGroup: 'Group A',
+      sectioncode: 'SEC001',
+      sectionbenefit: 'Outpatient Cover',
+      limitAmount: 100000,
+      premiumRate: 2.5,
+      rateType: 'Flat',
+      actions: 'Edit/Delete'
+    }
+  ];
   sectionPremiums = [
     {
       sectionCode: 'SC001',
