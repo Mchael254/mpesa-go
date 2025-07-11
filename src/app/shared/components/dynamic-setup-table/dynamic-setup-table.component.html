@@ -1,7 +1,7 @@
 <div class="row mb-3 mx-md-5">
   <div class="col-sm-12 col-md-6">
     <h5 class="my-3 text-dark">{{tableTitle | titlecase}}</h5>
-    <div class="row align-items-center" *ngIf="subGroupId === 'cr12Details'">
+    <div class="row align-items-center" *ngIf="subGroupId === 'cr12_details'">
       <label for="category" class="w-auto text-dark">{{"entities.category" | translate | titlecase }}</label>
       <select
         id="category"
@@ -61,7 +61,7 @@
     >
 
       <ng-template pTemplate="header">
-        <tr *ngIf="subGroupId === 'cr12Details'">
+        <tr *ngIf="subGroupId === 'cr12_details'">
           <ng-container *ngFor="let col of filteredColumns">
             <th *ngIf="col.visible"
                 [pSortableColumn]="col.field">
@@ -71,7 +71,7 @@
           </ng-container>
           <th style="width: 2%"></th>
         </tr>
-        <tr *ngIf="subGroupId !== 'cr12Details'">
+        <tr *ngIf="subGroupId !== 'cr12_details'">
           <ng-container *ngFor="let col of columns">
             <th *ngIf="col.visible"
                 [pSortableColumn]="col.field">
@@ -84,7 +84,7 @@
       </ng-template>
 
       <ng-template pTemplate="body" let-rowData>
-        <tr *ngIf="subGroupId === 'cr12Details'" [pSelectableRow]="rowData">
+        <tr *ngIf="subGroupId === 'cr12_details'" [pSelectableRow]="rowData">
           <ng-container *ngFor="let col of filteredColumns">
             <td *ngIf="col.visible">
               {{ rowData[col.field] | titlecase }}
@@ -98,7 +98,7 @@
             </div>
           </td>
         </tr>
-        <tr *ngIf="subGroupId !== 'cr12Details'" [pSelectableRow]="rowData">
+        <tr *ngIf="subGroupId !== 'cr12_details'" [pSelectableRow]="rowData">
           <ng-container *ngFor="let col of columns">
             <td *ngIf="col.visible">
               {{ rowData[col.field] | titlecase }}

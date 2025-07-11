@@ -1060,7 +1060,7 @@ export class NewEntityV2Component implements OnInit {
     const input = event.target as HTMLInputElement;
 
     if (input.files && input.files.length > 0) {
-      const file = input.files[0];
+      const file: File = input.files[0];
 
       if (uploadType === 'doc') {
         const index = this.uploadGroupSections.docs.findIndex((doc: RequiredDocumentDTO) => doc.id === docToUpload.id);
@@ -1073,10 +1073,79 @@ export class NewEntityV2Component implements OnInit {
         case 'profile':
           this.profilePicture = file;
           break;
+        case 'doc':
+          this.clientService.uploadDocForScanning(file).subscribe({
+            next: (result: any) => {
+              const urls = result.map(item => item.content_block.url);
+              log.info(`scanned documents >>> `, urls);
+              this.readScannedDocuments(urls);
+            },
+            error: (err) => {}
+          })
+          sessionStorage.removeItem('aiToken')
+          break;
         default:
         //do nothing
       }
     }
+
+  }
+
+
+  readScannedDocuments(urls): void {
+    const requestPayload = {
+      assistant_id: "DocumentHubAgent",
+      config: {
+        configurable: {
+          score_extraction: true,
+          strict: false
+        }
+      },
+      input: {
+        schema: "app.document_hub.schemas.document.kenya.KenyanKRAPIN",
+        files: [
+          ...urls
+        ]
+      }
+    };
+
+    this.clientService.readScannedDocuments(requestPayload).subscribe({
+      next: (result: any) => {
+
+        const data = result.data;
+        const dataToPatch = {
+          ...data,
+          pinNumber: data.pin_number,
+          lastName: data.taxpayer_name,
+          otherNames: data.taxpayer_name,
+          email: data.email_address,
+          houseNo: data.building,
+          physicalAddress: data.street_or_road,
+          cityTown: data.city_or_town,
+          postalCode: data.postal_code,
+        }
+
+        this.entityForm.patchValue({
+          address_details: {
+            address: '',
+            cityTown: data.city_or_town,
+            countryId: '',
+            postalCode: data.postal_code,
+            physicalAddress: data.street_or_road,
+            pinNumber: data.pin_number,
+          },
+          prime_identity: {
+            lastName: data.taxpayer_name,
+            otherNames: data.taxpayer_name,
+            email: data.email_address,
+          },
+        });
+        log.info(`scanned document data >>> `, dataToPatch, this.entityForm.getRawValue())
+
+      },
+      error: (err) => {}
+    })
+    sessionStorage.removeItem('aiToken')
 
   }
 
@@ -1092,9 +1161,6 @@ export class NewEntityV2Component implements OnInit {
       .uploadProfileImage(entityId, file)
       .subscribe((res) => {
         log.info(res);
-        /*this.savedEntity.profilePicture = res.file;
-        this.savedEntity.profileImage = res.file;
-        this.entityService.setCurrentEntity(this.savedEntity);*/
         this.globalMessagingService.clearMessages();
         this.globalMessagingService.displaySuccessMessage(
           'Success',
