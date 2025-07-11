@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
-import {AppConfigService} from '../../../../../../core/config/app-config-service';
-import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/common/http";
+import { Injectable } from '@angular/core';
+import { AppConfigService } from '../../../../../../core/config/app-config-service';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
 import {
   CreateLimitsOfLiability,
   EditRisk,
@@ -14,24 +14,24 @@ import {
   scheduleDetails,
   Sources
 } from '../../data/quotationsDTO';
-import {catchError, Observable, retry, tap, throwError} from 'rxjs';
-import {introducersDTO} from '../../data/introducersDTO';
-import {AgentDTO} from '../../../../../entities/data/AgentDTO';
-import {Pagination} from '../../../../../../shared/data/common/pagination';
-import {riskClauses} from '../../../setups/data/gisDTO';
-import {SESSION_KEY} from '../../../../../lms/util/session_storage_enum';
-import {StringManipulation} from '../../../../../lms/util/string_manipulation';
-import {SessionStorageService} from '../../../../../../shared/services/session-storage/session-storage.service';
-import {API_CONFIG} from '../../../../../../../environments/api_service_config';
-import {ApiService} from '../../../../../../shared/services/api/api.service';
-import {ExternalClaimExp} from '../../../policy/data/policy-dto';
-import {ClientDTO} from '../../../../../entities/data/ClientDTO';
-import {UtilService} from '../../../../../../shared/services';
-import {map} from "rxjs/operators";
-import {QuotationsDTO} from 'src/app/features/gis/data/quotations-dto';
-import {ComputationPayloadDto, PremiumComputationRequest, ProductLevelPremium} from "../../data/premium-computation";
-import {QuotationDetailsRequestDto} from "../../data/quotation-details";
-import {EmailDto} from "../../../../../../shared/data/common/email-dto";
+import { catchError, Observable, retry, tap, throwError } from 'rxjs';
+import { introducersDTO } from '../../data/introducersDTO';
+import { AgentDTO } from '../../../../../entities/data/AgentDTO';
+import { Pagination } from '../../../../../../shared/data/common/pagination';
+import { riskClauses } from '../../../setups/data/gisDTO';
+import { SESSION_KEY } from '../../../../../lms/util/session_storage_enum';
+import { StringManipulation } from '../../../../../lms/util/string_manipulation';
+import { SessionStorageService } from '../../../../../../shared/services/session-storage/session-storage.service';
+import { API_CONFIG } from '../../../../../../../environments/api_service_config';
+import { ApiService } from '../../../../../../shared/services/api/api.service';
+import { ExternalClaimExp } from '../../../policy/data/policy-dto';
+import { ClientDTO } from '../../../../../entities/data/ClientDTO';
+import { UtilService } from '../../../../../../shared/services';
+import { map } from "rxjs/operators";
+import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
+import { ComputationPayloadDto, PremiumComputationRequest, ProductLevelPremium } from "../../data/premium-computation";
+import { QuotationDetailsRequestDto } from "../../data/quotation-details";
+import { EmailDto } from "../../../../../../shared/data/common/email-dto";
 
 @Injectable({
   providedIn: 'root'
@@ -455,7 +455,7 @@ export class QuotationsService {
     // Add the mandatory parameter
     paramsObj['subclassCode'] = subclassCode.toString();
 
-    const params = new HttpParams({fromObject: paramsObj});
+    const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET<RegexPattern[]>(`v2/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
 
@@ -501,7 +501,7 @@ export class QuotationsService {
     paramsObj['scheduleType'] = scheduleType;
 
     // Convert the object into URL parameters
-    const params = new HttpParams({fromObject: paramsObj});
+    const params = new HttpParams({ fromObject: paramsObj });
 
     // Sends a GET request to fetch limits of liability
     return this.api.GET<Observable<any>>(
@@ -610,7 +610,7 @@ export class QuotationsService {
     paramsObj['productCode'] = productCode.toString();
     paramsObj['subClassCode'] = subClassCode.toString();
 
-    const params = new HttpParams({fromObject: paramsObj});
+    const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET(`v2/taxes?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
@@ -624,7 +624,7 @@ export class QuotationsService {
     paramsObj['coverTypeCode'] = covertypeCode?.toString();
     paramsObj['subclassCode'] = subclassCode?.toString();
 
-    const params = new HttpParams({fromObject: paramsObj});
+    const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET<any>(`v2/clauses?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
 
@@ -640,7 +640,7 @@ export class QuotationsService {
     paramsObj['subclassCode'] = subclassCode?.toString();
     paramsObj['scheduleType'] = scheduleType;
 
-    const params = new HttpParams({fromObject: paramsObj});
+    const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET<Observable<any>>(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
@@ -732,7 +732,7 @@ export class QuotationsService {
     paramsObj['quotCode'] = quotCode.toString();
 
     // Create HttpParams from the paramsObj
-    const params = new HttpParams({fromObject: paramsObj});
+    const params = new HttpParams({ fromObject: paramsObj });
     return this.api.GET(`v2/quotation/convert-to-normal-quot?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
@@ -775,6 +775,7 @@ export class QuotationsService {
   }
 
   searchQuotations(
+
     pageNo: number = 0,        // Default value is 0
     pageSize: number = 10,     // Default value is 10
     clientType?: string,
@@ -787,8 +788,15 @@ export class QuotationsService {
     status?: string,
     source?: string,
     clientName?: string
+    
   ) {
     const paramsObj: { [param: string]: string | number } = {};
+
+  // Format today's date as YYYY-MM-DD
+  const today = new Date().toISOString().split('T')[0];
+
+  // Use today's date as default for dateFrom if not provided
+  paramsObj['dateFrom'] = dateFrom || today;
 
     // Add mandatory parameters with default values
     paramsObj['pageNo'] = pageNo.toString();
@@ -804,9 +812,9 @@ export class QuotationsService {
     if (productCode) {
       paramsObj['productCode'] = productCode;
     }
-    if (dateFrom) {
-      paramsObj['dateFrom'] = dateFrom;
-    }
+   // if (dateFrom) {
+    //   paramsObj['dateFrom'] = dateFrom || today;
+    // }
     if (dateTo) {
       paramsObj['dateTo'] = dateTo;
     }
@@ -827,7 +835,7 @@ export class QuotationsService {
     }
 
     // Create HttpParams from the paramsObj
-    const params = new HttpParams({fromObject: paramsObj});
+    const params = new HttpParams({ fromObject: paramsObj });
     return this.api.GET(`v2/quotation/search`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 

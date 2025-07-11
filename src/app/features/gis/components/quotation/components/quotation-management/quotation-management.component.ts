@@ -9,6 +9,7 @@ import { QuotationsService } from '../../services/quotations/quotations.service'
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
+import { ClientSearchModalComponent } from 'src/app/shared/components/client-search-modal/client-search-modal.component';
 
 const log = new Logger('QuotationConcersionComponent');
 
@@ -72,7 +73,7 @@ export class QuotationManagementComponent {
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
   ) {
-    
+
     this.menuItems = [];
   }
 
@@ -87,7 +88,7 @@ export class QuotationManagementComponent {
 
   toggleMenu(event: Event, quotation: any) {
     this.selectedQuotation = quotation;
-    
+
     // Create base menu items
     const items = [
       {
@@ -95,7 +96,7 @@ export class QuotationManagementComponent {
         command: () => this.viewQuote(quotation)
       }
     ];
-  
+
     // Only add Edit Quote if status is Draft
     if (quotation.status === 'Draft') {
       items.push({
@@ -103,7 +104,7 @@ export class QuotationManagementComponent {
         command: () => this.editQuote(quotation)
       });
     }
-  
+
     // Add the rest of the items
     items.push(
       {
@@ -119,7 +120,7 @@ export class QuotationManagementComponent {
         command: () => this.deleteQuote(quotation)
       }
     );
-  
+
     this.menuItems = items;
     this.menu.toggle(event);
   }
@@ -174,7 +175,7 @@ export class QuotationManagementComponent {
     const quoteToEdit = quotation;
     const status = quoteToEdit.status;
 
-    if(status === "Draft") {
+    if (status === "Draft") {
       // navigate to client creation screen with quote details
       sessionStorage.setItem("quoteToEditData", JSON.stringify(quoteToEdit));
       this.router.navigate(['/home/gis/quotation/quotations-client-details']);
@@ -212,7 +213,7 @@ export class QuotationManagementComponent {
     const dateFrom = this.selectedDateFrom || null
     const dateTo = this.selectedDateTo || null
     const source = this.selectedSource
-    const clientName = null
+    const clientName = this.clientName
 
     log.debug("clientCode", clientCode);
     log.debug("productCode", productCode);
@@ -264,13 +265,13 @@ export class QuotationManagementComponent {
     this.quoteNumber = value;
   }
 
-  onClientSelected(event: { clientName: string; clientCode: number }) {
-    this.clientName = event.clientName;
-    this.clientCode = event.clientCode;
+  onClientSelected(event: any) {
+    this.clientName = event.clientFullName;
+    this.clientCode = event.id;
 
     // Optional: Log for debugging
-    log.debug('Selected Client:', event);
-
+    log.debug('Selected Client-quote management:', event);
+    this.fetchGISQuotations();
   }
 
   onAgentSelected(event: { agentName: string; agentId: number }) {
@@ -319,6 +320,8 @@ export class QuotationManagementComponent {
   }
 
   get displayClientName(): string {
+    // this.fetchGISQuotations()
+
     if (!this.clientName) return '';
     return this.clientName.length > 10 ? this.clientName.substring(0, 15) + '...' : this.clientName;
   }
@@ -337,28 +340,28 @@ export class QuotationManagementComponent {
     };
     this.cdr.detectChanges();
   }
-  reviseQuote(selectedQuotation:any){
-    log.debug("Selected Quote to be revised:",selectedQuotation)
-    const quotationCode=selectedQuotation.quotationCode
-    if (quotationCode){
-        this.quotationService
-            .reviseQuotation(quotationCode)
-            .pipe(untilDestroyed(this))
-            .subscribe({
-              next: (response: any) => {
-                const revisedQuoteNumber = response._embedded.quotationNumber
-                log.debug("Revised Quotation number ", revisedQuoteNumber);
-                sessionStorage.setItem('revisedQuotationNo', revisedQuoteNumber);
-                if(revisedQuoteNumber){
-                  
-                  this.router.navigate(['/home/gis/quotation/quotation-summary']);
-                }
-                
-              },
-              error: (error) => {
-                this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-              }
-            });
+  reviseQuote(selectedQuotation: any) {
+    log.debug("Selected Quote to be revised:", selectedQuotation)
+    const quotationCode = selectedQuotation.quotationCode
+    if (quotationCode) {
+      this.quotationService
+        .reviseQuotation(quotationCode)
+        .pipe(untilDestroyed(this))
+        .subscribe({
+          next: (response: any) => {
+            const revisedQuoteNumber = response._embedded.quotationNumber
+            log.debug("Revised Quotation number ", revisedQuoteNumber);
+            sessionStorage.setItem('revisedQuotationNo', revisedQuoteNumber);
+            if (revisedQuoteNumber) {
+
+              this.router.navigate(['/home/gis/quotation/quotation-summary']);
+            }
+
+          },
+          error: (error) => {
+            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          }
+        });
     }
 
   }
