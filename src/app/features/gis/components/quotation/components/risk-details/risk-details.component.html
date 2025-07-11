@@ -1573,18 +1573,19 @@
                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered ">
                     <div class="modal-content">
-                        <!-- <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div> -->
+                        <div class="modal-header" style="border-bottom: none;">
+                <h5 class="delete-title" id="exampleModalLabel">Delete section</h5>
+                <button type="button" class="btn-close red-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
                         <div class="modal-body">
                             <p class="d-flex justify-content-center" id="deleteLabel">
                                 {{'gis.quotation.are_you_sure_you_want_to_delete_section' | translate}}?</p>
-                            <div class="row d-flex justify-content-center">
+                            <div class=" d-flex justify-content-center">
                                 <button type="button" class="btn btn-primary " id="delete"
+                                (click)="confirmDelete()"
                                     data-bs-dismiss="modal">{{'gis.quotation.yes_delete' | translate}}</button>
                             </div><br>
-                            <div class="row d-flex justify-content-center">
+                            <div class="d-flex justify-content-center">
                                 <button type="button" class="btn btn-outline-primary" id="delete"
                                     data-bs-dismiss="modal">
                                     {{'gis.quotation.no_im_not' | translate}}</button>
@@ -1667,6 +1668,9 @@
                              <!-- Delete Button -->
                               <button pButton pRipple type="button" 
                                class="p-button-rounded p-button-text custom-button  " 
+                               data-bs-toggle="modal"
+                               data-bs-target="#deleteSection"
+                               (click)="setSectionToDelete(sectionArray)"
                                >
                                 Delete
                                 </button>
@@ -1719,7 +1723,7 @@
     <div class="card-body">
         <div>
             <div class="row">
-                <div class="col-4">
+                <div class="col-4 clause-title" >
                     <strong>{{'gis.quotation.risk_clauses' | translate}}</strong>
                 </div>
                 <div class="col-8 d-flex justify-content-end">
@@ -2037,6 +2041,6 @@ style="padding-left: 24px"
           </ng-template>
         </p-table> -->
 
-        </div>
+        <!-- </div>
     </div>
-</div>
+</div> -->
