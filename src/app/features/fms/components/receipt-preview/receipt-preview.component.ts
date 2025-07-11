@@ -146,12 +146,14 @@ export class ReceiptPreviewComponent implements OnInit {
       error: (err) => {
         const customMessage = this.translate.instant('fms.rctPrintError');
 
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
         this.globalMessagingService.displayErrorMessage(
           customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
+          backendError
         );
 
         // Clean up any session data to prevent inconsistent state
@@ -200,11 +202,8 @@ export class ReceiptPreviewComponent implements OnInit {
     this.receiptService.updateReceiptStatus(payload).subscribe({
       next: (response) => {
         this.globalMessagingService.displaySuccessMessage(
-         '',
-          response?.msg ||
-            response?.error ||
-            response?.status 
-            
+          '',
+          response?.msg || response?.error || response?.status
         );
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
@@ -214,13 +213,14 @@ export class ReceiptPreviewComponent implements OnInit {
 
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
         this.globalMessagingService.displayErrorMessage(
           customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
+          backendError
         );
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();

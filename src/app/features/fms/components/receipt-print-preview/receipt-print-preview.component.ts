@@ -119,25 +119,17 @@ export class ReceiptPrintPreviewComponent {
         //this.downlaod(this.filePath,'receiptpdf');
       },
       error: (err) => {
-        // const backendError = err.error?.msg || err.error?.status || err.statusText || 'The specific reason is unavailable.';
-
-        // const fullMessage = `The preview could not be generated. You can find and print it later from the receipt management screen.\n\nReason: ${backendError}`;
-
-        // this.globalMessagingService.displayErrorMessage(
-        //   'Error Generating Preview', // A more accurate title
-        //   fullMessage
-        // );
-
         const customMessage = this.translate.instant('fms.rctPrintError');
 
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
         this.globalMessagingService.displayErrorMessage(
           customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
+          backendError
         );
-
         // Navigate the user to a safe and stable screen
         this.router.navigate(['/home/fms/receipt-management']);
       },
@@ -163,12 +155,9 @@ export class ReceiptPrintPreviewComponent {
     const payload: number[] = [this.receiptNumber];
     this.receiptService.updateReceiptStatus(payload).subscribe({
       next: (response) => {
-       this.globalMessagingService.displaySuccessMessage(
-         '',
-          response?.msg ||
-            response?.error ||
-            response?.status 
-            
+        this.globalMessagingService.displaySuccessMessage(
+          '',
+          response?.msg || response?.error || response?.status
         );
 
         this.router.navigate(['/home/fms/receipt-management']);
@@ -176,13 +165,14 @@ export class ReceiptPrintPreviewComponent {
 
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
         this.globalMessagingService.displayErrorMessage(
           customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
+          backendError
         );
       },
     });

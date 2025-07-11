@@ -149,13 +149,15 @@ export class PdSlipPreviewComponent implements OnInit {
       error: (err) => {
         const customMessage = this.translate.instant('fms.pdPrintError');
 
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+       
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
         // 4. Clean up and navigate the user to a safe screen (this part remains the same)
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
@@ -220,15 +222,15 @@ export class PdSlipPreviewComponent implements OnInit {
         this.router.navigate(['/home/fms/receipt-capture']);
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+      const customMessage = this.translate.instant('fms.errorMessage');
+const backendError= err.error?.msg ||
+              err.error?.error ||
+              err.error?.status ||
+              err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
 
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
