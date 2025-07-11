@@ -325,6 +325,7 @@
                 [formFields]="corporateContactDetailsFormField"
                 [subGroupId]="'contact_person_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
+                [selectedAddressCountry]="selectedAddressCountry"
               ></app-dynamic-setup-table>
             </div>
 
@@ -336,6 +337,7 @@
                 [formFields]="corporateAddressDetailsFormField"
                 [subGroupId]="'branch_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
+                [selectedAddressCountry]="selectedAddressCountry"
               ></app-dynamic-setup-table>
             </div>
 
@@ -357,7 +359,7 @@
                 [addButtonText]="group.subGroup[0]?.addButtonText[language]"
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateWealthAmlFormFieldsDetailsFormField"
-                [subGroupId]="'aml_details'"
+                [subGroupId]="amlDetailsLabel"
                 (saveDetailsData)="fetchSavedDetails($event)"
               ></app-dynamic-setup-table>
             </div>
@@ -370,6 +372,7 @@
                 [formFields]="corporateWealthCR12DetailsFormField"
                 [subGroupId]="'cr12_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
+                [selectedAddressCountry]="selectedAddressCountry"
               ></app-dynamic-setup-table>
             </div>
 
@@ -381,6 +384,7 @@
                 [formFields]="corporateWealthOwnershipDetailsFormField"
                 [subGroupId]="'ownership_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
+                [selectedAddressCountry]="selectedAddressCountry"
               ></app-dynamic-setup-table>
             </div>
 

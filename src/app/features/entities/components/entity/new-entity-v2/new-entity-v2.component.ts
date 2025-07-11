@@ -113,6 +113,8 @@ export class NewEntityV2Component implements OnInit {
   shouldUploadProfilePhoto: boolean = false;
   profilePicture: any; // todo: define types
 
+  amlDetailsLabel: string = '';
+
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
   protected readonly CountryISO = CountryISO;
   protected readonly SearchCountryField = SearchCountryField;
@@ -311,12 +313,14 @@ export class NewEntityV2Component implements OnInit {
     if (formValues.role === 'client' && formValues.category === 'individual') {
       visibleFormFields = fields.filter((field: FieldModel) => field.visible
         && field.groupId !== 'wealth_aml_details' && field.subGroupId !== 'contact_details' && field.subGroupId !== 'privacy_policy');
+      this.amlDetailsLabel = 'aml_details_i';
 
     } else if(formValues.role === 'client' && formValues.category === 'corporate') {
       visibleFormFields = fields.filter((field: FieldModel) => field.visible &&
         field.subGroupId !== 'contact_person_details' && field.subGroupId !== 'privacy_policy' &&
         field.subGroupId !== 'payee_details' && field.subGroupId !== 'branch_details' &&
         field.groupId !== 'wealth_aml_details');
+      this.amlDetailsLabel = 'aml_details_c';
     }
 
 
