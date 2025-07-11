@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpParams} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
 import {
@@ -12,12 +12,19 @@ import {Pagination} from '../../../../shared/data/common/pagination';
 import {ApiService} from '../../../../shared/services/api/api.service';
 import {API_CONFIG} from '../../../../../environments/api_service_config';
 import {UtilService} from '../../../../shared/services';
+import {AppConfigService} from "../../../../core/config/app-config-service";
+import {AiDocumentHubRequest, AiFileUploadMetadata} from "../../data/ai-file-upload-metadata.model";
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClientService {
-  constructor(private api: ApiService, private utilService: UtilService) {
+  constructor(
+    private api: ApiService,
+    private utilService: UtilService,
+    private http: HttpClient,
+    private configService: AppConfigService,
+  ) {
   }
 
   getClients(
@@ -218,4 +225,24 @@ export class ClientService {
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
+
+  uploadDocForScanning(files: File): Observable<AiFileUploadMetadata> {
+    const url = 'https://turnquest-ai.turnkeyafrica.com/akili/storage/files';
+    const token = 'sk-akv1_MgByM76PW_JUja6lruC8rv5zIZmvU7J1qKoVCNqCwlk';
+
+    const formData = new FormData();
+    formData.append('files', files);
+
+    sessionStorage.setItem('aiToken', token);
+    return this.http.post<AiFileUploadMetadata>(url, formData)
+  }
+
+  readScannedDocuments(payload: AiDocumentHubRequest): Observable<any> {
+    const url = 'https://turnquest-ai.turnkeyafrica.com/akili/v2/runs/wait';
+    const token = 'sk-akv1_MgByM76PW_JUja6lruC8rv5zIZmvU7J1qKoVCNqCwlk';
+    sessionStorage.setItem('aiToken', token);
+    return this.http.post<any>(url, payload)
+  }
+
+
 }
