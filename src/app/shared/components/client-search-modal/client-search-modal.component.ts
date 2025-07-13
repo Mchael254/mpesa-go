@@ -92,6 +92,7 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
     const modalElement = this.modalElementRef?.nativeElement;
     if (modalElement) {
          this.modalInstance = new Modal(modalElement);
+         this.modalInstance.show();
       modalElement.addEventListener('shown.bs.modal', () => {
         this.shouldLoadClients = true;
         // Only reset the table the first time it's shown
