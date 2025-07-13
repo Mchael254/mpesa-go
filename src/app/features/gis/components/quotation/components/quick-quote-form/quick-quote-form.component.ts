@@ -802,9 +802,15 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   // Remove product
   deleteProduct(product: AbstractControl, productIndex: number) {
     log.debug("Selected product>>>", product.value, this.quickQuoteForm.get('product'))
+    const deletedCode = product.value.code;
+    log.debug("PRODUCT to be deleted", deletedCode)
+
     log.debug("PRODUCT INDEX", this.previousSelected)
     this.previousSelected = this.previousSelected.filter(value => value.code !== product.value.code)
     this.removeProductCoverTypes(product.value.code)
+    // Remove from selectedProducts
+    this.selectedProducts = this.selectedProducts.filter(p => p.code !== deletedCode);
+
     this.quickQuoteForm.patchValue({
       product: this.previousSelected
     })
