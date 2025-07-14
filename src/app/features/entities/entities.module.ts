@@ -51,7 +51,6 @@ import { ListProspectComponent } from './components/prospect/list-prospect/list-
 import { NewProspectComponent } from './components/prospect/new-prospect/new-prospect.component';
 import { EditContactAddressFormComponent } from './components/entity/view-entity/entity-other-details/edit-contact-address-form/edit-contact-address-form.component';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
-import {CreateEntityComponent} from "./components/entity/create-entity/create-entity.component";
 import {DialogModule} from "primeng/dialog";
 import {CheckboxModule} from "primeng/checkbox";
 import { NewEntityV2Component } from './components/entity/new-entity-v2/new-entity-v2.component';
@@ -97,7 +96,6 @@ import { PrivacyPolicyComponent } from './components/entity/new-entity-v2/privac
     ListProspectComponent,
     NewProspectComponent,
     EditContactAddressFormComponent,
-    CreateEntityComponent,
     NewEntityV2Component,
     PrivacyPolicyComponent,
   ],
