@@ -37,6 +37,7 @@
               </div>
             </ng-container>
 
+            <!--profile photo-->
             <ng-container *ngIf="uploadGroupSections?.photo?.length > 0 && shouldUploadProfilePhoto">
               <div *ngFor="let photo of uploadGroupSections.photo" class="col-sm-4">
                 <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
@@ -62,8 +63,10 @@
 
           <hr *ngIf="uploadGroupSections?.buttons?.length > 0" class="my-3 mx-3">
 
+          <!--client documents-->
           <div class="row" *ngIf="uploadGroupSections?.docs?.length > 0">
             <h6 class="mb-4 ms-md-5 mt-3">Document upload</h6>
+
             <ng-container *ngFor="let doc of uploadGroupSections?.docs">
               <div class="col-sm-6">
                 <div class="row ms-md-5">
@@ -71,16 +74,35 @@
                     <p class="text-muted">{{ doc.requiredDocumentName | titlecase }}</p>
                   </div>
                   <div class="col-sm-8 mb-4 col-6">
-                    <label class="btn btn-primary btn-sm d-inline-flex align-items-center">
-                      <!--{{ uploadButton.placeholder?.[language] }}-->
+                    <label
+                      class="btn btn-primary btn-sm d-inline-flex align-items-center"
+                      [ngClass]="{ 'disabled': !!doc.file }"
+                      [style.pointerEvents]="!!doc.file ? 'none' : 'auto'"
+                    >
                       Choose file
-                      <input type="file" hidden (change)="onFileSelected($event, doc, 'doc')">
+                      <input type="file" hidden (change)="onFileSelected($event, doc, 'doc')" [disabled]="!!doc.file">
                     </label>
-                    <span *ngIf="doc.file?.name">{{ doc.file?.name }}</span>
+                    <span *ngIf="doc.file?.name">
+                      {{ doc.file?.name }}
+                      <button id="deleteDocBtn" type="button" class="btn text-danger fs-4 border-0 bg-transparent" (click)="deleteDocument(doc)">&times;</button>
+                    </span>
                   </div>
                 </div>
               </div>
             </ng-container>
+
+            <div class="col-sm-6 offset-sm-6">
+              <div class="row">
+                <div class="col-sm-4 offset-sm-8">
+                  <button class="btn btn-primary" (click)="uploadDocForScanning()" [disabled]="isReadingDocuments">
+                    <div *ngIf="isReadingDocuments" class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    {{ isReadingDocuments ? 'scanning docs...' : 'Autofill' }}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </form>
       </div>

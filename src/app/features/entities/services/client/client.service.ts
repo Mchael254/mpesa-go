@@ -226,18 +226,20 @@ export class ClientService {
     );
   }
 
-  uploadDocForScanning(files: File): Observable<AiFileUploadMetadata> {
+  uploadDocForScanning(files: File[]): Observable<AiFileUploadMetadata> {
     const url = 'https://turnquest-ai.turnkeyafrica.com/akili/storage/files';
     const token = 'sk-akv1_MgByM76PW_JUja6lruC8rv5zIZmvU7J1qKoVCNqCwlk';
 
     const formData = new FormData();
-    formData.append('files', files);
+    files.forEach(file => {
+      formData.append('files', file);
+    })
 
     sessionStorage.setItem('aiToken', token);
     return this.http.post<AiFileUploadMetadata>(url, formData)
   }
 
-  readScannedDocuments(payload: AiDocumentHubRequest): Observable<any> {
+  readScannedDocuments(payload: any /*AiDocumentHubRequest*/): Observable<any> {
     const url = 'https://turnquest-ai.turnkeyafrica.com/akili/v2/runs/wait';
     const token = 'sk-akv1_MgByM76PW_JUja6lruC8rv5zIZmvU7J1qKoVCNqCwlk';
     sessionStorage.setItem('aiToken', token);
