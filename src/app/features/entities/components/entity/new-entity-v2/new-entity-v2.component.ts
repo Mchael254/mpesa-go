@@ -25,6 +25,7 @@ import {ClientService} from "../../../services/client/client.service";
 import {IdentityModeDTO} from "../../../data/entityDto";
 import {CurrencyService} from "../../../../../shared/services/setups/currency/currency.service";
 import {Branch, ContactDetails, Payee, WealthAmlDTO} from "../../../data/accountDTO";
+import {DmsService} from "../../../../../shared/services/dms/dms.service";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -112,6 +113,9 @@ export class NewEntityV2Component implements OnInit {
 
   shouldUploadProfilePhoto: boolean = false;
   profilePicture: any; // todo: define types
+  clientFiles: File[] = []
+  clientDocumentData: any = null; // todo: define types
+  isReadingDocuments: boolean = false;
 
   amlDetailsLabel: string = '';
 
@@ -134,6 +138,7 @@ export class NewEntityV2Component implements OnInit {
     private entityService: EntityService,
     private clientService: ClientService,
     private currencyService: CurrencyService,
+    private dmsService: DmsService,
   ) {
 
     this.uploadForm = this.fb.group({
@@ -381,12 +386,38 @@ export class NewEntityV2Component implements OnInit {
     }
 
     log.info(`pattern validation errors >>>`, this.regexErrorMessages) // todo: traverse this and check if any regex validation failed
+    log.info(`entity form >>>`, this.getInvalidControls(this.entityForm))
+
     if (this.entityForm.valid) {
       this.saveToDatabase(formValues, upperDetails);
     } else {
       this.entityForm.markAllAsTouched(); // show validation errors
     }
+  }
 
+  /**
+   * This method is primarily for debugging purposes only. It has no side effects
+   * @param formGroup
+   */
+  getInvalidControls(formGroup: FormGroup | FormArray): string[] {
+    const invalidControls: string[] = [];
+
+    const collectInvalid = (group: FormGroup | FormArray, path = '') => {
+      Object.keys(group.controls).forEach(controlName => {
+        const control = group.get(controlName);
+
+        const currentPath = path ? `${path}.${controlName}` : controlName;
+
+        if (control instanceof FormGroup || control instanceof FormArray) {
+          collectInvalid(control, currentPath);
+        } else if (control && control.invalid) {
+          invalidControls.push(currentPath);
+        }
+      });
+    };
+
+    collectInvalid(formGroup);
+    return invalidControls;
   }
 
 
@@ -470,21 +501,31 @@ export class NewEntityV2Component implements OnInit {
       partyId: 3661
     };
 
-    log.info(`clientDto >>> `, client, this.selectedClientTitle);
+    log.info(`clientDto >>> `, client);
 
     this.clientService.saveClientDetails2(client).subscribe({
       next: (response) => {
         log.info(`client saved >>> `, response);
         this.uploadImage(this.profilePicture, response.partyId)
+        this.uploadDocumentToDms();
       },
       error: (error) => {
-        log.info(`could not save`)
+        log.info(`could not save`, error);
       }
     })
-
-
   }
 
+
+  uploadDocumentToDms(): void {
+    this.dmsService.saveClientDocs(this.clientFiles).subscribe({
+      next: (res: any) => {
+        log.info(`document uploaded successfully!`, res);
+      },
+      error: (err) => {
+        log.info(`upload failed!`)
+      }
+    });
+  }
 
   /**
    * process select option based on the item selected
@@ -1078,25 +1119,86 @@ export class NewEntityV2Component implements OnInit {
           this.profilePicture = file;
           break;
         case 'doc':
-          this.clientService.uploadDocForScanning(file).subscribe({
-            next: (result: any) => {
-              const urls = result.map(item => item.content_block.url);
-              log.info(`scanned documents >>> `, urls);
-              this.readScannedDocuments(urls);
-            },
-            error: (err) => {}
-          })
-          sessionStorage.removeItem('aiToken')
+          this.clientFiles.push(file);
           break;
         default:
         //do nothing
       }
     }
+  }
 
+
+  deleteDocument(doc: any): void {
+    const index: number = this.uploadGroupSections.docs.findIndex(item => item.id === doc.id);
+    this.uploadGroupSections.docs[index].file = null;
+  }
+
+
+  uploadDocForScanning(): void {
+    log.info(`client files >>> `, this.clientFiles);
+    this.clientService.uploadDocForScanning(this.clientFiles).subscribe({
+      next: (result: any) => {
+        const urls = result.map(item => item.content_block.url);
+        log.info(`scanned documents >>> `, urls);
+        this.readScannedDocuments(urls);
+      },
+      error: (err) => {}
+    })
+    sessionStorage.removeItem('aiToken')
   }
 
 
   readScannedDocuments(urls): void {
+    const schema = {
+      withEffectFromDate: "",
+      withEffectToDate: "",
+      firstName: "",
+      gender: "",
+      lastName: "",
+      pinNumber: "",
+      category: "",
+      // countryId: "",
+      clientTypeId: "",
+      dateOfBirth: "",
+      modeOfIdentityId: "",
+      idNumber: "",
+      branchId: "",
+      maritalStatus: "",
+      partyId: "",
+
+      //address
+      boxNumber: "",
+      countryId: "",
+      houseNumber: "",
+      physicalAddress: "",
+      postalCode: "",
+      road: "",
+      townId: "",
+      stateId: "",
+      utilityAddressProof: "",
+      isUtilityAddress: "",
+
+      // contact details
+      emailAddress: "",
+      phoneNumber: "",
+      smsNumber: "",
+      titleId: "",
+      contactChannel: "",
+      websiteUrl: "",
+      socialMediaUrl: "",
+
+      // payment details
+      accountNumber: "",
+      bankBranchId: "",
+      preferedChannel: "",
+      mpayno: "",
+      iban: "",
+      swiftCode: ""
+
+      // todo: add contactPersons[], branches[], ownershipDetails[]
+    };
+
+
     const requestPayload = {
       assistant_id: "DocumentHubAgent",
       config: {
@@ -1106,7 +1208,8 @@ export class NewEntityV2Component implements OnInit {
         }
       },
       input: {
-        schema: "app.document_hub.schemas.document.kenya.KenyanKRAPIN",
+        // schema: "app.document_hub.schemas.document.kenya.KenyanKRAPIN",
+        schema,
         files: [
           ...urls
         ]
@@ -1115,8 +1218,10 @@ export class NewEntityV2Component implements OnInit {
 
     this.clientService.readScannedDocuments(requestPayload).subscribe({
       next: (result: any) => {
-
         const data = result.data;
+        this.clientDocumentData = data;
+
+        // todo: extract into method patchFormFields()
         const dataToPatch = {
           ...data,
           pinNumber: data.pin_number,
@@ -1144,7 +1249,7 @@ export class NewEntityV2Component implements OnInit {
             email: data.email_address,
           },
         });
-        log.info(`scanned document data >>> `, dataToPatch, this.entityForm.getRawValue())
+        log.info(`scanned document data >>> `, dataToPatch, this.entityForm.getRawValue());
 
       },
       error: (err) => {}
