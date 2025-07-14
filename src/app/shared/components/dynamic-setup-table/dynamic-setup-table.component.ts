@@ -6,7 +6,7 @@ import {SessionStorageService} from "../../services/session-storage/session-stor
 import {ReusableInputComponent} from "../reusable-input/reusable-input.component";
 import * as bootstrap from 'bootstrap';
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
-import {AppliesToEnum, FieldModel} from "../../../features/entities/data/form-config.model";
+import {FieldModel} from "../../../features/entities/data/form-config.model";
 import {RegexErrorMessages} from "../../../features/entities/data/field-error.model";
 import {DynamicColumns} from "../../data/dynamic-columns";
 import {SectorService} from "../../services/setups/sector/sector.service";
@@ -38,10 +38,7 @@ export class DynamicSetupTableComponent implements OnInit {
   dynamicModalForm!: FormGroup;
 
   columns: DynamicColumns[] = [];
-  filteredColumns: DynamicColumns[] = [];
   columnDialogVisible: boolean = false;
-
-  filteredCr12FormFields: FieldModel[] = null;
 
   @ViewChild('recordDeleteConfirmationModal')
   recordDeleteConfirmationModal!: ReusableInputComponent;
@@ -70,28 +67,25 @@ export class DynamicSetupTableComponent implements OnInit {
   validationObject = {};
   regexErrorMessages: RegexErrorMessages = {};
 
-  sectorData: SectorDTO[];
-  occupationData: OccupationDTO[];
+  sectorData: SectorDTO[] = [];
+  occupationData: OccupationDTO[] = [];
   clientTitlesData: ClientTitleDTO[] = [];
   countryData: CountryDto[] = [];
   citiesData: StateDto[] = [];
   townData: TownDto[] = [];
   postalCodeData: PostalCodesDTO[] = [];
-  banksData: BankDTO[];
-  bankBranchData: BankBranchDTO[];
-  fundSource: FundSourceDTO[];
+  banksData: BankDTO[] = [];
+  bankBranchData: BankBranchDTO[] = [];
+  fundSource: FundSourceDTO[] = [];
   selectedCountry: CountryDto;
   selectedCity: StateDto;
   selectedTown: TownDto;
   selectedBank: BankDTO;
-  selectedCr12Category: any;
 
-  premiumFrequenciesData: AccountsEnum[];
-  employmentTypesData: AccountsEnum[];
-  communicationChannelsData: AccountsEnum[];
+  premiumFrequenciesData: AccountsEnum[] = [];
+  employmentTypesData: AccountsEnum[] = [];
+  communicationChannelsData: AccountsEnum[] = [];
   insurancePurposeData: any[] = [];
-
-  appliesToEnum: typeof AppliesToEnum;
 
   constructor(
     private fb: FormBuilder,
@@ -115,67 +109,39 @@ export class DynamicSetupTableComponent implements OnInit {
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
     });
-    this.appliesToEnum = AppliesToEnum;
+    log.info('country', this.selectedAddressCountry, this.subGroupId);
   }
 
+  /**
+   * Filter the form fields based on the subGroupId and create a new
+   * columns array with the fieldId, header, and visibility.
+   */
   filterFormFields() {
     log.info('field:', this.formFields);
     if (this.formFields) {
-      this.columns = this.formFields.filter(field => field.subGroupId === this.subGroupId)
+      const subGroupId = this.subGroupId === 'aml_details_i' || this.subGroupId === 'aml_details_c' ? 'aml_details' : this.subGroupId;
+      this.columns = this.formFields.filter(field => field.subGroupId === subGroupId)
         .map(field => ({
           field: field.fieldId,
           header: field.label['en'] || field.fieldId,
           visible: field.visible !== false,
-          appliesTo: field.appliesTo
-      }));
+        }));
       log.info('columns:', this.columns);
-
-      this.onTypeSelect({target: {value: 'I'}} as unknown as Event);
     }
   }
 
-  /*createForm() {
-    if (!this.formFields) return;
-    const formControls: any = {};
-
-    this.groupFields = this.formFields.filter(field => field.subGroupId === this.subGroupId);
-    this.groupFields.forEach(field => {
-      let validators = [];
-
-      if (field.validations) {
-        field.validations.forEach(validation => {
-          if (validation.type === 'required') {
-            validators.push(Validators.required);
-          }
-        });
-      }
-
-      // formControls[field.fieldId] = [field.defaultValue || '', validators]
-      formControls[field.fieldId] = new FormControl('', validators);
-
-
-
-    });
-
-    this.formGroup = this.fb.group(formControls);
-    this.formReady = true;
-    // this.formGroup.addControl('subGroupId', formControls);
-    // this.formGroup.updateValueAndValidity();
-    console.log('[createForm] Controls created:', Object.keys(this.formGroup.controls));
-    console.log('[Rendering] groupFields:', this.groupFields.map(f => f.fieldId));
-    console.log('[Modal Open] groupFields:', this.groupFields.map(f => f.fieldId));
-
-    log.info('controls:', formControls, this.formGroup, this.groupFields);
-    this.cdr.detectChanges();
-  }*/
-
+  /**
+   * Create a form with form controls for each field in the formFields array.
+   * The form control is created with the fieldId as the key and a FormControl
+   * instance as the value. The FormControl instance is created with the
+   * validators specified in the field's validations array.
+   */
   createForm() {
     if (!this.formFields) return;
     const formControls: any = {};
     log.info('formFields:', this.formFields);
-    const defaultFields = this.filteredCr12FormFields !== null ? this.filteredCr12FormFields : this.formFields;
 
-    defaultFields.forEach(field => {
+    this.formFields.forEach(field => {
       let validators = [];
 
       if (field.validations) {
@@ -191,15 +157,19 @@ export class DynamicSetupTableComponent implements OnInit {
 
     this.dynamicModalForm = this.fb.group(formControls);
 
-    if (this.selectedCr12Category && this.dynamicModalForm.contains('cr12Category')) {
-      this.dynamicModalForm.controls['cr12Category'].setValue(this.selectedCr12Category);
-    }
-
     log.info('[createForm] Controls created:', Object.keys(this.dynamicModalForm.controls));
 
     this.cdr.detectChanges();
   }
 
+  /**
+   * Opens the dynamic details modal.
+   *
+   * This method creates a form with form controls for each field in the formFields array,
+   * and then opens the modal using the bootstrap.Modal class.
+   *
+   * @returns {void}
+   */
   openModal() {
     this.createForm();
     this.modalVisible = true;
@@ -213,6 +183,13 @@ export class DynamicSetupTableComponent implements OnInit {
     });
   }
 
+  /**
+   * Closes the dynamic details modal.
+   *
+   * This method hides the modal using the bootstrap.Modal class.
+   *
+   * @returns {void}
+   */
   closeModal() {
     const modalEl = document.getElementById('dynamicDetailsModal');
     if (modalEl) {
@@ -222,6 +199,18 @@ export class DynamicSetupTableComponent implements OnInit {
     this.modalVisible = false;
   }
 
+  /**
+   * Saves the dynamic details modal form data.
+   *
+   * This method is called when the user clicks the Save button in the modal.
+   * It filters the form data to only include fields that have a value, and then
+   * creates a new object with the filtered fields. It then updates the table
+   * data with the new object, and saves the table data to the session storage.
+   * If the edit mode is on, it updates the existing record in the table data;
+   * otherwise, it adds a new record.
+   *
+   * @returns {void}
+   */
   saveDetails() {
     const formValue = this.dynamicModalForm.getRawValue();
 
@@ -258,8 +247,7 @@ export class DynamicSetupTableComponent implements OnInit {
     if (!Array.isArray(this.tableData)) {
       this.tableData = [];
     }
-
-    if (this.editMode === true && this.selectedTableRecordIndex !== null) {
+    if (this.editMode === true && this.selectedTableRecordIndex >= 0) {
       this.tableData[this.selectedTableRecordIndex] = savedFields;
     } else {
       this.tableData.push(savedFields);
@@ -267,7 +255,7 @@ export class DynamicSetupTableComponent implements OnInit {
 
     this.selectedTableRecordDetails = null;
     this.selectedTableRecordIndex = null;
-
+    this.editMode = false;
 
     this.sessionStorageService.setItem(
       this.subGroupId,
@@ -277,12 +265,21 @@ export class DynamicSetupTableComponent implements OnInit {
     return savedFields;
   }
 
+  /**
+   * Toggles the edit mode and opens the dynamic details modal.
+   *
+   * This method is called when the user clicks the Edit button in the table.
+   * It toggles the edit mode, and if the edit mode is on, it opens the modal
+   * and patches the form values with the selected table record details.
+   *
+   * @returns {void}
+   */
   editSelectedRecord() {
-    this.editMode = !this.editMode;
-    this.selectedTableRecordIndex = this.tableData.findIndex(
-      (item: any) => item === this.selectedTableRecordDetails
-    );
     if (this.selectedTableRecordDetails) {
+      this.editMode = !this.editMode;
+      this.selectedTableRecordIndex = this.tableData.findIndex(
+        (item: any) => item === this.selectedTableRecordDetails
+      );
       this.openModal();
       const patchValues: { [key: string]: any } = {};
       if (this.formFields) {
@@ -298,8 +295,18 @@ export class DynamicSetupTableComponent implements OnInit {
         'Error', 'No record is selected'
       );
     }
+    this.cdr.detectChanges();
   }
 
+  /**
+   * Deletes the selected table record.
+   *
+   * This method is called when the user clicks the Delete button in the table.
+   * It deletes the selected table record from the table data and saves the table
+   * data to the session storage.
+   *
+   * @returns {void}
+   */
   deleteSelectedRecord() {
     if (!this.selectedTableRecordDetails) {
       this.globalMessagingService.displayErrorMessage(
@@ -310,6 +317,16 @@ export class DynamicSetupTableComponent implements OnInit {
     this.recordDeleteConfirmationModal.show();
   }
 
+  /**
+   * Confirms the deletion of the selected table record.
+   *
+   * This method is called when the user clicks the Confirm button in the
+   * record delete confirmation modal.
+   * It deletes the selected table record from the table data and saves the table
+   * data to the session storage.
+   *
+   * @returns {void}
+   */
   confirmRecordDelete() {
     const index = this.tableData.findIndex((item: any) => item === this.selectedTableRecordDetails);
     if (index !== -1) {
@@ -322,33 +339,30 @@ export class DynamicSetupTableComponent implements OnInit {
     }
   }
 
+  /**
+   * Handles the selection of a table row.
+   *
+   * This method is called when the user selects a table row. It updates the
+   * selectedTableRecordDetails property with the selected row data.
+   *
+   * @param {Event} event - The select event.
+   * @returns {void}
+   */
   onRowSelect(event: any) {
     this.selectedTableRecordDetails = event.data;
   }
 
-  onTypeSelect($event: Event) {
-    this.filteredColumns = this.columns.filter(column =>
-      column.appliesTo === AppliesToEnum.ALL || column.appliesTo === $event.target['value']
-    );
-
-    log.info('filtered columns', this.filteredColumns);
-  }
-
+  /**
+   * Processes the selected option for a select field and updates the related fields.
+   *
+   * @param {Event} event - The select event.
+   * @param {string} fieldId - The id of the field.
+   * @returns {void}
+   */
   processSelectOption(event: any, fieldId: string) : void {
     const selectedOption = event.target.value;
     log.info(`processSelectOptions >>> `, selectedOption, fieldId);
     switch (fieldId) {
-
-      case 'cr12Category':
-        const backupFields = [...this.formFields];
-        this.filteredCr12FormFields = backupFields.filter(field =>
-          field.appliesTo === (selectedOption === 'corporate' ? 'C' : 'I') ||
-          field.appliesTo === this.appliesToEnum?.ALL
-        );
-        this.selectedCr12Category = selectedOption;
-        this.createForm();
-        this.cdr.detectChanges();
-        break;
       case 'country':
         this.selectedCountry = this.countryData.find((b: CountryDto) => b.name === selectedOption);
         break;
@@ -366,11 +380,24 @@ export class DynamicSetupTableComponent implements OnInit {
     }
   }
 
-
+  /**
+   * Gets a form control by its group and field id.
+   *
+   * @param {string} groupId - The group id.
+   * @param {string} fieldId - The field id.
+   * @returns {AbstractControl | null} The form control or null if not found.
+   */
   getFieldControl(groupId: string, fieldId: string) {
     return this.dynamicModalForm.get(`${groupId}.${fieldId}`);
   }
 
+  /**
+   * Validates a field using a regex pattern.
+   *
+   * @param {FieldModel} field - The field to validate.
+   * @param {string} groupId - The group id.
+   * @returns {void}
+   */
   validateRegex(field: FieldModel, groupId: string): void {
 
     const fieldId = field.fieldId;
@@ -391,6 +418,15 @@ export class DynamicSetupTableComponent implements OnInit {
 
   }
 
+  /**
+   * Generates the regex error message for a field.
+   *
+   * @param {RegExp} pattern - The regex pattern.
+   * @param {string} input - The input to validate.
+   * @param {string} errorMessage - The error message.
+   * @param {string} fieldId - The field id.
+   * @returns {void}
+   */
   generateRegexErrorMessage(pattern: RegExp, input: string, errorMessage: string, fieldId: string): void {
     if (pattern.test(input)) {
       this.regexErrorMessages[fieldId] = {
@@ -405,15 +441,25 @@ export class DynamicSetupTableComponent implements OnInit {
     }
   }
 
+  /**
+   * Gets the country ISO from the selected address country.
+   *
+   * @returns {CountryISO | undefined} The country ISO or undefined if not found.
+   */
+  get countryISO(): CountryISO | undefined {
+    return this.selectedAddressCountry?.short_description as CountryISO;
+  }
+
+  /**
+   * Fetches the select options for a given field id.
+   *
+   * @param {string} fieldId - The id of the field.
+   * @returns {void}
+   */
   fetchSelectOptions(fieldId: string) {
-    // const sectionIndex: number = this.formFields.findIndex(section => section.groupId === groupId);
     log.info('selectid', fieldId);
     const fieldIndex: number = this.formFields
       .findIndex((field: FieldModel) => field.fieldId === fieldId);
-    /*if (
-      this.formFields[fieldIndex].options.length > 0 &&
-      (!['bankId', 'bankBranchCode'].includes(fieldId))
-    ) return*/ // if options already have value, don't call endpoint
 
     switch (fieldId) {
       case 'source_of_fund':
@@ -422,13 +468,13 @@ export class DynamicSetupTableComponent implements OnInit {
         break;
       case 'economicSector':
       case 'economicSectorAml':
-        this.fetchSectors(fieldIndex, undefined);
+        this.fetchSectors(fieldIndex);
         break;
       case 'occupation':
-        this.fetchOccupations(fieldIndex, undefined);
+        this.fetchOccupations(fieldIndex);
         break
       case 'title':
-        this.fetchClientTitles(fieldIndex, undefined);
+        this.fetchClientTitles(fieldIndex);
         break
       case 'country':
       case 'parentCountry':
@@ -467,6 +513,10 @@ export class DynamicSetupTableComponent implements OnInit {
     }
   }
 
+  /**
+   * Fetches the fund source options for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
   fetchFundSource(fieldIndex: number) {
     this.bankService.getFundSource().subscribe({
       next: (data: FundSourceDTO[]) => {
@@ -483,8 +533,12 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
-  fetchSectors(fieldIndex: number, organizationId: number) {
-    this.sectorService.getSectors(organizationId).subscribe({
+  /**
+   * Fetches the sectors for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
+  fetchSectors(fieldIndex: number) {
+    this.sectorService.getSectors().subscribe({
       next: (data: SectorDTO[]) => {
         this.sectorData = data;
         const sectorStringArr: string[] = data.map((sector: SectorDTO) => sector.name);
@@ -499,8 +553,12 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
-  fetchOccupations(fieldIndex: number, organizationId: number) {
-    this.occupationService.getOccupations(organizationId).subscribe({
+  /**
+   * Fetches the occupations for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
+  fetchOccupations(fieldIndex: number) {
+    this.occupationService.getOccupations().subscribe({
       next: (data: OccupationDTO[]) => {
         this.occupationData = data;
         const occupationStringArr: string[] = data.map((occupation: OccupationDTO) => occupation.name);
@@ -515,8 +573,12 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
-  fetchClientTitles(fieldIndex: number, organizationId: number) {
-    this.accountService.getClientTitles(organizationId).subscribe({
+  /**
+   * Fetches the client titles for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
+  fetchClientTitles(fieldIndex: number) {
+    this.accountService.getClientTitles().subscribe({
       next: (data: ClientTitleDTO[]) => {
         this.clientTitlesData = data;
         const titleStringArr: string[] = data.map((title: ClientTitleDTO) => title.description);
@@ -531,6 +593,10 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
+  /**
+   * Fetches the countries.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
   fetchCountries(fieldIndex: number) {
     this.countryService.getCountries().subscribe({
       next: (data: CountryDto[]) => {
@@ -547,6 +613,10 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
+  /**
+   * Fetches the main city states for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
   fetchMainCityStates(fieldIndex: number) {
     this.countryService.getMainCityStatesByCountry(this.selectedCountry?.id).subscribe({
       next: (data: StateDto[]) => {
@@ -563,6 +633,10 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
+  /**
+   * Fetches the towns for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
   fetchTowns(fieldIndex: number) {
     this.countryService.getTownsByMainCityState(this.selectedCity?.id).subscribe({
       next: (data: TownDto[]) => {
@@ -579,6 +653,10 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
+  /**
+   * Fetches the postal codes for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
   fetchPostalCode(fieldIndex: number) {
     this.countryService.getPostalCodes(this.selectedTown?.id).subscribe({
       next: (data: PostalCodesDTO[]) => {
@@ -595,6 +673,10 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
+  /**
+   * Fetches the banks for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
   fetchBanks(fieldIndex: number) {
     this.bankService.getBanks(this.selectedAddressCountry?.id).subscribe({
       next: (data: BankDTO[]) => {
@@ -611,6 +693,10 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
+  /**
+   * Fetches the bank branches for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
   fetchBankBranches(fieldIndex: number) {
     this.bankService.getBankBranchesByBankId(this.selectedBank?.id).subscribe({
       next: (data: BankBranchDTO[]) => {
@@ -627,6 +713,10 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
+  /**
+   * Fetches the premium frequencies for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
   fetchPremiumFrequencies(fieldIndex: number) {
     this.accountService.getPremiumFrequencies().subscribe({
       next: (data: AccountsEnum[]) => {
@@ -643,6 +733,10 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
+  /**
+   * Fetches the employment types for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
   fetchEmploymentTypes(fieldIndex: number) {
     this.accountService.getEmploymentTypes().subscribe({
       next: (data: AccountsEnum[]) => {
@@ -659,6 +753,10 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
+  /**
+   * Fetches the preferred communication channels for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
   fetchPreferredCommunicationChannels(fieldIndex: number) {
     this.accountService.getPreferredCommunicationChannels().subscribe({
       next: (data: AccountsEnum[]) => {
@@ -675,6 +773,10 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
+  /**
+   * Fetches the insurance purpose for the given field index.
+   * @param fieldIndex The index of the field for which to fetch the options.
+   */
   fetchInsurancePurpose(fieldIndex: number) {
     this.accountService.getInsurancePurpose().subscribe({
       next: (data: any[]) => {
