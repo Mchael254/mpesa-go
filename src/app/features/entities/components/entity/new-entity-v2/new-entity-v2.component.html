@@ -25,6 +25,7 @@
                       class="form-select"
                       aria-label="Default select example"
                       (change)="processSelectOption($event, field.fieldId)"
+                      (click)="fetchSelectOptions('', field.fieldId)"
                     >
                       <option value="">- Select {{ field.label?.[language] | titlecase }} -</option>
                       <option *ngFor="let option of field.options" [value]="option">
@@ -36,45 +37,72 @@
               </div>
             </ng-container>
 
-            <div class="col-sm-4">
-              <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
-                <div class="row" id="upload-image">
-                  <div class="col-sm-12">
-                    <label for="upload-image" class="form-label">Profile photo</label>
+            <!--profile photo-->
+            <ng-container *ngIf="uploadGroupSections?.photo?.length > 0 && shouldUploadProfilePhoto">
+              <div *ngFor="let photo of uploadGroupSections.photo" class="col-sm-4">
+                <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
+                  <div class="row" id="upload-image">
+                    <div class="col-sm-12">
+                      <label for="upload-image" class="form-label">{{ photo.label[language] | titlecase }}</label>
+                    </div>
+                    <div class="col-sm-12 text-primary">
+                      <label class="btn btn-outline-primary btn-sm d-inline-flex align-items-center">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> &nbsp; {{ photo.placeholder[language] | titlecase }}
+                        <input type="file" hidden (change)="onFileSelected($event, photo, 'profile')">
+                      </label> &nbsp;
+                      <span class="border-end border-primary border-3"></span> &nbsp;
+                      <i class="fa-solid fa-info-circle"></i>&nbsp;
+                      <span>Note:</span> png, jpeg or jpg
+                    </div>
                   </div>
-                  <div class="col-sm-12 text-primary">
-                    <label class="btn btn-outline-primary btn-sm d-inline-flex align-items-center">
-                      <i class="fa-solid fa-cloud-arrow-up"></i> &nbsp; Upload Image
-                      <input type="file" hidden>
-                    </label> &nbsp;
-                    <span class="border-end border-primary border-3"></span> &nbsp;
-                    <i class="fa-solid fa-info-circle"></i>&nbsp;
-                    <span>Note:</span> png, jpeg or jpg
-                  </div>
+                  <span *ngIf="photo.file?.name">{{ photo.file?.name }}</span>
                 </div>
               </div>
-            </div>
+            </ng-container>
           </div>
 
-          <hr class="my-3 mx-3">
+          <hr *ngIf="uploadGroupSections?.buttons?.length > 0" class="my-3 mx-3">
 
-          <div class="row">
-            <h6 class="mb-4 ms-md-5">Document upload</h6>
-            <ng-container *ngFor="let uploadButton of uploadGroupSections?.buttons">
+          <!--client documents-->
+          <div class="row" *ngIf="uploadGroupSections?.docs?.length > 0">
+            <h6 class="mb-4 ms-md-5 mt-3">Document upload</h6>
+
+            <ng-container *ngFor="let doc of uploadGroupSections?.docs">
               <div class="col-sm-6">
                 <div class="row ms-md-5">
                   <div class="col-sm-4 col-6">
-                    <p class="text-muted">{{ uploadButton.label?.[language] | titlecase }}</p>
+                    <p class="text-muted">{{ doc.requiredDocumentName | titlecase }}</p>
                   </div>
                   <div class="col-sm-8 mb-4 col-6">
-                    <label class="btn btn-primary btn-sm d-inline-flex align-items-center">
-                      {{ uploadButton.placeholder?.[language] }}
-                      <input type="file" hidden>
+                    <label
+                      class="btn btn-primary btn-sm d-inline-flex align-items-center"
+                      [ngClass]="{ 'disabled': !!doc.file }"
+                      [style.pointerEvents]="!!doc.file ? 'none' : 'auto'"
+                    >
+                      Choose file
+                      <input type="file" hidden (change)="onFileSelected($event, doc, 'doc')" [disabled]="!!doc.file">
                     </label>
+                    <span *ngIf="doc.file?.name">
+                      {{ doc.file?.name }}
+                      <button id="deleteDocBtn" type="button" class="btn text-danger fs-4 border-0 bg-transparent" (click)="deleteDocument(doc)">&times;</button>
+                    </span>
                   </div>
                 </div>
               </div>
             </ng-container>
+
+            <div class="col-sm-6 offset-sm-6">
+              <div class="row">
+                <div class="col-sm-4 offset-sm-8">
+                  <button class="btn btn-primary" (click)="uploadDocForScanning()" [disabled]="isReadingDocuments">
+                    <div *ngIf="isReadingDocuments" class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    {{ isReadingDocuments ? 'scanning docs...' : 'Autofill' }}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -100,7 +128,7 @@
 
                     <!-- Text / Email / Tel / etc -->
                     <ng-container *ngIf="field.type === 'text' || field.type === 'email' || field.type==='tel'">
-                      <ng-container *ngIf="!['idNumber', 'smsNumber'].includes(field.fieldId)">
+                      <ng-container *ngIf="!['idNumber', 'smsNumber', 'telNumber'].includes(field.fieldId)">
                         <label class="form-label" [for]="field.fieldId">
                           {{ field.label?.[language] | titlecase }}
                           <span *ngIf="field.isMandatory" class="text-danger">*</span>
@@ -138,14 +166,14 @@
                           [class.is-valid]="getFieldControl(group.groupId, field.fieldId)?.valid && getFieldControl(group.groupId, field.fieldId)?.touched"
                         />
                       </ng-container>
-                      <ng-container *ngIf="field.fieldId==='smsNumber'">
+                      <ng-container *ngIf="['smsNumber', 'telNumber'].includes(field.fieldId)">
                         <label class="form-label" [for]="field.fieldId">
                           {{ field.label?.[language] | titlecase }}
                           <span *ngIf="field.isMandatory" class="text-danger">*</span>
                         </label>
                         <ngx-intl-tel-input
                           [cssClass]="'form-control form-control-md mb-1'"
-                          id="smsNumber"
+                          [id]="field.fieldId"
                           [preferredCountries]=""
                           [enableAutoCountrySelect]="true"
                           [enablePlaceholder]="true"
@@ -156,25 +184,9 @@
                           [phoneValidation]="true"
                           [separateDialCode]="true"
                           [numberFormat]="PhoneNumberFormat.National"
-                          formControlName="smsNumber"
+                          [formControlName]="field.fieldId"
                           [style]="{ width: '100%' }">
                         </ngx-intl-tel-input>
-
-                        <!--<input
-                          [type]="field.type"
-                          [formControlName]="field.fieldId"
-                          [placeholder]="field?.placeholder[language]"
-                          [id]="field.fieldId"
-                          class="form-control"
-                          (keyup)="validateRegex(field, group.groupId)"
-
-                          [class.is-invalid]="getFieldControl(group.groupId, field.fieldId)?.invalid &&
-                            getFieldControl(group.groupId, field.fieldId)?.touched"
-
-                          [class.is-valid]="getFieldControl(group.groupId, field.fieldId)?.valid &&
-                            getFieldControl(group.groupId, field.fieldId)?.touched"
-
-                        />-->
                       </ng-container>
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
                           * {{ regexErrorMessages[field.fieldId]?.errorMessage }}
@@ -327,7 +339,7 @@
               ></app-dynamic-setup-table>
             </div>-->
 
-            <div *ngIf="group.groupId === 'contact_details' && category === 'corporate'">
+            <div *ngIf="group.groupId === 'contact_details' && category === 'corporate' && corporateContactDetailsFormField.length > 0">
               <app-dynamic-setup-table
                 [tableTitle]="group.subGroup[1]?.label"
                 [addButtonText]="group.subGroup[1]?.addButtonText[language]"
@@ -396,6 +408,10 @@
                 (saveDetailsData)="fetchSavedDetails($event)"
                 [selectedAddressCountry]="selectedAddressCountry"
               ></app-dynamic-setup-table>
+            </div>
+
+            <div *ngIf="group.groupId === 'privacy_policy'">
+              <app-privacy-policy [otpFormFields]="privacyPolicyFormFields"></app-privacy-policy>
             </div>
 
           </div>

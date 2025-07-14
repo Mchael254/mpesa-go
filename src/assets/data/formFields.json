@@ -1569,7 +1569,7 @@
             "fr": "",
             "ke": ""
           },
-          "isMandatory": true,
+          "isMandatory": false,
           "options": []
         },
 
@@ -1811,7 +1811,7 @@
             "fr": "",
             "ke": ""
           },
-          "isMandatory": true,
+          "isMandatory": false,
           "options": []
         },
         {
@@ -2172,8 +2172,7 @@
             "ke": ""
           },
           "isMandatory": true,
-          "options": [],
-          "appliesTo": "ALL"
+          "options": []
         },
         {
           "groupId": "wealth_aml_details",
@@ -2203,8 +2202,7 @@
             "ke": ""
           },
           "isMandatory": true,
-          "options": [],
-          "appliesTo": "C"
+          "options": []
         },
         {
           "groupId": "wealth_aml_details",
@@ -2234,8 +2232,7 @@
             "ke": ""
           },
           "isMandatory": true,
-          "options": [],
-          "appliesTo": "C"
+          "options": []
         },
         {
           "groupId": "wealth_aml_details",
@@ -2265,8 +2262,7 @@
             "ke": ""
           },
           "isMandatory": true,
-          "options": [],
-          "appliesTo": "ALL"
+          "options": []
         },
         {
           "groupId": "wealth_aml_details",
@@ -2296,8 +2292,7 @@
             "ke": ""
           },
           "isMandatory": true,
-          "options": [],
-          "appliesTo": "C"
+          "options": []
         },
         {
           "groupId": "wealth_aml_details",
@@ -2327,8 +2322,7 @@
             "ke": ""
           },
           "isMandatory": true,
-          "options": [],
-          "appliesTo": "C"
+          "options": []
         },
         {
           "groupId": "wealth_aml_details",
@@ -2393,7 +2387,7 @@
         {
           "groupId": "wealth_aml_details",
           "subGroupId": "ownership_details",
-          "fieldId": "mobileNumber",
+          "fieldId": "contactPersonPhone",
           "type": "tel",
           "label": {
             "en": "mobile number",
@@ -3650,7 +3644,7 @@
             "fr": "",
             "ke": ""
           },
-          "isMandatory": true,
+          "isMandatory": false,
           "options": []
         },
 

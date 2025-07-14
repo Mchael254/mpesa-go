@@ -17,7 +17,7 @@ import { ListLeadComponent } from './components/lead/list-lead/list-lead.compone
 import { NewLeadComponent } from './components/lead/new-lead/new-lead.component';
 import { ListProspectComponent } from './components/prospect/list-prospect/list-prospect.component';
 import { NewProspectComponent } from './components/prospect/new-prospect/new-prospect.component';
-import {CreateEntityComponent} from "./components/entity/create-entity/create-entity.component";
+import {NewEntityV2Component} from "./components/entity/new-entity-v2/new-entity-v2.component";
 
 const routes: Routes = [
   {
@@ -29,8 +29,12 @@ const routes: Routes = [
     component: ListEntityComponent,
   },
   {
-    path: 'new',
+    path: 'new-v1',
     component: NewEntityComponent,
+  },
+  {
+    path: 'new',
+    component: NewEntityV2Component,
   },
   {
     path: 'view/:id',
@@ -121,11 +125,7 @@ const routes: Routes = [
   {
     path: 'edit/:id',
     component: EditComponent,
-  },
-  {
-    path: 'create',
-    component: CreateEntityComponent,
-  },
+  }
 ];
 
 @NgModule({
