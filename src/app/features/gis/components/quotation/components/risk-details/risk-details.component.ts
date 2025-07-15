@@ -218,7 +218,7 @@ export class RiskDetailsComponent {
     this.quotationCode = sessionStorage.getItem('quotationCode');
     this.quotationNumber = sessionStorage.getItem('quotationNum');
     log.debug("Quotation number from session storage:", this.quotationNumber)
-    if (this.quotationNumber) {
+    if (this.quotationCode) {
       this.fetchQuotationDetails(this.quotationCode)
     }
 
@@ -416,6 +416,20 @@ export class RiskDetailsComponent {
     const input = event.target as HTMLInputElement;
     this.riskClauseTable.filter(input.value, 'wording', 'contains');
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   openAddRiskModal() {

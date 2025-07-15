@@ -29,13 +29,13 @@
           <!-- Client Name -->
           <div class="col-sm-4 col-6 mb-3">
             <label class="quote-label">Client name</label>
-            <input type="text" class="form-control" />
+            <input type="text" class="form-control" formControlName="client" />
           </div>
 
           <!-- Email Address -->
           <div class="col-sm-4 col-6 mb-3">
             <div class="form-group">
-            <label class="quote-label">Email address</label>
+              <label class="quote-label">Email address</label>
               <input type="email" id="email" class="form-control" formControlName="email"
                 placeholder="Enter your email" />
               <div *ngIf="quotationForm.get('email')?.touched && quotationForm.get('email')?.invalid"
@@ -58,7 +58,7 @@
               [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
               [selectFirstCountry]="false" [style]="{ width: '100%' }" [selectedCountryISO]="CountryISO.Kenya"
               [phoneValidation]="true" [separateDialCode]="true" [numberFormat]="PhoneNumberFormat.National"
-              formControlName="phoneNumber">
+              formControlName="phone">
             </ngx-intl-tel-input>
           </div>
         </div>
@@ -85,9 +85,12 @@
                         <i class="pi pi-search position-absolute"
                           style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
                       </div>
-                      <app-client-search-modal *ngIf="showClientSearchModal"  (onClickSaveClient)="handleSaveClient($event)"></app-client-search-modal>
+                      <app-client-search-modal *ngIf="showClientSearchModal"
+                        (onClickSaveClient)="handleSaveClient($event)"></app-client-search-modal>
                     </ng-container>
-
+                    <div
+                      *ngIf="quotationForm.get('client')?.hasError('required') && quotationForm.get('client')?.touched"
+                      class="form-text text-danger">Client name is required.</div>
                     <!-- SOURCE -->
                     <ng-container *ngIf="field.name === 'source'">
                       <p-dropdown formControlName="source" [options]="quotationSources" optionLabel="description"
@@ -120,7 +123,7 @@
 
                     <!-- CURRENCY -->
                     <ng-container *ngIf="field.name === 'currency'">
-                      <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" value="id"
+                      <p-dropdown formControlName="currency" [options]="currency" optionLabel="name" value="id"
                         placeholder=" " [filter]="true" [filterBy]="'name'" (onChange)="fetchUserOrgId()">
                       </p-dropdown>
                       <div
@@ -138,15 +141,7 @@
                         class="form-text text-danger">Introducer is required.</div>
                     </ng-container>
 
-                    <!-- PAYMENT FREQUENCY -->
-                    <ng-container *ngIf="field.name === 'paymentFrequency'">
-                      <p-dropdown formControlName="paymentFrequency" [options]="introducers" optionLabel="surName"
-                        optionValue="code" placeholder=" " [filter]="true" [filterBy]="'surName'">
-                      </p-dropdown>
-                      <div
-                        *ngIf="quotationForm.get('paymentFrequency')?.hasError('required') && quotationForm.get('paymentFrequency')?.touched"
-                        class="form-text text-danger">Payment frequency is required.</div>
-                    </ng-container>
+
 
                   </ng-container>
 
@@ -159,12 +154,12 @@
                   <ng-container *ngSwitchCase="'text'">
                     <div *ngIf="field.name === 'multiUserEntry'">
                       <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser"
+                        <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUserEntry"
                           id="multiUserYes" value="Y">
                         <label class="form-check-label quote-label" for="multiUserYes">Yes</label>
                       </div>
                       <div class="form-check form-check-inline ms-4">
-                        <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser"
+                        <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUserEntry"
                           id="multiUserNo" value="N">
                         <label class="form-check-label quote-label" for="multiUserNo">No</label>
                       </div>
@@ -204,8 +199,8 @@
 
                       <!-- PAYMENT FREQUENCY -->
                       <ng-container *ngIf="field.name === 'paymentFrequency'">
-                        <p-dropdown formControlName="paymentFrequency" [options]="introducers" optionLabel="surName"
-                          optionValue="code" placeholder=" " [filter]="true" [filterBy]="'surName'">
+                        <p-dropdown formControlName="paymentFrequency" [options]="paymentFrequencies"
+                          optionLabel="label" optionValue="value" placeholder=" " [filter]="true" [filterBy]="'label'">
                         </p-dropdown>
                         <div
                           *ngIf="quotationForm.get('paymentFrequency')?.hasError('required') && quotationForm.get('paymentFrequency')?.touched"
@@ -1039,6 +1034,6 @@
   <div class="float-end mb-4">
     <button class="btn btn-primary" #openModal data-bs-toggle="modal" data-bs-target="#exampleModal" hidden></button>
 
-    <button class="btn btn-primary" (click)="getExistingQuotations()">Next</button>
+    <button class="btn btn-primary" (click)="saveQuotationDetails()">Next</button>
   </div>
 </div>
