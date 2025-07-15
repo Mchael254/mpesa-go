@@ -193,11 +193,7 @@ export class RiskDetailsComponent {
   clientsData: ClientDTO[] = [];
   sectionToDelete: any = null;
 
-
-
   constructor(
-    private router: Router,
-    private messageService: MessageService,
     public subclassService: SubclassesService,
     private subclassCoverTypesService: SubClassCoverTypesService,
     public sharedService: SharedQuotationsService,
@@ -214,10 +210,6 @@ export class RiskDetailsComponent {
     public globalMessagingService: GlobalMessagingService,
     private policyService: PolicyService,
     public productService: ProductsService,
-
-
-
-
     public fb: FormBuilder,
     public cdr: ChangeDetectorRef,
     private renderer: Renderer2
@@ -229,7 +221,6 @@ export class RiskDetailsComponent {
     if (this.quotationNumber) {
       this.fetchQuotationDetails(this.quotationCode)
     }
-
 
   }
 
@@ -257,6 +248,7 @@ export class RiskDetailsComponent {
 
     }
   }
+
   ngOnInit(): void {
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
@@ -283,7 +275,7 @@ export class RiskDetailsComponent {
       nullable: true,
       align: 'left',
     };
-    
+
   }
   ngOnDestroy(): void { }
   ngAfterViewInit() {
@@ -293,16 +285,16 @@ export class RiskDetailsComponent {
     });
   }
 
-setSectionToDelete(section: any) {
-  this.sectionToDelete = section;
+  setSectionToDelete(section: any) {
+    this.sectionToDelete = section;
   }
   confirmDelete() {
-  if (this.sectionToDelete) {
-  this.sectionDetails = this.sectionDetails.filter(
-  (section) => section.sectioncode !== this.sectionToDelete.sectioncode
-  );
-  this.sectionToDelete = null; 
-  }
+    if (this.sectionToDelete) {
+      this.sectionDetails = this.sectionDetails.filter(
+        (section) => section.sectioncode !== this.sectionToDelete.sectioncode
+      );
+      this.sectionToDelete = null;
+    }
   }
 
   fetchQuotationDetails(quotationCode: number) {
@@ -402,7 +394,7 @@ setSectionToDelete(section: any) {
       isChecked: false
     }
   ];
-  
+
   selectAll: boolean = false;
 
   toggleSelectAll(event: any) {
@@ -424,20 +416,6 @@ setSectionToDelete(section: any) {
     const input = event.target as HTMLInputElement;
     this.riskClauseTable.filter(input.value, 'wording', 'contains');
   }
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   openAddRiskModal() {
@@ -451,38 +429,43 @@ setSectionToDelete(section: any) {
       next: (response) => {
         const fields = response?.[0]?.fields || [];
         this.subclassFormContent = response;
-        log.debug('this is the subClass risk content', this.subclassFormContent)
         this.subclassFormData = fields.filter(field => field.scheduleLevel === "L1");
 
-        log.debug('this is the subClass risk fields', this.subclassFormData)
+        log.debug('Loaded subclass form content:', this.subclassFormContent);
+        log.debug('Filtered subclass form fields:', this.subclassFormData);
 
-
-        // Remove existing dynamic controls
-        Object.keys(this.riskDetailsForm.controls).forEach((controlName) => {
+        // Remove only the old subclass controls, keep product-level controls intact
+        Object.keys(this.riskDetailsForm.controls).forEach(controlName => {
           const control = this.riskDetailsForm.get(controlName) as any;
-          if (control?.metadata?.dynamic) {
+          if (control?.metadata?.dynamicSubclass) {
             this.riskDetailsForm.removeControl(controlName);
-            log.debug(`Removed dynamic control: ${controlName}`);
+            log.debug(`Removed previous dynamicSubclass control: ${controlName}`);
           }
         });
 
-
-        this.subclassFormData.forEach((field) => {
+        // Add new subclass controls
+        this.subclassFormData.forEach(field => {
           if (!this.riskDetailsForm.get(field.name)) {
             const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
             const control = new FormControl(this.getDefaultValue(field), validators);
-            (control as any).metadata = { dynamicSubclass: true };
+            (control as any).metadata = { dynamicSubclass: true }; // tag it
             this.riskDetailsForm.addControl(field.name, control);
+            log.debug(`Added new dynamicSubclass control: ${field.name}`);
           }
         });
+        const yearOptions = this.generateYearsRange(1990);
+        this.safePopulateSelectOptions(this.subclassFormData, 'yearOfManufacture', yearOptions, 'label', 'value');
 
+
+        log.debug('Final riskDetailsForm controls after adding subclass fields:', this.riskDetailsForm.controls);
       },
       error: (err) => {
-        this.globalMessagingService.displayErrorMessage('Error', 'unable to load subclass risks');
+        this.globalMessagingService.displayErrorMessage('Error', 'Unable to load subclass risks');
+        log.error('Failed to load subclass form fields', err);
       }
-    })
-
+    });
   }
+
 
   getDefaultValue(field: any): any {
     if (field.type === 'date') {
@@ -490,6 +473,35 @@ setSectionToDelete(section: any) {
     }
     return '';
   }
+
+  //populates the dynamic risk fields
+  safePopulateSelectOptions(formDataArray: any[], fieldName: string, options: any[], labelKey: string, valueKey: string) {
+    if (formDataArray && Array.isArray(formDataArray)) {
+      formDataArray.forEach(field => {
+        if (field.name === fieldName) {
+          field.selectOptions = options.map(opt => ({
+            label: opt[labelKey],
+            value: opt[valueKey]
+          }));
+        }
+      });
+      log.debug(`Populated selectOptions for '${fieldName}'`, formDataArray);
+    } else {
+      log.warn(`Cannot populate '${fieldName}', form data array is not ready`);
+    }
+  }
+
+  generateYearsRange(startYear: number): { label: string, value: number }[] {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let year = currentYear; year >= startYear; year--) {
+      years.push({ label: year.toString(), value: year });
+    }
+    return years;
+  }
+
+
+
 
   loadSelectedProductRiskFields(productCode: number): void {
     const formFieldDescription = `detailed-quotation-risk-${productCode}`;
@@ -516,7 +528,7 @@ setSectionToDelete(section: any) {
         // Add new dynamic controls
         this.formData.forEach((field) => {
           const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
-          const formControl = new FormControl('', validators);
+          const formControl = new FormControl(this.getDefaultValue(field), validators);
           (formControl as any).metadata = { dynamic: true };
           this.riskDetailsForm.addControl(field.name, formControl);
         });
@@ -528,6 +540,7 @@ setSectionToDelete(section: any) {
       }
     });
   }
+
   loadAllClients() {
     this.clientService.getClients()
       .subscribe({
@@ -538,12 +551,21 @@ setSectionToDelete(section: any) {
           });
           this.clientsData = data.content;
 
+          // populate selectOptions for insureds field
+          this.safePopulateSelectOptions(this.formData, 'insureds', this.clientsData, 'clientFullName', 'id');
+          if (!this.riskDetailsForm.contains('insureds')) {
+            this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
+          }
+
+          log.debug('Clients loaded and insureds options populated', this.formData);
         },
         error: (err) => {
           log.error('Failed to fetch clients', err);
         }
       });
   }
+
+
   loadClientDetails() {
     this.clientService.getClientById(this.insuredCode).subscribe((data: any) => {
       this.selectedClientList = data;
@@ -742,7 +764,8 @@ setSectionToDelete(section: any) {
 
   getVehicleMake() {
     this.vehicleMakeService.getAllVehicleMake().subscribe(data => {
-      // this.vehicleMakeList = data;
+      this.vehicleMakeList = data;
+
       this.vehicleMakeList = data.map((value) => {
         let capitalizedDescription =
           value.name.charAt(0).toUpperCase() +
@@ -753,19 +776,10 @@ setSectionToDelete(section: any) {
         };
       });
 
+      log.debug('this is the vehicle make list >>>', this.vehicleMakeList)
+
       // Inject into the subclass formData
-      this.subclassFormData = this.subclassFormData.map(field => {
-        if (field.name === 'vehicleMake') {
-          return {
-            ...field,
-            selectOptions: this.vehicleMakeList.map(make => ({
-              label: make.name,
-              value: make.code
-            }))
-          };
-        }
-        return field;
-      });
+      this.safePopulateSelectOptions(this.subclassFormData, 'vehicleMake', this.vehicleMakeList, 'name', 'code');
 
 
       log.debug("VehicleMake", this.vehicleMakeList)
@@ -782,40 +796,16 @@ setSectionToDelete(section: any) {
     })
   }
 
-  // onVehicleMakeSelected(event: any) {
-  //   log.debug("event logged",event.target.value[0].code)
-  //   const selectedValue = event.target.value;
-  //   this.selectedVehicleMakeCode=selectedValue;
-  //   log.debug(`Selected vehicle value: ${selectedValue}`);
-  //   log.debug(this.selectedVehicleMakeCode,'Sekected vehicle make Code')
 
-  //   this.getVehicleModel();
-  // }
   onVehicleMakeSelected(event: any) {
-    const selectedValue = event.value.code;
-    log.debug("SELECTED CODE:", selectedValue)
+    const selectedMakeCode = event.value;
+    log.debug("Selected Vehicle Make Code:", selectedMakeCode);
 
-    this.selectedVehicleMakeCode = selectedValue;
-
-
-    // Convert selectedValue to the appropriate type (e.g., number)
-    const typedSelectedValue = this.convertToCorrectType(selectedValue);
-
-    // Find the selected object using the converted value
-    const selectedObject = this.vehicleMakeList.find(vehicleMake => vehicleMake.code === typedSelectedValue);
-
-    // Check if the object is found
-    if (selectedObject) {
-      log.debug('Selected Vehicle Object:', selectedObject);
-      sessionStorage.setItem('selectedVehicleMake', JSON.stringify(selectedObject));
-
-      // Perform further actions with the selected object as needed
-    } else {
-      console.error('Selected Vehicle Object not found');
+    if (selectedMakeCode) {
+      this.getVehicleModel(selectedMakeCode);
     }
-    this.getVehicleModel(this.selectedVehicleMakeCode);
-    this.selectedVehicleMakeName = selectedObject.name
   }
+
 
   convertToCorrectType(value: any): any {
     // Implement the conversion logic based on the actual type of your identifier
@@ -826,33 +816,32 @@ setSectionToDelete(section: any) {
 
 
   getVehicleModel(code: number) {
-    const vehicleMakeCode = code
+    const vehicleMakeCode = code;
     this.vehicleModelService.getAllVehicleModel(vehicleMakeCode).subscribe(data => {
       this.vehicleModelList = data;
+      this.vehicleModelDetails = this.vehicleModelList._embedded.vehicle_model_dto_list.map((value) => ({
+        ...value,
+        name: value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase()
+      }));
 
-      this.vehicleModelDetails = this.vehicleModelList._embedded.vehicle_model_dto_list;
-      this.vehicleModelDetails = this.vehicleModelDetails.map((value) => {
-        let capitalizedDescription =
-          value.name.charAt(0).toUpperCase() +
-          value.name.slice(1).toLowerCase();
-        return {
-          ...value,
-          name: capitalizedDescription,
-        };
-      });
       log.debug("Vehicle Model Details", this.vehicleModelDetails);
       sessionStorage.setItem('vehicleModelList', JSON.stringify(this.vehicleModelDetails));
 
+      // populate 
+      this.safePopulateSelectOptions(this.subclassFormData, 'vehicleModel', this.vehicleModelDetails, 'name', 'code');
+
+      // patch if stored data exists
       if (this.storedRiskFormDetails) {
         const selectedVehicleModel = this.vehicleModelDetails.find(model => model.code === this.storedRiskFormDetails?.vehicleModel);
         if (selectedVehicleModel) {
-          this.riskDetailsForm.patchValue({ vehicleModel: selectedVehicleModel });
-
+          this.riskDetailsForm.patchValue({ vehicleModel: selectedVehicleModel.code });
         }
       }
-
-    })
+    });
   }
+
+
+
   onVehicleModelSelected(event: any) {
     const selectedValue = event.value.code;
 
@@ -905,6 +894,7 @@ setSectionToDelete(section: any) {
       console.error('Unable to retrieve value from the event object.');
     }
   }
+
   getProductSubclass(code: number) {
     this.subclassService.getProductSubclasses(code).pipe(
       untilDestroyed(this)
@@ -914,7 +904,18 @@ setSectionToDelete(section: any) {
           ...value,
           description: this.capitalizeWord(value.description),
         }
-      })
+      });
+
+      if (this.formData) {
+        this.formData.forEach((field) => {
+          if (field.name === 'subclass') {
+            field.selectOptions = this.allMatchingSubclasses.map(subclass => ({
+              label: subclass.description,
+              value: subclass.code
+            }));
+          }
+        });
+      }
       log.debug("Subclasses-risk details:", this.allMatchingSubclasses)
       // Determine the subclass code to use (from storedRiskFormDetails or storedData)
       const subClassCodeToUse = this.storedRiskFormDetails?.subclassCode || this.passedSubclassCode;
@@ -949,24 +950,20 @@ setSectionToDelete(section: any) {
   }
 
   onSubclassSelected(event: any) {
+    this.selectedSubclassCode = event.value;
+    log.debug("Selected subclass code:", this.selectedSubclassCode);
 
-    const selectedValue = event.value // Get the selected value
-    this.selectedSubclassCode = selectedValue.code;
-    // Perform your action based on the selected value
-    log.debug("Selected value:", selectedValue);
-    log.debug(this.selectedSubclassCode, 'Sekected Subclass Code')
     if (this.selectedSubclassCode) {
-      this.loadSelectedSubclassRiskFields(this.selectedSubclassCode)
+      this.loadSelectedSubclassRiskFields(this.selectedSubclassCode);
       this.fetchRegexPattern();
       this.fetchTaxes();
       this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
       this.loadAllBinders();
       this.loadSubclassClauses(this.selectedSubclassCode);
-      this.getVehicleMake()
-
+      this.getVehicleMake();
     }
-
   }
+
 
   capitalizeWord(value: String): string {
     return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
@@ -976,6 +973,7 @@ setSectionToDelete(section: any) {
     this.binderService.getAllBindersQuick(this.selectedSubclassCode).subscribe(
       (data) => {
         this.binderList = data;
+
         this.binderListDetails = this.binderList._embedded.binder_dto_list;
 
         // Map and capitalize binder names
@@ -987,9 +985,11 @@ setSectionToDelete(section: any) {
           };
         });
 
+        log.debug("binder list", this.binderListDetails)
+
         // Inject into the subclass formData
         this.subclassFormData = this.subclassFormData.map(field => {
-          if (field.name === 'vehicleMake') {
+          if (field.name === 'premiumBand') {
             return {
               ...field,
               selectOptions: this.binderListDetails.map(binder => ({
@@ -1305,8 +1305,8 @@ setSectionToDelete(section: any) {
     { id: 3333, heading: 'Accident Protection', wording: 'For accidental loss or damage.', isMandatory: 'N', isEditable: 'Y' },
     { id: 4444, heading: 'Medical Expenses', wording: 'Covers hospital bills.', isMandatory: 'N', isEditable: 'Y' }
   ];
-  
-  
+
+
 
   showSections: boolean = false;
 
