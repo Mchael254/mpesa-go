@@ -17,7 +17,7 @@
                         <li class="nav-item" *ngFor="let product of passedProductList">
                             <a class="nav-link" [ngClass]="{ 'active-tab': selectedProduct === product }"
                                 (click)="selectProduct(product)">
-                                {{ product.productName }}
+                                {{ product.productName |sentenceCase}}
                             </a>
                         </li>
                     </ul>
@@ -36,9 +36,9 @@
                         <i [ngClass]="isCollapsed ? 'pi-caret-up' : 'pi-caret-down'"></i>
                        
                     </button> -->
-                     <i class="pi border border-black p-1 rounded-1 text-black"
-              [ngClass]="{'pi-caret-up': isCollapsed, 'pi-caret-down': !isCollapsed}"
-              style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleSection()" ></i>
+                    <i class="pi border border-black p-1 rounded-1 text-black"
+                        [ngClass]="{'pi-caret-up': isCollapsed, 'pi-caret-down': !isCollapsed}"
+                        style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleSection()"></i>
                 </div>
             </div>
 
