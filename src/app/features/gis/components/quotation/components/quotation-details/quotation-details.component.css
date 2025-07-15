@@ -55,9 +55,11 @@
   padding-right: 13px;
   white-space: nowrap;
 }
-::ng-deep .p-icon-wrapper{
+
+::ng-deep .p-icon-wrapper {
   color: #00529B;
 }
+
 ::ng-deep .p-calendar {
   position: relative;
   width: 100%;
@@ -486,4 +488,10 @@ textarea {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+::ng-deep .iti.separate-dial-code input {
+  padding-left: 98px;
+  max-width: 309px;
+  box-sizing: border-box;
 }

@@ -712,7 +712,10 @@ export class QuotationsService {
   }
 
   getExchangeRates(quotCurrencyId: number, orgId: number): Observable<any> {
-    return this.api.GET<Observable<any>>(`v2/exchange-rates?quotCurrencyId=${quotCurrencyId}&orgId=${orgId}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.GET<Observable<any>>(`v2/exchange-rates?quotCurrencyId=${quotCurrencyId}&orgId=${orgId}`, API_CONFIG.GIS_QUOTATION_BASE_URL,).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
   }
 
   convertQuoteToPolicy(
@@ -788,15 +791,15 @@ export class QuotationsService {
     status?: string,
     source?: string,
     clientName?: string
-    
+
   ) {
     const paramsObj: { [param: string]: string | number } = {};
 
-  // Format today's date as YYYY-MM-DD
-  const today = new Date().toISOString().split('T')[0];
+    // Format today's date as YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
 
-  // Use today's date as default for dateFrom if not provided
-  paramsObj['dateFrom'] = dateFrom || today;
+    // Use today's date as default for dateFrom if not provided
+    paramsObj['dateFrom'] = dateFrom || today;
 
     // Add mandatory parameters with default values
     paramsObj['pageNo'] = pageNo.toString();
@@ -812,7 +815,7 @@ export class QuotationsService {
     if (productCode) {
       paramsObj['productCode'] = productCode;
     }
-   // if (dateFrom) {
+    // if (dateFrom) {
     //   paramsObj['dateFrom'] = dateFrom || today;
     // }
     if (dateTo) {

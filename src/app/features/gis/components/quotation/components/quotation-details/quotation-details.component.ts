@@ -149,6 +149,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     CountryISO.UnitedKingdom,
   ];
   emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  selectedClientCode: number;
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -211,9 +212,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.quotationForm = this.fb.group({
-      email: ['', [Validators.required, Validators.pattern(this.emailPattern)]],
-      phone: ['', [Validators.required]],
-      clientName: ['', [Validators.required, Validators.minLength(2)]]
+      email: ['', [Validators.pattern(this.emailPattern)]],
+      phone: [''],
+      client: ['', [Validators.minLength(2)]]
     });
     this.loadDetailedQuotationFields();
 
@@ -300,10 +301,11 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   handleSaveClient(eventData: any) {
     log.debug('Event received from Client search comp', eventData);
     const clientCode = eventData.id;
+    this.selectedClientCode = clientCode;
     this.selectedClientName = eventData.clientFullName
-if (document.activeElement instanceof HTMLElement) {
-  document.activeElement.blur();
-}
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
 
     this.showClientSearchModal = false;
   }
@@ -580,7 +582,7 @@ if (document.activeElement instanceof HTMLElement) {
       // Set currency code
       this.currency.forEach(el => {
         if (el.symbol === this.quotationDetails.currency) {
-          this.quotationForm.controls['currencyCode'].setValue(el);
+          this.quotationForm.controls['currency'].setValue(el);
         }
       });
 
@@ -643,7 +645,7 @@ if (document.activeElement instanceof HTMLElement) {
         // Set currency code
         this.currency.forEach(el => {
           if (el.symbol === this.quickQuotationDetails.currency) {
-            this.quotationForm.controls['currencyCode'].setValue(el);
+            this.quotationForm.controls['currency'].setValue(el);
           }
         });
 
@@ -753,15 +755,16 @@ if (document.activeElement instanceof HTMLElement) {
         branchCode: quotationFormValues.branch.id,
         RFQDate: this.formatDate(quotationFormValues.RFQDate),
         expiryDate: this.formatDate(quotationFormValues.expiryDate),
-        currencyCode: quotationFormValues.currencyCode.id || this.defaultCurrency.id,
+        currencyCode: quotationFormValues.currency.id || this.defaultCurrency.id,
         source: quotationFormValues.source.code,
         currencyRate: this.exchangeRate,
-        agentShortDescription: this.agentDetails.shortDesc,
-        clientCode: this.selectedClient.id,
+        agentShortDescription: this.agentDetails?.shortDesc || "Direct",
+        agentCode: 0,
+        clientCode: this.selectedClientCode,
         clientType: "I",
         wefDate: this.formatDate(this.productDetails[0].coverFrom),
         wetDate: this.formatDate(this.productDetails[0].coverTo),
-        frequencyOfPayment: quotationFormValues.frequencyOfPayment.value,
+        frequencyOfPayment: quotationFormValues?.frequencyOfPayment?.value,
         quotationProducts: this.productDetails.map((value) => {
           return {
             wef: this.formatDate(value.coverFrom),
@@ -772,6 +775,7 @@ if (document.activeElement instanceof HTMLElement) {
         })
       }
       log.debug("quotation payload to save", quotationPayload);
+      this.createQuotation(quotationPayload)
     } else {
       // Mark all fields as touched and validate the form
       this.quotationForm.markAllAsTouched();
@@ -1285,8 +1289,9 @@ if (document.activeElement instanceof HTMLElement) {
           this.userOrgDetails = organization
           log.debug("User Organization Details  ", this.userOrgDetails);
           this.organizationId = this.userOrgDetails.organizationId
-          const currencySymbol = this.quotationForm.value.currencyCode.symbol
-          const currencyCode = this.quotationForm.value.currencyCode.id
+          const currencySymbol = this.quotationForm.value.currency.symbol
+
+          const currencyCode = this.quotationForm.value.currency.id
           this.branchId = this.userOrgDetails.branchId;
           log.debug("Cuurency code", currencyCode)
           log.debug("Cuurency ", currencySymbol)
@@ -1301,7 +1306,7 @@ if (document.activeElement instanceof HTMLElement) {
           log.debug("EXCHANGE RATE", this.exchangeRate)
         },
         error: (error) => {
-          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          this.globalMessagingService.displayErrorMessage('Error', error);
         }
       });
   }
@@ -1335,7 +1340,7 @@ if (document.activeElement instanceof HTMLElement) {
           log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
           log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
 
-          this.fetchUserOrgId()
+          // this.fetchUserOrgId()
         }
         if (this.quotationFormDetails?.currencyCode) {
           const selectedCurrency = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
@@ -1743,5 +1748,27 @@ if (document.activeElement instanceof HTMLElement) {
     }
   }
 
+  createQuotation(quotationPayload: any) {
+    log.debug("CREATE QUOTATION");
+    this.quotationService.processQuotation(quotationPayload).subscribe(
+      (data) => {
+        this.quotationNo = data;
+        this.spinner.hide();
+        log.debug(this.quotationForm.value);
+        log.debug(this.quotationNo, 'quotation number output');
+        this.quotationCode = this.quotationNo._embedded.quotationCode;
+        this.quotationNum = this.quotationNo._embedded.quotationNumber
+        sessionStorage.setItem('quotationNum', this.quotationNum);
+        sessionStorage.setItem('quotationCode', this.quotationCode);
+        sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationPayload));
+        this.router.navigate(['/home/gis/quotation/risk-center']);
+      },
+      (error: HttpErrorResponse) => {
+        log.info(error);
+        this.spinner.hide();
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+      }
+    );
 
+  }
 }
