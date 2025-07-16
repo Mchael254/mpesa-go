@@ -251,7 +251,8 @@ const SERVICES = [
         PdfViewerModule,
         DialogModule,
         FormsModule,
-        NgxIntlTelInputModule
+        NgxIntlTelInputModule,
+      DynamicSetupTableComponent
     ],
   exports: [
     ErrorComponent,
@@ -304,7 +305,7 @@ const SERVICES = [
     AgentSearchModalComponent,
     ProductSearchModalComponent,
     DynamicReportsComponent,
-    DynamicSetupTableComponent
+    DynamicSetupTableComponent,
     TruncatePipe,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
