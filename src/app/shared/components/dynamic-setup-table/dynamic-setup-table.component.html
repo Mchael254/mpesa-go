@@ -4,7 +4,7 @@
   </div>
   <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-end gap-2">
     <button class="btn btn-primary" (click)="openModal()">
-      {{addButtonText | titlecase}}
+      {{addButtonText | titlecase }}
     </button>
 
     <!-- Caret Dropdown-style Button -->
@@ -301,12 +301,12 @@
 
 
 <ng-container *ngIf="selectedTableRecordDetails">
-  <app-reusable-input
+  <!--<app-reusable-input
     [modalId]="'recordDeleteConfirmationModal'"
     [title]="'Delete Confirmation'"
     [message]="'Are you sure you want to delete this record?'"
     (confirmed)="confirmRecordDelete()"
     #recordDeleteConfirmationModal
-  ></app-reusable-input>
+  ></app-reusable-input>-->
 </ng-container>
 
