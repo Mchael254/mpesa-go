@@ -1299,35 +1299,47 @@
             </div>
 
             <!-- Edit Risk Section Modal -->
-            <div class="modal fade" id="editSection" #editSectionModal tabindex="-1" role="dialog"
+            <div class="modal fade  " id="editSection" #editSectionModal tabindex="-1" role="dialog"
                 aria-labelledby="editSectionLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                     <div class="modal-content">
-                        <div class="modal-body">
+                        <div class="modal-body"style="padding-left: 40px; max-height:650px;overflow-y: auto;">
                             <h5 class="modal-title mt-2" id="editScheduleLabel">
-                                Edit</h5>
+                                Edit section details
+                                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                                aria-label="Close"></button></h5>
                             <form [formGroup]="sectionDetailsForm">
                                 <!-- **ROW 1** -->
                                 <div class="row" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.id'
                                                 | translate}} :</label>
                                             <div class="col-7">
-                                                <input type="text" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1" formControlName="code">
+                                                <!-- <input type="text" id="scheduleInput"
+                                                    class="form-control form-control-sm mb-1" formControlName="code"> -->
+                                                    <select class="form-select form-control-sm mb-1" id="scheduleInput"
+                                                    formControlName="code">
+                                                    <option value="FXD">{{'gis.quotation.id' | translate}}</option>
+                                                  
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.description' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <!-- <input type="number" id="scheduleInput"
                                                     class="form-control form-control-sm mb-1"
+                                                    formControlName="sectionShortDescription"> -->
+                                                    <select class="form-select form-control-sm mb-1" id="scheduleInput"
                                                     formControlName="sectionShortDescription">
+                                                    <option value="FXD">{{'gis.quotation.description' | translate}}</option>
+                                                    
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -1335,11 +1347,14 @@
                                 <!-- **ROW 2** -->
                                 <div class="row" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">
                                                 {{'gis.quotation.rate_type' | translate}} :</label>
                                             <div class="col-7">
-                                                <select class="form-select form-control-sm mb-1" id="scheduleInput"
+                                                 <input type="number" id="scheduleInput"
+                                                    class="form-control form-control-sm mb-1"
+                                                    formControlName="rateType">
+                                                <!-- <select class="form-select form-control-sm mb-1" id="scheduleInput"
                                                     formControlName="rateType">
                                                     <option value="FXD">{{'gis.quotation.fixed' | translate}}</option>
                                                     <option value="RCU">{{'gis.quotation.recursive' | translate}}
@@ -1350,46 +1365,73 @@
                                                     </option>
                                                     <option value="SRG">{{'gis.quotation.step_ranges' | translate}}
                                                     </option>
-                                                </select>
+                                                </select> -->
 
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
-                                            <label for="minmax-buttons" class="col-5 col-form-label"
-                                                id="scheduleLabel">{{'gis.quotation.premium_type' | translate}}:</label>
-                                            <div class="col-7">
-                                                <select class="form-select form-control-sm mb-1" id="scheduleInput"
-                                                    formControlName="description">
-
-                                                </select>
-
-                                            </div>
+                                        <div class="mb-3">
+                                          <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">
+                                            {{ 'gis.quotation.premium_type' | translate }}:
+                                          </label>
+                                      
+                                          <div class="col-7">
+                                            <input
+                                              type="text"
+                                              id="scheduleInput"
+                                              class="form-control form-control-sm mb-1"
+                                              [value]="premiumTypes?.length > 0 ? riskDetailsForm.get('premiumType')?.value : 'No premium types available.'"
+                                              readonly
+                                            />
+                                          </div>
                                         </div>
-                                    </div>
+                                      </div>
+                                      
+                                      
                                 </div>
                                 <!-- **ROW 3** -->
                                 <div class="row" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
-                                            <label for="minmax-buttons" class="col-5 col-form-label"
-                                                id="scheduleLabel">{{'gis.quotation.free_limit' | translate}} :</label>
-                                            <div class="col-7">
-                                                <input type="number" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
-                                                    formControlName="freeLimit">
-                                            </div>
+                                        <div class="mb-3">
+                                          <label class="col-5 col-form-label" id="scheduleLabel">
+                                            {{ 'gis.quotation.free_limit' | translate }} :
+                                          </label>
+                                          <div class="col-7">
+                                            <ng-container *ngIf="isEditable; else readOnlyInput">
+                                              <!-- Editable number input -->
+                                              <input
+                                                type="number"
+                                                class="form-control form-control-sm mb-1"
+                                                formControlName="freeLimit"
+                                                [value]="freeLimitValue|translate"
+                                              />
+                                            </ng-container>
+                                      
+                                            <!-- Read-only number input -->
+                                            <ng-template #readOnlyInput>
+                                              <input
+                                                type="number"
+                                                class="form-control form-control-sm mb-1"
+                                                [value]="freeLimitValue|translate"
+                                                readonly
+                                              />
+                                            </ng-template>
+                                          </div>
                                         </div>
-                                    </div>
+                                      </div>
+                                      
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.limit_amount' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                              
+                                                    <select class="form-select form-control-sm mb-1" id="scheduleInput"
                                                     formControlName="limitAmount">
+                                                    <option value="FXD">{{'gis.quotation.limit_amount' | translate}}</option>
+                                                   
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -1397,24 +1439,30 @@
                                 <!-- **ROW 4** -->
                                 <div class="row" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.group' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                               
+                                                    <select class="form-select form-control-sm mb-1" id="scheduleInput"
                                                     formControlName="calcGroup">
+                                                    <option value="FXD">{{'gis.quotation.group' | translate}}</option>
+                                                   
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.premium_rate' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                               
+                                                    <select class="form-select form-control-sm mb-1" id="scheduleInput"
                                                     formControlName="premiumRate">
+                                                    <option value="FXD">{{'gis.quotation.premium_rate' | translate}}</option>
+                                                   
+                                                </select>
 
                                             </div>
                                         </div>
@@ -1423,24 +1471,30 @@
                                 <!-- **ROW 5** -->
                                 <div class="row" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.div_by' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                               
+                                                    <select class="form-select form-control-sm mb-1" id="scheduleInput"
                                                     formControlName="rateDivisionFactor">
+                                                    <option value="FXD">{{'gis.quotation.div_by' | translate}}</option>
+                                                  
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.multi_rate' | translate}} :</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                               
+                                                    <select class="form-select form-control-sm mb-1" id="scheduleInput"
                                                     formControlName="multiplierRate">
+                                                    <option value="FXD">{{'gis.quotation.multi_rate' | translate}}</option>
+                                                   
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -1448,7 +1502,7 @@
                                 <!-- **ROW 6** -->
                                 <div class="row" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.div_multi_by' | translate}}:</label>
                                             <div class="col-7">
@@ -1459,7 +1513,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.premium' | translate}}:</label>
                                             <div class="col-7">
@@ -1473,25 +1527,32 @@
                                 <!-- **ROW 7** -->
                                 <div class="row" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.minimum_premium' |
                                                 translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                               
+                                                    <select class="form-select form-control-sm mb-1" id="scheduleInput"
                                                     formControlName="description">
+                                                    <option value="FXD">{{'gis.quotation.minimum_premium' | translate}}</option>
+                                                   
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.accumulation' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                                
+                                                    <select class="form-select form-control-sm mb-1" id="scheduleInput"
                                                     formControlName="description">
+                                                    <option value="FXD">{{'gis.quotation.accumulation' | translate}}</option>
+                                                   
+                                                </select>
+                                                    
                                             </div>
                                         </div>
                                     </div>
@@ -1499,41 +1560,125 @@
                                 <!-- **ROW 8** -->
                                 <div class="row" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.remarks' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="text" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                                
+                                                    <select class="form-select form-control-sm mb-1" id="scheduleInput"
                                                     formControlName="description">
+                                                    <option value="FXD">{{'gis.quotation.remarks' | translate}}</option>
+                                                  
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.declaration' | translate}}:</label>
-                                            <div class="col-7">
-                                                <select class="form-select form-control-sm mb-1" id="scheduleInput"
-                                                    formControlName="description">
-                                                    <option></option>
-                                                    <option>Yes{{'gis.policy.yes' | translate}}</option>
-                                                    <option>No{{'gis.policy.no' | translate}}</option>
-                                                </select>
-                                            </div>
+                                                <div class="col-7">
+                                                    <div class="d-flex gap-4">
+                                                      <!-- YES option -->
+                                                      <div
+                                                        class="d-flex align-items-center"
+                                                        style="cursor: pointer;"
+                                                        (click)="setDeclaration1(true)"
+                                                      >
+                                                        <div
+                                                          class="rounded-circle me-2"
+                                                          [ngStyle]="{
+                                                            width: '18px',
+                                                            height: '18px',
+                                                            backgroundColor: declaration1 === true ? '#198754' : 'transparent',
+                                                            border: '2px solid',
+                                                            borderColor: declaration1 === true ? '#198754' : '#6c757d'
+                                                          }"
+                                                          style="user-select: none; outline: none;"
+                                                          tabindex="-1"
+                                                        ></div>
+                                                        {{ 'gis.policy.yes' | translate }}
+                                                      </div>
+                                                  
+                                                      <!-- NO option -->
+                                                      <div
+                                                        class="d-flex align-items-center"
+                                                        style="cursor: pointer;"
+                                                        (click)="setDeclaration1(false)"
+                                                      >
+                                                        <div
+                                                          class="rounded-circle me-2"
+                                                          [ngStyle]="{
+                                                            width: '18px',
+                                                            height: '18px',
+                                                            backgroundColor: declaration1 === false ? '#dc3545' : 'transparent',
+                                                            border: '2px solid',
+                                                            borderColor: declaration1 === false ? '#dc3545' : '#6c757d'
+                                                          }"
+                                                          style="user-select: none; outline: none;"
+                                                          tabindex="-1"
+                                                        ></div>
+                                                        {{ 'gis.policy.no' | translate }}
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  
+                                                  
                                         </div>
                                     </div>
                                 </div>
                                 <!-- **ROW 9** -->
                                 <div class="row" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 row">
+                                        <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.compute' | translate}}:</label>
-                                            <div class="col-7">
-                                                <input class="form-check-input" type="checkbox" value=""
-                                                    id="flexCheckDefault" formControlName="compute">
-                                            </div>
+                                                <div class="col-7">
+                                                    <div class="d-flex gap-4">
+                                                      <!-- YES option -->
+                                                      <div
+                                                        class="d-flex align-items-center"
+                                                        style="cursor: pointer;"
+                                                        (click)="setDeclaration2(true)"
+                                                      >
+                                                        <div
+                                                          class="rounded-circle me-2"
+                                                          [ngStyle]="{
+                                                            width: '18px',
+                                                            height: '18px',
+                                                            backgroundColor: declaration2 === true ? '#198754' : 'transparent',
+                                                            border: '2px solid',
+                                                            borderColor: declaration2 === true ? '#198754' : '#6c757d'
+                                                          }"
+                                                          style="user-select: none; outline: none;"
+                                                          tabindex="-1"
+                                                        ></div>
+                                                        {{ 'gis.policy.yes' | translate }}
+                                                      </div>
+                                                  
+                                                      <!-- NO option -->
+                                                      <div
+                                                        class="d-flex align-items-center"
+                                                        style="cursor: pointer;"
+                                                        (click)="setDeclaration2(false)"
+                                                      >
+                                                        <div
+                                                          class="rounded-circle me-2"
+                                                          [ngStyle]="{
+                                                            width: '18px',
+                                                            height: '18px',
+                                                            backgroundColor: declaration2 === false ? '#dc3545' : 'transparent',
+                                                            border: '2px solid',
+                                                            borderColor: declaration2 === false ? '#dc3545' : '#6c757d'
+                                                          }"
+                                                          style="user-select: none; outline: none;"
+                                                          tabindex="-1"
+                                                        ></div>
+                                                        {{ 'gis.policy.no' | translate }}
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
@@ -1547,6 +1692,7 @@
                                 <div class="col-6 ">
                                 </div>
                                 <div class="col-6 d-flex justify-content-end">
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="background-color:#ffffff; color: #00529b;">Cancel</button>
                                     <!-- <button type="button" class="btn btn-primary"  data-bs-dismiss="modal" (click)="updateRiskSection()" >Save Details</button> -->
                                     <button type="button" class="btn btn-primary" (click)="onSaveDetailsClick()">
                                         {{'gis.quotation.save_details' | translate}}</button>
@@ -1648,6 +1794,9 @@
                             <!-- Edit Button -->
                             <button pButton pRipple type="button" pInitEditableRow
                                 class="p-button-rounded p-button-text custom-button "
+                                [disabled]="quotationIsAuthorised"
+                                pTooltip="Cannot edit sections on authorised quotation."
+                                tooltipPosition="top"
                                 (click)="onEditButtonClick(sectionArray)">
                                 Edit
                             </button>
@@ -1712,6 +1861,7 @@
                     </button>
                 </div>
             </div>
+            
 
 
     </div>
