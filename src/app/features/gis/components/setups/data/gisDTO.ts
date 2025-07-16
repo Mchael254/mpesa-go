@@ -1,4 +1,4 @@
-import {ClientDTO} from "../../../../entities/data/ClientDTO";
+import { ClientDTO } from "../../../../entities/data/ClientDTO";
 
 /**
  * Screen Code interface
@@ -159,7 +159,7 @@ export interface FormScreen {
   shortDescription: string,
   description: string,
   module: number,
-  fields: Field []
+  fields: Field[]
 }
 
 export interface productDocument {
@@ -240,7 +240,7 @@ export interface Products {
   maximumTerm: number;
   termDistribution: number;
   organizationCode: number;
-  productImage:string;
+  productImage: string;
 }
 
 export interface otherdetails {
@@ -1058,24 +1058,26 @@ export interface specialPremiumRates {
 
 
 export interface SubclassCoverTypes {
-  code: number,
-  coverTypeCode: number,
-  coverTypeShortDescription: string,
-  subClassCode: number,
-  certificateTypeCode: string,
-  certificateTypeShortDescription: string,
-  minimumPremium: string,
-  description: string,
-  isDefault: string,
-  defaultSumInsured: string,
-  sumInsuredCurrencyCode: number,
-  sumInsuredExchangeRate: string,
-  installmentType: string,
-  paymentInstallmentPercentage: string,
-  maximumInstallments: string,
-  installmentPeriod: string,
-  surveyEvaluationRequired: string,
-  organizationCode: string
+  code: number;
+  coverTypeCode: number;
+  coverTypeShortDescription: string;
+  subClassCode: number;
+  certificateTypeCode: number | null;
+  certificateTypeShortDescription: string | null;
+  minimumPremium: number | null;
+  description: string;
+  isDefault: 'Y' | 'N';
+  defaultSumInsured: number | null;
+  sumInsuredCurrencyCode: number;
+  sumInsuredExchangeRate: number | null;
+  installmentType: string;
+  paymentInstallmentPercentage: number | null;
+  maximumInstallments: number | null;
+  installmentPeriod: number | null;
+  surveyEvaluationRequired: 'Y' | 'N';
+  organizationCode: number | null;
+  webShow: boolean | null;
+  applicableRates: any;
 }
 
 export interface SubclassCoverTypesResponse {
@@ -1253,7 +1255,7 @@ export interface ProductClauseDTO {
   heading: string;
   wording: string;
   type: string;
-  isEditable:string;
+  isEditable: string;
   isCurrent: string;
   isLien: string;
   ins: string;
