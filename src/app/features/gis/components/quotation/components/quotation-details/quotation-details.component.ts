@@ -25,6 +25,7 @@ import { forkJoin, mergeMap } from 'rxjs';
 import { QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
 import { ProductClauseDTO, Products } from '../../../setups/data/gisDTO';
 import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
+import { ClaimsService } from '../../../claim/services/claims.service';
 
 const log = new Logger('QuotationDetails');
 
@@ -151,6 +152,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   ];
   emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   selectedClientCode: number;
+  users: any
+  selectedUser: any;
+  fullNameSearch: string = '';
+  globalSearch: string = '';
+  noUserChosen: boolean = false
+  clientToReassignProduct: string;
+
+
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -166,6 +175,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     public quotationService: QuotationsService,
     public productSubclass: ProductSubclassService,
     private globalMessagingService: GlobalMessagingService,
+    public claimsService: ClaimsService,
   ) {
 
     this.quotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
@@ -251,6 +261,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
 
     this.loadPersistedClauses();
+    this.getUsers()
   }
 
 
@@ -316,13 +327,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  handleMultiUserYes(): void {
-    this.reassignButton = true
-  }
 
-  handleMultiUserNo(): void {
-    this.reassignButton = false
-  }
+
 
   setClientType(value: 'new' | 'existing') {
     this.selectedClientType = value;
@@ -1792,7 +1798,79 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  reassignQuotation() {
+  getUsers() {
+    this.claimsService.getUsers().subscribe({
+      next: (res => {
+        this.users = res;
+        this.users = this.users.content;
+        log.debug('users>>>', this.users)
+
+      }),
+      error: (error => {
+        log.debug('error', error)
+        this.globalMessagingService.displayErrorMessage('Error', 'failed to feth users')
+      })
+    })
+  }
+
+  handleMultiUserYes(): void {
+    this.reassignButton = true
+  }
+
+  handleMultiUserNo(): void {
+    this.reassignButton = false
+  }
+
+  //search member to reassign
+  filterGlobal(event: any): void {
+    const value = event.target.value;
+    this.globalSearch = value;
+    this.table.filterGlobal(value, 'contains');
+  }
+
+  filterByFullName(event: any): void {
+    const value = event.target.value;
+    this.table.filter(value, 'name', 'contains');
+  }
+
+  onUserSelect(): void {
+    if (this.selectedUser) {
+      log.debug("Selected user>>>", this.selectedUser);
+      this.globalSearch = this.selectedUser.id;
+      this.fullNameSearch = this.selectedUser.name;
+    }
+
+  }
+
+  onUserUnselect(): void {
+    this.selectedUser = null;
+    this.globalSearch = '';
+    this.fullNameSearch = '';
+  }
+
+  selectClient() {
+    if (!this.selectedUser) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false
+
+      }, 3000);
+      return;
+    }
+    this.clientToReassignProduct = this.selectedUser.name
+
+  }
+
+  reassignProduct() {
+    if (!this.clientToReassignProduct) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false
+
+      }, 3000);
+      return;
+    }
+    this.globalMessagingService.displaySuccessMessage('Success', 'reassigning...')
 
   }
 
