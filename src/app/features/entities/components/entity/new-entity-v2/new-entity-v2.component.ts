@@ -517,7 +517,8 @@ export class NewEntityV2Component implements OnInit {
 
 
   uploadDocumentToDms(): void {
-    this.dmsService.saveClientDocs(this.clientFiles).subscribe({
+    log.info(``)
+    this.dmsService.saveClientDocs(this.clientFiles[0]).subscribe({
       next: (res: any) => {
         log.info(`document uploaded successfully!`, res);
       },
