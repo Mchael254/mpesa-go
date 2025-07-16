@@ -681,7 +681,7 @@
             <div class="w-75">
               <p>Default User</p>
               <input pInputText type="text" class="form-control" data-bs-toggle="modal"
-                data-bs-target="#chooseClientReassingModal">
+                data-bs-target="#chooseClientReassingModal" [(ngModel)]="clientToReassignProduct">
             </div>
 
             <div class="w-75 mt-4 mb-3">
@@ -689,9 +689,14 @@
               <textarea name="reassignProduct" class="form-control" style="height: 70px" id=""></textarea>
             </div>
 
+            <small class="text-danger block" [class.invisible]="!noUserChosen">
+              Please select a person to reassign before continuing
+            </small>
+
+
             <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
               <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
-                (click)="reassignQuotation()">{{ 'gis.quotation.reassign' | translate }}
+                (click)="reassignProduct()">{{ 'gis.quotation.reassign' | translate }}
               </button>
               <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
                 style="text-decoration: none;">{{
@@ -705,7 +710,7 @@
       </div>
 
       <!-- Reassign Product Modal 2 -->
-      <div class="modal fade " id="chooseClientReassingModal" tabindex="-1" aria-hidden="true">
+      <div class="modal fade " id="reassignProductModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="min-width:200px">
           <div class="modal-content ps-4 pt-2 pb-5 pe-4">
 
@@ -718,8 +723,9 @@
             </div>
 
             <div class="row mt-2">
-              <p-table #dt [value]="" [rows]="3" [paginator]="true"
-                [globalFilterFields]="" styleClass="p-datatable-striped">
+              <p-table #dt [value]="users" [rows]="3" [paginator]="true" [globalFilterFields]="['id', 'name']"
+                styleClass="p-datatable-striped" selectionMode="single" [(selection)]="selectedUser"
+                styleClass="p-datatable-striped" (onRowSelect)="onUserSelect()" (onRowUnselect)="onUserUnselect()">
 
                 <ng-template pTemplate="header">
                   <tr>
@@ -732,17 +738,17 @@
 
                   </tr>
                   <tr>
-                    <th><input type="text" class="form-control form-control-sm" 
-                        (input)="filterByshortDescription($event)" placeholder="Search code"></th>
-                    <th><input type="text" class="form-control form-control-sm"
-                         placeholder="Search name"></th>
+                    <th><input type="text" class="form-control form-control-sm" [(ngModel)]="globalSearch"
+                        (input)="filterGlobal($event)" placeholder="Search code"></th>
+                    <th><input type="text" [(ngModel)]="fullNameSearch" (input)="filterByFullName($event)"
+                        class="form-control form-control-sm" placeholder="Search name"></th>
                   </tr>
                 </ng-template>
 
-                <ng-template pTemplate="body" let-clause>
-                  <tr [pSelectableRow]="clause">
-                    <td></td>
-                    <td></td>
+                <ng-template pTemplate="body" let-user>
+                  <tr [pSelectableRow]="user">
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.name }}</td>
                   </tr>
                 </ng-template>
 
@@ -751,12 +757,11 @@
                   <tr>
                     <td colspan="4" style="text-align: center; padding: 20px;">
                       <div style="color: #6c757d; font-size: 15px;">
-                        <ng-container *ngIf="productClause.length === 0">
+                        <ng-container *ngIf="users.length === 0">
                           No user available.
                         </ng-container>
-                        <ng-container *ngIf="productClause.length > 0">
-                          <!-- No user found matching your search -->
-                           No user available yet.
+                        <ng-container *ngIf="users.length > 0">
+                          No user found matching your search
                         </ng-container>
                       </div>
                     </td>
@@ -764,12 +769,14 @@
                 </ng-template>
               </p-table>
             </div>
-
-
+            <small class="text-danger block" [class.invisible]="!noUserChosen">
+              Please select a person to reassign before continuing
+            </small>
 
             <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
               <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
-                (click)="reassignQuotation()">{{ 'gis.quotation.save' | translate }}
+                (click)="selectClient()">{{
+                'gis.quotation.save' | translate }}
               </button>
               <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
                 style="text-decoration: none;">{{
@@ -806,7 +813,8 @@
 
       <div class="col-12 d-flex justify-content-end mb-1">
         <div class="d-flex justify-content-center align-items-center">
-          <button type="button" class="btn btn-primary no-hover" (click)="openClauseModal()" title="Add Product"> Add
+          <button type="button" class="btn btn-primary no-hover" (click)="openClauseModal()" title="Add Product">
+            Add
             clauses
           </button>
           <i class="pi border border-black p-1 rounded-1 text-black"
