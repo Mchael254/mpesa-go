@@ -1,286 +1,443 @@
 <div class="d-flex my-4 ms-4" style="display: flex; justify-content: start">
-    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
-    </app-dynamic-breadcrumb>
-  </div>
-  <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
-  <!-- Subcard: Quotation Details & Table -->
-  <div class="card mb-4 mx-4" style=" position: relative; border: none; border-radius: 5px;">
+  <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+  </app-dynamic-breadcrumb>
+</div>
+<app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+<!-- Subcard: Quotation Details & Table -->
+<div class="card mb-4 mx-4" style=" position: relative; border: none; border-radius: 5px;">
 
-    <div class="card-body ">
-      <p class="subtitle ">{{ 'gis.quotation.quotation_summmary' | translate }}</p>
+  <div class="card-body ">
+    <p class="subtitle ">{{ 'gis.quotation.quotation_summmary' | translate }}</p>
 
-      <!-- Quotation Details -->
-      <div class="row mb-1">
-        <div class="col-sm-5 col-12 ">
-          <p id="quote-label">{{ 'gis.quotation.quotation_number' | translate }}: <strong id="quote-input">{{
-              quotationDetails?.quotationNo
-              }}</strong>
-          </p>
+    <!-- Quotation Details -->
+    <div class="row mb-1">
+      <div class="col-sm-5 col-12 ">
+        <p id="quote-label">{{ 'gis.quotation.quotation_number' | translate }}: <strong id="quote-input">{{
+            quotationDetails?.quotationNo
+            }}</strong>
+        </p>
 
-        </div>
-        <div class="col-sm-3 col-12 ">
-          <p id="quote-label">{{ 'gis.quotation.quotation_status' | translate }}:<strong id="quote-input">{{
-              quotationDetails?.status
-              }}</strong></p>
-
-        </div>
-        <div class="col-sm-4 col-12 ">
-          <p id="quote-label">{{ 'gis.quotation.ticket_number' | translate }}:<strong id="quote-input"></strong></p>
-        </div>
       </div>
-      <div class="row mb-4">
-        <div class="col-sm-5 col-12 ">
-          <p id="quote-label">{{ 'gis.quotation.ipay_reference' | translate }}: <strong id="quote-input">{{
-              quotationDetails?.ipayReferenceNumber
-              }}</strong></p>
+      <div class="col-sm-3 col-12 ">
+        <p id="quote-label">{{ 'gis.quotation.quotation_status' | translate }}:<strong id="quote-input">{{
+            quotationDetails?.status
+            }}</strong></p>
 
-        </div>
-        <div class="col-sm-3 col-12 ">
-          <p id="quote-label">{{ 'gis.quotation.currency' | translate }}: <strong id="quote-input">{{
-              quotationDetails?.currency
-              }}</strong></p>
-
-        </div>
-        <div class="col-sm-4 col-12 ">
-          <p id="quote-label">
-            {{ 'gis.quotation.notes' | translate }}: <span class="notes-preview" id="quote-input" pTooltip="{{ quotationDetails?.comments }}" tooltipPosition="top">
-              {{quotationDetails?.comments}}</span>
-
-            <i class="fa fa-pencil edit-icon" data-bs-toggle="modal" data-bs-target="#notesModal"
-              (click)="storeCurrentComment()"></i>
-          </p>
-
-
-        </div>
       </div>
-      <!-- NOTES MODAL -->
-      <div class="modal fade pb-4" id="notesModal" tabindex="-1" aria-labelledby="notesLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content ps-4 pt-4 pe-4 pb-4">
-            <div class="d-flex justify-content-between align-items-center rounded-3 mb-4 p-1">
-              <p class="modal-title mb-0" id="acceptQuoteLabel">
-                {{ 'gis.quotation.notes' | translate }}</p>
-              <button type="button" data-bs-dismiss="modal"
-                class="btn p-0 border-0 bg-transparent text-danger fs-4 fw-light"
-                style="text-decoration: none;color: #EE3945;" #closeBtn>X
-              </button>
-            </div>
-            <textarea rows="5" [(ngModel)]="quotationDetails.comments"></textarea>
+      <div class="col-sm-4 col-12 ">
+        <p id="quote-label">{{ 'gis.quotation.ticket_number' | translate }}:<strong id="quote-input"></strong></p>
+      </div>
+    </div>
+    <div class="row mb-4">
+      <div class="col-sm-5 col-12 ">
+        <p id="quote-label">{{ 'gis.quotation.ipay_reference' | translate }}: <strong id="quote-input">{{
+            quotationDetails?.ipayReferenceNumber
+            }}</strong></p>
 
-            <div class=" d-flex justify-content-end mb-4 mt-4">
-              <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary me-1 ">
-                {{ 'gis.quotation.cancel' | translate }}
-              </button>
-              <button type="button" class="btn btn-primary " (click)="saveNotes()">
-                {{ 'gis.policy.save_details' | translate }}
-              </button>
+      </div>
+      <div class="col-sm-3 col-12 ">
+        <p id="quote-label">{{ 'gis.quotation.currency' | translate }}: <strong id="quote-input">{{
+            quotationDetails?.currency
+            }}</strong></p>
 
-            </div>
+      </div>
+      <div class="col-sm-4 col-12 ">
+        <p id="quote-label">
+          {{ 'gis.quotation.notes' | translate }}: <span class="notes-preview" id="quote-input"
+            pTooltip="{{ quotationDetails?.comments }}" tooltipPosition="top">
+            {{quotationDetails?.comments}}</span>
+
+          <i class="fa fa-pencil edit-icon" data-bs-toggle="modal" data-bs-target="#notesModal"
+            (click)="storeCurrentComment()"></i>
+        </p>
+
+
+      </div>
+    </div>
+    <!-- NOTES MODAL -->
+    <div class="modal fade pb-4" id="notesModal" tabindex="-1" aria-labelledby="notesLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content ps-4 pt-4 pe-4 pb-4">
+          <div class="d-flex justify-content-between align-items-center rounded-3 mb-4 p-1">
+            <p class="modal-title mb-0" id="acceptQuoteLabel">
+              {{ 'gis.quotation.notes' | translate }}</p>
+            <button type="button" data-bs-dismiss="modal"
+              class="btn p-0 border-0 bg-transparent text-danger fs-4 fw-light"
+              style="text-decoration: none;color: #EE3945;" #closeBtn>X
+            </button>
+          </div>
+          <textarea rows="5" [(ngModel)]="quotationDetails.comments"></textarea>
+
+          <div class=" d-flex justify-content-end mb-4 mt-4">
+            <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary me-1 ">
+              {{ 'gis.quotation.cancel' | translate }}
+            </button>
+            <button type="button" class="btn btn-primary " (click)="saveNotes()">
+              {{ 'gis.policy.save_details' | translate }}
+            </button>
+
           </div>
         </div>
       </div>
-
-
-      <!-- Product Table -->
-      <p-table [value]="productDetails" [sortField]="'productName'" [sortOrder]="1" rowGroupMode="rowspan"
-        groupField="productName" class="mt-4 ui-datatable">
-        <!-- Table Header -->
-        <ng-template pTemplate="header">
-          <tr>
-            <th class="flexible-header"> {{ 'gis.quotation.product' | translate }}</th>
-            <th class="flexible-header"> {{ 'gis.quotation.risk' | translate }}</th>
-            <th class="flexible-header"> {{ 'gis.quotation.cover_type' | translate }}</th>
-            <th class="flexible-header"> {{ 'gis.quotation.effective_date' | translate }}</th>
-            <th class="flexible-header"> {{ 'gis.quotation.sum_insured' | translate }}</th>
-            <th class="flexible-header"> {{ 'gis.quotation.premium' | translate }}</th>
-          </tr>
-        </ng-template>
-
-        <!-- Table Body -->
-        <ng-template pTemplate="body" let-quote let-rowIndex="rowIndex">
-          <tr>
-            <td *ngIf="shouldShowProductName(rowIndex)">
-              {{ quote.productName |sentenceCase }}
-            </td>
-            <td *ngIf="!shouldShowProductName(rowIndex)">
-              <!-- empty cell to align with rowspan -->
-            </td>
-            <td>{{ quote.riskId |sentenceCase }}</td>
-            <td>{{ quote.coverType |sentenceCase }}</td>
-            <td>{{ quote.wef }}</td>
-            <td>{{ quote.sumInsured | number: '1.0-2' }}</td>
-            <td>{{ quote.premium | number: '1.0-2' }}</td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="footer">
-          <tr>
-            <td colspan="4"></td>
-            <td class="text-right  label">
-              {{ 'gis.quotation.sub_total' | translate }}
-            </td>
-            <td class="text-right  value">
-              {{ totalSumInsured | number: '1.0-2' }}
-            </td>
-          </tr>
-        </ng-template>
-
-
-      </p-table>
-
     </div>
+
+
+    <!-- Product Table -->
+    <p-table [value]="productDetails" [sortField]="'productName'" [sortOrder]="1" rowGroupMode="rowspan"
+      groupField="productName" class="mt-4 ui-datatable">
+      <!-- Table Header -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="flexible-header"> {{ 'gis.quotation.product' | translate }}</th>
+          <th class="flexible-header"> {{ 'gis.quotation.risk' | translate }}</th>
+          <th class="flexible-header"> {{ 'gis.quotation.cover_type' | translate }}</th>
+          <th class="flexible-header"> {{ 'gis.quotation.effective_date' | translate }}</th>
+          <th class="flexible-header"> {{ 'gis.quotation.sum_insured' | translate }}</th>
+          <th class="flexible-header"> {{ 'gis.quotation.premium' | translate }}</th>
+        </tr>
+      </ng-template>
+
+      <!-- Table Body -->
+      <ng-template pTemplate="body" let-quote let-rowIndex="rowIndex">
+        <tr>
+          <td *ngIf="shouldShowProductName(rowIndex)">
+            {{ quote.productName |sentenceCase }}
+          </td>
+          <td *ngIf="!shouldShowProductName(rowIndex)">
+            <!-- empty cell to align with rowspan -->
+          </td>
+          <td>{{ quote.riskId |sentenceCase }}</td>
+          <td>{{ quote.coverType |sentenceCase }}</td>
+          <td>{{ quote.wef }}</td>
+          <td>{{ quote.sumInsured | number: '1.0-2' }}</td>
+          <td>{{ quote.premium | number: '1.0-2' }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <tr>
+          <td colspan="4"></td>
+          <td class="text-right  label">
+            {{ 'gis.quotation.sub_total' | translate }}
+          </td>
+          <td class="text-right  value">
+            {{ totalSumInsured | number: '1.0-2' }}
+          </td>
+        </tr>
+      </ng-template>
+
+
+    </p-table>
+
   </div>
-  <div class="row mb-4 mx-4">
-    <div class="col-md-4  col-12 mt-2 d-flex justify-content-start gap-2">
-      <button type="button" class="btn btn-text me-2 " style="border: none;" (click)="navigateToQuoteDetails()">
-        {{ 'gis.quotation.back' | translate }}
-      </button>
-      <button *ngIf="!afterRejectQuote" type="button" class="btn btn-outline-primary mx-2"
-        (click)="getUsers(); $event.preventDefault()" data-bs-target="#reassignQuotation" data-bs-toggle="modal">{{
-        'gis.quotation.reassign' | translate
-        }}
-      </button>
-      <button *ngIf="!afterRejectQuote" type="button" class="btn btn-outline-primary" data-bs-target="#rejectQuote"
-        data-bs-toggle="modal">{{
-        'gis.quotation.reject' |
-        translate
-        }}
-      </button>
-    </div>
-    <div class="col-md-8  col-12 mt-2 d-flex justify-content-end">
+</div>
+<div class="row mb-4 mx-4">
+  <div class="col-md-4  col-12 mt-2 d-flex justify-content-start gap-2">
+    <button type="button" class="btn btn-text me-2 " style="border: none;" (click)="navigateToQuoteDetails()">
+      {{ 'gis.quotation.back' | translate }}
+    </button>
+    <button *ngIf="!afterRejectQuote" type="button" class="btn btn-outline-primary mx-2"
+      (click)="getUsers(); $event.preventDefault()" data-bs-target="#reassignQuotation" data-bs-toggle="modal">{{
+      'gis.quotation.reassign' | translate
+      }}
+    </button>
+    <button *ngIf="!afterRejectQuote" type="button" class="btn btn-outline-primary" data-bs-target="#rejectQuote"
+      data-bs-toggle="modal">{{
+      'gis.quotation.reject' |
+      translate
+      }}
+    </button>
+  </div>
+  <div class="col-md-8  col-12 mt-2 d-flex justify-content-end">
 
-      <button *ngIf="!afterRejectQuote" type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
-        data-bs-target="#shareQuoteModal">
-        {{ 'gis.quotation.share_quotation' | translate }}
-      </button>
+    <button *ngIf="!afterRejectQuote" type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
+      data-bs-target="#shareQuoteModal">
+      {{ 'gis.quotation.share_quotation' | translate }}
+    </button>
 
-      <button *ngIf="!afterRejectQuote" type="button" class="btn btn-primary " (click)="convertQuoteToNormalQuote()">
-        {{ 'gis.quotation.convert_to_normal_quote' | translate }}
-      </button>
-      <button *ngIf="!afterRejectQuote" type="button" class="btn btn-primary" (click)="openClientSearchModal()">
-        {{ 'gis.quotation.convert_to_policy' | translate }}
-      </button>
-      <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-        style="display: none;"></button>
-      <app-client-search-modal [convertToPolicy]="true" *ngIf="isClientSearchModalVisible"
+    <button *ngIf="!afterRejectQuote" type="button" class="btn btn-primary " (click)="convertQuoteToNormalQuote()">
+      {{ 'gis.quotation.convert_to_normal_quote' | translate }}
+    </button>
+    <button *ngIf="!afterRejectQuote" type="button" class="btn btn-primary" data-bs-toggle="modal"
+      data-bs-target="#convertToPolicyModal">
+      {{ 'gis.quotation.convert_to_policy' | translate }}
+    </button>
+    <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+      style="display: none;"></button>
+    <!-- <app-client-search-modal [convertToPolicy]="true" *ngIf="isClientSearchModalVisible"
         (onClickSaveClient)="handleSaveClient($event)" (modalClosed)="isClientSearchModalVisible = false">
-      </app-client-search-modal>
+      </app-client-search-modal> -->
+  </div>
+</div>
+
+
+<!-- SHARE QUOTE MODAL -->
+<div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content w-[40vw] h-[40vh] p-3">
+      <div class="modal-body">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <p class="mb-0 custom-margin" id="shareQuote">Share quote</p>
+          <button type="button" class="btn-close custom-close-style" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <app-share-quotes (sendEvent)="listenToSendEvent($event)"
+          (downloadRequested)="onDownloadRequested()"></app-share-quotes>
+
+
+      </div>
     </div>
+
   </div>
 
+</div>
 
-  <!-- SHARE QUOTE MODAL -->
-  <div #shareQuoteModal class="modal fade" id="shareQuoteModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-      <div class="modal-content w-[40vw] h-[40vh] p-3">
-        <div class="modal-body">
-          <div class="d-flex justify-content-between align-items-center mb-1">
-            <p class="mb-0 custom-margin" id="shareQuote">Share quote</p>
-            <button type="button" class="btn-close custom-close-style" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- reject quote modal -->
+<div class="modal fade" id="rejectQuote">
+  <div class="modal-dialog modal-dialog-centered" style="min-width:400px">
+    <div class="modal-content ps-4 pt-2 pe-4">
+      <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+        <p class="modal-title fw-bold">{{ 'gis.quotation.reject_quote' | translate }}</p>
+        <button type="button" data-bs-dismiss="modal" class="btn p-1 text-danger fw-bold" style="border: none;">X
+        </button>
+      </div>
+      <p class="text-dark mb-5">Are you sure you want to reject this quote? </p>
+      <label class="text-dark mt-0" for="comment">Comment</label>
+      <textarea [(ngModel)]="rejectComment" name="rejectComment" #commentInput="ngModel"></textarea>
+      <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
+        <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary" style="text-decoration: none;">{{
+          'gis.quotation.cancel' | translate
+          }}
+        </button>
+        <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+          data-bs-dismiss="modal" (click)="rejectQuotation(quotationDetails.code)">{{
+          'gis.quotation.save_changes' |
+          translate
+          }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- reassign quote modal -->
+<div class="modal fade" id="reassignQuotation">
+  <div class="modal-dialog modal-dialog-centered" style="min-width:500px">
+    <div class="modal-content ps-4 pt-2 pe-4">
+      <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+        <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+          {{ 'gis.quotation.reassign_quote' | translate }}</p>
+        <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X
+        </button>
+      </div>
+      <div class="row mt-2">
+        <p-table #dt [value]="users" [rows]="3" [paginator]="true" [globalFilterFields]="['id', 'name']"
+          selectionMode="single" [(selection)]="selectedUser" styleClass="p-datatable-striped"
+          (onRowSelect)="onUserSelect()" (onRowUnselect)="onUserUnselect()">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>User ID</th>
+              <th>Full Name</th>
+            </tr>
+            <tr styleClass="p-striped">
+              <th>
+                <input type="text" [(ngModel)]="globalSearch" (input)="filterGlobal($event)">
+              </th>
+              <th>
+                <input type="text" [(ngModel)]="fullNameSearch" (input)="filterByFullName($event)">
+              </th>
+            </tr>
+
+          </ng-template>
+          <ng-template pTemplate="body" let-user>
+            <tr [pSelectableRow]="user">
+              <td>{{ user.id }}</td>
+              <td>{{ user.name }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <hr class="mt-1" style="border: none; border-top: 2.5px solid #0000004D;">
+      <small class="text-danger block" [class.invisible]="!noUserChosen">
+        Please select a person to reassign before continuing
+      </small>
+
+      <div>
+        <label class="text-dark block" for="comment">Comment</label>
+        <textarea [(ngModel)]="reassignComment" name="reassignComment"
+          class="w-full mt-0 p-2 border rounded"></textarea>
+      </div>
+
+      <small class="text-danger block" [class.invisible]="!comment">
+        Please leave a comment before continuing
+      </small>
+      <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-2 mt-2 p-0">
+
+        <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
+        <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+          (click)="reassignQuotation()">{{ 'gis.quotation.reassign' | translate }}
+        </button>
+        <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary" style="text-decoration: none;">{{
+          'gis.quotation.cancel' | translate
+          }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Convert to policy modal -->
+<div class="modal fade" id="convertToPolicyModal">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 700px;">
+    <div class="modal-content ps-4 pt-2 pe-4">
+      <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+        <p class="modal-title fw-bold" *ngIf="selectedClientType === 'existing'">Select client</p>
+        <p class="modal-title fw-bold" *ngIf="selectedClientType === 'new'">Create new client</p>
+        <button type="button" data-bs-dismiss="modal" class="btn p-1 text-danger fw-bold" style="border: none;">X
+        </button>
+      </div>
+      <div class="d-flex gap-4 mb-3">
+        <div class="method-option" (click)="setClientType('new')" [class.selected]="selectedClientType === 'new'">
+          <i class="far fa-circle" style="color: #000;" *ngIf="selectedClientType !== 'new'"></i>
+          <i class="fas fa-dot-circle" style="color: #000;" *ngIf="selectedClientType === 'new'"></i>
+          <span style="color: #000;">New client</span>
+        </div>
+
+        <div class="method-option" (click)="setClientType('existing')"
+          [class.selected]="selectedClientType === 'existing'">
+          <i class="far fa-circle" style="color: #000;" *ngIf="selectedClientType !== 'existing'"></i>
+          <i class="fas fa-dot-circle" style="color: #000;" *ngIf="selectedClientType === 'existing'"></i>
+          <span style="color: #000;">Existing client</span>
+        </div>
+
+      </div>
+      <!-- Content for new client -->
+      <div id="newClient" *ngIf="selectedClientType === 'new'">
+        <div class="row">
+          <!-- Client Name -->
+          <div class="col-sm-6 col-6 mb-3">
+            <label class="new-client-label mb-2">Client name</label>
+            <input type="text" id="new-client-input" class="form-control form-control-sm mb-1">
           </div>
-          <app-share-quotes (sendEvent)="listenToSendEvent($event)"
-            (downloadRequested)="onDownloadRequested()"></app-share-quotes>
 
+          <!-- Email Address -->
+          <div class="col-sm-6 col-6 mb-3">
+            <div class="form-group">
+              <label class="new-client-label mb-2">Email address</label>
+              <input type="email" id="new-client-input" class="form-control form-control-sm mb-1"
+                placeholder="Enter your email" />
+              <!-- <div *ngIf="quotationForm.get('email')?.touched && quotationForm.get('email')?.invalid"
+                  class="text-danger form-text">
+                  <div *ngIf="quotationForm.get('email')?.errors?.['required']">
+                    Email is required.
+                  </div>
+                  <div *ngIf="quotationForm.get('email')?.errors?.['pattern']">
+                    Enter a valid email address.
+                  </div>
+                </div> -->
+            </div>
+          </div>
 
+          <!-- Phone Number -->
+          <div class="col-sm-6 col-6 mb-3">
+            <label class="new-client-label mb-2">Phone number</label>
+            <ngx-intl-tel-input id="phoneNumber" [cssClass]="'form-control form-control-sm mb-1 fixed-phone-width'"
+              [preferredCountries]="preferredCountries" [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
+              [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+              [selectFirstCountry]="false" [style]="{ maxWidth: '30px' }" [selectedCountryISO]="CountryISO.Kenya"
+              [phoneValidation]="true" [separateDialCode]="true" [numberFormat]="PhoneNumberFormat.National">
+            </ngx-intl-tel-input>
+          </div>
         </div>
       </div>
+      <!-- Content for existing client -->
 
-    </div>
+      <div id="existingClient" *ngIf="selectedClientType === 'existing'">
+        <p-table #dt1 (onLazyLoad)="lazyLoadClients($event)" [autoLayout]="true" [lazy]="true" [paginator]="true"
+          [rowHover]="true" [resizableColumns]="true" [showCurrentPageReport]="false" [rows]="pageSize || 5"
+          [totalRecords]="clientsData?.totalElements" [value]="clientsData?.content"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]" responsiveLayout="stack" [scrollable]="true"
+          scrollHeight="400px" scrollWidth="659px" currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          [globalFilterFields]=globalFilterFields [selection]="selectedClient"
+          (onRowSelect)="selectedClient = $event.data" [selectionMode]="'single'" class="p-datatable-striped">
 
-  </div>
 
-  <!-- reject quote modal -->
-  <div class="modal fade" id="rejectQuote">
-    <div class="modal-dialog modal-dialog-centered" style="min-width:400px">
-      <div class="modal-content ps-4 pt-2 pe-4">
-        <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
-          <p class="modal-title fw-bold">{{ 'gis.quotation.reject_quote' | translate }}</p>
-          <button type="button" data-bs-dismiss="modal" class="btn p-1 text-danger fw-bold" style="border: none;">X
-          </button>
-        </div>
-        <p class="text-dark mb-5">Are you sure you want to reject this quote? </p>
-        <label class="text-dark mt-0" for="comment">Comment</label>
-        <textarea [(ngModel)]="rejectComment" name="rejectComment" #commentInput="ngModel"></textarea>
-        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
-          <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
-            style="text-decoration: none;">{{
-            'gis.quotation.cancel' | translate
-            }}
-          </button>
-          <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
-            data-bs-dismiss="modal" (click)="rejectQuotation(quotationDetails.code)">{{
-            'gis.quotation.save_changes' |
-            translate
-            }}
-          </button>
-        </div>
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="name" style="min-width: 220px; font-weight: 500;">
+                Name
+                <p-sortIcon field="name"></p-sortIcon>
+              </th>
+              <th pSortableColumn="emailAddress" style="min-width: 250px;">
+                Email
+                <p-sortIcon field="emailAddress"></p-sortIcon>
+              </th>
+              <th pSortableColumn="phoneNumber" style="min-width: 200px;">
+                Phone
+                <p-sortIcon field="phoneNumber"></p-sortIcon>
+              </th>
+              <th pSortableColumn="idNumber" style="min-width: 200px;">
+                ID Number
+                <p-sortIcon field="idNumber"></p-sortIcon>
+              </th>
+              <th pSortableColumn="pinNumber" style="min-width: 200px;">
+                Pin
+                <p-sortIcon field="pinNumber"></p-sortIcon>
+              </th>
+              <th pSortableColumn="id" style="min-width: 200px;">
+                Internal ID
+                <p-sortIcon field="id"></p-sortIcon>
+              </th>
+            </tr>
+
+            <tr>
+              <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputName($event)">
+              </th>
+              <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputEmail($event)">
+              </th>
+              <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputPhone($event)">
+              </th>
+              <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputId($event)">
+              </th>
+              <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputPin($event)">
+              </th>
+              <th><input type="text" class="form-control " (keyup.enter)="filter($event);"
+                  (input)="inputInternalId($event)">
+              </th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-clientData>
+            <tr [pSelectableRow]="clientData">
+              <td>{{ utilService.getFullName(clientData) }}</td>
+              <td>{{ clientData.emailAddress }}</td>
+              <td>{{ clientData.phoneNumber }}</td>
+              <td>{{ clientData.idNumber }}</td>
+              <td>{{ clientData.pinNumber }}</td>
+              <td>{{ clientData.id }}</td>
+
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4">{{ 'gis.quotation.no_client_found' | translate }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="d-flex justify-content-end mt-4 mb-3">
+        <button type="button" class="btn btn-outline-primary px-5 me-2" id="cancel" data-bs-dismiss="modal">{{
+          'gis.policy.cancel'
+          | translate
+          }}
+        </button>
+        <button *ngIf="selectedClientType ==='existing'" type="button" class="btn btn-primary px-5"
+          data-bs-dismiss="modal" (click)="saveSelectedClient()">Save
+        </button>
+        <button *ngIf="selectedClientType ==='new'" type="button" class="btn btn-primary px-5"
+          data-bs-dismiss="modal">Save
+        </button>
       </div>
     </div>
   </div>
-
-  <!-- reassign quote modal -->
-  <div class="modal fade" id="reassignQuotation">
-    <div class="modal-dialog modal-dialog-centered" style="min-width:500px">
-      <div class="modal-content ps-4 pt-2 pe-4">
-        <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
-          <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-            {{ 'gis.quotation.reassign_quote' | translate }}</p>
-          <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none;">X
-          </button>
-        </div>
-        <div class="row mt-2">
-          <p-table #dt [value]="users" [rows]="3" [paginator]="true" [globalFilterFields]="['id', 'name']"
-            selectionMode="single" [(selection)]="selectedUser" styleClass="p-datatable-striped"
-            (onRowSelect)="onUserSelect()" (onRowUnselect)="onUserUnselect()">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>User ID</th>
-                <th>Full Name</th>
-              </tr>
-              <tr styleClass="p-striped">
-                <th>
-                  <input type="text" [(ngModel)]="globalSearch" (input)="filterGlobal($event)">
-                </th>
-                <th>
-                  <input type="text" [(ngModel)]="fullNameSearch" (input)="filterByFullName($event)">
-                </th>
-              </tr>
-
-            </ng-template>
-            <ng-template pTemplate="body" let-user>
-              <tr [pSelectableRow]="user">
-                <td>{{ user.id }}</td>
-                <td>{{ user.name }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
-
-        <hr class="mt-1" style="border: none; border-top: 2.5px solid #0000004D;">
-        <small class="text-danger block" [class.invisible]="!noUserChosen">
-          Please select a person to reassign before continuing
-        </small>
-
-        <div>
-          <label class="text-dark block" for="comment">Comment</label>
-          <textarea [(ngModel)]="reassignComment" name="reassignComment"
-            class="w-full mt-0 p-2 border rounded"></textarea>
-        </div>
-
-        <small class="text-danger block" [class.invisible]="!comment">
-          Please leave a comment before continuing
-        </small>
-        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-2 mt-2 p-0">
-
-          <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
-          <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
-            (click)="reassignQuotation()">{{ 'gis.quotation.reassign' | translate }}
-          </button>
-                    <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
-            style="text-decoration: none;">{{
-            'gis.quotation.cancel' | translate
-            }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>

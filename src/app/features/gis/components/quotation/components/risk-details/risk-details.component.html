@@ -1273,11 +1273,11 @@
                             <!-- <input class="form-control-sm mb-2" id="search-input-Rsection" pInputText type="text"
                                 (input)="applyGlobalFilter($event)" placeholder="Search..."> -->
 
-                            <p-table #sectionTable [value]="sectionPremiums" id="clientTable" dataKey="code"
+                            <p-table #sectionTable [value]="sectionPremium" id="clientTable" dataKey="code"
                                 [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }"
                                 [(selection)]="selectedSections" [resizableColumns]="true" responsiveLayout="scroll"
-                                class='ui-datatable' [autoLayout]="true" [paginator]="true" [rows]="2"
-                                [rowsPerPageOptions]="[2, 4, 6]" [scrollable]="true" scrollDirection="horizontal"
+                                class='ui-datatable' [autoLayout]="true" [paginator]="true" [rows]="5"
+                                [rowsPerPageOptions]="[5, 10, 20]" [scrollable]="true" scrollDirection="horizontal"
                                 [showCurrentPageReport]="true"
                                 currentPageReportTemplate="{first} - {last} of {totalRecords}"
                                 [globalFilterFields]="['benefit', 'freeLimit', 'limitAmount', 'rate']">
@@ -1326,7 +1326,7 @@
                                             <input type="checkbox" id="check_section_{{ section.sectionCode }}"
                                                 [(ngModel)]="section.isChecked">
                                         </td>
-                                        <td class="equal-width">{{ section.benefit |sentenceCase }}</td>
+                                        <td class="equal-width">{{ section.sectionDescription |sentenceCase }}</td>
                                         <td class="equal-width">{{ section.freeLimit | number }}</td>
                                         <td class="equal-width" [pEditableColumn]="section.limitAmount"
                                             pEditableColumnField="limitAmount">
