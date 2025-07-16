@@ -36,7 +36,7 @@ import { TokenInterceptor } from './services/http/token-interceptor';
 import { HttpCacheService } from './services/http/http-cache.service';
 import { IeCacheControlInterceptor } from './services/http/ie-cache-control-interceptor';
 import { OtpComponent } from './components/otp/otp.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { DynamicTableComponent } from './components/dynamic-table/dynamic-table.component';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -99,12 +99,15 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { PolicyModule } from '../features/lms/grp/components/policy/policy.module';
 import { NationalityPipe } from '../features/lms/pipe/nationality/nationality.pipe';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
-import { DynamicDocumentModalComponent } from "./components/dynamic-document-modal/dynamic-document-modal.component";
-import { ApiSpinnerInterceptor } from "./services/http/api-spinner.interceptor";
+import {DynamicDocumentModalComponent} from "./components/dynamic-document-modal/dynamic-document-modal.component";
+import {ApiSpinnerInterceptor} from "./services/http/api-spinner.interceptor";
 import { ClientSearchModalComponent } from './components/client-search-modal/client-search-modal.component';
 import { AgentSearchModalComponent } from './components/agent-search-modal/agent-search-modal.component';
 import { ProductSearchModalComponent } from './components/product-search-modal/product-search-modal.component';
 import { DynamicReportsComponent } from './components/dynamic-reports/dynamic-reports.component';
+import { DynamicSetupTableComponent } from './components/dynamic-setup-table/dynamic-setup-table.component';
+import {DialogModule} from "primeng/dialog";
+import {NgxIntlTelInputModule} from "ngx-intl-tel-input";
 import { TruncatePipe } from './pipes/truncate/truncate.pipe';
 
 
@@ -219,33 +222,38 @@ const SERVICES = [
     AgentSearchModalComponent,
     ProductSearchModalComponent,
     DynamicReportsComponent,
+    DynamicReportsComponent,
     TruncatePipe,
 
   ],
-  imports: [
-    CommonModule,
-    ToastModule,
-    ProgressBarModule,
-    NgOptimizedImage,
-    ReactiveFormsModule,
-    TableModule,
-    ButtonModule,
-    ChipsModule,
-    ChartModule,
-    RouterLink,
-    NgxSpinnerModule,
-    TranslateModule,
-    ReactiveFormsModule,
-    CalendarModule,
-    DropdownModule,
-    HttpClientModule,
-    NgbModule,
-    Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
-    TabViewModule,
-    FileUploadModule,
-    PolicyModule,
-    PdfViewerModule
-  ],
+    imports: [
+        CommonModule,
+        ToastModule,
+        ProgressBarModule,
+        NgOptimizedImage,
+        ReactiveFormsModule,
+        TableModule,
+        ButtonModule,
+        ChipsModule,
+        ChartModule,
+        RouterLink,
+        NgxSpinnerModule,
+        TranslateModule,
+        ReactiveFormsModule,
+        CalendarModule,
+        DropdownModule,
+        HttpClientModule,
+        NgbModule,
+        Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
+        TabViewModule,
+        FileUploadModule,
+        PolicyModule,
+        PdfViewerModule,
+        DialogModule,
+        FormsModule,
+        NgxIntlTelInputModule,
+      DynamicSetupTableComponent
+    ],
   exports: [
     ErrorComponent,
     HideMessageDirective,
@@ -297,6 +305,7 @@ const SERVICES = [
     AgentSearchModalComponent,
     ProductSearchModalComponent,
     DynamicReportsComponent,
+    DynamicSetupTableComponent,
     TruncatePipe,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -309,4 +318,3 @@ export class SharedModule {
     };
   }
 }
-

@@ -190,7 +190,7 @@ export class ApiService {
     const url = `${this.baseURL}/${endpoint}`;
 
     const headers = new HttpHeaders()
-      .set('Accept', 'application/json')
+      // .set('Accept', 'application/json')
       .set(
         'X-TenantId',
         StringManipulation.returnNullIfEmpty(

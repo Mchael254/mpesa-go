@@ -144,9 +144,10 @@ input {
 button.p-button {
   min-width: 100px;
 }
+
 .card {
   border-radius: 5px;
-    box-shadow: none !important;
+  box-shadow: none !important;
 
 }
 
@@ -195,7 +196,8 @@ p-table ::ng-deep table tbody tr td {
   border: none;
 }
 
-.label, .value {
+.label,
+.value {
   margin-bottom: 0;
   padding: 0 0.5rem;
   padding-right: 6.4rem;
@@ -314,35 +316,37 @@ button {
 
 
 }
-  #shareQuote {
-    font-family: Roboto;
-    font-weight: 600;
-    font-size: 20px;
-    line-height: 100%;
-    letter-spacing: 0%;
 
-  }
-  .total-premium-row {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding-right: 40px;
-    gap: 10px; 
-  }
-  
-  .label {
-    font-weight: 500;
-    color: #000000;
-    font-size: 16px;
-  }
-  
-  .value {
-   color: #000000;
-   font-size: 20px;
-   font-weight: 600;
-  }
-  
-  
+#shareQuote {
+  font-family: Roboto;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: 0%;
+
+}
+
+.total-premium-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 40px;
+  gap: 10px;
+}
+
+.label {
+  font-weight: 500;
+  color: #000000;
+  font-size: 16px;
+}
+
+.value {
+  color: #000000;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+
 .flexible-header {
   white-space: nowrap;
   width: auto;
@@ -362,6 +366,43 @@ button {
   border: none;
   filter: brightness(0) saturate(100%) invert(12%) sepia(93%) saturate(5425%) hue-rotate(357deg) brightness(92%) contrast(115%);
 }
+
 .custom-margin {
-  margin-left: 15px; 
+  margin-left: 15px;
+}
+
+.method-options {
+  font-family: Roboto;
+  display: flex;
+  gap: 2rem;
+  font-size: 16px;
+  color: #000000;
+  font-weight: 400;
+}
+
+.method-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#new-client-input {
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  /* height: 50%; */
+  font-size: 14px;
+  height: 30px;
+}
+
+::ng-deep .iti.separate-dial-code input {
+  width: 315px !important;
+}
+
+.new-client-label {
+  font-family: Roboto;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #000000;
 }

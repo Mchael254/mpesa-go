@@ -1,0 +1,4068 @@
+{
+    "id": "client-registration",
+    "locale": "en",
+	"category": [
+		{
+			"label": "Corporate",
+			"groups": [
+				{
+					"label": "",
+					"groupId": "",
+					"subGroup": [
+						{
+							"label": "",
+							"subGroupId": ""
+						}
+
+					]
+				}
+
+			],
+
+			"fields": [
+				{
+					"groupId": "",
+					"subGroupId": "",
+					"fieldId": "dateOfIncorporation",
+					"type": "date",
+					"label": {
+						"en": "Date of Incorporation",
+						"ke": "",
+						"fr": ""
+					},
+					"dynamicLabel": null,
+					"defaultValue": null,
+					"visible": true,
+					"disabled": false,
+					"validations": [],
+					"conditions": [],
+					"order": 1,
+					"tooltip": {
+						"en": "",
+						"fr": "",
+						"ke": ""
+					},
+					"placeholder": {
+						"en": "",
+						"fr": "",
+						"ke": ""
+					},
+					"isMandatory": true,
+					"options": []
+				}
+			]
+		},
+		{
+			"label": "Individual",
+			"groups": [
+				{
+					"label": "",
+					"groupId": "",
+					"subGroup": [
+						{
+							"label": "",
+							"subGroupId": ""
+						}
+
+					]
+				}
+
+			],
+
+			"fields": [
+				{
+					"groupId": "",
+					"subGroupId": "",
+					"fieldId": "dateOfIncorporation",
+					"type": "date",
+					"label": {
+						"en": "Date of Birth",
+						"ke": "",
+						"fr": ""
+					},
+					"dynamicLabel": null,
+					"defaultValue": null,
+					"visible": true,
+					"disabled": false,
+					"validations": [],
+					"conditions": [],
+					"order": 1,
+					"tooltip": {
+						"en": "",
+						"fr": "",
+						"ke": ""
+					},
+					"placeholder": {
+						"en": "",
+						"fr": "",
+						"ke": ""
+					},
+					"isMandatory": true,
+					"options": []
+				}
+			]
+		}
+	],
+    "fields": [
+        {
+            "fieldId": "category",
+            "type": "select",
+            "label": {
+                "en": "Client Category",
+                "ke": "Kategoria ya Mteja",
+                "fr": "Cat'gorie de Client"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "new_entity",
+          "subGroupId":"cntl_cpersons",
+            "order": 1,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "branchId",
+            "type": "select",
+            "label": {
+                "en": "Organization Branch",
+                "ke": "Tawi la Shirika",
+                "fr": "Succursale de l'organisation"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "prime_entity",
+          "subGroupId":"cntl_cpersons",
+            "order": 2,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "shortDescription",
+            "type": "text",
+            "label": {
+                "en": "Short Description",
+                "ke": "Maelezo Mafupi",
+                "fr": "Br\u00e8ve Description"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": [],
+            "groupId": "prime_entity",
+          "subGroupId":"cntl_cpersons",
+            "order": 3,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "clientTypeId",
+            "type": "select",
+            "label": {
+                "en": "Client Type",
+                "ke": "Aina ya Mteja",
+                "fr": "Type de Client"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "prime_entity",
+            "order": 4,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "gender",
+            "type": "select",
+            "label": {
+                "en": "Gender",
+                "ke": "Jinsia",
+                "fr": "Genre"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ],
+            "groupId": "prime_entity",
+            "order": 5,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "dateOfBirth",
+            "type": "date",
+            "label": {
+                "en": "Date of Birth",
+                "ke": "Tarehe ya Kuzaliwa",
+                "fr": "Date de Naissance"
+            },
+            "dynamicLabel": {
+                "field": "category",
+                "mapping": {
+                    "Individual": {
+                        "en": "Date of Birth",
+                        "ke": "Tarehe ya Kuzaliwa",
+                        "fr": "Date de Naissance"
+                    },
+                    "Corporate": {
+                        "en": "Date of Incorporation",
+                        "ke": "Tarehe ya Usajili",
+                        "fr": "Date de Constitution"
+                    }
+                }
+            },
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+			{
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+			],
+            "groupId": "prime_entity",
+            "order": 6,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "modeOfIdentityId",
+            "type": "select",
+            "label": {
+                "en": "ID Type",
+                "ke": "Aina ya Kitambulisho",
+                "fr": "Type d'Identification"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true,
+                    "config": {
+                        "defaultValue": "NATIONAL_ID"
+                    }
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": true,
+                    "config": {
+                        "defaultValue": "CERT_OF_INCOP_NUMBER"
+                    }
+                }
+            ],
+            "groupId": "prime_entity",
+            "order": 7,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "idNumber",
+            "type": "text",
+            "label": {
+                "en": "National ID Number",
+                "ke": "Namba ya Kitambulisho cha Kitaifa",
+                "fr": "Num'ro de Carte Nationale d'Identit'"
+            },
+            "dynamicLabel": {
+                "field": "modeOfIdentityId",
+                "mapping": {
+                    "NATIONAL_ID": {
+                        "en": "National ID Number",
+                        "ke": "Namba ya Kitambulisho cha Kitaifa",
+                        "fr": "Num'ro de Carte Nationale d'Identit'"
+                    },
+                    "PASSPORT_NUMBER": {
+                        "en": "Passport Number",
+                        "ke": "Namba ya Pasipoti",
+                        "fr": "Num'ro de Passeport"
+                    },
+                    "BIRTH_CERT_NUMBER": {
+                        "en": "Birth Certificate Number",
+                        "ke": "Namba ya Cheti cha Kuzaliwa",
+                        "fr": "Num'ro de Certificat de Naissance"
+                    },
+                    "CERT_OF_INCOP_NUMBER": {
+                        "en": "Certificate of Incorporation Number",
+                        "ke": "Namba ya Cheti cha Usajili",
+                        "fr": "Num'ro de Certificat d'Incorporation"
+                    },
+                    "TAX_NUMBER": {
+                        "en": "Tax Number",
+                        "ke": "Namba ya Ushuru",
+                        "fr": "Num'ro Fiscal"
+                    }
+                }
+            },
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "modeOfIdentityId",
+                    "value": "NATIONAL_ID",
+                    "config": {
+                        "validations": [
+                            {
+                                "type": "pattern",
+                                "value": "^[0-9]{6,10}$",
+                                "message": {
+                                    "en": "National ID must be 6 to 10 digits, e.g. 34776252",
+                                    "ke": "Kitambulisho lazima kiwe na tarakimu 6 hadi 10, mfano 34776252",
+                                    "fr": "La carte d'identité doit comporter de 6 à 10 chiffres, ex. 34776252"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "field": "modeOfIdentityId",
+                    "value": "PASSPORT_NUMBER",
+                    "config": {
+                        "validations": [
+                            {
+                                "type": "pattern",
+                                "value": "^[A-Z0-9]{6,9}$",
+                                "message": {
+                                    "en": "Passport number must be 6 to 9 alphanumeric characters",
+                                    "ke": "Nambari ya pasipoti iwe na herufi na/au tarakimu kati ya 6 hadi 9",
+                                    "fr": "Le numéro de passeport doit contenir de 6 à 9 caractères alphanumériques"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "field": "modeOfIdentityId",
+                    "value": "BIRTH_CERT_NUMBER",
+                    "config": {
+                        "validations": [
+                            {
+                                "type": "pattern",
+                                "value": "^[A-Z0-9-/]{6,15}$",
+                                "message": {
+                                    "en": "Birth Certificate number must be 6 to 15 characters (letters, numbers, or '/')",
+                                    "ke": "Nambari ya cheti cha kuzaliwa iwe na herufi, tarakimu au / kati ya 6 hadi 15",
+                                    "fr": "Le numéro d'acte de naissance doit comporter de 6 à 15 caractères (lettres, chiffres ou '/')"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "field": "modeOfIdentityId",
+                    "value": "CERT_OF_INCOP_NUMBER",
+                    "config": {
+                        "validations": [
+                            {
+                                "type": "pattern",
+                                "value": "^[A-Z0-9-/]{6,20}$",
+                                "message": {
+                                    "en": "Certificate of Incorporation number must be 6 to 20 characters",
+                                    "ke": "Nambari ya cheti cha usajili iwe kati ya herufi/tarakimu 6 hadi 20",
+                                    "fr": "Le numéro du certificat d'incorporation doit comporter de 6 à 20 caractères"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            "groupId": "prime_entity",
+            "order": 8,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "firstName",
+            "type": "text",
+            "label": {
+                "en": "First Name",
+                "ke": "Jina la Kwanza",
+                "fr": "Pr'nom"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ],
+            "groupId": "prime_entity",
+            "order": 9,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "lastName",
+            "type": "text",
+            "label": {
+                "en": "Last Name",
+                "ke": "Jina la Mwisho",
+                "fr": "Nom de Famille"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ],
+            "groupId": "prime_entity",
+            "order": 10,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "otherNames",
+            "type": "text",
+            "label": {
+                "en": "Company/Organization Name",
+                "ke": "Jina la Kampuni",
+                "fr": "Nom de l'Entreprise"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": false
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": true
+                }
+            ],
+            "groupId": "prime_entity",
+            "order": 11,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "pinNumber",
+            "type": "text",
+            "label": {
+                "en": "PIN Number",
+                "ke": "Namba ya PIN",
+                "fr": "Num'ro PIN"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "prime_entity",
+            "order": 12,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "withEffectFromDate",
+            "type": "date",
+            "label": {
+                "en": "Start Date",
+                "ke": "Tarehe ya Kuanza",
+                "fr": "Date de D'but"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "prime_entity",
+            "order": 13,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "withEffectToDate",
+            "type": "date",
+            "label": {
+                "en": "End Date",
+                "ke": "Tarehe ya Mwisho",
+                "fr": "Date de Fin"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "prime_entity",
+            "order": 14,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "organizationId",
+            "type": "number",
+            "label": {
+                "en": "Organization",
+                "ke": "Shirika",
+                "fr": "Organisation"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "prime_entity",
+            "order": 15,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "maritalStatus",
+            "type": "select",
+            "label": {
+                "en": "Marital Status",
+                "ke": "Hali ya Ndoa",
+                "fr": "\u00c9tat Civil"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ],
+            "groupId": "prime_entity",
+            "order": 16,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "titleId",
+            "type": "select",
+            "label": {
+                "en": "Client Title",
+                "ke": "Cheo cha Mteja",
+                "fr": "Titre du Client"
+            },
+            "dynamicLabel": null,
+            "defaultValue": "",
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ],
+            "groupId": "contactDetails",
+            "order": 17,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "emailAddress",
+            "type": "email",
+            "label": {
+                "en": "Email Address",
+                "ke": "Anwani ya Barua Pepe",
+                "fr": "Adresse Email"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "email",
+                    "message": {
+                        "en": "Invalid email format",
+                        "ke": "Muundo batili wa barua pepe",
+                        "fr": "Format d'email invalide"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 18,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "phoneNumber",
+            "type": "text",
+            "label": {
+                "en": "Phone Number",
+                "ke": "Namba ya Simu",
+                "fr": "Num'ro de T'l'phone"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "pattern",
+                    "value": "^\\+?[1-9][0-9]{7,14}$",
+                    "message": {
+                        "en": "Invalid phone number format",
+                        "ke": "Muundo batili wa namba ya simu",
+                        "fr": "Format de num'ro de t'l'phone invalide"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 19,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "contactChannel",
+            "type": "select",
+            "label": {
+                "en": "Preferred Contact Channel",
+                "ke": "Njia ya Mawasiliano Unayoipendelea",
+                "fr": "Canal de Contact Pr'f'r'"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 20,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "smsNumber",
+            "type": "text",
+            "label": {
+                "en": "SMS Number",
+                "ke": "Nambari ya SMS",
+                "fr": "Num'ro SMS"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 21,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "whatsappNumber",
+            "type": "text",
+            "label": {
+                "en": "WhatsApp Number",
+                "ke": "Nambari ya WhatsApp",
+                "fr": "Num'ro WhatsApp"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 22,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "socialMediaUrl",
+            "type": "text",
+            "label": {
+                "en": "Social Media Profile URL",
+                "ke": "Kiungo cha Wasifu wa Mitandao ya Kijamii",
+                "fr": "Lien du Profil R'seaux Sociaux"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 23,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "faxNumber",
+            "type": "text",
+            "label": {
+                "en": "Fax Number",
+                "ke": "Nambari ya Faksi",
+                "fr": "Num'ro de Fax"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 24,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "countryId",
+            "type": "select",
+            "label": {
+                "en": "Country",
+                "ke": "Nchi",
+                "fr": "Pays"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 25,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "stateId",
+            "type": "select",
+            "label": {
+                "en": "State/Province",
+                "ke": "Jimbo/Mkoa",
+                "fr": "\u00c9tat/Province"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 26,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "townId",
+            "type": "select",
+            "label": {
+                "en": "Town/City",
+                "ke": "Mji",
+                "fr": "Ville"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 27,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "boxNumber",
+            "type": "text",
+            "label": {
+                "en": "P.O. Box Number",
+                "ke": "Sanduku la Posta",
+                "fr": "Num'ro de Bo\u00eete Postale"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 28,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "isUtilityAddress",
+            "type": "select",
+            "label": {
+                "en": "Utility Address",
+                "ke": "Anwani ya Huduma",
+                "fr": "Adresse de Service"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 29,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "residentialAddress",
+            "type": "text",
+            "label": {
+                "en": "Residential Address",
+                "ke": "Anwani ya Makazi",
+                "fr": "Adresse R'sidentielle"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ],
+            "groupId": "address",
+            "order": 30,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "zip",
+            "type": "text",
+            "label": {
+                "en": "ZIP Code",
+                "ke": "Msimbo wa ZIP",
+                "fr": "Code ZIP"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": false
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ],
+            "groupId": "address",
+            "order": 31,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "estate",
+            "type": "text",
+            "label": {
+                "en": "Estate",
+                "ke": "Mtaa/Eneo",
+                "fr": "Lotissement"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": false
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ],
+            "groupId": "address",
+            "order": 32,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "road",
+            "type": "text",
+            "label": {
+                "en": "Road/Street",
+                "ke": "Barabara",
+                "fr": "Rue"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": false
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ],
+            "groupId": "address",
+            "order": 33,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "physicalAddress",
+            "type": "text",
+            "label": {
+                "en": "Physical Address",
+                "ke": "Anwani ya Makazi",
+                "fr": "Adresse Physique"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 34,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "postalCode",
+            "type": "text",
+            "label": {
+                "en": "Postal Code",
+                "ke": "Msimbo wa Posta",
+                "fr": "Code Postal"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "pattern",
+                    "value": "^\\d{5}$",
+                    "message": {
+                        "en": "Postal Code must be 5 digits",
+                        "ke": "Msimbo wa Posta lazima uwe na tarakimu 5",
+                        "fr": "Le code postal doit comporter 5 chiffres"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "address",
+            "order": 35,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "bankBranchId",
+            "type": "select",
+            "label": {
+                "en": "Bank Branch",
+                "ke": "Tawi la Benki",
+                "fr": "Agence Bancaire"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 36,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "accountNumber",
+            "type": "text",
+            "label": {
+                "en": "Account Number",
+                "ke": "Namba ya Akaunti",
+                "fr": "Num'ro de Compte"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 37,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "currencyId",
+            "type": "select",
+            "label": {
+                "en": "Currency",
+                "ke": "Sarafu",
+                "fr": "Devise"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 38,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "effectiveFromDate",
+            "type": "date",
+            "label": {
+                "en": "Effective From",
+                "ke": "Tarehe ya Kuanza",
+                "fr": "Date de D'but"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 39,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "effectiveToDate",
+            "type": "date",
+            "label": {
+                "en": "Effective To",
+                "ke": "Tarehe ya Mwisho",
+                "fr": "Date de Fin"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 40,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "isDefaultChannel",
+            "type": "select",
+            "label": {
+                "en": "Default Channel",
+                "ke": "Chaneli Chaguomsingi",
+                "fr": "Canal par D'faut"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 41,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "MPAYNO",
+            "type": "text",
+            "label": {
+                "en": "MPAY Number",
+                "ke": "Nambari ya MPAY",
+                "fr": "Num'ro MPAY"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 42,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "IBAN",
+            "type": "text",
+            "label": {
+                "en": "IBAN",
+                "ke": "IBAN",
+                "fr": "IBAN"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 43,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "preferredChannel",
+            "type": "select",
+            "label": {
+                "en": "Preferred Channel",
+                "ke": "Chaneli Inayopendelewa",
+                "fr": "Canal Pr'f'r'"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 44,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "swiftCode",
+            "type": "text",
+            "label": {
+                "en": "SWIFT Code",
+                "ke": "Msimbo wa SWIFT",
+                "fr": "Code SWIFT"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 45,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "vatApplicable",
+            "type": "select",
+            "label": {
+                "en": "VAT Applicable?",
+                "ke": "Je, VAT Inahitajika?",
+                "fr": "TVA Applicable ?"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 46,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "commissionAllowed",
+            "type": "select",
+            "label": {
+                "en": "Commission Allowed?",
+                "ke": "Je, Tume Inaruhusiwa?",
+                "fr": "Commission Autoris'e ?"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 47,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "creditAllowed",
+            "type": "select",
+            "label": {
+                "en": "Credit Allowed?",
+                "ke": "Je, Mkopo Unaruhusiwa?",
+                "fr": "Cr'dit Autoris' ?"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 48,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "commissionStatusDate",
+            "type": "date",
+            "label": {
+                "en": "Commission Status Date",
+                "ke": "Tarehe ya Hali ya Tume",
+                "fr": "Date du Statut de Commission"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 49,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "commissionEffectiveDate",
+            "type": "date",
+            "label": {
+                "en": "Commission Effective Date",
+                "ke": "Tarehe ya Kuanzisha Tume",
+                "fr": "Date d'Entr'e en Vigueur de la Commission"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 50,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "creditLimit",
+            "type": "number",
+            "label": {
+                "en": "Credit Limit",
+                "ke": "Kikomo cha Mkopo",
+                "fr": "Plafond de Cr'dit"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 51,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "taxAuthorityCode",
+            "type": "text",
+            "label": {
+                "en": "Tax Authority Code",
+                "ke": "Msimbo wa Mamlaka ya Ushuru",
+                "fr": "Code de l'Autorit' Fiscale"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 52,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "paymentTerms",
+            "type": "text",
+            "label": {
+                "en": "Payment Terms",
+                "ke": "Masharti ya Malipo",
+                "fr": "Modalit's de Paiement"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 53,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "paymentFrequency",
+            "type": "select",
+            "label": {
+                "en": "Payment Frequency",
+                "ke": "Mzunguko wa Malipo",
+                "fr": "Fr'quence de Paiement"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 54,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "glAccountNumber",
+            "type": "text",
+            "label": {
+                "en": "GL Account Number",
+                "ke": "Nambari ya Akaunti ya GL",
+                "fr": "Num'ro de Compte GL"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 55,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "withholdingTax",
+            "type": "number",
+            "label": {
+                "en": "Withholding Tax",
+                "ke": "Kodi ya Zuio",
+                "fr": "Imp\u00f4t Retenu \u00e0 la Source"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 56,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "withholdingTaxApplicable",
+            "type": "select",
+            "label": {
+                "en": "Withholding Tax Applicable?",
+                "ke": "Je, Kodi ya Zuio Inahitajika?",
+                "fr": "Imp\u00f4t Retenu Applicable ?"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "paymentDetails",
+            "order": 57,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "idNo",
+            "type": "text",
+            "label": {
+                "en": "ID Number",
+                "fr": "Num'ro d'identification",
+                "ke": "Nambari ya Kitambulisho"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 58,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "name",
+            "type": "text",
+            "label": {
+                "en": "Name",
+                "fr": "Nom",
+                "ke": "Jina"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 59,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "address",
+            "type": "textarea",
+            "label": {
+                "en": "Address",
+                "fr": "Adresse",
+                "ke": "Anwani"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 60,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "mobileNo",
+            "type": "text",
+            "label": {
+                "en": "Mobile Number",
+                "fr": "Num'ro de mobile",
+                "ke": "Nambari ya Simu"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "pattern",
+                    "regex": "^\\+?[1-9][0-9]{7,14}$",
+                    "message": {
+                        "en": "Invalid mobile number format",
+                        "fr": "Format de num'ro de mobile invalide",
+                        "ke": "Muundo wa nambari ya simu si sahihi"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 61,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "email",
+            "type": "email",
+            "label": {
+                "en": "Email Address",
+                "fr": "Adresse e-mail",
+                "ke": "Barua pepe"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "email",
+                    "message": {
+                        "en": "Invalid email format",
+                        "fr": "Format d'e-mail invalide",
+                        "ke": "Muundo wa barua pepe si sahihi"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 62,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "type",
+            "type": "select",
+            "label": {
+                "en": "Type",
+                "fr": "Type",
+                "ke": "Aina"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 63,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "zip",
+            "type": "text",
+            "label": {
+                "en": "ZIP Code",
+                "fr": "Code postal",
+                "ke": "Nambari ya Posta"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 64,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "town",
+            "type": "text",
+            "label": {
+                "en": "Town",
+                "fr": "Ville",
+                "ke": "Mji"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 65,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "countryCode",
+            "type": "select",
+            "label": {
+                "en": "Country",
+                "fr": "Pays",
+                "ke": "Nchi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 66,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "bankBranchCode",
+            "type": "select",
+            "label": {
+                "en": "Bank Branch",
+                "fr": "Agence bancaire",
+                "ke": "Tawi la Benki"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 67,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "accountNumber",
+            "type": "text",
+            "label": {
+                "en": "Account Number",
+                "fr": "Num'ro de compte",
+                "ke": "Nambari ya Akaunti"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 68,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "code",
+            "type": "number",
+            "label": {
+                "en": "Contact Code",
+                "fr": "Code du contact",
+                "ke": "Nambari ya mawasiliano"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 69,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "clientCode",
+            "type": "number",
+            "label": {
+                "en": "Client Code",
+                "fr": "Code client",
+                "ke": "Nambari ya mteja"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 70,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "clientTitleCode",
+            "type": "select",
+            "label": {
+                "en": "Title",
+                "fr": "Titre",
+                "ke": "Cheo"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 71,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "name",
+            "type": "text",
+            "label": {
+                "en": "Name",
+                "fr": "Nom",
+                "ke": "Jina"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 72,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "idNumber",
+            "type": "text",
+            "label": {
+                "en": "ID Number",
+                "fr": "Num'ro d'identit'",
+                "ke": "Nambari ya kitambulisho"
+            },
+            "dynamicLabel": {
+                "field": "modeOfIdentityId",
+                "mapping": {
+                    "NATIONAL_ID": {
+                        "en": "National ID Number",
+                        "ke": "Namba ya Kitambulisho cha Kitaifa",
+                        "fr": "Num'ro de Carte Nationale d'Identit'"
+                    },
+                    "PASSPORT_NUMBER": {
+                        "en": "Passport Number",
+                        "ke": "Namba ya Pasipoti",
+                        "fr": "Num'ro de Passeport"
+                    },
+                    "BIRTH_CERT_NUMBER": {
+                        "en": "Birth Certificate Number",
+                        "ke": "Namba ya Cheti cha Kuzaliwa",
+                        "fr": "Num'ro de Certificat de Naissance"
+                    },
+                    "CERT_OF_INCOP_NUMBER": {
+                        "en": "Certificate of Incorporation Number",
+                        "ke": "Namba ya Cheti cha Usajili",
+                        "fr": "Num'ro de Certificat d'Incorporation"
+                    },
+                    "TAX_NUMBER": {
+                        "en": "Tax Number",
+                        "ke": "Namba ya Ushuru",
+                        "fr": "Num'ro Fiscal"
+                    }
+                }
+            },
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 73,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "email",
+            "type": "email",
+            "label": {
+                "en": "Email",
+                "fr": "Email",
+                "ke": "Barua pepe"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "email",
+                    "message": {
+                        "en": "Invalid email address",
+                        "fr": "Adresse e-mail invalide",
+                        "ke": "Anwani ya barua pepe si sahihi"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 74,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "mobileNumber",
+            "type": "text",
+            "label": {
+                "en": "Mobile Number",
+                "fr": "Num'ro de portable",
+                "ke": "Nambari ya simu"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "pattern",
+                    "pattern": "^\\+?[1-9][0-9]{7,14}$",
+                    "message": {
+                        "en": "Invalid mobile number format",
+                        "fr": "Format de num'ro de portable invalide",
+                        "ke": "Muundo wa nambari ya simu si sahihi"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 75,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "wef",
+            "type": "date",
+            "label": {
+                "en": "Valid From (W.E.F)",
+                "fr": "Valide \u00e0 partir de",
+                "ke": "Imethibitishwa kuanzia"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 76,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "wet",
+            "type": "date",
+            "label": {
+                "en": "Valid To (W.E.T)",
+                "fr": "Valide jusqu'\u00e0",
+                "ke": "Imethibitishwa hadi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 77,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "postalAddress",
+            "type": "text",
+            "label": {
+                "en": "Postal Address",
+                "fr": "Adresse postale",
+                "ke": "Anwani ya posta"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 78,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "physicalAddress",
+            "type": "text",
+            "label": {
+                "en": "Physical Address",
+                "fr": "Adresse physique",
+                "ke": "Anwani ya makazi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 79,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "sectorCode",
+            "type": "number",
+            "label": {
+                "en": "Sector Code",
+                "fr": "Code secteur",
+                "ke": "Nambari ya sekta"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "contactDetails",
+            "order": 80,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "code",
+            "type": "number",
+            "label": {
+                "en": "Branch Code",
+                "fr": "Code de la succursale",
+                "ke": "Nambari ya tawi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 81,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "clientCode",
+            "type": "number",
+            "label": {
+                "en": "Client Code",
+                "fr": "Code client",
+                "ke": "Nambari ya mteja"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 82,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "name",
+            "type": "text",
+            "label": {
+                "en": "Branch Name",
+                "fr": "Nom de la succursale",
+                "ke": "Jina la tawi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 83,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "shortDesc",
+            "type": "text",
+            "label": {
+                "en": "Short Description",
+                "fr": "Description courte",
+                "ke": "Maelezo mafupi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 84,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "countryId",
+            "type": "select",
+            "label": {
+                "en": "Country",
+                "fr": "Pays",
+                "ke": "Nchi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 85,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "stateId",
+            "type": "select",
+            "label": {
+                "en": "State/Region",
+                "fr": "\u00c9tat/R'gion",
+                "ke": "Jimbo/Eneo"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 86,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "townId",
+            "type": "select",
+            "label": {
+                "en": "Town",
+                "fr": "Ville",
+                "ke": "Mji"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 87,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "physicalAddress",
+            "type": "text",
+            "label": {
+                "en": "Physical Address",
+                "fr": "Adresse physique",
+                "ke": "Anwani ya makazi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 88,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "postalAddress",
+            "type": "text",
+            "label": {
+                "en": "Postal Address",
+                "fr": "Adresse postale",
+                "ke": "Anwani ya posta"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 89,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "postalCode",
+            "type": "text",
+            "label": {
+                "en": "Postal Code",
+                "fr": "Code postal",
+                "ke": "Msimbo wa posta"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "address",
+            "order": 90,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "email",
+            "type": "email",
+            "label": {
+                "en": "Email",
+                "fr": "Email",
+                "ke": "Barua pepe"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "email",
+                    "message": {
+                        "en": "Invalid email address",
+                        "fr": "Adresse e-mail invalide",
+                        "ke": "Anwani ya barua pepe si sahihi"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "address",
+            "order": 91,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "landlineNumber",
+            "type": "text",
+            "label": {
+                "en": "Landline Number",
+                "fr": "Num'ro fixe",
+                "ke": "Nambari ya simu ya mezani"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "pattern",
+                    "pattern": "^\\+?[1-9][0-9]{7,14}$",
+                    "message": {
+                        "en": "Invalid landline number format",
+                        "fr": "Format de num'ro fixe invalide",
+                        "ke": "Muundo wa nambari ya simu si sahihi"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "address",
+            "order": 92,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "mobileNumber",
+            "type": "text",
+            "label": {
+                "en": "Mobile Number",
+                "fr": "Num'ro de portable",
+                "ke": "Nambari ya simu ya mkononi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "pattern",
+                    "pattern": "^\\+?[1-9][0-9]{7,14}$",
+                    "message": {
+                        "en": "Invalid mobile number format",
+                        "fr": "Format de num'ro de portable invalide",
+                        "ke": "Muundo wa nambari ya simu si sahihi"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "address",
+            "order": 93,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "code",
+            "type": "number",
+            "label": {
+                "en": "Ownership Code",
+                "fr": "Code de propri't'",
+                "ke": "Nambari ya umiliki"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 94,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "accountCode",
+            "type": "number",
+            "label": {
+                "en": "Account Code",
+                "fr": "Code du compte",
+                "ke": "Nambari ya akaunti"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": true,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 95,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "idNumber",
+            "type": "text",
+            "label": {
+                "en": "ID Number",
+                "fr": "Num'ro d'identification",
+                "ke": "Nambari ya kitambulisho"
+            },
+            "dynamicLabel": {
+                "field": "modeOfIdentityId",
+                "mapping": {
+                    "NATIONAL_ID": {
+                        "en": "National ID Number",
+                        "ke": "Namba ya Kitambulisho cha Kitaifa",
+                        "fr": "Num'ro de Carte Nationale d'Identit'"
+                    },
+                    "PASSPORT_NUMBER": {
+                        "en": "Passport Number",
+                        "ke": "Namba ya Pasipoti",
+                        "fr": "Num'ro de Passeport"
+                    },
+                    "BIRTH_CERT_NUMBER": {
+                        "en": "Birth Certificate Number",
+                        "ke": "Namba ya Cheti cha Kuzaliwa",
+                        "fr": "Num'ro de Certificat de Naissance"
+                    },
+                    "CERT_OF_INCOP_NUMBER": {
+                        "en": "Certificate of Incorporation Number",
+                        "ke": "Namba ya Cheti cha Usajili",
+                        "fr": "Num'ro de Certificat d'Incorporation"
+                    },
+                    "TAX_NUMBER": {
+                        "en": "Tax Number",
+                        "ke": "Namba ya Ushuru",
+                        "fr": "Num'ro Fiscal"
+                    }
+                }
+            },
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 96,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "name",
+            "type": "text",
+            "label": {
+                "en": "Name",
+                "fr": "Nom",
+                "ke": "Jina"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "max_length",
+                    "value": 100,
+                    "message": {
+                        "en": "Name must not exceed 100 characters",
+                        "fr": "Le nom ne doit pas d'passer 100 caract\u00e8res",
+                        "ke": "Jina halipaswi kuzidi herufi 100"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 97,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "contactPersonPhone",
+            "type": "text",
+            "label": {
+                "en": "Contact Person Phone",
+                "fr": "T'l'phone du contact",
+                "ke": "Nambari ya simu ya mtu wa mawasiliano"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "max_length",
+                    "value": 20,
+                    "message": {
+                        "en": "Phone number must not exceed 20 characters",
+                        "fr": "Le num'ro de t'l'phone ne doit pas d'passer 20 caract\u00e8res",
+                        "ke": "Nambari ya simu haipaswi kuzidi herufi 20"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 98,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "percentOwnership",
+            "type": "number",
+            "label": {
+                "en": "Percentage Ownership",
+                "fr": "Pourcentage de propri't'",
+                "ke": "Asilimia ya umiliki"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "min",
+                    "min": 0.01,
+                    "message": {
+                        "en": "Percentage ownership must be at least 0.01",
+                        "fr": "Le pourcentage de propri't' doit \u00eatre au moins 0,01",
+                        "ke": "Asilimia ya umiliki lazima iwe angalau 0.01"
+                    }
+                },
+                {
+                    "type": "max",
+                    "value": 100.0,
+                    "message": {
+                        "en": "Percentage ownership cannot exceed 100",
+                        "fr": "Le pourcentage de propri't' ne peut pas d'passer 100",
+                        "ke": "Asilimia ya umiliki haiwezi kuzidi 100"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 99,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "nationalityCountryId",
+            "type": "number",
+            "label": {
+                "en": "Nationality Country ID",
+                "fr": "ID du pays de nationalit'",
+                "ke": "Nambari ya nchi ya utaifa"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 100,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "citizenshipCountryId",
+            "type": "number",
+            "label": {
+                "en": "Citizenship Country ID",
+                "fr": "ID du pays de citoyennet'",
+                "ke": "Nambari ya nchi ya uraia"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 101,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "fundsSource",
+            "type": "text",
+            "label": {
+                "en": "Source of Funds",
+                "fr": "Source des fonds",
+                "ke": "Chanzo cha fedha"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "max_length",
+                    "value": 200,
+                    "message": {
+                        "en": "Source of funds must not exceed 200 characters",
+                        "fr": "La source des fonds ne doit pas d'passer 200 caract\u00e8res",
+                        "ke": "Chanzo cha fedha hakipaswi kuzidi herufi 200"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 102,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "employmentStatus",
+            "type": "select",
+            "label": {
+                "en": "Employment Status",
+                "fr": "Statut d'emploi",
+                "ke": "Hali ya ajira"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 103,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "maritalStatus",
+            "type": "select",
+            "label": {
+                "en": "Marital Status",
+                "fr": "Statut matrimonial",
+                "ke": "Hali ya ndoa"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [
+                {
+                    "field": "category",
+                    "value": "Individual",
+                    "visible": true
+                },
+                {
+                    "field": "category",
+                    "value": "Corporate",
+                    "visible": false
+                }
+            ],
+            "groupId": "wealthAmlDetails",
+            "order": 104,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "occupationId",
+            "type": "number",
+            "label": {
+                "en": "Occupation ID",
+                "fr": "ID de profession",
+                "ke": "Nambari ya kazi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 105,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "sectorId",
+            "type": "number",
+            "label": {
+                "en": "Sector ID",
+                "fr": "ID du secteur",
+                "ke": "Nambari ya sekta"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 106,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "tradingName",
+            "type": "text",
+            "label": {
+                "en": "Trading Name",
+                "fr": "Nom commercial",
+                "ke": "Jina la biashara"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "max_length",
+                    "value": 150,
+                    "message": {
+                        "en": "Trading name must not exceed 150 characters",
+                        "fr": "Le nom commercial ne doit pas d'passer 150 caract\u00e8res",
+                        "ke": "Jina la biashara halipaswi kuzidi herufi 150"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 107,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "cr12Code",
+            "type": "number",
+            "label": {
+                "en": "CR12 Code",
+                "fr": "Code CR12",
+                "ke": "Nambari ya CR12"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 108,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "wealthDetailsCode",
+            "type": "number",
+            "label": {
+                "en": "Wealth Details Code",
+                "fr": "Code des D'tails de Richesse",
+                "ke": "Nambari ya Maelezo ya Mali"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 109,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "certificateReferenceNo",
+            "type": "text",
+            "label": {
+                "en": "Certificate Reference Number",
+                "fr": "Num'ro de R'f'rence du Certificat",
+                "ke": "Nambari ya Rejeleo la Cheti"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 110,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "certificateRegistrationYear",
+            "type": "text",
+            "label": {
+                "en": "Certificate Registration Year",
+                "fr": "Ann'e d'Enregistrement du Certificat",
+                "ke": "Mwaka wa Usajili wa Cheti"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [
+                {
+                    "type": "max_length",
+                    "value": 4,
+                    "message": {
+                        "en": "Year must be 4 digits",
+                        "fr": "L'ann'e doit contenir 4 chiffres",
+                        "ke": "Mwaka lazima uwe na tarakimu 4"
+                    }
+                }
+            ],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 111,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "certificateName",
+            "type": "text",
+            "label": {
+                "en": "Certificate Name",
+                "fr": "Nom du Certificat",
+                "ke": "Jina la Cheti"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 112,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "address",
+            "type": "text",
+            "label": {
+                "en": "Director Email Address",
+                "fr": "Adresse e-mail du Directeur",
+                "ke": "Barua pepe ya Mkurugenzi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 113,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "category",
+            "type": "select",
+            "label": {
+                "en": "Client Category",
+                "fr": "Cat'gorie du Client",
+                "ke": "Aina ya Mteja"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 114,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": true
+        },
+        {
+            "fieldId": "directorName",
+            "type": "text",
+            "label": {
+                "en": "Director Name",
+                "fr": "Nom du Directeur",
+                "ke": "Jina la Mkurugenzi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 115,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "directorIdRegNo",
+            "type": "text",
+            "label": {
+                "en": "Director ID Registration Number",
+                "fr": "Num'ro d'enregistrement d'identit'",
+                "ke": "Nambari ya Usajili ya Kitambulisho"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 116,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "directorDob",
+            "type": "date",
+            "label": {
+                "en": "Date of Incorporation",
+                "ke": "Tarehe ya Usajili",
+                "fr": "Date de Constitution"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 117,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        },
+        {
+            "fieldId": "directorTitle",
+            "type": "text",
+            "label": {
+                "en": "Director Title",
+                "fr": "Titre du Directeur",
+                "ke": "Cheo cha Mkurugenzi"
+            },
+            "dynamicLabel": null,
+            "defaultValue": null,
+            "visible": true,
+            "disabled": false,
+            "validations": [],
+            "conditions": [],
+            "groupId": "wealthAmlDetails",
+            "order": 118,
+            "tooltip": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "placeholder": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "isMandatory": false
+        }
+    ],
+    "formGroups": [
+        {
+            "groupId": "new_entity",
+            "labels": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "groupOrder": 1,
+            "description": "new entity details",
+            "subGroups": [],
+            "visible": true
+        },
+        {
+            "groupId": "prime_entity",
+            "labels": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "groupOrder": 2,
+            "description": "prime entity details",
+            "subGroups": [],
+            "visible": true
+        },
+        {
+            "groupId": "contactDetails",
+            "labels": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "groupOrder": 3,
+            "description": "contactDetails details",
+            "subGroups": [
+                {
+                    "subGroupId": "contactDetails",
+                    "labels": {
+                        "en": "",
+                        "fr": "",
+                        "ke": ""
+                    },
+                    "description": "contactDetails details",
+                    "visible": true
+                },
+                {
+                    "subGroupId": "contactPersons",
+                    "labels": {
+                        "en": "",
+                        "fr": "",
+                        "ke": ""
+                    },
+                    "description": "contactPersons details",
+                    "visible": true
+                }
+            ],
+            "visible": true
+        },
+        {
+            "groupId": "address",
+            "labels": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "groupOrder": 4,
+            "description": "address details",
+            "subGroups": [
+                {
+                    "subGroupId": "address",
+                    "labels": {
+                        "en": "",
+                        "fr": "",
+                        "ke": ""
+                    },
+                    "description": "address details",
+                    "visible": true
+                },
+                {
+                    "subGroupId": "branches",
+                    "labels": {
+                        "en": "",
+                        "fr": "",
+                        "ke": ""
+                    },
+                    "description": "branches details",
+                    "visible": true
+                }
+            ],
+            "visible": true
+        },
+        {
+            "groupId": "paymentDetails",
+            "labels": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "groupOrder": 5,
+            "description": "paymentDetails details",
+            "subGroups": [],
+            "visible": true
+        },
+        {
+            "groupId": "wealthAmlDetails",
+            "labels": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "groupOrder": 6,
+            "description": "wealthAmlDetails details",
+            "subGroups": [
+                {
+                    "subGroupId": "payee",
+                    "labels": {
+                        "en": "",
+                        "fr": "",
+                        "ke": ""
+                    },
+                    "description": "payee details",
+                    "visible": true
+                },
+                {
+                    "subGroupId": "ownershipDetails",
+                    "labels": {
+                        "en": "",
+                        "fr": "",
+                        "ke": ""
+                    },
+                    "description": "ownershipDetails details",
+                    "visible": true
+                },
+                {
+                    "subGroupId": "wealthAmlDetails",
+                    "labels": {
+                        "en": "",
+                        "fr": "",
+                        "ke": ""
+                    },
+                    "description": "wealthAmlDetails details",
+                    "visible": true
+                },
+                {
+                    "subGroupId": "cr12Details",
+                    "labels": {
+                        "en": "",
+                        "fr": "",
+                        "ke": ""
+                    },
+                    "description": "cr12Details details",
+                    "visible": true
+                }
+            ],
+            "visible": true
+        },
+        {
+            "groupId": "privacyPolicyConsent",
+            "labels": {
+                "en": "",
+                "fr": "",
+                "ke": ""
+            },
+            "groupOrder": 7,
+            "description": "Privacy Policy and Consent",
+            "subGroups": [],
+            "visible": true
+        }
+    ]
+}

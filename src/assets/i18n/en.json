@@ -246,6 +246,55 @@
     "Quotation Numbers": "Quotation Numbers",
     "Quotation Management": "Quotation Management"
   },
+  "FORM": {
+    "TITLE": "Create New Entity",
+    "SUBTITLE": "Fill in the details below to create a new entity",
+    "SECTIONS": {
+      "ENTITY_INFO": "Entity Information"
+    },
+    "FIELDS": {
+      "NAME": {
+        "LABEL": "Full Name"
+      },
+      "EMAIL": {
+        "LABEL": "Email Address"
+      },
+      "PHONE": {
+        "LABEL": "Phone Number"
+      },
+      "BIRTH_DATE": {
+        "LABEL": "Date of Birth"
+      },
+      "AGE": {
+        "LABEL": "Age"
+      },
+      "STATUS": {
+        "LABEL": "Status"
+      }
+    },
+    "OPTIONS": {
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive",
+      "PENDING": "Pending"
+    },
+    "VALIDATION": {
+      "REQUIRED": "This field is required",
+      "INVALID_FORMAT": "Invalid format",
+      "NAME_LENGTH": "Name must be between 3 and 50 characters",
+      "INVALID_EMAIL": "Please enter a valid email address",
+      "INVALID_PHONE": "Please enter a valid 10-digit phone number",
+      "AGE_RANGE": "Age must be between 18 and 100",
+      "MIN_LENGTH": "Minimum length is {{length}} characters",
+      "MAX_LENGTH": "Maximum length is {{length}} characters",
+      "MIN_VALUE": "Minimum value is {{value}}",
+      "MAX_VALUE": "Maximum value is {{value}}"
+    },
+    "SELECT_PLACEHOLDER": "Select {{field}}",
+    "BUTTONS": {
+      "SUBMIT": "Submit",
+      "RESET": "Reset"
+    }
+  },
   "shared": {
     "quotation_landing_screen": {
       "new_quote": "New quote",
@@ -872,7 +921,6 @@
       "existing_client": "Existing Client",
       "name": "Name",
       "client": "Client",
-      "select_a_client": "Select a client",
       "id_no": "Id number",
       "email_address": "Email Address",
       "phone_number": "Phone Number",
@@ -946,7 +994,7 @@
       "delete": "Delete",
       "add_another_risk": "Add another risk",
       "cancel_quote": "Cancel quote",
-      "cancel":"Cancel",
+      "cancel": "Cancel",
       "accept_quote": "Accept quote",
       "quotation_summary": "Quotations: Quotation summary",
       "provide_reason_for_cancellation": "Please provide a reason for your cancellation",
@@ -985,7 +1033,7 @@
       "driver_relation_insured": "Driver relation insured",
       "driver_email_address": "Driver email address",
       "clear": "Clear",
-      "add_product":"Add product",
+      "add_product": "Add product",
       "save_details": "Save",
       "are_you_sure_you_want_to_delete_schedule": "Are you sure you want to delete this schedule",
       "no_im_not": "No, I'm not",
@@ -1010,7 +1058,7 @@
       "limit_amount": "Limit Amount",
       "group": "Group",
       "premium_rate": "Premium Rate",
-      "actions":"Actions",
+      "actions": "Actions",
       "div_by": "Div By",
       "multi_rate": "Multi Rate",
       "div_multi_by": "Div Multi By",
@@ -1111,7 +1159,7 @@
       "driver_relation_insured": "Driver relation insured",
       "driver_sms_no": "Driver SMS no",
       "edit": "Edit",
-      "edit_clause":"Edit Clause",
+      "edit_clause": "Edit Clause",
       "edit_motor_private_details": "Edit Motor Private Details",
       "edit_Other_details": "Edit Other Details",
       "edit_risk_section_details": "Edit Risk Section Details",
@@ -1166,7 +1214,7 @@
       "no_client_found": "No client found",
       "no_contact_information_available": "No contact information available",
       "no_data": "No Data To Display",
-      "no_clause_to_display":"No clauses.Click on “Add clauses” to add a new clause",
+      "no_clause_to_display": "No clauses.Click on “Add clauses” to add a new clause",
       "no_data_to_display": "No product.Click on “Add product” to add a new product",
       "no_im_not": "No, I'm not",
       "no_policy_found": "No Policy Found",
@@ -1227,7 +1275,7 @@
       "risk_id": "Risk ID",
       "risk_sections": "Risk Sections",
       "row_num": "Row Num",
-      "save":"Save",
+      "save": "Save",
       "save_changes": "Save changes",
       "save_details": "Save Details",
       "sch_active": "SCH active",
@@ -1241,7 +1289,7 @@
       "security_device": "Security device",
       "security_device_1": "Security device 1",
       "select": "Select",
-      "select_a_client": "Select a client",
+      "select_a_client": "Select  client",
       "select_a_cover": "Select a cover",
       "select_a_policy": "Select a policy",
       "select_a_product": "Select a product",
@@ -1284,8 +1332,8 @@
       "year_of_manufacture": "Year of Manufacture",
       "yes_delete": "Yes,delete",
       "quotation_data_entry": "Quotations: Quotation Data Entry",
-      "delete_clause":"Delete product clause",
-      "section":"Section"
+      "delete_clause": "Delete product clause",
+      "section": "Section"
     },
     "policy": {
       "underwriting_new_transaction": "Underwriting: new transaction",
@@ -2948,10 +2996,9 @@
     "signSelect": "Sign selected",
     "correction": "Send for correction",
     "reject": "Reject",
-    "errorMessage":"An Error Occurred!",
-    "rctPrintError":"Receipt saved successfully but unable to print",
-    "pdPrintError":"Receipt saved successfully but unable to print slip",
-
+    "errorMessage": "An Error Occurred!",
+    "rctPrintError": "Receipt saved successfully but unable to print",
+    "pdPrintError": "Receipt saved successfully but unable to print slip",
     "receipting": {
       "receipting": "Receipting",
       "cbReceipting": "CB-Receipting",
