@@ -942,7 +942,7 @@ export interface LimitPremium {
 export interface TaxComputation {
   code: number;
   premium: number;
-  rateDescription:string
+  rateDescription: string
 }
 
 
@@ -1135,10 +1135,10 @@ export interface QuotationReportDto {
     code: number
     description: string
     riskLevelPremiums: {
-      sumInsured:number
+      sumInsured: number
       coverTypeDetails: {
-        subclasscode:number,
-        description:string,
+        subclasscode: number,
+        description: string,
         coverTypeShortDescription: string;
         coverTypeDescription: string,
         limits: {
@@ -1149,7 +1149,7 @@ export interface QuotationReportDto {
         taxComputation: {
           premium: number,
           code: number
-          rateDescription:string
+          rateDescription: string
         }[]
         clauses: {
           heading: string,
@@ -1189,4 +1189,34 @@ export interface QuotationReportDto {
   organization?: OrganizationDto
   quotation?: QuotationDetailsDto
 }
+export class UsersDetailsDto {
+  id: number;
+  name: string;
+  username: string;
+  emailAddress: string;
+  dateOfBirth: Date | null;
+  status: string;
+  userType: string;
+  telNo: string | null;
+  phoneNumber: string;
+  otherPhone: string | null;
+  personelRank: string;
+  countryCode: string | null;
+  townCode: string | null;
+  physicalAddress: string | null;
+  postalCode: string | null;
+  departmentCode: string | null;
+  activatedBy: string | null;
+  updateBy: string | null;
+  dateCreated: Date;
+  profilePicture: string | null;
+  organizationId: number | null;
+  organizationGroupId: number | null;
+  supervisorId: number | null;
+  branchId: number | null;
+  gender: string | null;
+  pinNumber: string | null;
+  idNumber: string | null;
+}
+
 
