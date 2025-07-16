@@ -65,6 +65,7 @@ export class QuotationManagementComponent {
 
   menuItems: MenuItem[];
   viewQuoteFlag: Boolean = false;
+  isClientSearchModalVisible = false;
 
   constructor(
     private menuService: MenuService,
@@ -429,6 +430,9 @@ export class QuotationManagementComponent {
 
     // Trigger change detection
     this.cdr.detectChanges();
+  }
+  openClientSearchModal() {
+    this.isClientSearchModalVisible = true;
   }
 
 

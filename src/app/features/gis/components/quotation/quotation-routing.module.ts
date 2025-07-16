@@ -1,27 +1,28 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
-import {ListQuotationsComponent} from './components/list-quotations/list-quotations.component';
-import {QuickQuoteFormComponent} from './components/quick-quote-form/quick-quote-form.component';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { ListQuotationsComponent } from './components/list-quotations/list-quotations.component';
+import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
 
 import {
   QuotationsClientDetailsComponent
 } from './components/quotations-client-details/quotations-client-details.component';
-import {RiskSectionDetailsComponent} from './components/risk-section-details/risk-section-details.component';
-import {QuotationDetailsComponent} from './components/quotation-details/quotation-details.component';
-import {QuoteAssigningComponent} from './components/quote-assigning/quote-assigning.component';
-import {ImportRisksComponent} from './components/import-risks/import-risks.component';
-import {QuotationSummaryComponent} from './components/quotation-summary/quotation-summary.component';
-import {CoverTypesComparisonComponent} from './components/cover-types-comparison/cover-types-comparison.component';
-import {CreateClientComponent} from './components/create-client/create-client.component';
-import {ReviseReuseQuotationComponent} from './components/revise-reuse-quotation/revise-reuse-quotation.component';
-import {QuotationConversionComponent} from './components/quotation-conversion/quotation-conversion.component';
-import {QuotationInquiryComponent} from './components/quotation-inquiry/quotation-inquiry.component';
-import {QuotationSourcesComponent} from './components/quotation-sources/quotation-sources.component';
-import {QuotationManagementComponent} from './components/quotation-management/quotation-management.component';
-import {RiskCentreComponent} from './components/risk-centre/risk-centre.component';
-import {QuoteSummaryComponent} from './components/quoute-summary/quote-summary.component';
-import {ShareQuotesComponent} from './components/share-quotes/share-quotes.component';
-import {PaymentAdviceComponent} from './components/payment-advice/payment-advice.component';
+import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
+import { QuotationDetailsComponent } from './components/quotation-details/quotation-details.component';
+import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
+import { ImportRisksComponent } from './components/import-risks/import-risks.component';
+import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
+import { CoverTypesComparisonComponent } from './components/cover-types-comparison/cover-types-comparison.component';
+import { CreateClientComponent } from './components/create-client/create-client.component';
+import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotation/revise-reuse-quotation.component';
+import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
+import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
+import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
+import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
+import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
+import { QuoteSummaryComponent } from './components/quoute-summary/quote-summary.component';
+import { ShareQuotesComponent } from './components/share-quotes/share-quotes.component';
+import { PaymentAdviceComponent } from './components/payment-advice/payment-advice.component';
+import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 
 
 
@@ -39,7 +40,7 @@ const routes: Routes = [
     path: 'quotations-client-details', component: QuotationsClientDetailsComponent
   },
   {
-    path: 'risk-section-details', component: RiskSectionDetailsComponent
+    path: 'risk-details', component: RiskDetailsComponent
   },
   {
     path: 'quotation-details', component: QuotationDetailsComponent

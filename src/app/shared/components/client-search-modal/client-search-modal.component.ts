@@ -91,7 +91,8 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
   ngAfterViewInit(): void {
     const modalElement = this.modalElementRef?.nativeElement;
     if (modalElement) {
-         this.modalInstance = new Modal(modalElement);
+      this.modalInstance = new Modal(modalElement);
+      this.modalInstance.show();
       modalElement.addEventListener('shown.bs.modal', () => {
         this.shouldLoadClients = true;
         // Only reset the table the first time it's shown
@@ -126,27 +127,52 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
   }
 
 
-  private hideModal(): void {
-  if (this.modalInstance) {
-    this.modalInstance.hide();         
-    this.shouldLoadClients = false;   
-  }
+  //   private hideModal(): void {
+  //   if (this.modalInstance) {
+  //     this.modalInstance.hide();         
+  //     this.shouldLoadClients = false;   
+  //   }
 
-  // Optional: remove focus from any active input (e.g., for accessibility)
-  if (document.activeElement instanceof HTMLElement) {
-    document.activeElement.blur();
-  }
-}
+  //   // Optional: remove focus from any active input (e.g., for accessibility)
+  //   if (document.activeElement instanceof HTMLElement) {
+  //     document.activeElement.blur();
+  //   }
+  // }
 
+  // Define listener references so they can be removed
+  private _onShown?: () => void;
+  private _onHidden?: () => void;
+
+  hideModal(): void {
+    const modalElement = this.modalElementRef?.nativeElement;
+
+    if (this.modalInstance && modalElement && document.body.contains(modalElement)) {
+      setTimeout(() => {
+        try {
+          this.modalInstance?.hide();
+        } catch (err) {
+          console.error('Error while hiding modal:', err);
+        }
+      }, 0);
+    }
+  }
 
   ngOnDestroy(): void {
-    if (this.modalInstance) {
-      this.modalInstance.dispose();
+    const modalElement = this.modalElementRef?.nativeElement;
+
+    try {
+      this.modalInstance?.hide();
+    } catch (_) { }
+
+    // Clean up event listeners
+    if (modalElement) {
+      if (this._onShown) modalElement.removeEventListener('shown.bs.modal', this._onShown);
+      if (this._onHidden) modalElement.removeEventListener('hidden.bs.modal', this._onHidden);
     }
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
+
+    this.modalInstance = null;
   }
+
 
 
 
@@ -322,14 +348,14 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
     const value = (event.target as HTMLInputElement).value;
     this.idValue = value;
   }
-//  fetchClientsAndShow() {
-//   const event = {
-//     first: 0,
-//     rows: this.pageSize,
-//     sortField: 'createdDate',
-//     sortOrder: -1, // or 1 depending on direction
-//   };
+  //  fetchClientsAndShow() {
+  //   const event = {
+  //     first: 0,
+  //     rows: this.pageSize,
+  //     sortField: 'createdDate',
+  //     sortOrder: -1, // or 1 depending on direction
+  //   };
 
-//   this.lazyLoadClients(event);
-// }
+  //   this.lazyLoadClients(event);
+  // }
 }

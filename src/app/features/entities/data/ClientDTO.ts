@@ -31,6 +31,7 @@ export interface ClientDTO {
   withEffectFromDate: string,
   clientTypeName: string
   clientFullName: string
+  code:number //added
 }
 export interface ClientTypeDTO {
   category: string,
