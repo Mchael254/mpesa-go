@@ -1,0 +1,9 @@
+deleteDocBtn {
+  padding: 0.2rem
+}
+
+#deleteDocBtn:hover {
+  background: red!important;
+  color: white!important;
+  transition: 500ms;
+}

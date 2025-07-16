@@ -1,0 +1,57 @@
+<div class="px-5">
+  <p>Share OTP Via</p>
+  <ul class="nav nav-underline">
+    <li class="nav-item">
+      <button
+        class="nav-link text-primary"
+        (click)="showSelectedTab('otp_sms')"
+        [ngClass]="{'active': selectedTab === 'otp_sms'}"
+      >
+        SMS
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link text-primary"
+        (click)="showSelectedTab('otp_email')"
+        [ngClass]="{'active': selectedTab === 'otp_email'}"
+      >
+        Email
+      </button>
+    </li>
+  </ul>
+
+  <div class="mt-3" *ngIf="shouldShowFields">
+    <form [formGroup]="otpForm">
+      <ng-container *ngFor="let field of otpFormFields">
+        <div class="row" *ngIf="selectedTab===field.fieldId || field.fieldId==='enter_otp'">
+          <div class="col-sm-3">
+            <div class="mb-3">
+              <label class="form-label" [for]="field.fieldId">
+                {{ field.label[language] | titlecase }}
+                <span *ngIf="field.isMandatory" class="text-danger">*</span>
+              </label>
+              <input
+                [type]="field.type"
+                [formControlName]="field.fieldId"
+                [placeholder]="field.label[language]"
+                [id]="field.fieldId"
+                class="form-control"
+              />
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <button
+              class="btn btn-outline-primary send-verify-button ms-5"
+              (click)="processInput(field.fieldId)"
+            >
+              Verify OTP
+            </button>
+          </div>
+        </div>
+      </ng-container>
+      <p class="lead text-primary">OTP code expires in 0:30</p>
+    </form>
+
+  </div>
+</div>
