@@ -124,6 +124,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   nonMandatoryProductClause: ProductClauseDTO[] = [];
   productClause: ProductClauseDTO[] = [];
   deleteCandidateProductCode: string | null = null;
+  reassignProductCode: string | null = null;
   quotationFormContent: any
   detailedQuotationFormData: {
     type: string;
@@ -277,13 +278,35 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         //   }
         // });
 
-        // Add new dynamic controls
+        // Add new dynamic controls 
         this.detailedQuotationFormData.forEach((field) => {
           const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
-          const formControl = new FormControl('', validators);
+          const savedValue = sessionStorage.getItem(`quotation_${field.name}`);
+          const formControl = new FormControl(savedValue || '', validators);
           (formControl as any).metadata = { dynamic: true };
+
           this.quotationForm.addControl(field.name, formControl);
+          formControl.valueChanges.subscribe(value => {
+            sessionStorage.setItem(`quotation_${field.name}`, value);
+
+            if (field.name === 'multiUserEntry') {
+              if (value === 'Y') {
+                this.handleMultiUserYes();
+              } else if (value === 'N') {
+                this.handleMultiUserNo();
+              }
+            }
+          });
+
+          if (field.name === 'multiUserEntry' && savedValue) {
+            if (savedValue === 'Y') {
+              this.handleMultiUserYes();
+            } else if (savedValue === 'N') {
+              this.handleMultiUserNo();
+            }
+          }
         });
+
 
         log.debug(this.quotationForm.value, 'Final Form Value');
       },
@@ -291,6 +314,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         log.error(err, 'Failed to load risk fields');
       }
     });
+  }
+
+  handleMultiUserYes(): void {
+    this.reassignButton = true
+  }
+
+  handleMultiUserNo(): void {
+    this.reassignButton = false
   }
 
   setClientType(value: 'new' | 'existing') {
@@ -1658,8 +1689,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.productToDelete = null;
   }
 
-
-
   updateCoverTo(product: any) {
     if (product.coverFrom) {
 
@@ -1746,6 +1775,25 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       product.productCode = selectedProduct;
       log.debug("Updated product after dropdown change:", product);
     }
+  }
+
+  reassignButton: boolean = false
+  openProductReassignModal(product: any) {
+    this.productToDelete = product;
+    this.reassignProductCode = product.productCode.code;
+
+    // Directly open the modal using Bootstrap
+    const modalElement = document.getElementById('deleteProduct');
+    if (modalElement) {
+      const modal = new (window as any).bootstrap.Modal(modalElement);
+      modal.show();
+    } else {
+      console.error("❌ Modal with ID 'deleteProduct' not found in DOM.");
+    }
+  }
+
+  reassignQuotation() {
+
   }
 
   createQuotation(quotationPayload: any) {
