@@ -3,7 +3,7 @@ import { QuotationDetails, QuotationReportDto, ShareQuoteDTO } from '../../data/
 
 import { QuotationsService } from "../../services/quotations/quotations.service";
 import { Logger, untilDestroyed, UtilService } from "../../../../../../shared/shared.module";
-import { Table } from 'primeng/table';
+import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
@@ -12,14 +12,19 @@ import { ClaimsService } from '../../../claim/services/claims.service';
 import { ProductLevelPremium } from "../../data/premium-computation";
 import { ShareQuotesComponent } from '../share-quotes/share-quotes.component';
 import { format } from "date-fns";
-import { mergeMap } from "rxjs";
+import { mergeMap, tap } from "rxjs";
 import { EmailDto } from "../../../../../../shared/data/common/email-dto";
 import { NotificationService } from "../../services/notification/notification.service";
 import { StringManipulation } from "../../../../../lms/util/string_manipulation";
 import { SESSION_KEY } from "../../../../../lms/util/session_storage_enum";
 import { SessionStorageService } from "../../../../../../shared/services/session-storage/session-storage.service";
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
-
+import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
+import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import { Pagination } from 'src/app/shared/data/common/pagination';
+import { LazyLoadEvent } from 'primeng/api';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
 
 const log = new Logger('QuoteSummaryComponent');
 type ProductWithRiskId = {
@@ -66,7 +71,44 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   comments: string;
   isClientSearchModalVisible = false;
   organizationId: number;
-isModalLoading = false;
+  isModalLoading = false;
+  newClient: boolean = false;
+  selectedClientType = 'existing';
+  showClientSearchModal = false;
+  selectedClientName = '';
+  SearchCountryField = SearchCountryField;
+  CountryISO = CountryISO;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries: CountryISO[] = [
+    CountryISO.Kenya,
+    CountryISO.Nigeria,
+    CountryISO.UnitedStates,
+    CountryISO.UnitedKingdom,
+  ];
+  emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  tableDetails: any = {
+    rows: [], // Initially empty array for rows
+    totalElements: 0 // Default total count
+  };
+  pageSize: number = 5;
+
+  public clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
+  filterObject: {
+    name: string, idNumber: string,
+  } = {
+      name: '', idNumber: '',
+    };
+  clientDetails: ClientDTO;
+  globalFilterFields = ['idNumber', 'firstName', 'lastName'];
+  clientName: any;
+  clientCode: any;
+  clientType: any;
+  idValue: string;
+  emailValue: string;
+  phoneValue: string;
+  internalIdValue: string;
+  pinValue: string;
+  selectedClient: ClientDTO;
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
@@ -76,7 +118,10 @@ isModalLoading = false;
     public utilService: UtilService,
     public cdr: ChangeDetectorRef,
     private session_storage: SessionStorageService,
-    private sessionStorageService: SessionStorageService
+    private sessionStorageService: SessionStorageService,
+    private spinner: NgxSpinnerService,
+    private clientService: ClientService,
+
 
   ) {
     this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
@@ -123,7 +168,7 @@ isModalLoading = false;
         }
       });
     const organization = this.sessionStorageService.getItem("organizationDetails") as OrganizationDTO;
-  if (organization) {
+    if (organization) {
       this.organizationId = organization.id
     }
 
@@ -569,8 +614,130 @@ isModalLoading = false;
         }
       })
   }
-  openClientSearchModal() {
-    this.isClientSearchModalVisible = true;
+
+  setClientType(value: 'new' | 'existing') {
+    this.selectedClientType = value;
+    this.newClient = value === 'new';
+    log.debug("New client status", this.newClient)
+
   }
 
+  /**
+   * The function "lazyLoadClients" is used to fetch clients data with pagination, sorting, and filtering options.
+   * @param {LazyLoadEvent | TableLazyLoadEvent} event - The `event` parameter is of type `LazyLoadEvent` or
+   * `TableLazyLoadEvent`. It is used to determine the pagination, sorting, and filtering options for fetching clients.
+   */
+  lazyLoadClients(event: LazyLoadEvent | TableLazyLoadEvent) {
+
+    const pageIndex = event.first / event.rows;
+    const sortField = "createdDate";
+    const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
+    const pageSize = event.rows;
+
+    this.spinner.show();
+
+    this.clientService.getClients(pageIndex, pageSize, sortField, sortOrder)
+      .pipe(
+        untilDestroyed(this),
+        tap((data) => log.info(`Fetching Clients>>>`, data))
+      )
+      .subscribe({
+        next: (data: Pagination<ClientDTO>) => {
+          data.content.forEach(client => {
+            client.clientTypeName = client.clientType.clientTypeName;
+            client.clientFullName = client.firstName + ' ' + (client.lastName || '');
+          });
+          this.clientsData = data;
+          this.tableDetails.rows = this.clientsData?.content;
+          this.tableDetails.totalElements = this.clientsData?.totalElements;
+          this.cdr.detectChanges();
+
+          this.spinner.hide();
+
+        },
+        error: (err) => {
+          this.spinner.hide();
+          log.error('Failed to fetch clients', err);
+        }
+      });
+  }
+
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
+    this.clientsData = null;
+    let columnName;
+    let columnValue;
+    if (this.emailValue) {
+      columnName = 'emailAddress';
+      columnValue = this.emailValue;
+    } else if (this.phoneValue) {
+      columnName = 'phoneNumber';
+      columnValue = this.phoneValue;
+    } else if (this.internalIdValue) {
+      columnName = 'id';
+      columnValue = this.internalIdValue;
+    } else if (this.idValue) {
+      columnName = 'idNumber';
+      columnValue = this.idValue;
+    } else if (this.pinValue) {
+      columnName = 'pinNumber';
+      columnValue = this.pinValue;
+    }
+
+    this.isSearching = true;
+    this.spinner.show();
+    this.quotationService
+      .searchClients(
+        columnName,
+        columnValue,
+        pageIndex,
+        pageSize,
+        this.filterObject?.name,
+        this.filterObject?.idNumber
+      )
+      .subscribe(
+        (data) => {
+          this.clientsData = data;
+          this.spinner.hide();
+
+        },
+        (error) => {
+          this.spinner.hide();
+        }
+      );
+  }
+
+  inputName(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['name'] = value;
+  }
+
+
+  inputEmail(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.emailValue = value;
+  }
+
+  inputPhone(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.phoneValue = value;
+  }
+
+  inputInternalId(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.internalIdValue = value;
+  }
+
+  inputPin(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.pinValue = value;
+  }
+
+  inputId(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.idValue = value;
+  }
+  saveSelectedClient() {
+    log.debug("Saved client", this.selectedClient)
+    this.handleSaveClient(this.selectedClient)
+  }
 }

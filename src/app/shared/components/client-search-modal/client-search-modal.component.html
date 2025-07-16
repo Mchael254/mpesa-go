@@ -1,10 +1,11 @@
 <div #clientSearchModalElement class="modal fade" id="clientSearchModal" tabindex="-1"
-  aria-labelledby="exampleModalLabel" >
+  aria-labelledby="exampleModalLabel">
   <div class="modal-dialog modal-dialog-centered" style="max-width: 700px;">
     <div class="modal-content">
 
       <div class="modal-body">
-        <button type="button" class="float-end btn-close" (click)="cancel()" aria-label="Close"></button>
+        <button type="button" class="float-end btn-close" id="closeButton" (click)="cancel()"
+          aria-label="Close"></button>
         <p class="text-start" id="selectClient"> {{
           'gis.quotation.select_a_client' |
           translate
@@ -15,19 +16,37 @@
           [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]" responsiveLayout="stack" [scrollable]="true"
           scrollHeight="400px" scrollWidth="659px" currentPageReportTemplate="{first} - {last} of {totalRecords}"
           [globalFilterFields]=globalFilterFields [selection]="selectedClient"
-          (onRowSelect)="selectedClient = $event.data" [selectionMode]="'single'">
+          (onRowSelect)="selectedClient = $event.data" [selectionMode]="'single'" class="p-datatable-striped">
 
 
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="name" style="min-width: 220px;">Name</th>
-              <th pSortableColumn="emailAddress" style="min-width: 250px;">Email</th>
-              <th pSortableColumn="phoneNumber" style="min-width: 200px;">Phone</th>
-              <th pSortableColumn="idNumber" style="min-width: 200px;">ID Number</th>
-              <th pSortableColumn="pinNumber" style="min-width: 200px;">Pin</th>
-              <th pSortableColumn="id" style="min-width: 200px;">Internal ID</th>
-
+              <th pSortableColumn="name" style="min-width: 220px; font-weight: 500;">
+                Name
+                <p-sortIcon field="name"></p-sortIcon>
+              </th>
+              <th pSortableColumn="emailAddress" style="min-width: 250px;">
+                Email
+                <p-sortIcon field="emailAddress"></p-sortIcon>
+              </th>
+              <th pSortableColumn="phoneNumber" style="min-width: 200px;">
+                Phone
+                <p-sortIcon field="phoneNumber"></p-sortIcon>
+              </th>
+              <th pSortableColumn="idNumber" style="min-width: 200px;">
+                ID Number
+                <p-sortIcon field="idNumber"></p-sortIcon>
+              </th>
+              <th pSortableColumn="pinNumber" style="min-width: 200px;">
+                Pin
+                <p-sortIcon field="pinNumber"></p-sortIcon>
+              </th>
+              <th pSortableColumn="id" style="min-width: 200px;">
+                Internal ID
+                <p-sortIcon field="id"></p-sortIcon>
+              </th>
             </tr>
+
             <tr>
               <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputName($event)">
               </th>
@@ -63,7 +82,7 @@
             </tr>
           </ng-template>
         </p-table>
-        <div class="d-flex justify-content-end mt-4 mb-3" >
+        <div class="d-flex justify-content-end mt-4 mb-3">
           <button type="button" class="btn btn-outline-primary px-5 me-2" id="cancel" (click)="cancel()">{{
             'gis.policy.cancel'
             | translate

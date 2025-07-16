@@ -51,13 +51,14 @@
   letter-spacing: 0%;
   color: #00529B;
 }
-/* * Table headers */ 
 
-p-table ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+/* * Table headers */
+
+p-table ::ng-deep .p-datatable .p-datatable-thead>tr>th {
   color: #000000;
   font-weight: 500;
   text-align: left;
-  font-size: 16px!important;
+  font-size: 16px !important;
 }
 
 /* Table rows */
@@ -65,12 +66,18 @@ p-table ::ng-deep table tbody tr td {
   padding: 18px 22px;
   border-bottom: 1px solid #e8eef7;
   transition: background-color 0.3s ease;
-    font-size: 16px!important;
-    font-weight: 400;
+  font-size: 16px !important;
+  font-weight: 400;
 
 }
+
 /* For the selected row */
-::ng-deep .p-datatable .p-datatable-tbody > tr.p-highlight {
+::ng-deep .p-datatable .p-datatable-tbody>tr.p-highlight {
   background-color: #BAD0E4 !important;
-  color: inherit; /* Optional: maintain text color */
+  color: inherit;
+  /* Optional: maintain text color */
+}
+
+#closeButton {
+  color: #EE3945 !important;
 }

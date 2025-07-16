@@ -36,7 +36,7 @@
 .bounceOutDown {
   -webkit-animation-name: bounceOutDown;
   animation-name: bounceOutDown;
-    animation-duration: 1.9s;
+  animation-duration: 1.9s;
 
 }
 
@@ -88,7 +88,7 @@
   border-radius: 0;
 }
 
-.p-datatable.p-datatable-sm .p-datatable-thead > tr > th {
+.p-datatable.p-datatable-sm .p-datatable-thead>tr>th {
   padding: 0.1rem 0.5rem;
   font-size: 0.78em;
   background-color: #00539b03;
@@ -97,6 +97,7 @@
 svg.p-icon.p-sortable-column-icon {
   height: 10px;
 }
+
 tr.ng-star-inserted {
   border: 0;
 }
@@ -112,8 +113,7 @@ tr.ng-star-inserted {
 
 .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link:active,
 .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link:hover,
-.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link:focus
- {
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link:focus {
   border: 0;
   border-radius: 0;
   border-bottom: solid 2px #00529b;
@@ -159,26 +159,36 @@ tr.ng-star-inserted {
 
   font-size: 7px;
 }
+
 .iti-sdc-4 {
   width: 100%;
 }
-#country-search-box{
+
+#country-search-box {
   width: 350px;
 }
-.iti__country-list{
+
+.iti__country-list {
   width: 350px;
 }
-.iti--allow-dropdown input, .iti--allow-dropdown input[type=text], .iti--allow-dropdown input[type=tel], .iti--separate-dial-code input, .iti--separate-dial-code input[type=text], .iti--separate-dial-code input[type=tel] {
+
+.iti--allow-dropdown input,
+.iti--allow-dropdown input[type=text],
+.iti--allow-dropdown input[type=tel],
+.iti--separate-dial-code input,
+.iti--separate-dial-code input[type=text],
+.iti--separate-dial-code input[type=tel] {
   padding-right: 6px;
   padding-left: 52px;
   width: 350px;
   margin-left: 0;
 }
-.input-group span{
-   color: inherit;
+
+.input-group span {
+  color: inherit;
   background-color: transparent;
 }
 
-
-
-
+.p-datatable .p-datatable-tbody>tr:nth-child(even) {
+  background-color: #f5f5f5 !important;
+}
