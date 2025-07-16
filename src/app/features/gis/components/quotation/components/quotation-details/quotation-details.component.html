@@ -516,9 +516,8 @@
                     data-bs-target="#deleteProductModal">
                     Delete
                   </button>
-                  <button *ngIf="reassignButton" type="button" (click)="openProductDeleteModal(product)"
-                    class="p-button-sm p-button-text p-button-danger no-border" data-bs-toggle="modal"
-                    data-bs-target="#reassignProductModal">
+                  <button *ngIf="reassignButton" type="button" (click)="openReassignProductModal(product)"
+                    class="p-button-sm p-button-text p-button-danger no-border">
                     Reassign
                   </button>
 
@@ -667,7 +666,7 @@
       </div>
 
       <!-- Reassign Product Modal 1 -->
-      <div class="modal fade " id="reassignProductModal" tabindex="-1" aria-hidden="true">
+      <div class="modal fade" #reassignProductModal id="reassignProductModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="min-width:200px">
           <div class="modal-content ps-4 pt-2 pb-5 pe-4">
             <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0">
@@ -681,7 +680,7 @@
             <div class="w-75">
               <p>Default User</p>
               <input pInputText type="text" class="form-control" data-bs-toggle="modal"
-                data-bs-target="#chooseClientReassingModal" [(ngModel)]="clientToReassignProduct">
+                (click)="openChooseClientModal()" [(ngModel)]="clientToReassignProduct">
             </div>
 
             <div class="w-75 mt-4 mb-3">
@@ -692,7 +691,6 @@
             <small class="text-danger block" [class.invisible]="!noUserChosen">
               Please select a person to reassign before continuing
             </small>
-
 
             <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
               <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
@@ -710,7 +708,7 @@
       </div>
 
       <!-- Reassign Product Modal 2 -->
-      <div class="modal fade " id="reassignProductModal" tabindex="-1" aria-hidden="true">
+      <div class="modal fade" #chooseClientReassignModal id="chooseClientReassingModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="min-width:200px">
           <div class="modal-content ps-4 pt-2 pb-5 pe-4">
 
@@ -788,11 +786,6 @@
           </div>
         </div>
       </div>
-
-      <div class="row mb-4" [formGroup]='quotationForm'>
-      </div>
-
-
     </div>
   </div>
 

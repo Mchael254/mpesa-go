@@ -26,6 +26,7 @@ import { QuotationList, QuotationSource, UserDetail } from '../../data/quotation
 import { ProductClauseDTO, Products } from '../../../setups/data/gisDTO';
 import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
 import { ClaimsService } from '../../../claim/services/claims.service';
+import * as bootstrap from 'bootstrap';
 
 const log = new Logger('QuotationDetails');
 
@@ -39,6 +40,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   @ViewChild('dt') table!: Table;
   @ViewChild(Table) private dataTable: Table;
+  @ViewChild('reassignProductModal') reassignProductModalElement!: ElementRef;
+  @ViewChild('chooseClientReassignModal') chooseClientReassignModalElement!: ElementRef;
+
   quotationForm: FormGroup;
   newClient: boolean = false;
   selectedClientType = 'existing';
@@ -157,8 +161,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   fullNameSearch: string = '';
   globalSearch: string = '';
   noUserChosen: boolean = false
-  clientToReassignProduct: string;
-
+  clientToReassignProduct: string = '';
+  reassignProductModal: any;
+  chooseClientReassignModal: any;
+  reassignButton: boolean = false
 
   constructor(
     public bankService: BankService,
@@ -219,6 +225,11 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     ]
     this.selectedClient = JSON.parse(sessionStorage.getItem('client'))
     log.debug("product Form details", this.productDetails)
+  }
+
+  ngAfterViewInit() {
+    this.reassignProductModal = new bootstrap.Modal(this.reassignProductModalElement.nativeElement);
+    this.chooseClientReassignModal = new bootstrap.Modal(this.chooseClientReassignModalElement.nativeElement);
   }
 
   ngOnInit(): void {
@@ -1783,20 +1794,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  reassignButton: boolean = false
-  openProductReassignModal(product: any) {
-    this.productToDelete = product;
-    this.reassignProductCode = product.productCode.code;
-
-    // Directly open the modal using Bootstrap
-    const modalElement = document.getElementById('deleteProduct');
-    if (modalElement) {
-      const modal = new (window as any).bootstrap.Modal(modalElement);
-      modal.show();
-    } else {
-      console.error("❌ Modal with ID 'deleteProduct' not found in DOM.");
-    }
+  openReassignProductModal(product: any) {
+    this.reassignProductModal.show();
   }
+
+  openChooseClientModal() {
+    this.chooseClientReassignModal.show();
+  }
+
 
   getUsers() {
     this.claimsService.getUsers().subscribe({
@@ -1857,7 +1862,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }, 3000);
       return;
     }
-    this.clientToReassignProduct = this.selectedUser.name
+
+    this.clientToReassignProduct = this.selectedUser.name;
+    this.chooseClientReassignModal.hide();
+    this.reassignProductModal.show();
 
   }
 
@@ -1870,7 +1878,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }, 3000);
       return;
     }
-    this.globalMessagingService.displaySuccessMessage('Success', 'reassigning...')
+    this.reassignProductModal.hide();
+    this.globalMessagingService.displaySuccessMessage('Success', 'Product reassigned');
+    this.clientToReassignProduct = null;
 
   }
 
