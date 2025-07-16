@@ -231,8 +231,8 @@ export class EntityService {
 
   uploadProfileImage(partyId: number, file: File) {
     let form = new FormData();
-    form.append('file', file, file.name);
-    return this.api.POST<any>(
+    form.append('file', file, file?.name);
+    return this.api.FILEUPLOAD<any>(
       `parties/${partyId}/upload-profile-image`,
       form,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
