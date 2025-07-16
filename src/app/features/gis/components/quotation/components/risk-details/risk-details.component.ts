@@ -53,6 +53,10 @@ const log = new Logger('RiskClausesDetailsComponent');
 })
 
 export class RiskDetailsComponent {
+freeLimitValue: any;
+getFreeLimitLabel(arg0: any) {
+throw new Error('Method not implemented.');
+}
   @Input() selectedProduct!: any;
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
   @ViewChild('sectionTable') sectionTable!: Table;
@@ -189,6 +193,15 @@ export class RiskDetailsComponent {
   dynamicRegexPattern: string;
   clientsData: ClientDTO[] = [];
   sectionToDelete: any = null;
+  declaration1: boolean | null = null;
+  declaration2: boolean | null = null;
+  premiumTypes: any[] = [];
+isEditable: boolean = false;
+quotationIsAuthorised: boolean = true; // or false
+
+
+
+
   clientCode: number;
 
   constructor(
@@ -273,6 +286,8 @@ export class RiskDetailsComponent {
       nullable: true,
       align: 'left',
     };
+    this.loadDummyFreeLimit();
+    
     this.clientCode = Number(sessionStorage.getItem('insuredCode'))
   }
   ngOnDestroy(): void { }
@@ -282,6 +297,33 @@ export class RiskDetailsComponent {
       keyboard: false
     });
   }
+  
+  
+  setDeclaration1(value: boolean) {
+    this.declaration1 = value;
+    this.riskDetailsForm.get('declarationField')?.setValue(value ? 'Yes' : 'No'); // Optional
+  }
+  
+  setDeclaration2(value: boolean) {
+    this.declaration2 = value;
+    this.riskDetailsForm.get('computeField')?.setValue(value ? 'Yes' : 'No'); // Optional
+  }
+  
+loadDummyFreeLimit() {
+  
+  const dummyResponse = {
+    value: 100000,        
+    editable: false      
+  };
+
+  this.freeLimitValue = dummyResponse.value;
+  this.isEditable = dummyResponse.editable;
+
+  if (this.isEditable) {
+    this.riskDetailsForm.get('freeLimit')?.setValue(this.freeLimitValue);
+  }
+}
+
 
   setSectionToDelete(section: any) {
     this.sectionToDelete = section;
