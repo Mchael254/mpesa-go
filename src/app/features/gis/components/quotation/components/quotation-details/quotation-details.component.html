@@ -516,6 +516,11 @@
                     data-bs-target="#deleteProductModal">
                     Delete
                   </button>
+                  <button *ngIf="reassignButton" type="button" (click)="openProductDeleteModal(product)"
+                    class="p-button-sm p-button-text p-button-danger no-border" data-bs-toggle="modal"
+                    data-bs-target="#reassignProductModal">
+                    Reassign
+                  </button>
 
                 </div>
               </td>
@@ -661,6 +666,121 @@
         </div>
       </div>
 
+      <!-- Reassign Product Modal 1 -->
+      <div class="modal fade " id="reassignProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="min-width:200px">
+          <div class="modal-content ps-4 pt-2 pb-5 pe-4">
+            <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0">
+              <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                Reassign task
+              </p>
+              <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                style="border: none;">X</button>
+            </div>
+
+            <div class="w-75">
+              <p>Default User</p>
+              <input pInputText type="text" class="form-control" data-bs-toggle="modal"
+                data-bs-target="#chooseClientReassingModal">
+            </div>
+
+            <div class="w-75 mt-4 mb-3">
+              <p>Comments</p>
+              <textarea name="reassignProduct" class="form-control" style="height: 70px" id=""></textarea>
+            </div>
+
+            <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
+              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+                (click)="reassignQuotation()">{{ 'gis.quotation.reassign' | translate }}
+              </button>
+              <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                style="text-decoration: none;">{{
+                'gis.quotation.cancel' | translate
+                }}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Reassign Product Modal 2 -->
+      <div class="modal fade " id="chooseClientReassingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="min-width:200px">
+          <div class="modal-content ps-4 pt-2 pb-5 pe-4">
+
+            <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0">
+              <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                Reassign task
+              </p>
+              <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                style="border: none;">X</button>
+            </div>
+
+            <div class="row mt-2">
+              <p-table #dt [value]="" [rows]="3" [paginator]="true"
+                [globalFilterFields]="" styleClass="p-datatable-striped">
+
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="flexible-header1" style="width: 18%" pSortableColumn="code">
+                      User Code <p-sortIcon field="code" />
+                    </th>
+                    <th class="flexible-header1" style="width: 18%" pSortableColumn="name">
+                      User name <p-sortIcon field="name" />
+                    </th>
+
+                  </tr>
+                  <tr>
+                    <th><input type="text" class="form-control form-control-sm" 
+                        (input)="filterByshortDescription($event)" placeholder="Search code"></th>
+                    <th><input type="text" class="form-control form-control-sm"
+                         placeholder="Search name"></th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-clause>
+                  <tr [pSelectableRow]="clause">
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </ng-template>
+
+                <!-- empty/search states -->
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="4" style="text-align: center; padding: 20px;">
+                      <div style="color: #6c757d; font-size: 15px;">
+                        <ng-container *ngIf="productClause.length === 0">
+                          No user available.
+                        </ng-container>
+                        <ng-container *ngIf="productClause.length > 0">
+                          <!-- No user found matching your search -->
+                           No user available yet.
+                        </ng-container>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+
+
+
+            <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
+              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+                (click)="reassignQuotation()">{{ 'gis.quotation.save' | translate }}
+              </button>
+              <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                style="text-decoration: none;">{{
+                'gis.quotation.cancel' | translate
+                }}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
 
       <div class="row mb-4" [formGroup]='quotationForm'>
       </div>
