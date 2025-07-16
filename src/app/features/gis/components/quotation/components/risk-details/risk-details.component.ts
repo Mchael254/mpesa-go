@@ -1,10 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
-import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { ProductService } from '../../../../../gis/services/product/product.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { PolicyService } from '../../../policy/services/policy.service';
 import { BinderService } from '../../../setups/services/binder/binder.service';
@@ -28,7 +25,7 @@ import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from "ngx-currency";
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import * as bootstrap from 'bootstrap';
-import { Pagination } from 'src/app/shared/data/common/pagination';
+
 
 const log = new Logger('RiskClausesDetailsComponent');
 
@@ -192,6 +189,7 @@ export class RiskDetailsComponent {
   dynamicRegexPattern: string;
   clientsData: ClientDTO[] = [];
   sectionToDelete: any = null;
+  clientCode: number;
 
   constructor(
     public subclassService: SubclassesService,
@@ -275,7 +273,7 @@ export class RiskDetailsComponent {
       nullable: true,
       align: 'left',
     };
-
+    this.clientCode = Number(sessionStorage.getItem('insuredCode'))
   }
   ngOnDestroy(): void { }
   ngAfterViewInit() {
@@ -419,19 +417,6 @@ export class RiskDetailsComponent {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   openAddRiskModal() {
     this.modalInstance?.show();
   }
@@ -515,8 +500,6 @@ export class RiskDetailsComponent {
   }
 
 
-
-
   loadSelectedProductRiskFields(productCode: number): void {
     const formFieldDescription = `detailed-quotation-risk-${productCode}`;
 
@@ -565,19 +548,32 @@ export class RiskDetailsComponent {
           });
           this.clientsData = data.content;
 
-          // populate selectOptions for insureds field
+          // Populate selectOptions for insureds field
           this.safePopulateSelectOptions(this.formData, 'insureds', this.clientsData, 'clientFullName', 'id');
+
+          // Ensure FormControl exists
           if (!this.riskDetailsForm.contains('insureds')) {
             this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
+            log.debug('Added insureds control to the form');
           }
 
-          log.debug('Clients loaded and insureds options populated', this.formData);
+          // Now preselect if clientCode matches
+          if (this.clientCode) {
+            const selectedClient = this.clientsData.find(client => client.code === this.clientCode || client.id === this.clientCode);
+            if (selectedClient) {
+              this.riskDetailsForm.patchValue({ insureds: selectedClient.id });
+              log.debug('Preselected insured client in form:', selectedClient);
+            }
+          }
+
+          log.debug('Clients loaded and insureds options populated:', this.formData);
         },
         error: (err) => {
           log.error('Failed to fetch clients', err);
         }
       });
   }
+
 
 
   loadClientDetails() {
@@ -692,8 +688,6 @@ export class RiskDetailsComponent {
         },
 
       })
-
-
 
   }
   formatDate(date: string | Date): string {
@@ -1320,8 +1314,6 @@ export class RiskDetailsComponent {
     { id: 4444, heading: 'Medical Expenses', wording: 'Covers hospital bills.', isMandatory: 'N', isEditable: 'Y' }
   ];
 
-
-
   showSections: boolean = false;
 
   toggleSections() {
@@ -1555,6 +1547,7 @@ export class RiskDetailsComponent {
 
     return schedule;
   }
+
   fetchScheduleRelatedData() {
     forkJoin(([
       this.policyService.getBodyTypes(),
@@ -1625,23 +1618,6 @@ export class RiskDetailsComponent {
       rateType: 'test rate'
     }
   ];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
