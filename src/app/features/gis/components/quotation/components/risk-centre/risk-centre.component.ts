@@ -87,6 +87,7 @@ export class RiskCentreComponent {
   toggleSection() {
     this.isCollapsed = !this.isCollapsed;
   }
+
   fetchQuotationDetails(quoatationCode: number) {
     log.debug("Quotation code tot use:", quoatationCode)
     this.quotationService.getQuotationDetails(quoatationCode)
@@ -102,6 +103,8 @@ export class RiskCentreComponent {
             this.selectedProduct = this.passedProductList[0];
             log.debug("Selected Product:", this.selectedProduct)
           }
+          const insuredCode = this.quotationDetails.clientCode
+          sessionStorage.setItem('insuredCode', insuredCode.toString())
         },
         error: (error: HttpErrorResponse) => {
           log.debug("Error log", error.error.message);
