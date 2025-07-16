@@ -197,16 +197,17 @@
     border: none !important;
     outline: none !important;
     box-shadow: none !important;
-    width: 1.75rem;         /* Adjust width */
-    height: 1.75rem;        /* Adjust height */
-    font-size: 1.2rem;      /* Makes the "×" icon bigger */
+    width: 1.75rem;         
+    height: 1.75rem;        
+    font-size: 1.2rem;      
     line-height: 1.75rem; 
   }
   ::ng-deep .p-datatable table {
     width: 100% !important;
   }
   
-
+ 
+  
 
   
   
