@@ -1960,6 +1960,8 @@
             scrollDirection="horizontal"
             responsiveLayout="scroll"
             class="mt-3"
+            [(selection)]="selectedClauses"
+            selectionMode="multiple"
           >
             <!-- Table Header -->
             <ng-template pTemplate="header">
@@ -2043,7 +2045,7 @@
   
 <div [@slideInOut]="isClausesOpen ? 'open' : 'closed'" class="mt-2 w-100">
    
-    <p-table #riskClauseTable [value]="SubclauseLists" dataKey="code" editMode="row" [(selection)]="selectedClause"
+    <p-table #riskClauseTable [value]="SubclauseList" dataKey="code" editMode="row" [(selection)]="selectedClause"
         selectionMode="multiple" [autoLayout]="true" [paginator]="true" [rows]="2" [rowsPerPageOptions]="[2, 4, 6]"
         [scrollable]="true" [showCurrentPageReport]="true"
         currentPageReportTemplate="{first} to {last} of {totalRecords} entries" responsiveLayout="scroll"
@@ -2110,7 +2112,7 @@
                                 class="form-control form-control-sm" [ngModelOptions]="{ standalone: true }" />
                         </ng-template>
                         <ng-template pTemplate="output">
-                            {{ selectedClauseList.heading }}
+                            {{ selectedClauseList.heading || selectedClauseList.description}}
                         </ng-template>
                     </p-cellEditor>
                 </td>

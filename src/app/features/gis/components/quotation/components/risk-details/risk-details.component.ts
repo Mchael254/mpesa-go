@@ -151,7 +151,7 @@ throw new Error('Method not implemented.');
   modalHeight: number = 200; // Initial height
   clauseList: Clause[];
   // selectedClauseList: Clause[];
-  SubclauseList: any;
+  SubclauseList: any[] = [];
   selectedSubClauseList: subclassClauses[];
   selectedClauseCode: any;
   // clauseDetail:any;
@@ -198,6 +198,8 @@ throw new Error('Method not implemented.');
   premiumTypes: any[] = [];
 isEditable: boolean = false;
 quotationIsAuthorised: boolean = true; // or false
+
+
 
 
 
@@ -2436,12 +2438,34 @@ loadDummyFreeLimit() {
     // this.clauseList.forEach(clause => (clause.isChecked = this.selectAll));
   }
   
-  saveRiskClauses() {
-    // const selected = this.clauseList.filter(c => c.isChecked);
-    // console.log('Selected Risk Clauses:', selected);
+  saveRiskClauses(): void {
+    const selected = this.clauseLists?.filter(clause => clause.isChecked) || [];
+  
+    if (!selected.length) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one clause to add.');
+      return;
+    }
+  
+    // Map to expected structure with heading and wording
+    const mappedClauses = selected.map(clause => ({
+      code: clause.code || clause.id,
+      id: clause.id,
+      heading:  clause.description || '',
+      wording:clause.description || '',
+    }));
+  
+    
+    this.SubclauseList = [...(this.SubclauseList || []), ...mappedClauses];
+
+    this.clauseLists.forEach(clause => clause.isChecked = false);
+  
+    
+    this.selectedClauses = [];
   }
   
+  
   openAddSectionModal(): void {
+    
     if (!this.selectedRisk || !this.selectedRisk.code) {
       this.globalMessagingService.displayErrorMessage(
         'No Risk Selected',
