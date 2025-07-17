@@ -9,7 +9,7 @@ import {NgxSpinnerModule} from "ngx-spinner";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TranslateModule} from "@ngx-translate/core";
 import {SharedModule} from "../../shared/shared.module";
-// import { ReceiptComponent } from './components/receipt/receipt.component';
+
 import { ReceiptAuthorizationComponent } from './components/receipt-authorization/receipt-authorization.component';
 import { BaseFmsComponent } from './components/base-fms/base-fms.component';
 import { ReceiptCaptureComponent } from './components/receipt-capture/receipt-capture.component';
