@@ -1923,6 +1923,20 @@
 
     </div>
 </div>
+      <!-- ADD Risk clause BUTTON ROW -->
+      <div class="row mb-2" *ngIf="isClausesOpen" >
+        <div class="col-12 d-flex justify-content-end">
+            <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                data-bs-target="#addClause"> Add risk Clause
+            </button>
+    
+            <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
+              'pi-caret-up': showSections,
+              'pi-caret-down': !showSections
+            }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                (click)="toggleSections()"></i>
+        </div>
+    </div>
 
 <!-- Add risk close popup -->
 <div class="modal fade" id="addClause" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel" aria-hidden="true">
@@ -2029,20 +2043,7 @@
   </div>
   
 <div [@slideInOut]="isClausesOpen ? 'open' : 'closed'" class="mt-2 w-100">
-         <!-- ADD Risk clause BUTTON ROW -->
-  <div class="row mb-2" *ngIf="isClausesOpen" >
-    <div class="col-12 d-flex justify-content-end">
-        <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-            data-bs-target="#addClause"> Add risk Clause
-        </button>
-
-        <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
-          'pi-caret-up': showSections,
-          'pi-caret-down': !showSections
-        }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-            (click)="toggleSections()"></i>
-    </div>
-</div>
+   
     <p-table #riskClauseTable [value]="SubclauseLists" dataKey="code" editMode="row" [(selection)]="selectedClause"
         selectionMode="multiple" [autoLayout]="true" [paginator]="true" [rows]="2" [rowsPerPageOptions]="[2, 4, 6]"
         [scrollable]="true" [showCurrentPageReport]="true"
