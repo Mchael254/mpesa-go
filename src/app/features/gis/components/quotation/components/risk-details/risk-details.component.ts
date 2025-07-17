@@ -151,7 +151,7 @@ throw new Error('Method not implemented.');
   modalHeight: number = 200; // Initial height
   clauseList: Clause[];
   // selectedClauseList: Clause[];
-  SubclauseList: any;
+  SubclauseList: any[] = [];
   selectedSubClauseList: subclassClauses[];
   selectedClauseCode: any;
   // clauseDetail:any;
@@ -198,6 +198,8 @@ throw new Error('Method not implemented.');
   premiumTypes: any[] = [];
 isEditable: boolean = false;
 quotationIsAuthorised: boolean = true; // or false
+
+
 
 
 
@@ -289,6 +291,8 @@ quotationIsAuthorised: boolean = true; // or false
     this.loadDummyFreeLimit();
     
     this.clientCode = Number(sessionStorage.getItem('insuredCode'))
+    console.log(Object.keys(this.sectionPremium[0]));
+
   }
   ngOnDestroy(): void { }
   ngAfterViewInit() {
@@ -1290,6 +1294,8 @@ loadDummyFreeLimit() {
           // log.debug("Schedule List:", this.scheduleList);
           // log.debug("Risk Clauses List:", this.riskClausesList);
           log.debug("RESPONSE AFTER getting premium rates ", this.sectionPremium);
+          log.debug("Keys in sectionPremium[0]:", Object.keys(this.sectionPremium[0]));
+
 
           // this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created successfully');
           this.fetchQuotationDetails(this.quotationCode)
@@ -1835,6 +1841,10 @@ loadDummyFreeLimit() {
   toggleSectionDetails() {
     this.isSectionDetailsOpen = !this.isSectionDetailsOpen;
   }
+
+  toggleClauses() {
+    this.isClausesOpen = !this.isClausesOpen;
+  }
   /**
 * Creates and initializes a section details form.
 * Utilizes the 'FormBuilder'to create a form group ('sectionDetailsForm').
@@ -1930,6 +1940,7 @@ loadDummyFreeLimit() {
  */
 
   createRiskSection() {
+    
     log.debug("Risk Code:", this.quotationRiskCode);
     let limitsToSave = this.riskLimitPayload();
 
@@ -1966,6 +1977,11 @@ loadDummyFreeLimit() {
       this.globalMessagingService.displayErrorMessage('Error', 'Premium list is empty');
     }
   }
+  // getRiskLimitPayload():any[]{
+
+
+
+  // }
   riskLimitPayload() {
     let limitsToSave: any[] = [];
 
@@ -2404,4 +2420,69 @@ loadDummyFreeLimit() {
     return this.riskDetailsForm.get('registrationNumber') as FormControl;
 
   }
+  
+  
+
+
+  clauseLists = [
+    { id: 'KBCU8375', description: 'Anti-theft', isChecked: false, code: 1 },
+    { id: 'DVL09935', description: 'Co-insurance', isChecked: false, code: 2 },
+    { id: 'KBCU8375', description: 'Automatic depreciation', isChecked: false, code: 3 },
+    { id: 'DVL09935', description: 'Maintenance garage', isChecked: false, code: 4 }
+  ];
+  
+  selectedClauses: any[] = [];
+  
+  
+  toggleSelectAlls(event: any) {
+    // this.clauseList.forEach(clause => (clause.isChecked = this.selectAll));
+  }
+  
+  saveRiskClauses(): void {
+    const selected = this.clauseLists?.filter(clause => clause.isChecked) || [];
+  
+    if (!selected.length) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one clause to add.');
+      return;
+    }
+  
+    // Map to expected structure with heading and wording
+    const mappedClauses = selected.map(clause => ({
+      code: clause.code || clause.id,
+      id: clause.id,
+      heading:  clause.description || '',
+      wording:clause.description || '',
+    }));
+  
+    
+    this.SubclauseList = [...(this.SubclauseList || []), ...mappedClauses];
+
+    this.clauseLists.forEach(clause => clause.isChecked = false);
+  
+    
+    this.selectedClauses = [];
+  }
+  
+  
+  openAddSectionModal(): void {
+    
+    if (!this.selectedRisk || !this.selectedRisk.code) {
+      this.globalMessagingService.displayErrorMessage(
+        'No Risk Selected',
+        'Please select a risk before adding a section.'
+      );
+      return;
+    }
+  
+    const modal = document.getElementById('addSection');
+    if (modal) {
+      const bootstrapModal = new bootstrap.Modal(modal);
+      bootstrapModal.show();
+    }
+  }
+  
+  
+
+
+
 }
