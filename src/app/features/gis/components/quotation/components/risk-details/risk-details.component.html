@@ -1280,7 +1280,7 @@
                                 [rowsPerPageOptions]="[5, 10, 20]" [scrollable]="true" scrollDirection="horizontal"
                                 [showCurrentPageReport]="true"
                                 currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                                [globalFilterFields]="['benefit', 'freeLimit', 'limitAmount', 'rate']">
+                                [globalFilterFields]="['sectionDescription', 'freeLimit', 'limitAmount', 'rate']">
                                 <ng-template pTemplate="header">
                                     <tr>
 
@@ -1289,7 +1289,7 @@
                                                 (change)="toggleSelectAll($event)" />
                                         </th>
 
-                                        <th class="equal-width " pSortableColumn="benefit"> {{ 'gis.quotation.benefit' |
+                                        <th class="equal-width " pSortableColumn="sectionDescription"> {{ 'gis.quotation.benefit' |
                                             translate }}<p-sortIcon field="benefit" /></th>
                                         <th class="equal-width" pSortableColumn="free_limit"> {{
                                             'gis.quotation.free_limit' | translate }}<p-sortIcon field="free_limit" />
@@ -1910,9 +1910,6 @@
             <div class="col-4 clause-title">
                 <strong>{{'gis.quotation.risk_clauses' | translate}}</strong>
             </div>
-<<<<<<< HEAD
-            
-=======
             <div class="col-8 d-flex justify-content-end">
                 <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse"
                     data-bs-target="#riskClauses" aria-expanded="false" aria-controls="riskClauses"
@@ -1921,7 +1918,6 @@
                 </button>
             </div>
         </div>
->>>>>>> bcfbc1451a73640c0ea9e0fd67ed056f1d6ca7f1
 
 
     </div>

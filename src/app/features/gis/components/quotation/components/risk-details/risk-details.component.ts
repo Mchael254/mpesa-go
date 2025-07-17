@@ -289,6 +289,8 @@ quotationIsAuthorised: boolean = true; // or false
     this.loadDummyFreeLimit();
     
     this.clientCode = Number(sessionStorage.getItem('insuredCode'))
+    console.log(Object.keys(this.sectionPremium[0]));
+
   }
   ngOnDestroy(): void { }
   ngAfterViewInit() {
@@ -1290,6 +1292,8 @@ loadDummyFreeLimit() {
           // log.debug("Schedule List:", this.scheduleList);
           // log.debug("Risk Clauses List:", this.riskClausesList);
           log.debug("RESPONSE AFTER getting premium rates ", this.sectionPremium);
+          log.debug("Keys in sectionPremium[0]:", Object.keys(this.sectionPremium[0]));
+
 
           // this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created successfully');
           this.fetchQuotationDetails(this.quotationCode)
@@ -1930,6 +1934,7 @@ loadDummyFreeLimit() {
  */
 
   createRiskSection() {
+    
     log.debug("Risk Code:", this.quotationRiskCode);
     let limitsToSave = this.riskLimitPayload();
 
@@ -1966,6 +1971,11 @@ loadDummyFreeLimit() {
       this.globalMessagingService.displayErrorMessage('Error', 'Premium list is empty');
     }
   }
+  // getRiskLimitPayload():any[]{
+
+
+
+  // }
   riskLimitPayload() {
     let limitsToSave: any[] = [];
 
