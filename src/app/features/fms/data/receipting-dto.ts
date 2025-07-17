@@ -360,7 +360,7 @@ export interface ReceiptSaveDTO {
   drawerBank: string;
   userCode: number;
   narration: string;
-  insurerAccount: string;
+ // insurerAccount: string;
   receivedFrom: string;
   grossOrNet: string;
   sysShtDesc: string;

@@ -10,6 +10,7 @@ import { ReceiptService } from '../../services/receipt.service';
 import { ReportsService } from '../../../../shared/services/reports/reports.service';
 import { ReceiptDataService } from '../../services/receipt-data.service';
 import { TranslateService } from '@ngx-translate/core';
+import { EncryptionService } from 'src/app/shared/services/encryption/encryption.service';
 /**
  * @Component ReceiptPrintPreviewComponent
  * @description
@@ -53,6 +54,10 @@ export class ReceiptPrintPreviewComponent {
    * by the template binding `[fileName]="documentData?.fileName ?? ''"`, though it's not explicitly set in this component.
    */
   documentData: any;
+  isPrinting:boolean=false;
+   
+  // A local flag to prevent revoking URL too early
+  private isNavigating = false;
   /**
    * @constructor
    * @param {SessionStorageService} sessionStorage - Service to interact with browser session storage. Used to retrieve receipt number and organization details.
@@ -68,7 +73,8 @@ export class ReceiptPrintPreviewComponent {
     private router: Router,
     private receiptService: ReceiptService,
     private receiptDataService: ReceiptDataService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private encryptionService:EncryptionService
   ) {}
   /**
    * @method ngOnInit
@@ -119,29 +125,49 @@ export class ReceiptPrintPreviewComponent {
         //this.downlaod(this.filePath,'receiptpdf');
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.rctPrintError');
+        
+        const customMessage = this.translate.instant('fms.errorMessage');
 
         const backendError =
           err.error?.msg ||
           err.error?.error ||
           err.error?.status ||
+          err.error?.message ||
           err.statusText;
         this.globalMessagingService.displayErrorMessage(
-          customMessage,
+           customMessage,
           backendError
         );
-        // Navigate the user to a safe and stable screen
-        this.router.navigate(['/home/fms/receipt-management']);
+         // On error, also set the flag and navigate back
+        this.handleNavigationError();
+
+       
+        
       },
     });
   }
+  // Consolidated navigation logic
+  private navigateBackToPrintTab() {
+      this.isNavigating = true;
+      this.sessionStorage.setItem('printTabStatus', JSON.stringify(true));
+      this.router.navigate(['/home/fms/receipt-management']);
+  }
+  // Handles API error navigation
+  private handleNavigationError(customError?: string) {
+    const customMessage = this.translate.instant('fms.errorMessage');
+      if (customError) {
+        this.globalMessagingService.displayErrorMessage(customMessage, customError);
+      }
+      this.navigateBackToPrintTab();
+  }
+
   /**
    * @method navigateToReceiptCapture
    * @description Navigates the user back to the main receipt management view.
    * Typically used when the user clicks the 'Unprinted' button or cancels the operation.
    */
   navigateToReceiptCapture(): void {
-    this.router.navigate(['/home/fms/receipt-management']);
+    this.navigateBackToPrintTab();
   }
   /**
    * @method updatePrintStatus
@@ -159,8 +185,12 @@ export class ReceiptPrintPreviewComponent {
           '',
           response?.msg || response?.error || response?.status
         );
+         // On success, set the flag and navigate
+        this.navigateBackToPrintTab();
 
-        this.router.navigate(['/home/fms/receipt-management']);
+
+
+
       },
 
       error: (err) => {
@@ -174,7 +204,22 @@ export class ReceiptPrintPreviewComponent {
           customMessage,
           backendError
         );
+        // Even on error, navigate back to the print tab as per the user story
+        this.navigateBackToPrintTab();
       },
     });
+  }
+  /**When you use createObjectURL, the browser holds the PDF file data in memory. 
+   * This memory is not automatically released until the entire page/tab is closed. 
+   * If a user prints many receipts without closing the tab, this could slowly consume memory (a memory leak).
+The Solution: The best practice is to manually release the memory using window.URL.revokeObjectURL(this.filePath) 
+when you are finished with the file. 
+The perfect place to do this is in the ngOnDestroy lifecycle hook, which runs just before the component is removed from the screen. */
+  // Clean up the blob URL to prevent memory leaks
+  /**this.isNavigating flag was to handle a potential memory leak related to window.URL.createObjectURL(blob). */
+  ngOnDestroy() {
+      if (this.filePath && !this.isNavigating) {
+          window.URL.revokeObjectURL(this.filePath);
+      }
   }
 }
