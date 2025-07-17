@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import {
   glAccountDTO,
   glContentDTO,
@@ -32,7 +32,7 @@ import { Pagination } from 'src/app/shared/data/common/pagination';
   templateUrl: './receipt-management.component.html',
   styleUrls: ['./receipt-management.component.css'],
 })
-export class ReceiptManagementComponent {
+export class ReceiptManagementComponent implements OnInit{
   cancelForm: FormGroup;
   users: any;
   /**
@@ -97,7 +97,7 @@ export class ReceiptManagementComponent {
     {} as Pagination<glContentDTO>; // This holds full pagination data
   filteredReceipts: ReceiptsToCancelContentDTO[] = [];
   glAccountContent: glContentDTO[] = []; // This will hold just the content array
-
+checkActiveTab:any;
   loggedInUser: any;
   //raiseBankCharge: string = 'no';
   constructor(
@@ -117,6 +117,9 @@ export class ReceiptManagementComponent {
   ngOnInit(): void {
     this.initializeForm();
     // Retrieve branch from localStorage or receiptDataService
+
+   this.handleInitialTabState(); // <-- NEW: Logic to set the tab
+
 
     let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
     let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
@@ -143,7 +146,31 @@ export class ReceiptManagementComponent {
     );
 
     this.fetchGlAccounts(this.defaultBranch?.id || this.selectedBranch?.id);
+
+
   }
+   // NEW METHOD: Handles setting the initial tab based on session storage
+  handleInitialTabState(): void {
+    try {
+      const activeTabFlag = this.sessionStorage.getItem('printTabStatus');
+      if (activeTabFlag) {
+        // We found the flag, so we came from the print preview screen.
+        // The value should be "true" (a string), but we just need to check for existence.
+        this.isPrintingClicked();
+        // IMPORTANT: Clean up the flag so it doesn't persist.
+        this.sessionStorage.removeItem('printTabStatus');
+      } else {
+        // Default behavior: show cancellation tab
+        this.cancelClicked();
+      }
+    } catch (e) {
+      // This catch block will handle any unexpected errors during session storage access.
+     // console.error('Error reading tab status from session storage:', e);
+      // Default to the cancellation tab in case of an error
+      this.cancelClicked();
+    }
+  }
+
   initializeForm() {
     this.cancelForm = this.fb.group({
       accountCharged: ['', Validators.required],
@@ -429,6 +456,7 @@ export class ReceiptManagementComponent {
     );
 
     this.router.navigate(['/home/fms/receipt-print-preview']);
+   
   }
   //cancellation section
   fetchReceiptsToCancel(branchCode: number) {

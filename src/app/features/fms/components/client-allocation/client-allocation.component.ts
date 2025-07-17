@@ -884,7 +884,7 @@ export class ClientAllocationComponent {
   confirmtotalAllocatedAmount() {
     if (this.totalAllocatedAmount > 0) {
       this.allocateAndPostAllocations();
-    } else {
+    } else if(this.totalAllocatedAmount <= 0) {
       this.saveEmptyAllocations();
     }
   }
@@ -1783,7 +1783,7 @@ export class ClientAllocationComponent {
       drawerBank: this.drawersBank || null,
       userCode: this.loggedInUser.code,
       narration: this.narration,
-      insurerAccount: null,
+      //insurerAccount: null,
       receivedFrom: this.receivedFrom || null,
       grossOrNet: 'G',
       //  grossOrNet: null,
@@ -1943,7 +1943,7 @@ export class ClientAllocationComponent {
       drawerBank: this.drawersBank || null,
       userCode: this.loggedInUser.code,
       narration: this.narration,
-      insurerAccount: null,
+      //insurerAccount: null,
       receivedFrom: this.receivedFrom || null,
       grossOrNet: 'G',
       //  grossOrNet: null,
@@ -2099,7 +2099,7 @@ export class ClientAllocationComponent {
       drawerBank: this.drawersBank || null,
       userCode: this.loggedInUser.code,
       narration: this.narration,
-      insurerAccount: null,
+      //insurerAccount: null,
       receivedFrom: this.receivedFrom || null,
       grossOrNet: 'G',
       //  grossOrNet: null,
