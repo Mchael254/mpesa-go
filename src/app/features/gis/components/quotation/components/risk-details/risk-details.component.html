@@ -1918,11 +1918,131 @@
                 </button>
             </div>
         </div>
+   
 
 
     </div>
 </div>
+
+<!-- Add risk close popup -->
+<div class="modal fade" id="addClause" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
+      <div class="modal-content" id="addSectionModal">
+        <div class="modal-body">
+          <h5 class="modal-title mt-2" id="editOtherDetailsLabel">
+            Add risk clause
+            <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+          </h5>
+  
+          <p-table
+            #clauseTable
+            [value]="clauseLists"
+            dataKey="code"
+            [(selection)]="selectedClauses"
+            [paginator]="true"
+            [rows]="3"
+            [rowsPerPageOptions]="[3, 5, 10]"
+            [globalFilterFields]="['id', 'description']"
+            [scrollable]="true"
+            scrollDirection="horizontal"
+            responsiveLayout="scroll"
+            class="mt-3"
+          >
+            <!-- Table Header -->
+            <ng-template pTemplate="header">
+                <!-- Column Labels -->
+                <tr>
+                  <th style="width: 2%;"></th>
+                  <th pSortableColumn="id" class="equal-width">
+                    ID <p-sortIcon field="id" />
+                  </th>
+                  <th pSortableColumn="description" class="equal-width">
+                    Description <p-sortIcon field="description" />
+                  </th>
+                </tr>
+              
+                
+                <tr>
+                  <td  style="padding-top: 10px; padding-bottom: 10px;"></td>
+                  <td  style="padding-top: 10px; padding-bottom: 10px;">
+                    <input
+                      class="form-control form-control-sm"
+                      pInputText
+                      #globalFilterInput
+                      type="text"
+                      placeholder=""
+                      (input)="clauseTable.filterGlobal(globalFilterInput.value, 'contains')"
+                      style="width: 30%;"
+                    />
+                  </td>
+                  <td  style="padding-top: 10px; padding-bottom: 10px;">
+                    <input
+                      class="form-control form-control-sm"
+                      #globalFilterInput
+                      pInputText
+                      type="text"
+                      placeholder=""
+                      (input)="clauseTable.filterGlobal(globalFilterInput.value, 'contains')"
+                      style="width: 30%;"
+                    />
+                  </td>
+                </tr>
+              </ng-template>
+              
+
+  
+            <!-- Empty Message -->
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="3" class="text-center text-muted py-3">No clauses found matching your search.</td>
+              </tr>
+            </ng-template>
+  
+            <!-- Table Body -->
+            <ng-template pTemplate="body" let-clause>
+              <tr>
+                <td>
+                  <input type="checkbox" [(ngModel)]="clause.isChecked" />
+                </td>
+                <td>{{ clause.id }}</td>
+                <td>{{ clause.description }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+  
+          <!-- Buttons -->
+          <div class="mt-4 d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-primary me-2" data-bs-dismiss="modal">Cancel</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="saveDetails"
+              data-bs-dismiss="modal"
+              (click)="saveRiskClauses()"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
 <div [@slideInOut]="isClausesOpen ? 'open' : 'closed'" class="mt-2 w-100">
+         <!-- ADD Risk clause BUTTON ROW -->
+  <div class="row mb-2" *ngIf="isClausesOpen" >
+    <div class="col-12 d-flex justify-content-end">
+        <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+            data-bs-target="#addClause"> Add risk Clause
+        </button>
+
+        <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
+          'pi-caret-up': showSections,
+          'pi-caret-down': !showSections
+        }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+            (click)="toggleSections()"></i>
+    </div>
+</div>
     <p-table #riskClauseTable [value]="SubclauseLists" dataKey="code" editMode="row" [(selection)]="selectedClause"
         selectionMode="multiple" [autoLayout]="true" [paginator]="true" [rows]="2" [rowsPerPageOptions]="[2, 4, 6]"
         [scrollable]="true" [showCurrentPageReport]="true"

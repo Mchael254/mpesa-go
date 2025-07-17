@@ -1839,6 +1839,10 @@ loadDummyFreeLimit() {
   toggleSectionDetails() {
     this.isSectionDetailsOpen = !this.isSectionDetailsOpen;
   }
+
+  toggleClauses() {
+    this.isClausesOpen = !this.isClausesOpen;
+  }
   /**
 * Creates and initializes a section details form.
 * Utilizes the 'FormBuilder'to create a form group ('sectionDetailsForm').
@@ -2414,4 +2418,32 @@ loadDummyFreeLimit() {
     return this.riskDetailsForm.get('registrationNumber') as FormControl;
 
   }
+  
+  
+
+
+  clauseLists = [
+    { id: 'KBCU8375', description: 'Anti-theft', isChecked: false, code: 1 },
+    { id: 'DVL09935', description: 'Co-insurance', isChecked: false, code: 2 },
+    { id: 'KBCU8375', description: 'Automatic depreciation', isChecked: false, code: 3 },
+    { id: 'DVL09935', description: 'Maintenance garage', isChecked: false, code: 4 }
+  ];
+  
+  selectedClauses: any[] = [];
+  
+  
+  toggleSelectAlls(event: any) {
+    // this.clauseList.forEach(clause => (clause.isChecked = this.selectAll));
+  }
+  
+  saveRiskClauses() {
+    // const selected = this.clauseList.filter(c => c.isChecked);
+    // console.log('Selected Risk Clauses:', selected);
+  }
+  
+
+
+
+
+
 }
