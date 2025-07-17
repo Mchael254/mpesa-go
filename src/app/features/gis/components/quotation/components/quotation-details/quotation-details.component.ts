@@ -25,6 +25,8 @@ import { forkJoin, mergeMap } from 'rxjs';
 import { QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
 import { ProductClauseDTO, Products } from '../../../setups/data/gisDTO';
 import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
+import { ClaimsService } from '../../../claim/services/claims.service';
+import * as bootstrap from 'bootstrap';
 
 const log = new Logger('QuotationDetails');
 
@@ -38,6 +40,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   @ViewChild('dt') table!: Table;
   @ViewChild(Table) private dataTable: Table;
+  @ViewChild('reassignProductModal') reassignProductModalElement!: ElementRef;
+  @ViewChild('chooseClientReassignModal') chooseClientReassignModalElement!: ElementRef;
+
   quotationForm: FormGroup;
   newClient: boolean = false;
   selectedClientType = 'existing';
@@ -151,6 +156,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   ];
   emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   selectedClientCode: number;
+  users: any
+  selectedUser: any;
+  fullNameSearch: string = '';
+  globalSearch: string = '';
+  noUserChosen: boolean = false
+  clientToReassignProduct: string = '';
+  reassignProductModal: any;
+  chooseClientReassignModal: any;
+  reassignButton: boolean = false
+
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -166,6 +181,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     public quotationService: QuotationsService,
     public productSubclass: ProductSubclassService,
     private globalMessagingService: GlobalMessagingService,
+    public claimsService: ClaimsService,
   ) {
 
     this.quotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
@@ -211,6 +227,11 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("product Form details", this.productDetails)
   }
 
+  ngAfterViewInit() {
+    this.reassignProductModal = new bootstrap.Modal(this.reassignProductModalElement.nativeElement);
+    this.chooseClientReassignModal = new bootstrap.Modal(this.chooseClientReassignModalElement.nativeElement);
+  }
+
   ngOnInit(): void {
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
@@ -251,6 +272,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
 
     this.loadPersistedClauses();
+    this.getUsers()
   }
 
 
@@ -316,13 +338,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  handleMultiUserYes(): void {
-    this.reassignButton = true
-  }
 
-  handleMultiUserNo(): void {
-    this.reassignButton = false
-  }
+
 
   setClientType(value: 'new' | 'existing') {
     this.selectedClientType = value;
@@ -1777,22 +1794,93 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  reassignButton: boolean = false
-  openProductReassignModal(product: any) {
-    this.productToDelete = product;
-    this.reassignProductCode = product.productCode.code;
-
-    // Directly open the modal using Bootstrap
-    const modalElement = document.getElementById('deleteProduct');
-    if (modalElement) {
-      const modal = new (window as any).bootstrap.Modal(modalElement);
-      modal.show();
-    } else {
-      console.error("❌ Modal with ID 'deleteProduct' not found in DOM.");
-    }
+  openReassignProductModal(product: any) {
+    this.reassignProductModal.show();
   }
 
-  reassignQuotation() {
+  openChooseClientModal() {
+    this.chooseClientReassignModal.show();
+  }
+
+
+  getUsers() {
+    this.claimsService.getUsers().subscribe({
+      next: (res => {
+        this.users = res;
+        this.users = this.users.content;
+        log.debug('users>>>', this.users)
+
+      }),
+      error: (error => {
+        log.debug('error', error)
+        this.globalMessagingService.displayErrorMessage('Error', 'failed to feth users')
+      })
+    })
+  }
+
+  handleMultiUserYes(): void {
+    this.reassignButton = true
+  }
+
+  handleMultiUserNo(): void {
+    this.reassignButton = false
+  }
+
+  //search member to reassign
+  filterGlobal(event: any): void {
+    const value = event.target.value;
+    this.globalSearch = value;
+    this.table.filterGlobal(value, 'contains');
+  }
+
+  filterByFullName(event: any): void {
+    const value = event.target.value;
+    this.table.filter(value, 'name', 'contains');
+  }
+
+  onUserSelect(): void {
+    if (this.selectedUser) {
+      log.debug("Selected user>>>", this.selectedUser);
+      this.globalSearch = this.selectedUser.id;
+      this.fullNameSearch = this.selectedUser.name;
+    }
+
+  }
+
+  onUserUnselect(): void {
+    this.selectedUser = null;
+    this.globalSearch = '';
+    this.fullNameSearch = '';
+  }
+
+  selectClient() {
+    if (!this.selectedUser) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false
+
+      }, 3000);
+      return;
+    }
+
+    this.clientToReassignProduct = this.selectedUser.name;
+    this.chooseClientReassignModal.hide();
+    this.reassignProductModal.show();
+
+  }
+
+  reassignProduct() {
+    if (!this.clientToReassignProduct) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false
+
+      }, 3000);
+      return;
+    }
+    this.reassignProductModal.hide();
+    this.globalMessagingService.displaySuccessMessage('Success', 'Product reassigned');
+    this.clientToReassignProduct = null;
 
   }
 
