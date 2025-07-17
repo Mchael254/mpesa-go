@@ -2441,8 +2441,23 @@ loadDummyFreeLimit() {
     // console.log('Selected Risk Clauses:', selected);
   }
   
-
-
+  openAddSectionModal(): void {
+    if (!this.selectedRisk || !this.selectedRisk.code) {
+      this.globalMessagingService.displayErrorMessage(
+        'No Risk Selected',
+        'Please select a risk before adding a section.'
+      );
+      return;
+    }
+  
+    const modal = document.getElementById('addSection');
+    if (modal) {
+      const bootstrapModal = new bootstrap.Modal(modal);
+      bootstrapModal.show();
+    }
+  }
+  
+  
 
 
 

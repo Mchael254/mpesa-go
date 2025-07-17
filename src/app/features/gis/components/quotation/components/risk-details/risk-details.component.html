@@ -1226,7 +1226,7 @@
                 <div class="row mt-3" *ngIf="isSectionDetailsOpen">
                     <div class="col-12 d-flex justify-content-end">
                         <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#addSection"> Add Section
+                        (click)="openAddSectionModal()"> Add Section
                         </button>
 
                         <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
@@ -1952,7 +1952,6 @@
             #clauseTable
             [value]="clauseLists"
             dataKey="code"
-            [(selection)]="selectedClauses"
             [paginator]="true"
             [rows]="3"
             [rowsPerPageOptions]="[3, 5, 10]"
@@ -2008,7 +2007,7 @@
             <!-- Empty Message -->
             <ng-template pTemplate="emptymessage">
               <tr>
-                <td colspan="3" class="text-center text-muted py-3">No clauses found matching your search.</td>
+                <td colspan="3" class="text-center text-muted py-3">No predefined clauses available.</td>
               </tr>
             </ng-template>
   
