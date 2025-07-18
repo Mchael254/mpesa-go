@@ -1,3 +1,61 @@
+<!--{{ dynamicDisplay | json }}-->
+<div *ngIf="dynamicDisplay" class="entity-container">
+  <ng-container *ngFor="let display of dynamicDisplay">
+    <p-tabView>
+      <ng-container *ngFor="let tab of display?.tabs">
+        <p-tabPanel>
+          <ng-template pTemplate="header" >
+            <span class="text-primary m-2" (click)="selectTab(tab)">
+              {{ tab.label[language] | titlecase }}
+            </span>
+            <span
+              id="edit-tab-btn"
+              *ngIf="tab.title === selectedTab || tab.title === selectedSubTab"
+              class="m-2"
+            >
+              <i class="fa fa-pencil"></i>
+            </span>
+          </ng-template>
+          <ng-container
+            *ngIf="
+            entityPartyIdDetails &&
+            entityAccountIdDetails &&
+            partyAccountDetails &&
+            unAssignedPartyTypes &&
+            tab.title === 'overview'
+          "
+          >
+            <app-entity-basic-info
+              [unAssignedPartyTypes]="unAssignedPartyTypes"
+              [partyAccountDetails]="partyAccountDetails"
+              [entityAccountIdDetails]="entityAccountIdDetails"
+              [entityPartyIdDetails]="entityPartyIdDetails"
+              (assignRole)="onAssignRole($event)"
+              (partyTypeRole)="selectPartyTypeRole($event)"
+              [overviewConfig]="tab"
+            ></app-entity-basic-info>
+          </ng-container>
+
+          <ng-container *ngIf="
+            entityPartyIdDetails &&
+            partyAccountDetails &&
+            tab.title==='prime_identity'"
+          >
+            <app-prime-identity
+              [partyAccountDetails]="partyAccountDetails"
+              [entityPartyIdDetails]="entityPartyIdDetails"
+              [primeDetailsConfig]="tab"
+            >
+            </app-prime-identity>
+          </ng-container>
+        </p-tabPanel>
+      </ng-container>
+    </p-tabView>
+  </ng-container>
+</div>
+
+
+<!--
 <div class="entity-container">
   <ngx-spinner
     type="ball-clip-rotate-multiple"
@@ -49,3 +107,4 @@
     </p-tabView>
   </div>
 </div>
+-->

@@ -556,3 +556,21 @@ export interface Payee {
   bankBranchCode: number;
   accountNumber: string;
 }
+
+export interface OwnerDetail {
+  contactPersonPhone: string;
+  docIdNumber: string;
+  name: string;
+  percentOwnership: string;
+}
+
+export interface Cr12Detail {
+  address: string;
+  companyRegistrationDate: string;  // or Date if you parse it
+  companyRegistrationNumber: string;
+  name: string;
+  referenceNumber: string;
+  referenceNumberYear: string;      // or number if appropriate
+}
+
+
