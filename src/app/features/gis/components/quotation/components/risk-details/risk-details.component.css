@@ -1,214 +1,218 @@
 .card {
-    border: none;
-    border-radius: 5px;
+  border: none;
+  border-radius: 5px;
 }
 
 #icon {
-    background-color: #E4E7EB;
-    border-radius: 100px;
-    border: none;
+  background-color: #E4E7EB;
+  border-radius: 100px;
+  border: none;
 }
 
 #icon i {
-    color: #00529B;
+  color: #00529B;
 }
 
 .icon {
-    background-color: #E4E7EB;
-    border-radius: 100px;
-    border: none;
+  background-color: #E4E7EB;
+  border-radius: 100px;
+  border: none;
 }
 
 .flexible-header {
-    white-space: nowrap;
-    width: auto;
-    text-align: left;
+  white-space: nowrap;
+  width: auto;
+  text-align: left;
 }
 
 ::ng-deep .p-dropdown {
-    height: 33px;
-    width: 100%;
-    border: 1px solid rgba(0, 0, 0, 0.20);
-    border-radius: 4px;
+  height: 33px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  border-radius: 4px;
 }
 
 ::ng-deep .p-dropdown .p-dropdown-label.p-placeholder {
-    padding: 3px;
+  padding: 3px;
 
 
 }
 
 ::ng-deep .p-dropdown .p-dropdown-label {
-    padding: 3px;
-    font-size: 14px;
-    color: #000;
+  padding: 3px;
+  font-size: 14px;
+  color: #000;
 }
 
 ::ng-deep .p-dropdown-filter {
-    width: 100%;
-    height: 30px;
-    border-radius: 4px;
+  width: 100%;
+  height: 30px;
+  border-radius: 4px;
 }
 
 ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
-    font-size: 14px;
-    color: #000;
-    padding: 3px 20px;
-    font-family: Roboto;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
+  font-size: 14px;
+  color: #000;
+  padding: 3px 20px;
+  font-family: Roboto;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 
 #quote-label {
-    color: #000;
-    font-family: Roboto;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 100%;
-    letter-spacing: 0%;
-    margin-bottom: 10px;
+  color: #000;
+  font-family: Roboto;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  margin-bottom: 10px;
 }
 
 #quote-input {
-    border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.20);
-    height: 35px;
-    font-size: 14px;
-    /* background: #fff */
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  height: 35px;
+  font-size: 14px;
+  /* background: #fff */
 }
 
 ::ng-deep .p-datatable .p-datatable-thead>tr>th {
-    /* padding: 0.3rem 1rem;  */
-    /* padding: 0.1rem 0.1rem; */
-    color: #000000B2;
-    font-family: Roboto;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 24px;
-    background-color: #BAD0E4;
-    /* 150% */
+  /* padding: 0.3rem 1rem;  */
+  /* padding: 0.1rem 0.1rem; */
+  color: #000000B2;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  background-color: #BAD0E4;
+  /* 150% */
 }
-::ng-deep .custom-subclause-table .p-datatable-thead > tr > th {
-    color: #000000B2;
-    font-family: Roboto;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 24px;
-    background-color: #BAD0E4 !important;
-    
-  }
-  ::ng-deep .p-datatable-wrapper {
-    width: 100% !important;
-  }
-  
-  ::ng-deep .p-datatable table {
-    width: 100% !important;
-    table-layout: auto !important;
-  }
-  
-  
+
+::ng-deep .custom-subclause-table .p-datatable-thead>tr>th {
+  color: #000000B2;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  background-color: #BAD0E4 !important;
+
+}
+
+::ng-deep .p-datatable-wrapper {
+  width: 100% !important;
+}
+
+::ng-deep .p-datatable table {
+  width: 100% !important;
+  table-layout: auto !important;
+}
+
+
 
 .deleteMessage {
-    color: #000;
-    font-size: 16px;
-    font-family: Roboto;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    text-align: center;
+  color: #000;
+  font-size: 16px;
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-align: center;
 }
 
 
 .addRiskTitle {
-    font-family: Roboto;
-    font-weight: 600;
-    font-size: 20px;
-    line-height: 100%;
-    letter-spacing: 0%;
-    color: #00529B;
-}
-.btn-close{
-    color: #EE3945;
-    font-size: 12px;
+  font-family: Roboto;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #00529B;
 }
 
-.section-title{
-    font-family: Roboto;
-    font-weight: 500;
-    font-size: 20px;
-    color: #00529B;
+.btn-close {
+  color: #EE3945;
+  font-size: 12px;
+}
+
+.section-title {
+  font-family: Roboto;
+  font-weight: 500;
+  font-size: 20px;
+  color: #00529B;
 
 }
 
 #openModalButtonAdd {
-    border-radius: 4px;
-    padding: 4px 12px;
-    font-weight: 500;
-    background-color: #00529B;
-    color: #ffffff;
-  }
-  button:focus {
-    outline: none;
-    box-shadow: none;
-    background: none;
-  }
-  .custom-button{
-    color: #00529B;
-    font-family: Roboto;
-    font-weight: 500;
-    font-size: 14px;
-  }
-  .ui-paginator .ui-paginator-rpp-options {
-    margin-left: auto;
-  }
-  .narrow-input {
-    width: 100px;
-  }
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-weight: 500;
+  background-color: #00529B;
+  color: #ffffff;
+}
 
-  .modal-title{
-    margin-bottom: 15px;
-    color: #00529B;
-  }
-  .delete-title{
-    color: #00529B;
-    margin-left: 4.5rem;
-  }
-  .btn-close.red-close {
-    font-weight: 600;
-    filter: invert(29%) sepia(96%) saturate(7476%) hue-rotate(354deg) brightness(94%) contrast(123%);
-  }
-  .clause-title{
-    font-family: Roboto;
-    font-weight: 500;
-    font-size: 20px;
-    color: #00529B;
+button:focus {
+  outline: none;
+  box-shadow: none;
+  background: none;
+}
 
-  }
-  
-  
-  
-  .custom-close {
-    filter: brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(7451%) hue-rotate(357deg) brightness(102%) contrast(122%);
-    background-color: transparent !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-    width: 1.75rem;         
-    height: 1.75rem;        
-    font-size: 1.2rem;      
-    line-height: 1.75rem; 
-  }
-  ::ng-deep .p-datatable table {
-    width: 100% !important;
-  }
-  
- 
-  
+.custom-button {
+  color: #00529B;
+  font-family: Roboto;
+  font-weight: 600;
+  font-size: 14px;
+}
 
-  
-  
-  
+.ui-paginator .ui-paginator-rpp-options {
+  margin-left: auto;
+}
+
+.narrow-input {
+  width: 100px;
+}
+
+.modal-title {
+  margin-bottom: 15px;
+  color: #00529B;
+}
+
+.delete-title {
+  color: #00529B;
+  font-weight: 500;
+}
+
+.btn-close.red-close {
+  font-weight: 600;
+  filter: invert(29%) sepia(96%) saturate(7476%) hue-rotate(354deg) brightness(94%) contrast(123%);
+}
+
+.clause-title {
+  font-family: Roboto;
+  font-weight: 500;
+  font-size: 20px;
+  color: #00529B;
+
+}
+
+
+
+.custom-close {
+  filter: brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(7451%) hue-rotate(357deg) brightness(102%) contrast(122%);
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: 1.2rem;
+  line-height: 1.75rem;
+}
+
+::ng-deep .p-datatable table {
+  width: 100% !important;
+}

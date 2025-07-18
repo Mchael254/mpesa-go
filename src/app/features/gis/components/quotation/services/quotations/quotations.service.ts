@@ -223,8 +223,11 @@ export class QuotationsService {
 
   }
 
-  deleteRiskSections(riskSectionCode: number) {
-    return this.api.PUT(`v1/risk-sections?riskSectionCode=${riskSectionCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  deleteRiskSections(limitCode: number) {
+    return this.api.DELETE(`v2/risk-limits?limitCode=${limitCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
 
   }
 

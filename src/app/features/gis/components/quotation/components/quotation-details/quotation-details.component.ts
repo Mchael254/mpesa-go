@@ -301,13 +301,52 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         // });
 
         // Add new dynamic controls 
+        // this.detailedQuotationFormData.forEach((field) => {
+        //   const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
+        //   const savedValue = sessionStorage.getItem(`quotation_${field.name}`);
+        //   const formControl = new FormControl(savedValue || '', validators);
+        //   (formControl as any).metadata = { dynamic: true };
+
+        //   this.quotationForm.addControl(field.name, formControl);
+        //   formControl.valueChanges.subscribe(value => {
+        //     sessionStorage.setItem(`quotation_${field.name}`, value);
+
+        //     if (field.name === 'multiUserEntry') {
+        //       if (value === 'Y') {
+        //         this.handleMultiUserYes();
+        //       } else if (value === 'N') {
+        //         this.handleMultiUserNo();
+        //       }
+        //     }
+        //   });
+
+        //   if (field.name === 'multiUserEntry' && savedValue) {
+        //     if (savedValue === 'Y') {
+        //       this.handleMultiUserYes();
+        //     } else if (savedValue === 'N') {
+        //       this.handleMultiUserNo();
+        //     }
+        //   }
+        // });
         this.detailedQuotationFormData.forEach((field) => {
           const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
-          const savedValue = sessionStorage.getItem(`quotation_${field.name}`);
-          const formControl = new FormControl(savedValue || '', validators);
-          (formControl as any).metadata = { dynamic: true };
 
+          // Handle rfqDate separately
+          let initialValue: any;
+          const savedValue = sessionStorage.getItem(`quotation_${field.name}`);
+
+          if (field.name === 'rfqDate') {
+            // If sessionStorage has value, use it; otherwise, use today's date
+            initialValue = savedValue ? new Date(savedValue) : new Date();
+            this.updateQuotationExpiryDate(initialValue)
+          } else {
+            initialValue = savedValue || '';
+          }
+
+          const formControl = new FormControl(initialValue, validators);
+          (formControl as any).metadata = { dynamic: true };
           this.quotationForm.addControl(field.name, formControl);
+
           formControl.valueChanges.subscribe(value => {
             sessionStorage.setItem(`quotation_${field.name}`, value);
 
