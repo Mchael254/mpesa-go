@@ -4,16 +4,16 @@
 //  **
 //  ****************************************************************************/
 
-import {Injectable} from '@angular/core';
-import {AbstractControl, AsyncValidatorFn, FormArray, ValidationErrors} from '@angular/forms';
-import {ClientAccountContact} from "../../data/client-account-contact";
-import {AccountContact} from "../../data/account-contact";
-import {WebAdmin} from "../../data/web-admin";
-import {HttpParams, HttpResponse} from "@angular/common/http";
-import {DatePipe} from "@angular/common";
-import {ClientDTO} from 'src/app/features/entities/data/ClientDTO';
-import {BehaviorSubject} from "rxjs";
-import {saveAs} from "file-saver";
+import { Injectable } from '@angular/core';
+import { AbstractControl, AsyncValidatorFn, FormArray, ValidationErrors } from '@angular/forms';
+import { ClientAccountContact } from "../../data/client-account-contact";
+import { AccountContact } from "../../data/account-contact";
+import { WebAdmin } from "../../data/web-admin";
+import { HttpParams, HttpResponse } from "@angular/common/http";
+import { DatePipe } from "@angular/common";
+import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import { BehaviorSubject } from "rxjs";
+import { saveAs } from "file-saver";
 
 // import { format, subYears } from 'date-fns';
 
@@ -264,12 +264,12 @@ export class UtilService {
     clntType: 'I' | 'C' | 'T' | 'W' = 'I',
   ): FullName {
     if (!fullName) {
-      return {clntName: '', clntOtherNames: '', clntSurname: ''};
+      return { clntName: '', clntOtherNames: '', clntSurname: '' };
     }
 
     const _fullName = fullName.trim();
     if (clntType === 'C') {
-      return {clntName: _fullName, clntSurname: '', clntOtherNames: ''};
+      return { clntName: _fullName, clntSurname: '', clntOtherNames: '' };
     }
 
     let name: any, surname: any, otherNames: any;
@@ -378,7 +378,7 @@ export class UtilService {
         .split('')
         .map((char) => char.charCodeAt(0)),
     );
-    return new Blob([byteArray], {type: 'application/pdf'});
+    return new Blob([byteArray], { type: 'application/pdf' });
   }
 
   /**
@@ -579,7 +579,7 @@ export class UtilService {
    * @returns {string} URL of the file
    */
   generateURLFromBase64String(mimeType: string,
-                              base64String: string) {
+    base64String: string) {
     // extract base64string
     // if in format: "data:image/png;base64,iVBORw0KG... extract data after coma
     let base64FileData = !!base64String && base64String.includes(',') ?
@@ -595,7 +595,7 @@ export class UtilService {
     );
 
     // Create a Blob object from the array buffer.
-    const blob = new Blob([byteArray], {type: mimeType});
+    const blob = new Blob([byteArray], { type: mimeType });
 
     // Create a temporary URL for the Blob object using the URL.createObjectURL() method.
     return URL.createObjectURL(blob);
@@ -693,7 +693,27 @@ export class UtilService {
     sessionStorage.removeItem('passedQuotationCode')
     sessionStorage.removeItem('riskFormData')
     sessionStorage.removeItem('quoteToEditData')
+    const keysToRemove = [
+      'quotation_expiryDate',
+      'quotation_introducer',
+      'quotation_multiUserEntry',
+      'quotation_quotationType',
+      'quotation_rfqDate',
+      'quotation_source',
+      'selectedCoverFromDate',
+      'selectedCoverToDate',
+      'selectedProductCode',
+      'selectedVehicleModel',
+      'vehicleModelList',
+      'insuredCode',
+      'binderList',
+      'allClausesMap',
+      'productFormDetails',
+      'quotation_branch',
+      'quotation_currency'
+    ];
 
+    keysToRemove.forEach(key => sessionStorage.removeItem(key));
 
   }
 
@@ -731,7 +751,7 @@ export class UtilService {
   }
   downloadPdfFromBase64(base64: string, fileName: string) {
     const binaryData = atob(base64);
-    const blob = new Blob([new Uint8Array(this.stringToArrayBuffer(binaryData))], {type: 'application/pdf'});
+    const blob = new Blob([new Uint8Array(this.stringToArrayBuffer(binaryData))], { type: 'application/pdf' });
     const downloadLink = window.URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = downloadLink;
