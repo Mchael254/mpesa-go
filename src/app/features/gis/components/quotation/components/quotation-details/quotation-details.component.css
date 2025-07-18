@@ -95,7 +95,7 @@
 
 ::ng-deep .p-calendar {
   height: 30px !important;
-  width: 350px;
+  width: 100%;
 
 }
 
@@ -244,6 +244,7 @@
   box-shadow: none !important;
   background: none !important;
   color: #00529B;
+  font-weight: 600;
 }
 
 .arrow {
