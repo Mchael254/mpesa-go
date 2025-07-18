@@ -2702,30 +2702,54 @@ export class RiskDetailsComponent {
     // this.clauseList.forEach(clause => (clause.isChecked = this.selectAll));
   }
 
-  saveRiskClauses(): void {
-    const selected = this.SubclauseList?.filter(clause => clause.isChecked) || [];
+saveRiskClauses(): void {
+  const selected = this.SubclauseList?.filter(clause => clause.isChecked) || [];
 
-    if (!selected.length) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one clause to add.');
-      return;
-    }
-
-    // Map to expected structure with heading and wording
-    const mappedClauses = selected.map(clause => ({
-      code: clause.code || clause.id,
-      id: clause.id,
-      heading: clause.description || '',
-      wording: clause.description || '',
-    }));
-
-
-    this.SubclauseList = [...(this.SubclauseList || []), ...mappedClauses];
-
-    this.SubclauseList.forEach(clause => clause.isChecked = false);
-
-
-    this.selectedClauses = [];
+  if (!selected.length) {
+    this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one clause to add.');
+    return;
   }
+
+  const mappedClauses: subclassClauses[] = selected
+  
+  .map(clause => {
+    if (!clause?.clauseCode || !clause?.shortDescription) return null;
+
+    return {
+      clauseCode: clause.clauseCode,
+      id: clause.id ?? 0,
+      heading: clause.heading ?? clause.shortDescription,
+      wording: clause.wording ?? clause.shortDescription,
+      shortDescription: clause.shortDescription,
+      subClassCode: clause.subClassCode ?? '',
+      isMandatory: clause.isMandatory ?? false,
+      isLienClause: clause.isLienClause ?? false,
+      clauseExpires: clause.clauseExpires ?? null,
+      isRescueClause: clause.isRescueClause ?? false,
+      version: clause.version ?? 1,
+      isEditable: 'Y', 
+    };
+  })
+  .filter(Boolean);
+ 
+  
+
+
+  console.log('Filtered and Mapped Clauses:', mappedClauses);
+
+  this.selectedClause = [...(this.selectedClause || []), ...mappedClauses];
+  this.SubclauseList.forEach(clause => clause.isChecked = false);
+  this.selectedClauses = [];
+
+  if (this.riskClauseTable) {
+    this.riskClauseTable.clear();
+    this.riskClauseTable.reset();
+  }
+
+  
+}
+
+  
 
 
   openAddSectionModal(): void {
