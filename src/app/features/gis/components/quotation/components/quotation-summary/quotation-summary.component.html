@@ -18,229 +18,133 @@
   </div>
 
   <div class="tab-content" id="nav-tabContent">
-    <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab"
-         tabindex="0">
+    <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab" tabindex="0">
       <div class="spinner" style="position: relative">
-        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="large"
-                     bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="large" bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
       </div>
-
-      <!-- Quotation Details Card -->
+  
+      <!-- Quotation details card  -->
       <div class="card mb-4">
         <div class="card-body">
-          <p class="card-title mb-4">Details</p>
-
-          <div class="row">
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-5">
-                  <p class="label">Quotation number</p>
-                </div>
-                <div class="col-7">
-                  <p class="content">{{ fetchedQuoteNum }}</p>
-                </div>
-              </div>
+          <p class="card-title mb-4">Quotation Details</p>
+  
+          <div class="row mb-3">
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Quotation Number</p>
+              <p class="content w-50">{{ fetchedQuoteNum }}</p>
             </div>
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-4">
-                  <p class="label">Client</p>
-                </div>
-                <div class="col-8">
-                  <p
-                    class="content">{{ clientDetails?.inputClientName || clientDetails?.firstName + " " + clientDetails?.lastName || quickQuoteData.clientName }}</p>
-                </div>
-              </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Branch</p>
+              <p class="content w-50">{{ branch?.name }}</p>
             </div>
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-sm-4">
-                  <p class="label">Agent</p>
-                </div>
-                <div class="col-8">
-                  <p class="content">{{ agents?.name }}</p>
-                </div>
-              </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Currency</p>
+              <p class="content w-50">{{ quotationView?.currency }}</p>
             </div>
           </div>
-
-          <div class="row">
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-5">
-                  <p class="label">Branch</p>
-                </div>
-                <div class="col-7">
-                  <p class="content">{{ branch?.name }}</p>
-                </div>
-              </div>
+  
+          <div class="row mb-3">
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Expiry Date</p>
+              <p class="content w-50">{{ expiryDate }}</p>
             </div>
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-4">
-                  <p class="label">Cover from</p>
-                </div>
-                <div class="col-8">
-                  <p class="content">{{ coverFrom }}</p>
-                </div>
-              </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Cover From</p>
+              <p class="content w-50">{{ coverFrom }}</p>
             </div>
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-4">
-                  <p class="label">Cover to</p>
-                </div>
-                <div class="col-8">
-                  <p class="content">{{ coverTo }}</p>
-                </div>
-              </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Cover To</p>
+              <p class="content w-50">{{ coverTo }}</p>
             </div>
           </div>
-
-          <div class="row">
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-5">
-                  <p class="label">Currency</p>
-                </div>
-                <div class="col-7">
-                  <p class="content">{{ quotationView?.currency }}</p>
-                </div>
-              </div>
+  
+          <div class="row mb-3">
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Status</p>
+              <p class="content w-50">{{ quotationView?.status }}</p>
             </div>
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-4">
-                  <p class="label">Proposer</p>
-                </div>
-                <div class="col-8">
-                  <p class="content">{{ quotationView?.introducerCode }}</p>
-                </div>
-              </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Frequency of Payment</p>
+              <p class="content w-50">{{ quotationView?.frequencyOfPayment }}</p>
             </div>
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-4">
-                  <p class="label">Introducer</p>
-                </div>
-                <div class="col-8">
-                  <p class="content">{{ quotationView?.introducerCode }}</p>
-                </div>
-              </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Notes</p>
+              <p class="content w-50">{{ quotationDetails.comments }}</p>
             </div>
           </div>
-
-          <div class="row">
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-5">
-                  <p class="label">Expiry date</p>
-                </div>
-                <div class="col-7">
-                  <p class="content">{{ expiryDate }}</p>
-                </div>
-              </div>
+  
+          <p class="card-title mb-4">Client Information</p>
+  
+          <div class="row mb-3">
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Client Name</p>
+              <p class="content w-50">{{ clientDetails?.inputClientName || clientDetails?.firstName + ' ' + clientDetails?.lastName }}</p>
             </div>
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-4">
-                  <p class="label">Status</p>
-                </div>
-                <div class="col-8">
-                  <p class="content">{{ quotationView?.status }}</p>
-                </div>
-              </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Client Code</p>
+              <p class="content w-50">{{ clientDetails?.clientCode }}</p>
             </div>
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-4">
-                  <p class="label">Source</p>
-                </div>
-                <div class="col-8">
-                  <p class="content">{{ source }}</p>
-                </div>
-              </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Client Type</p>
+              <p class="content w-50">{{ clientDetails?.clientType }}</p>
             </div>
           </div>
-
-          <div class="row">
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-5">
-                  <p class="label ">Premium</p>
-                </div>
-                <div class="col-7">
-                  <p class="content ">{{ premiumAmount | number }}</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-4">
-                  <p class="label ">Sum insured</p>
-                </div>
-                <div class="col-8">
-                  <p class="content">{{ sumInsured | number }}</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-4">
-                  <p class="label ">Comm amt.</p>
-                </div>
-                <div class="col-8">
-                  <p class="content">{{ marketerCommissionAmount | number }}</p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
+  
           <div class="row mb-2">
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-5">
-                  <p class="label">Internal comments</p>
-                </div>
-                <div class="col-7">
-                  <p class="content">{{ quotationView?.internalComments }}</p>
-                </div>
-              </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Email</p>
+              <p class="content w-50">{{ clientDetails?.email }}</p>
             </div>
-            <div class="col-md-4">
-              <div class="row">
-                <div class="col-4">
-                  <p class="label">External comments</p>
-                </div>
-                <div class="col-8">
-                  <p class="content">{{ quotationView?.comments }}</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <!--  -->
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Phone</p>
+              <p class="content w-50">{{ clientDetails?.phoneNumber }}</p>
             </div>
           </div>
-
-          <!-- <p class="cancel float-start mt-4" (click)="cancelQuotation()"  [class.disabled]="viewQuoteFlag">Cancel Quotation</p> -->
-          <p class="cancel float-start mt-4"
-             (click)="!viewQuoteFlag && cancelQuotation()"
-             [class.disabled]="viewQuoteFlag">
-            Cancel Quotation
-          </p>
-
-          <div class="float-end">
-            <button class="btn btn-outline-primary custom-outline-btn " style="margin-right: 10px;"
-                    (click)="editDetails()" [disabled]="viewQuoteFlag">Edit
-              details
-            </button>
-            <button class="btn btn-primary custom-btn-primary" (click)="computePremium()" [disabled]="viewQuoteFlag">
-              Compute Premium
+  
+          <p class="card-title mb-4">Financial Overview</p>
+  
+          <div class="row mb-3">
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Premium</p>
+              <p class="content w-50">{{ premiumAmount | number }}</p>
+            </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Sum Insured</p>
+              <p class="content w-50">{{ sumInsured | number }}</p>
+            </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Marketer Comm.</p>
+              <p class="content w-50">{{ marketerCommissionAmount | number }}</p>
+            </div>
+          </div>
+  
+          <div class="row mb-2">
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Comm Amount</p>
+              <p class="content w-50">{{ quotationView?.commissionAmount }}</p>
+            </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">External Comments</p>
+              <p class="content w-50">{{ quotationView?.comments }}</p>
+            </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Internal Comments</p>
+              <p class="content w-50">{{ quotationView?.internalComments }}</p>
+            </div>
+          </div>
+  
+          <div class="d-flex justify-content-end align-items-center mt-4">
+            <a href="#" (click)="viewClientProfile()" class="text-primary text-decoration-underline">
+              View Client Profile
+            </a>
+  
+            <button class="btn btn-outline-primary custom-outline-btn" style="margin-right: 10px; margin-left: 20px;" (click)="editDetails()" [disabled]="viewQuoteFlag">
+              Edit details
             </button>
           </div>
         </div>
       </div>
+    
 
       <!-- Product Details Card -->
       <div class="card mb-4">
