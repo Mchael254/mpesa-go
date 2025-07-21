@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
@@ -41,7 +41,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('dt') table!: Table;
   @ViewChild(Table) private dataTable: Table;
   @ViewChild('reassignProductModal') reassignProductModalElement!: ElementRef;
-  @ViewChild('chooseClientReassignModal') chooseClientReassignModalElement!: ElementRef;
+  @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
+  private modals: { [key: string]: bootstrap.Modal } = {};
 
   quotationForm: FormGroup;
   newClient: boolean = false;
@@ -163,8 +164,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   noUserChosen: boolean = false
   clientToReassignProduct: string = '';
   reassignProductModal: any;
-  chooseClientReassignModal: any;
   reassignButton: boolean = false
+  productToReassign: any;
+  noCommentleft: boolean = false
+  reassignProductComment:string;
 
   constructor(
     public bankService: BankService,
@@ -182,6 +185,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     public productSubclass: ProductSubclassService,
     private globalMessagingService: GlobalMessagingService,
     public claimsService: ClaimsService,
+    private renderer: Renderer2
   ) {
 
     this.quotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
@@ -227,10 +231,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("product Form details", this.productDetails)
   }
 
-  ngAfterViewInit() {
-    this.reassignProductModal = new bootstrap.Modal(this.reassignProductModalElement.nativeElement);
-    this.chooseClientReassignModal = new bootstrap.Modal(this.chooseClientReassignModalElement.nativeElement);
-  }
+
 
   ngOnInit(): void {
     this.quotationForm = this.fb.group({
@@ -273,6 +274,19 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     this.loadPersistedClauses();
     this.getUsers()
+  }
+
+  ngAfterViewInit() {
+    this.modals['chooseClientReassign'] = new bootstrap.Modal(this.chooseClientReassignModal.nativeElement);
+    this.modals['reassignProduct'] = new bootstrap.Modal(this.reassignProductModalElement.nativeElement);
+  }
+
+  openModals(modalName: string) {
+    this.modals[modalName]?.show();
+  }
+
+  closeModals(modalName: string) {
+    this.modals[modalName]?.hide();
   }
 
 
@@ -1833,15 +1847,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  openReassignProductModal(product: any) {
-    this.reassignProductModal.show();
-  }
-
-  openChooseClientModal() {
-    this.chooseClientReassignModal.show();
-  }
-
-
   getUsers() {
     this.claimsService.getUsers().subscribe({
       next: (res => {
@@ -1897,16 +1902,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       this.noUserChosen = true;
       setTimeout(() => {
         this.noUserChosen = false
-
       }, 3000);
       return;
     }
 
     this.clientToReassignProduct = this.selectedUser.name;
-    this.chooseClientReassignModal.hide();
-    this.reassignProductModal.show();
+    this.closeChooseClientReassignModal();
+    this.openReassignProductModal(this.productToReassign);
 
   }
+
 
   reassignProduct() {
     if (!this.clientToReassignProduct) {
@@ -1917,10 +1922,37 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }, 3000);
       return;
     }
-    this.reassignProductModal.hide();
-    this.globalMessagingService.displaySuccessMessage('Success', 'Product reassigned');
-    this.clientToReassignProduct = null;
+    if (!this.reassignProductComment) {
+      this.noCommentleft = true;
+      setTimeout(() => {
+        this.noCommentleft = false
 
+      }, 3000);
+      return;
+    }
+    
+    this.closeReassignProductModal();
+    this.clientToReassignProduct = null;
+    this.productToReassign = null;
+    this.globalMessagingService.displaySuccessMessage('Success', 'Product reassigned');
+
+  }
+
+  openChooseClientReassignModal() {
+    this.openModals('chooseClientReassign');
+  }
+
+  closeChooseClientReassignModal() {
+    this.closeModals('chooseClientReassign');
+  }
+
+  openReassignProductModal(product: any) {
+    this.selectedProduct = this.productToReassign;
+    this.openModals('reassignProduct');
+  }
+
+  closeReassignProductModal() {
+    this.closeModals('reassignProduct');
   }
 
   createQuotation(quotationPayload: any) {

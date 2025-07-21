@@ -457,6 +457,12 @@ export class RiskDetailsComponent {
         });
         this.fetchRegexPattern();
         this.fetchScheduleRelatedData();
+        this.fetchTaxes();
+        this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
+        this.loadAllBinders();
+        this.loadSubclassClauses(this.selectedSubclassCode);
+        this.getVehicleMake();
+        this.fetchYearOfManufacture()
 
         log.debug('Final riskDetailsForm controls after adding subclass fields:', this.riskDetailsForm.controls);
       },
@@ -491,8 +497,6 @@ export class RiskDetailsComponent {
       log.warn(`Cannot populate '${fieldName}', form data array is not ready`);
     }
   }
-
-
 
 
   loadSelectedProductRiskFields(productCode: number): void {
@@ -799,18 +803,20 @@ export class RiskDetailsComponent {
       log.debug('Processed covertypes:', this.subclassCoverType);
 
       // Inject into the subclass formData
-      this.subclassFormData = this.subclassFormData.map(field => {
-        if (field.name === 'coverType') {
-          return {
-            ...field,
-            selectOptions: this.subclassCoverType.map(cover => ({
-              label: cover.description,
-              value: cover.coverTypeCode
-            }))
-          };
-        }
-        return field;
-      });
+      // this.subclassFormData = this.subclassFormData.map(field => {
+      //   if (field.name === 'coverType') {
+      //     return {
+      //       ...field,
+      //       selectOptions: this.subclassCoverType.map(cover => ({
+      //         label: cover.description,
+      //         value: cover.coverTypeCode
+      //       }))
+      //     };
+      //   }
+      //   return field;
+      // });
+
+      this.safePopulateSelectOptions(this.subclassFormData, 'coverType', this.subclassCoverType, 'description', 'coverTypeCode');
 
       const coverTypeCodeToUse = this.storedRiskFormDetails?.coverTypeCode || this.passedCoverTypeCode;
       if (coverTypeCodeToUse) {
@@ -1022,12 +1028,7 @@ export class RiskDetailsComponent {
     if (this.selectedSubclassCode) {
       this.loadSelectedSubclassRiskFields(this.selectedSubclassCode);
 
-      this.fetchTaxes();
-      this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
-      this.loadAllBinders();
-      this.loadSubclassClauses(this.selectedSubclassCode);
-      this.getVehicleMake();
-      this.fetchYearOfManufacture()
+
     }
   }
 
@@ -2254,15 +2255,18 @@ export class RiskDetailsComponent {
   }
 
   onSaveDetailsClick() {
-    this.updateRiskSection();
+    const payload = this.getRiskLimitPayload(); // or riskLimitPayload() depending on your structure
 
-    // Close the modal
-    const modalElement: HTMLElement | null = this.editSectionModal.nativeElement;
-    if (modalElement) {
-      this.renderer.removeClass(modalElement, 'show'); // Remove 'show' class to hide the modal
-      this.renderer.setStyle(modalElement, 'display', 'none'); // Set display property to 'none'
+    if (!payload || payload.length === 0) {
+      log.error('No section data to save.');
+      return;
     }
+
+
   }
+
+
+
 
   updateRiskSection() {
     const section = this.sectionDetailsForm.value;
@@ -2426,6 +2430,7 @@ export class RiskDetailsComponent {
 
 
   }
+
   captureRiskClause() {
     if (this.selectedClause && this.selectedClause.length > 0) {
       this.selectedClause.forEach(el => {
@@ -2466,6 +2471,7 @@ export class RiskDetailsComponent {
     //     // },
     //   });
   }
+
   onRiskEdit(risk: any) {
     this.selectedRisk = risk;
     const binderList = JSON.parse(sessionStorage.getItem('binderList'));
@@ -2594,6 +2600,7 @@ export class RiskDetailsComponent {
       document.getElementById("openRiskModalButtonDelete").click();
     }
   }
+
   deleteRisk() {
     log.debug("Selected Risk to be deleted", this.selectedRisk)
     this.quotationService
@@ -2619,6 +2626,7 @@ export class RiskDetailsComponent {
         }
       });
   }
+
   validateCarRegNo() {
     const control = this.riskDetailsForm.get('registrationNumber') as FormControl;
     log.debug("Keyed In value>>>", control);
@@ -2702,54 +2710,54 @@ export class RiskDetailsComponent {
     // this.clauseList.forEach(clause => (clause.isChecked = this.selectAll));
   }
 
-saveRiskClauses(): void {
-  const selected = this.SubclauseList?.filter(clause => clause.isChecked) || [];
+  saveRiskClauses(): void {
+    const selected = this.SubclauseList?.filter(clause => clause.isChecked) || [];
 
-  if (!selected.length) {
-    this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one clause to add.');
-    return;
+    if (!selected.length) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one clause to add.');
+      return;
+    }
+
+    const mappedClauses: subclassClauses[] = selected
+
+      .map(clause => {
+        if (!clause?.clauseCode || !clause?.shortDescription) return null;
+
+        return {
+          clauseCode: clause.clauseCode,
+          id: clause.id ?? 0,
+          heading: clause.heading ?? clause.shortDescription,
+          wording: clause.wording ?? clause.shortDescription,
+          shortDescription: clause.shortDescription,
+          subClassCode: clause.subClassCode ?? '',
+          isMandatory: clause.isMandatory ?? false,
+          isLienClause: clause.isLienClause ?? false,
+          clauseExpires: clause.clauseExpires ?? null,
+          isRescueClause: clause.isRescueClause ?? false,
+          version: clause.version ?? 1,
+          isEditable: 'Y',
+        };
+      })
+      .filter(Boolean);
+
+
+
+
+    console.log('Filtered and Mapped Clauses:', mappedClauses);
+
+    this.selectedClause = [...(this.selectedClause || []), ...mappedClauses];
+    this.SubclauseList.forEach(clause => clause.isChecked = false);
+    this.selectedClauses = [];
+
+    if (this.riskClauseTable) {
+      this.riskClauseTable.clear();
+      this.riskClauseTable.reset();
+    }
+
+
   }
 
-  const mappedClauses: subclassClauses[] = selected
-  
-  .map(clause => {
-    if (!clause?.clauseCode || !clause?.shortDescription) return null;
 
-    return {
-      clauseCode: clause.clauseCode,
-      id: clause.id ?? 0,
-      heading: clause.heading ?? clause.shortDescription,
-      wording: clause.wording ?? clause.shortDescription,
-      shortDescription: clause.shortDescription,
-      subClassCode: clause.subClassCode ?? '',
-      isMandatory: clause.isMandatory ?? false,
-      isLienClause: clause.isLienClause ?? false,
-      clauseExpires: clause.clauseExpires ?? null,
-      isRescueClause: clause.isRescueClause ?? false,
-      version: clause.version ?? 1,
-      isEditable: 'Y', 
-    };
-  })
-  .filter(Boolean);
- 
-  
-
-
-  console.log('Filtered and Mapped Clauses:', mappedClauses);
-
-  this.selectedClause = [...(this.selectedClause || []), ...mappedClauses];
-  this.SubclauseList.forEach(clause => clause.isChecked = false);
-  this.selectedClauses = [];
-
-  if (this.riskClauseTable) {
-    this.riskClauseTable.clear();
-    this.riskClauseTable.reset();
-  }
-
-  
-}
-
-  
 
 
   openAddSectionModal(): void {
@@ -2793,6 +2801,7 @@ saveRiskClauses(): void {
       })
 
   }
+
   handleSelectChange(fieldName: string, event: any): void {
     switch (fieldName) {
       case 'vehicleMake':
