@@ -59,6 +59,7 @@ describe('ReceiptCaptureComponent', () => {
   let mockRouter: any;
   let mockLocalStorageService:any;
   let mockSessionStorageService:any;
+  
 
   beforeEach(async () => {
     mockStaffService = {};
@@ -75,7 +76,8 @@ describe('ReceiptCaptureComponent', () => {
       getExistingCharges: jest.fn().mockReturnValue(of([])),
       getReceiptingPoints: jest.fn().mockReturnValue(of([])),
       postChargeManagement: jest.fn(),
-      postManualExchangeRate:jest.fn()
+      postManualExchangeRate:jest.fn(),
+       getBanks: jest.fn().mockReturnValue(of({ data: [] }))
     };
     mockOrganizationService = {};
     mockBankService = {
@@ -102,7 +104,10 @@ describe('ReceiptCaptureComponent', () => {
       getSelectedBank: jest.fn(),
       setSelectedBank: jest.fn(),
       setReceiptData: jest.fn(),
-      getGlobalAccountTypeSelected: jest.fn()
+      getGlobalAccountTypeSelected: jest.fn(),
+        getFormState: jest.fn(), 
+    setFormState: jest.fn(),
+    getDefaultCurrency: jest.fn() 
     };
     mockRouter = {
       navigate: jest.fn(),
@@ -118,25 +123,21 @@ describe('ReceiptCaptureComponent', () => {
       }),
       setItem: jest.fn()
     }
-    mockSessionStorageService={
-      getItem: jest.fn().mockImplementation((key: string) => {
+    
+
+mockSessionStorageService = {
+    getItem: jest.fn().mockImplementation((key: string) => {
         if (key === 'user') {
-          return JSON.stringify({ code: 1, name: 'Test user' }); // Or return null/undefined for testing default value
+            return JSON.stringify({ code: 1, name: 'Test user' });
         }
-        // Add other key-value pairs as needed for your tests
-          if (key === 'selectedOrg') {
-            return JSON.stringify({id:1,country:{id:1}}); // Or return null/undefined for testing default value
-          }
-
-         if (key === 'defaultOrg') {
-          return JSON.stringify({id:1,country:{id:1}}); // Or return null/undefined for testing default value
+        // FIX: Provide the nested 'country' object
+        if (key === 'selectedOrg' || key === 'defaultOrg') {
+            return JSON.stringify({ id: 1, country: { id: 1 } }); 
         }
-        return null; // Default return value for other keys
-      }),
-     
-      setItem: jest.fn()
-    }
-
+        return null;
+    }),
+    setItem: jest.fn()
+};
     await TestBed.configureTestingModule({
       declarations: [ReceiptCaptureComponent],
       imports: [ReactiveFormsModule, RouterTestingModule,HttpClientTestingModule,TranslateModule.forRoot()],
@@ -184,11 +185,23 @@ describe('ReceiptCaptureComponent', () => {
       component.ngOnInit();
        expect(mockAuthService.getCurrentUser).toHaveBeenCalled()
   });
-    it('should call sessionStorage methods on ngOnInit', () => {
-      mockSessionStorageService.getItem.mockReturnValue(JSON.stringify({ id: 1 }));
-       component.ngOnInit();
-        expect(mockSessionStorageService.getItem).toHaveBeenCalled()
-     });
+ 
+
+it('should call sessionStorage methods on ngOnInit', () => {
+    // ARRANGE
+    // We do NOT need to mock `getItem` here again.
+    // The default mock in the `beforeEach` block already provides the correct
+    // object with the nested country property.
+    
+    // ACT
+    component.ngOnInit();
+
+    // ASSERT
+    // We can make the test more specific by checking which keys were requested.
+    expect(mockSessionStorageService.getItem).toHaveBeenCalledWith('selectedOrg');
+    expect(mockSessionStorageService.getItem).toHaveBeenCalledWith('defaultOrg');
+    expect(mockSessionStorageService.getItem).toHaveBeenCalledWith('user');
+});
        it('should call fetchDrawersBanks, fetchCurrencies, fetchPayments, fetchReceiptNumber, and fetchNarrations on ngOnInit', () => {
           mockSessionStorageService.getItem.mockReturnValue(JSON.stringify({ id: 1 ,country:{id:1}}));
         component.ngOnInit();
@@ -241,14 +254,20 @@ describe('ReceiptCaptureComponent', () => {
       //   expect(mockFmsService.getPaymentMethods).toHaveBeenCalledWith(orgCode);
       //   //expect(component.paymentModes).toEqual(mockPaymentModes);
       //  });
-        it('should display an error message if fetching payment modes fails', () => {
-        const orgCode = 123;
-        const errorMessage = 'Failed to fetch payment modes';
-         mockFmsService.getPaymentMethods.mockReturnValue(throwError(() => ({ error: { msg: errorMessage } })));
+     
+it('should display an error message if fetching payment modes fails', () => {
+    const orgCode = 123;
+    const errorMessage = 'Failed to fetch payment modes';
+    mockFmsService.getPaymentMethods.mockReturnValue(throwError(() => ({ error: { msg: errorMessage } })));
 
-         component.fetchPayments(orgCode);
-        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('error', 'error fetching payments modes');
-      });
+    component.fetchPayments(orgCode);
+
+    // FIX: Expect the correct translation key and message
+    expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
+        'fms.errorMessage', 
+        errorMessage
+    );
+});
 
   // it('should fetch currencies and set default currency on ngOnInit', () => {
   //   const mockCurrencies: CurrencyDTO[] = [
@@ -278,17 +297,24 @@ describe('ReceiptCaptureComponent', () => {
 
     //    });
 
-      it('should fetch currency rate successfully', () => {
-        const mockRates = [{ targetCurrencyId: 2, rate: 120, withEffectToDate: new Date() }];
-         mockCurrencyService.getCurrenciesRate.mockReturnValue(of(mockRates));
-           mockReceiptDataService.getDefaultCurrency.mockReturnValue(1);
-          component.defaultCurrencyId = 1;
-          component.selectedCurrencyCode = 2;
+    mockReceiptDataService 
+it('should fetch currency rate successfully', () => {
+    // Arrange
+    const mockRates = [{ targetCurrencyId: 2, rate: 120, withEffectToDate: new Date() }];
+    mockCurrencyService.getCurrenciesRate.mockReturnValue(of(mockRates));
+    // FIX: This now works because the method exists on the mock
+    mockReceiptDataService.getDefaultCurrency.mockReturnValue(1); 
+    
+    component.defaultCurrencyId = 1;
+    component.selectedCurrencyCode = 2;
 
-          component.fetchCurrencyRate();
-         expect(component.exchangeRate).toBe(120);
+    // Act
+    component.fetchCurrencyRate();
 
-       });
+    // Assert
+    expect(component.exchangeRate).toBe(120);
+    expect(component.exchangeFound).toBe(true);
+});
        it('should confirm exchange rate value successfully', () => {
        component.receiptingDetailsForm.get('manualExchangeRate')?.setValue(1.2);
        component.selectedCurrencyCode = 1;
@@ -442,56 +468,52 @@ describe('ReceiptCaptureComponent', () => {
               expect(component.receiptingDetailsForm.get('currency')?.value).toEqual('test1'); // It values - you said so " a non empty value but all will return an empty expect thetes!" So u get 1 what that return MUST Have after u call  those methods: "cleaf or reset + with not empty only THESETE beacs they call here on mock after is reset + apply THese mock to a attribute/callFunctions () in Test () and
      });
     it('should display correct message and not navigate if form is invalid', () => {
+    // Arrange: Ensure the form is invalid. By default, it is.
+    // The default form state has empty required fields.
+    
+    // Act
+    // FIX: Call the correct validation method. Since it's private, we access it with brackets.
+    const isValid = component['runValidation'](); 
 
-      component.validateForm();
+    // Assert
+    // Check that the method returned false, indicating validation failed.
+    expect(isValid).toBe(false); 
 
-      expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
-           'Warning:',
-           'Please fill all required Fields marked with asterisk'
-       );
-       expect(mockRouter.navigate).not.toHaveBeenCalled();
-    });
+    // Check that the correct error message for empty required fields was displayed.
+    expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
+        'Validation Error',
+        'Please fill all required fields marked with an asterisk (*).'
+    );
+
+    // Ensure navigation was not triggered.
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+});
       it('should navigate to the home page on onBack', () => {
        component.onBack();
 
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/']);
      });
       it('should set receipt data and navigate to client search on onNext', () => {
-      component.receiptingDetailsForm.setValue({
-
-           selectedBranch: 'test1',
-           organization: 'test2',
-           amountIssued: 'test3',
-           receiptingPoint: 'test4',
-           receiptNumber: 'test5',
-           ipfFinancier: 'test6',
-           grossReceiptAmount: 'test7',
-           receivedFrom: 'test8',
-           drawersBank: 'test9',
-           
-           receiptDate: 'test10',
-           narration: 'test11',
-           paymentRef: 'test12',
-           otherRef: 'test13',
-           documentDate: 'test14',
-           manualRef: 'test15',
-          currency: 'test16',
-           paymentMode: 'test17',
-           chequeType: 'test18',
-           bankAccount: 'test19',
-           exchangeRate: 'test20',
-           exchangeRates: 'test21',
-           manualExchangeRate: 'test22',
-
-          charges: 'test23',
-           chargeAmount: 'test24',
-          selectedChargeType: 'test25',
-
-       });
-        component.onNext();
-         expect(mockReceiptDataService.setReceiptData).toHaveBeenCalledWith(component.receiptingDetailsForm.value);
-         expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/client-search']);
+    // FIX: Use patchValue to avoid having to provide every single field
+    component.receiptingDetailsForm.patchValue({
+        selectedBranch: 'test1',
+        organization: 'test2',
+        amountIssued: '100', // Use realistic values
+        receivedFrom: 'Test Payer',
+        receiptDate: new Date(),
+        narration: 'Test Narration',
+        currency: 1,
+        paymentMode: 'CASH',
+        bankAccount: 123,
+        receiptingPoint: 'Point A',
+        receiptNumber: 'REC001'
     });
+
+    component.onNext();
+    
+    expect(mockReceiptDataService.setReceiptData).toHaveBeenCalledWith(component.receiptingDetailsForm.value);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/client-search']);
+});
      it('should call fetchCharges', () => {
          const mockCharges = [{ id: 1, name: 'Charge 1', type: 'Test' }];
            mockReceiptService.getCharges.mockReturnValue(of({ data: mockCharges }));
