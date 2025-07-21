@@ -44,6 +44,8 @@ import { CardModule } from 'primeng/card';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { QuotationOtherDetailsComponent } from './components/quotation-other-details/quotation-other-details.component';
+import { QuotationReportComponent } from './components/quotation-report/quotation-report.component';
 
 
 
@@ -72,6 +74,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
     QuoteSummaryComponent,
     ShareQuotesComponent,
     PaymentAdviceComponent,
+    QuotationOtherDetailsComponent,
+    QuotationReportComponent,
 
 
 
