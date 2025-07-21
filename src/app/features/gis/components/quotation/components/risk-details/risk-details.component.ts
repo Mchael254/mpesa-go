@@ -203,6 +203,8 @@ export class RiskDetailsComponent {
   yearList: any;
   clientCode: number;
   showSections: boolean = false;
+  tabs = ['Schedule Details', 'Level 2', 'Level 3']; // Dummy tabs for now
+  activeTab = 'Schedule Details';
 
   constructor(
     public subclassService: SubclassesService,
@@ -1248,6 +1250,7 @@ export class RiskDetailsComponent {
   }
   createRiskDetail() {
     log.debug("RISK FORM VALUE", this.riskDetailsForm.value)
+    sessionStorage.setItem('riskFormDetails', JSON.stringify(this.riskDetailsForm.value));
     log.debug("Insured code:", this.insuredCode)
     this.riskDetailsForm.get('insureds').setValue(this.insuredCode);
     this.selectedBinderCode = this.riskDetailsForm.value.premiumBand
@@ -1344,28 +1347,28 @@ export class RiskDetailsComponent {
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
 
 
-          // Prepare schedule payload
-          // const schedulePayload = this.prepareSchedulePayload();
+
           const subclasscode = this.selectedSubclassCode
           const binderCode = this.selectedBinderCode || this.defaultBinder[0].code
           const coverTypeCode = this.selectedCoverType.coverTypeCode
           // Call services directly
           return forkJoin([
-            // this.quotationService.createSchedule(schedulePayload),
-            // this.quotationService.getQuotationDetails(quotationCode),
+
+
             this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode)
           ]);
         })
       ).subscribe({
         next: ([premiumRates]: any) => {
 
+          // this.quotationDetails = quoteDetails
+          // log.debug("Quotation List-risk creation method:", this.quotationDetails);
 
           const result = premiumRates;
           this.sectionPremium = result
-          // log.debug("Schedule List:", this.scheduleList);
           // log.debug("Risk Clauses List:", this.riskClausesList);
           log.debug("RESPONSE AFTER getting premium rates ", this.sectionPremium);
-          log.debug("Keys in sectionPremium[0]:", Object.keys(this.sectionPremium[0]));
+          // log.debug("Keys in sectionPremium[0]:", Object.keys(this.sectionPremium[0]));
 
 
           // this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created successfully');
@@ -1744,21 +1747,24 @@ export class RiskDetailsComponent {
   }
   prepareSchedulePayload() {
     const schedule = this.scheduleDetailsForm.value;
+    const riskform = JSON.parse(sessionStorage.getItem('riskFormDetails'));
 
+    log.debug('SELECTED RISK:', this.selectedRisk)
+    log.debug("Risk form-session storage:", riskform)
     schedule.details.level1 = {
-      bodyType: null,
-      yearOfManufacture: null,
-      color: "red",
-      engineNumber: null,
-      cubicCapacity: null,
+      bodyType: riskform.bodyType,
+      yearOfManufacture: riskform.yearOfManufacture,
+      color: riskform.color,
+      engineNumber: riskform.engineNumber,
+      cubicCapacity: riskform.cubicCapacity,
       Make: this.selectedVehicleMakeName,
-      coverType: this.selectedCoverType.description,
-      registrationNumber: this.passedRiskId,
-      chasisNumber: null,
+      coverType: this.selectedRisk.coverTypeDescription,
+      registrationNumber: riskform.registrationNumber,
+      chasisNumber: riskform.chasisNumber,
       tonnage: null,
-      carryCapacity: null,
+      carryCapacity: riskform.seatingCapacity,
       logBook: null,
-      value: null
+      value: riskform.value
     };
 
     schedule.riskCode = this.quotationRiskCode;
@@ -1822,6 +1828,7 @@ export class RiskDetailsComponent {
     // this.onRiskEdit(this.selectedRisk)
     const selectedRiskCode = this.selectedRisk?.code
     this.quotationRiskCode = selectedRiskCode
+    this.quotationRiskCode && this.createScheduleL1(this.quotationRiskCode)
     log.debug("Quotation risk code:", this.quotationRiskCode)
     const productDetails = this.quotationDetails.quotationProducts.find(
       product => product.productCode === this.selectedProductCode
@@ -2868,5 +2875,26 @@ export class RiskDetailsComponent {
       // Add more cases if needed
     }
   }
+  createScheduleL1(riskCode: number) {
+    // Prepare schedule payload
+    const schedulePayload = this.prepareSchedulePayload();
+    this.quotationService.createSchedule(schedulePayload)
+      .subscribe({
+        next: (createdSchedule) => {
+          this.scheduleData = createdSchedule;
+          this.scheduleList = this.scheduleData._embedded;
+          log.debug("Schedule List:", this.scheduleList);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created successfully');
+        },
+        error: (error: HttpErrorResponse) => {
+          log.debug("Error log", error.error.message);
 
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error.message
+          );
+        },
+
+      })
+  }
 }
