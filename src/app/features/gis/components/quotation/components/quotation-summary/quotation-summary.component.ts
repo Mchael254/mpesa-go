@@ -43,6 +43,9 @@ interface FileItem {
   styleUrls: ['./quotation-summary.component.css']
 })
 export class QuotationSummaryComponent implements OnInit, OnDestroy {
+viewClientProfile() {
+throw new Error('Method not implemented.');
+}
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('closebutton') closebutton;
 
