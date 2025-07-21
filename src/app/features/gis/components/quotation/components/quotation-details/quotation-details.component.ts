@@ -42,6 +42,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   @ViewChild(Table) private dataTable: Table;
   @ViewChild('reassignProductModal') reassignProductModalElement!: ElementRef;
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
+
   private modals: { [key: string]: bootstrap.Modal } = {};
 
   quotationForm: FormGroup;
