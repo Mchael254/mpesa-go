@@ -75,7 +75,15 @@
               <p class="label w-50 mb-0">Notes</p>
               
               <div class="d-flex align-items-center w-50">
-                <p class="content mb-0 me-2">{{ quotationDetails.comments || '---' }}</p>
+                <p class="content mb-0 me-2">
+                  {{
+                    quotationView?.comments
+                      ? quotationView.comments.split(' ').slice(0, 5).join(' ') + 
+                        (quotationView.comments.split(' ').length > 5 ? '...' : '')
+                      : '-----'
+                  }}
+                </p>
+                
                 <i class="fas fa-edit text-primary" style="cursor: pointer;"></i>
               </div>
             </div>
@@ -87,7 +95,7 @@
           <div class="row mb-3">
             <div class="col-md-4 d-flex">
               <p class="label w-50">Client </p>
-              <p class="content w-50">{{ clientDetails?.inputClientName || clientDetails?.firstName + ' ' + clientDetails?.lastName }}</p>
+              <p class="content w-50">{{ quotationView?.clientName }}</p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Proposer</p>
@@ -102,15 +110,15 @@
           <div class="row mb-2">
             <div class="col-md-4 d-flex">
               <p class="label w-50">Source</p>
-              <p class="content w-50">{{ clientDetails?.source }}</p>
+              <p class="content w-50">{{ quotationView?.source.description}}</p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Likelihood</p>
-              <p class="content w-50">{{ clientDetails?.likelihood }}</p>
+              <p class="content w-50">{{ quotationView?.likelihood}}</p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Agent</p>
-              <p class="content w-50">{{ clientDetails?.agent }}</p>
+              <p class="content w-50">{{ quotationView?.agentName}}</p>
             </div>
           </div>
   
@@ -127,7 +135,7 @@
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Marketer Comm.</p>
-              <p class="content w-50">{{ marketerCommissionAmount | number }}</p>
+              <p class="content w-50">{{ quotationView?.marketerCommissionAmount | number }}</p>
             </div>
           </div>
   
