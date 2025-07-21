@@ -58,12 +58,11 @@ export class RiskDetailsComponent {
     throw new Error('Method not implemented.');
   }
   @Input() selectedProduct!: any;
-  @ViewChild('editSectionModal') editSectionModal!: ElementRef;
   @ViewChild('sectionTable') sectionTable!: Table;
   @ViewChild('addRiskModal') addRiskModalRef!: ElementRef;
   @ViewChild('addRiskSection') addRiskSectionRef!: ElementRef;
-
-
+  @ViewChild('editSectionModal') editSectionModal!: ElementRef;
+  private modals: { [key: string]: bootstrap.Modal } = {};
 
   @ViewChild('riskClauseTable') riskClauseTable: any;
   modalInstance: any;
@@ -295,7 +294,10 @@ export class RiskDetailsComponent {
 
   }
   ngOnDestroy(): void { }
+
   ngAfterViewInit(): void {
+    this.modals['editSection'] = new bootstrap.Modal(this.editSectionModal.nativeElement);
+
     // Initialize addRiskModal
     if (this.addRiskModalRef?.nativeElement) {
       this.modalInstance = new bootstrap.Modal(this.addRiskModalRef.nativeElement, {
@@ -312,6 +314,15 @@ export class RiskDetailsComponent {
       });
     }
   }
+
+  openModals(modalName: string) {
+    this.modals[modalName]?.show();
+  }
+
+  closeModals(modalName: string) {
+    this.modals[modalName]?.hide();
+  }
+
 
 
 
@@ -2248,20 +2259,79 @@ export class RiskDetailsComponent {
 
     return limitsToSave;
   }
+
+  openEditSectionModal() {
+    this.openModals('editSection');
+  }
+
+  closeEditSectionModal() {
+    this.closeModals('editSection');
+  }
+
   onSelectSection(event: any) {
     this.selectedRiskSection = event;
     log.info("Patched section", this.selectedRiskSection)
     this.sectionDetailsForm.patchValue(this.selectedRiskSection)
   }
 
-  onSaveDetailsClick() {
-    const payload = this.getRiskLimitPayload(); // or riskLimitPayload() depending on your structure
+  onOpenEditSectionModal(selectedSection: any) {
+    this.openEditSectionModal();
+    this.selectedSection = selectedSection; // Track the selected section
+    log.debug("Selected section:", this.selectedSection);
 
-    if (!payload || payload.length === 0) {
-      log.error('No section data to save.');
+    // Patch the form with the selected section's values, including the row number
+    this.sectionDetailsForm.patchValue({
+      ...this.selectedSection,
+      rowNumber: this.selectedSection.rowNumber // Preserve the row number
+    });
+
+    // Open the modal
+    const modalElement: HTMLElement | null = this.editSectionModal.nativeElement;
+    if (modalElement) {
+      this.renderer.addClass(modalElement, 'show'); // Add 'show' class to make it visible
+      this.renderer.setStyle(modalElement, 'display', 'block'); // Set display property to 'block'
+    }
+  }
+
+  editSection() {
+    const section = this.sectionDetailsForm.value;
+    log.debug("Selected Section(UpdateRiskSection):", this.selectedSection)
+    log.debug("Section Details(UpdateRiskSection):", this.sectionDetails)
+    
+    if (!this.selectedSection) {
+      console.error('No section selected for update.');
+      this.globalMessagingService.displayErrorMessage('Error', 'No section selected for update');
       return;
     }
 
+    const index = this.sectionDetails.findIndex(s => s.sectionCode === this.selectedSection.sectionCode);
+
+    if (index !== -1) {
+      this.sectionDetails[index] = { ...this.sectionDetails[index], ...section };
+      this.sectionDetails = [...this.sectionDetails]; // Trigger change detection
+
+      // Log the updated section
+      log.debug("Updated section:", this.sectionDetails[index]);
+
+      // Send the updated section to the service
+      this.quotationService.updateRiskSection(this.quotationRiskCode, [this.sectionDetails[index]]).subscribe((data) => {
+        try {
+          // Reset the form and selected section
+          this.sectionDetailsForm.reset();
+          this.selectedSection = null;
+
+          this.globalMessagingService.displaySuccessMessage('Success', 'Section Updated');
+          this.closeEditSectionModal();
+        } catch (error) {
+          log.error("Error updating section:", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+          this.sectionDetailsForm.reset();
+        }
+      });
+    } else {
+      console.error('Selected section not found in the sections array.');
+      this.globalMessagingService.displayErrorMessage('Error', 'Selected section not found');
+    }
 
   }
 
@@ -2314,23 +2384,8 @@ export class RiskDetailsComponent {
       this.globalMessagingService.displayErrorMessage('Error', 'Selected section not found');
     }
   }
-  onEditButtonClick(selectedSection: any) {
-    this.selectedSection = selectedSection; // Track the selected section
-    log.debug("Selected section:", this.selectedSection);
 
-    // Patch the form with the selected section's values, including the row number
-    this.sectionDetailsForm.patchValue({
-      ...this.selectedSection,
-      rowNumber: this.selectedSection.rowNumber // Preserve the row number
-    });
 
-    // Open the modal
-    const modalElement: HTMLElement | null = this.editSectionModal.nativeElement;
-    if (modalElement) {
-      this.renderer.addClass(modalElement, 'show'); // Add 'show' class to make it visible
-      this.renderer.setStyle(modalElement, 'display', 'block'); // Set display property to 'block'
-    }
-  }
 
   deleteRiskSection(riskSectionCode: number) {
 
