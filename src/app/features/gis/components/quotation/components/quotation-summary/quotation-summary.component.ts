@@ -128,6 +128,8 @@ throw new Error('Method not implemented.');
   viewQuoteFlag: boolean;
   revisedQuotationNumber: string;
   premiumAmount: number
+  editableComment: string = '';
+  showCommentModal: boolean = false;
 
 
   constructor(
@@ -184,6 +186,7 @@ throw new Error('Method not implemented.');
     if (this.quotationCodeString) {
       this.quotationCode = this.quotationCodeString;
     }
+   
 
     this.clientDetails = JSON.parse(
       sessionStorage.getItem('clientFormData') ||
@@ -1533,4 +1536,25 @@ throw new Error('Method not implemented.');
         }
       });
   }
+
+   openCommentModal() {
+    this.editableComment = this.quotationViews?.comments || '';
+    this.showCommentModal = true;
+  }
+
+  closeCommentModal() {
+    this.showCommentModal = false;
+  }
+
+  saveComment() {
+    this.quotationViews.comments = this.editableComment;
+    this.closeCommentModal();
+  }
+  quotationViews: Partial<QuotationDetails> = {
+    comments: 'This is a dummy comment for testing.'
+  };
+  
+
+ 
 }
+
