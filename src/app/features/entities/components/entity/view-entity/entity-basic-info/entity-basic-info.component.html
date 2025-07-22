@@ -1,3 +1,6 @@
+
+<!--{{ overviewConfig | json }}-->
+
 <div class="row g-3 align-items-center">
   <!-- Profile Section -->
   <div class="col-sm-4">
@@ -39,15 +42,83 @@
   </div>
 
   <!-- Assign Role Button -->
-  <div class="col-sm-auto flex-grow-1">
+  <div class="col-sm-4">
+    <h5 style="visibility: hidden;">Assign role button</h5> <!--this is for layout purposes and should not be displayed-->
     <button
       class="btn btn-primary btn-sm"
       data-bs-toggle="modal"
       data-bs-target="#assignRole"
     >
-      {{ "entities.assign_role" | translate }}
+      <!--{{ "entities.assign_role" | translate }}-->
+      {{ basicInfo?.assignRole[language] | titlecase }}
     </button>
   </div>
+
+  <!-- Status -->
+  <div class="col-sm-4 ">
+    <h5 style="visibility: hidden;">Status select dropdown</h5> <!--this is for layout purposes and should not be displayed-->
+    <div *ngIf="partyAccountDetails?.status" class="row text-end">
+      <div class="col-sm-8">
+        <label for="status" class="col-form-label">
+          <!--{{ "entities.status" | translate }}-->
+          {{ basicInfo?.status[language] | titlecase }}
+        </label>
+      </div>
+      <div class="col-sm-4">
+        <select id="status" class="form-select form-select-sm" aria-label="Default select example">
+          <option selected>Ready</option>
+          <option value="1">One</option>
+          <option value="2">Two</option>
+          <option value="3">Three</option>
+        </select>
+      </div>
+    </div>
+    <!--<p *ngIf="partyAccountDetails?.status">
+      {{ "entities.status" | translate }}
+      <span class="badge text-bg-success ms-4 px-3 py-1">
+        {{ partyAccountDetails?.status === "A" ? "Active" : "Inactive" }}
+      </span>
+    </p>-->
+  </div>
+
+  <!-- WEF/WET Fields -->
+  <div class="col-sm-4">
+    <div class="row">
+      <div class="offset-sm-3 col-sm-9 mt-3">
+        <ng-container
+          *ngIf="
+            partyAccountDetails?.partyType?.partyTypeName !== 'Lead' &&
+            partyAccountDetails?.partyType?.partyTypeName !== 'Prospect'">
+          <ng-container *ngTemplateOutlet="wefWetFields"></ng-container>
+        </ng-container>
+        <ng-container
+          *ngIf="
+            partyAccountDetails?.partyType?.partyTypeName === 'Lead' ||
+            partyAccountDetails?.partyType?.partyTypeName === 'Prospect'"
+        >
+          <ng-container *ngTemplateOutlet="wefWetFields"></ng-container>
+        </ng-container>
+        <ng-template #wefWetFields>
+          <div class="col-sm-auto flex-grow-1 d-flex flex-wrapfloat-end">
+            <p class="me-5">
+              {{ basicInfo?.wef[language] | uppercase }}
+              <span class="ms-1 fw-bold">{{ entityPartyIdDetails?.effectiveDateFrom | date }}</span>
+            </p>
+            <p>
+              {{ basicInfo?.wet[language] | uppercase }}
+              <span class="ms-1 fw-bold">{{ entityPartyIdDetails?.effectiveDateFrom | date }}</span>
+            </p>
+            <p>
+              <button class="btn btn-light btn-sm ms-4" style="border-radius: 100%">
+                <i class="fa fa-pencil" style="color: #00529b; font-size: 0.8em"></i>
+              </button>
+            </p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Dynamic Buttons Section -->
   <div class="col-sm-auto flex-grow-0 d-flex flex-wrap justify-content-between">
@@ -67,157 +138,11 @@
       <button class="btn btn-primary btn-sm me-2">Convert to Client</button>
     </ng-container>
   </div>
-
-  <!-- WEF/WET Fields -->
-  <ng-container
-    *ngIf="
-      partyAccountDetails?.partyType?.partyTypeName !== 'Lead' &&
-      partyAccountDetails?.partyType?.partyTypeName !== 'Prospect'
-    "
-  >
-    <ng-container *ngTemplateOutlet="wefWetFields"></ng-container>
-  </ng-container>
-  <ng-container
-    *ngIf="
-      partyAccountDetails?.partyType?.partyTypeName === 'Lead' ||
-      partyAccountDetails?.partyType?.partyTypeName === 'Prospect'
-    "
-  >
-    <ng-container *ngTemplateOutlet="wefWetFields"></ng-container>
-  </ng-container>
-  <ng-template #wefWetFields>
-    <div class="col-sm-auto flex-grow-1 d-flex flex-wrapfloat-end">
-      <p class="me-4">
-        WEF
-        <span class="ms-4 fw-bold">
-          {{ entityPartyIdDetails?.effectiveDateFrom | date }}
-        </span>
-      </p>
-      <p>
-        WET
-        <span class="ms-2 fw-bold">
-          {{ entityPartyIdDetails?.effectiveDateFrom | date }}
-        </span>
-      </p>
-    </div>
-  </ng-template>
-
-  <!-- Status -->
-  <div class="col-sm-auto">
-    <p *ngIf="partyAccountDetails?.status">
-      {{ "entities.status" | translate }}
-      <span class="badge text-bg-success ms-4 px-3 py-1">
-        {{ partyAccountDetails?.status === "A" ? "Active" : "Inactive" }}
-      </span>
-    </p>
-  </div>
 </div>
 
-<!-- <div class="row g-3">
-  <div class="col-sm-4">
-    <div class="row profile g-2">
-      <div class="col-sm-3">
-        <img
-          class="profile-image"
-          src="{{
-            entityPartyIdDetails?.profileImage ||
-              '../../../../../../../assets/images/headshot.png'
-          }}"
-          alt="{{ entityPartyIdDetails?.name | titlecase }}"
-        />
-      </div>
-      <div class="col-sm-9">
-        <h5>{{ entityPartyIdDetails?.name | titlecase }}</h5>
-        <ng-container
-          *ngIf="entityAccountIdDetails.length > 0; else noEntityTypes"
-        >
-          <ng-container *ngFor="let role of entityAccountIdDetails">
-            <button
-              id="select-party-type-role"
-              class="btn btn-sm me-2"
-              [ngClass]="{
-                'btn-primary':
-                  partyAccountDetails?.partyType?.id === role?.partyType?.id,
-                'btn-outline-primary':
-                  partyAccountDetails?.partyType?.id !== role?.partyType?.id
-              }"
-              (click)="selectPartyTypeRole(role)"
-            >
-              {{ role?.partyType.partyTypeName }}
-            </button>
-          </ng-container>
-        </ng-container>
-        <ng-template #noEntityTypes> Loading... </ng-template>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-2 d-flex align-items-center p-2">
-    <button
-      class="btn btn-primary btn-sm"
-      data-bs-toggle="modal"
-      data-bs-target="#assignRole"
-    >
-      {{ "entities.assign_role" | translate }}
-    </button>
-  </div>
-  <ng-container
-    *ngIf="partyAccountDetails?.partyType?.partyTypeName === 'Lead'"
-  >
-    <div class="col-sm-2 d-flex align-items-center">
-      <button class="btn btn-outline-primary btn-sm">Convert to Client</button>
-    </div>
-    <div class="col-sm-2 d-flex align-items-center">
-      <button class="btn btn-outline-primary btn-sm">
-        Convert to Prospect
-      </button>
-    </div>
-    <ng-container *ngTemplateOutlet="wefWetFields"></ng-container>
-  </ng-container>
-  <ng-container
-    *ngIf="partyAccountDetails?.partyType?.partyTypeName === 'Prospect'"
-  >
-    <div class="col-sm-4 d-flex align-items-center">
-      <button class="btn btn-primary btn-sm">Convert to Client</button>
-    </div>
-    <ng-container *ngTemplateOutlet="wefWetFields"></ng-container>
-  </ng-container>
-  <ng-container
-    *ngIf="
-      partyAccountDetails?.partyType?.partyTypeName !== 'Lead' &&
-      partyAccountDetails?.partyType?.partyTypeName !== 'Prospect'
-    "
-  >
-    <ng-container *ngTemplateOutlet="wefWetFields"></ng-container>
-  </ng-container>
-  <ng-template #wefWetFields>
-    <div class="col-sm-2 d-flex align-items-center">
-      <p>
-        WEF
-        <span class="ms-4 fw-bold">
-          {{ entityPartyIdDetails?.effectiveDateFrom | date }}
-        </span>
-      </p>
-    </div>
-    <div class="col-sm-2 d-flex align-items-center">
-      <p>
-        WET
-        <span class="ms-4 fw-bold">
-          {{ entityPartyIdDetails?.effectiveDateTo | date }}
-        </span>
-      </p>
-    </div>
-  </ng-template>
-  <div class="col-sm-2 d-flex align-items-center">
-    <p *ngIf="partyAccountDetails?.status">
-      {{ "entities.status" | translate }}
-      <span class="badge text-bg-success ms-4 px-3 py-1">
-        {{ partyAccountDetails?.status === "A" ? "Active" : "Inactive" }}
-      </span>
-    </p>
-  </div>
-</div> -->
 
-<div class="row">
+<!--dynamic display prep-->
+<!--<div class="row">
   <div class="col-sm-12">
     <h5 class="mt-5">
       {{ "entities.basic_information" | translate }}
@@ -314,7 +239,7 @@
         <tr *ngIf="partyAccountDetails?.clientDto?.clientTitle">
           <td>{{ "entities.title" | translate }}</td>
           <th>
-            <!-- {{ partyAccountDetails?.contactDetails?.title?.shortDescription }} -->
+            &lt;!&ndash; {{ partyAccountDetails?.contactDetails?.title?.shortDescription }} &ndash;&gt;
             {{ partyAccountDetails?.clientDto?.clientTitle }}
           </th>
         </tr>
@@ -336,7 +261,7 @@
       </tbody>
     </table>
   </div>
-</div>
+</div>-->
 
 <!-- Assign Role Modal -->
 <div

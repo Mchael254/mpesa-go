@@ -1,0 +1,138 @@
+<!--{{ primaryDetailsConfig | json }}-->
+
+<div class="row">
+  <div class="col-sm-12">
+    <!--<h5 class="mt-5">
+      {{ "entities.basic_information" | translate }}
+      <button class="btn btn-light btn-sm ms-4" style="border-radius: 100%">
+        <i class="fa fa-pencil" style="color: #00529b; font-size: 0.8em"></i>
+      </button>
+    </h5>-->
+  </div>
+  <div class="col-sm-4">
+    <table class="table table-borderless">
+      <tbody>
+        <tr>
+          <td>
+            <!--{{ "entities.party_type" | translate }}-->
+            {{ primaryDetailsConfig?.party_type[language] | titlecase }}
+          </td>
+          <th>
+            <span *ngIf="partyAccountDetails?.clientDto?.clientType?.category">
+              {{ partyAccountDetails?.clientDto?.clientType?.category }}
+            </span>
+            <span *ngIf="partyAccountDetails?.agentDto?.category">
+              {{ partyAccountDetails?.agentDto?.category }}
+            </span>
+            <span *ngIf="partyAccountDetails?.serviceProviderDto?.category">
+              {{ partyAccountDetails?.serviceProviderDto?.category }}
+            </span>
+            <span *ngIf="partyAccountDetails?.leadDto">
+              {{ partyAccountDetails?.category }}
+            </span>
+            <span *ngIf="partyAccountDetails?.prospectDto">
+              {{ partyAccountDetails?.category }}
+            </span>
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <!--{{ "entities.primary_id_type" | translate }}-->
+            {{ primaryDetailsConfig?.id_type[language] | titlecase }}
+          </td>
+          <th>{{ entityPartyIdDetails?.modeOfIdentity?.name }}</th>
+        </tr>
+        <tr>
+          <td *ngIf="partyAccountDetails?.clientDto?.passportNumber">
+            <!--{{ "entities.passport_number" | translate }}-->
+            <!--{{ primaryDetailsConfig?.id_number[language] | titlecase }}-->
+          </td>
+          <th>{{ partyAccountDetails?.clientDto?.passportNumber }}</th>
+        </tr>
+        <tr *ngIf="partyAccountDetails?.clientDto?.occupation?.name">
+          <td>{{ "entities.occupation" | translate }}</td>
+          <th>{{ partyAccountDetails?.clientDto?.occupation?.name }}</th>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-sm-4">
+    <table class="table table-borderless">
+      <tbody>
+        <!--<tr>
+          <td>
+            {{
+              partyAccountDetails?.partyType?.partyTypeName === "Agent"
+                ? "Account"
+                : partyAccountDetails?.partyType?.partyTypeName
+            }}
+            Type
+          </td>
+          <th>
+            <span
+              *ngIf="partyAccountDetails?.clientDto?.clientType?.clientTypeName"
+            >
+              {{ partyAccountDetails?.clientDto?.clientType?.clientTypeName }}
+            </span>
+            <span *ngIf="partyAccountDetails?.agentDto?.accountType">
+              {{ partyAccountDetails?.agentDto?.accountType }}
+            </span>
+            <span
+              *ngIf="
+                partyAccountDetails?.serviceProviderDto?.providerType?.name
+              "
+            >
+              {{ partyAccountDetails?.serviceProviderDto?.providerType?.name }}
+            </span>
+            <span *ngIf="partyAccountDetails?.leadDto">
+              {{ partyAccountDetails?.category }}
+            </span>
+            <span *ngIf="partyAccountDetails?.prospectDto">
+              {{ partyAccountDetails?.category }}
+            </span>
+          </th>
+        </tr>-->
+        <tr *ngIf="partyAccountDetails?.userDto?.username">
+          <td>{{ "entities.username" | translate }}</td>
+          <th>{{ partyAccountDetails?.userDto?.username }}</th>
+        </tr>
+
+        <tr>
+          <td>
+            <!--{{ "entities.id_number" | translate }}-->
+            {{ primaryDetailsConfig?.id_number[language] | titlecase }}
+          </td>
+          <th>{{ entityPartyIdDetails?.identityNumber }}</th>
+        </tr>
+        <tr *ngIf="partyAccountDetails?.clientDto?.clientTitle">
+          <td>{{ "entities.title" | translate }}</td>
+          <th>
+            <!-- {{ partyAccountDetails?.contactDetails?.title?.shortDescription }} -->
+            {{ partyAccountDetails?.clientDto?.clientTitle }}
+          </th>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-sm-4">
+    <table class="table table-borderless">
+      <tbody>
+        <tr>
+          <td>
+            <!--{{ "entities.dob" | translate }}-->
+            {{ primaryDetailsConfig?.dob[language] | titlecase }}
+          </td>
+          <th>{{ partyAccountDetails?.dateOfBirth | date }}</th>
+        </tr>
+
+        <tr>
+          <td>
+            <!--{{ "entities.pin_number" | translate }}-->
+            {{ primaryDetailsConfig?.pin_number[language] | titlecase }}
+          </td>
+          <th>{{ partyAccountDetails?.pinNumber }}</th>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

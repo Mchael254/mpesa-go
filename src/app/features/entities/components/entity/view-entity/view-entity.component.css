@@ -14,7 +14,8 @@
 }
 
 .nav-link.active {
-    color: var(--primary-color);
+  color: var(--primary-color);
+  text-decoration: underline;
 }
 
 .entityTitle {
@@ -219,7 +220,7 @@
     background: #FAFAFA;
     color: var(--primary-color);
     padding: 0.5rem;
-    border-radius: 0.3rem;
+    /*border-radius: 0.3rem;*/
     cursor: pointer;
     border-radius: 50%;
     margin-right: 20px;
@@ -242,6 +243,23 @@
 
 .btnTransactions {
     margin-right: 5px;
+}
+
+.profile-image {
+  height: 70px;
+  width: 70px;
+  border-radius: 100%;
+}
+
+#edit-tab-btn {
+  color: #00529b;
+  font-size: 0.8em;
+}
+
+#edit-tab-btn:hover {
+  color: red;
+  font-size: 0.9em;
+  transition: 0.2s;
 }
 
 

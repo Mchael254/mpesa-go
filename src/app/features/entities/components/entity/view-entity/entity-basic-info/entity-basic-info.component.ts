@@ -11,7 +11,7 @@ import {
   ReqPartyById,
 } from 'src/app/features/entities/data/entityDto';
 import { PartyAccountsDetails } from '../../../../data/accountDTO';
-import { Logger } from '../../../../../../shared/services';
+import {Logger, UtilService} from '../../../../../../shared/services';
 import { PartyTypeDto } from '../../../../data/partyTypeDto';
 import { StateDto } from '../../../../../../shared/data/common/countryDto';
 
@@ -34,8 +34,22 @@ export class EntityBasicInfoComponent {
   @Input() entityAccountIdDetails: AccountReqPartyId[];
   @Input() partyAccountDetails: PartyAccountsDetails;
   @Input() unAssignedPartyTypes: PartyTypeDto[];
+  @Input() overviewConfig: any;
+  basicInfo: any;
 
-  constructor() {}
+  language: string = 'en'
+
+  constructor(
+    private utilService: UtilService,
+  ) {
+    this.utilService.currentLanguage.subscribe(lang => {
+      this.language = lang;
+    });
+
+    setTimeout(() => {
+      this.basicInfo = this.overviewConfig?.basic_info;
+    }, 1000)
+  }
 
   onAssignRole(role: PartyTypeDto) {
     this.closebutton.nativeElement.click();
@@ -46,4 +60,5 @@ export class EntityBasicInfoComponent {
     // this.entityAccountIdDetails = [];
     this.partyTypeRole.emit(role);
   }
+
 }

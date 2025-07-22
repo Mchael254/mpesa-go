@@ -25,7 +25,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { TimeScale } from 'chart.js';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import {AuthService} from '../../../../shared/services/auth.service';
 import { Pagination } from 'src/app/shared/data/common/pagination';
 @Component({
   selector: 'app-receipt-management',

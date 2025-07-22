@@ -1,0 +1,169 @@
+[
+  {
+    "section_id": "prime_details",
+    "label": {
+      "en": "prime details",
+      "fr": "french details",
+      "ke": "swahili details"
+    },
+    "tabs": [
+      {
+        "title": "overview",
+        "label": {
+          "en": "overview",
+          "fr": "french details",
+          "ke": "swahili details"
+        },
+        "basic_info": {
+          "title": "basic_info",
+          "assignRole": {
+            "en": "assign role",
+            "ke": "peana jukumu",
+            "fr": "attribuer un rôle"
+          },
+          "wef": {
+            "en": "wef",
+            "ke": "kuanzia tarehe",
+            "fr": "à partir du"
+          },
+          "wet": {
+            "en": "wet",
+            "ke": "hadi tarehe",
+            "fr": "jusqu'au"
+          },
+          "status": {
+            "en": "status",
+            "ke": "hali",
+            "fr": "statut"
+          }
+        }
+      },
+      {
+        "title": "transactions",
+        "label": {
+          "en": "transactions",
+          "fr": "french details",
+          "ke": "swahili details"
+        }
+      },
+      {
+        "title": "reports",
+        "label": {
+          "en": "reports",
+          "fr": "french details",
+          "ke": "swahili details"
+        }
+      }
+    ],
+    "order": 1
+  },
+  {
+    "section_id": "additional_information",
+    "label": {
+      "en": "additional information",
+      "fr": "french details",
+      "ke": "swahili details"
+    },
+    "tabs": [
+      {
+        "title": "prime_identity",
+        "label": {
+          "en": "prime identity",
+          "fr": "identité principale",
+          "ke": "utambulisho mkuu"
+        },
+        "primary_details": {
+          "party_type": {
+            "en": "client type",
+            "fr": "type de client",
+            "ke": "aina ya mteja"
+          },
+          "id_type": {
+            "en": "Id Type",
+            "fr": "type d'identifiant",
+            "ke": "aina ya kitambulisho"
+          },
+          "id_number": {
+            "en": "id number",
+            "fr": "numéro d'identifiant",
+            "ke": "nambari ya kitambulisho"
+          },
+          "pin_number": {
+            "en": "pin number",
+            "fr": "numéro PIN",
+            "ke": "nambari ya PIN"
+          },
+          "dob": {
+            "en": "date of birth",
+            "fr": "date de naissance",
+            "ke": "tarehe ya kuzaliwa"
+          },
+          "citizenship": {
+            "en": "citizenship",
+            "fr": "nationalité",
+            "ke": "uraia"
+          },
+          "gender": {
+            "en": "gender",
+            "fr": "sexe",
+            "ke": "jinsia"
+          },
+          "marital_status": {
+            "en": "marital status",
+            "fr": "statut matrimonial",
+            "ke": "hali ya ndoa"
+          }
+        }
+      },
+      {
+        "title": "contact",
+        "label": {
+          "en": "contact",
+          "fr": "french details",
+          "ke": "swahili details"
+        }
+      },
+      {
+        "title": "address",
+        "label": {
+          "en": "address",
+          "fr": "french details",
+          "ke": "swahili details"
+        }
+      },
+      {
+        "title": "financial",
+        "label": {
+          "en": "financial",
+          "fr": "french details",
+          "ke": "swahili details"
+        }
+      },
+      {
+        "title": "wealth_aml",
+        "label": {
+          "en": "wealth and aml",
+          "fr": "french details",
+          "ke": "swahili details"
+        }
+      },
+      {
+        "title": "documents",
+        "label": {
+          "en": "documents",
+          "fr": "french details",
+          "ke": "swahili details"
+        }
+      },
+      {
+        "title": "audit_trail",
+        "label": {
+          "en": "audit trail",
+          "fr": "french details",
+          "ke": "swahili details"
+        }
+      }
+    ],
+    "order": 2
+  }
+]
