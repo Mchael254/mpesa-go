@@ -1,4 +1,4 @@
-import {QuotationProduct} from "./quotationsDTO";
+import { QuotationProduct } from "./quotationsDTO";
 
 export interface QuotationDetailsRequestDto {
   quotationCode?: number;
@@ -92,7 +92,7 @@ interface RiskInformation {
   value: number;
   coverTypeShortDescription: string;
   sectionsDetails: SectionsDetail[];
-  scheduleDetails: object;
+  scheduleDetails: scheduleDetails;
   premium: number;
   subclassCode: number;
   itemDesc: string;
@@ -109,5 +109,51 @@ interface RiskInformation {
   prospectCode: number;
   coverTypeDescription: string;
 }
+export interface scheduleDetails {
+  details: {
+    level1: {
+      bodyType: string,
+      yearOfManufacture: number,
+      color: string,
+      engineNumber: string,
+      cubicCapacity: number,
+      make: string,
+      coverType: string,
+      registrationNumber: string,
+      chasisNumber: string,
+      tonnage: string,
+      carryCapacity: number,
+      logBook: string,
+      value: number,
+      age: number,
+      itemNo: number,
+      terrorismApplicable: string,
+      securityDevice1: string,
+      motorAccessories: string,
+      model: string,
+      securityDevice: string,
+      regularDriverName: string,
+      schActive: string,
+      licenceNo: string,
+      driverLicenceDate: string,
+      driverSmsNo: number,
+      driverRelationInsured: string,
+      driverEmailAddress: string
 
+    },
+    level2?: {  // Making level2 optional
+      code: number,
+      geographicalLimits: string,
+      deductibleDesc: string,
+      limitationUse: string,
+      authorisedDriver: string
+    }
+
+  },
+  riskCode: number,
+  transactionType: string,
+  version: number,
+  code?: number,
+  organizationCode?: number
+}
 
