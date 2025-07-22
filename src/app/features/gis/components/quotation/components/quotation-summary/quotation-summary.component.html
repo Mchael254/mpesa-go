@@ -71,20 +71,20 @@
               <p class="label w-50">Frequency of Payment</p>
               <p class="content w-50">{{ quotationView?.frequencyOfPayment }}</p>
             </div>
-            <div class="col-md-4 d-flex align-items-center">
-              <p class="label w-50 mb-0">Notes</p>
+            <div class="col-md-4 d-flex align-items-center position-relative">
+              <p class="label w-auto mb-0 me-5">Notes</p>
               
-              <div class="d-flex align-items-center w-50">
+              <div class="d-flex align-items-center flex-grow-1">
                 <p class="content mb-0 me-2">
                   {{
                     quotationView?.comments
-                      ? quotationView.comments.split(' ').slice(0, 5).join(' ') + 
-                        (quotationView.comments.split(' ').length > 5 ? '...' : '')
-                      : '-----'
+                      ? quotationView.comments.split(' ').slice(0, 3).join(' ') + 
+                        (quotationView.comments.split(' ').length > 3 ? '...' : '')
+                      : ''
                   }}
                 </p>
                 
-                <i class="fas fa-edit text-primary" style="cursor: pointer;"></i>
+                <i class="fas fa-edit text-primary" style="cursor: pointer;" (click)="openCommentModal()"></i>
               </div>
             </div>
             
@@ -165,6 +165,28 @@
           </div>
         </div>
       </div>
+      <!-- edit notes Modal -->
+<div *ngIf="showCommentModal" class="modal-backdrop-custom">
+  <div class="modal d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Edit Notes</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="closeCommentModal()"></button>
+        </div>
+        <div class="modal-body">
+          <textarea [(ngModel)]="editableComment" class="form-control w-90%" rows="2"></textarea>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-secondary btn-lightblue" (click)="closeCommentModal()">Cancel</button>
+          <button class="btn btn-primary" (click)="saveComment()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
     
 
       <!-- Product Details Card -->
