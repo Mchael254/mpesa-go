@@ -246,7 +246,7 @@ export interface RiskInformation {
   coverDays: number;
   quotationCode?: number
   quotationProductCode?: number
-  scheduleDetails?: any
+  scheduleDetails?: scheduleDetails;
   location?: any
   town?: any
   quotationRevisionNumber?: any
@@ -395,7 +395,7 @@ export interface scheduleDetails {
       color: string,
       engineNumber: string,
       cubicCapacity: number,
-      Make: string,
+      make: string,
       coverType: string,
       registrationNumber: string,
       chasisNumber: string,
