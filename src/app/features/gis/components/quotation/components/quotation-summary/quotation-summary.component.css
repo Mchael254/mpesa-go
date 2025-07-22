@@ -536,4 +536,24 @@ tr:hover {
   color: #00529B;
   border-color: #00529B;
 }
+::ng-deep .p-datatable .p-datatable-thead>tr>th {
+  /* padding: 0.3rem 1rem;  */
+  /* padding: 0.1rem 0.1rem; */
+  color: #000000B2;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  background-color: #BAD0E4;
+  /* 150% */
+}
 
+.card-title-p{
+  
+  font-family: Roboto;
+  font-size: 16px;
+  color: #000000;
+  font-weight: 700;
+
+}
