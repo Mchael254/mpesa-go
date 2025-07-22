@@ -68,7 +68,8 @@
             <div *ngIf="field.isPriority === 'Y' && !(newClient && field.name === 'client')" class="col-sm-4 col-6">
               <div class="form-group form-group-sm">
                 <!-- Label -->
-                <label *ngIf="field.name " class="quote-label" [ngClass]="{ 'required': field.isMandatory === 'Y' }">
+                <label *ngIf="shouldShowField(field.name)" class="quote-label"
+                  [ngClass]="{ 'required': field.isMandatory === 'Y' }">
                   {{ field.label | translate }}
                 </label>
 
@@ -110,6 +111,31 @@
                         *ngIf="quotationForm.get('quotationType')?.hasError('required') && quotationForm.get('quotationType')?.touched"
                         class="form-text text-danger">Quotation type is required.</div>
                     </ng-container>
+
+                    <!-- Agent Field -->
+                    <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
+                      <p-dropdown formControlName="agents" [options]="agents" optionLabel="label" optionValue="value"
+                        placeholder="Select Agent" [filter]="true" [filterBy]="'label'">
+                      </p-dropdown>
+                      <div
+                        *ngIf="quotationForm.get('agents')?.hasError('required') && quotationForm.get('agents')?.touched"
+                        class="form-text text-danger">
+                        Agent is required.
+                      </div>
+                    </ng-container>
+
+                    <!-- campaign field -->
+                    <ng-container *ngIf="field.name === 'campaign' && showCampaignField">
+                      <p-dropdown formControlName="campaign" [options]="fromCampaign" optionLabel="label" optionValue="value"
+                        placeholder="Select Campaign" [filter]="true" [filterBy]="'label'">
+                      </p-dropdown>
+                      <div
+                        *ngIf="quotationForm.get('agents')?.hasError('required') && quotationForm.get('agents')?.touched"
+                        class="form-text text-danger">
+                        Campaign source is required.
+                      </div>
+                    </ng-container>
+
 
                     <!-- BRANCH -->
                     <ng-container *ngIf="field.name === 'branch'">
