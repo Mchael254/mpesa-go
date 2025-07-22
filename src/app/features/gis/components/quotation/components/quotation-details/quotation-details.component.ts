@@ -1447,7 +1447,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
           log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
 
-          // this.fetchUserOrgId()
+          this.fetchUserOrgId()
         }
         if (this.quotationFormDetails?.currencyCode) {
           const selectedCurrency = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);

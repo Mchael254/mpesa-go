@@ -12,18 +12,36 @@
                     <th class="flexible-header">{{'gis.quotation.premium_band' | translate}}</th>
                     <th class="flexible-header"> {{'gis.quotation.cover_from' | translate}}</th>
                     <th class="flexible-header">{{'gis.quotation.cover_to' | translate}}</th>
+                    <th class="flexible-header"></th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-ri="rowIndex" let-risk>
                 <tr [class.p-highlight]="risk === selectedRisk" [pSelectableRow]="riskDetails" class="point"
                     (click)="handleRowClick(risk)">
-                    <td>{{risk.propertyId}}</td>
-                    <td>{{risk.itemDesc}}</td>
-                    <td>{{risk.subclass.description}}</td>
-                    <td>{{risk.coverTypeDescription}}</td>
-                    <td>{{risk.binderCode}}</td>
-                    <td>{{risk.wef}}</td>
-                    <td>{{risk.wet}}</td>
+                    <td class="flexible-header">{{risk.propertyId}}</td>
+                    <td class="flexible-header">{{risk.itemDesc}}</td>
+                    <td class="flexible-header">{{risk.subclass.description
+                        |sentenceCase}}</td>
+                    <td class="flexible-header">{{risk.coverTypeDescription |sentenceCase}}</td>
+                    <td class="flexible-header">{{risk.binderCode}}</td>
+                    <td class="flexible-header">{{risk.wef}}</td>
+                    <td class="flexible-header">{{risk.wet}}</td>
+                    <td class="flexible-header">
+                        <!-- Edit Button -->
+                        <button pButton pRipple type="button"
+                            class="p-button-text p-button-sm p-button-info custom-button" pTooltip="Edit Risk"
+                            tooltipPosition="top" (click)="openEditRiskModal(risk)">
+                            Edit
+                        </button>
+
+                        <!-- Delete Button -->
+
+                        <button *ngIf="riskDetails.length > 1" pButton pRipple type="button"
+                            class="p-button-text p-button-sm custom-button" pTooltip="Delete Risk" tooltipPosition="top"
+                            data-bs-toggle="modal" data-bs-target="#deleteRisk">
+                            Delete
+                        </button>
+                    </td>
 
                 </tr>
             </ng-template>
@@ -34,12 +52,13 @@
                 </tr>
             </ng-template>
         </p-table>
-        <!-- Add Risk  Modal -->
+        <!-- Add/edit Risk  Modal -->
         <div class="modal fade" id="addRisk" #addRiskModal tabindex="-1" role="dialog" aria-labelledby="addRiskLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 700px;">
-                <div class="modal-content" id="addRiskModal">
-                    <div class="modal-body" style="max-height: 504px; overflow-y: auto;min-height: 304px;">
+                <div class="modal-content" style="max-height: 704px; overflow: hidden;min-height: 250px;">
+
+                    <div class="modal-body" style="height: 100%; max-height: 500px; overflow-y: auto;">
                         <h5 class="modal-title mt-2 mb-2 addRiskTitle ">Add risk
                             <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
@@ -200,181 +219,10 @@
                         <div class="mt-4 d-flex justify-content-end">
                             <button type="button" class="btn btn-outline-primary mx-2" id="saveDetails"
                                 data-bs-dismiss="modal">{{'gis.policy.cancel' | translate}}</button>
-                            <button type="button" class="btn btn-primary " id="saveDetails"
+                            <button *ngIf="!isEditMode" type="button" class="btn btn-primary " id="saveDetails"
                                 (click)="createRiskDetail()">{{'gis.quotation.save_details' | translate}}</button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <!-- Edit Risk  Modal -->
-        <div class="modal fade" id="editRisk" tabindex="-1" role="dialog" aria-labelledby="addRiskLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content" id="addRiskModal">
-                    <div class="modal-body">
-                        <h5 class="modal-title mt-2" id="editOtherDetailsLabel">{{'gis.quotation.risk_details' |
-                            translate}}
-                            <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </h5>
-                        <div class="row mb-4 " [formGroup]='editRiskDetailsForm'>
-                            <div class="col-sm-6 col-6">
-                                <div class="form-group form-group-sm">
-                                    <br>
-                                    <label for="minmax-buttons" id="quote-label">{{'gis.quotation.insured' |
-                                        translate}}</label>
-                                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                                        [value]="clientName |sentenceCase" readonly>
-
-                                </div>
-                            </div>
-
-                            <div class="col-sm-6 col-6">
-                                <div class="form-group form-group-sm">
-                                    <br>
-                                    <label for="minmax-buttons" id="quote-label"
-                                        class="required">{{'gis.quotation.subclass' |
-                                        translate}}</label>
-                                    <p-dropdown formControlName="subclassCode" [options]="allMatchingSubclasses"
-                                        optionLabel="description" [filterBy]="'description'" [filter]="true"
-                                        (onChange)="onSubclassSelected($event);"></p-dropdown>
-
-                                </div>
-                            </div>
-                            <!-- MOTOR SUBCLASS FIELD -->
-                            <div class="col-sm-6 col-6" *ngIf="showMotorSubclassFields">
-                                <div class="form-group form-group-sm">
-                                    <br>
-                                    <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.vehicle_make' |
-                                        translate}}</label>
-
-                                    <p-dropdown formControlName="vehicleMake" [options]="vehicleMakeList"
-                                        optionLabel="name" [filterBy]="'name'" [filter]="true"
-                                        (onChange)="onVehicleMakeSelected($event);"></p-dropdown>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-6" *ngIf="showMotorSubclassFields">
-                                <div class="form-group form-group-sm">
-                                    <br>
-                                    <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.vehicle_model' |
-                                        translate}}</label>
-                                    <p-dropdown formControlName="vehicleModel" [options]="vehicleModelDetails"
-                                        optionLabel="name" [filterBy]="'name'" [filter]="true"
-                                        (onChange)="onVehicleModelSelected($event);"></p-dropdown>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-6" *ngIf="showMotorSubclassFields">
-                                <div class="form-group form-group-sm">
-                                    <br>
-                                    <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.risk_id' |
-                                        translate}}</label>
-                                    <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId" [(ngModel)]="passedRiskId" (change)="riskIdPassed()">   -->
-                                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                                        formControlName="propertyId"
-                                        (input)="riskIdPassed($event); transformToUpperCase($event)"
-                                        placeholder="KAA 123X">
-                                    <div *ngIf="riskDetailsForm?.get('propertyId')?.hasError('pattern') && riskDetailsForm?.get('propertyId').touched"
-                                        class="form-text text-danger">
-                                        {{'gis.quotation.risk_id' | translate}} is invalid
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-6" *ngIf="showMotorSubclassFields">
-                                <div class="form-group form-group-sm">
-                                    <br>
-                                    <label for="minmax-buttons" id="quote-label" class="required">
-                                        {{'gis.quotation.risk_description' |
-                                        translate}}</label>
-                                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                                        formControlName="itemDesc" [value]="vehiclemakeModel" readonly>
-
-                                </div>
-                            </div>
-                            <!-- NON MOTOR FIELDS -->
-                            <div class="col-sm-6 col-6" *ngIf="showNonMotorSubclassFields">
-                                <div class="form-group form-group-sm">
-                                    <br>
-                                    <label for="minmax-buttons" id="quote-label"> {{'gis.quotation.risk_id' |
-                                        translate}}</label>
-                                    <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId" [(ngModel)]="passedRiskId" (change)="riskIdPassed()">   -->
-                                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                                        formControlName="propertyId">
-                                    <div *ngIf="riskDetailsForm?.get('propertyId')?.hasError('pattern') && riskDetailsForm?.get('propertyId').touched"
-                                        class="form-text text-danger">
-                                        {{'gis.quotation.risk_id' | translate}} is invalid
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-6" *ngIf="showNonMotorSubclassFields">
-                                <div class="form-group form-group-sm">
-                                    <br>
-                                    <label for="minmax-buttons" id="quote-label" class="required">
-                                        {{'gis.quotation.risk_description' |
-                                        translate}}</label>
-                                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                                        formControlName="itemDesc">
-
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-6">
-                                <div class="form-group form-group-sm">
-                                    <br>
-                                    <label for="minmax-buttons" id="quote-label" class="required">
-                                        {{'gis.quotation.cover_type' |
-                                        translate}}</label>
-                                    <p-dropdown formControlName="coverTypeDescription" [options]="subclassCoverType"
-                                        optionLabel="description" optionValue="description" [filterBy]="'description'"
-                                        [filter]="true" (onChange)="onCoverTypeSelected($event);"></p-dropdown>
-
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-6">
-                                <div class="form-group form-group-sm">
-                                    <br>
-                                    <label for="minmax-buttons" id="quote-label" class="required">
-                                        {{'gis.quotation.premium_band' |
-                                        translate}}</label>
-                                    <p-dropdown formControlName="binderCode" [options]="binderListDetails"
-                                        optionLabel="binder_name" [filterBy]="'binder_name'" [filter]="true"
-                                        (onChange)="onBinderSelected($event);"></p-dropdown>
-
-                                </div>
-                            </div>
-
-                            <!-- date fields -->
-                            <div class="col-sm-6 col-6">
-                                <div class="form-group form-group-sm">
-                                    <br>
-                                    <label for="" id="quote-label"> {{'gis.quotation.cover_from' | translate}}</label>
-                                    <p-calendar formControlName="wef" name="wef" id="coverFromDate"
-                                        inputId="coverFromDate" [dateFormat]="dateFormat" inputStyleClass='form-control'
-                                        [showIcon]="true" (onSelect)="updateCoverToDate($event)" [minDate]="minDate">
-                                    </p-calendar>
-
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-6">
-                                <div class="form-group form-group-sm">
-                                    <br>
-                                    <label for="" id="quote-label"> {{'gis.quotation.cover_to' | translate}}</label>
-                                    <p-calendar formControlName="wet" name="wet" id="coverToDate" inputId="coverToDate"
-                                        [dateFormat]="dateFormat" inputStyleClass='form-control' [showIcon]="true"
-                                        [minDate]="minDate">
-                                    </p-calendar>
-                                </div>
-                            </div>
-
-                        </div>
-
-
-
-                        <div class="mt-4 d-flex justify-content-end">
-                            <button type="button" class="btn btn-outline-primary mx-2" id="saveDetails"
-                                data-bs-dismiss="modal">{{'gis.policy.cancel' | translate}}</button>
-                            <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal"
-                                (click)="updateRiskDetails()">{{'gis.quotation.save_details' | translate}}</button>
+                            <button *ngIf="isEditMode" type="button" class="btn btn-primary " id="saveDetails"
+                                (click)="UpdateRiskDetail()">{{'gis.quotation.save_details' | translate}}</button>
                         </div>
                     </div>
 
@@ -675,8 +523,8 @@
                                                 | translate}} :</label>
                                             <div class="col-7">
                                                 <input type="text" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1" formControlName="sectionShortDescription"
-                                                    readonly>
+                                                    class="form-control form-control-sm mb-1"
+                                                    formControlName="sectionShortDescription" readonly>
 
                                             </div>
                                         </div>
@@ -728,10 +576,10 @@
 
                                             <div class="col-7">
                                                 <div class="col-7">
-                                                <input type="text" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
-                                                    formControlName="sectionType">
-                                            </div>
+                                                    <input type="text" id="scheduleInput"
+                                                        class="form-control form-control-sm mb-1"
+                                                        formControlName="sectionType">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -807,7 +655,7 @@
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.div_by' | translate}}:</label>
-                                              <div class="col-7">
+                                            <div class="col-7">
                                                 <input type="number" id="scheduleInput"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="multiplierDivisionFactor">
@@ -818,7 +666,7 @@
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.multi_rate' | translate}} :</label>
-                                             <div class="col-7">
+                                            <div class="col-7">
                                                 <input type="number" id="scheduleInput"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="multiplierRate">
@@ -870,9 +718,8 @@
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.accumulation' | translate}}:</label>
                                             <div class="col-7">
-                                               <input type="text" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
-                                                    formControlName="">
+                                                <input type="text" id="scheduleInput"
+                                                    class="form-control form-control-sm mb-1" formControlName="">
                                             </div>
                                         </div>
                                     </div>
