@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { TransactionDTO } from '../data/receipting-dto'; // Adjust path as needed
 import { retry } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+
+import {SessionStorageService} from '../../../shared/services/session-storage/session-storage.service';
 
 @Injectable({
   providedIn: 'root',
