@@ -30,7 +30,7 @@
       <!-- Quotation details card  -->
       <div class="card mb-4">
         <div class="card-body">
-          <p class="card-title mb-4">Quotation Details</p>
+          <p class="card-titles mb-4">Quotation details</p>
   
           <div class="row mb-3">
             <div class="col-md-4 d-flex">
@@ -71,64 +71,81 @@
               <p class="label w-50">Frequency of Payment</p>
               <p class="content w-50">{{ quotationView?.frequencyOfPayment }}</p>
             </div>
-            <div class="col-md-4 d-flex">
-              <p class="label w-50">Notes</p>
-              <p class="content w-50">{{ quotationDetails.comments }}</p>
+            <div class="col-md-4 d-flex align-items-center">
+              <p class="label w-50 mb-0">Notes</p>
+              
+              <div class="d-flex align-items-center w-50">
+                <p class="content mb-0 me-2">
+                  {{
+                    quotationView?.comments
+                      ? quotationView.comments.split(' ').slice(0, 5).join(' ') + 
+                        (quotationView.comments.split(' ').length > 5 ? '...' : '')
+                      : '-----'
+                  }}
+                </p>
+                
+                <i class="fas fa-edit text-primary" style="cursor: pointer;"></i>
+              </div>
             </div>
+            
           </div>
   
-          <p class="card-title mb-4">Client Information</p>
+          <p class="card-titles mb-4">Client information</p>
   
           <div class="row mb-3">
             <div class="col-md-4 d-flex">
-              <p class="label w-50">Client Name</p>
-              <p class="content w-50">{{ clientDetails?.inputClientName || clientDetails?.firstName + ' ' + clientDetails?.lastName }}</p>
+              <p class="label w-50">Client </p>
+              <p class="content w-50">{{ quotationView?.clientName }}</p>
             </div>
             <div class="col-md-4 d-flex">
-              <p class="label w-50">Client Code</p>
-              <p class="content w-50">{{ clientDetails?.clientCode }}</p>
+              <p class="label w-50">Proposer</p>
+              <p class="content w-50">{{ clientDetails?.proposer }}</p>
             </div>
             <div class="col-md-4 d-flex">
-              <p class="label w-50">Client Type</p>
-              <p class="content w-50">{{ clientDetails?.clientType }}</p>
+              <p class="label w-50">Introducer</p>
+              <p class="content w-50">{{ clientDetails?.introducer }}</p>
             </div>
           </div>
   
           <div class="row mb-2">
             <div class="col-md-4 d-flex">
-              <p class="label w-50">Email</p>
-              <p class="content w-50">{{ clientDetails?.email }}</p>
+              <p class="label w-50">Source</p>
+              <p class="content w-50">{{ quotationView?.source.description}}</p>
             </div>
             <div class="col-md-4 d-flex">
-              <p class="label w-50">Phone</p>
-              <p class="content w-50">{{ clientDetails?.phoneNumber }}</p>
+              <p class="label w-50">Likelihood</p>
+              <p class="content w-50">{{ quotationView?.likelihood}}</p>
+            </div>
+            <div class="col-md-4 d-flex">
+              <p class="label w-50">Agent</p>
+              <p class="content w-50">{{ quotationView?.agentName}}</p>
             </div>
           </div>
   
-          <p class="card-title mb-4">Financial Overview</p>
+          <p class="card-titles mb-4">Financial overview</p>
   
           <div class="row mb-3">
             <div class="col-md-4 d-flex">
               <p class="label w-50">Premium</p>
-              <p class="content w-50">{{ premiumAmount | number }}</p>
+              <p class="content w-50">{{ quotationView?.premium | number }}</p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Sum Insured</p>
-              <p class="content w-50">{{ sumInsured | number }}</p>
+              <p class="content w-50">{{ quotationView?.sumInsured | number }}</p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Marketer Comm.</p>
-              <p class="content w-50">{{ marketerCommissionAmount | number }}</p>
+              <p class="content w-50">{{ quotationView?.marketerCommissionAmount | number }}</p>
             </div>
           </div>
   
           <div class="row mb-2">
             <div class="col-md-4 d-flex">
-              <p class="label w-50">Comm Amount</p>
+              <p class="label w-50">Comm amt.</p>
               <p class="content w-50">{{ quotationView?.commissionAmount }}</p>
             </div>
             <div class="col-md-4 d-flex">
-              <p class="label w-50">External Comments</p>
+              <p class="label w-50">Comments</p>
               <p class="content w-50">{{ quotationView?.comments }}</p>
             </div>
             <div class="col-md-4 d-flex">
