@@ -1,0 +1,308 @@
+{
+  "overview": {
+    "label": {
+      "en": "overview",
+      "fr": "aperçu",
+      "ke": "muhtasari"
+    },
+    "fields": []
+  },
+  "transactions": {
+    "label": {
+      "en": "transactions",
+      "fr": "transactions",
+      "ke": "miamala"
+    },
+    "fields": []
+  },
+  "reports": {
+    "label": {
+      "en": "reports",
+      "fr": "rapports",
+      "ke": "ripoti"
+    },
+    "fields": []
+  },
+  "prime_identity": {
+    "label": {
+      "en": "prime identity details",
+      "fr": "identité principale",
+      "ke": "utambulisho mkuu"
+    },
+    "fields": [
+      {
+        "sectionId": "prime_identity",
+        "fieldId": "id_type",
+        "type": "select",
+        "label": {
+          "en": "primary identity type",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": ["NATIONAL_ID", "BIRTH_CERT"]
+      },
+      {
+        "sectionId": "prime_identity",
+        "fieldId": "id_number",
+        "type": "text",
+        "label": {
+          "en": "id number",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "prime_identity",
+        "fieldId": "pin_number",
+        "type": "text",
+        "label": {
+          "en": "pin number",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "prime_identity",
+        "fieldId": "dob",
+        "type": "date",
+        "label": {
+          "en": "date of birth",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "prime_identity",
+        "fieldId": "citizenship",
+        "type": "select",
+        "label": {
+          "en": "citizenship",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "e.g. Kenya",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": ["nigeria", "kenya"]
+      },
+      {
+        "sectionId": "prime_identity",
+        "fieldId": "gender",
+        "type": "select",
+        "label": {
+          "en": "gender",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": ["m", "f"]
+      },
+      {
+        "sectionId": "prime_identity",
+        "fieldId": "marital_status",
+        "type": "select",
+        "label": {
+          "en": "marital status",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": ["m", "s", "d", "w"]
+      }
+    ],
+    "buttons": {
+      "cancel": {
+        "sectionId": "prime_identity",
+        "fieldId": "cancel_button",
+        "type": "button",
+        "label": {
+          "en": "cancel",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        }
+      },
+      "save": {
+        "sectionId": "prime_identity",
+        "fieldId": "cancel_button",
+        "type": "button",
+        "label": {
+          "en": "save details",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        }
+      }
+    }
+  },
+  "contact": {
+    "label": {
+      "en": "contact",
+      "fr": "contact",
+      "ke": "mawasiliano"
+    },
+    "fields": []
+  },
+  "address": {
+    "label": {
+      "en": "address",
+      "fr": "adresse",
+      "ke": "anwani"
+    },
+    "fields": []
+  },
+  "financial": {
+    "label": {
+      "en": "financial",
+      "fr": "financier",
+      "ke": "kifedha"
+    },
+    "fields": []
+  },
+  "wealth_aml": {
+    "label": {
+      "en": "wealth & aml",
+      "fr": "richesse & lbc",
+      "ke": "utajiri & aml"
+    },
+    "fields": []
+  },
+  "documents": {
+    "label": {
+      "en": "documents",
+      "fr": "documents",
+      "ke": "hati"
+    },
+    "fields": []
+  },
+  "audit_trail": {
+    "label": {
+      "en": "audit trail",
+      "fr": "piste d'audit",
+      "ke": "rekodi ya ukaguzi"
+    },
+    "fields": []
+  }
+}
