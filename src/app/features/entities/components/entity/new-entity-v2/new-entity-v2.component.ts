@@ -24,7 +24,14 @@ import {PartyTypeDto} from "../../../data/partyTypeDto";
 import {ClientService} from "../../../services/client/client.service";
 import {IdentityModeDTO} from "../../../data/entityDto";
 import {CurrencyService} from "../../../../../shared/services/setups/currency/currency.service";
-import {Branch, ContactDetails, Payee, WealthAmlDTO} from "../../../data/accountDTO";
+import {
+  Branch,
+  ContactDetails,
+  Cr12Detail,
+  OwnerDetail,
+  Payee,
+  WealthAmlDTO
+} from "../../../data/accountDTO";
 import {DmsService} from "../../../../../shared/services/dms/dms.service";
 
 const log = new Logger('NewEntityV2Component');
@@ -108,8 +115,8 @@ export class NewEntityV2Component implements OnInit {
   contactPersonDetails: ContactDetails[] = [];
   branchDetails: Branch[] = [];
   payeeDetails: Payee[] = [];
-  ownershipDetails: any[] = []; // todo: define types
-  cr12Details: any[] = []; // todo: define types
+  ownershipDetails: OwnerDetail[] = [];
+  cr12Details: Cr12Detail[] = [];
 
   shouldUploadProfilePhoto: boolean = false;
   profilePicture: any; // todo: define types
@@ -421,7 +428,14 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
-  saveToDatabase(formValues, upperDetails): void {
+  /**
+   * Save the details to database
+   * Create a clientObject for database posting
+   * Call function to upload logo/profilePicture, uploadDocsToDms
+   * @param formValues
+   * @param upperDetails
+   */
+  saveToDatabase(formValues, upperDetails): void { // todo: define model for formValues & upperDetails
     const payloadObject = {
       ...formValues.prime_identity,
       ...formValues.contact_details,
@@ -516,8 +530,10 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
+  /**
+   * Upload documents to DMS after saving client and uploading profileImage/logo
+   */
   uploadDocumentToDms(): void {
-    log.info(``)
     this.dmsService.saveClientDocs(this.clientFiles[0]).subscribe({
       next: (res: any) => {
         log.info(`document uploaded successfully!`, res);
@@ -542,9 +558,6 @@ export class NewEntityV2Component implements OnInit {
       case 'modeOfIdentityId':
         this.selectedIdType = this.idTypes.find((type) => type.name === selectedOption);
         this.idType = selectedOption;
-        break;
-      case 'idType':
-        // this.
         break;
       case 'language':
         this.language = selectedOption;
@@ -595,7 +608,10 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
-
+  /**
+   * fetched list of required documents based on entity/client type
+   * @param formValues
+   */
   fetchRequiredDocuments(formValues) : void {
     if (formValues.category && formValues.role && formValues.organizationType) {
       const accountType: PartyTypeDto = this.roles.filter(
@@ -756,7 +772,6 @@ export class NewEntityV2Component implements OnInit {
     }
 
     log.info(`regex to use`, this.regexErrorMessages, groupId);
-
   }
 
   /**
@@ -913,6 +928,11 @@ export class NewEntityV2Component implements OnInit {
     }
   }
 
+  /**
+   * Fetch the list of states by country code
+   * @param sectionIndex
+   * @param fieldIndex
+   */
   fetchStatesByCountryCode(sectionIndex:number, fieldIndex: number): void {
     if (this.selectedAddressCountry) {
       this.countryService.getMainCityStatesByCountry(this.selectedAddressCountry?.id).subscribe({
@@ -932,6 +952,11 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
+  /**
+   * Fetch towns based on selected state
+   * @param sectionIndex
+   * @param fieldIndex
+   */
   fetchTownsByStateCode(sectionIndex:number, fieldIndex: number): void {
     if (this.selectedState) {
       this.countryService.getTownsByMainCityState(this.selectedState?.id).subscribe({
@@ -951,6 +976,11 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
+  /**
+   * Fetch postal code by town code (town must be selected first)
+   * @param sectionIndex
+   * @param fieldIndex
+   */
   fetchPostalCodeByTownCode(sectionIndex:number, fieldIndex: number): void {
     if (this.selectedTown) {
       this.countryService.getPostalCodes(this.selectedTown?.id).subscribe({
@@ -970,6 +1000,11 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
+  /**
+   * Fetch id types
+   * @param sectionIndex
+   * @param fieldIndex
+   */
   fetchIdTypes(sectionIndex:number, fieldIndex: number): void {
     if (!(this.idTypes.length > 0)) {
       this.entityService.getIdentityType().subscribe({
@@ -986,6 +1021,12 @@ export class NewEntityV2Component implements OnInit {
     }
   }
 
+
+  /**
+   * Fetch list of currencies
+   * @param sectionIndex
+   * @param fieldIndex
+   */
   fetchCurrencies(sectionIndex:number, fieldIndex: number): void {
     if (!(this.currencies.length > 0)) {
       this.currencyService.getCurrencies().subscribe({
@@ -1002,6 +1043,11 @@ export class NewEntityV2Component implements OnInit {
     }
   }
 
+  /**
+   * Fetch client titles
+   * @param sectionIndex
+   * @param fieldIndex
+   */
   fetchClientTitles(sectionIndex:number, fieldIndex: number): void {
     if(!(this.clientTitles.length > 0)) {
       this.clientService.getClientTitles().subscribe({
@@ -1019,6 +1065,9 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
+  /**
+   * Fetch system roles
+   */
   fetchSystemRoles(): void {
     if (!(this.roles.length > 0)) {
       this.entityService.getPartiesType().subscribe({
@@ -1036,6 +1085,10 @@ export class NewEntityV2Component implements OnInit {
     }
   }
 
+  /**
+   * Fetch saved details from dynamic table component
+   * @param eventData
+   */
   fetchSavedDetails(eventData:any) {
     log.debug('Save details modal data:', eventData);
     const subgroup = eventData.subGroupId;
@@ -1066,6 +1119,9 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
+  /**
+   * Fetch org types
+   */
   fetchOrganizationTypes(): void {
     const role = this.uploadForm.getRawValue().role.toLowerCase();
     log.info(`role to fetch with >>> `, role);
@@ -1079,6 +1135,10 @@ export class NewEntityV2Component implements OnInit {
     }
   }
 
+
+  /**
+   * Fetch client types
+   */
   fetchClientTypes(): void {
     if(!(this.clientTypes.length > 0)) {
       this.clientTypeService.getClientTypes().subscribe({
@@ -1129,12 +1189,19 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
-  deleteDocument(doc: any): void {
+  /**
+   * Deleted selected document
+   * @param doc
+   */
+  deleteDocument(doc: any): void { // todo: fix bug on delete document
     const index: number = this.uploadGroupSections.docs.findIndex(item => item.id === doc.id);
     this.uploadGroupSections.docs[index].file = null;
   }
 
 
+  /**
+   * Upload selected documents for AI scanning
+   */
   uploadDocForScanning(): void {
     log.info(`client files >>> `, this.clientFiles);
     this.clientService.uploadDocForScanning(this.clientFiles).subscribe({
@@ -1149,6 +1216,10 @@ export class NewEntityV2Component implements OnInit {
   }
 
 
+  /**
+   * Read data from scanned documents based on urls
+   * @param urls
+   */
   readScannedDocuments(urls): void {
     const schema = {
       withEffectFromDate: "",

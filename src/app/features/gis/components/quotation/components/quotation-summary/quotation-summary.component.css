@@ -231,11 +231,11 @@ ul li a.active {
   border-right: 0px;
 }
 
-.card-title {
+.card-titles {
   color: #00529b;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 18px;
 }
 
