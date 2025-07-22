@@ -168,7 +168,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   reassignButton: boolean = false
   productToReassign: any;
   noCommentleft: boolean = false
-  reassignProductComment:string;
+  reassignProductComment: string;
 
   constructor(
     public bankService: BankService,
@@ -274,7 +274,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
 
     this.loadPersistedClauses();
-    this.getUsers()
+    this.getUsers();
+    this.getAgents();
   }
 
   ngAfterViewInit() {
@@ -391,6 +392,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }
     });
   }
+
 
 
 
@@ -1030,7 +1032,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       untilDestroyed(this)
     )
       .subscribe(data => {
-        this.agents = data.content
+        this.agents = data.content.map(agent => ({
+          label: `${agent.name}`,
+          value: agent
+        }));
         log.debug("AGENTS", data)
       })
   }
@@ -1513,13 +1518,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   onSourceChange(event): void {
     const selectedSource = event.value;
+
     if (selectedSource) {
-      // Check for Walk in - set to Direct
+      this.showCampaignField = false;
+
       if (selectedSource.description === 'Walk in') {
         this.quotationForm.get('quotationType').setValue('D'); // Set to Direct
         this.onQuotationTypeChange('D');
       }
-      // Check for Agent, Agent/b, or Broker/agent - set to Intermediary
       else if (
         selectedSource.description === 'Agent' ||
         selectedSource.description === 'Agent/b' ||
@@ -1528,8 +1534,25 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.quotationForm.get('quotationType').setValue('I'); // Set to Intermediary
         this.onQuotationTypeChange('I');
       }
+      else if (selectedSource.description === 'Campaign') {
+        this.showCampaignField = true;
+      }
     }
   }
+
+
+  shouldShowField(fieldName: string): boolean {
+    if (fieldName === 'agent') {
+      return this.quotationForm.get('quotationType')?.value === 'I';
+    }
+    if (fieldName === 'campaign') {
+      return this.showCampaignField;
+    }
+
+    return true;
+  }
+
+
   editingRowIndex: number | null = null;
 
 
@@ -1931,7 +1954,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }, 3000);
       return;
     }
-    
+
     this.closeReassignProductModal();
     this.clientToReassignProduct = null;
     this.productToReassign = null;
