@@ -77,10 +77,10 @@
               <div class="d-flex align-items-center flex-grow-1">
                 <p class="content mb-0 me-2">
                   {{
-                    quotationViews?.comments
-                      ? quotationViews.comments.split(' ').slice(0, 3).join(' ') + 
-                        (quotationViews.comments.split(' ').length > 3 ? '...' : '')
-                      : '-----'
+                    quotationView?.comments
+                      ? quotationView.comments.split(' ').slice(0, 3).join(' ') + 
+                        (quotationView.comments.split(' ').length > 3 ? '...' : '')
+                      : ''
                   }}
                 </p>
                 

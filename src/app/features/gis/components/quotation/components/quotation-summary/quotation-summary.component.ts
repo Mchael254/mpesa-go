@@ -1538,7 +1538,7 @@ throw new Error('Method not implemented.');
   }
 
    openCommentModal() {
-    this.editableComment = this.quotationViews?.comments || '';
+    this.editableComment = this.quotationView?.comments || '';
     this.showCommentModal = true;
   }
 
@@ -1547,12 +1547,46 @@ throw new Error('Method not implemented.');
   }
 
   saveComment() {
-    this.quotationViews.comments = this.editableComment;
-    this.closeCommentModal();
+    
+    if (!this.editableComment || this.editableComment.trim() === '') {
+      this.globalMessagingService.displayErrorMessage(
+        'Validation Error',
+        'Notes cannot be empty.'
+      );
+      return;
+    }
+  
+    const payload = {
+      comment: this.editableComment,
+      quotationCode: this.quotationView.code
+    };
+  
+    this.quotationService.updateQuotationComment(payload).subscribe({
+      next: () => {
+        
+        this.quotationView.comments = this.editableComment;
+  
+        
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Notes updated successfully.'
+        );
+  
+        this.closeCommentModal();
+      },
+      error: (error) => {
+        console.error('Error updating comment:', error);
+  
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Unable to update notes. Please try again later.'
+        );
+      }
+    });
   }
-  quotationViews: Partial<QuotationDetails> = {
-    comments: 'This is a dummy comment for testing.'
-  };
+  
+  
+  
   
 
  
