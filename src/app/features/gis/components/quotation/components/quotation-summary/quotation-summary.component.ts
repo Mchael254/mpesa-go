@@ -128,6 +128,8 @@ throw new Error('Method not implemented.');
   viewQuoteFlag: boolean;
   revisedQuotationNumber: string;
   premiumAmount: number
+  editableComment: string = '';
+  showCommentModal: boolean = false;
 
 
   constructor(
@@ -184,6 +186,7 @@ throw new Error('Method not implemented.');
     if (this.quotationCodeString) {
       this.quotationCode = this.quotationCodeString;
     }
+   
 
     this.clientDetails = JSON.parse(
       sessionStorage.getItem('clientFormData') ||
@@ -1533,4 +1536,61 @@ throw new Error('Method not implemented.');
         }
       });
   }
+
+   openCommentModal() {
+    this.editableComment = this.quotationView?.comments || '';
+    this.showCommentModal = true;
+  }
+
+  closeCommentModal() {
+    this.showCommentModal = false;
+  }
+
+  saveComment() {
+    
+    
+    if (!this.editableComment || this.editableComment.trim() === '') {
+      this.globalMessagingService.displayErrorMessage(
+        'Validation Error',
+        'Notes cannot be empty.'
+      );
+      return;
+    }
+  
+    const payload = {
+      comment: this.editableComment,
+      quotationCode: this.quotationView.code
+    };
+  
+    this.quotationService.updateQuotationComment(payload).subscribe({
+      next: () => {
+        
+        this.quotationView.comments = this.editableComment;
+  
+        
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Notes updated successfully.'
+        );
+  
+        this.closeCommentModal();
+      },
+      error: (error) => {
+        console.error('Error updating comment:', error);
+  
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Unable to update notes. Please try again later.'
+        );
+      }
+    });
+  }
+  
+  
+ 
+  
+  
+
+ 
 }
+

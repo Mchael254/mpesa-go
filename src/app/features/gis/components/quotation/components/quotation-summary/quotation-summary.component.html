@@ -71,20 +71,20 @@
               <p class="label w-50">Frequency of Payment</p>
               <p class="content w-50">{{ quotationView?.frequencyOfPayment }}</p>
             </div>
-            <div class="col-md-4 d-flex align-items-center">
-              <p class="label w-50 mb-0">Notes</p>
+            <div class="col-md-4 d-flex align-items-center position-relative">
+              <p class="label w-50 mb-0 me-2">Notes</p>
               
               <div class="d-flex align-items-center w-50">
                 <p class="content mb-0 me-2">
                   {{
                     quotationView?.comments
-                      ? quotationView.comments.split(' ').slice(0, 5).join(' ') + 
-                        (quotationView.comments.split(' ').length > 5 ? '...' : '')
-                      : '-----'
+                      ? quotationView.comments.split(' ').slice(0, 3).join(' ') + 
+                        (quotationView.comments.split(' ').length > 3 ? '...' : '')
+                      : ''
                   }}
                 </p>
                 
-                <i class="fas fa-edit text-primary" style="cursor: pointer;"></i>
+                <i class="fas fa-edit text-primary" style="cursor: pointer;" (click)="openCommentModal()"></i>
               </div>
             </div>
             
@@ -165,6 +165,28 @@
           </div>
         </div>
       </div>
+      <!-- edit notes Modal -->
+<div *ngIf="showCommentModal" class="modal-backdrop-custom">
+  <div class="modal d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Edit Notes</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="closeCommentModal()"></button>
+        </div>
+        <div class="modal-body">
+          <textarea [(ngModel)]="editableComment" class="form-control w-90%" rows="3"></textarea>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-secondary btn-lightblue" (click)="closeCommentModal()">Cancel</button>
+          <button class="btn btn-primary" (click)="saveComment()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
     
 
       <!-- Product Details Card -->
@@ -172,32 +194,32 @@
         <div class="card-body">
           <div class="row">
             <div class="col-4">
-              <p *ngIf="!isCollapsibleOpen" class="card-title mt-2" data-bs-toggle="collapse"
-                 data-bs-target="#productDetails"
-                 (click)="toggleProductDetails()">Product Details</p>
+              <p  class="card-title mt-2" 
+                
+                 class="card-title-p mt-2">Products</p>
             </div>
             <div class="col-8 d-flex justify-content-end">
               <div class="row">
 
-                <div class="col-4" *ngIf="!isCollapsibleOpen">
+                <div class="col-4" >
                   <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse"
                           data-bs-target="#productDetails" (click)="toggleProductDetails()"
                           [attr.aria-expanded]="!isCollapsibleOpen">
-                    <i class="fa-solid fa-chevron-down"></i>
+                    <i class="fa-solid"  [ngClass]="isCollapsibleOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                   </button>
                 </div>
               </div>
             </div>
           </div>
-          <div class="collapse mt-4" id="productDetails">
-            <div class="row">
-              <div class="col-3">
+          <div *ngIf="isCollapsibleOpen"  class=" mt-4" id="productDetails">
+             <div class="row">
+              <div class="col-3"> 
                 <!-- <p class="card-title mt-2" data-bs-toggle="collapse" data-bs-target="#productDetails" (click)="toggleProductDetails()">Product Details</p> -->
-                <p class="fw-semibold	card-title-collapsed mt-2">Product Details</p>
-              </div>
-              <div class="col-9 d-flex justify-content-end" id="navigationIcons">
-                <div class="row">
-                  <div class="col-sm-3"></div>
+                <!-- <p class="fw-semibold	card-title-collapsed mt-2"></p>
+              </div> -->
+              <!-- <div class="col-9 d-flex justify-content-end" id="navigationIcons">
+                <div class="row"> -->
+                  <!-- <div class="col-sm-3"></div>
                   <div class="col-sm-3">
                     <button type="button" id="icon" class="btn btn-primary" title="Add" [disabled]="viewQuoteFlag">
                       <i class="fa-solid fa-plus"></i>
@@ -207,38 +229,42 @@
                     <button type="button" id="icon" class="btn btn-primary" title="Edit" [disabled]="viewQuoteFlag">
                       <i class="fa-solid fa-pencil"></i>
                     </button>
-                  </div>
-                  <div class="col-sm-3">
+                  </div> -->
+                 
 
-                    <button type="button" id="icon" class="btn btn-danger me-2" title="Delete"
-                            id="openProductModalButtonDelete" [hidden]="true" data-bs-toggle="modal"
-                            data-bs-target="#deleteProduct">
-                      <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                    <button
-                      type="button"
-                      id="icon"
-                      class="btn btn-primary"
-                      title="Delete"
-                      [disabled]="viewQuoteFlag ||!quotationDetails?.quotationProducts || quotationDetails.quotationProducts.length <= 1">
-                      <i class="fa-solid fa-trash-can" (click)="openProductDeleteModal()"></i>
-                    </button>
-                  </div>
-
-                </div>
-              </div>
+                 <!-- </div>  -->
+              </div> 
+              
             </div>
             <div class="mt-3" id="">
-              <p-table [value]="productDetails" [tableStyle]="{ 'min-width': '50rem' }">
+              <p-table [value]="productDetails" [tableStyle]="{ 'min-width': '50rem' }"
+              >
                 <ng-template pTemplate="header">
                   <tr>
-                    <th>Product</th>
-                    <th>Cover From</th>
-                    <th>Cover To</th>
-                  <!--  <th>Binder</th>-->
-                    <th class="text-end">Sum Insured</th>
-                    <th class="text-end">Commission</th>
-                    <th class="text-end">Premium</th>
+                    <th pSortableColumn="productName">
+                      Product
+                      <p-sortIcon field="productName"></p-sortIcon>
+                    </th>
+              
+                    <th pSortableColumn="wef">
+                      Cover From
+                      <p-sortIcon field="wef"></p-sortIcon>
+                    </th>
+              
+                    <th pSortableColumn="wet">
+                      Cover To
+                      <p-sortIcon field="wet"></p-sortIcon>
+                    </th>
+              
+                    <th  pSortableColumn="premium">
+                      Premium
+                      <p-sortIcon field="premium"></p-sortIcon>
+                    </th>
+              
+                    <th  pSortableColumn="commission">
+                      Commission
+                      <p-sortIcon field="commission"></p-sortIcon>
+                    </th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-data>
@@ -247,10 +273,9 @@
                     <td>{{ data.productName | sentenceCase }}</td>
                     <td>{{ data.wef }}</td>
                     <td>{{ data.wet }}</td>
-                   <!-- <td>{{ data.binder || "-" }}</td>-->
-                    <td class="text-end">{{ data.totalSumInsured || 0.00 |number }}</td>
-                    <td class="text-end">{{ data.commission || 0.00 |number }}</td>
-                    <td class="text-end">{{ data.premium || 0.00 | number }}</td>
+                    <td>{{ data.premium || 0.00 | number }}</td>
+                    <td >{{ data.commission || 0.00 |number }}</td>
+                    
                   </tr>
                 </ng-template>
               </p-table>
@@ -347,9 +372,21 @@
                            scrollHeight="200px">
                     <ng-template pTemplate="header">
                       <tr>
-                        <th class="flexible-header">ID</th>
-                        <th class="flexible-header"> {{ 'gis.quotation.heading' | translate }}</th>
-                        <th class="flexible-header">{{ 'gis.quotation.wording' | translate }}</th>
+                        <th class="flexible-header" pSortableColumn="id">
+                          ID
+                          <p-sortIcon field="id"></p-sortIcon>
+                        </th>
+                        
+                        <th class="flexible-header" pSortableColumn="heading">
+                          {{ 'gis.quotation.heading' | translate }}
+                          <p-sortIcon field="heading"></p-sortIcon>
+                        </th>
+                        
+                        <th class="flexible-header" pSortableColumn="wording">
+                          {{ 'gis.quotation.wording' | translate }}
+                          <p-sortIcon field="wording"></p-sortIcon>
+                        </th>
+                        
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-data>
