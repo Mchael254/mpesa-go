@@ -238,8 +238,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
       phone: [''],
-      client: ['', [Validators.minLength(2)]]
+      client: ['', [Validators.minLength(2)]],
+      currencyCode: [null, Validators.required],
     });
+
     this.loadDetailedQuotationFields();
 
     this.minDate = new Date();
@@ -1364,16 +1366,18 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
-          this.campaignList = response
-          log.debug("Campaign List:", this.campaignList)
-
+          this.campaignList = response.map(c => ({
+            label: c.campaignName,
+            value: c.code
+          }));
+          log.debug("Campaign List:", this.campaignList);
         },
         error: (error) => {
-
-          // this.globalMessagingService.displayErrorMessage('Error', 'Failed to retrieve  campaign details.Try again later');
+          log.error("Failed to fetch campaigns", error);
         }
-      })
+      });
   }
+
 
   toggleProducts() {
     this.showProducts = !this.showProducts;
@@ -1388,35 +1392,61 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.show = !this.show;
   }
 
+  userBranch: any;
   fetchUserOrgId() {
     this.quotationService
       .getUserOrgId(this.userCode)
       .pipe(
         mergeMap((organization) => {
-          this.userOrgDetails = organization
-          log.debug("User Organization Details  ", this.userOrgDetails);
-          this.organizationId = this.userOrgDetails.organizationId
-          const currencySymbol = this.quotationForm.value.currency.symbol
+          this.userOrgDetails = organization;
+          log.debug("User Organization Details", this.userOrgDetails);
 
-          const currencyCode = this.quotationForm.value.currency.id
+          this.organizationId = this.userOrgDetails.organizationId;
           this.branchId = this.userOrgDetails.branchId;
-          log.debug("Cuurency code", currencyCode)
-          log.debug("Cuurency ", currencySymbol)
+
+          const currency = this.quotationForm.value.currencyCode;
+          const currencyCode = currency?.id;
+          const currencySymbol = currency?.symbol;
+
+          log.debug('quotCurrencyId', currencyCode);
+          console.log("Currency object:", currency);
+
+          if (!currencyCode || isNaN(currencyCode)) {
+            log.error('Invalid currency code:', currencyCode);
+            return;
+          }
+
           sessionStorage.setItem('currencySymbol', currencySymbol);
 
-          return this.quotationService.getExchangeRates(currencyCode, organization.organizationId)
+          // Match the user branch
+          const matchedBranch = this.branch.find(
+            (b) => b.id === this.userOrgDetails.branchId
+          );
+
+          if (matchedBranch) {
+            this.userBranch = matchedBranch;
+            log.info("✅ Matched User Branch:", this.userBranch);
+            this.quotationForm.patchValue({ branch: this.userBranch });
+          } else {
+            log.warn("⚠️ No branch matched the user branch ID:", this.userOrgDetails.branchId);
+          }
+
+          return this.quotationService.getExchangeRates(currencyCode, organization.organizationId);
         }),
-        untilDestroyed(this))
+        untilDestroyed(this)
+      )
       .subscribe({
         next: (response: any) => {
-          this.exchangeRate = response
-          log.debug("EXCHANGE RATE", this.exchangeRate)
+          this.exchangeRate = response;
+          log.debug("EXCHANGE RATE", this.exchangeRate);
         },
         error: (error) => {
           this.globalMessagingService.displayErrorMessage('Error', error);
         }
       });
   }
+
+
 
   fetchQuotationRelatedData() {
     forkJoin([
@@ -1447,7 +1477,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
           log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
 
-          // this.fetchUserOrgId()
+          this.fetchUserOrgId()
         }
         if (this.quotationFormDetails?.currencyCode) {
           const selectedCurrency = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
@@ -1458,6 +1488,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           this.quotationForm.patchValue({ currencyCode: this.defaultCurrency });
 
         }
+        console.log("Form value here:", this.quotationForm.value);
         // QUOTATION SOURCES
         this.quotationSources = sources?.content || [];
         this.quotationSources = this.quotationSources.map((value) => {
@@ -1536,6 +1567,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }
       else if (selectedSource.description === 'Campaign') {
         this.showCampaignField = true;
+        this.fetchCampaigns();
       }
     }
   }
