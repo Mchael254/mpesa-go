@@ -1548,6 +1548,7 @@ throw new Error('Method not implemented.');
 
   saveComment() {
     
+    
     if (!this.editableComment || this.editableComment.trim() === '') {
       this.globalMessagingService.displayErrorMessage(
         'Validation Error',
@@ -1586,6 +1587,7 @@ throw new Error('Method not implemented.');
   }
   
   
+ 
   
   
 
