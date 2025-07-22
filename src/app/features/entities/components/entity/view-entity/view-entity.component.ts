@@ -17,7 +17,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EntityService } from '../../../services/entity/entity.service';
 import { AccountService } from '../../../services/account/account.service';
 import { DatePipe } from '@angular/common';
-import { Logger } from '../../../../../shared/services';
+import {Logger, UtilService} from '../../../../../shared/services';
 import { ClientDTO } from '../../../data/ClientDTO';
 import { ServiceProviderRes } from '../../../data/ServiceProviderDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -34,6 +34,7 @@ import { Bank } from '../../../data/BankDto';
 import { BankService } from '../../../../../shared/services/setups/bank/bank.service';
 import { BankBranchDTO } from '../../../../../shared/data/common/bank-dto';
 import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
+import {HttpClient} from "@angular/common/http";
 
 const log = new Logger('ViewEntityComponent');
 
@@ -98,6 +99,15 @@ export class ViewEntityComponent implements OnInit {
   bankBranchDetails: BankBranchDTO;
 
   partyTypes: PartyTypeDto[];
+  selectedTab: string = 'overview';
+  selectedSubTab: string = 'prime_identity';
+
+  primaryTabs: string[] = [];
+  secondaryTabs: string[] = [];
+
+  dynamicDisplay: any = null;
+
+  language: string = 'en';
 
   constructor(
     private fb: FormBuilder,
@@ -109,13 +119,19 @@ export class ViewEntityComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private countryService: CountryService,
     private bankService: BankService,
-    private globalMessagingService: GlobalMessagingService
+    private globalMessagingService: GlobalMessagingService,
+    private utilService: UtilService,
+    private http: HttpClient,
   ) {
     this.spinner.show();
     this.selectedRole = {};
+    this.utilService.currentLanguage.subscribe(lang => {
+      this.language = lang;
+    });
   }
 
   ngOnInit(): void {
+    this.fetchDynamicDisplayConfig()
     this.createEntitySummaryForm();
     this.createSelectRoleForm();
     this.entityId = this.activatedRoute.snapshot.params['id'];
@@ -123,6 +139,32 @@ export class ViewEntityComponent implements OnInit {
     this.getEntityAccountById();
     this.getCountries();
     this.spinner.hide();
+  }
+
+  fetchDynamicDisplayConfig(): void {
+    this.http.get<any>( 'assets/data/dynamicDisplay360View.json').subscribe({
+      next: (data: any) => {
+        this.dynamicDisplay = data;
+        log.info('dynamicDisplay360View >>> ', data);
+        this.dynamicDisplay = this.dynamicDisplay.sort((a, b) => a.order - b.order);
+
+        data.forEach(item => {
+          if (item.section_id === 'prime_details') {
+            const primaryTabsArr = item.tabs;
+            this.primaryTabs = primaryTabsArr.map(item => item.title);
+          } else if (item.section_id === 'additional_information') {
+            const secondaryTabsArr = item.tabs;
+            this.secondaryTabs = secondaryTabsArr.map(item => item.title);
+          }
+        })
+
+        log.info(`primary tabs >>> `, this.primaryTabs, this.secondaryTabs);
+      },
+      error: err => {
+        log.error(err);
+      }
+    })
+
   }
 
   getCountries() {
@@ -513,10 +555,18 @@ export class ViewEntityComponent implements OnInit {
     }
   }
 
+
+  selectTab(tab: any): void {
+    this.selectedTab = this.primaryTabs.includes(tab.title) ? tab.title : this.selectedTab;
+    this.selectedSubTab = this.secondaryTabs.includes(tab.title) ? tab.title : this.selectedSubTab;
+    log.info(`Selected tab `, tab);
+  }
+
   /**
    * Refresh data by calling the OnInit method
    */
   refreshData(): void {
     this.ngOnInit();
   }
+
 }
