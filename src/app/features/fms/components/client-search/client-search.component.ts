@@ -328,8 +328,12 @@ export class ClientSearchComponent implements OnInit {
    * @returns {void}
    */
   onClickClient(selectedClient) {
-    if (this.selectedClient.length < 0) {
-      return; // Avoid unnecessary API call
+    //I have replaced this code with more logical check
+    // if (this.selectedClient.length < 0) {
+    //   return; // Avoid unnecessary API call
+    // }
+     if (!selectedClient) { // A much more logical check
+      return; 
     }
     this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
 
