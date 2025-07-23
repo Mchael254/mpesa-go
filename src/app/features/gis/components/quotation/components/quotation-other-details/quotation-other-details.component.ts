@@ -7,4 +7,13 @@ import { Component } from '@angular/core';
 })
 export class QuotationOtherDetailsComponent {
 
+  showRevision: boolean = true;
+  activeTab: 'internal' | 'external' = 'internal';
+
+  toggleRevision() {
+    this.showRevision = !this.showRevision;
+  }
+  
+
+
 }
