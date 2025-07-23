@@ -103,17 +103,17 @@
                       </ng-container>
 
                       <!-- QUOTATION TYPE -->
-                      <ng-container *ngIf="field.name === 'quotationType'">
+                      <!-- <ng-container *ngIf="field.name === 'quotationType'">
                         <p-dropdown formControlName="quotationType" [options]="quotationType" optionLabel="label"
                           optionValue="value" placeholder=" " [filter]="true" [filterBy]="'label'">
                         </p-dropdown>
                         <div
                           *ngIf="quotationForm.get('quotationType')?.hasError('required') && quotationForm.get('quotationType')?.touched"
                           class="form-text text-danger">Quotation type is required.</div>
-                      </ng-container>
+                      </ng-container> -->
 
                       <!-- Agent Field -->
-                      <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
+                      <!-- <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
                         <p-dropdown formControlName="agents" [options]="agents" optionLabel="label" optionValue="value"
                           placeholder="Select Agent" [filter]="true" [filterBy]="'label'">
                         </p-dropdown>
@@ -122,10 +122,10 @@
                           class="form-text text-danger">
                           Agent is required.
                         </div>
-                      </ng-container>
+                      </ng-container> -->
 
                       <!-- campaign field -->
-                      <ng-container *ngIf="field.name === 'campaign' && showCampaignField">
+                      <!-- <ng-container *ngIf="field.name === 'campaign' && showCampaignField">
                         <p-dropdown formControlName="campaign" [options]="fromCampaign" optionLabel="label"
                           optionValue="value" placeholder="Select Campaign" [filter]="true" [filterBy]="'label'">
                         </p-dropdown>
@@ -134,37 +134,37 @@
                           class="form-text text-danger">
                           Campaign source is required.
                         </div>
-                      </ng-container>
+                      </ng-container> -->
 
                       <!-- BRANCH -->
-                      <ng-container *ngIf="field.name === 'branch'">
+                      <!-- <ng-container *ngIf="field.name === 'branch'">
                         <p-dropdown formControlName="branch" [options]="branch" optionLabel="name" placeholder=" "
                           value="id" [filter]="true" [filterBy]="'name'">
                         </p-dropdown>
                         <div
                           *ngIf="quotationForm.get('branch')?.hasError('required') && quotationForm.get('branch')?.touched"
                           class="form-text text-danger">Branch is required.</div>
-                      </ng-container>
+                      </ng-container> -->
 
                       <!-- CURRENCY -->
-                      <ng-container *ngIf="field.name === 'currency'">
+                      <!-- <ng-container *ngIf="field.name === 'currency'">
                         <p-dropdown formControlName="currency" [options]="currency" optionLabel="name" value="id"
                           placeholder=" " [filter]="true" [filterBy]="'name'" (onChange)="fetchUserOrgId()">
                         </p-dropdown>
                         <div
                           *ngIf="quotationForm.get('currencyCode')?.hasError('required') && quotationForm.get('currencyCode')?.touched"
                           class="form-text text-danger">Currency is required.</div>
-                      </ng-container>
+                      </ng-container> -->
 
                       <!-- INTRODUCER -->
-                      <ng-container *ngIf="field.name === 'introducer'">
+                      <!-- <ng-container *ngIf="field.name === 'introducer'">
                         <p-dropdown formControlName="introducer" [options]="introducers" optionLabel="surName"
                           optionValue="code" placeholder=" " [filter]="true" [filterBy]="'surName'">
                         </p-dropdown>
                         <div
                           *ngIf="quotationForm.get('introducer')?.hasError('required') && quotationForm.get('introducer')?.touched"
                           class="form-text text-danger">Introducer is required.</div>
-                      </ng-container>
+                      </ng-container> -->
                     </ng-container>
 
                     <!-- DATE -->

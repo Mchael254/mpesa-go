@@ -1,25 +1,25 @@
-import {ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
-import {QuotationsService} from '../../services/quotations/quotations.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {Router} from '@angular/router';
-import {HttpErrorResponse} from '@angular/common/http';
-import {ActivatedRoute} from '@angular/router';
+import { QuotationsService } from '../../services/quotations/quotations.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 
-import {NgxSpinnerService} from 'ngx-spinner';
-import {MenuItem} from 'primeng/api';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {untilDestroyed} from 'src/app/shared/services/until-destroyed';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
-import {IntermediaryService} from "../../../../../entities/services/intermediary/intermediary.service";
-import {ProductService} from "../../../../services/product/product.service";
-import {AuthService} from "../../../../../../shared/services/auth.service";
-import {BranchService} from "../../../../../../shared/services/setups/branch/branch.service";
-import {BankService} from "../../../../../../shared/services/setups/bank/bank.service";
-import {Logger} from "../../../../../../shared/services";
-import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
-import {ClientService} from 'src/app/features/entities/services/client/client.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { MenuItem } from 'primeng/api';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { IntermediaryService } from "../../../../../entities/services/intermediary/intermediary.service";
+import { ProductService } from "../../../../services/product/product.service";
+import { AuthService } from "../../../../../../shared/services/auth.service";
+import { BranchService } from "../../../../../../shared/services/setups/branch/branch.service";
+import { BankService } from "../../../../../../shared/services/setups/bank/bank.service";
+import { Logger } from "../../../../../../shared/services";
+import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import {
   LimitsOfLiability,
   QuotationDetails,
@@ -27,7 +27,10 @@ import {
   SubclassSectionPeril,
   TaxInformation
 } from '../../data/quotationsDTO';
-import {EmailDto} from "../../../../../../shared/data/common/email-dto";
+import { EmailDto } from "../../../../../../shared/data/common/email-dto";
+import { Table } from 'primeng/table';
+import { ClaimsService } from '../../../claim/services/claims.service';
+import * as bootstrap from 'bootstrap';
 
 const log = new Logger('QuotationSummaryComponent');
 
@@ -43,11 +46,16 @@ interface FileItem {
   styleUrls: ['./quotation-summary.component.css']
 })
 export class QuotationSummaryComponent implements OnInit, OnDestroy {
-viewClientProfile() {
-throw new Error('Method not implemented.');
-}
+  viewClientProfile() {
+    throw new Error('Method not implemented.');
+  }
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('closebutton') closebutton;
+  @ViewChild('dt') table!: Table;
+  @ViewChild('closeReassignButton') closeReassignButton: ElementRef;
+  @ViewChild('reassignQuotationModal') reassignQuotationModalElement!: ElementRef;
+  @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
+  private modals: { [key: string]: bootstrap.Modal } = {};
 
   steps = quoteStepsData;
   quotationCode: any
@@ -130,6 +138,20 @@ throw new Error('Method not implemented.');
   premiumAmount: number
   editableComment: string = '';
   showCommentModal: boolean = false;
+  reassignComment: string = ''
+  users: any[] = [];
+  selectedUser: any;
+  fullNameSearch: string = '';
+  globalSearch: string = '';
+  comment: boolean = false
+  noUserChosen: boolean = false
+  clientToReassignQuote: string = '';
+  reassignQuoteModal: any;
+  reassignQuotationComment: string;
+  noCommentleft: boolean = false;
+  clientToReassignQuotation: any;
+  clientOptions:any;
+
 
 
   constructor(
@@ -147,6 +169,7 @@ throw new Error('Method not implemented.');
     public bankService: BankService,
     private fb: FormBuilder,
     private clientService: ClientService,
+    public claimsService: ClaimsService,
   ) {
     this.viewQuoteFlag = JSON.parse(sessionStorage.getItem('viewQuoteFlag'));
     log.debug("View Quotation Flag", this.viewQuoteFlag)
@@ -186,7 +209,7 @@ throw new Error('Method not implemented.');
     if (this.quotationCodeString) {
       this.quotationCode = this.quotationCodeString;
     }
-   
+
 
     this.clientDetails = JSON.parse(
       sessionStorage.getItem('clientFormData') ||
@@ -252,8 +275,26 @@ throw new Error('Method not implemented.');
         this.clearForm();
       });
     }
+
     log.debug('tax details', this.taxDetails)
+
+
   }
+
+  ngAfterViewInit() {
+    this.modals['chooseClientReassign'] = new bootstrap.Modal(this.chooseClientReassignModal.nativeElement);
+    this.modals['reassignQuotation'] = new bootstrap.Modal(this.reassignQuotationModalElement.nativeElement);
+  }
+
+  openModals(modalName: string) {
+    this.modals[modalName]?.show();
+  }
+
+  closeModals(modalName: string) {
+    this.modals[modalName]?.hide();
+
+  }
+
 
   // Method to show external claims
   external() {
@@ -590,7 +631,7 @@ throw new Error('Method not implemented.');
         this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed');
         this.premium = res;
         log.debug("res.riskLevelPremiums >>>", res.riskLevelPremiums)
-        const totalTax =  (res.riskLevelPremiums || [])
+        const totalTax = (res.riskLevelPremiums || [])
           .map(risk =>
             (risk.taxComputation || []).reduce(
               (taxAcc, tax) => taxAcc + (tax.premium || 0),
@@ -692,16 +733,16 @@ throw new Error('Method not implemented.');
         untilDestroyed(this)
       )
       .subscribe({
-      next: (res) => {
-        const response = res
-        this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
-        log.debug(res)
-      },
-      error: (error: HttpErrorResponse) => {
-        log.info(error);
-        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-      }
-    })
+        next: (res) => {
+          const response = res
+          this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
+          log.debug(res)
+        },
+        error: (error: HttpErrorResponse) => {
+          log.info(error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+        }
+      })
     log.debug('Submitted payload:', JSON.stringify(payload));
   }
 
@@ -747,20 +788,20 @@ throw new Error('Method not implemented.');
     this.quotationService.getSubclassSectionPeril(subClassCode)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
-          next: (res) => {
-            this.excesses = res;
-            this.excessesList = this.excesses._embedded ?? [];
+        next: (res) => {
+          this.excesses = res;
+          this.excessesList = this.excesses._embedded ?? [];
 
-            log.debug("EXCESS LIST", this.excessesList);
-            if (this.limits?.message) {
-              this.globalMessagingService.displaySuccessMessage('Success', this.limits.message);
-            }
-          },
-          error: (error) => {
-            log.debug('Error fetching excesses:', error);
-            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          log.debug("EXCESS LIST", this.excessesList);
+          if (this.limits?.message) {
+            this.globalMessagingService.displaySuccessMessage('Success', this.limits.message);
           }
+        },
+        error: (error) => {
+          log.debug('Error fetching excesses:', error);
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
         }
+      }
       );
   }
 
@@ -884,15 +925,15 @@ throw new Error('Method not implemented.');
     this.quotationService.getRiskClauses(riskCode)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
-          next: (res) => {
-            this.riskClauses = res;
-            log.debug("RISK CLAUSES", this.riskClauses);
-          },
-          error: (error) => {
-            log.debug('Error fetching risk clauses:', error);
-            this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch risk clauses');
-          }
+        next: (res) => {
+          this.riskClauses = res;
+          log.debug("RISK CLAUSES", this.riskClauses);
+        },
+        error: (error) => {
+          log.debug('Error fetching risk clauses:', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch risk clauses');
         }
+      }
       );
   }
 
@@ -1101,7 +1142,7 @@ throw new Error('Method not implemented.');
     log.debug('Form is valid, proceeding with premium computation...');
 
     // Extract only the name of the insurer
-    const insurer = {...this.insurersDetailsForm.value, insurer: this.insurersDetailsForm.value.insurer?.name};
+    const insurer = { ...this.insurersDetailsForm.value, insurer: this.insurersDetailsForm.value.insurer?.name };
     log.debug("Client Code", this.clientCode)
 
     const damageAmountString = this.insurersDetailsForm.get('damageAmount').value.replace(/,/g, '');
@@ -1135,18 +1176,18 @@ throw new Error('Method not implemented.');
       .addExternalClaimExp(insurer)
       .pipe(untilDestroyed(this))
       .subscribe({
-          next: (response: any) => {
-            this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience details added successfully');
+        next: (response: any) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience details added successfully');
 
-            log.debug("Response after adding external Claim Experience", response);
-            this.getExternalClaimsExperience(this.clientCode);
+          log.debug("Response after adding external Claim Experience", response);
+          this.getExternalClaimsExperience(this.clientCode);
 
-          },
-          error: (error) => {
-            log.debug("error after adding external Claim Experience", error);
-            this.globalMessagingService.displayErrorMessage('Error', 'Failed to add external claim exp...Try again later');
-          }
+        },
+        error: (error) => {
+          log.debug("error after adding external Claim Experience", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add external claim exp...Try again later');
         }
+      }
       );
   }
 
@@ -1171,7 +1212,7 @@ throw new Error('Method not implemented.');
     log.debug('Form is valid, proceeding with premium computation...');
 
     // Extract only the name of the insurer
-    const insurer = {...this.insurersDetailsForm.value, insurer: this.insurersDetailsForm.value.insurer?.name};
+    const insurer = { ...this.insurersDetailsForm.value, insurer: this.insurersDetailsForm.value.insurer?.name };
     log.debug("Client Code", this.clientCode)
 
     const damageAmountString = this.insurersDetailsForm.get('damageAmount').value.replace(/,/g, '');
@@ -1206,19 +1247,19 @@ throw new Error('Method not implemented.');
       .editExternalClaimExp(insurer)
       .pipe(untilDestroyed(this))
       .subscribe({
-          next: (response: any) => {
-            this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience details edited successfully');
+        next: (response: any) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience details edited successfully');
 
-            log.debug("Response after editing external Claim Experience", response);
-            this.getExternalClaimsExperience(this.clientCode);
-            this.selectedExternalClaimExp = null;
+          log.debug("Response after editing external Claim Experience", response);
+          this.getExternalClaimsExperience(this.clientCode);
+          this.selectedExternalClaimExp = null;
 
-          },
-          error: (error) => {
-            log.debug("Error editing an external claim exp", error);
-            this.globalMessagingService.displayErrorMessage('Error', 'Failed to edit external claim exp...Try again later');
-          }
+        },
+        error: (error) => {
+          log.debug("Error editing an external claim exp", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to edit external claim exp...Try again later');
         }
+      }
       );
   }
 
@@ -1233,17 +1274,17 @@ throw new Error('Method not implemented.');
       .deleteExternalClaimExp(this.externalClaimExpCode)
       .pipe(untilDestroyed(this))
       .subscribe({
-          next: (response: any) => {
-            log.debug("Response after deleting an external claim experience ", response);
-            this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience deleted successfully');
-            this.getExternalClaimsExperience(this.clientCode);
-            this.selectedExternalClaimExp = null;
-          },
-          error: (error) => {
-            log.debug('Error deleting external claim exp', error);
-            this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete external claim exp...Try again later');
-          }
+        next: (response: any) => {
+          log.debug("Response after deleting an external claim experience ", response);
+          this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience deleted successfully');
+          this.getExternalClaimsExperience(this.clientCode);
+          this.selectedExternalClaimExp = null;
+        },
+        error: (error) => {
+          log.debug('Error deleting external claim exp', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete external claim exp...Try again later');
         }
+      }
       );
   }
 
@@ -1365,17 +1406,17 @@ throw new Error('Method not implemented.');
       .getLimitsOfLiability(this.selectedSubclassCode)
       .pipe(untilDestroyed(this))
       .subscribe({
-          next: (response: any) => {
+        next: (response: any) => {
 
-            this.limitsOfLiabilityList = response._embedded
-            log.debug("Limits of Liability List ", this.limitsOfLiabilityList);
+          this.limitsOfLiabilityList = response._embedded
+          log.debug("Limits of Liability List ", this.limitsOfLiabilityList);
 
-          },
-          error: (error) => {
-            log.debug("error fetching limits of liability", error);
-            this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
-          }
+        },
+        error: (error) => {
+          log.debug("error fetching limits of liability", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liabilty. Try again later');
         }
+      }
       );
   }
 
@@ -1392,17 +1433,17 @@ throw new Error('Method not implemented.');
       .getSimilarQuotes(quotationProductCode)
       .pipe(untilDestroyed(this))
       .subscribe({
-          next: (response: any) => {
+        next: (response: any) => {
 
-            this.similarQuotesList = response._embedded
-            log.debug("Similar Quotes List ", this.similarQuotesList);
+          this.similarQuotesList = response._embedded
+          log.debug("Similar Quotes List ", this.similarQuotesList);
 
-          },
-          error: (error) => {
-            log.debug("error fetching similar quotes", error);
-            this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch similar quotations. Try again later');
-          }
+        },
+        error: (error) => {
+          log.debug("error fetching similar quotes", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch similar quotations. Try again later');
         }
+      }
       );
   }
 
@@ -1413,7 +1454,7 @@ throw new Error('Method not implemented.');
 
     // Extract the day, month, and year
     const day = rawDate.getDate();
-    const month = rawDate.toLocaleString('default', {month: 'long'}); // 'long' gives the full month name
+    const month = rawDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
     const year = rawDate.getFullYear();
 
     // Format the date in 'dd-Month-yyyy' format
@@ -1538,7 +1579,7 @@ throw new Error('Method not implemented.');
       });
   }
 
-   openCommentModal() {
+  openCommentModal() {
     this.editableComment = this.quotationView?.comments || '';
     this.showCommentModal = true;
   }
@@ -1548,8 +1589,8 @@ throw new Error('Method not implemented.');
   }
 
   saveComment() {
-    
-    
+
+
     if (!this.editableComment || this.editableComment.trim() === '') {
       this.globalMessagingService.displayErrorMessage(
         'Validation Error',
@@ -1557,28 +1598,28 @@ throw new Error('Method not implemented.');
       );
       return;
     }
-  
+
     const payload = {
       comment: this.editableComment,
       quotationCode: this.quotationView.code
     };
-  
+
     this.quotationService.updateQuotationComment(payload).subscribe({
       next: () => {
-        
+
         this.quotationView.comments = this.editableComment;
-  
-        
+
+
         this.globalMessagingService.displaySuccessMessage(
           'Success',
           'Notes updated successfully.'
         );
-  
+
         this.closeCommentModal();
       },
       error: (error) => {
         console.error('Error updating comment:', error);
-  
+
         this.globalMessagingService.displayErrorMessage(
           'Error',
           'Unable to update notes. Please try again later.'
@@ -1586,7 +1627,125 @@ throw new Error('Method not implemented.');
       }
     });
   }
+
   
  
+
+
+  //reassign
+  openReassignQuotationModal() {
+    this.openModals('reassignQuotation');
+
+  }
+
+  closeReassignQuotationModal() {
+    this.closeModals('reassignQuotation');
+    this.reassignComment = null;
+    this.clientToReassignQuotation = null;
+  }
+
+  openChooseClientReassignModal() {
+    this.openModals('chooseClientReassign');
+    this.closeReassignQuotationModal();
+    this.getUsers();
+  }
+
+  closeChooseClientReassignModal(): void {
+    this.closeModals('chooseClientReassign');
+    this.onUserUnselect();
+  }
+
+  getUsers() {
+    this.claimsService.getUsers().subscribe({
+      next: (res: any) => {
+        this.users = Array.isArray(res) ? res : (res.content || []);
+        log.debug('users>>>', this.users)
+
+      },
+      error: (error => {
+        log.debug('error', error)
+        this.globalMessagingService.displayErrorMessage('Error', 'failed to feth users')
+      })
+    })
+  }
+
+  //search member to reassign
+  filterGlobal(event: any): void {
+    const value = event.target.value;
+    this.globalSearch = value;
+    this.table.filterGlobal(value, 'contains');
+  }
+
+  filterByFullName(event: any): void {
+    const value = event.target.value;
+    this.table.filter(value, 'name', 'contains');
+  }
+
+  onUserSelect(): void {
+    if (this.selectedUser) {
+      log.debug("Selected user>>>", this.selectedUser);
+      this.globalSearch = this.selectedUser.id;
+      this.fullNameSearch = this.selectedUser.name;
+    }
+  }
+
+  onUserUnselect(): void {
+    this.selectedUser = null;
+    this.globalSearch = '';
+    this.fullNameSearch = '';
+  }
+
+  selectClient() {
+    if (!this.selectedUser) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false
+      }, 3000);
+      return;
+    }
+
+    this.clientToReassignQuotation = this.selectedUser.name;
+    this.closeChooseClientReassignModal();
+    this.openReassignQuotationModal();
+
+  }
+
+  //reassign quotation
+  reassignQuotation() {
+    if (!this.clientToReassignQuotation) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false
+      }, 3000);
+      return;
+
+    }
+
+    if (!this.reassignQuotationComment) {
+      this.noCommentleft = true;
+      setTimeout(() => {
+        this.noCommentleft = false
+      }, 3000);
+      return;
+    }
+
+    const reassignPayload = {
+      user: this.clientToReassignQuotation.id,
+    }
+    this.closeReassignQuotationModal();
+    this.onUserUnselect();
+    this.reassignQuotationComment = null;
+    this.globalMessagingService.displaySuccessMessage('Success', 'reassigning...')
+
+    log.debug('reassign Payload', reassignPayload)
+
+  }
+
+
+
+
+
+
+
 }
 
