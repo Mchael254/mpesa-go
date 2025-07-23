@@ -432,6 +432,7 @@ ul li a.active {
   white-space: nowrap;
   width: auto;
   text-align: left;
+  
 }
 
 /* .ui-datatable th, .ui-datatable td {
@@ -556,4 +557,8 @@ tr:hover {
   color: #000000;
   font-weight: 700;
 
+}
+.small-input {
+  width: 80px;
+  height: 30px;
 }

@@ -322,7 +322,7 @@
                       <a class="nav-link" [class.active]="activeTab === 'taxes'" (click)="setActiveTab('taxes')"
                          data-bs-toggle="tab" data-bs-target="#nav-taxes">Taxes</a>
                     </li>
-                    <br>
+                    <!-- <br>
                     <li class="nav-item">
                       <a class="nav-link" [class.active]="activeTab === 'limits'" (click)="setActiveTab('limits')"
                          data-bs-toggle="tab" data-bs-target="#nav-limits">Limits of Liability</a>
@@ -332,13 +332,13 @@
                       <a class="nav-link" [class.active]="activeTab === 'similarQuotes'"
                          (click)="setActiveTab('similarQuotes')" data-bs-toggle="tab"
                          data-bs-target="#nav-similarQuotes">Similar Quotes</a>
-                    </li>
+                    </li> -->
                   </ul>
                 </div>
                 <div class="col-5 d-flex justify-content-end" id="navigationIcons">
                   <div class="row" *ngIf="activeTab === 'clauses' || activeTab === 'taxes' || activeTab === 'limits'">
                     <div class="col-sm-3"></div>
-                    <div class="col-sm-3">
+                    <!-- <div class="col-sm-3">
                       <button type="button" id="icon" class="btn btn-primary" title="Add" [disabled]="viewQuoteFlag">
                         <i class="fa-solid fa-plus"></i>
                       </button>
@@ -347,12 +347,13 @@
                       <button type="button" id="icon" class="btn btn-primary" title="Edit" [disabled]="viewQuoteFlag">
                         <i class="fa-solid fa-pencil"></i>
                       </button>
-                    </div>
+                    </div> -->
                     <div class="col-sm-3">
-                      <button type="button" id="icon" class="btn btn-danger me-2" title="Delete"
-                              [disabled]="viewQuoteFlag">
-                        <i class="fa-solid fa-trash-can"></i>
-                      </button>
+                      <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
+                        'pi-caret-up': isCollapsibleOpen,
+                        'pi-caret-down': !isCollapsibleOpen
+                      }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                             (click)="toggleProductDetails()"></i>
                     </div>
 
                   </div>
@@ -366,8 +367,8 @@
                      tabindex="0">
 
 
-                  <p-table [value]="clauses" [tableStyle]="{ 'min-width': '50rem' }" [rows]="5"
-
+                  <p-table [value]="clauses" [tableStyle]="{ 'min-width': '50rem' }" [rows]="3"
+                           [paginator]="true" [rowsPerPageOptions]="[3,6,9]" [showCurrentPageReport]="true"  currentPageReportTemplate="{first} - {last} of {totalRecords}"
                            class='ui-datatable' responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true"
                            scrollHeight="200px">
                     <ng-template pTemplate="header">
@@ -389,7 +390,19 @@
                         
                       </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-data>
+
+                    <ng-template pTemplate="body" let-data let-rowIndex="rowIndex" >
+                      <tr *ngIf="rowIndex === 0">
+                        <td>
+                          <input type="text" pInputText placeholder="" class="small-input" />
+                        </td>
+                        <td>
+                          <input type="text" pInputText placeholder="" class="small-input" />
+                        </td>
+                        <td>
+                          <input type="text" pInputText placeholder="" class="small-input" />
+                        </td>
+                      </tr>
                       <tr>
                         <td>{{ data.shortDescription }}</td>
                         <td>{{ data.heading | sentenceCase }}</td>
@@ -401,6 +414,25 @@
                         </td>
                       </tr>
                     </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr >
+                        <td>
+                          <input type="text" pInputText placeholder=""class="small-input" />
+                        </td>
+                        <td>
+                          <input type="text" pInputText placeholder="" class="small-input" />
+                        </td>
+                        <td>
+                          <input type="text" pInputText placeholder="" class="small-input" />
+                        </td>
+                      </tr>
+                      <tr>
+                      <tr>
+                          <td colspan="5" class="text-center text-muted py-3">
+                            “No product clauses available.”
+                          </td>
+                      </tr>
+                  </ng-template>
                   </p-table>
                 </div>
                 <!-- TAXES -->
