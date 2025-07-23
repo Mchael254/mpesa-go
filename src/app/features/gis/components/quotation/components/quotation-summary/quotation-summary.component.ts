@@ -1727,7 +1727,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.closeReassignQuotationModal();
     this.onUserUnselect();
     this.reassignQuotationComment = null;
-    this.globalMessagingService.displaySuccessMessage('Success', 'reassigning...')
+    this.globalMessagingService.displaySuccessMessage('Success', 'Quote reassigned successfully')
 
     log.debug('reassign Payload', reassignPayload)
 

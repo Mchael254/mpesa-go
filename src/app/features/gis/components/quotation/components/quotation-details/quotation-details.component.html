@@ -92,7 +92,7 @@
                         *ngIf="quotationForm.get('client')?.hasError('required') && quotationForm.get('client')?.touched"
                         class="form-text text-danger">Client name is required.</div>
                       <!-- SOURCE -->
-                      <ng-container *ngIf="field.name === 'source'">
+                      <!-- <ng-container *ngIf="field.name === 'source'">
                         <p-dropdown formControlName="source" [options]="quotationSources" optionLabel="description"
                           placeholder=" " [filter]="true" [filterBy]="'description'"
                           (onChange)="onSourceChange($event)">
@@ -100,7 +100,7 @@
                         <div
                           *ngIf="quotationForm.get('source')?.hasError('required') && quotationForm.get('source')?.touched"
                           class="form-text text-danger">Source is required.</div>
-                      </ng-container>
+                      </ng-container> -->
 
                       <!-- QUOTATION TYPE -->
                       <!-- <ng-container *ngIf="field.name === 'quotationType'">
@@ -786,7 +786,14 @@
                 style="border: none;">X</button>
             </div>
 
-            <div class="w-75">
+            <div class="w-75 mb-3 mt-2">
+              <p style="color:#000000">Group User</p>
+              <p-dropdown [options]="clientOptions" [(ngModel)]="clientToReassignQuotation"
+                 [showClear]="true" styleClass="w-full">
+              </p-dropdown>
+            </div>
+
+            <div class="w-75 mb-3 mt-2">
               <p>Default User</p>
               <input pInputText type="text" class="form-control" (click)="openChooseClientReassignModal()"
                 [(ngModel)]="clientToReassignProduct">
