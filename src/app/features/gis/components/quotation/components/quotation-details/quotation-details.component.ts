@@ -169,6 +169,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   productToReassign: any;
   noCommentleft: boolean = false
   reassignProductComment: string;
+  sessionClauses: any;
 
   constructor(
     public bankService: BankService,
@@ -232,8 +233,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("product Form details", this.productDetails)
   }
 
-
-
   ngOnInit(): void {
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
@@ -251,7 +250,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.getuser();
     this.createQuotationProductForm();
 
-
     this.quotationProductForm.get('productCodes')?.valueChanges.subscribe(product => {
       if (product) {
         const today = new Date();
@@ -262,7 +260,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           wef: today,
           wet: oneYearLater
         });
-
 
         this.updateCoverToDate(today);
       }
@@ -292,7 +289,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   closeModals(modalName: string) {
     this.modals[modalName]?.hide();
   }
-
 
 
   loadDetailedQuotationFields(): void {
@@ -396,14 +392,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
 
-
-
-
   setClientType(value: 'new' | 'existing') {
     this.selectedClientType = value;
     this.newClient = value === 'new';
     log.debug("New client status", this.newClient)
   }
+
   handleSaveClient(eventData: any) {
     log.debug('Event received from Client search comp', eventData);
     const clientCode = eventData.id;
@@ -415,6 +409,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     this.showClientSearchModal = false;
   }
+
   //search clause
   filterByshortDescription(event: any): void {
     const value = event.target.value;
@@ -432,9 +427,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.table.filter(value, 'wording', 'contains');
   }
 
-
   // Product Clauses
-  sessionClauses: any
   getProductClause(product: any) {
     const productCode = product.code || this.productCode;
     this.productCode = productCode;
@@ -607,8 +600,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       this.clauseToDelete = null;
     }
     this.globalMessagingService.displaySuccessMessage('success', 'Clause deleted successfully');
-
-
   }
 
 
