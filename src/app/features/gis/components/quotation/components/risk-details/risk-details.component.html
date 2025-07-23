@@ -506,8 +506,8 @@
             <div class="modal fade  " id="editSectionModal" #editSectionModal tabindex="-1" role="dialog"
                 aria-labelledby="editSectionLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-body" style="padding-left: 40px; max-height:650px;overflow-y: auto;">
+                    <div class="modal-content" style=" width:700px;">
+                        <div class="modal-body" style="padding-left: 40px; max-height:650px; overflow-y: auto;">
                             <h5 class="modal-title mt-2" id="editScheduleLabel">
                                 Edit section details
                                 <button type="button" class="btn-close red-close float-end"
@@ -515,7 +515,7 @@
                             </h5>
                             <form [formGroup]="sectionDetailsForm">
                                 <!-- **ROW 1** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-1" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
@@ -524,7 +524,7 @@
                                             <div class="col-7">
                                                 <input type="text" id="scheduleInput"
                                                     class="form-control form-control-sm mb-1"
-                                                    formControlName="sectionShortDescription" readonly>
+                                                    formControlName="sectionShortDescription" style="width:300px" readonly>
 
                                             </div>
                                         </div>
@@ -535,7 +535,7 @@
                                                 id="scheduleLabel">{{'gis.quotation.description' | translate}}:</label>
                                             <div class="col-7">
                                                 <input type="text" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                                    class="form-control form-control-sm mb-1" style="width:300px"
                                                     formControlName="sectionShortDescription">
                                             </div>
                                         </div>
@@ -543,14 +543,14 @@
                                 </div>
 
                                 <!-- **ROW 2** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">
                                                 {{'gis.quotation.rate_type' | translate}} :</label>
                                             <div class="col-7">
                                                 <input type="text" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                                    class="form-control form-control-sm mb-1"  style="width:300px"
                                                     formControlName="rateType">
                                                 <!-- <select class="form-select form-control-sm mb-1" id="scheduleInput"
                                                     formControlName="rateType">
@@ -576,7 +576,7 @@
 
                                             <div class="col-7">
                                                 <div class="col-7">
-                                                    <input type="text" id="scheduleInput"
+                                                    <input type="text" id="scheduleInput"  style="width:300px"
                                                         class="form-control form-control-sm mb-1"
                                                         formControlName="sectionType">
                                                 </div>
@@ -587,7 +587,7 @@
 
                                 </div>
                                 <!-- **ROW 3** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3">
                                             <label class="col-5 col-form-label" id="scheduleLabel">
@@ -597,14 +597,14 @@
                                                 <ng-container *ngIf="isEditable; else readOnlyInput">
                                                     <!-- Editable number input -->
                                                     <input type="number" class="form-control form-control-sm mb-1"
-                                                        formControlName="freeLimit"
+                                                        formControlName="freeLimit"  style="width:300px"
                                                         [value]="freeLimitValue|translate" />
                                                 </ng-container>
 
                                                 <!-- Read-only number input -->
                                                 <ng-template #readOnlyInput>
                                                     <input type="number" class="form-control form-control-sm mb-1"
-                                                        [value]="freeLimitValue|translate" readonly />
+                                                        [value]="freeLimitValue|translate"  style="width:300px" readonly />
                                                 </ng-template>
                                             </div>
                                         </div>
@@ -616,7 +616,7 @@
                                                 id="scheduleLabel">{{'gis.quotation.limit_amount' | translate}}:</label>
 
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput"  style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="limitAmount">
                                             </div>
@@ -624,13 +624,13 @@
                                     </div>
                                 </div>
                                 <!-- **ROW 4** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.group' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput"  style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="calcGroup">
                                             </div>
@@ -642,7 +642,7 @@
                                                 id="scheduleLabel">{{'gis.quotation.premium_rate' | translate}}:</label>
 
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput"  style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="premiumRate">
                                             </div>
@@ -650,13 +650,13 @@
                                     </div>
                                 </div>
                                 <!-- **ROW 5** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.div_by' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput"  style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="multiplierDivisionFactor">
                                             </div>
@@ -667,7 +667,7 @@
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.multi_rate' | translate}} :</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput"  style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="multiplierRate">
                                             </div>
@@ -675,13 +675,13 @@
                                     </div>
                                 </div>
                                 <!-- **ROW 6** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.div_multi_by' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput"  style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="multiplierDivisionFactor">
                                             </div>
@@ -692,7 +692,7 @@
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.premium' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput"  style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="premiumAmount">
                                             </div>
@@ -700,14 +700,14 @@
                                     </div>
                                 </div>
                                 <!-- **ROW 7** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
-                                            <label for="minmax-buttons" class="col-5 col-form-label"
+                                            <label for="minmax-buttons" class="col-5 col-form-label"  style="width:300px"
                                                 id="scheduleLabel">{{'gis.quotation.minimum_premium' |
                                                 translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput"  style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="minimumPremium">
                                             </div>
@@ -718,14 +718,14 @@
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.accumulation' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="text" id="scheduleInput"
+                                                <input type="text" id="scheduleInput"  style="width:300px"
                                                     class="form-control form-control-sm mb-1" formControlName="">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- **ROW 8** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
@@ -733,7 +733,7 @@
                                             <div class="col-7">
 
                                                 <textarea type="text" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                                    class="form-control form-control-sm mb-1"  style="width:300px"
                                                     formControlName="description"></textarea>
                                             </div>
                                         </div>
@@ -779,7 +779,7 @@
                                     </div>
                                 </div>
                                 <!-- **ROW 9** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
