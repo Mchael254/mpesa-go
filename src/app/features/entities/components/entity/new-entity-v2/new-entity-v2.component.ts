@@ -33,6 +33,7 @@ import {
   WealthAmlDTO
 } from "../../../data/accountDTO";
 import {DmsService} from "../../../../../shared/services/dms/dms.service";
+import {DmsDocument} from "../../../../../shared/data/common/dmsDocument";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -121,6 +122,7 @@ export class NewEntityV2Component implements OnInit {
   shouldUploadProfilePhoto: boolean = false;
   profilePicture: any; // todo: define types
   clientFiles: File[] = []
+  filesToUpload: DmsDocument[] = [];
   clientDocumentData: any = null; // todo: define types
   isReadingDocuments: boolean = false;
 
@@ -375,6 +377,8 @@ export class NewEntityV2Component implements OnInit {
    * create payload for prime identity (primeIdentityPayload)
    */
   saveDetails() : void {
+    this.uploadDocumentToDms();
+
     const formValues = this.entityForm.getRawValue();
     const uploadFormValues = this.uploadForm.getRawValue();
 
@@ -534,7 +538,8 @@ export class NewEntityV2Component implements OnInit {
    * Upload documents to DMS after saving client and uploading profileImage/logo
    */
   uploadDocumentToDms(): void {
-    this.dmsService.saveClientDocs(this.clientFiles[0]).subscribe({
+    log.info(` client files to upload >>> `, this.filesToUpload)
+    this.dmsService.saveClientDocs(this.filesToUpload[0]).subscribe({
       next: (res: any) => {
         log.info(`document uploaded successfully!`, res);
       },
@@ -1180,11 +1185,40 @@ export class NewEntityV2Component implements OnInit {
           this.profilePicture = file;
           break;
         case 'doc':
-          this.clientFiles.push(file);
+          // this.clientFiles.push(file);
+          this.readFileAsBase64(event);
           break;
         default:
         //do nothing
       }
+    }
+  }
+
+  readFileAsBase64(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0]
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const base64String = reader.result?.toString().split(',')[1];
+
+        let payload: DmsDocument = {
+          actualName: file.name,
+          userName: '',
+          docType: file.type,
+          docData: base64String,
+          originalFileName: file.name,
+          clientName: ''
+        }
+        this.filesToUpload.push(payload)
+      };
+
+      reader.onerror = err => {
+        log.info(`could not read file >>> `, err);
+      };
+      reader.readAsDataURL(file);
     }
   }
 
