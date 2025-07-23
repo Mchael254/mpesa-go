@@ -348,11 +348,14 @@
                         <i class="fa-solid fa-pencil"></i>
                       </button>
                     </div> -->
-                    <div class="col-sm-3">
+                    <div class="col-sm-3 d-flex">
+                      <button *ngIf="activeTab === 'taxes'" id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal" style="white-space: nowrap; height: 30px; padding: 2px 8px; font-size: 13px; line-height: 1;"
+                      > Add Tax
+                  </button>
                       <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
                         'pi-caret-up': isCollapsibleOpen,
                         'pi-caret-down': !isCollapsibleOpen
-                      }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                      }" style="font-size: 16px; cursor: pointer; margin-left: 8px; padding: 2px 8px; height: 30px; "
                              (click)="toggleProductDetails()"></i>
                     </div>
 
@@ -441,20 +444,71 @@
                            responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
                     <ng-template pTemplate="header">
                       <tr>
-                        <th class="flexible-header">Description</th>
-                        <th class="flexible-header">Quotation Rate</th>
-                        <th class="flexible-header">Rate Type</th>
-                        <th class="flexible-header text-end">Amount</th>
+                        <th pSortableColumn="taxPayer">
+                          Tax payer
+                          <p-sortIcon field="taxPayer"></p-sortIcon>
+                        </th>
+                  
+                        <th pSortableColumn="shortDescription">
+                          Short description
+                          <p-sortIcon field="shortDescription"></p-sortIcon>
+                        </th>
+                  
+                        <th pSortableColumn="taxdescription">
+                          Tax description
+                          <p-sortIcon field="taxdescription" ></p-sortIcon>
+                        </th>
+                  
+                        <th  pSortableColumn="rate">
+                          Rate
+                          <p-sortIcon field="rate"></p-sortIcon>
+                        </th>
+                  
+                        <th  pSortableColumn="taxAmount">
+                          Tax amount
+                          <p-sortIcon field="taxAmount"></p-sortIcon>
+                        </th>
+                        <th  pSortableColumn="rateType">
+                          Rate type
+                          <p-sortIcon field="rateType"></p-sortIcon>
+                        </th>
+                        <th  pSortableColumn="taxType">
+                          Tax type
+                          <p-sortIcon field="taxType"></p-sortIcon>
+                        </th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-data>
                       <tr>
-                        <td>{{ data.rateDescription }}</td>
-                        <td>{{ data.quotationRate }}</td>
+                        <td>{{ data.taxPayer}}</td>
+                        <td>{{ data.shortDescription}}td>
+                        <td>{{ data.taxdescription}}</td>
+                        <td>{{ data.rate}}</td>
+                        <td>{{ data.taxamount }}</td>
                         <td>{{ data.rateType }}</td>
-                        <td>{{ data.taxAmount }}</td>
+                        <td>{{ data.taxType }}</td>
+                        <td>
+                          <button class="btn btn-sm borderless-button me-2" >
+                            Edit
+                          </button>
+                          <button class="btn btn-sm borderless-button" >
+                            Delete
+                          </button>
+                        </td>
                       </tr>
                     </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                     
+                      <tr>
+                          <td colspan="11" class="text-center text-muted py-3">
+                            “No taxes. Click on ‘Add Tax’ to add a new tax.”
+                          </td>
+                      </tr>
+                  </ng-template>
                   </p-table>
                 </div>
                 <!-- LIMITS -->
