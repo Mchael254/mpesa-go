@@ -252,6 +252,7 @@ throw new Error('Method not implemented.');
         this.clearForm();
       });
     }
+    log.debug('tax details', this.taxDetails)
   }
 
   // Method to show external claims
@@ -1586,11 +1587,6 @@ throw new Error('Method not implemented.');
     });
   }
   
-  
- 
-  
-  
-
  
 }
 
