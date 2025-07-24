@@ -427,19 +427,12 @@ export class QuotationsService {
   }
 
 
-  addProductClause(clauseCode, productCode, quotationCode) {
-    const params = new HttpParams()
-      .set('clauseCode', clauseCode)
-      .set('productCode', productCode)
-      .set('quotationCode', quotationCode)
+  addProductClause(data: any) {
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-    });
-
-    return this.api.POST(`v1/quotation-product-clause/post-product-clauses?clauseCode=${clauseCode}&productCode=${productCode}&quotationCode=${quotationCode}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.POST(`v2/quotation-product-clauses`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
   }
 
   postDocuments(data) {

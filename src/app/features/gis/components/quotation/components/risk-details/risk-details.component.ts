@@ -1222,6 +1222,8 @@ export class RiskDetailsComponent {
     log.debug("Insured code:", this.insuredCode)
     this.riskDetailsForm.get('insureds').setValue(this.insuredCode);
     this.selectedBinderCode = this.riskDetailsForm.value.premiumBand
+    const clauses = this.getProductClausesPayload();
+    log.debug('Product Clauses-', clauses)
     // validate inputs
     if (this.riskDetailsForm.invalid) {
       Object.keys(this.riskDetailsForm.controls).forEach(field => {
@@ -1260,8 +1262,9 @@ export class RiskDetailsComponent {
             binder: this.riskDetailsForm.value.premiumBand,
             agentShortDescription: this.selectedProduct.agentShortDescription,
             riskInformation: riskPayload,
-            limitsOfLiability: [], // can be empty for now
-            taxInformation: [] // optional or empty
+            limitsOfLiability: [],
+            taxInformation: [],
+            productClauses: clauses
           }
         ],
         quotationNumber: this.selectedProduct.quotationNo,
@@ -1282,36 +1285,14 @@ export class RiskDetailsComponent {
         clientCode: this.quotationDetails.clientCode,
         prospectCode: this.quotationDetails.prospectCode,
       };
-      // const riskFormData: any = {
-      //   vehicleMake: formValues?.vehicleMake?.code,
-      //   vehicleModel: formValues?.vehicleModel?.code,
-      //   coverTypeDescription: formValues?.coverTypeDescription.description,
-      //   binderCode: formValues?.binderCode.code,
-      //   coverTypeCode: formValues.coverTypeDescription.coverTypeCode,
-      //   quotationCode: formValues.quotationCode,
-      //   productCode: this.selectedProductCode,
-      //   propertyId: formValues.propertyId,
-      //   coverTypeShortDescription: formValues.coverTypeShortDescription.coverTypeShortDescription,
-      //   subclassCode: formValues.subclassCode.code,
-      //   itemDesc: formValues.itemDesc || this.vehiclemakeModel,
-      //   wef: riskPayload[0].wef,
-      //   wet: riskPayload[0].wet,
-      // }
-      // sessionStorage.setItem('riskFormData', JSON.stringify(riskFormData));
-      // log.debug(riskArray)
+
       this.quotationService.processQuotation(payload).pipe(
         switchMap(data => {
           const quotationCode = data._embedded.quotationCode
           this.quotationCode = quotationCode
           const quotationNo = data._embedded.quotationNo
-          // this.quotationRiskData = data;
-          // const quotationRiskDetails = this.quotationRiskData._embedded[0];
 
-          // if (quotationRiskDetails) {
-          //   this.quotationRiskCode = quotationRiskDetails.riskCode;
-          //   this.quoteProductCode = quotationRiskDetails.quotProductCode;
-          // }
-
+          this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
 
 
@@ -1340,7 +1321,7 @@ export class RiskDetailsComponent {
 
 
           // this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created successfully');
-          this.fetchQuotationDetails(this.quotationCode)
+
 
 
         },
@@ -2986,4 +2967,33 @@ export class RiskDetailsComponent {
 
       })
   }
+  getProductClausesPayload(): any[] {
+    const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+    const payload: any[] = [];
+    const selectedSubclassCode = this.riskDetailsForm.value.subclass
+    Object.keys(allClausesMap).forEach(productCode => {
+      const productData = allClausesMap[productCode];
+      const clauses = productData.productClause || [];
+
+      clauses.forEach(clause => {
+        payload.push({
+          productCode: +productCode,
+          clauseCode: clause.code,
+          quotationProductCode: this.selectedProduct.code || 0,
+          quotationCode: this.selectedProduct.quotationCode,
+          quotationNumber: this.selectedProduct.quotationNo || '',
+          clause: clause.wording || '',
+          clauseIsEditable: clause.isEditable || 'Y',
+          clauseShortDescription: clause.shortDescription || '',
+          clauseHeading: clause.heading || '',
+          clauseType: clause.type || '',
+          quotationRevisionNumber: 0,
+          subclassCode: selectedSubclassCode || 0
+        });
+      });
+    });
+
+    return payload;
+  }
+
 }
