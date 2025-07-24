@@ -28,6 +28,7 @@ export interface ScreenFormsDto {
   label: MultilingualText,
   visible: boolean;
   order: number;
+  hasFields: boolean;
 }
 
 export interface FormGroupsDto {
@@ -40,7 +41,8 @@ export interface FormGroupsDto {
   screenCode: number;
   subModuleCode: number;
   visible: boolean,
-  subGroup: FormSubGroupsDto[]
+  subGroup: FormSubGroupsDto[],
+  hasFields: boolean,
 }
 
 export interface FormSubGroupsDto {
@@ -71,9 +73,7 @@ export interface ConfigFormFieldsDto {
   disabled: boolean;
   validations: Validation[],
   conditions: Condition[],
-  originalLabel: string;
-  groupId: string;
-  subGroupId: string;
+  originalLabel?: string;
   placeholder: MultilingualText,
   tooltip: MultilingualText,
   order: number;
@@ -84,6 +84,7 @@ export interface ConfigFormFieldsDto {
   screenCode: number;
   subModuleCode: number;
   mandatory: boolean;
+  isProtected?: boolean;
 }
 
 export interface MultilingualText {

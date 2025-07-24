@@ -9,7 +9,9 @@
       <div class="col-md-3 border-end p-3">
         <h4 class="column-title">Sub modules</h4>
         <div class="edit-row" *ngFor="let subModule of subModules">
-          <label class="form-label" (click)="onClickSubModule(subModule)">
+          <label class="form-label" (click)="onClickSubModule(subModule)"
+            [class.text-primary]="selectedSubModule?.code === subModule.code"
+          >
             {{ subModule.label?.[language] }}
           </label>
           <span class="text-primary edit-link" role="button" (click)="editSubModule(subModule)">Edit</span>
@@ -17,10 +19,12 @@
       </div>
 
       <!-- Screens -->
-      <div class="col-md-3 border-end p-3" *ngIf="selectedSubModule">
+      <div class="col-md-3 border-end p-3" *ngIf="selectedSubModule && showScreens">
         <h4 class="column-title">Screens</h4>
         <div class="edit-row" *ngFor="let screen of screens">
-          <label class="form-label" (click)="onClickScreen(screen)">
+          <label class="form-label" (click)="onClickScreen(screen)"
+                 [class.text-primary]="selectedScreen?.code === screen.code"
+          >
             {{ screen.label?.[language] }}
           </label>
           <span class="text-primary edit-link" role="button" (click)="editScreens(screen)">Edit</span>
@@ -28,10 +32,12 @@
       </div>
 
       <!-- Sections -->
-      <div class="col-md-3 border-end p-3" *ngIf="selectedScreen">
+      <div class="col-md-3 border-end p-3" *ngIf="selectedScreen && showSections">
         <h4 class="column-title">Sections</h4>
         <div class="edit-row" *ngFor="let section of sections">
-          <label class="form-label" (click)="onClickSection(section)">
+          <label class="form-label" (click)="onClickSection(section)"
+                 [class.text-primary]="selectedSection?.code === section.code"
+          >
             {{ section.label?.[language] }}
           </label>
           <span class="text-primary edit-link" role="button" (click)="editSections(section)">Edit</span>
@@ -39,10 +45,11 @@
       </div>
 
       <!-- Sub Sections -->
-      <div class="col-md-3 p-3" *ngIf="selectedSection">
+      <div class="col-md-3 p-3" *ngIf="selectedScreen && selectedSection && showSubSections">
         <h4 class="column-title">Sub sections</h4>
         <div class="edit-row" *ngFor="let subSection of subSections">
-          <label class="form-label" (click)="onClickSubSection(subSection)">
+          <label class="form-label" (click)="onClickSubSection(subSection)"
+                 [class.text-primary]="selectedSubSection?.code === subSection.code">
             {{ subSection.label?.[language] }}
           </label>
           <span class="text-primary edit-link" role="button" (click)="editSubSections(subSection)">Edit</span>
@@ -51,15 +58,15 @@
     </div>
   </div>
 
-  <div class="container mt-4 section-container bg-white" *ngIf="tableData">
+  <div class="container mt-4 section-container bg-white" *ngIf="showFields">
     <div class="row mb-3 mx-md-1">
       <div class="col-sm-12 col-md-6">
-        <h5 class="my-3 text-dark">{{selectedSubModule?.label?.[language] | titlecase}} fields</h5>
+        <h5 class="my-3 text-dark">{{tableTitle | titlecase}} Fields</h5>
         <input
           type="text"
           class="form-control w-50"
-          placeholder="Search"
-
+          placeholder="Search by field label"
+          (input)="filterFields($event)"
         />
       </div>
       <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-end gap-2">
@@ -91,6 +98,7 @@
       </div>
       <div class="mt-3">
         <p-table
+          #dt2
           [value]="tableData"
           [paginator]="true"
           [rows]="pageSize || 10"
@@ -99,10 +107,8 @@
           responsiveLayout="stack"
           scrollHeight="400px"
           [scrollable]="true"
-          [(selection)]= "selectedTableRecordDetails"
-          selectionMode="single"
           [resizableColumns]="true"
-          (onRowSelect)="onRowSelect($event)"
+          [globalFilterFields]="['label']"
         >
 
           <ng-template pTemplate="header">
@@ -126,7 +132,23 @@
               <td>{{ rowData?.mandatory === true ? 'Yes' : 'No' }}</td>
               <td>{{ rowData?.order }}</td>
               <td>{{ rowData?.type | titlecase }}</td>
-              <td>{{ rowData?.validations }}</td>
+              <td>
+                <span [title]="getValidationTypes(rowData?.validations)"
+                      *ngIf="rowData?.validations?.length">
+                  {{ rowData?.validations?.length }}
+                </span>
+                <span *ngIf="!rowData?.validations?.length">0</span>
+              </td>
+
+              <!--<td>
+                <span [title]="rowData?.validations?.map(v => v.type).join(', ')"
+                      *ngIf="rowData?.validations?.length > 0">
+                  {{ rowData?.validations?.length }}
+                </span>
+                <span *ngIf="!rowData?.validations?.length">0</span>
+              </td>-->
+
+              <!--              <td>{{ rowData?.validations }}</td>-->
               <!--<ng-container *ngFor="let col of columns">
                 <td *ngIf="col.visible">
                   {{ rowData[col.field] }}
@@ -135,7 +157,7 @@
 
               <td *ngIf="tableData?.length > 0" class="text-center">
                 <div>
-                  <a role="button" class="text-primary" (click)="editSelectedRecord()">Edit</a>
+                  <a role="button" class="text-primary" (click)="editSelectedRecord(rowData)">Edit</a>
                 </div>
               </td>
             </tr>
@@ -254,19 +276,6 @@
                 <option value="">select sub module level</option>
                 <option *ngFor="let i of [].constructor(subModules?.length); let j = index" [value]="j">{{j}}</option>
               </select>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label w-100">
-                Form field label alignment
-              </label>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" id="alignment" value="top" formControlName="alignment">
-                <label class="form-check-label text-dark" for="alignment">Top</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" id="alignment" value="left" formControlName="alignment">
-                <label class="form-check-label text-dark" for="alignment">Left</label>
-              </div>
             </div>
           </div>
         </form>
@@ -682,13 +691,13 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Section label
+                Field label
                 <span class="text-primary" style="font-size: .9rem;">(Original)</span>
               </label>
               <input
                 type="text"
-                formControlName="originalSectionLabel"
-                id="originalSectionLabel"
+                formControlName="originalFieldLabel"
+                id="originalFieldLabel"
                 class="form-control"
 
               />
@@ -707,13 +716,13 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Section label
+                Field label
                 <span class="text-primary" style="font-size: .9rem;">(Current)</span>
               </label>
               <input
                 type="text"
-                formControlName="currentSectionLabel"
-                id="currentSectionLabel"
+                formControlName="currentFieldLabel"
+                id="currentFieldLabel"
                 class="form-control"
 
               />
@@ -818,22 +827,22 @@
               <label class="form-label">
                 Order
               </label>
-              <select
-                formControlName="order"
-                id="order"
-                class="form-select"
-              >
-                <option value="">select order</option>
-                <option value="1">1</option>
-              </select>
               <!--<select
                 formControlName="order"
                 id="order"
                 class="form-select"
               >
                 <option value="">select order</option>
-                <option *ngFor="let i of [].constructor(fields?.length); let j = index" [value]="j">{{j}}</option>
+                <option value="1">1</option>
               </select>-->
+              <select
+                formControlName="order"
+                id="order"
+                class="form-select"
+              >
+                <option value="">select order</option>
+                <option *ngFor="let i of [].constructor(tableData?.length); let j = index" [value]="j">{{j}}</option>
+              </select>
             </div>
 
             <div class="container mb-3">
@@ -878,7 +887,7 @@
                     <input
                       type="text"
                       class="form-control"
-                      formControlName="errorMessage"
+                      formControlName="message"
                       placeholder="Error message"
                     />
                   </div>
