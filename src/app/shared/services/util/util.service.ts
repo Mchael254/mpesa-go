@@ -710,7 +710,7 @@ export class UtilService {
       'allClausesMap',
       'productFormDetails',
       'quotation_branch',
-      'quotation_currency',
+      'quotation_currency', 'sumInsured',
       'riskFormDetails', 'SelectedClientName', 'quotationForm', 'quotationPayload',
     ];
 

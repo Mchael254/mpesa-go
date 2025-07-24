@@ -150,7 +150,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   reassignQuotationComment: string;
   noCommentleft: boolean = false;
   clientToReassignQuotation: any;
-  clientOptions:any;
+  clientOptions: any;
 
 
 
@@ -432,7 +432,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
    * @method editDetails
    * @return {void}
    */
-  editDetails() {
+  editQuotationDetails() {
     const action = "E";
     sessionStorage.setItem("quotationAction", action);
     this.router.navigate(['/home/gis/quotation/quotation-details']);
