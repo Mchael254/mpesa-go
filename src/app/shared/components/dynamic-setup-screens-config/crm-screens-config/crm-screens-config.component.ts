@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {BreadCrumbItem} from "../../../data/common/BreadCrumbItem";
 import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Logger, UtilService} from "../../../services";
@@ -7,12 +7,14 @@ import {LANGUAGES, LanguagesDto} from "../../../data/common/languages-dto";
 import {TranslateService} from "@ngx-translate/core";
 import {DynamicScreensSetupService} from "../../../services/setups/dynamic-screen-config/dynamic-screens-setup.service";
 import {
+  ConfigFormFieldsDto,
   DynamicScreenSetupDto,
   FormGroupsDto, MultilingualText,
   ScreenFormsDto,
   ScreensDto,
-  SubModulesDto
+  SubModulesDto, Validation
 } from "../../../data/common/dynamic-screens-dto";
+import {Table} from "primeng/table";
 
 const log = new Logger('CrmScreensConfigComponent');
 @Component({
@@ -33,12 +35,12 @@ export class CrmScreensConfigComponent implements OnInit {
   selectedScreen: ScreensDto = null;
   selectedSection: ScreenFormsDto = null;
   selectedSubSection: FormGroupsDto = null;
-  selectedField: any = null;
 
   subModules: SubModulesDto[] = [];
   screens: ScreensDto[] = [];
   sections: ScreenFormsDto[] = [];
   subSections: FormGroupsDto[] = [];
+  fields: ConfigFormFieldsDto[] = [];
   /*subSections = [
     { label: 'Prime identity', editable: true },
     { label: 'Contact details', editable: true },
@@ -69,7 +71,11 @@ export class CrmScreensConfigComponent implements OnInit {
 
   // All possible validations
   availableValidations: string[] = ['min', 'max', 'pattern', 'required'];
-
+  showFields: boolean = false;
+  showScreens: boolean = false;
+  showSections: boolean = false;
+  showSubSections: boolean = false;
+  @ViewChild('dt2') dt2: Table | undefined;
   dynamicConfigBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Home',
@@ -135,7 +141,6 @@ export class CrmScreensConfigComponent implements OnInit {
       currentSubModulesLabel: [''],
       visible: [''],
       subModuleLevel: [''],
-      alignment: [''],
     });
   }
 
@@ -171,9 +176,9 @@ export class CrmScreensConfigComponent implements OnInit {
 
   createFieldsForm(): void {
     this.fieldsForm = this.fb.group({
-      originalSectionLabel: [{ value: '', disabled: true }],
+      originalFieldLabel: [{ value: '', disabled: true }],
       placeholder: [''],
-      currentSectionLabel: [''],
+      currentFieldLabel: [''],
       inputType: [{ value: '', disabled: true }],
       visible: [''],
       mandatory: [''],
@@ -380,19 +385,58 @@ export class CrmScreensConfigComponent implements OnInit {
   saveFieldProperties() {
     const data = this.fieldsForm.getRawValue();
     log.info('fields form', data);
+    const field = this.selectedTableRecordDetails;
+
+    this.updateMultilingualLabel(field, this.fieldsForm, 'currentFieldLabel');
+    this.saveValidationsMessages();
+
+    const payload: ConfigFormFieldsDto = {
+      ...field,
+      code: field.code,
+      conditions: field.conditions,
+      defaultValue: field.defaultValue,
+      disabled: data.disabled === 'Y',
+      dynamicLabel: null,
+      fieldId: field.fieldId,
+      formCode: field.formCode,
+      formGroupingCode: field.formGroupingCode,
+      formSubGroupingCode: field.formSubGroupingCode,
+      label: field.label,
+      mandatory: data.mandatory === 'Y',
+      options: data.options,
+      order: data.order,
+      placeholder: data.placeholder,
+      screenCode: field.screenCode,
+      subModuleCode: field.subModuleCode,
+      tooltip: undefined, //Todo: add tooltip
+      type: field.type,
+      validations: field.validations,
+      visible: data.visible === 'Y'
+
+    }
+
+    const index = this.tableData.findIndex(item => item.code === payload.code);
+    if (index !== -1) {
+      this.tableData[index] = { ...this.tableData[index], ...payload };
+    }
+
+
+    log.info('Saving fields:', payload);
+    this.globalMessagingService.displayInfoMessage('Info', 'Publish to save fields changes.');
+    this.closeFieldsModal();
   }
 
   editSubModule(subModule?: any) {
-    if (this.selectedSubModule) {
+    if (subModule) {
       this.editMode = !this.editMode;
       this.openSubModulesModal();
+      this.selectedSubModule = subModule;
       this.subModulesForm.patchValue({
         originalSubModulesLabel: subModule.originalLabel,
         module: subModule.moduleName,
         currentSubModulesLabel: subModule.label?.[this.language],
         visible: subModule.visible === true ? 'Y' : 'N',
         subModuleLevel: subModule.order,
-        alignment: null,
       });
     } else {
       this.globalMessagingService.displayErrorMessage(
@@ -403,9 +447,10 @@ export class CrmScreensConfigComponent implements OnInit {
   }
 
   editScreens(screen?: any) {
-    if (this.selectedScreen) {
+    if (screen) {
       this.editMode = !this.editMode;
       this.openScreensModal();
+      this.selectedScreen = screen;
       this.screensForm.patchValue({
         originalScreenLabel: screen.originalLabel,
         subModule: screen.subModuleCode,
@@ -422,9 +467,10 @@ export class CrmScreensConfigComponent implements OnInit {
   }
 
   editSections(section?: any) {
-    if (this.selectedSection) {
+    if (section) {
       this.editMode = !this.editMode;
       this.openSectionsModal();
+      this.selectedSection = section;
       this.sectionsForm.patchValue({
         originalSectionLabel: section.originalLabel,
         screen: section.screenCode,
@@ -441,9 +487,10 @@ export class CrmScreensConfigComponent implements OnInit {
   }
 
   editSubSections(subSection?: any) {
-    if (this.selectedSubSection) {
+    if (subSection) {
       this.editMode = !this.editMode;
       this.openSubSectionsModal();
+      this.selectedSubSection = subSection;
       this.subSectionsForm.patchValue({
         originalSubSectionLabel: subSection.originalLabel,
         section: subSection.formCode,
@@ -459,29 +506,42 @@ export class CrmScreensConfigComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  onRowSelect(event: any) {
-    this.selectedTableRecordDetails = event.data;
-  }
-
-  editSelectedRecord() {
-
+  editSelectedRecord(selectedRecord?: any) {
+    this.selectedTableRecordDetails = selectedRecord;
     log.info('selectedTableRecordDetails', this.selectedTableRecordDetails)
     if (this.selectedTableRecordDetails) {
       this.editMode = !this.editMode;
       this.openFieldsModal();
       this.fieldsForm.patchValue({
-        originalSectionLabel: this.selectedTableRecordDetails.originalLabel,
+        originalFieldLabel: this.selectedTableRecordDetails.originalLabel,
         placeholder: this.selectedTableRecordDetails.placeholder?.[this.language],
-        currentSectionLabel: this.selectedTableRecordDetails.label?.[this.language],
+        currentFieldLabel: this.selectedTableRecordDetails.label?.[this.language],
         inputType: this.selectedTableRecordDetails.type,
         visible: this.selectedTableRecordDetails.visible === true ? 'Y' : 'N',
         mandatory: this.selectedTableRecordDetails.mandatory === true ? 'Y' : 'N',
+        disabled: this.selectedTableRecordDetails.disabled === true ? 'Y' : 'N',
         section: this.selectedTableRecordDetails.formCode,
         order: this.selectedTableRecordDetails.order,
-        tooltips: this.selectedTableRecordDetails.tooltips?.[this.language],
-        tooltipWords: this.selectedTableRecordDetails.tooltipWords,
-        validationMessage: this.selectedTableRecordDetails.validationMessage,
+        tooltips: this.selectedTableRecordDetails.tooltips,
+        tooltipWords: this.selectedTableRecordDetails.tooltipWords?.[this.language],
       });
+
+      // Clear existing validations
+      while (this.validations.length) {
+        this.validations.removeAt(0);
+      }
+
+      // Add validations if they exist
+      if (this.selectedTableRecordDetails.validations) {
+        this.selectedTableRecordDetails.validations.forEach(validation => {
+          const group = this.fb.group({
+            type: [validation.type],
+            value: [validation.value],
+            message: [validation.message?.[this.language]],
+          });
+          this.validations.push(group);
+        });
+      }
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error', 'No field is selected'
@@ -517,11 +577,30 @@ export class CrmScreensConfigComponent implements OnInit {
       this.patchCurrentLabel(this.subSectionsForm, this.selectedSubSection, 'currentSubSectionLabel');
     }
 
-    if (this.selectedField) {
-      this.patchCurrentLabel(this.fieldsForm, this.selectedField, 'currentSectionLabel');
+    if (this.selectedTableRecordDetails) {
+      this.patchCurrentLabel(this.fieldsForm, this.selectedTableRecordDetails, 'currentFieldLabel');
+      this.fieldsForm.patchValue({
+        tooltipWords: this.selectedTableRecordDetails.tooltipWords?.[this.language] || '',
+        placeholder: this.selectedTableRecordDetails.placeholder?.[this.language] || '',
+      });
+
+      this.patchValidationsMessages(this.selectedTableRecordDetails.validations);
     }
 
     // this.utilService.setLanguage(value.code);
+  }
+
+  patchValidationsMessages(validations: Validation[]) {
+    const validationsFA = this.fieldsForm.get('validations') as FormArray;
+    validationsFA.clear();
+
+    validations.forEach(v => {
+      validationsFA.push(this.fb.group({
+        type: [v.type],
+        value: [v.value],
+        message: [v.message?.[this.language] || '']
+      }));
+    });
   }
 
   updateMultilingualLabel(
@@ -529,6 +608,7 @@ export class CrmScreensConfigComponent implements OnInit {
     form: FormGroup,
     labelField: string
   ) {
+    log.info('labelField', labelField, dto);
     if (!dto.label) {
       dto.label = { en: '', ke: '', fr: '' };
     }
@@ -547,9 +627,27 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  saveValidationsMessages() {
+    const validationsFA = this.fieldsForm.get('validations') as FormArray;
+    const formValidations = validationsFA.getRawValue();
+
+    this.selectedTableRecordDetails.validations = formValidations.map((v, i) => {
+      const msg = this.selectedTableRecordDetails.validations?.[i]?.message || {
+        en: '', ke: '', fr: ''
+      };
+      msg[this.language] = v.message;
+
+      return {
+        type: v.type,
+        value: v.value,
+        message: msg
+      };
+    });
+  }
+
   publishChanges() {
     const payload: DynamicScreenSetupDto = {
-      // fields: this.fields,
+      fields: this.tableData,
       groups: this.subSections,
       forms: this.sections,
       screens: this.screens,
@@ -577,16 +675,16 @@ export class CrmScreensConfigComponent implements OnInit {
     const group = this.fb.group({
       type: [null, Validators.required],
       value: [{ value: '', disabled: true }, Validators.required],
-      errorMessage: [{ value: '', disabled: true }, Validators.required],
+      message: [{ value: '', disabled: true }, Validators.required],
     });
 
     group.get('type')?.valueChanges.subscribe(selected => {
       if (selected) {
         group.get('value')?.enable();
-        group.get('errorMessage')?.enable();
+        group.get('message')?.enable();
       } else {
         group.get('value')?.disable();
-        group.get('errorMessage')?.disable();
+        group.get('message')?.disable();
       }
     });
 
@@ -605,26 +703,56 @@ export class CrmScreensConfigComponent implements OnInit {
     return this.availableValidations.filter(v => !selected.includes(v));
   }
 
-  onClickSubModule(subModule: any) {
+  onClickSubModule(subModule: SubModulesDto) {
     this.selectedSubModule = subModule;
     this.selectedScreen = null;
     this.fetchScreens(subModule.code);
-    this.fetchFormFields(subModule.code)
+    this.fetchFormFields(subModule.code);
+    this.tableTitle = subModule.label[this.language];
+    this.showFields = true;
+    this.showScreens = true;
   }
 
-  onClickScreen(screen: any) {
+  onClickScreen(screen: ScreensDto) {
     this.selectedScreen = screen;
     this.selectedSection = null;
-    this.fetchSections(screen.code)
+    this.fetchSections(screen.code);
+    if (screen?.hasFields === true) {
+      this.fetchFormFields(this.selectedSubModule?.code, screen.code);
+      this.tableTitle = screen.label[this.language];
+    }
+    this.showFields = screen?.hasFields;
+    this.showSections = true;
   }
 
-  onClickSection(section: any) {
+  onClickSection(section: ScreenFormsDto) {
     this.selectedSection = section;
-    this.fetchSubSections(this.selectedSubModule.code, null, section.code)
+    this.fetchSubSections(this.selectedSubModule.code, null, section.code);
+    if (section?.hasFields === true) {
+      this.fetchFormFields(this.selectedSubModule?.code, this.selectedScreen?.code, section.code);
+      this.tableTitle = section.label[this.language];
+    }
+    this.showFields = section?.hasFields;
+    this.showSubSections = true;
   }
 
-  onClickSubSection(subSection: any) {
-    this.selectedSubSection = subSection
+  onClickSubSection(subSection: FormGroupsDto) {
+    this.selectedSubSection = subSection;
+    if (subSection?.hasFields === true) {
+      this.fetchFormFields(this.selectedSubModule?.code, this.selectedScreen?.code, this.selectedSection?.code, subSection.code);
+      this.tableTitle = subSection.label[this.language];
+    }
+    this.showFields = subSection?.hasFields;
+  }
+
+  filterFields(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dt2.filter(filterValue, 'label.' + this.language, 'contains');
+  }
+
+  getValidationTypes(validations: any[]): string {
+    if (!validations || validations.length === 0) return '';
+    return validations.map(v => v.type).join(', ');
   }
 
   fetchSubModules() {
