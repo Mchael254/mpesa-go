@@ -121,6 +121,7 @@ export class NewEntityV2Component implements OnInit {
 
   shouldUploadProfilePhoto: boolean = false;
   profilePicture: any; // todo: define types
+  photoPreviewUrl: string;
   clientFiles: File[] = []
   filesToUpload: DmsDocument[] = [];
   clientDocumentData: any = null; // todo: define types
@@ -539,7 +540,7 @@ export class NewEntityV2Component implements OnInit {
    */
   uploadDocumentToDms(): void {
     log.info(` client files to upload >>> `, this.filesToUpload)
-    this.dmsService.saveClientDocs(this.filesToUpload[0]).subscribe({
+    this.dmsService.saveClientDocs(this.filesToUpload).subscribe({
       next: (res: any) => {
         log.info(`document uploaded successfully!`, res);
       },
@@ -1178,6 +1179,12 @@ export class NewEntityV2Component implements OnInit {
         this.uploadGroupSections.docs[index].file = file;
       } else if (uploadType === 'profile') {
         this.uploadGroupSections.photo[0].file = file;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event: any) => {
+          this.photoPreviewUrl = event.target.result;
+        }
       }
 
       switch (uploadType) {
@@ -1206,11 +1213,11 @@ export class NewEntityV2Component implements OnInit {
 
         let payload: DmsDocument = {
           actualName: file.name,
-          userName: '',
+          userName: 'test',
           docType: file.type,
           docData: base64String,
           originalFileName: file.name,
-          clientName: ''
+          clientName: 'test'
         }
         this.filesToUpload.push(payload)
       };
