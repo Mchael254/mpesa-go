@@ -353,7 +353,7 @@
                         'pi-caret-up': isCollapsibleOpen,
                         'pi-caret-down': !isCollapsibleOpen
                       }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                             (click)="toggleProductDetails()"></i>
+                        (click)="toggleProductDetails()"></i>
                     </div>
 
                   </div>
@@ -367,10 +367,10 @@
                   tabindex="0">
 
 
-                  <p-table [value]="clauses" [tableStyle]="{ 'min-width': '50rem' }" [rows]="3"
-                           [paginator]="true" [rowsPerPageOptions]="[3,6,9]" [showCurrentPageReport]="true"  currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                           class='ui-datatable' responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true"
-                           scrollHeight="200px">
+                  <p-table [value]="clauses" [tableStyle]="{ 'min-width': '50rem' }" [rows]="3" [paginator]="true"
+                    [rowsPerPageOptions]="[3,6,9]" [showCurrentPageReport]="true"
+                    currentPageReportTemplate="{first} - {last} of {totalRecords}" class='ui-datatable'
+                    responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
                     <ng-template pTemplate="header">
                       <tr>
                         <th class="flexible-header" pSortableColumn="id">
@@ -391,7 +391,7 @@
                       </tr>
                     </ng-template>
 
-                    <ng-template pTemplate="body" let-data let-rowIndex="rowIndex" >
+                    <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
                       <tr *ngIf="rowIndex === 0">
                         <td>
                           <input type="text" pInputText placeholder="" class="small-input" />
@@ -415,9 +415,9 @@
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
-                      <tr >
+                      <tr>
                         <td>
-                          <input type="text" pInputText placeholder=""class="small-input" />
+                          <input type="text" pInputText placeholder="" class="small-input" />
                         </td>
                         <td>
                           <input type="text" pInputText placeholder="" class="small-input" />
@@ -428,11 +428,11 @@
                       </tr>
                       <tr>
                       <tr>
-                          <td colspan="5" class="text-center text-muted py-3">
-                            “No product clauses available.”
-                          </td>
+                        <td colspan="5" class="text-center text-muted py-3">
+                          “No product clauses available.”
+                        </td>
                       </tr>
-                  </ng-template>
+                    </ng-template>
                   </p-table>
                 </div>
                 <!-- TAXES -->

@@ -35,7 +35,6 @@
                         </button>
 
                         <!-- Delete Button -->
-
                         <button *ngIf="riskDetails.length > 1" pButton pRipple type="button"
                             class="p-button-text p-button-sm custom-button" pTooltip="Delete Risk" tooltipPosition="top"
                             data-bs-toggle="modal" data-bs-target="#deleteRisk">
@@ -263,65 +262,68 @@
             <div class="nav-tabs-wrapper overflow-auto flex-grow-1 me-3">
                 <ul class="nav nav-tabs flex-nowrap mb-0" style="min-width: max-content;">
                     <li class="nav-item" *ngFor="let tab of tabs">
-                        <a class="nav-link" [ngClass]="{ 'active-tab': activeTab === tab }" (click)="activeTab = tab">{{
-                            tab
-                            }}</a>
+                        <a class="nav-link" [ngClass]="{ 'active-tab': activeTab === tab }" (click)="activeTab = tab">
+                            {{ tab }}
+                        </a>
                     </li>
                 </ul>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
-                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                    data-bs-target="#deleteRisk">
-                    Import risk
-                </button>
-                <button type="button" class="btn btn-primary btn-sm">
-                    Add risk
-                </button>
-                <i class="pi border border-black p-1 rounded-1 text-black"
-                    [ngClass]="{ 'pi-caret-up': isCollapsibleOpen, 'pi-caret-down': !isCollapsibleOpen }"
-                    style="font-size: 13px; cursor: pointer; margin-left: 18px;"></i>
             </div>
         </div>
 
         <!-- Tab Content -->
-        <p-table [value]="scheduleList" selectionMode="single" [(selection)]="selectedSchedule" dataKey="code">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th class="flexible-header">{{'gis.quotation.reg_no' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.vehicle_make' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.cubic_capacity' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.year_of_manufacture' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.seating_capacity' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.value' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.body_type' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.cover_type' | translate}}</th>
-                </tr>
-            </ng-template>
+        <div [ngSwitch]="activeTab">
+            <!-- Tab 1 Content -->
+            <div>
+                <p-table [value]="scheduleList" selectionMode="single" [(selection)]="selectedSchedule" dataKey="code">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="flexible-header">{{'gis.quotation.reg_no' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.vehicle_make' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.cubic_capacity' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.year_of_manufacture' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.seating_capacity' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.value' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.body_type' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.cover_type' | translate}}</th>
+                        </tr>
+                    </ng-template>
 
-            <ng-template pTemplate="body" let-schedule>
-                <tr (click)="onSelectSchedule(schedule)" [pEditableRow]="schedule"
-                    [class.p-highlight]="schedule === selectedSchedule">
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                </tr>
-            </ng-template>
+                    <ng-template pTemplate="body" let-schedule>
+                        <tr (click)="onSelectSchedule(schedule)" [pEditableRow]="schedule"
+                            [class.p-highlight]="schedule === selectedSchedule">
+                            <td class="flexible-header">{{ schedule.details.level1.registrationNumber}}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.Make |sentenceCase }}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.cubicCapacity }}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.yearOfManufacture }}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.carryCapacity }}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.value |number }}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.bodyType |sentenceCase }}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.coverType |sentenceCase }}</td>
+                        </tr>
+                    </ng-template>
 
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="8" style="padding: 20px; text-align: center">
-                        {{ 'gis.quotation.no_data_to_display' | translate }}
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="8" style="padding: 20px; text-align: center">
+                                No schedule Click on + icon to add risk
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+
+            <!-- Tab 2 Content -->
+            <div *ngSwitchCase="'Level 2'">
+
+            </div>
+
+            <!-- Tab 3 Content -->
+            <div *ngSwitchCase="'Level 3'">
+
+            </div>
+        </div>
+
+
 
     </div>
 </div>
@@ -329,30 +331,12 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="row">
-            <div class="col-4 section-title">
-                <strong> {{'gis.quotation.section_details' | translate}}</strong>
+            <div class="col-4 ">
+                <p class="section-title"> {{'gis.quotation.section_details' | translate}}</p>
             </div>
             <div class="col-8 d-flex justify-content-end">
                 <div class="row">
-                    <!-- <div class="col-4" *ngIf="isSectionDetailsOpen">
-                            <button id="openModalButtonAdd"  data-bs-toggle="modal"
-                                data-bs-target="#addSection">Add section</button>
-                             <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#addSection" title="Edit">
-                                <i class="fa-solid fa-plus"></i>
-                            </button> -->
-                    <!-- </div>  -->
-                    <!-- <div class="col-3" *ngIf="isSectionDetailsOpen">
-                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editSection" title="Edit">
-                    <i class="fa-solid fa-pencil"></i>
-                  </button>
-                </div> -->
-                    <!-- <div class="col-4" *ngIf="isSectionDetailsOpen">
-                            <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#deleteSection" title="Delete">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </div> -->
+
                     <div class="col-4 ">
                         <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse"
                             data-bs-target="#sectionDetails" aria-expanded="false"
@@ -507,7 +491,7 @@
                 aria-labelledby="editSectionLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                     <div class="modal-content" style=" width:700px;">
-                        <div class="modal-body" style="padding-left: 40px; max-height:650px; overflow-y: auto;">
+                        <div class="modal-body" style="padding-left: 40px; max-height:550px; overflow-y: auto;">
                             <h5 class="modal-title mt-2" id="editScheduleLabel">
                                 Edit section details
                                 <button type="button" class="btn-close red-close float-end"
@@ -696,8 +680,8 @@
                                                 id="scheduleLabel">{{'gis.quotation.premium' | translate}}:</label>
                                             <div class="col-7">
                                                 <input type="text" id="scheduleInput" style="width:300px"
-                                                    class="form-control form-control-sm mb-1" currencyMask [options]="currencyObj"
-                                                    formControlName="premiumAmount">
+                                                    class="form-control form-control-sm mb-1" currencyMask
+                                                    [options]="currencyObj" formControlName="premiumAmount">
                                             </div>
                                         </div>
                                     </div>
@@ -711,8 +695,8 @@
                                                 translate}}:</label>
                                             <div class="col-7">
                                                 <input type="text" id="scheduleInput" style="width:300px"
-                                                    class="form-control form-control-sm mb-1" currencyMask [options]="currencyObj"
-                                                    formControlName="minimumPremium">
+                                                    class="form-control form-control-sm mb-1" currencyMask
+                                                    [options]="currencyObj" formControlName="minimumPremium">
                                             </div>
                                         </div>
                                     </div>
@@ -967,7 +951,7 @@
 
         <div class="row">
             <div class="col-4 clause-title">
-                <strong>{{'gis.quotation.risk_clauses' | translate}}</strong>
+                <p class="section-title">{{'gis.quotation.risk_clauses' | translate}}</p>
             </div>
 
             <div class="col-8 d-flex justify-content-end">
