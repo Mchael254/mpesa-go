@@ -39,23 +39,35 @@
 
             <!--profile photo-->
             <ng-container *ngIf="uploadGroupSections?.photo?.length > 0 && shouldUploadProfilePhoto">
-              <div *ngFor="let photo of uploadGroupSections.photo" class="col-sm-4">
+              <div *ngFor="let photo of uploadGroupSections.photo" class="col-sm-6">
                 <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
                   <div class="row" id="upload-image">
                     <div class="col-sm-12">
                       <label for="upload-image" class="form-label">{{ photo.label[language] | titlecase }}</label>
                     </div>
                     <div class="col-sm-12 text-primary">
+
+                      <img
+                        *ngIf="photoPreviewUrl !== '' && photoPreviewUrl"
+                        [src]="photoPreviewUrl"
+                        class="img-thumbnail"
+                        alt="image preview"
+                        id="profile-photo"
+                        style="width: 100px; height: 100px; border-radius: 100%; margin-right: 10px"
+                      >
+
                       <label class="btn btn-outline-primary btn-sm d-inline-flex align-items-center">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> &nbsp; {{ photo.placeholder[language] | titlecase }}
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span *ngIf="!photoPreviewUrl">{{ photo.uploadBtnLabel[language] | titlecase }}</span>
+                        <span *ngIf="photoPreviewUrl">{{ photo.editBtnLabel[language] | titlecase }}</span>
                         <input type="file" hidden (change)="onFileSelected($event, photo, 'profile')">
-                      </label> &nbsp;
+                      </label>
                       <span class="border-end border-primary border-3"></span> &nbsp;
                       <i class="fa-solid fa-info-circle"></i>&nbsp;
                       <span>Note:</span> png, jpeg or jpg
                     </div>
                   </div>
-                  <span *ngIf="photo.file?.name">{{ photo.file?.name }}</span>
+                  <!--<span *ngIf="photo.file?.name">{{ photo.file?.name }}</span>-->
                 </div>
               </div>
             </ng-container>
