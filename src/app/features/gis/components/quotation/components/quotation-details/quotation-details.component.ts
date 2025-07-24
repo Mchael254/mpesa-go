@@ -170,6 +170,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   noCommentleft: boolean = false
   reassignProductComment: string;
   sessionClauses: any;
+  clientToReassignQuotation: any;
+  clientOptions: any;
 
   constructor(
     public bankService: BankService,
@@ -247,7 +249,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     // this.todaysDate = new Date();
     // this.coverToDate = new Date(this.todaysDate);
     //  this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);
-    this.getuser();
     this.createQuotationProductForm();
 
     this.quotationProductForm.get('productCodes')?.valueChanges.subscribe(product => {
@@ -1480,6 +1481,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
         }
         console.log("Form value here:", this.quotationForm.value);
+
         // QUOTATION SOURCES
         this.quotationSources = sources?.content || [];
         this.quotationSources = this.quotationSources.map((value) => {
@@ -1981,12 +1983,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.closeReassignProductModal();
     this.clientToReassignProduct = null;
     this.productToReassign = null;
-    this.globalMessagingService.displaySuccessMessage('Success', 'Product reassigned');
+    this.globalMessagingService.displaySuccessMessage('Success', 'Product reassigned successfully');
 
   }
 
   openChooseClientReassignModal() {
     this.openModals('chooseClientReassign');
+    this.closeReassignProductModal();
+    this.getUsers();
   }
 
   closeChooseClientReassignModal() {
