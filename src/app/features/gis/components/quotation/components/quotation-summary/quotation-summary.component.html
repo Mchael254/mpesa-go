@@ -959,9 +959,9 @@
             </div>
 
             <div class="w-75">
-              <p style="color:#000000" >Default User</p>
-              <input pInputText type="text" style="color:#000000" class="form-control" (click)="openChooseClientReassignModal()"
-                [(ngModel)]="clientToReassignQuotation">
+              <p style="color:#000000">Default User</p>
+              <input pInputText type="text" style="color:#000000" class="form-control"
+                (click)="openChooseClientReassignModal()" [(ngModel)]="clientToReassignQuotation">
             </div>
 
             <div class="w-75 mt-4 mb-3">
@@ -978,7 +978,7 @@
               Please select a person to reassign before continuing
             </small>
 
-            <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
+            <div class="w-full d-flex flex-row-reverse gap-4 mt-2">
               <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
                 (click)="reassignQuotation()">{{
                 'gis.quotation.reassign' | translate }}

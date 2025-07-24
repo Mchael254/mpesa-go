@@ -711,7 +711,7 @@ export class UtilService {
       'productFormDetails',
       'quotation_branch',
       'quotation_currency',
-      'riskFormDetails'
+      'riskFormDetails', 'SelectedClientName', 'quotationForm', 'quotationPayload',
     ];
 
     keysToRemove.forEach(key => sessionStorage.removeItem(key));
