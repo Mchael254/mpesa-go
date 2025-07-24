@@ -172,9 +172,7 @@ button:focus {
   margin-left: auto;
 }
 
-.narrow-input {
-  width: 100px;
-}
+
 
 .modal-title {
   margin-bottom: 15px;
@@ -209,6 +207,12 @@ button:focus {
 
 ::ng-deep .p-datatable table {
   width: 100% !important;
+}
+
+::ng-deep .p-datatable .p-datatable-tbody>tr.p-highlight {
+  background-color: #ddedfb !important;
+  color: inherit !important;
+  /* Optional: maintain text color */
 }
 
 .active-tab {
@@ -262,6 +266,7 @@ button:focus {
     background-color: #666;
   }
 }
+
 .section-title {
   font-family: Roboto;
   font-weight: 500;
