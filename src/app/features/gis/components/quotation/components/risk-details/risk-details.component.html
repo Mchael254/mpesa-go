@@ -380,25 +380,6 @@
                                     aria-label="Close"></button>
                             </h5>
 
-                            <!-- <div class="search-container mb-3">
-                  <span class="search-icon"><i class="fa fa-search"></i></span>
-                  <input type="text" placeholder="Search" id="search-input-Rsection" [(ngModel)]="searchText" />
-                </div> -->
-                            <!-- <div class="scrollable-list">
-                  <div *ngFor="let section of sectionPremium">
-                    <div class="form-check" *ngIf="matchesSearch(section.sectionShortDescription)">
-                      <input class="form-check-input" type="checkbox" [id]="'checkbox-' + section.code"
-                        (change)="onCheckboxChange(section)" />
-                      <label class="form-check-label" [for]="'checkbox-' + section.code">
-                        {{ section.sectionShortDescription }}
-                      </label>
-                    </div>
-                  </div>
-                </div> -->
-                            <!-- <input pInputText type="text" (input)="sectionTable.filterGlobal($event.target.value, 'contains')" placeholder="Search..." #sectionTable> -->
-                            <!-- <input class="form-control-sm mb-2" id="search-input-Rsection" pInputText type="text"
-                                (input)="applyGlobalFilter($event)" placeholder="Search..."> -->
-
                             <p-table #sectionTable [value]="sectionPremium" id="clientTable" dataKey="code"
                                 [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }"
                                 [(selection)]="selectedSections" [resizableColumns]="true" responsiveLayout="scroll"
@@ -415,16 +396,16 @@
                                                 (change)="toggleSelectAll($event)" />
                                         </th>
 
-                                        <th class="equal-width " pSortableColumn="sectionDescription"> {{
+                                        <th class="flexible-header" pSortableColumn="sectionDescription"> {{
                                             'gis.quotation.benefit' |
                                             translate }}<p-sortIcon field="benefit" /></th>
-                                        <th class="equal-width" pSortableColumn="free_limit"> {{
+                                        <th class="flexible-header" pSortableColumn="free_limit"> {{
                                             'gis.quotation.free_limit' | translate }}<p-sortIcon field="free_limit" />
                                         </th>
-                                        <th class="equal-width" pSortableColumn="limit of amount"> {{
+                                        <th class="flexible-header" pSortableColumn="limit of amount"> {{
                                             'gis.quotation.limit_amount' | translate }}<p-sortIcon
                                                 field="limit of amount" /></th>
-                                        <th class="equal-width" pSortableColumn="rate"> {{ 'gis.quotation.rate' |
+                                        <th class="flexible-header" pSortableColumn="rate"> {{ 'gis.quotation.rate' |
                                             translate }} <p-sortIcon field="rate" /></th>
 
                                     </tr>
@@ -453,19 +434,19 @@
                                             <input type="checkbox" id="check_section_{{ section.sectionCode }}"
                                                 [(ngModel)]="section.isChecked">
                                         </td>
-                                        <td class="equal-width">{{ section.sectionDescription |sentenceCase }}</td>
-                                        <td class="equal-width">{{ section.freeLimit | number }}</td>
-                                        <td class="equal-width" [pEditableColumn]="section.limitAmount"
+                                        <td class="flexible-header">{{ section.sectionDescription |sentenceCase }}</td>
+                                        <td class="flexible-header">{{ section.freeLimit | number }}</td>
+                                        <td class="flexible-header" [pEditableColumn]="section.limitAmount"
                                             pEditableColumnField="limitAmount">
-                                            <input class=" form-control form-control-sm narrow-input error-border"
+                                            <input class=" form-control form-control-sm  error-border"
                                                 id="section_{{ section.sectionCode }}" [(ngModel)]="section.limitAmount"
                                                 [options]="currencyObj" currencyMask type="text"
                                                 (keydown)="onKeyUp($event, section)"
                                                 [ngClass]="{'error-border': section.isChecked && !section.limitAmount}">
                                         </td>
-                                        <td class="equal-width" [pEditableColumn]="section.rate"
+                                        <td class="flexible-header" [pEditableColumn]="section.rate"
                                             pEditableColumnField="rate">
-                                            <input class="form-control form-control-sm narrow-input error-border"
+                                            <input class="form-control form-control-sm  error-border"
                                                 id="section_{{ section.sectionCode }}" [(ngModel)]="section.rate"
                                                 type="number" (keydown)="onKeyUp($event, section)"
                                                 [ngClass]="{'error-border': section.isChecked && !section.rate}">
@@ -999,10 +980,10 @@
                                 <!-- Column Labels -->
                                 <tr>
                                     <th style="width: 2%;"></th>
-                                    <th pSortableColumn="id" class="equal-width">
+                                    <th pSortableColumn="id" class="flexible-header">
                                         ID <p-sortIcon field="id" />
                                     </th>
-                                    <th pSortableColumn="description" class="equal-width">
+                                    <th pSortableColumn="description" class="flexible-header">
                                         Description <p-sortIcon field="description" />
                                     </th>
                                 </tr>
