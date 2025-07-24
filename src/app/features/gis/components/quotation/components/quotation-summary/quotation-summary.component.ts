@@ -276,6 +276,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       });
     }
 
+    log.debug('tax details', this.taxDetails)
+
+
   }
 
   ngAfterViewInit() {
@@ -289,6 +292,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   closeModals(modalName: string) {
     this.modals[modalName]?.hide();
+
   }
 
 
@@ -1623,6 +1627,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  
+ 
+
 
   //reassign
   openReassignQuotationModal() {

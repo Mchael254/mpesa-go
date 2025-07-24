@@ -562,3 +562,12 @@ tr:hover {
   width: 80px;
   height: 30px;
 }
+.borderless-button {
+  border: none;
+  background: transparent;
+  color: #00529B;
+  padding: 4px 8px;
+  font-size: 14px;
+}
+
+
