@@ -172,9 +172,7 @@ button:focus {
   margin-left: auto;
 }
 
-.narrow-input {
-  width: 100px;
-}
+
 
 .modal-title {
   margin-bottom: 15px;
@@ -191,13 +189,7 @@ button:focus {
   filter: invert(29%) sepia(96%) saturate(7476%) hue-rotate(354deg) brightness(94%) contrast(123%);
 }
 
-.clause-title {
-  font-family: Roboto;
-  font-weight: 500;
-  font-size: 20px;
-  color: #00529B;
 
-}
 
 
 
@@ -215,4 +207,73 @@ button:focus {
 
 ::ng-deep .p-datatable table {
   width: 100% !important;
+}
+
+::ng-deep .p-datatable .p-datatable-tbody>tr.p-highlight {
+  background-color: #ddedfb !important;
+  color: inherit !important;
+  /* Optional: maintain text color */
+}
+
+.active-tab {
+  color: #00529B;
+  border: 1px solid #DCDCDCD9;
+  border-bottom: none;
+  color: #00529B !important;
+  background-color: #fff;
+  /* Optional: to contrast with border */
+  z-index: 1;
+  font-weight: 500;
+}
+
+/* Style on hover */
+.nav-tabs .nav-link:hover {
+  font-weight: bold;
+  border: 1px solid #DCDCDCD9;
+  border-bottom: none;
+}
+
+
+
+/* 
+.nav-tabs-wrapper {
+  max-width: 150px;
+  overflow-x: auto;
+  white-space: nowrap;
+} */
+/* Custom Scrollbar Styles */
+.nav-tabs-wrapper {
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: #ccc transparent;
+  /* Firefox */
+
+  /* Chrome, Edge, Safari */
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #999;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #666;
+  }
+}
+
+.section-title {
+  font-family: Roboto;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 19.89px;
+  letter-spacing: 0%;
+  color: #00529B;
+
+
 }
