@@ -4,14 +4,14 @@ import { AgentDTO } from '../../../data/AgentDTO';
 import { PartyTypeDto } from '../../../data/partyTypeDto';
 import {
   AccountReqPartyId,
-  EntityDto,
+  EntityDto, IdentityModeDTO,
   PoliciesDTO,
   ReqPartyById,
   Roles,
 } from '../../../data/entityDto';
 import { Pagination } from '../../../../../shared/data/common/pagination';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ReplaySubject, finalize, takeUntil, take } from 'rxjs';
+import {ReplaySubject, finalize, takeUntil, take, forkJoin} from 'rxjs';
 import { PartyAccountsDetails } from '../../../data/accountDTO';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntityService } from '../../../services/entity/entity.service';
@@ -35,6 +35,9 @@ import { BankService } from '../../../../../shared/services/setups/bank/bank.ser
 import { BankBranchDTO } from '../../../../../shared/data/common/bank-dto';
 import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
 import {HttpClient} from "@angular/common/http";
+import {PrimeIdentityComponent} from "./prime-identity/prime-identity.component";
+import {MaritalStatusService} from "../../../../../shared/services/setups/marital-status/marital-status.service";
+import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
 
 const log = new Logger('ViewEntityComponent');
 
@@ -46,7 +49,9 @@ const log = new Logger('ViewEntityComponent');
 export class ViewEntityComponent implements OnInit {
   @ViewChild('closebutton') closebutton;
   @ViewChild('rolesDropDown') rolesDropdown;
-  @ViewChild(EntityTransactionsComponent)
+  @ViewChild(EntityTransactionsComponent) entityTransactionsComponent: EntityTransactionsComponent;
+  @ViewChild('primeIdentityRef') primeIdentityComponent!: PrimeIdentityComponent;
+
   entityTransactions: EntityTransactionsComponent;
 
   public entityDetails: StaffDto | ClientDTO | ServiceProviderRes | AgentDTO;
@@ -109,6 +114,14 @@ export class ViewEntityComponent implements OnInit {
 
   language: string = 'en';
 
+  editPrimeDetailsFormConfig: any[];
+
+  selectOptions: {
+    idTypes: IdentityModeDTO[],
+    countries: CountryDto[],
+    maritalStatuses: MaritalStatus[]
+  } = undefined
+
   constructor(
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
@@ -119,6 +132,7 @@ export class ViewEntityComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private countryService: CountryService,
     private bankService: BankService,
+    private maritalStatusService: MaritalStatusService,
     private globalMessagingService: GlobalMessagingService,
     private utilService: UtilService,
     private http: HttpClient,
@@ -131,7 +145,9 @@ export class ViewEntityComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // this.fetchSelectOptions();
     this.fetchDynamicDisplayConfig()
+    this.edit360ViewFormsConfig();
     this.createEntitySummaryForm();
     this.createSelectRoleForm();
     this.entityId = this.activatedRoute.snapshot.params['id'];
@@ -156,6 +172,8 @@ export class ViewEntityComponent implements OnInit {
             const secondaryTabsArr = item.tabs;
             this.secondaryTabs = secondaryTabsArr.map(item => item.title);
           }
+
+          item.tabs = item.tabs.sort((a, b) => a.order - b.order);
         })
 
         log.info(`primary tabs >>> `, this.primaryTabs, this.secondaryTabs);
@@ -163,8 +181,18 @@ export class ViewEntityComponent implements OnInit {
       error: err => {
         log.error(err);
       }
-    })
+    });
+  }
 
+  edit360ViewFormsConfig(): void {
+    this.http.get<any>( 'assets/data/edit360ViewForms.json').subscribe({
+      next: (data: any) => {
+        this.editPrimeDetailsFormConfig = data.prime_identity;
+      },
+      error: err => {
+        log.error(err);
+      }
+    });
   }
 
   getCountries() {
@@ -562,6 +590,17 @@ export class ViewEntityComponent implements OnInit {
     log.info(`Selected tab `, tab);
   }
 
+  openEditModal(tabTitle: string): void {
+    switch (tabTitle) {
+      case 'prime_identity':
+        this.primeIdentityComponent.openEditPrimeIdentityDialog();
+        break;
+      default:
+          // do something
+    }
+
+  }
+
   /**
    * Refresh data by calling the OnInit method
    */
@@ -569,4 +608,30 @@ export class ViewEntityComponent implements OnInit {
     this.ngOnInit();
   }
 
+  fetchSelectOptions(): void {
+    log.info(`fetching select options >>> `);
+    forkJoin({
+      idTypes: this.entityService.getIdentityType(),
+      countries: this.countryService.getCountries(),
+      maritalStatuses: this.maritalStatusService.getMaritalStatus()
+    }).subscribe({
+      next: data => {
+        this.selectOptions = {
+          idTypes: data.idTypes,
+          countries: data.countries,
+          maritalStatuses: data.maritalStatuses,
+        }
+        this.countries = data.countries;
+        log.info(`select options >>> `, data);
+        // this.cdr.detectChanges();
+      },
+      error: err => {
+        const errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        log.error(`could not fetch: `, err);
+      }
+    });
+  }
+
+  protected readonly open = open;
 }
