@@ -12,6 +12,7 @@
               id="edit-tab-btn"
               *ngIf="tab.title === selectedTab || tab.title === selectedSubTab"
               class="m-2"
+              (click)="openEditModal(tab.title)"
             >
               <i class="fa fa-pencil"></i>
             </span>
@@ -37,14 +38,14 @@
           </ng-container>
 
           <ng-container *ngIf="
-            entityPartyIdDetails &&
             partyAccountDetails &&
-            tab.title==='prime_identity'"
+            tab.title==='prime_identity';"
           >
             <app-prime-identity
+              #primeIdentityRef
               [partyAccountDetails]="partyAccountDetails"
-              [entityPartyIdDetails]="entityPartyIdDetails"
               [primeDetailsConfig]="tab"
+              [formFieldsConfig]="editPrimeDetailsFormConfig"
             >
             </app-prime-identity>
           </ng-container>
