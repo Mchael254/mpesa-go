@@ -224,6 +224,7 @@ const SERVICES = [
     DynamicReportsComponent,
     DynamicReportsComponent,
     TruncatePipe,
+    DynamicSetupTableComponent
 
   ],
     imports: [
@@ -252,7 +253,6 @@ const SERVICES = [
         DialogModule,
         FormsModule,
         NgxIntlTelInputModule,
-      DynamicSetupTableComponent
     ],
   exports: [
     ErrorComponent,
