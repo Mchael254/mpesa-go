@@ -130,6 +130,8 @@ throw new Error('Method not implemented.');
   premiumAmount: number
   editableComment: string = '';
   showCommentModal: boolean = false;
+  taxForm:FormGroup;
+  showTaxModal = false;
 
 
   constructor(
@@ -221,6 +223,7 @@ throw new Error('Method not implemented.');
     this.loadAllSubclass();
     this.createSmsForm();
     this.getDocumentTypes();
+    this.createTaxForm();
 
     this.menuItems = [
       {
@@ -638,6 +641,39 @@ throw new Error('Method not implemented.');
       bcc: ['', Validators.required],
     });
   }
+  createTaxForm() {
+    this.taxForm = this.fb.group({
+      tax: ['', Validators.required],
+      taxType: ['', Validators.required],
+      transactionType: ['', Validators.required],
+      computationLevel: ['', Validators.required], // Policy or Risk
+      taxMode: ['', Validators.required], // Rate or Amount
+      taxValue: ['', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
+      override: ['', Validators.required], // Yes or No
+    });
+  }
+
+  saveTax(){
+
+  }
+  openTaxModal() {
+    this.showTaxModal = true;
+  }
+
+  closeTaxModal() {
+    this.showTaxModal = false;
+  }
+
+  taxTypes = [
+  { label: 'UW Tax', value: 'UW Tax' },
+  { label: 'U/W Comm WHTX', value: 'U/W Comm WHTX' },
+  { label: 'Premium Tax', value: 'Premium Tax' },
+  { label: 'Service Fee', value: 'Service Fee' },
+  { label: 'Stamp Duty', value: 'Stamp Duty' },
+  { label: 'Extras', value: 'Extras' },
+  { label: 'PolicyHolder Fund', value: 'PolicyHolder Fund' },
+];
+
 
   createSmsForm() {
     this.smsForm = this.fb.group({
