@@ -4,7 +4,7 @@ import {Observable} from "rxjs/internal/Observable";
 import {API_CONFIG} from "../../../../../environments/api_service_config";
 import {
   ConfigFormFieldsDto, DynamicScreenSetupDto,
-  FormGroupsDto,
+  FormGroupsDto, FormSubGroupsDto,
   ScreenFormsDto,
   ScreensDto,
   SubModulesDto
@@ -83,9 +83,9 @@ export class DynamicScreensSetupService {
 
   fetchSubGroups(
     groupCode?: number
-  ): Observable<FormGroupsDto[]> {
+  ): Observable<FormSubGroupsDto[]> {
 
-    return this.api.GET<FormGroupsDto[]>(
+    return this.api.GET<FormSubGroupsDto[]>(
       `dynamic-screens-setup/form-sub-groupings/${groupCode}`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
     );
