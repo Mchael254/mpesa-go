@@ -138,6 +138,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   premiumAmount: number
   editableComment: string = '';
   showCommentModal: boolean = false;
+  taxForm:FormGroup;
+  showTaxModal = false;
   reassignComment: string = ''
   users: any[] = [];
   selectedUser: any;
@@ -244,6 +246,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.loadAllSubclass();
     this.createSmsForm();
     this.getDocumentTypes();
+    this.createTaxForm();
 
     this.menuItems = [
       {
@@ -679,6 +682,39 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       bcc: ['', Validators.required],
     });
   }
+  createTaxForm() {
+    this.taxForm = this.fb.group({
+      tax: ['', Validators.required],
+      taxType: ['', Validators.required],
+      transactionType: ['', Validators.required],
+      computationLevel: ['', Validators.required], // Policy or Risk
+      taxMode: ['', Validators.required], // Rate or Amount
+      taxValue: ['', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
+      override: ['', Validators.required], // Yes or No
+    });
+  }
+
+  saveTax(){
+
+  }
+  openTaxModal() {
+    this.showTaxModal = true;
+  }
+
+  closeTaxModal() {
+    this.showTaxModal = false;
+  }
+
+  taxTypes = [
+  { label: 'UW Tax', value: 'UW Tax' },
+  { label: 'U/W Comm WHTX', value: 'U/W Comm WHTX' },
+  { label: 'Premium Tax', value: 'Premium Tax' },
+  { label: 'Service Fee', value: 'Service Fee' },
+  { label: 'Stamp Duty', value: 'Stamp Duty' },
+  { label: 'Extras', value: 'Extras' },
+  { label: 'PolicyHolder Fund', value: 'PolicyHolder Fund' },
+];
+
 
   createSmsForm() {
     this.smsForm = this.fb.group({
