@@ -570,4 +570,28 @@ tr:hover {
   font-size: 14px;
 }
 
+.modal-title{
+  margin-left:1.2rem;
+}
+
+.no-border-header {
+  border-bottom: none !important;
+}
+::ng-deep .slim-dropdown .p-dropdown {
+  height: 32px !important;
+  font-size: 13px;
+  padding: 0 !important;
+}
+
+::ng-deep .slim-dropdown .p-dropdown-label {
+  padding: 4px 8px !important;
+  line-height: 1.2;
+}
+
+::ng-deep .slim-dropdown .p-dropdown-trigger {
+  padding: 0 6px !important;
+}
+
+
+
 
