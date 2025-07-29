@@ -1,32 +1,60 @@
 <div class="mx-4 mt-3">
-  <p class="title">Quotations:Quotation Summary </p>
+  <p class="title">Quotations:Quotation Summary</p>
   <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
 
   <div class="card mb-3">
     <div class="header mx-4 mt-2 mb-2">
       <ul class="nav">
         <li class="nav-item">
-          <a class="nav-link sub-title active" data-bs-toggle="tab" id="nav-summary-tab" aria-controls="nav-summary"
-            data-bs-target="#nav-summary">Quotation Summary</a>
+          <a
+            class="nav-link sub-title active"
+            data-bs-toggle="tab"
+            id="nav-summary-tab"
+            aria-controls="nav-summary"
+            data-bs-target="#nav-summary"
+            >Quotation Summary</a
+          >
         </li>
         <li class="nav-item">
-          <a class="nav-link sub-title" data-bs-toggle="tab" id="nav-quotation-other-details-tab"
-            aria-controls="nav-authorization" data-bs-target="#nav-quotation-other-details">Quotation Other Details</a>
+          <a
+            class="nav-link sub-title"
+            data-bs-toggle="tab"
+            id="nav-quotation-other-details-tab"
+            aria-controls="nav-authorization"
+            data-bs-target="#nav-quotation-other-details"
+            >Quotation Other Details</a
+          >
         </li>
         <li class="nav-item">
-          <a class="nav-link sub-title" data-bs-toggle="tab" id="nav-reports-tab" aria-controls="nav-authorization"
-            data-bs-target="#nav-reports">Reports and documents</a>
+          <a
+            class="nav-link sub-title"
+            data-bs-toggle="tab"
+            id="nav-reports-tab"
+            aria-controls="nav-authorization"
+            data-bs-target="#nav-reports"
+            >Reports and documents</a
+          >
         </li>
       </ul>
     </div>
   </div>
 
   <div class="tab-content" id="nav-tabContent">
-    <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab"
-      tabindex="0">
+    <div
+      class="tab-pane fade show active"
+      id="nav-summary"
+      role="tabpanel"
+      aria-labelledby="nav-summary-tab"
+      tabindex="0"
+    >
       <div class="spinner" style="position: relative">
-        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="large"
-          bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <ngx-spinner
+          type="ball-clip-rotate-multiple"
+          [fullScreen]="true"
+          color="#00529B"
+          size="large"
+          bdColor="rgba(255, 255, 255, 0.966)"
+        ></ngx-spinner>
       </div>
 
       <!-- Quotation details card  -->
@@ -71,7 +99,9 @@
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Frequency of Payment</p>
-              <p class="content w-50">{{ quotationView?.frequencyOfPayment }}</p>
+              <p class="content w-50">
+                {{ quotationView?.frequencyOfPayment }}
+              </p>
             </div>
             <div class="col-md-4 d-flex align-items-center position-relative">
               <p class="label w-50 mb-0 me-2">Notes</p>
@@ -79,24 +109,32 @@
               <div class="d-flex align-items-center w-50">
                 <p class="content mb-0 me-2">
                   {{
-                  quotationView?.comments
-                  ? quotationView.comments.split(' ').slice(0, 3).join(' ') +
-                  (quotationView.comments.split(' ').length > 3 ? '...' : '')
-                  : ''
+                    quotationView?.comments
+                      ? quotationView.comments
+                          .split(" ")
+                          .slice(0, 3)
+                          .join(" ") +
+                        (quotationView.comments.split(" ").length > 3
+                          ? "..."
+                          : "")
+                      : ""
                   }}
                 </p>
 
-                <i class="fas fa-edit text-primary" style="cursor: pointer;" (click)="openCommentModal()"></i>
+                <i
+                  class="fas fa-edit text-primary"
+                  style="cursor: pointer"
+                  (click)="openCommentModal()"
+                ></i>
               </div>
             </div>
-
           </div>
 
           <p class="card-titles mb-4">Client information</p>
 
           <div class="row mb-3">
             <div class="col-md-4 d-flex">
-              <p class="label w-50">Client </p>
+              <p class="label w-50">Client</p>
               <p class="content w-50">{{ quotationView?.clientName }}</p>
             </div>
             <div class="col-md-4 d-flex">
@@ -112,15 +150,17 @@
           <div class="row mb-2">
             <div class="col-md-4 d-flex">
               <p class="label w-50">Source</p>
-              <p class="content w-50">{{ quotationView?.source.description}}</p>
+              <p class="content w-50">
+                {{ quotationView?.source.description }}
+              </p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Likelihood</p>
-              <p class="content w-50">{{ quotationView?.likelihood}}</p>
+              <p class="content w-50">{{ quotationView?.likelihood }}</p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Agent</p>
-              <p class="content w-50">{{ quotationView?.agentName}}</p>
+              <p class="content w-50">{{ quotationView?.agentName }}</p>
             </div>
           </div>
 
@@ -133,11 +173,15 @@
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Sum Insured</p>
-              <p class="content w-50">{{ quotationView?.sumInsured | number }}</p>
+              <p class="content w-50">
+                {{ quotationView?.sumInsured | number }}
+              </p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Marketer Comm.</p>
-              <p class="content w-50">{{ quotationView?.marketerCommissionAmount | number }}</p>
+              <p class="content w-50">
+                {{ quotationView?.marketerCommissionAmount | number }}
+              </p>
             </div>
           </div>
 
@@ -157,12 +201,20 @@
           </div>
 
           <div class="d-flex justify-content-end align-items-center mt-4">
-            <a href="#" (click)="viewClientProfile()" class="text-primary text-decoration-underline">
+            <a
+              href="#"
+              (click)="viewClientProfile()"
+              class="text-primary text-decoration-underline"
+            >
               View Client Profile
             </a>
 
-            <button class="btn btn-outline-primary custom-outline-btn" style="margin-right: 10px; margin-left: 20px;"
-              (click)="editQuotationDetails()" [disabled]="viewQuoteFlag">
+            <button
+              class="btn btn-outline-primary custom-outline-btn"
+              style="margin-right: 10px; margin-left: 20px"
+              (click)="editQuotationDetails()"
+              [disabled]="viewQuoteFlag"
+            >
               Edit details
             </button>
           </div>
@@ -171,26 +223,39 @@
       <!-- edit notes Modal -->
       <div *ngIf="showCommentModal" class="modal-backdrop-custom">
         <div class="modal d-block" tabindex="-1">
-          <div class="modal-dialog modal-dialog-centered modal-sm">
+          <div class="modal-dialog modal-dialog-centered modal-md">
             <div class="modal-content">
               <div class="modal-header border-0">
                 <h5 class="modal-title">Edit Notes</h5>
-                <button type="button" class="btn-close" aria-label="Close" (click)="closeCommentModal()"></button>
+                <button
+                  type="button"
+                  class="btn-close"
+                  aria-label="Close"
+                  (click)="closeCommentModal()"
+                ></button>
               </div>
               <div class="modal-body">
-                <textarea [(ngModel)]="editableComment" class="form-control w-90%" rows="3"></textarea>
+                <textarea
+                  [(ngModel)]="editableComment"
+                  class="form-control w-90%"
+                  rows="3"
+                ></textarea>
               </div>
               <div class="modal-footer border-0">
-                <button class="btn btn-secondary btn-lightblue" (click)="closeCommentModal()">Cancel</button>
-                <button class="btn btn-primary" (click)="saveComment()">Save</button>
+                <button
+                  class="btn btn-secondary btn-lightblue"
+                  (click)="closeCommentModal()"
+                >
+                  Cancel
+                </button>
+                <button class="btn btn-primary" (click)="saveComment()">
+                  Save
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-
-
 
       <!-- Product Details Card -->
       <div class="card mb-4">
@@ -201,18 +266,28 @@
             </div>
             <div class="col-8 d-flex justify-content-end">
               <div class="row">
-
                 <div class="col-4">
-                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse"
-                    data-bs-target="#productDetails" (click)="toggleProductDetails()"
-                    [attr.aria-expanded]="!isCollapsibleOpen">
-                    <i class="fa-solid" [ngClass]="isCollapsibleOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                  <button
+                    type="button"
+                    id="icon"
+                    class="btn btn-primary"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#productDetails"
+                    (click)="toggleProductDetails()"
+                    [attr.aria-expanded]="!isCollapsibleOpen"
+                  >
+                    <i
+                      class="fa-solid"
+                      [ngClass]="
+                        isCollapsibleOpen ? 'fa-chevron-up' : 'fa-chevron-down'
+                      "
+                    ></i>
                   </button>
                 </div>
               </div>
             </div>
           </div>
-          <div *ngIf="isCollapsibleOpen" class=" mt-4" id="productDetails">
+          <div *ngIf="isCollapsibleOpen" class="mt-4" id="productDetails">
             <div class="row">
               <div class="col-3">
                 <!-- <p class="card-title mt-2" data-bs-toggle="collapse" data-bs-target="#productDetails" (click)="toggleProductDetails()">Product Details</p> -->
@@ -232,13 +307,14 @@
                     </button>
                   </div> -->
 
-
                 <!-- </div>  -->
               </div>
-
             </div>
             <div class="mt-3" id="">
-              <p-table [value]="productDetails" [tableStyle]="{ 'min-width': '50rem' }">
+              <p-table
+                [value]="productDetails"
+                [tableStyle]="{ 'min-width': '50rem' }"
+              >
                 <ng-template pTemplate="header">
                   <tr>
                     <th pSortableColumn="productName">
@@ -268,42 +344,57 @@
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-data>
-                  <tr (click)="handleProductClick(data)" class="point"
-                    [ngClass]="{'selected-row': selectedProduct === data}">
+                  <tr
+                    (click)="handleProductClick(data)"
+                    class="point"
+                    [ngClass]="{ 'selected-row': selectedProduct === data }"
+                  >
                     <td>{{ data.productName | sentenceCase }}</td>
                     <td>{{ data.wef }}</td>
                     <td>{{ data.wet }}</td>
-                    <td>{{ data.premium || 0.00 | number }}</td>
-                    <td>{{ data.commission || 0.00 |number }}</td>
-
+                    <td>{{ data.premium || 0.0 | number }}</td>
+                    <td>{{ data.commission || 0.0 | number }}</td>
                   </tr>
                 </ng-template>
               </p-table>
               <!-- Delete Product Modal -->
-              <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
-                aria-hidden="true">
+              <div
+                class="modal fade"
+                id="deleteProduct"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="deleteProduct"
+                aria-hidden="true"
+              >
                 <div class="modal-dialog modal-dialog-centered" role="document">
                   <div class="modal-content" id="deleteProduct">
-                    <div class="modal-body ">
-                      <p class="deleteMessage mt-4 mb-4">{{
-                        'gis.policy.are_you_sure_you_want_to_delete' |
-                        translate
-                        }}</p>
+                    <div class="modal-body">
+                      <p class="deleteMessage mt-4 mb-4">
+                        {{
+                          "gis.policy.are_you_sure_you_want_to_delete"
+                            | translate
+                        }}
+                      </p>
                       <div class="d-flex justify-content-center mb-3">
-                        <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
-                          (click)="deleteProduct()">{{
-                          'gis.policy.yes_delete'
-                          | translate
-                          }}
+                        <button
+                          type="button"
+                          class="btn btn-primary px-5"
+                          id="delete"
+                          data-bs-dismiss="modal"
+                          (click)="deleteProduct()"
+                        >
+                          {{ "gis.policy.yes_delete" | translate }}
                         </button>
                       </div>
                       <div class="d-flex justify-content-center mb-2">
-                        <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">{{
-                          'gis.policy.no_im_not' | translate }}
+                        <button
+                          type="button"
+                          class="btn btn-outline-primary px-5"
+                          data-bs-dismiss="modal"
+                        >
+                          {{ "gis.policy.no_im_not" | translate }}
                         </button>
                       </div>
-
-
                     </div>
                   </div>
                 </div>
@@ -311,16 +402,28 @@
               <!-- TABS  -->
               <div class="row mt-5 mb-3">
                 <div class="col-7">
-                  <ul class="nav nav-underline ">
+                  <ul class="nav nav-underline">
                     <li class="nav-item">
-                      <a class="nav-link active" [class.active]="activeTab === 'clauses'"
-                        (click)="setActiveTab('clauses')" aria-current="page" data-bs-toggle="tab"
-                        data-bs-target="#nav-clauses">Clauses</a>
+                      <a
+                        class="nav-link active"
+                        [class.active]="activeTab === 'clauses'"
+                        (click)="setActiveTab('clauses')"
+                        aria-current="page"
+                        data-bs-toggle="tab"
+                        data-bs-target="#nav-clauses"
+                        >Clauses</a
+                      >
                     </li>
-                    <br>
+                    <br />
                     <li class="nav-item">
-                      <a class="nav-link" [class.active]="activeTab === 'taxes'" (click)="setActiveTab('taxes')"
-                        data-bs-toggle="tab" data-bs-target="#nav-taxes">Taxes</a>
+                      <a
+                        class="nav-link"
+                        [class.active]="activeTab === 'taxes'"
+                        (click)="setActiveTab('taxes')"
+                        data-bs-toggle="tab"
+                        data-bs-target="#nav-taxes"
+                        >Taxes</a
+                      >
                     </li>
                     <!-- <br>
                     <li class="nav-item">
@@ -335,8 +438,18 @@
                     </li> -->
                   </ul>
                 </div>
-                <div class="col-5 d-flex justify-content-end" id="navigationIcons">
-                  <div class="row" *ngIf="activeTab === 'clauses' || activeTab === 'taxes' || activeTab === 'limits'">
+                <div
+                  class="col-5 d-flex justify-content-end"
+                  id="navigationIcons"
+                >
+                  <div
+                    class="row"
+                    *ngIf="
+                      activeTab === 'clauses' ||
+                      activeTab === 'taxes' ||
+                      activeTab === 'limits'
+                    "
+                  >
                     <div class="col-sm-3"></div>
                     <!-- <div class="col-sm-3">
                       <button type="button" id="icon" class="btn btn-primary" title="Add" [disabled]="viewQuoteFlag">
@@ -349,35 +462,65 @@
                       </button>
                     </div> -->
                     <div class="col-sm-3 d-flex">
-                      <button *ngIf="activeTab === 'taxes'" id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal" style="white-space: nowrap; height: 30px; padding: 2px 8px; font-size: 13px; line-height: 1;"
-                      (click)="openTaxModal()"> Add Tax
-                  </button>
-                      <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
-                        'pi-caret-up': isCollapsibleOpen,
-                        'pi-caret-down': !isCollapsibleOpen
-                      }" style="font-size: 16px; cursor: pointer; margin-left: 8px; padding: 2px 8px; height: 30px; "
-                             (click)="toggleProductDetails()"></i>
-
-
+                      <button
+                        *ngIf="activeTab === 'taxes'"
+                        id="openModalButtonAdd"
+                        class="btn btn-primary btn-sm"
+                        data-bs-toggle="modal"
+                        style="
+                          white-space: nowrap;
+                          height: 30px;
+                          padding: 2px 8px;
+                          font-size: 13px;
+                          line-height: 1;
+                        "
+                        (click)="openEditTaxModal();getTransactionTypes();getProductTaxes()"
+                      >
+                        Add Tax
+                      </button>
+                      <i
+                        class="pi border border-black p-1 rounded-1 text-black"
+                        [ngClass]="{
+                          'pi-caret-up': isCollapsibleOpen,
+                          'pi-caret-down': !isCollapsibleOpen
+                        }"
+                        style="
+                          font-size: 16px;
+                          cursor: pointer;
+                          margin-left: 8px;
+                          padding: 2px 8px;
+                          height: 30px;
+                        "
+                        (click)="toggleProductDetails()"
+                      ></i>
                     </div>
-
                   </div>
                 </div>
               </div>
 
-
-
-
               <div class="tab-content mb-4" id="nav-tabContent">
                 <!-- CLAUSES -->
-                <div class="tab-pane fade show active" id="nav-clauses" role="tabpanel" aria-labelledby="nav-clauses"
-                  tabindex="0">
-
-
-                  <p-table [value]="clauses" [tableStyle]="{ 'min-width': '50rem' }" [rows]="3" [paginator]="true"
-                    [rowsPerPageOptions]="[3,6,9]" [showCurrentPageReport]="true"
-                    currentPageReportTemplate="{first} - {last} of {totalRecords}" class='ui-datatable'
-                    responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
+                <div
+                  class="tab-pane fade show active"
+                  id="nav-clauses"
+                  role="tabpanel"
+                  aria-labelledby="nav-clauses"
+                  tabindex="0"
+                >
+                  <p-table
+                    [value]="clauses"
+                    [tableStyle]="{ 'min-width': '50rem' }"
+                    [rows]="3"
+                    [paginator]="true"
+                    [rowsPerPageOptions]="[3, 6, 9]"
+                    [showCurrentPageReport]="true"
+                    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                    class="ui-datatable"
+                    responsiveLayout="scroll"
+                    [autoLayout]="true"
+                    [scrollable]="true"
+                    scrollHeight="200px"
+                  >
                     <ng-template pTemplate="header">
                       <tr>
                         <th class="flexible-header" pSortableColumn="id">
@@ -386,54 +529,92 @@
                         </th>
 
                         <th class="flexible-header" pSortableColumn="heading">
-                          {{ 'gis.quotation.heading' | translate }}
+                          {{ "gis.quotation.heading" | translate }}
                           <p-sortIcon field="heading"></p-sortIcon>
                         </th>
 
                         <th class="flexible-header" pSortableColumn="wording">
-                          {{ 'gis.quotation.wording' | translate }}
+                          {{ "gis.quotation.wording" | translate }}
                           <p-sortIcon field="wording"></p-sortIcon>
                         </th>
-
                       </tr>
                     </ng-template>
 
-                    <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
+                    <ng-template
+                      pTemplate="body"
+                      let-data
+                      let-rowIndex="rowIndex"
+                    >
                       <tr *ngIf="rowIndex === 0">
                         <td>
-                          <input type="text" pInputText placeholder="" class="small-input" />
+                          <input
+                            type="text"
+                            pInputText
+                            placeholder=""
+                            class="small-input"
+                          />
                         </td>
                         <td>
-                          <input type="text" pInputText placeholder="" class="small-input" />
+                          <input
+                            type="text"
+                            pInputText
+                            placeholder=""
+                            class="small-input"
+                          />
                         </td>
                         <td>
-                          <input type="text" pInputText placeholder="" class="small-input" />
+                          <input
+                            type="text"
+                            pInputText
+                            placeholder=""
+                            class="small-input"
+                          />
                         </td>
                       </tr>
                       <tr>
                         <td>{{ data.shortDescription }}</td>
                         <td>{{ data.heading | sentenceCase }}</td>
-                        <td style=" white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        max-width:300px;
-                        overflow-y: auto;">{{ data.wording | sentenceCase }}
+                        <td
+                          style="
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            max-width: 300px;
+                            overflow-y: auto;
+                          "
+                        >
+                          {{ data.wording | sentenceCase }}
                         </td>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
                       <tr>
                         <td>
-                          <input type="text" pInputText placeholder="" class="small-input" />
+                          <input
+                            type="text"
+                            pInputText
+                            placeholder=""
+                            class="small-input"
+                          />
                         </td>
                         <td>
-                          <input type="text" pInputText placeholder="" class="small-input" />
+                          <input
+                            type="text"
+                            pInputText
+                            placeholder=""
+                            class="small-input"
+                          />
                         </td>
                         <td>
-                          <input type="text" pInputText placeholder="" class="small-input" />
+                          <input
+                            type="text"
+                            pInputText
+                            placeholder=""
+                            class="small-input"
+                          />
                         </td>
                       </tr>
-                      <tr>
+                      <tr></tr>
                       <tr>
                         <td colspan="5" class="text-center text-muted py-3">
                           “No product clauses available.”
@@ -443,253 +624,514 @@
                   </p-table>
                 </div>
 
-                <div *ngIf="showTaxModal" class="modal fade show d-block" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-    <div class="modal-content">
+                <!-- Add tax modal -->
 
-      <!-- Modal Header -->
-      <div class="modal-header d-flex align-items-center no-border-header">
-        <h5 class="modal-title text-primary">Add tax</h5>
-        <button type="button" class="btn-close ms-auto" aria-label="Close" (click)="closeTaxModal()">
-          
-        </button>
-      </div>
+                <div
+                  *ngIf="showTaxModal"
+                  class="modal fade show d-block"
+                  tabindex="-1"
+                  role="dialog"
+                >
+                  <div
+                    class="modal-dialog modal-lg modal-dialog-centered"
+                    role="document"
+                  >
+                    <div class="modal-content">
+                      <!-- Modal Header -->
+                      <div
+                        class="modal-header d-flex align-items-center no-border-header"
+                      >
+                        <h5 class="modal-title text-primary">Add tax</h5>
+                        <button
+                          type="button"
+                          class="btn-close ms-auto"
+                          aria-label="Close"
+                          (click)="closeTaxModal()"
+                        ></button>
+                      </div>
 
-      <!-- Modal Body -->
-      <div class="modal-body">
-        <form [formGroup]="taxForm">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label>Tax</label>
-             <div class="position-relative">
-  <input
-    formControlName="tax"
-    type="text"
-    class="form-control form-control-sm pe-5"
-    placeholder="Enter tax"
-  />
-  <span
-    class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
-    style="cursor: pointer;"
-    
-  >
-    🔍
-  </span>
-</div>
-
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <label>Tax type</label>
-             <p-dropdown 
-    formControlName="taxType" 
-    [options]="taxTypes" 
-    optionLabel="label" 
-    placeholder="Select tax type"
-    class="w-100 p-inputtext-sm slim-dropdown"
-    [showClear]="true"
-    [filter]="true">
-  </p-dropdown>
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <label>Transaction type</label>
-              <select formControlName="transactionType" class="form-control form-control-sm">
-                <option value="">Select</option>
-              </select>
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <label>Computation level</label><br />
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" formControlName="computationLevel " value="Policy" />
-                <label class="form-check-label">Policy</label>
+                      <!-- Modal Body -->
+                      <div class="modal-body">
+                        <form [formGroup]="taxForm">
+                          <div class="row">
+                            <div class="col-md-6 mb-3">
+                              <label>Tax</label>
+                              <div class="position-relative" *ngIf="taxTypes && taxTypes.length">
+                                <p-dropdown
+                                  formControlName="tax"
+                                  [options]="taxes"
+                                  optionLabel="description"
+                                  placeholder="Enter tax"
+                                  optionValue="taxCode"
+                                  class="w-100 p-inputtext-sm slim-dropdown"
+                                  [showClear]="true"
+                                  [filter]="true"
+                                  filterBy="description"
+                                  
+                                >
+                                </p-dropdown>
+                                 <div *ngIf="taxForm.get('tax')?.touched && taxForm.get('tax')?.invalid" class="text-danger small">
+                Tax is required.
               </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" formControlName="computationLevel" value="Risk" />
-                <label class="form-check-label">Risk</label>
+                                
+                              </div>
+                              
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                              <label>Tax type</label>
+                              <p-dropdown
+                                formControlName="taxType"
+                                [options]="taxTypes"
+                                optionLabel="label"
+                                placeholder="Select tax type"
+                                class="w-100 p-inputtext-sm slim-dropdown"
+                                [showClear]="true"
+                                [filter]="true"
+                              >
+                              </p-dropdown>
+                               <div *ngIf="taxForm.get('taxType')?.touched && taxForm.get('taxType')?.invalid" class="text-danger small">
+                Tax type is required.
               </div>
-            </div>
+                            </div>
 
-            <div class="col-md-6 mb-3">
-              <label>Tax</label><br />
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" formControlName="taxMode" value="Rate" />
-                <label class="form-check-label">Rate</label>
+                            <div class="col-md-6 mb-3">
+                              <label>Transaction type</label>
+                               <p-dropdown
+                                formControlName="transactionType"
+                                [options]="transactionTypes"
+                                optionLabel="description"
+                                placeholder=""
+                                class="w-100 p-inputtext-sm slim-dropdown"
+                                [showClear]="true"
+                                [filter]="true"
+                                filterBy="description"
+                              >
+                              </p-dropdown>
+                              <div *ngIf="taxForm.get('transactionType')?.touched && taxForm.get('transactionType')?.invalid" class="text-danger small">
+                Transaction type is required.
               </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" formControlName="taxMode" value="Amount" />
-                <label class="form-check-label">Amount</label>
+                              
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                              <label>Computation level</label><br />
+                              <div class="form-check form-check-inline">
+                                <input
+                                  class="form-check-input"
+                                  type="radio"
+                                  formControlName="computationLevel"
+                                  value="Policy"
+                                />
+                                <label class="form-check-label">Policy</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                <input
+                                  class="form-check-input"
+                                  type="radio"
+                                  formControlName="computationLevel"
+                                  value="Risk"
+                                />
+                                <label class="form-check-label">Risk</label>
+                              </div>
+                              <div *ngIf="taxForm.get('computationLevel')?.touched && taxForm.get('computationLevel')?.invalid" class="text-danger small">
+                Computation level is required.
               </div>
-            </div>
+                            </div>
 
-            <div class="col-md-6 mb-3">
-              <label>Tax value</label>
-              <input formControlName="taxValue" type="text" class="form-control form-control-sm" />
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <label>Override</label><br />
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" formControlName="override" value="Yes" />
-                <label class="form-check-label">Yes</label>
+                            <div class="col-md-6 mb-3">
+                              <label>Tax</label><br />
+                              <div class="form-check form-check-inline">
+                                <input
+                                  class="form-check-input"
+                                  type="radio"
+                                  formControlName="taxMode"
+                                  value="Rate"
+                                />
+                                <label class="form-check-label">Rate</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                <input
+                                  class="form-check-input"
+                                  type="radio"
+                                  formControlName="taxMode"
+                                  value="Amount"
+                                />
+                                <label class="form-check-label">Amount</label>
+                              </div>
+                               <div *ngIf="taxForm.get('taxMode')?.touched && taxForm.get('taxMode')?.invalid" class="text-danger small">
+                Tax mode is required.
               </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" formControlName="override" value="No" />
-                <label class="form-check-label">No</label>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                              <label>Tax value</label>
+                              <input
+                                formControlName="taxValue"
+                                type="text"
+                                class="form-control form-control-sm"
+                              />
+                               <div *ngIf="taxForm.get('taxValue')?.touched && taxForm.get('taxValue')?.errors" class="text-danger small">
+                <div *ngIf="taxForm.get('taxValue')?.errors['required']">Tax value is required.</div>
+                <div *ngIf="taxForm.get('taxValue')?.errors['pattern']">Must be a valid number (e.g., 12 or 12.5).</div>
               </div>
-            </div>
-          </div>
-        </form>
-      </div>
+                            </div>
 
-      <!-- Modal Footer -->
-      <div class="modal-footer gap-3">
-        <button type="button" class="btn btn-outline-primary" (click)="closeTaxModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="saveTax()">Save</button>
-      </div>
+                            <div class="col-md-6 mb-3">
+                              <label>Override</label><br />
+                              <div class="form-check form-check-inline">
+                                <input
+                                  class="form-check-input"
+                                  type="radio"
+                                  formControlName="override"
+                                  value="Yes"
+                                />
+                                <label class="form-check-label">Yes</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                <input
+                                  class="form-check-input"
+                                  type="radio"
+                                  formControlName="override"
+                                  value="No"
+                                />
+                                <label class="form-check-label">No</label>
+                              </div>
+                               <div *ngIf="taxForm.get('override')?.touched && taxForm.get('override')?.invalid" class="text-danger small">
+                Override selection is required.
+              </div>
+                            </div>
+                          </div>
+                        </form>
+                        
+                      </div>
 
-    </div>
-  </div>
-</div>
+                      <!-- Modal Footer -->
+                      <div class="modal-footer gap-3">
+                        <button
+                          type="button"
+                          class="btn btn-outline-primary"
+                          (click)="closeTaxModal()"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-primary"
+                          (click)="addTax()"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+               
 
+                <!-- Edit Tax Modal -->
+                <div
+                  *ngIf="showEditTaxModal"
+                  class="modal fade show d-block"
+                  tabindex="-1"
+                  role="dialog"
+                >
+                  <div
+                    class="modal-dialog modal-lg modal-dialog-centered"
+                    role="document"
+                  >
+                    <div class="modal-content">
+                      <!-- Modal Header -->
+                      <div class="modal-header">
+                        <h5 class="modal-title text-primary">Select tax</h5>
+                        <button
+                          type="button"
+                          class="btn-close"
+                          aria-label="Close"
+                          (click)="closeEditTaxModal()"
+                        ></button>
+                      </div>
 
+                      <!-- Modal Body -->
+                      <div class="modal-body">
+                        <p-table
+                          [value]="taxes"
+                          selectionMode="single"
+                          [(selection)]="selectedTax"
+                          [tableStyle]="{  'width': '100%' }"
+                          [rows]="4"
+                          [paginator]="true"
+                          [rowsPerPageOptions]="[2, 4, 6]"
+                          [showCurrentPageReport]="true"
+                          currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                          class="ui-datatable"
+                          responsiveLayout="scroll"
+                          [autoLayout]="true"
+                          scrollHeight="200px"
+                        >
+                          <ng-template pTemplate="header">
+                            <tr>
+                              <th class="flexible-header" pSortableColumn="id">
+                                ID
+                                <p-sortIcon field="id"></p-sortIcon>
+                              </th>
+                              <th></th>
+                              <th
+                                class="flexible-header"
+                                pSortableColumn="tax-description"
+                              >
+                                Tax description
+                                <p-sortIcon
+                                  field="tax-description"
+                                ></p-sortIcon>
+                              </th>
+                              <th></th>
+                            </tr>
+                          </ng-template>
 
+                          <ng-template
+                            pTemplate="body"
+                            let-data
+                            let-rowIndex="rowIndex"
+                          >
+                            <tr *ngIf="rowIndex === 0">
+                              <td>
+                                <input
+                                  type="text"
+                                  pInputText
+                                  class="small-input"
+                                />
+                              </td>
+                              <td></td>
+                              <td>
+                                <input
+                                  type="text"
+                                  pInputText
+                                  class="small-input"
+                                />
+                              </td>
+                            </tr>
+                            <tr [pSelectableRow]="data">
+                              <td>{{ data.taxCode }}</td>
+                              <td></td>
+                              <td>{{ data.description | sentenceCase }}</td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div> <!-- Modal Footer -->
+                      <div class="modal-footer gap-3">
+                        <button
+                          type="button"
+                          class="btn btn-outline-primary"
+                          (click)="closeEditTaxModal()"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-primary"
+                         (click)="handleNextClick()"
+                        >
+                          Next
+                        </button>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
 
                 <!-- TAXES -->
-                <div class="tab-pane fade" id="nav-taxes" role="tabpanel" aria-labelledby="nav-taxes" tabindex="0">
-                  <p-table [value]="taxDetails" [tableStyle]="{ 'min-width': '50rem' }" class='ui-datatable'
-                    responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
+                <div
+                  class="tab-pane fade"
+                  id="nav-taxes"
+                  role="tabpanel"
+                  aria-labelledby="nav-taxes"
+                  tabindex="0"
+                >
+                  <p-table
+                    [value]="taxDetails"
+                    [tableStyle]="{ 'min-width': '50rem' }"
+                    class="ui-datatable"
+                    responsiveLayout="scroll"
+                    [autoLayout]="true"
+                    [scrollable]="true"
+                    scrollHeight="200px"
+                  >
                     <ng-template pTemplate="header">
                       <tr>
                         <th pSortableColumn="taxPayer">
                           Tax payer
                           <p-sortIcon field="taxPayer"></p-sortIcon>
                         </th>
-                  
-                        <th pSortableColumn="shortDescription">
+
+                        <th pSortableColumn="rateDescription">
                           Short description
-                          <p-sortIcon field="shortDescription"></p-sortIcon>
+                          <p-sortIcon field="rateDescription"></p-sortIcon>
                         </th>
-                  
-                        <th pSortableColumn="taxdescription">
+
+                        <th pSortableColumn="rateDescription">
                           Tax description
-                          <p-sortIcon field="taxdescription" ></p-sortIcon>
+                          <p-sortIcon field="rateDescription"></p-sortIcon>
                         </th>
-                  
-                        <th  pSortableColumn="rate">
+
+                        <th pSortableColumn="rate">
                           Rate
                           <p-sortIcon field="rate"></p-sortIcon>
                         </th>
-                  
-                        <th  pSortableColumn="taxAmount">
+
+                        <th pSortableColumn="taxAmount">
                           Tax amount
                           <p-sortIcon field="taxAmount"></p-sortIcon>
                         </th>
-                        <th  pSortableColumn="rateType">
+                        <th pSortableColumn="rateType">
                           Rate type
                           <p-sortIcon field="rateType"></p-sortIcon>
                         </th>
-                        <th  pSortableColumn="taxType">
+                        <th pSortableColumn="taxType">
                           Tax type
                           <p-sortIcon field="taxType"></p-sortIcon>
                         </th>
-                        
-                        
-                        
-                        
+                        <th></th>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-data>
                       <tr>
-                        <td>{{ data.taxPayer}}</td>
-                        <td>{{ data.shortDescription}}td>
-                        <td>{{ data.taxdescription}}</td>
-                        <td>{{ data.rate}}</td>
-                        <td>{{ data.taxamount }}</td>
+                        <td>{{ data.taxPayer }}Individual</td>
+                        <td>{{ data.rateDescription }}</td>
+                        <td>{{ data.rateDescription }}</td>
+                        <td>{{ data.rate }}</td>
+                        <td>{{ data.taxAmount }}</td>
                         <td>{{ data.rateType }}</td>
                         <td>{{ data.taxType }}</td>
                         <td>
-                          <button class="btn btn-sm borderless-button me-2" >
+                          <button
+                            class="btn btn-sm borderless-button me-2"
+                            (click)="openTaxModal()"
+                          >
                             Edit
                           </button>
-                          <button class="btn btn-sm borderless-button" >
+                          <button class="btn btn-sm borderless-button">
                             Delete
                           </button>
                         </td>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
-                     
                       <tr>
-                          <td colspan="7" class="text-center text-muted py-3">
-                            “No taxes. Click on ‘Add Tax’ to add a new tax.”
-                          </td>
+                        <td colspan="7" class="text-center text-muted py-3">
+                          “No taxes. Click on ‘Add Tax’ to add a new tax.”
+                        </td>
                       </tr>
-                  </ng-template>
+                    </ng-template>
                   </p-table>
                 </div>
                 <!-- LIMITS -->
-                <div class="tab-pane fade " id="nav-limits" role="tabpanel" aria-labelledby="nav-limits" tabindex="0">
+                <div
+                  class="tab-pane fade"
+                  id="nav-limits"
+                  role="tabpanel"
+                  aria-labelledby="nav-limits"
+                  tabindex="0"
+                >
                   <div class="row">
                     <div class="col-3">
                       <div>
-
                         <div class="listing">
-                          <p class="subclass-title">{{ 'gis.quotation.subclass' | translate }} </p>
+                          <p class="subclass-title">
+                            {{ "gis.quotation.subclass" | translate }}
+                          </p>
                           <ul class="scrollable-list">
-                            <li *ngFor="let data of productSubclass" (click)="onSubclassClick(data.code)">
+                            <li
+                              *ngFor="let data of productSubclass"
+                              (click)="onSubclassClick(data.code)"
+                            >
                               {{ data.description | sentenceCase }}
                             </li>
                           </ul>
                         </div>
-
                       </div>
                     </div>
                     <div class="col-9">
-
-
-                      <p-table [value]="limitsOfLiabilityList" [tableStyle]="{ 'min-width': '50rem' }"
-                        class='ui-datatable' responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true"
-                        scrollHeight="200px">
+                      <p-table
+                        [value]="limitsOfLiabilityList"
+                        [tableStyle]="{ 'min-width': '50rem' }"
+                        class="ui-datatable"
+                        responsiveLayout="scroll"
+                        [autoLayout]="true"
+                        [scrollable]="true"
+                        scrollHeight="200px"
+                      >
                         <ng-template pTemplate="header">
                           <tr>
-                            <th class="flexible-header">{{ 'gis.quotation.narration' | translate }}</th>
+                            <th class="flexible-header">
+                              {{ "gis.quotation.narration" | translate }}
+                            </th>
                             <th class="flexible-header">Scl Desc</th>
-                            <th class="flexible-header">{{ 'gis.quotation.value' | translate }}</th>
+                            <th class="flexible-header">
+                              {{ "gis.quotation.value" | translate }}
+                            </th>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-data>
                           <tr>
-                            <td style=" white-space: nowrap;
+                            <td
+                              style="
+                                white-space: nowrap;
                                 overflow: hidden;
                                 text-overflow: ellipsis;
-                                max-width:300px;
-                                overflow-y: auto;">{{ data.narration | sentenceCase }}
+                                max-width: 300px;
+                                overflow-y: auto;
+                              "
+                            >
+                              {{ data.narration | sentenceCase }}
                             </td>
                             <td>{{ data.subclassCode }}</td>
                             <td>{{ data.value }}</td>
                           </tr>
                         </ng-template>
                       </p-table>
-
                     </div>
                   </div>
                 </div>
                 <!-- SIMILAR QUOTES -->
-                <div class="tab-pane fade" id="nav-similarQuotes" role="tabpanel" aria-labelledby="nav-similarities"
-                  tabindex="0">
-                  <p-table [value]="similarQuotesList" [tableStyle]="{ 'min-width': '50rem' }" class='ui-datatable'
-                    responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
+                <div
+                  class="tab-pane fade"
+                  id="nav-similarQuotes"
+                  role="tabpanel"
+                  aria-labelledby="nav-similarities"
+                  tabindex="0"
+                >
+                  <p-table
+                    [value]="similarQuotesList"
+                    [tableStyle]="{ 'min-width': '50rem' }"
+                    class="ui-datatable"
+                    responsiveLayout="scroll"
+                    [autoLayout]="true"
+                    [scrollable]="true"
+                    scrollHeight="200px"
+                  >
                     <ng-template pTemplate="header">
                       <tr>
-                        <th class="flexible-header">{{ 'gis.quotation.quotation_number' | translate }}</th>
-                        <th class="flexible-header">{{ 'gis.quotation.client' | translate }}</th>
-                        <th class="flexible-header">{{ 'gis.quotation.cover_from' | translate }}</th>
-                        <th class="flexible-header">{{ 'gis.quotation.cover_to' | translate }}</th>
-                        <th class="flexible-header">{{ 'gis.quotation.branch' | translate }}</th>
-                        <th class="flexible-header">{{ 'gis.quotation.agent' | translate }}</th>
-                        <th class="flexible-header">{{ 'gis.quotation.product' | translate }}</th>
+                        <th class="flexible-header">
+                          {{ "gis.quotation.quotation_number" | translate }}
+                        </th>
+                        <th class="flexible-header">
+                          {{ "gis.quotation.client" | translate }}
+                        </th>
+                        <th class="flexible-header">
+                          {{ "gis.quotation.cover_from" | translate }}
+                        </th>
+                        <th class="flexible-header">
+                          {{ "gis.quotation.cover_to" | translate }}
+                        </th>
+                        <th class="flexible-header">
+                          {{ "gis.quotation.branch" | translate }}
+                        </th>
+                        <th class="flexible-header">
+                          {{ "gis.quotation.agent" | translate }}
+                        </th>
+                        <th class="flexible-header">
+                          {{ "gis.quotation.product" | translate }}
+                        </th>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-data>
@@ -707,7 +1149,9 @@
                     <!-- Template for empty data -->
                     <ng-template pTemplate="emptymessage">
                       <tr>
-                        <td colspan="7" class="text-center">No similar quotations to display</td>
+                        <td colspan="7" class="text-center">
+                          No similar quotations to display
+                        </td>
                       </tr>
                     </ng-template>
                   </p-table>
@@ -723,15 +1167,28 @@
         <div class="card-body">
           <div class="row">
             <div class="col-4">
-              <p *ngIf="!isRiskCollapsibleOpen" class="card-title mt-2" data-bs-toggle="collapse"
-                data-bs-target="#riskDetails" (click)="toggleRiskDetails()">Risk Details</p>
+              <p
+                *ngIf="!isRiskCollapsibleOpen"
+                class="card-title mt-2"
+                data-bs-toggle="collapse"
+                data-bs-target="#riskDetails"
+                (click)="toggleRiskDetails()"
+              >
+                Risk Details
+              </p>
             </div>
             <div class="col-8 d-flex justify-content-end">
               <div class="row">
                 <div class="col-4" *ngIf="!isRiskCollapsibleOpen">
-                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse"
-                    data-bs-target="#riskDetails" (click)="toggleRiskDetails()"
-                    [attr.aria-expanded]="!isRiskCollapsibleOpen">
+                  <button
+                    type="button"
+                    id="icon"
+                    class="btn btn-primary"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#riskDetails"
+                    (click)="toggleRiskDetails()"
+                    [attr.aria-expanded]="!isRiskCollapsibleOpen"
+                  >
                     <i class="fa-solid fa-chevron-down"></i>
                   </button>
                 </div>
@@ -742,18 +1199,36 @@
           <div class="collapse mt-4" id="riskDetails">
             <div class="row mb-3">
               <div class="col-4">
-                <p class=" mt-2 fw-semibold" data-bs-toggle="collapse" data-bs-target="#riskDetails">Risk Details</p>
+                <p
+                  class="mt-2 fw-semibold"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#riskDetails"
+                >
+                  Risk Details
+                </p>
               </div>
               <div class="col-8 d-flex justify-content-end">
                 <div class="row">
                   <div class="col-sm-3"></div>
                   <div class="col-sm-3">
-                    <button type="button" id="icon" class="btn btn-primary" title="Add" [disabled]="viewQuoteFlag">
+                    <button
+                      type="button"
+                      id="icon"
+                      class="btn btn-primary"
+                      title="Add"
+                      [disabled]="viewQuoteFlag"
+                    >
                       <i class="fa-solid fa-plus"></i>
                     </button>
                   </div>
                   <div class="col-sm-3">
-                    <button type="button" id="icon" class="btn btn-primary" title="Edit" [disabled]="viewQuoteFlag">
+                    <button
+                      type="button"
+                      id="icon"
+                      class="btn btn-primary"
+                      title="Edit"
+                      [disabled]="viewQuoteFlag"
+                    >
                       <i class="fa-solid fa-pencil"></i>
                     </button>
                   </div>
@@ -763,24 +1238,41 @@
                     </button>
                   </div> -->
                   <div class="col-sm-3">
-
-                    <button type="button" id="icon" class="btn btn-danger me-2" title="Delete"
-                      id="openRiskModalButtonDelete" [hidden]="true" data-bs-toggle="modal"
-                      data-bs-target="#deleteRisk">
+                    <button
+                      type="button"
+                      id="icon"
+                      class="btn btn-danger me-2"
+                      title="Delete"
+                      id="openRiskModalButtonDelete"
+                      [hidden]="true"
+                      data-bs-toggle="modal"
+                      data-bs-target="#deleteRisk"
+                    >
                       <i class="fa-solid fa-trash-can"></i>
                     </button>
-                    <button type="button" id="icon" class="btn btn-primary" title="Delete"
-                      [disabled]="viewQuoteFlag || !quotationDetails?.quotationProducts?.[0]?.riskInformation || quotationDetails.quotationProducts[0].riskInformation.length <= 1">
-                      <i class="fa-solid fa-trash-can" (click)="openRiskDeleteModal()"></i>
+                    <button
+                      type="button"
+                      id="icon"
+                      class="btn btn-primary"
+                      title="Delete"
+                      [disabled]="viewQuoteFlag || !quotationDetails?.quotationProducts?.[0]?.riskInformation || quotationDetails.quotationProducts[0].riskInformation.length <= 1"
+                    >
+                      <i
+                        class="fa-solid fa-trash-can"
+                        (click)="openRiskDeleteModal()"
+                      ></i>
                     </button>
                   </div>
-
                 </div>
               </div>
             </div>
 
-            <p-table [value]="riskDetails" [tableStyle]="{ 'min-width': '50rem' }" class='ui-datatable'
-              styleClass="p-datatable-striped">
+            <p-table
+              [value]="riskDetails"
+              [tableStyle]="{ 'min-width': '50rem' }"
+              class="ui-datatable"
+              styleClass="p-datatable-striped"
+            >
               <ng-template pTemplate="header">
                 <tr>
                   <th>ID</th>
@@ -792,70 +1284,123 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-data>
-                <tr [class.p-highlight]="data === selectedRisk" [pSelectableRow]="riskDetails" class="point"
-                  (click)="handleRowClick(data)" [class.disabled]="!data?.code">
-                  <td>{{ data?.quotationRiskNo || '-' }}</td>
-                  <td>{{ data?.propertyId || '-' }}</td>
-                  <td>{{ data?.coverTypeDescription || '-' | sentenceCase }}</td>
-                  <td>{{ data?.subclass?.description || '-' | sentenceCase }}</td>
-                  <td class="text-end">{{ data?.sectionsDetails[0]?.limitAmount || 0 | number }}</td>
-                  <td class="text-end">{{ data?.sectionsDetails[0]?.premium || 0 | number }}</td>
+                <tr
+                  [class.p-highlight]="data === selectedRisk"
+                  [pSelectableRow]="riskDetails"
+                  class="point"
+                  (click)="handleRowClick(data)"
+                  [class.disabled]="!data?.code"
+                >
+                  <td>{{ data?.quotationRiskNo || "-" }}</td>
+                  <td>{{ data?.propertyId || "-" }}</td>
+                  <td>
+                    {{ data?.coverTypeDescription || "-" | sentenceCase }}
+                  </td>
+                  <td>
+                    {{ data?.subclass?.description || "-" | sentenceCase }}
+                  </td>
+                  <td class="text-end">
+                    {{ data?.sectionsDetails[0]?.limitAmount || 0 | number }}
+                  </td>
+                  <td class="text-end">
+                    {{ data?.sectionsDetails[0]?.premium || 0 | number }}
+                  </td>
                 </tr>
               </ng-template>
             </p-table>
             <!-- Delete Risk Modal -->
-            <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog" aria-labelledby="deleteRisk"
-              aria-hidden="true">
+            <div
+              class="modal fade"
+              id="deleteRisk"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="deleteRisk"
+              aria-hidden="true"
+            >
               <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content" id="deleteRisk">
-                  <div class="modal-body ">
-                    <p class="deleteMessage mt-4 mb-4">{{
-                      'gis.policy.are_you_sure_you_want_to_delete' |
-                      translate
-                      }}</p>
+                  <div class="modal-body">
+                    <p class="deleteMessage mt-4 mb-4">
+                      {{
+                        "gis.policy.are_you_sure_you_want_to_delete" | translate
+                      }}
+                    </p>
                     <div class="d-flex justify-content-center mb-3">
-                      <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
-                        (click)="deleteRisk()">{{
-                        'gis.policy.yes_delete'
-                        | translate
-                        }}
+                      <button
+                        type="button"
+                        class="btn btn-primary px-5"
+                        id="delete"
+                        data-bs-dismiss="modal"
+                        (click)="deleteRisk()"
+                      >
+                        {{ "gis.policy.yes_delete" | translate }}
                       </button>
                     </div>
                     <div class="d-flex justify-content-center mb-2">
-                      <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">{{
-                        'gis.policy.no_im_not' | translate }}
+                      <button
+                        type="button"
+                        class="btn btn-outline-primary px-5"
+                        data-bs-dismiss="modal"
+                      >
+                        {{ "gis.policy.no_im_not" | translate }}
                       </button>
                     </div>
-
-
                   </div>
                 </div>
               </div>
             </div>
-            <br>
+            <br />
             <ul class="nav nav-underline mt-2 mb-4">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" data-bs-toggle="tab"
-                  data-bs-target="#nav-sections">Sections</a>
+                <a
+                  class="nav-link active"
+                  aria-current="page"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-sections"
+                  >Sections</a
+                >
               </li>
-              <br>
+              <br />
               <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-riskClauses">Clauses</a>
+                <a
+                  class="nav-link"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-riskClauses"
+                  >Clauses</a
+                >
               </li>
-              <br>
+              <br />
               <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-schedules">Other Details</a>
+                <a
+                  class="nav-link"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-schedules"
+                  >Other Details</a
+                >
               </li>
-              <br>
+              <br />
               <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Excesses</a>
+                <a
+                  class="nav-link"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-excesses"
+                  >Excesses</a
+                >
               </li>
             </ul>
             <div class="tab-content mb-4" id="nav-tabContent">
               <!-- SECTIONS -->
-              <div class="tab-pane fade show active" id="nav-sections" role="tabpanel" aria-labelledby="nav-sections"
-                tabindex="0">
-                <p-table [value]="sections" [tableStyle]="{ 'min-width': '50rem' }">
+              <div
+                class="tab-pane fade show active"
+                id="nav-sections"
+                role="tabpanel"
+                aria-labelledby="nav-sections"
+                tabindex="0"
+              >
+                <p-table
+                  [value]="sections"
+                  [tableStyle]="{ 'min-width': '50rem' }"
+                >
                   <ng-template pTemplate="header">
                     <tr>
                       <th class="flexible-header">Group</th>
@@ -870,46 +1415,87 @@
                   </ng-template>
                   <ng-template pTemplate="body" let-data>
                     <tr>
-                      <td class="flexible-header">{{ data.calculationGroup }}</td>
+                      <td class="flexible-header">
+                        {{ data.calculationGroup }}
+                      </td>
                       <td class="flexible-header">{{ data.rowNumber }}</td>
-                      <td class="flexible-header">{{ data.sectionDescription | sentenceCase }}</td>
+                      <td class="flexible-header">
+                        {{ data.sectionDescription | sentenceCase }}
+                      </td>
                       <td class="flexible-header">{{ data.rateType }}</td>
                       <td class="flexible-header">{{ data.rate }}</td>
-                      <td class="text-end flexible-header">{{ data.limitAmount | number }}</td>
-                      <td class="text-end flexible-header">{{ data.premium | number }}</td>
-                      <td class="text-end flexible-header">{{ data.freeLimit | number }}</td>
+                      <td class="text-end flexible-header">
+                        {{ data.limitAmount | number }}
+                      </td>
+                      <td class="text-end flexible-header">
+                        {{ data.premium | number }}
+                      </td>
+                      <td class="text-end flexible-header">
+                        {{ data.freeLimit | number }}
+                      </td>
                     </tr>
                   </ng-template>
                 </p-table>
               </div>
               <!-- RISK CLAUSES -->
-              <div class="tab-pane fade" id="nav-riskClauses" role="tabpanel" aria-labelledby="nav-riskClauses"
-                tabindex="0">
-                <p-table [value]="riskClauses" dataKey="code" editMode="row" [tableStyle]="{'min-width': '50rem'}"
-                  responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true">
+              <div
+                class="tab-pane fade"
+                id="nav-riskClauses"
+                role="tabpanel"
+                aria-labelledby="nav-riskClauses"
+                tabindex="0"
+              >
+                <p-table
+                  [value]="riskClauses"
+                  dataKey="code"
+                  editMode="row"
+                  [tableStyle]="{ 'min-width': '50rem' }"
+                  responsiveLayout="scroll"
+                  class="ui-datatable"
+                  [autoLayout]="true"
+                >
                   <ng-template pTemplate="header">
                     <tr>
-                      <th style="width: 5%;padding-right: 50px;">Clause</th>
-                      <th style="width: 25%;padding-right: 50px;">Product</th>
-                      <th style="width: 40%;">Wording</th>
-                      <th style="width: 5%;"></th>
-                      <th style="width: 5%;">Editable</th>
+                      <th style="width: 5%; padding-right: 50px">Clause</th>
+                      <th style="width: 25%; padding-right: 50px">Product</th>
+                      <th style="width: 40%">Wording</th>
+                      <th style="width: 5%"></th>
+                      <th style="width: 5%">Editable</th>
                     </tr>
                   </ng-template>
-                  <ng-template pTemplate="body" let-selectedClauseList let-editing="editing" let-ri="rowIndex">
+                  <ng-template
+                    pTemplate="body"
+                    let-selectedClauseList
+                    let-editing="editing"
+                    let-ri="rowIndex"
+                  >
                     <tr [pEditableRow]="selectedClauseList">
                       <td>
                         {{ selectedClauseList.shortDescription }}
                       </td>
                       <td>
-                        {{ selectedClauseList.productDescription | sentenceCase }}
+                        {{
+                          selectedClauseList.productDescription | sentenceCase
+                        }}
                       </td>
                       <td
-                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:300px; overflow-y: auto;">
+                        style="
+                          white-space: nowrap;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          max-width: 300px;
+                          overflow-y: auto;
+                        "
+                      >
                         <p-cellEditor>
                           <ng-template pTemplate="input">
-                            <input pInputText type="text" [(ngModel)]="selectedClauseList.clause"
-                              class="form-control form-control-sm" [ngModelOptions]="{standalone: true}">
+                            <input
+                              pInputText
+                              type="text"
+                              [(ngModel)]="selectedClauseList.clause"
+                              class="form-control form-control-sm"
+                              [ngModelOptions]="{ standalone: true }"
+                            />
                           </ng-template>
                           <ng-template pTemplate="output">
                             {{ selectedClauseList.clause }}
@@ -918,17 +1504,32 @@
                         </p-cellEditor>
                       </td>
                       <td>
-                        <button pButton pRipple type="button" (click)="openHelperModal(selectedClauseList)"
-                          icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
+                        <button
+                          pButton
+                          pRipple
+                          type="button"
+                          (click)="openHelperModal(selectedClauseList)"
+                          icon="pi pi-info-circle"
+                          class="p-button-rounded p-button-text"
+                        ></button>
                       </td>
                       <td>{{ selectedClauseList.clauseEditable }}</td>
                     </tr>
                     <!-- Modal for each row -->
-                    <p-dialog [(visible)]="selectedClauseList.showHelperModal" [modal]="false"
-                      [style]="{ 'width': '700px'}">
+                    <p-dialog
+                      [(visible)]="selectedClauseList.showHelperModal"
+                      [modal]="false"
+                      [style]="{ width: '700px' }"
+                    >
                       <ng-container *ngIf="selectedClauseList">
-                        <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
-                          (onResize)="onResize($event)">
+                        <div
+                          pResizable
+                          [ngStyle]="{
+                            'min-width.px': 200,
+                            'min-height.px': 150
+                          }"
+                          (onResize)="onResize($event)"
+                        >
                           <p>{{ selectedClauseList.clause }}</p>
                         </div>
                       </ng-container>
@@ -937,13 +1538,21 @@
                 </p-table>
               </div>
               <!-- SCHEDULES -->
-              <div class="tab-pane fade " id="nav-schedules" role="tabpanel" aria-labelledby="nav-schedules"
-                tabindex="0">
-                <p-table [value]="schedules" [tableStyle]="{ 'min-width': '50rem' }">
+              <div
+                class="tab-pane fade"
+                id="nav-schedules"
+                role="tabpanel"
+                aria-labelledby="nav-schedules"
+                tabindex="0"
+              >
+                <p-table
+                  [value]="schedules"
+                  [tableStyle]="{ 'min-width': '50rem' }"
+                >
                   <ng-template pTemplate="header">
                     <tr>
                       <th class="flexible-header">Reg no.</th>
-                      <th class="flexible-header"> Vehicle make</th>
+                      <th class="flexible-header">Vehicle make</th>
                       <th class="flexible-header">Cubic capacity</th>
                       <th class="flexible-header">Year of manufacture</th>
                       <th class="flexible-header">Seating capacity</th>
@@ -954,10 +1563,14 @@
                   </ng-template>
                   <ng-template pTemplate="body" let-data>
                     <tr>
-                      <td class="flexible-header">{{ data.registrationNumber }}</td>
+                      <td class="flexible-header">
+                        {{ data.registrationNumber }}
+                      </td>
                       <td class="flexible-header">{{ data.Make }}</td>
                       <td class="flexible-header">{{ data.cubicCapacity }}</td>
-                      <td class="flexible-header">{{ data.yearOfManufacture }}</td>
+                      <td class="flexible-header">
+                        {{ data.yearOfManufacture }}
+                      </td>
                       <td class="flexible-header">{{ data.carryCapacity }}</td>
                       <td class="flexible-header">{{ data.value }}</td>
                       <td class="flexible-header">{{ data.bodyType }}</td>
@@ -967,8 +1580,17 @@
                 </p-table>
               </div>
               <!-- EXCESSES -->
-              <div class="tab-pane fade" id="nav-excesses" role="tabpanel" aria-labelledby="nav-excesses" tabindex="0">
-                <p-table [value]="excessesList" [tableStyle]="{ 'min-width': '50rem' }">
+              <div
+                class="tab-pane fade"
+                id="nav-excesses"
+                role="tabpanel"
+                aria-labelledby="nav-excesses"
+                tabindex="0"
+              >
+                <p-table
+                  [value]="excessesList"
+                  [tableStyle]="{ 'min-width': '50rem' }"
+                >
                   <ng-template pTemplate="header">
                     <tr>
                       <th>Narration</th>
@@ -993,35 +1615,75 @@
         <div class="card-body">
           <div class="row mb-3">
             <div class="col-4">
-              <p-panelMenu [model]="menuItems" [style]="{'width':'300px'}"></p-panelMenu>
+              <p-panelMenu
+                [model]="menuItems"
+                [style]="{ width: '300px' }"
+              ></p-panelMenu>
             </div>
             <div class="col-8 d-flex justify-content-end">
               <div class="row">
                 <div class="col-3"></div>
                 <div class="col-sm-3">
-                  <button type="button" id="icon" class="btn btn-primary" title="Add" data-bs-toggle="modal"
-                    [disabled]="viewQuoteFlag" data-bs-target="#addExternalClaimExperienceModal"
-                    [hidden]="!showExternalClaims">
+                  <button
+                    type="button"
+                    id="icon"
+                    class="btn btn-primary"
+                    title="Add"
+                    data-bs-toggle="modal"
+                    [disabled]="viewQuoteFlag"
+                    data-bs-target="#addExternalClaimExperienceModal"
+                    [hidden]="!showExternalClaims"
+                  >
                     <i class="fa-solid fa-plus"></i>
                   </button>
                 </div>
                 <div class="col-sm-3">
-                  <button type="button" id="icon" class="btn btn-primary" title="Edit" [disabled]="viewQuoteFlag"
-                    [attr.data-bs-toggle]="selectedExternalClaimExp ? 'modal' : null"
-                    [attr.data-bs-target]="selectedExternalClaimExp ? '#addExternalClaimExperienceModal' : null"
-                    (click)="openExternalClaimExpEditModal()" [hidden]="!showExternalClaims">
+                  <button
+                    type="button"
+                    id="icon"
+                    class="btn btn-primary"
+                    title="Edit"
+                    [disabled]="viewQuoteFlag"
+                    [attr.data-bs-toggle]="
+                      selectedExternalClaimExp ? 'modal' : null
+                    "
+                    [attr.data-bs-target]="
+                      selectedExternalClaimExp
+                        ? '#addExternalClaimExperienceModal'
+                        : null
+                    "
+                    (click)="openExternalClaimExpEditModal()"
+                    [hidden]="!showExternalClaims"
+                  >
                     <i class="fa-solid fa-pencil"></i>
                   </button>
                 </div>
                 <div class="col-sm-3">
-                  <button type="button" id="icon" class="btn btn-danger me-2" title="Delete" [disabled]="viewQuoteFlag"
-                    id="openClaimModalButtonDelete" [hidden]="true" data-bs-toggle="modal"
-                    data-bs-target="#deleteClaim">
+                  <button
+                    type="button"
+                    id="icon"
+                    class="btn btn-danger me-2"
+                    title="Delete"
+                    [disabled]="viewQuoteFlag"
+                    id="openClaimModalButtonDelete"
+                    [hidden]="true"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteClaim"
+                  >
                     <i class="fa-solid fa-trash-can"></i>
                   </button>
-                  <button type="button" id="icon" class="btn btn-primary" title="Delete" [hidden]="!showExternalClaims"
-                    [disabled]="viewQuoteFlag">
-                    <i class="fa-solid fa-trash-can" (click)="openClaimDeleteModal()"></i>
+                  <button
+                    type="button"
+                    id="icon"
+                    class="btn btn-primary"
+                    title="Delete"
+                    [hidden]="!showExternalClaims"
+                    [disabled]="viewQuoteFlag"
+                  >
+                    <i
+                      class="fa-solid fa-trash-can"
+                      (click)="openClaimDeleteModal()"
+                    ></i>
                   </button>
                 </div>
               </div>
@@ -1029,7 +1691,10 @@
           </div>
           <!-- EXTERNAL CLAIMS -->
           <div class="mb-4" *ngIf="showExternalClaims">
-            <p-table [value]="externalTable" [tableStyle]="{ 'min-width': '50rem' }">
+            <p-table
+              [value]="externalTable"
+              [tableStyle]="{ 'min-width': '50rem' }"
+            >
               <ng-template pTemplate="header">
                 <tr>
                   <!-- <th>Client</th> -->
@@ -1041,27 +1706,49 @@
                   <th class="text-end flexible-header">Third-Party Amount</th>
                   <th class="text-end flexible-header">Other Amount</th>
                   <th class="text-end flexible-header">Claim Paid</th>
-
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-externalClaim>
-                <tr [class.p-highlight]="externalClaim === selectedExternalClaimExp"
-                  (click)="onExternalClaimSelect(externalClaim)" style="cursor: default">
+                <tr
+                  [class.p-highlight]="
+                    externalClaim === selectedExternalClaimExp
+                  "
+                  (click)="onExternalClaimSelect(externalClaim)"
+                  style="cursor: default"
+                >
                   <!-- <td>{{ clientDetails?.firstName+" "+clientDetails?.lastName }}</td> -->
                   <td class="flexible-header">{{ externalClaim.insurer }}</td>
-                  <td class="flexible-header">{{ externalClaim.policyNumber }}</td>
+                  <td class="flexible-header">
+                    {{ externalClaim.policyNumber }}
+                  </td>
                   <td class="flexible-header">{{ externalClaim.year }}</td>
-                  <td class="flexible-header">{{ externalClaim.riskDetails }}</td>
-                  <td class="text-end flexible-header">{{ externalClaim.damageAmount | number }}</td>
-                  <td class="text-end flexible-header">{{ externalClaim.totalPaidAmount | number }}</td>
-                  <td class="text-end flexible-header">{{ externalClaim.otherAmount | number }}</td>
-                  <td class="text-end flexible-header">{{ externalClaim.claimPaid | number }}</td>
+                  <td class="flexible-header">
+                    {{ externalClaim.riskDetails }}
+                  </td>
+                  <td class="text-end flexible-header">
+                    {{ externalClaim.damageAmount | number }}
+                  </td>
+                  <td class="text-end flexible-header">
+                    {{ externalClaim.totalPaidAmount | number }}
+                  </td>
+                  <td class="text-end flexible-header">
+                    {{ externalClaim.otherAmount | number }}
+                  </td>
+                  <td class="text-end flexible-header">
+                    {{ externalClaim.claimPaid | number }}
+                  </td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
                   <td colspan="1"></td>
-                  <td colspan="4" style="padding:30px;padding-left: 350px;" id="empty">No records Found</td>
+                  <td
+                    colspan="4"
+                    style="padding: 30px; padding-left: 350px"
+                    id="empty"
+                  >
+                    No records Found
+                  </td>
                 </tr>
               </ng-template>
             </p-table>
@@ -1069,7 +1756,10 @@
 
           <!-- INTERNAL CLAIMS -->
           <div class="mb-4" *ngIf="showInternalClaims">
-            <p-table [value]="internalTable" [tableStyle]="{ 'min-width': '50rem' }">
+            <p-table
+              [value]="internalTable"
+              [tableStyle]="{ 'min-width': '50rem' }"
+            >
               <ng-template pTemplate="header">
                 <tr>
                   <th class="flexible-header">Policy No</th>
@@ -1083,22 +1773,47 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-internalClaim>
-                <tr [class.p-highlight]="internalClaim === selectedIntetnalClaimExp"
-                  (click)="onInternalClaimSelect(internalClaim)" style="cursor: default">
-                  <td class="flexible-header">{{ internalClaim.cmb_pol_client_policy_no }}</td>
+                <tr
+                  [class.p-highlight]="
+                    internalClaim === selectedIntetnalClaimExp
+                  "
+                  (click)="onInternalClaimSelect(internalClaim)"
+                  style="cursor: default"
+                >
+                  <td class="flexible-header">
+                    {{ internalClaim.cmb_pol_client_policy_no }}
+                  </td>
                   <td class="flexible-header">{{ internalClaim.claim_no }}</td>
-                  <td class="text-end flexible-header">{{ internalClaim.ost_reserve | number }}</td>
-                  <td class="text-end flexible-header">{{ internalClaim.total_reserve | number }}</td>
-                  <td class="text-end flexible-header">{{ internalClaim.recoveries | number }}</td>
-                  <td class="text-end flexible-header">{{ internalClaim.salvages | number }}</td>
-                  <td class="text-end flexible-header">{{ internalClaim.total_payments | number }}</td>
-                  <td class="text-end flexible-header">{{ internalClaim.net_paid | number }}</td>
+                  <td class="text-end flexible-header">
+                    {{ internalClaim.ost_reserve | number }}
+                  </td>
+                  <td class="text-end flexible-header">
+                    {{ internalClaim.total_reserve | number }}
+                  </td>
+                  <td class="text-end flexible-header">
+                    {{ internalClaim.recoveries | number }}
+                  </td>
+                  <td class="text-end flexible-header">
+                    {{ internalClaim.salvages | number }}
+                  </td>
+                  <td class="text-end flexible-header">
+                    {{ internalClaim.total_payments | number }}
+                  </td>
+                  <td class="text-end flexible-header">
+                    {{ internalClaim.net_paid | number }}
+                  </td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
                   <td colspan="1"></td>
-                  <td colspan="4" style="padding:30px;padding-left:350px;" id="empty">No records Found</td>
+                  <td
+                    colspan="4"
+                    style="padding: 30px; padding-left: 350px"
+                    id="empty"
+                  >
+                    No records Found
+                  </td>
                 </tr>
               </ng-template>
             </p-table>
@@ -1107,39 +1822,79 @@
       </div>
 
       <!-- reassign -->
-      <button type="button" class="btn btn-outline-primary mx-2" (click)="openReassignQuotationModal()">{{
-        'gis.quotation.reassign' | translate}}
+      <button
+        type="button"
+        class="btn btn-outline-primary mx-2"
+        (click)="openReassignQuotationModal()"
+      >
+        {{ "gis.quotation.reassign" | translate }}
       </button>
 
       <!-- Reassign quote Modal 1 (re assign)-->
-      <div class="modal fade " id="reassignQuotationModal" #reassignQuotationModal tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="min-width:200px">
+      <div
+        class="modal fade"
+        id="reassignQuotationModal"
+        #reassignQuotationModal
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div
+          class="modal-dialog modal-dialog-centered"
+          style="min-width: 200px"
+        >
           <div class="modal-content ps-4 pt-2 pb-5 pe-4">
-            <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0">
-              <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+            <div
+              class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0"
+            >
+              <p
+                class="modal-title"
+                style="color: #00529b; font-weight: 600; font-size: 20px"
+              >
                 Reassign task
               </p>
-              <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
-                style="border: none;">X</button>
+              <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn p-0 text-danger fw-bold"
+                style="border: none"
+              >
+                X
+              </button>
             </div>
 
             <div class="w-75 mb-3 mt-2">
-              <p style="color:#000000">Group User</p>
-              <p-dropdown [options]="clientOptions" [(ngModel)]="clientToReassignQuotation"
-                placeholder="Select a client" [showClear]="true" styleClass="w-full">
+              <p style="color: #000000">Group User</p>
+              <p-dropdown
+                [options]="clientOptions"
+                [(ngModel)]="clientToReassignQuotation"
+                placeholder="Select a client"
+                [showClear]="true"
+                styleClass="w-full"
+              >
               </p-dropdown>
             </div>
 
             <div class="w-75">
-              <p style="color:#000000">Default User</p>
-              <input pInputText type="text" style="color:#000000" class="form-control"
-                (click)="openChooseClientReassignModal()" [(ngModel)]="clientToReassignQuotation">
+              <p style="color: #000000">Default User</p>
+              <input
+                pInputText
+                type="text"
+                style="color: #000000"
+                class="form-control"
+                (click)="openChooseClientReassignModal()"
+                [(ngModel)]="clientToReassignQuotation"
+              />
             </div>
 
             <div class="w-75 mt-4 mb-3">
-              <p style="color:#000000">Comments</p>
-              <textarea name="reassignProduct" style="color:#000000" class="form-control" style="height: 70px"
-                [(ngModel)]="reassignQuotationComment"></textarea>
+              <p style="color: #000000">Comments</p>
+              <textarea
+                name="reassignProduct"
+                style="color: #000000"
+                class="form-control"
+                style="height: 70px"
+                [(ngModel)]="reassignQuotationComment"
+              ></textarea>
             </div>
 
             <small class="text-danger block" [class.invisible]="!noCommentleft">
@@ -1151,36 +1906,75 @@
             </small>
 
             <div class="w-full d-flex flex-row-reverse gap-4 mt-2">
-              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
-                (click)="reassignQuotation()">{{
-                'gis.quotation.reassign' | translate }}
+              <button
+                type="button"
+                class="btn"
+                style="
+                  background-color: #00529b;
+                  color: white;
+                  text-decoration: none;
+                "
+                (click)="reassignQuotation()"
+              >
+                {{ "gis.quotation.reassign" | translate }}
               </button>
-              <button type="button" (click)="closeReassignQuotationModal()" class="btn btn-outline-primary"
-                style="text-decoration: none;">{{'gis.quotation.cancel' | translate}}
+              <button
+                type="button"
+                (click)="closeReassignQuotationModal()"
+                class="btn btn-outline-primary"
+                style="text-decoration: none"
+              >
+                {{ "gis.quotation.cancel" | translate }}
               </button>
             </div>
-
           </div>
         </div>
       </div>
 
       <!-- reassign quote modal 2 (choose user)-->
-      <div class="modal fade" id="chooseClientReassignModal" #chooseClientReassignModal tabindex="-1"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="min-width:500px">
+      <div
+        class="modal fade"
+        id="chooseClientReassignModal"
+        #chooseClientReassignModal
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div
+          class="modal-dialog modal-dialog-centered"
+          style="min-width: 500px"
+        >
           <div class="modal-content ps-4 pt-2 pe-4">
-            <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
-              <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-                {{ 'gis.quotation.reassign_task' | translate }}</p>
-              <button type="button" (click)="closeChooseClientReassignModal()" class="btn p-0 text-danger fw-bold"
-                style="border: none;">X
+            <div
+              class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1"
+            >
+              <p
+                class="modal-title"
+                style="color: #00529b; font-weight: 600; font-size: 20px"
+              >
+                {{ "gis.quotation.reassign_task" | translate }}
+              </p>
+              <button
+                type="button"
+                (click)="closeChooseClientReassignModal()"
+                class="btn p-0 text-danger fw-bold"
+                style="border: none"
+              >
+                X
               </button>
             </div>
             <div class="row mt-2">
-              <p-table #dt [value]="users" [rows]="3" [paginator]="true" [globalFilterFields]="['id', 'name']"
-                selectionMode="single" [(selection)]="selectedUser" styleClass="p-datatable-striped"
-                (onRowSelect)="onUserSelect()" (onRowUnselect)="onUserUnselect()">
-
+              <p-table
+                #dt
+                [value]="users"
+                [rows]="3"
+                [paginator]="true"
+                [globalFilterFields]="['id', 'name']"
+                selectionMode="single"
+                [(selection)]="selectedUser"
+                styleClass="p-datatable-striped"
+                (onRowSelect)="onUserSelect()"
+                (onRowUnselect)="onUserUnselect()"
+              >
                 <ng-template pTemplate="header">
                   <tr>
                     <th>User ID</th>
@@ -1188,13 +1982,20 @@
                   </tr>
                   <tr styleClass="p-striped">
                     <th>
-                      <input type="text" [(ngModel)]="globalSearch" (input)="filterGlobal($event)">
+                      <input
+                        type="text"
+                        [(ngModel)]="globalSearch"
+                        (input)="filterGlobal($event)"
+                      />
                     </th>
                     <th>
-                      <input type="text" [(ngModel)]="fullNameSearch" (input)="filterByFullName($event)">
+                      <input
+                        type="text"
+                        [(ngModel)]="fullNameSearch"
+                        (input)="filterByFullName($event)"
+                      />
                     </th>
                   </tr>
-
                 </ng-template>
 
                 <ng-template pTemplate="body" let-user>
@@ -1207,8 +2008,8 @@
                 <!-- empty/search states -->
                 <ng-template pTemplate="emptymessage">
                   <tr>
-                    <td colspan="4" style="text-align: center; padding: 20px;">
-                      <div style="color: #6c757d; font-size: 15px;">
+                    <td colspan="4" style="text-align: center; padding: 20px">
+                      <div style="color: #6c757d; font-size: 15px">
                         <ng-container *ngIf="users.length === 0">
                           No users available.
                         </ng-container>
@@ -1222,38 +2023,63 @@
               </p-table>
             </div>
 
-            <hr class="mt-1" style="border: none; border-top: 2.5px solid #0000004D;">
+            <hr
+              class="mt-1"
+              style="border: none; border-top: 2.5px solid #0000004d"
+            />
             <small class="text-danger block" [class.invisible]="!noUserChosen">
               Please select a person to reassign before continuing
             </small>
 
-            <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-2 mt-2 p-0">
-              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
-                (click)="selectClient()">{{ 'gis.quotation.reassign' | translate }}
+            <div
+              class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-2 mt-2 p-0"
+            >
+              <button
+                type="button"
+                class="btn"
+                style="
+                  background-color: #00529b;
+                  color: white;
+                  text-decoration: none;
+                "
+                (click)="selectClient()"
+              >
+                {{ "gis.quotation.reassign" | translate }}
               </button>
-              <button type="button" (click)="closeChooseClientReassignModal()" class="btn btn-outline-primary"
-                style="text-decoration: none;">{{
-                'gis.quotation.cancel' | translate
-                }}
+              <button
+                type="button"
+                (click)="closeChooseClientReassignModal()"
+                class="btn btn-outline-primary"
+                style="text-decoration: none"
+              >
+                {{ "gis.quotation.cancel" | translate }}
               </button>
             </div>
-
           </div>
         </div>
       </div>
 
       <!-- quotation other details -->
-      <div class="tab-pane fade" id="nav-quotation-other-details" role="tabpanel"
-        aria-labelledby="nav-authorization-tab" tabindex="0">
+      <div
+        class="tab-pane fade"
+        id="nav-quotation-other-details"
+        role="tabpanel"
+        aria-labelledby="nav-authorization-tab"
+        tabindex="0"
+      >
         <app-quotation-other-details></app-quotation-other-details>
-
       </div>
 
       <!-- quotation report  -->
-      <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-authorization-tab" tabindex="0">
+      <div
+        class="tab-pane fade"
+        id="nav-reports"
+        role="tabpanel"
+        aria-labelledby="nav-authorization-tab"
+        tabindex="0"
+      >
         <app-quotation-report></app-quotation-report>
-
       </div>
     </div>
-
   </div>
+</div>
