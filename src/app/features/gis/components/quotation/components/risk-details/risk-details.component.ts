@@ -160,6 +160,7 @@ export class RiskDetailsComponent {
   // clauseDetail:any;
   selectedClause: subclassClauses[] = [];
   nonMandatoryClauses: subclassClauses[] = [];
+  riskClause: subclassClauses[] = [];
   selectProductCode: any
   showOtherSscheduleDetails: boolean = false;
   formContent: any;
@@ -263,6 +264,7 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
+    this.loadPersistentClauses();
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
     });
@@ -2522,26 +2524,48 @@ export class RiskDetailsComponent {
   //     });
   //   })
   // }
+  clauseModified: boolean = false;
+  sessionClauses: any[] = [];
+  selectedRiskCode: any
   loadSubclassClauses(code: any) {
     if (!code) {
       console.warn("Missing subclass code, skipping clause loading.");
       return;
     }
 
+    this.selectedRiskCode = code;
+    sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
+
+    const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+    const riskSessionData = riskClauseMap[this.selectedRiskCode];
+
+    if (riskSessionData) {
+      this.riskClause = riskSessionData.riskClause || [];
+      this.nonMandatoryClauses = riskSessionData.nonMandatoryClauses || [];
+      this.clauseModified = riskSessionData.clauseModified || false;
+      this.sessionClauses = [...this.riskClause];
+
+      if (this.clauseModified && this.riskClause.length && this.nonMandatoryClauses.length) {
+        console.log('Using modified clauses from sessionStorage, skipping API fetch.');
+        return;
+      }
+    }
+
     this.subclassService.getSubclassClauses(code).subscribe({
       next: (data) => {
         this.SubclauseList = data || [];
 
-        log.debug('subclass ClauseList#####', this.SubclauseList);
-
         this.selectedClause = this.SubclauseList.filter(clause => clause.isMandatory === 'Y');
         this.nonMandatoryClauses = this.SubclauseList.filter(clause => clause.isMandatory === 'N');
-        log.debug('selected subclass ClauseList#####', this.selectedClause);
-        log.debug('Non mandatory  subclass ClauseList#####', this.nonMandatoryClauses);
+        this.riskClause = this.selectedClause;
+        this.sessionClauses = [...this.riskClause];
 
-        this.SubclauseList.forEach(clause => {
-          clause.checked = clause.isMandatory === 'Y';
-        });
+        riskClauseMap[this.selectedRiskCode] = {
+          riskClause: this.selectedClause,
+          nonMandatoryClauses: this.nonMandatoryClauses,
+          clauseModified: false
+        };
+        sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
       },
       error: (err) => {
         console.error('Failed to load subclass clauses:', err);
@@ -2551,6 +2575,75 @@ export class RiskDetailsComponent {
         console.log('Subclass clause loading complete');
       }
     });
+  }
+
+
+  showRiskClauses: boolean = true;
+  showClauseModal: boolean = false;
+  clausesModified: boolean = false;
+  clauses: any;
+  toggleRiskClauses() {
+    this.showRiskClauses = !this.showRiskClauses;
+
+  }
+
+  openClauseModal() {
+    const storedRiskCode = sessionStorage.getItem("selectedRiskCode");
+
+    if (storedRiskCode) {
+      if ((!this.clauses || this.clauses.length === 0) && !this.clausesModified) {
+        this.loadSubclassClauses({ code: storedRiskCode });
+      }
+
+      this.showClauseModal = true;
+      const modalElement = document.getElementById('addClause');
+      if (modalElement) {
+        const modal = new (window as any).bootstrap.Modal(modalElement);
+        modal.show();
+      }
+    } else {
+      this.globalMessagingService.displayErrorMessage('warning', 'You need to select a product first');
+    }
+
+  }
+
+  private loadPersistentClauses() {
+    const storedRiskCode = sessionStorage.getItem("selectedRiskCode");
+    const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+    if (storedRiskCode && riskClauseMap[storedRiskCode]) {
+      const riskSessionData = riskClauseMap[storedRiskCode];
+      this.riskClause = riskSessionData.riskClause || [];
+      this.nonMandatoryClauses = riskSessionData.nonMandatoryClauses || [];
+      this.clauseModified = riskSessionData.clauseModified || false;
+      this.sessionClauses = [...this.riskClause];
+    } else {
+      console.warn("No stored risk code or clauses found in session storage.");
+    }
+  }
+  selectedRiskClauses: any;
+  saveRiskClauses(): void {
+    if (this.selectedRiskClauses?.length) {
+      this.riskClause = [...this.riskClause, ...this.selectedRiskClauses];
+      this.sessionClauses = [...this.riskClause];
+      log.debug("Selected Risk Clauses:", this.selectedRiskClauses);
+      this.nonMandatoryClauses = this.nonMandatoryClauses.filter(clause => !this.selectedRiskClauses
+        .some(sel => sel.shortDescription === clause.shortDescription));
+
+      this.clauseModified = true;
+      const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+      riskClauseMap[this.selectedRiskCode] = {
+        riskClause: this.riskClause,
+        nonMandatoryClauses: this.nonMandatoryClauses,
+        clauseModified: this.clauseModified
+      };
+
+      sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+
+      this.selectedClauses = [];
+      this.globalMessagingService.displaySuccessMessage("success", "Risk clause added successfully")
+    }
+
+
   }
 
   onClauseSelectionChange(selectedClauseList: any) {
@@ -2855,52 +2948,7 @@ export class RiskDetailsComponent {
     // this.clauseList.forEach(clause => (clause.isChecked = this.selectAll));
   }
 
-  saveRiskClauses(): void {
-    const selected = this.SubclauseList?.filter(clause => clause.isChecked) || [];
 
-    if (!selected.length) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one clause to add.');
-      return;
-    }
-
-    const mappedClauses: subclassClauses[] = selected
-
-      .map(clause => {
-        if (!clause?.clauseCode || !clause?.shortDescription) return null;
-
-        return {
-          clauseCode: clause.clauseCode,
-          id: clause.id ?? 0,
-          heading: clause.heading ?? clause.shortDescription,
-          wording: clause.wording ?? clause.shortDescription,
-          shortDescription: clause.shortDescription,
-          subClassCode: clause.subClassCode ?? '',
-          isMandatory: clause.isMandatory ?? false,
-          isLienClause: clause.isLienClause ?? false,
-          clauseExpires: clause.clauseExpires ?? null,
-          isRescueClause: clause.isRescueClause ?? false,
-          version: clause.version ?? 1,
-          isEditable: 'Y',
-        };
-      })
-      .filter(Boolean);
-
-
-
-
-    console.log('Filtered and Mapped Clauses:', mappedClauses);
-
-    this.selectedClause = [...(this.selectedClause || []), ...mappedClauses];
-    this.SubclauseList.forEach(clause => clause.isChecked = false);
-    this.selectedClauses = [];
-
-    if (this.riskClauseTable) {
-      this.riskClauseTable.clear();
-      this.riskClauseTable.reset();
-    }
-
-
-  }
 
 
 
