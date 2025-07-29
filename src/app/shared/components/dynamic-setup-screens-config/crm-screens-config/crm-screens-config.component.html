@@ -6,53 +6,65 @@
   <div class="container mt-4 section-container bg-white">
     <div class="row">
       <!-- Sub Modules -->
-      <div class="col-md-3 border-end p-3">
-        <h4 class="column-title">Sub modules</h4>
+      <div class="col-md-2 border-end p-3">
+        <h4 class="column-title">{{ 'crm.subModules' | translate }}</h4>
         <div class="edit-row" *ngFor="let subModule of subModules">
           <label class="form-label" (click)="onClickSubModule(subModule)"
-            [class.text-primary]="selectedSubModule?.code === subModule.code"
+            [class.highlight]="selectedSubModule?.code === subModule.code"
           >
-            {{ subModule.label?.[language] }}
+            {{ subModule.label?.[language] | titlecase }}
           </label>
-          <span class="text-primary edit-link" role="button" (click)="editSubModule(subModule)">Edit</span>
+          <span class="text-primary edit-link" role="button" (click)="editSubModule(subModule)">{{ 'crm.edit' | translate }}</span>
         </div>
       </div>
 
       <!-- Screens -->
-      <div class="col-md-3 border-end p-3" *ngIf="selectedSubModule && showScreens">
-        <h4 class="column-title">Screens</h4>
+      <div class="col-md-2 border-end p-3" *ngIf="selectedSubModule && showScreens">
+        <h4 class="column-title">{{ 'crm.screens' | translate }}</h4>
         <div class="edit-row" *ngFor="let screen of screens">
           <label class="form-label" (click)="onClickScreen(screen)"
-                 [class.text-primary]="selectedScreen?.code === screen.code"
+                 [class.highlight]="selectedScreen?.code === screen.code"
           >
-            {{ screen.label?.[language] }}
+            {{ screen.label?.[language] | titlecase }}
           </label>
-          <span class="text-primary edit-link" role="button" (click)="editScreens(screen)">Edit</span>
+          <span class="text-primary edit-link" role="button" (click)="editScreens(screen)">{{ 'crm.edit' | translate }}</span>
         </div>
       </div>
 
       <!-- Sections -->
-      <div class="col-md-3 border-end p-3" *ngIf="selectedScreen && showSections">
-        <h4 class="column-title">Sections</h4>
+      <div class="col-md-2 border-end p-3" *ngIf="selectedScreen && showSections">
+        <h4 class="column-title">{{ 'crm.sections' | translate }}</h4>
         <div class="edit-row" *ngFor="let section of sections">
           <label class="form-label" (click)="onClickSection(section)"
-                 [class.text-primary]="selectedSection?.code === section.code"
+                 [class.highlight]="selectedSection?.code === section.code"
           >
-            {{ section.label?.[language] }}
+            {{ section.label?.[language] | titlecase }}
           </label>
-          <span class="text-primary edit-link" role="button" (click)="editSections(section)">Edit</span>
+          <span class="text-primary edit-link" role="button" (click)="editSections(section)">{{ 'crm.edit' | translate }}</span>
         </div>
       </div>
 
       <!-- Sub Sections -->
-      <div class="col-md-3 p-3" *ngIf="selectedScreen && selectedSection && showSubSections">
-        <h4 class="column-title">Sub sections</h4>
+      <div class="col-md-3 border-end p-3" *ngIf="selectedScreen && selectedSection && showSubSections">
+        <h4 class="column-title">{{ 'crm.subSections' | translate }}</h4>
         <div class="edit-row" *ngFor="let subSection of subSections">
           <label class="form-label" (click)="onClickSubSection(subSection)"
-                 [class.text-primary]="selectedSubSection?.code === subSection.code">
-            {{ subSection.label?.[language] }}
+                 [class.highlight]="selectedSubSection?.code === subSection.code">
+            {{ subSection.label?.[language] | titlecase }}
           </label>
-          <span class="text-primary edit-link" role="button" (click)="editSubSections(subSection)">Edit</span>
+          <span class="text-primary edit-link" role="button" (click)="editSubSections(subSection)">{{ 'crm.edit' | translate }}</span>
+        </div>
+      </div>
+
+      <!-- Sub Sections 2-->
+      <div class="col-md-3 p-3" *ngIf="selectedScreen && selectedSection && showSubSections && showSubSectionsTwo && subSectionsTwo?.length > 0">
+        <h4 class="column-title">{{ 'crm.subSectionsTwo' | translate }}</h4>
+        <div class="edit-row" *ngFor="let subSectionTwo of subSectionsTwo">
+          <label class="form-label" (click)="onClickSubSectionTwo(subSectionTwo)"
+                 [class.highlight]="selectedSubSectionTwo?.code === subSectionTwo.code">
+            {{ subSectionTwo.label?.[language] | titlecase }}
+          </label>
+          <span class="text-primary edit-link" role="button" (click)="editSubSectionsTwo(subSectionTwo)">{{ 'crm.edit' | translate }}</span>
         </div>
       </div>
     </div>
@@ -61,7 +73,7 @@
   <div class="container mt-4 section-container bg-white" *ngIf="showFields">
     <div class="row mb-3 mx-md-1">
       <div class="col-sm-12 col-md-6">
-        <h5 class="my-3 text-dark">{{tableTitle | titlecase}} Fields</h5>
+        <h5 class="my-3 text-dark">{{tableTitle | titlecase}} {{ 'crm.fields' | translate }}</h5>
         <input
           type="text"
           class="form-control w-50"
@@ -71,10 +83,10 @@
       </div>
       <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-end gap-2">
         <button class="btn btn-outline-primary">
-          Import setup
+          {{ 'crm.importSetup' | translate }}
         </button>
         <button class="btn btn-outline-primary">
-          Export setup
+          {{ 'crm.exportSetup' | translate }}
         </button>
 
         <!-- Caret Dropdown-style Button -->
@@ -157,7 +169,7 @@
 
               <td *ngIf="tableData?.length > 0" class="text-center">
                 <div>
-                  <a role="button" class="text-primary" (click)="editSelectedRecord(rowData)">Edit</a>
+                  <a role="button" class="text-primary" (click)="editSelectedRecord(rowData)">{{ 'crm.edit' | translate }}</a>
                 </div>
               </td>
             </tr>
@@ -172,8 +184,8 @@
     </div>
   </div>
   <div class="float-end my-3">
-    <button class="btn btn-primary">Preview</button>
-    <button class="btn btn-primary" (click)="publishChanges()">Publish</button>
+    <button class="btn btn-primary">{{ 'crm.preview' | translate }}</button>
+    <button class="btn btn-primary" (click)="publishChanges()">{{ 'crm.publish' | translate }}</button>
   </div>
 </div>
 
@@ -188,7 +200,7 @@
   <div class="modal-dialog modal-dialog-centered align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title text-primary" id="exampleModalLabel"> Edit sub modules</h5>
+        <h5 class="modal-title text-primary" id="exampleModalLabel">{{ 'crm.editSubModules' | translate }}</h5>
         <div class="ms-auto">
           <span class="nav-item dropdown">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -215,8 +227,8 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Sub modules label
-                <span class="text-primary" style="font-size: .9rem;">(Original)</span>
+                  {{ 'crm.subModulesLabel' | translate }}
+                <span class="text-primary" style="font-size: .9rem;">({{ 'crm.original' | translate }})</span>
               </label>
               <input
                 type="text"
@@ -228,7 +240,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Module
+                  {{ 'crm.module' | translate }}
               </label>
               <input
                 type="text"
@@ -240,8 +252,8 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Sub modules label
-                <span class="text-primary" style="font-size: .9rem;">(Current)</span>
+                  {{ 'crm.subModulesLabel' | translate }}
+                <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
               </label>
               <input
                 type="text"
@@ -253,36 +265,36 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                Visible
+                  {{ 'crm.visible' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="Y" formControlName="visible">
-                <label class="form-check-label text-dark" for="visibility">Yes</label>
+                <label class="form-check-label text-dark" for="visibility">{{ 'entities.yes' | translate }}</label>
               </div>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="N" formControlName="visible">
-                <label class="form-check-label text-dark" for="visibility">No</label>
+                <label class="form-check-label text-dark" for="visibility">{{ 'entities.no' | translate }}</label>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Sub Modules level
+                  {{ 'crm.subModulesLevel' | translate }}
               </label>
               <select
                 formControlName="subModuleLevel"
                 id="subModuleLevel"
                 class="form-select"
               >
-                <option value="">select sub module level</option>
-                <option *ngFor="let i of [].constructor(subModules?.length); let j = index" [value]="j">{{j}}</option>
+                <option value="">{{ 'crm.selectSubModuleLevel' | translate }}</option>
+                <option *ngFor="let i of [].constructor(subModules?.length); let j = index" [value]="j+1">{{j+ 1}}</option>
               </select>
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-outline-primary" (click)="closeSubModulesModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="saveSubModules()">Save changes</button>
+        <button type="button" class="btn btn-outline-primary" (click)="closeSubModulesModal()">{{ 'crm.cancel' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="saveSubModules()">{{ 'crm.saveChanges' | translate }}</button>
       </div>
 
     </div>
@@ -300,7 +312,7 @@
   <div class="modal-dialog modal-dialog-centered align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title text-primary" id="exampleModalLabel"> Edit screens</h5>
+        <h5 class="modal-title text-primary" id="exampleModalLabel"> {{ 'crm.editScreens' | translate }}</h5>
         <div class="ms-auto">
           <span class="nav-item dropdown">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -327,8 +339,8 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Screen label
-                <span class="text-primary" style="font-size: .9rem;">(Original)</span>
+                {{ 'crm.screenLabel' | translate }}
+                <span class="text-primary" style="font-size: .9rem;">({{ 'crm.original' | translate }})</span>
               </label>
               <input
                 type="text"
@@ -340,7 +352,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Sub module
+                {{ 'crm.subModule' | translate }}
               </label>
               <select
                 formControlName="subModule"
@@ -348,7 +360,7 @@
                 class="form-select"
 
               >
-                <option value="">select sub module</option>
+                <option value="">{{ 'crm.selectSubModule' | translate }}</option>
                 <option *ngFor="let subModule of subModules"
                         value="{{ subModule.code }}">
                   {{subModule?.originalLabel}}
@@ -357,8 +369,8 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Screen label
-                <span class="text-primary" style="font-size: .9rem;">(Current)</span>
+                {{ 'crm.screenLabel' | translate }}
+                <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
               </label>
               <input
                 type="text"
@@ -370,36 +382,36 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                Visible
+                {{ 'crm.visible' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="Y" formControlName="visible">
-                <label class="form-check-label text-dark" for="visibility">Yes</label>
+                <label class="form-check-label text-dark" for="visibility">{{ 'entities.yes' | translate }}</label>
               </div>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="N" formControlName="visible">
-                <label class="form-check-label text-dark" for="visibility">No</label>
+                <label class="form-check-label text-dark" for="visibility">{{ 'entities.no' | translate }}</label>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Screen level
+                {{ 'crm.screenLevel' | translate }}
               </label>
               <select
                 formControlName="screenLevel"
                 id="screenLevel"
                 class="form-select"
               >
-                <option value="">select screen level</option>
-                <option *ngFor="let i of [].constructor(screens?.length); let j = index" [value]="j">{{j}}</option>
+                <option value="">{{ 'crm.selectScreenLevel' | translate }}</option>
+                <option *ngFor="let i of [].constructor(screens?.length); let j = index" [value]="j+1">{{j+ 1}}</option>
               </select>
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-outline-primary" (click)="closeScreensModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="saveScreens()">Save changes</button>
+        <button type="button" class="btn btn-outline-primary" (click)="closeScreensModal()">{{ 'crm.cancel' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="saveScreens()">{{ 'crm.saveChanges' | translate }}</button>
       </div>
 
     </div>
@@ -417,7 +429,7 @@
   <div class="modal-dialog modal-dialog-centered align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title text-primary" id="exampleModalLabel"> Edit sections</h5>
+        <h5 class="modal-title text-primary" id="exampleModalLabel"> {{ 'crm.editSections' | translate }}</h5>
         <div class="ms-auto">
           <span class="nav-item dropdown">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -444,8 +456,8 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Section label
-                <span class="text-primary" style="font-size: .9rem;">(Original)</span>
+                {{ 'crm.sectionLabel' | translate }}
+                <span class="text-primary" style="font-size: .9rem;">({{ 'crm.original' | translate }})</span>
               </label>
               <input
                 type="text"
@@ -457,7 +469,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Screen
+                {{ 'crm.screen' | translate }}
               </label>
               <select
                 formControlName="screen"
@@ -473,8 +485,8 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Section label
-                <span class="text-primary" style="font-size: .9rem;">(Current)</span>
+                  {{ 'crm.sectionLabel' | translate }}
+                <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
               </label>
               <input
                 type="text"
@@ -486,36 +498,36 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                Visible
+                  {{ 'crm.visible' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="Y" formControlName="visible">
-                <label class="form-check-label text-dark" for="visibility">Yes</label>
+                <label class="form-check-label text-dark" for="visibility">{{ 'entities.yes' | translate }}</label>
               </div>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="N" formControlName="visible">
-                <label class="form-check-label text-dark" for="visibility">No</label>
+                <label class="form-check-label text-dark" for="visibility">{{ 'entities.no' | translate }}</label>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Section level
+                {{ 'crm.sectionLevel' | translate }}
               </label>
               <select
                 formControlName="sectionLevel"
                 id="sectionLevel"
                 class="form-select"
               >
-                <option value="">select section level</option>
-                <option *ngFor="let i of [].constructor(sections?.length); let j = index" [value]="j">{{j}}</option>
+                <option value="">{{ 'crm.selectSectionLevel' | translate }}</option>
+                <option *ngFor="let i of [].constructor(sections?.length); let j = index" [value]="j+1">{{j+ 1}}</option>
               </select>
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-outline-primary" (click)="closeSectionsModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="saveSections()">Save changes</button>
+        <button type="button" class="btn btn-outline-primary" (click)="closeSectionsModal()">{{ 'crm.cancel' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="saveSections()">{{ 'crm.saveChanges' | translate }}</button>
       </div>
 
     </div>
@@ -533,7 +545,7 @@
   <div class="modal-dialog modal-dialog-centered align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title text-primary" id="exampleModalLabel"> Edit sub sections</h5>
+        <h5 class="modal-title text-primary" id="exampleModalLabel"> {{ 'crm.editSubSections' | translate }}</h5>
         <div class="ms-auto">
           <span class="nav-item dropdown">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -560,8 +572,8 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Sub section label
-                <span class="text-primary" style="font-size: .9rem;">(Original)</span>
+                {{ 'crm.subSectionLabel' | translate }}
+                <span class="text-primary" style="font-size: .9rem;">({{ 'crm.original' | translate }})</span>
               </label>
               <input
                 type="text"
@@ -573,14 +585,14 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Section
+                {{ 'crm.section' | translate }}
               </label>
               <select
                 formControlName="section"
                 id="section"
                 class="form-select"
               >
-                <option value="">select section</option>
+                <option value="">{{ 'crm.selectSection' | translate }}</option>
                 <option *ngFor="let section of sections"
                         value="{{ section?.code}}">
                   {{ section?.originalLabel }}
@@ -589,8 +601,8 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Sub section label
-                <span class="text-primary" style="font-size: .9rem;">(Current)</span>
+                {{ 'crm.subSectionLabel' | translate }}
+                <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
               </label>
               <input
                 type="text"
@@ -602,36 +614,152 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                Visible
+                {{ 'crm.visible' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="Y" formControlName="visible">
-                <label class="form-check-label text-dark" for="visibility">Yes</label>
+                <label class="form-check-label text-dark" for="visibility">{{ 'entities.yes' | translate }}</label>
               </div>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="N" formControlName="visible">
-                <label class="form-check-label text-dark" for="visibility">No</label>
+                <label class="form-check-label text-dark" for="visibility">{{ 'entities.no' | translate }}</label>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Sub section level
+                {{ 'crm.subSectionLevel' | translate }}
               </label>
               <select
                 formControlName="subSectionLevel"
                 id="subSectionLevel"
                 class="form-select"
               >
-                <option value="">select sub section level</option>
-                <option *ngFor="let i of [].constructor(subSections?.length); let j = index" [value]="j">{{j}}</option>
+                <option value="">{{ 'crm.selectSubSectionLevel' | translate }}</option>
+                <option *ngFor="let i of [].constructor(subSections?.length); let j = index" [value]="j+1">{{j+ 1}}</option>
               </select>
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-outline-primary" (click)="closeSubSectionsModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="saveSubSections()">Save changes</button>
+        <button type="button" class="btn btn-outline-primary" (click)="closeSubSectionsModal()">{{ 'crm.cancel' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="saveSubSections()">{{ 'crm.saveChanges' | translate }}</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!--Sub Section Two modal-->
+<div
+  class="modal fade"
+  #subSectionTwoModal
+  id="subSectionTwoModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog modal-dialog-centered align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title text-primary" id="exampleModalLabel"> {{ 'crm.editSubSectionsTwo' | translate }}</h5>
+        <div class="ms-auto">
+          <span class="nav-item dropdown">
+            <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li *ngFor="let language of languages">
+                <a class="dropdown-item" href="javascript:void(0)" (click)="selectLanguage(language)">
+                  <span [class]="language.class"></span>
+                  <span style="color: black; font-size: 14px;"> {{language.lang}}</span>
+                </a>
+              </li>
+            </ul>
+          </span>
+        </div>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeSubSectionTwoModal()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="subSectionTwoForm">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label" >
+                  {{ 'crm.subSectionTwoLabel' | translate }}
+                <span class="text-primary" style="font-size: .9rem;">({{ 'crm.original' | translate }})</span>
+              </label>
+              <input
+                type="text"
+                formControlName="originalSubSectionTwoLabel"
+                id="originalSubSectionTwoLabel"
+                class="form-control"
+
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label" >
+                  {{ 'crm.section' | translate }}
+              </label>
+              <select
+                formControlName="section"
+                id="section"
+                class="form-select"
+              >
+                <option value="">{{ 'crm.selectSection' | translate }}</option>
+                <option *ngFor="let section of sections"
+                        value="{{ section?.code}}">
+                  {{ section?.originalLabel }}
+                </option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label" >
+                  {{ 'crm.subSectionTwoLabel' | translate }}
+                <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
+              </label>
+              <input
+                type="text"
+                formControlName="currentSubSectionTwoLabel"
+                id="currentSubSectionTwoLabel"
+                class="form-control"
+
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label w-100" >
+                {{ 'crm.visible' | translate }}
+              </label>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="visibility" value="Y" formControlName="visible">
+                <label class="form-check-label text-dark" for="visibility">{{ 'entities.yes' | translate }}</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="visibility" value="N" formControlName="visible">
+                <label class="form-check-label text-dark" for="visibility">{{ 'entities.no' | translate }}</label>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label" >
+                {{ 'crm.subSectionTwoLevel' | translate }}
+              </label>
+              <select
+                formControlName="subSectionTwoLevel"
+                id="subSectionTwoLevel"
+                class="form-select"
+              >
+                <option value="">{{ 'crm.selectSubSectionTwoLevel' | translate }}</option>
+                <option *ngFor="let i of [].constructor(subSectionsTwo?.length); let j = index" [value]="j+1">{{j+ 1}}</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-outline-primary" (click)="closeSubSectionTwoModal()">{{ 'crm.cancel' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="saveSubSectionTwo()">{{ 'crm.saveChanges' | translate }}</button>
       </div>
 
     </div>
@@ -649,22 +777,8 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title text-primary" id="exampleModalLabel"> Edit field properties</h5>
-        <!--<span class="nav-item dropdown">
-          <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
-          </button>
-          <ul class="dropdown-menu">
-            <li *ngFor="let language of languages">
-              <a class="dropdown-item" href="javascript:void(0)" (click)="selectLanguage(language)">
-                <span [class]="language.class"></span>
-                <span style="color: black; font-size: 14px;"> {{language.lang}}</span>
-              </a>
-            </li>
-          </ul>
-        </span>-->
+        <h5 class="modal-title text-primary" id="exampleModalLabel">{{ 'crm.editFieldProperties' | translate }}</h5>
         <div class="ms-auto">
-<!--        <app-language-selector></app-language-selector>-->
           <span class="nav-item dropdown">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
               <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
@@ -691,8 +805,8 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Field label
-                <span class="text-primary" style="font-size: .9rem;">(Original)</span>
+                  {{ 'crm.fieldLabel' | translate }}
+                <span class="text-primary" style="font-size: .9rem;">({{ 'crm.original' | translate }})</span>
               </label>
               <input
                 type="text"
@@ -704,7 +818,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Placeholder
+                {{ 'crm.placeholder' | translate }}
               </label>
               <input
                 type="text"
@@ -716,8 +830,8 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Field label
-                <span class="text-primary" style="font-size: .9rem;">(Current)</span>
+                {{ 'crm.fieldLabel' | translate }}
+                <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
               </label>
               <input
                 type="text"
@@ -729,14 +843,14 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Input type
+                {{ 'crm.inputType' | translate }}
               </label>
               <select
                 formControlName="inputType"
                 id="inputType"
                 class="form-select"
               >
-                <option value="">select type</option>
+                <option value="">{{ 'crm.selectType' | translate }}</option>
                 <option value="text">text</option>
                 <option value="select">select</option>
                 <option value="number">number</option>
@@ -745,7 +859,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                Visible
+                  {{ 'crm.visible' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="Y" formControlName="visible">
@@ -758,7 +872,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                Mandatory
+                {{ 'crm.mandatory' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="mandatory" value="Y" formControlName="mandatory">
@@ -771,27 +885,27 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                Disabled
+                {{ 'crm.disabled' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="disabled" value="Y" formControlName="disabled">
-                <label class="form-check-label text-dark" for="disabled">Yes</label>
+                <label class="form-check-label text-dark" for="disabled">{{ 'entities.yes' | translate }}</label>
               </div>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="disabled" value="N" formControlName="disabled">
-                <label class="form-check-label text-dark" for="disabled">No</label>
+                <label class="form-check-label text-dark" for="disabled">{{ 'entities.no' | translate }}</label>
               </div>
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Sections
+                {{ 'crm.sections' | translate }}
               </label>
               <select
                 formControlName="section"
                 id="section"
                 class="form-select"
               >
-                <option value="">select section</option>
+                <option value="">{{ 'crm.selectSection' | translate }}</option>
                 <option *ngFor="let section of sections"
                         value="{{ section?.code}}">
                   {{ section?.originalLabel }}
@@ -801,7 +915,7 @@
 
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                Tool tips
+                {{ 'crm.toolTips' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="tooltips" value="Y" formControlName="tooltips">
@@ -814,41 +928,35 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                Tool tip words
+                {{ 'crm.toolTipWords' | translate }}
               </label>
               <input
                 type="text"
-                formControlName="tooltipWords"
-                id="tooltipWords"
+                formControlName="tooltip"
+                id="tooltip"
                 class="form-control"
               />
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label">
-                Order
+                {{ 'crm.order' | translate }}
               </label>
-              <!--<select
-                formControlName="order"
-                id="order"
-                class="form-select"
-              >
-                <option value="">select order</option>
-                <option value="1">1</option>
-              </select>-->
               <select
                 formControlName="order"
                 id="order"
                 class="form-select"
               >
-                <option value="">select order</option>
-                <option *ngFor="let i of [].constructor(tableData?.length); let j = index" [value]="j">{{j}}</option>
+                <option value="">{{ 'crm.selectOrder' | translate }}</option>
+                  <option *ngFor="let i of [].constructor(tableData?.length); let j = index" [value]="j+1">{{ j + 1 }}
+                  </option>
               </select>
             </div>
 
             <div class="container mb-3">
               <div class="d-flex align-items-center mb-2">
-                <span class="text-dark me-2">Validations</span>
-                <button class="btn btn-link p-0 text-primary" (click)="addSection()" [disabled]="getRemainingValidations().length === 0">
+                <span class="text-dark me-2">{{ 'crm.validations' | translate }}</span>
+                <button class="btn btn-link p-0 text-primary" (click)="addSection()"
+                        [disabled]="getRemainingValidations().length === 0 || selectedTableRecordDetails?.isProtected === true">
                   <i class="fas fa-plus-circle fa-lg"></i>
                 </button>
               </div>
@@ -906,10 +1014,52 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-outline-primary" (click)="closeFieldsModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="saveFieldProperties()">Save changes</button>
+        <button type="button" class="btn btn-outline-primary" (click)="closeFieldsModal()">{{ 'crm.cancel' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="saveFieldProperties()">{{ 'crm.saveChanges' | translate }}</button>
       </div>
 
     </div>
   </div>
+</div>
+
+<!--Multilingual confirmation modal-->
+<div class="modal fade" id="multilingualModal" aria-labelledby="multilingualModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content position-relative p-4">
+        <div class="d-flex align-items-center">
+          <div
+            class="d-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-25 me-4"
+            style="width: 60px; height: 60px;"
+          >
+            <i class="fas fa-info text-primary" style="font-size: 1.5rem;"></i>
+          </div>
+          <div>
+            <h5 class="fw-bold mb-2">Info</h5>
+            <p class="text-muted mb-3">
+              {{ 'crm.updateInAnotherLanguage' | translate }}
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+              <button
+                type="button"
+                class="btn btn-outline-primary btn-md"
+                (click)="closeMultilingualModal()"
+              >
+                {{ 'entities.no' | translate }}
+              </button>
+              <button type="button" class="btn btn-primary btn-md" (click)="closeMultilingualModal(true)">
+                {{ 'entities.yes' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Close button -->
+        <button
+          type="button"
+          class="btn-close position-absolute top-0 end-0 m-3"
+          (click)="closeMultilingualModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+    </div>
 </div>

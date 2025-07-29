@@ -24,3 +24,8 @@
 .btn-close {
   margin-left:4rem!important
 }
+
+.highlight {
+  background-color: #e9eef6 !important;
+  font-weight: 500 !important;
+}

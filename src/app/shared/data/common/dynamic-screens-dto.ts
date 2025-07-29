@@ -54,6 +54,7 @@ export interface FormSubGroupsDto {
   addButtonTextLabel: MultilingualText,
   visible: boolean;
   order: number;
+  hasFields: boolean;
 }
 
 export interface ConfigFormFieldsDto {
@@ -85,6 +86,7 @@ export interface ConfigFormFieldsDto {
   subModuleCode: number;
   mandatory: boolean;
   isProtected?: boolean;
+  showTooltip: boolean;
 }
 
 export interface MultilingualText {
