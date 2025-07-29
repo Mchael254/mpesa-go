@@ -588,6 +588,22 @@ export class MenuService {
     ],
     FMS: [
       {
+name:'setups',
+nameSlug:'set-ups',
+menuItems:[
+  {
+    name:'',
+    nameSlug:'',
+subList:[
+{name:'',link:''},
+{name:'',link:''},
+
+]
+  }
+]
+
+      },
+      {
         name: 'General Ledger',
 
         nameSlug: 'general-ledger',
@@ -595,24 +611,66 @@ export class MenuService {
 
         menuItems: [
           {
-            name: 'Paramaters',
+            name: 'GL-Parameters',
             nameSlug: 'parameters',
-            subList: [{ name: '', link: '' }],
+            subList: [
+              { name: 'Accounts Setup', link: '' },
+              { name: 'Charts of Accounts', link: '' },
+              { name: 'Define Branch Accounts', link: '' },
+              { name: 'View Branch Accounts', link: '' },
+              { name: 'Define Budgets', link: '' },
+              { name: 'Authorise Budgets', link: '' },
+              { name: 'Revise Budgets', link: '' },
+              { name: 'Opening Balances', link: '' },
+              { name: 'Import Opening Balance', link: '' },
+              { name: 'Recurring Journals', link: '' }
+
+            ],
+            
           },
           {
             name: 'Gl-Transactions',
             nameSlug: 'transactions',
-            subList: [{ name: '', link: '' }],
+            subList: [
+              { name: 'Journal Entries', link: '' },
+              { name: 'View Journal Entries', link: '' },
+              { name: 'Post Transactions', link: '' },
+              { name: 'View Transactions', link: '' },
+              { name: 'Audit Journals', link: '' },
+
+              { name: 'Post Audit Journals', link: '' }
+             
+            ],
           },
           {
             name: 'Gl-Inquiries',
             nameSlug: 'gl-inquires',
-            subList: [{ name: '', link: '' }],
+            subList: [
+              { name: 'View Transactions', link: '' },
+            { name: 'Audit Trail', link: '' },
+          { name: 'Voucher Inquiries', link: '' },
+        { name: 'Budget Trail', link: '' },
+      { name: 'View Account Balances', link: '' },
+    { name: 'Vouchers Report', link: '' },
+    { name: 'Transactions without Cost Centres', link: '' },
+    { name: 'GL Listing Report', link: '' },
+    { name: 'Transaction Listing Report', link: '' },
+    { name: 'Expense Reports', link: '' },
+    { name: 'DMS Documents', link: '' }
+    
+    ],
           },
           {
             name: 'Gl-Final Reports',
             nameSlug: 'final-reports',
-            subList: [{ name: '', link: '' }],
+            subList: [
+              { name: 'Formats', link: '' },
+               { name: 'Reports Apportionment', link: '' },
+                { name: 'Changes in Equity', link: '' },
+                 { name: 'Setups', link: '' },
+                  { name: 'Reports', link: '' }
+                   
+            ],
           },
         ],
 
