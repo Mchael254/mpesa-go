@@ -129,6 +129,8 @@ export class NewEntityV2Component implements OnInit {
 
   amlDetailsLabel: string = '';
 
+  isPatchingFormValues: boolean = false;
+
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
   protected readonly CountryISO = CountryISO;
   protected readonly SearchCountryField = SearchCountryField;
@@ -1192,7 +1194,7 @@ export class NewEntityV2Component implements OnInit {
           this.profilePicture = file;
           break;
         case 'doc':
-          // this.clientFiles.push(file);
+          this.clientFiles.push(file);
           this.readFileAsBase64(event);
           break;
         default:
@@ -1311,6 +1313,8 @@ export class NewEntityV2Component implements OnInit {
       // todo: add contactPersons[], branches[], ownershipDetails[]
     };
 
+    this.isPatchingFormValues = true;
+    this.entityForm.disable();
 
     const requestPayload = {
       assistant_id: "DocumentHubAgent",
@@ -1337,35 +1341,56 @@ export class NewEntityV2Component implements OnInit {
         // todo: extract into method patchFormFields()
         const dataToPatch = {
           ...data,
-          pinNumber: data.pin_number,
-          lastName: data.taxpayer_name,
-          otherNames: data.taxpayer_name,
-          email: data.email_address,
+          pinNumber: data.pinNumber,
+          lastName: data.lastName,
+          otherNames: data.firstName,
+          email: data.emailAddress,
           houseNo: data.building,
-          physicalAddress: data.street_or_road,
-          cityTown: data.city_or_town,
-          postalCode: data.postal_code,
+          physicalAddress: data.physicalAddress,
+          cityTown: data.townId,
+          postalCode: data.postalCode,
         }
 
         this.entityForm.patchValue({
           address_details: {
-            address: '',
-            cityTown: data.city_or_town,
-            countryId: '',
-            postalCode: data.postal_code,
-            physicalAddress: data.street_or_road,
-            pinNumber: data.pin_number,
+            address: data.physicalAddress,
+            cityTown: data.townId,
+            countryId: null,
+            postalCode: data.postalCode,
+            physicalAddress: data.physicalAddress,
+            postalAddress: data.postalAddress,
           },
           prime_identity: {
-            lastName: data.taxpayer_name,
-            otherNames: data.taxpayer_name,
-            email: data.email_address,
+            lastName: data.lastName,
+            otherNames: data.firstName,
+            email: data.emailAddress,
+            pinNumber: data.pinNumber,
+            citizenshipCountryId: data.countryId,
+            dateOfBirth: data.dateOfBirth,
+            gender: data.gender,
+            idNumber: data.idNumber,
+            maritalStatus: data.maritalStatus,
+            modeOfIdentityId: null,
+            wef: data.withEffectFromDate,
+            wet: data.withEffectToDate,
           },
+          contact_details: {
+            telNumber: data.phoneNumber,
+            smsNumber: data.smsNumber,
+            contactChannel: data.contactChannel,
+            email: data.emailAddress,
+            titleId: null // todo: get title
+          }
         });
-        log.info(`scanned document data >>> `, dataToPatch, this.entityForm.getRawValue());
+        log.info(`scanned document data >>> `, typeof dataToPatch, dataToPatch, this.entityForm.getRawValue());
+        this.isPatchingFormValues = false;
+        this.entityForm.enable();
 
       },
-      error: (err) => {}
+      error: (err) => {
+        this.isPatchingFormValues = false;
+        this.entityForm.enable();
+      }
     })
     sessionStorage.removeItem('aiToken')
 
