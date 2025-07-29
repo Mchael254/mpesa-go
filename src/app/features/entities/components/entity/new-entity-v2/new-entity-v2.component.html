@@ -121,7 +121,18 @@
     </div>
   </div>
 
+
   <form [formGroup]="entityForm">
+
+    <ng-container *ngIf="isPatchingFormValues" >
+      <div class="lead text-center alert alert-primary">
+        Please hold on while the form is being populated by the document.
+        <div class="spinner-grow text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </ng-container>
+
     <ng-container *ngFor="let group of formGroupSections" [formGroupName]="group.groupId">
       <div class="card mb-3">
         <div class="m-3 text-muted">
@@ -338,18 +349,6 @@
               </ng-container>
 
             </div>
-
-            <!--{{ group | json}} dynamic tables-->
-            <!--<div *ngIf="group.groupId === 'wealth_aml_details'">
-              <app-dynamic-setup-table
-                [tableTitle]="group.subGroup[0]?.label"
-                [addButtonText]="group.subGroup[0]?.addButtonText[language]"
-                [emptyTableMessage]="'No record found!'"
-                [formFields]="wealthAmlFormFields"
-                [subGroupId]="'wealth_aml_details'"
-                (saveDetailsData)="fetchSavedDetails($event)"
-              ></app-dynamic-setup-table>
-            </div>-->
 
             <div *ngIf="group.groupId === 'contact_details' && category === 'corporate' && corporateContactDetailsFormField.length > 0">
               <app-dynamic-setup-table
