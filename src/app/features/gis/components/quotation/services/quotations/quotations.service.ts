@@ -28,7 +28,7 @@ import { ExternalClaimExp } from '../../../policy/data/policy-dto';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { UtilService } from '../../../../../../shared/services';
 import { map } from "rxjs/operators";
-import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
+import { QuotationsDTO, riskClause } from 'src/app/features/gis/data/quotations-dto';
 import { ComputationPayloadDto, PremiumComputationRequest, ProductLevelPremium } from "../../data/premium-computation";
 import { QuotationDetailsRequestDto } from "../../data/quotation-details";
 import { EmailDto } from "../../../../../../shared/data/common/email-dto";
@@ -858,6 +858,18 @@ export class QuotationsService {
       catchError(this.errorHandl)
     )
   }
+
+  addRiskClause(payload: riskClause): Observable<any> {
+    return this.api.POST<any>(
+      `v2/quotation-risk-clauses`,
+      payload, // <-- NOT JSON.stringify()
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    ).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+
 
 
 }
