@@ -613,29 +613,29 @@ export class QuotationsService {
 
 
 
-addTaxes(
-  generatedQuotCode: number,
-  newQpCode: number,
-  payload: any
-): Observable<any> {
-  const params = new HttpParams()
-    .set('generatedQuotCode', generatedQuotCode)
-    .set('newQpCode', newQpCode);
+  addTaxes(
+    generatedQuotCode: number,
+    newQpCode: number,
+    payload: any
+  ): Observable<any> {
+    const params = new HttpParams()
+      .set('generatedQuotCode', generatedQuotCode)
+      .set('newQpCode', newQpCode);
 
-  return this.api.POST<any>(
-    `v2/taxes?${params.toString()}`,
-    payload,                         
-    API_CONFIG.GIS_QUOTATION_BASE_URL
-  );
-}
+    return this.api.POST<any>(
+      `v2/taxes?${params.toString()}`,
+      payload,
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    );
+  }
 
-updateTaxes(payload: any): Observable<any> {
-  return this.api.PUT<any>(
-    'v2/taxes', 
-    payload,
-    API_CONFIG.GIS_QUOTATION_BASE_URL
-  );
-}
+  updateTaxes(payload: any): Observable<any> {
+    return this.api.PUT<any>(
+      'v2/taxes',
+      payload,
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    );
+  }
 
 
 
@@ -890,18 +890,21 @@ updateTaxes(payload: any): Observable<any> {
   }
 
   addRiskClause(payload: riskClause): Observable<any> {
-    return this.api.POST<any>(
-      `v2/quotation-risk-clauses`,
-      payload, // <-- NOT JSON.stringify()
-      API_CONFIG.GIS_QUOTATION_BASE_URL
-    ).pipe(
+    return this.api.POST<any>(`v2/quotation-risk-clauses`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+
+  editRiskClause(payload: riskClause): Observable<any> {
+    return this.api.PUT<any>(`v2/quotation-risk-clauses`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     );
   }
 
 
-     getTransactionTypes(): Observable<any> {
+  getTransactionTypes(): Observable<any> {
     let page = 0;
     let size = 1000
     const headers = new HttpHeaders({

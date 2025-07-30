@@ -2717,8 +2717,6 @@ export class RiskDetailsComponent {
     }
   }
 
-
-
   //edit clause
   selectedRiskClause: any = {
     id: '',
@@ -2741,34 +2739,60 @@ export class RiskDetailsComponent {
     this.originalClauseBeforeEdit = { ...clause };
   }
 
-  editClause() {
-    if (!this.selectedRiskClause) return;
+  editClause(): void {
+    if (!this.selectedRiskClause || !this.wasModified()) return;
 
-    const replaceClause = (list: any[]) =>
-      list.map(c => c.shortDescription === this.selectedRiskClause.shortDescription ? { ...this.selectedRiskClause } : c);
+    const quotationCode = Number(sessionStorage.getItem("quotationCode"));
+    const riskCode = Number(this.selectedRiskCode);
 
-    // Update all relevant arrays
-    this.sessionClauses = replaceClause(this.sessionClauses);
-    this.riskClause = replaceClause(this.riskClause);
-
-    // Ensure clauseModified flag is set
-    this.clauseModified = true;
-
-    // Update session storage with the modified flag
-    const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
-    riskClauseMap[this.selectedRiskCode] = {
-      riskClause: this.riskClause,
-      nonMandatoryClauses: this.nonMandatoryClauses,
-      clauseModified: true  // Explicitly set this to true
+    const payload: riskClause = {
+      clauseCode: this.selectedRiskClause.clauseCode,
+      clauseShortDescription: this.selectedRiskClause.shortDescription ?? '',
+      quotationCode: quotationCode,
+      riskCode: riskCode,
+      clause: this.selectedRiskClause.wording?.trim() ?? '',
+      clauseEditable: this.selectedRiskClause.isEditable ?? 'N',
+      clauseType: this.selectedRiskClause.clauseType ?? 'CL',
+      clauseHeading: this.selectedRiskClause.heading ?? ''
     };
-    sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
 
-    // Reset the edit form
-    this.selectedRiskClause = { id: '', heading: '', wording: '' };
-    this.originalClauseBeforeEdit = null;
+    log.debug("Sending update for clause:", payload);
 
-    this.globalMessagingService.displaySuccessMessage('success', 'Clause edited successfully');
+    this.quotationService.editRiskClause(payload).subscribe({
+      next: () => {
+        // Replace in all relevant arrays
+        const replaceClause = (list: any[]) =>
+          list.map(c => c.shortDescription === this.selectedRiskClause.shortDescription
+            ? { ...this.selectedRiskClause }
+            : c
+          );
+
+        this.sessionClauses = replaceClause(this.sessionClauses);
+        this.riskClause = replaceClause(this.riskClause);
+
+        // Update sessionStorage
+        this.clauseModified = true;
+        const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+        riskClauseMap[this.selectedRiskCode] = {
+          riskClause: this.riskClause,
+          nonMandatoryClauses: this.nonMandatoryClauses,
+          clauseModified: true
+        };
+        sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+
+        // Reset state
+        this.selectedRiskClause = { id: '', heading: '', wording: '' };
+        this.originalClauseBeforeEdit = null;
+
+        this.globalMessagingService.displaySuccessMessage('Success', 'Clause edited successfully');
+      },
+      error: (err) => {
+        log.error("Failed to edit clause:", err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to update clause');
+      }
+    });
   }
+
 
   //delete risk clause
   clauseToDelete: any = null;
