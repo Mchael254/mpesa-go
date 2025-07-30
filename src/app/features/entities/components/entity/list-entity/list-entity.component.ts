@@ -35,13 +35,18 @@ export class ListEntityComponent implements OnInit, OnDestroy {
   isSearching = false;
   searchTerm = '';
   private subscription: Subscription;
-  cols = [
-    { field: 'name', header: 'Name' },
-    { field: 'modeOfIdentityName', header: 'ID Type' },
-    { field: 'identityNumber', header: 'ID Number' },
-    { field: 'pinNumber', header: 'Pin Number' },
-    { field: 'categoryName', header: 'Entity Type' },
+  columns = [
+    { field: 'name', header: 'Name', visible: true },
+    { field: 'modeOfIdentityName', header: 'ID Type', visible: true },
+    { field: 'identityNumber', header: 'ID Number', visible: true },
+    { field: 'pinNumber', header: 'Pin Number', visible: true },
+    { field: 'categoryName', header: 'Entity Type', visible: true },
+    { field: 'email', header: 'Email', visible: false },
+    { field: 'telephoneNumber', header: 'Telephone Number', visible: false },
   ];
+
+
+  columnDialogVisible: boolean = false;
 
   globalFilterFields = ['name', 'modeOfIdentity.name', 'identityNumber', 'pinNumber', 'categoryName'];
 
@@ -79,7 +84,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
  */
   ngOnInit(): void {
     this.tableDetails = {
-      cols: this.cols,
+      cols: this.columns,
       rows: [],
       globalFilterFields: this.globalFilterFields,
       showFilter: false,
@@ -279,6 +284,36 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     }
 
   }
+
+  /**
+   * Filter records beased on column filter
+   * @param event
+   * @param field
+   */
+  processInput(event: Event, field: string) {
+    switch (field) {
+      case 'name':
+        this.inputName(event);
+        break;
+      case 'modeOfIdentityName':
+        this.inputModeOfIdentityName(event);
+        break;
+      case 'identityNumber':
+        this.inputIdNumber(event);
+        break;
+      case 'pinNumber':
+        this.inputPinNumber(event);
+        break;
+      case 'categoryName':
+        this.inputCategoryName(event);
+        break;
+      default:
+        // do nothing
+
+    }
+  }
+
+
   inputName(event) {
 
     const value = (event.target as HTMLInputElement).value;
@@ -290,6 +325,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     const value = (event.target as HTMLInputElement).value;
     this.filterObject['identityNumber'] = value;
   }
+
   inputModeOfIdentityName(event) {
 
     const value = (event.target as HTMLInputElement).value;

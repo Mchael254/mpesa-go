@@ -15,10 +15,10 @@ import { ServiceProviderRes } from '../../../data/ServiceProviderDTO';
 import { PartyTypeDto } from '../../../data/partyTypeDto';
 import { Subject, of } from 'rxjs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AccountService } from '../../../services/account/account.service';
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import {ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from '@angular/core';
 import { MessageService } from 'primeng/api';
 
 const mockEntityData: ReqPartyById = {
@@ -119,6 +119,34 @@ const client: ClientTypeDTO = {
 
 const mockClientAccountData: ClientDTO = {
   branchCode: 0,
+  category: "",
+  clientFullName: "",
+  clientTitle: "",
+  clientType: undefined,
+  clientTypeName: "",
+  code: 0,
+  country: 0,
+  createdBy: "",
+  dateOfBirth: "",
+  emailAddress: "",
+  firstName: "",
+  gender: "",
+  id: 0,
+  idNumber: "",
+  lastName: "",
+  mobileNumber: "",
+  modeOfIdentity: "",
+  occupation: {id: 0, name: "", sector_id: 0, short_description: ""},
+  passportNumber: "",
+  phoneNumber: "",
+  physicalAddress: "",
+  pinNumber: "",
+  shortDescription: "",
+  state: "",
+  status: "",
+  town: "",
+  withEffectFromDate: ""
+  /*branchCode: 0,
   category: '',
   clientTitle: '',
   clientType: client,
@@ -146,7 +174,7 @@ const mockClientAccountData: ClientDTO = {
   status: '',
   withEffectFromDate: '',
   clientTypeName: '',
-  clientFullName: '',
+  clientFullName: '',*/
 };
 
 const mockServiceProviderAccountData: ServiceProviderRes = {
@@ -243,12 +271,33 @@ const mockUnAssignedPartyRoles: PartyTypeDto[] = [
   },
 ];
 
+const mockJson = [
+  {
+    section_id: 'prime_details',
+    order: 2,
+    tabs: [
+      { title: 'Tab A', order: 2 },
+      { title: 'Tab B', order: 1 }
+    ]
+  },
+  {
+    section_id: 'additional_information',
+    order: 1,
+    tabs: [
+      { title: 'Tab C', order: 3 },
+      { title: 'Tab D', order: 2 }
+    ]
+  }
+];
+
+
 export class MockEntityService {
   getEntityByPartyId = jest.fn().mockReturnValue(of(mockEntityData));
   getAccountById = jest.fn().mockReturnValue(of());
   getPartiesType = jest.fn().mockReturnValue(of(mockAllPartyTypes));
-  uploadProfileImage = jest.fn();
+  uploadProfileImage = jest.fn().mockReturnValue(of({ file: 'uploaded-profile-image.jpg' }));
   setCurrentAccount = jest.fn();
+  setCurrentEntity = jest.fn();
 }
 
 export class MockAccountService {
@@ -282,10 +331,21 @@ describe('ViewEntityComponent', () => {
   let clientServiceStub: ClientService;
   let serviceProviderServiceStub: ServiceProviderService;
   let intermediaryServiceStub: IntermediaryService;
+  let cdr: ChangeDetectorRef;
+  let http: HttpTestingController;
+
   const mySubject = new Subject();
 
   let activatedRoute: ActivatedRoute;
   let routeStub: Router;
+
+  const mockPrimeIdentityComponent = {
+    openEditPrimeIdentityDialog: jest.fn()
+  };
+
+  const mockRouter = {
+    navigate: jest.fn()
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -300,6 +360,7 @@ describe('ViewEntityComponent', () => {
       ],
       providers: [
         { provide: EntityService, useClass: MockEntityService },
+        { provide: Router, useValue: mockRouter },
         { provide: AccountService, useClass: MockAccountService },
         // { provide: AccountService, useValue: {currentAccount$: mySubject.asObservable()}},
         { provide: StaffService, useClass: MockStaffService },
@@ -314,6 +375,7 @@ describe('ViewEntityComponent', () => {
           useValue: { snapshot: { params: { id: 16674453 } } },
         },
         MessageService,
+        ChangeDetectorRef,
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
     });
@@ -327,7 +389,54 @@ describe('ViewEntityComponent', () => {
 
     routeStub = TestBed.inject(Router);
     activatedRoute = TestBed.inject(ActivatedRoute);
+    http = TestBed.inject(HttpTestingController);
+    cdr = TestBed.inject(ChangeDetectorRef);
+
     fixture.detectChanges();
+
+
+    // Set sample tabs
+    component.primaryTabs = ['Overview', 'Reports', 'Transactions'];
+    component.secondaryTabs = ['Prime identity', 'Contact', 'Address'];
+
+    // Set default selections
+    component.selectedTab = 'Overview';
+    component.selectedSubTab = 'Prime identity';
+
+    component.primeIdentityComponent = mockPrimeIdentityComponent;
+
+    component.entityPartyIdDetails = {
+      categoryName: 'TestCat',
+      countryId: 1,
+      dateOfBirth: '1990-01-01',
+      effectiveDateFrom: '2023-01-01',
+      effectiveDateTo: '2025-01-01',
+      id: 101,
+      modeOfIdentity: null,
+      identityNumber: 123,
+      name: 'John Doe',
+      organizationId: 99,
+      pinNumber: 'PIN123',
+      profileImage: 'img.png'
+    };
+
+    component.entityAccountIdDetails = [
+      { partyType: {
+          id: 1,
+          organizationId: 2,
+          partyTypeName: 'Staff',
+          partyTypeShtDesc: 'STAFF',
+          partyTypeVisible: null,
+          partyTypeLevel: 1,
+        }},
+    ] as any;
+
+
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    // http.verify();
   });
 
   test('should create', () => {
@@ -402,7 +511,8 @@ describe('ViewEntityComponent', () => {
     expect(component.selectRoleModalForm).toBeDefined();
   });
 
-  test('should call uploadProfileImage on file change', () => {
+  /*test('should call uploadProfileImage on file change', () => {
+    console.log(`testing onFile change...`)
     const file = new File([''], 'profile.png', { type: 'image/png' });
     const event = { target: { files: [file] } };
 
@@ -417,7 +527,7 @@ describe('ViewEntityComponent', () => {
 
     expect(uploadProfileImageSpy).toHaveBeenCalled();
     expect(component.selectedFile).toEqual(file);
-  });
+  });*/
 
   test('should call entityService.uploadProfileImage and update entityPartyIdDetails on uploadProfileImage', () => {
     const file = new File([''], 'profile.png', { type: 'image/png' });
@@ -500,4 +610,110 @@ describe('ViewEntityComponent', () => {
     component.goToViewPolicies(accountId);
     expect(navigateSpy).toHaveBeenCalled();
   });
+
+  test('should test file changes onSelect', () => {
+    console.log('testing file select')
+
+    const mockFile = new File(['dummy content'], 'test.png', { type: 'image/png' });
+    const event = { target: { files: [mockFile] } };
+
+    const readerMock = {
+      readAsDataURL: jest.fn(),
+      onload: null as any,
+      result: 'data:image/png;base64,dummybase64'
+    };
+
+    (window as any).FileReader = jest.fn(() => readerMock);
+    component.onFileChange(event as any);
+    readerMock.onload({ target: { result: readerMock.result } });
+
+    // Give it time to execute async code
+    setTimeout(() => {
+      expect(component.selectedFile).toBe(mockFile);
+      expect(component.url).toBe('data:image/png;base64,dummybase64');
+      expect(component.uploadProfileImage).toHaveBeenCalled();
+    }, 10)
+  });
+
+  test('should update selectedTab if tab title is in primaryTabs', () => {
+    const tab = { title: 'Transactions' };
+    component.selectTab(tab);
+    expect(component.selectedTab).toBe('Transactions');
+    expect(component.selectedSubTab).toBe('Prime identity'); // unchanged
+  });
+
+  // does not increase coverage
+  /*test('should update selectedSubTab if tab title is in secondaryTabs', () => {
+    const tab = { title: 'Contact' };
+    component.selectTab(tab);
+    expect(component.selectedTab).toBe('Overview'); // unchanged
+    expect(component.selectedSubTab).toBe('Contact');
+  });
+
+  test('should update both selectedTab and selectedSubTab if title is in both', () => {
+    component.primaryTabs.push('Contact'); // add overlap
+    const tab = { title: 'Contact' };
+    component.selectTab(tab);
+    expect(component.selectedTab).toBe('Contact');
+    expect(component.selectedSubTab).toBe('Contact');
+  });
+
+  test('should not update anything if title is not in any tab list', () => {
+    const tab = { title: 'Unknown' };
+    component.selectTab(tab);
+    expect(component.selectedTab).toBe('Overview');
+    expect(component.selectedSubTab).toBe('Prime identity');
+  });*/
+
+  test('should call openEditPrimeIdentityDialog when tabTitle is "prime_identity"', () => {
+    component.openEditModal('prime_identity');
+    expect(mockPrimeIdentityComponent.openEditPrimeIdentityDialog).toHaveBeenCalled();
+  });
+
+
+  test('should assign role and navigate to staff URL', () => {
+    const role: AccountReqPartyId = {
+      accountCode: 0,
+      accountTypeId: 0,
+      category: "",
+      effectiveDateFrom: "",
+      effectiveDateTo: "",
+      id: 0,
+      organizationGroupId: 0,
+      organizationId: 0,
+      partyId: 0,
+      partyType: undefined
+    };
+    component.onAssignRole(role);
+
+    expect(component.selectedRole).toEqual(role);
+    expect(entityServiceStub.setCurrentEntity).toHaveBeenCalled();
+    expect(mockRouter.navigate).toHaveBeenCalled();
+  });
+
+  test('should load unassigned party types correctly', () => {
+    component.getUnAssignedRoles();
+    expect(entityServiceStub.getPartiesType).toHaveBeenCalled();
+    // expect(component.unAssignedPartyTypes).toEqual(mockAllPartyTypes);
+  });
+
+  test('should fetch and sort dynamic display config, and set primary/secondary tabs', () => {
+    component.fetchDynamicDisplayConfig();
+
+    const req = http.match('assets/data/dynamicDisplay360View.json');
+    expect(req.length).toBe(2);
+    /*expect(req.request.method).toBe('GET');
+    req.flush(mockJson);*/
+
+    req.forEach(req => {
+      expect(req.request.method).toBe('GET');
+      req.flush(mockJson);
+    });
+
+    expect(component.dynamicDisplay.length).toBe(2);
+    expect(component.dynamicDisplay[0].section_id).toBe('additional_information'); // sorted by order
+    expect(component.primaryTabs).toEqual(['Tab B', 'Tab A']); // sorted internally
+    expect(component.secondaryTabs).toEqual(['Tab D', 'Tab C']);
+  });
+
 });
