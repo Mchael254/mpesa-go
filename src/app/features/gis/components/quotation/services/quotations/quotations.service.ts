@@ -889,6 +889,7 @@ export class QuotationsService {
     )
   }
 
+  //risk clauses
   addRiskClause(payload: riskClause): Observable<any> {
     return this.api.POST<any>(`v2/quotation-risk-clauses`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
@@ -902,6 +903,15 @@ export class QuotationsService {
       catchError(this.errorHandl)
     );
   }
+
+  deleteRiskClause(clauseCode: number, riskCode: number): Observable<any> {
+    return this.api.DELETE(`/v2/quotation-risk-clauses?clauseCodes=${clauseCode}&quotRiskCode=${riskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL
+    ).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+
 
 
   getTransactionTypes(): Observable<any> {
