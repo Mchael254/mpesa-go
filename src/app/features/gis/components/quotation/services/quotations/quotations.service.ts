@@ -611,6 +611,36 @@ export class QuotationsService {
     return this.api.GET(`v2/taxes?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
+
+
+addTaxes(
+  generatedQuotCode: number,
+  newQpCode: number,
+  payload: any
+): Observable<any> {
+  const params = new HttpParams()
+    .set('generatedQuotCode', generatedQuotCode)
+    .set('newQpCode', newQpCode);
+
+  return this.api.POST<any>(
+    `v2/taxes?${params.toString()}`,
+    payload,                         
+    API_CONFIG.GIS_QUOTATION_BASE_URL
+  );
+}
+
+updateTaxes(payload: any): Observable<any> {
+  return this.api.PUT<any>(
+    'v2/taxes', 
+    payload,
+    API_CONFIG.GIS_QUOTATION_BASE_URL
+  );
+}
+
+
+
+
+
   getClauses(
     covertypeCode: number,
     subclassCode: number,): Observable<any> {
@@ -870,6 +900,21 @@ export class QuotationsService {
     );
   }
 
+
+     getTransactionTypes(): Observable<any> {
+    let page = 0;
+    let size = 1000
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+
+    })
+
+    return this.api.GET<any>(`api/v1/transaction-types?pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
 
 
 }

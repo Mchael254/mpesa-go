@@ -153,6 +153,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   noCommentleft: boolean = false;
   clientToReassignQuotation: any;
   clientOptions: any;
+  taxes:any;
+  showEditTaxModal:any;
+  selectedTax: any = null;
+  transactionTypes:any[]=[];
+  
+
 
 
 
@@ -192,9 +198,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   public cdr: ChangeDetectorRef;
 
 
+
   ngOnInit(): void {
     this.quotationCodeString = sessionStorage.getItem('quotationCode');
     this.quotationNumber = sessionStorage.getItem('quotationNumber') || sessionStorage.getItem('quotationNum');
+    log.debug('quotationCode',this.quotationCodeString)
     log.debug("quick Quotation number", this.quotationNumber);
 
     this.conversionFlagString = sessionStorage.getItem("conversionFlag");
@@ -209,7 +217,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.moreDetails = sessionStorage.getItem('quotationFormDetails');
 
     if (this.quotationCodeString) {
-      this.quotationCode = this.quotationCodeString;
+      this.quotationCode = Number(this.quotationCodeString);
     }
 
 
@@ -230,8 +238,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       const parsedMoreDetails = JSON.parse(this.moreDetails);
       this.quotationDetails = parsedMoreDetails;
     }
+    
 
-    this.getQuotationDetails(this.quotationCode || this.revisedQuotationNumber);
+    this.quotationCode&&this.getQuotationDetails(this.quotationCode );
     this.getuser();
 
     this.createInsurersForm();
@@ -247,6 +256,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.createSmsForm();
     this.getDocumentTypes();
     this.createTaxForm();
+    
 
     this.menuItems = [
       {
@@ -280,6 +290,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
 
     log.debug('tax details', this.taxDetails)
+
+    log.debug('QuotationView',this.quotationView)
+    log.debug('quotationDetails',this.quotationDetails)
+    log.debug('quotationDetailsm',this.getQuotationDetails(this.productSubclass))
 
 
   }
@@ -330,6 +344,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       )
       .subscribe((res: any) => {
         this.quotationView = res;
+        log.debug('QuotationView',this.quotationView)
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
         if (!this.moreDetails) {
@@ -365,7 +380,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.productDetails = this.quotationView.quotationProducts
 
         this.getbranch();
-        this.getPremiumComputationDetails();
+        // this.getPremiumComputationDetails();
         this.getAgent();
 
         // extract client-code and productCode
@@ -500,6 +515,147 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       log.debug(this.clauses)
     })
   }
+
+
+ getProductTaxes() {
+  this.taxes = [];
+  log.debug('getProductTaxes has been called ',this.selectedProduct)
+  const productCode=this.selectedProduct.productCode
+  const subClassCode=this.selectedProduct.riskInformation[0].subclassCode
+    if (productCode && subClassCode) {
+      this.quotationService.getTaxes(productCode, subClassCode).subscribe(res => {
+        
+        this.taxes = res._embedded;
+        log.debug('Taxes',this.taxes)
+      });
+    } else {
+      console.warn("Missing productCode or subClassCode for a risk:",);
+    }
+
+ 
+}
+
+
+
+
+
+getTransactionTypes(){
+
+  this.quotationService.getTransactionTypes().subscribe({
+    next:(response)=>{
+      this.transactionTypes=response || [];
+
+      log.debug('transactionTypes', this.transactionTypes)
+    },
+    error:(error)=>{
+      log.error('Error fetching transaction types:', error);
+    }
+  })
+
+}
+
+
+addTax() {
+
+
+   Object.keys(this.taxForm.controls).forEach(field => {
+    const control = this.taxForm.get(field);
+    control?.markAsTouched({ onlySelf: true });
+  });
+
+
+   if (this.taxForm.invalid || !this.selectedProduct) {
+    this.messageService.displayErrorMessage('Missing Info', 'Please complete the form before submitting');
+    return;
+  }
+
+  const formValues = this.taxForm.value;
+
+  const payload = {
+    code: 0,
+    rateDescription: formValues.tax,
+    rate: parseFloat(formValues.taxValue),
+    rateType: formValues.taxType.value,
+    taxAmount: 0,
+    productCode: this.selectedProduct.productCode,
+    quotationCode: Number (this.quotationCode),
+    transactionCode: formValues.transactionType.code,
+    renewalEndorsement: '', 
+    taxRateCode: formValues.taxRateCode,
+    levelCode: formValues.computationLevel,
+    taxType: formValues.tax,
+    riskProductLevel: ''
+  };
+
+
+  log.debug('Payload to submit:', payload);
+  log.debug('quotationCode',this.quotationCode)
+  const quotationCode=Number(this.quotationCode)
+
+this.quotationService.addTaxes(quotationCode, this.selectedProduct.code, [payload]).subscribe({
+  next: (res) => {
+    res && this.getQuotationDetails(quotationCode);
+    this.globalMessagingService.displaySuccessMessage('Success', 'Tax added successfully');
+    this.showTaxModal = false;
+    this.taxForm.reset();
+  },
+  error: (err) => {
+    this.messageService.displayErrorMessage('Error', 'Failed to add tax');
+  }
+});
+
+ 
+}
+
+updateTax() {
+  const formValue = this.taxForm.value;
+
+  const payload = {
+    code: this.selectedTax.code,
+    rateDescription: formValue.tax,
+    rate: parseFloat(formValue.taxValue),
+    rateType: formValue.taxType.value,
+    taxAmount: 0,
+    productCode: this.selectedProduct.productCode,
+    quotationCode: Number(this.quotationCode),
+    transactionCode: formValue.transactionType.code,
+    renewalEndorsement:'',
+    taxRateCode: formValue.taxRateCode,
+    levelCode: formValue.computationLevel,
+    taxType: formValue.tax,
+    riskProductLevel:'',
+  };
+
+  this.quotationService.updateTaxes(payload).subscribe({
+    next: (res) => {
+     res && this.getQuotationDetails(this.quotationCode);
+      console.log('Tax updated successfully:', res);
+      this.globalMessagingService.displaySuccessMessage('Success', 'Tax updated successfully');
+      this.taxForm.reset();
+      this.showTaxModal=false;
+      
+    },
+    error: (err) => {
+      console.error('Error updating tax:', err);
+      this.globalMessagingService.displayErrorMessage('Error', err?.error?.message || 'Failed to update tax');
+    }
+  });
+}
+
+saveTax() {
+  if (!this.taxForm.valid) {
+    this.messageService.displayErrorMessage('Missing Info', 'Please complete the form before submitting');
+    return;
+  }
+
+  if (this.selectedTax) {
+    this.updateTax(); 
+  } else {
+    this.addTax(); 
+  }
+}
+
+
 
   /**
    * Retrieves the current user and stores it in the 'user' property.
@@ -687,19 +843,58 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       tax: ['', Validators.required],
       taxType: ['', Validators.required],
       transactionType: ['', Validators.required],
-      computationLevel: ['', Validators.required], // Policy or Risk
-      taxMode: ['', Validators.required], // Rate or Amount
-      taxValue: ['', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
-      override: ['', Validators.required], // Yes or No
+      computationLevel: ['', Validators.required], 
+      taxMode: ['', Validators.required],
+      taxValue: ['', [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)]],
+      override: ['', Validators.required], 
+      rateDescription: ['']
     });
   }
 
-  saveTax(){
+  
 
+
+  
+ openTaxModal(tax?: any) {
+  if (!this.selectedProduct) {
+    this.globalMessagingService.displayErrorMessage('Missing Product', 'Please select a product before adding tax.');
+    return;
   }
-  openTaxModal() {
-    this.showTaxModal = true;
-  }
+  this.selectedTax = tax || null;
+
+  this.taxForm.reset();
+  log.debug('SelectedTaxCode',this.selectedTax?.code)
+  log.debug('SelectedTax:', this.selectedTax);
+
+
+ if (this.selectedTax) {
+  this.taxForm.patchValue({
+    tax: this.selectedTax.code,
+    taxType: this.selectedTax.taxRateType || '',
+    transactionType: this.selectedTax.transactionType || '',
+    computationLevel: this.selectedTax.applicationLevel === 'P' ? 'Policy' : 'Risk',
+    taxMode: '', 
+    taxValue: this.selectedTax.taxRate || '',
+    override: '',
+    rateDescription: this.selectedTax.description || '' 
+  });
+} else {
+  
+  this.taxForm.patchValue({
+    tax: '',
+    taxType: '',
+    transactionType: '',
+    computationLevel: '',
+    taxMode: '', 
+    taxValue: '',
+    override: ''
+  });
+}
+
+
+  this.showTaxModal = true;
+}
+
 
   closeTaxModal() {
     this.showTaxModal = false;
@@ -714,6 +909,34 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   { label: 'Extras', value: 'Extras' },
   { label: 'PolicyHolder Fund', value: 'PolicyHolder Fund' },
 ];
+
+logFilter(event: any) {
+  console.log('Filter event:', event);
+}
+
+
+openEditTaxModal() {
+  if (!this.selectedProduct) {
+    this.globalMessagingService.displayErrorMessage('Missing Product', 'Please select a product before editing tax.');
+    return;
+  }
+  this.showEditTaxModal = true;
+}
+
+closeEditTaxModal() {
+  this.showEditTaxModal = false;
+}
+handleNextClick() {
+  if (!this.selectedTax) {
+    this.messageService.displayErrorMessage('Selection Required', 'Please select a tax to proceed');
+    return;
+  }
+
+  this.closeEditTaxModal();
+  this.openTaxModal();
+}
+
+
 
 
   createSmsForm() {
@@ -867,6 +1090,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.selectedProduct = data;
 
     log.debug('Product clicked with data:', data);
+    this.getProductTaxes();
 
     const proCode = data.productCode;
     log.debug("product Code", proCode);
@@ -1776,9 +2000,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     log.debug('reassign Payload', reassignPayload)
 
   }
-
-
-
 
 
 
