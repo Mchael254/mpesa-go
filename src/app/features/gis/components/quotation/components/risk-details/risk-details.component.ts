@@ -2800,6 +2800,42 @@ export class RiskDetailsComponent {
     this.clauseToDelete = clause;
   }
 
+  deleteProductClause(): void {
+    if (!this.clauseToDelete) return;
+
+    const clauseCode = this.clauseToDelete.clauseCode;
+    const riskCode = Number(this.selectedRiskCode);
+
+    this.quotationService.deleteRiskClause(clauseCode, riskCode).subscribe({
+      next: () => {
+        // Remove from local arrays
+        this.sessionClauses = this.sessionClauses.filter(
+          c => c.shortDescription !== this.clauseToDelete.shortDescription
+        );
+        this.riskClause = this.riskClause.filter(
+          c => c.shortDescription !== this.clauseToDelete.shortDescription
+        );
+
+        // Update session storage
+        const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+        if (riskClauseMap[this.selectedRiskCode]) {
+          riskClauseMap[this.selectedRiskCode].riskClause = this.riskClause;
+          riskClauseMap[this.selectedRiskCode].clauseModified = true;
+          sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+        }
+
+        this.globalMessagingService.displaySuccessMessage('Success', 'Clause deleted successfully');
+        this.clauseToDelete = null;
+      },
+      error: (err) => {
+        log.error("Failed to delete clause:", err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete clause');
+      }
+    });
+  }
+
+
+
   onClauseSelectionChange(selectedClauseList: any) {
     if (selectedClauseList.checked) {
       // ✅ Add to selectedClause if not already included
