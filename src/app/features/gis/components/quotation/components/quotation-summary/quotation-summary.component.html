@@ -466,7 +466,7 @@
                         *ngIf="activeTab === 'taxes'"
                         id="openModalButtonAdd"
                         class="btn btn-primary btn-sm"
-                        data-bs-toggle="modal"
+                        
                         style="
                           white-space: nowrap;
                           height: 30px;
@@ -818,7 +818,7 @@
                         <button
                           type="button"
                           class="btn btn-primary"
-                          (click)="addTax()"
+                          (click)="saveTax()"
                         >
                           Save
                         </button>
@@ -995,7 +995,7 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-data>
                       <tr>
-                        <td>{{ data.taxPayer }}Individual</td>
+                        <td>{{ data.taxPayer }}</td>
                         <td>{{ data.rateDescription }}</td>
                         <td>{{ data.rateDescription }}</td>
                         <td>{{ data.rate }}</td>
@@ -1005,7 +1005,7 @@
                         <td>
                           <button
                             class="btn btn-sm borderless-button me-2"
-                            (click)="openTaxModal()"
+                            (click)="openTaxModal(data)"
                           >
                             Edit
                           </button>
