@@ -157,6 +157,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showEditTaxModal:any;
   selectedTax: any = null;
   transactionTypes:any[]=[];
+  
 
 
 
@@ -563,7 +564,7 @@ addTax() {
   });
 
 
-   if (this.taxForm.invalid || !this.selectedTax || !this.selectedProduct) {
+   if (this.taxForm.invalid || !this.selectedProduct) {
     this.messageService.displayErrorMessage('Missing Info', 'Please complete the form before submitting');
     return;
   }
@@ -607,19 +608,51 @@ this.quotationService.addTaxes(quotationCode, this.selectedProduct.code, [payloa
 }
 
 updateTax() {
-  const payload = this.taxForm.value; 
+  const formValue = this.taxForm.value;
+
+  const payload = {
+    code: this.selectedTax.code,
+    rateDescription: formValue.tax,
+    rate: parseFloat(formValue.taxValue),
+    rateType: formValue.taxType.value,
+    taxAmount: 0,
+    productCode: this.selectedProduct.productCode,
+    quotationCode: Number(this.quotationCode),
+    transactionCode: formValue.transactionType.code,
+    renewalEndorsement:'',
+    taxRateCode: formValue.taxRateCode,
+    levelCode: formValue.computationLevel,
+    taxType: formValue.tax,
+    riskProductLevel:'',
+  };
 
   this.quotationService.updateTaxes(payload).subscribe({
     next: (res) => {
+     res && this.getQuotationDetails(this.quotationCode);
       console.log('Tax updated successfully:', res);
-      this.messageService.displaySuccessMessage('Success', 'Tax updated successfully');
+      this.globalMessagingService.displaySuccessMessage('Success', 'Tax updated successfully');
+      this.taxForm.reset();
+      this.showTaxModal=false;
       
     },
     error: (err) => {
       console.error('Error updating tax:', err);
-      this.messageService.displayErrorMessage('Error', err?.error?.message || 'Failed to update tax');
+      this.globalMessagingService.displayErrorMessage('Error', err?.error?.message || 'Failed to update tax');
     }
   });
+}
+
+saveTax() {
+  if (!this.taxForm.valid) {
+    this.messageService.displayErrorMessage('Missing Info', 'Please complete the form before submitting');
+    return;
+  }
+
+  if (this.selectedTax) {
+    this.updateTax(); 
+  } else {
+    this.addTax(); 
+  }
 }
 
 
@@ -810,10 +843,11 @@ updateTax() {
       tax: ['', Validators.required],
       taxType: ['', Validators.required],
       transactionType: ['', Validators.required],
-      computationLevel: ['', Validators.required], // Policy or Risk
+      computationLevel: ['', Validators.required], 
       taxMode: ['', Validators.required],
       taxValue: ['', [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)]],
-      override: ['', Validators.required], // Yes or No
+      override: ['', Validators.required], 
+      rateDescription: ['']
     });
   }
 
@@ -821,25 +855,46 @@ updateTax() {
 
 
   
-  openTaxModal() {
-     if (!this.selectedProduct) {
-    this.messageService.displayErrorMessage('Missing Product', 'Please select a product before adding tax.');
+ openTaxModal(tax?: any) {
+  if (!this.selectedProduct) {
+    this.globalMessagingService.displayErrorMessage('Missing Product', 'Please select a product before adding tax.');
     return;
   }
+  this.selectedTax = tax || null;
+
+  this.taxForm.reset();
+  log.debug('SelectedTaxCode',this.selectedTax?.code)
+  log.debug('SelectedTax:', this.selectedTax);
+
+
+ if (this.selectedTax) {
+  this.taxForm.patchValue({
+    tax: this.selectedTax.code,
+    taxType: this.selectedTax.taxRateType || '',
+    transactionType: this.selectedTax.transactionType || '',
+    computationLevel: this.selectedTax.applicationLevel === 'P' ? 'Policy' : 'Risk',
+    taxMode: '', 
+    taxValue: this.selectedTax.taxRate || '',
+    override: '',
+    rateDescription: this.selectedTax.description || '' 
+  });
+} else {
   
-  // if (this.selectedTax && this.taxForm) {
-  //   this.taxForm.patchValue({
-  //     tax: this.selectedTax.taxCode,
-  //     taxType: this.selectedTax.taxRateType,
-  //     transactionType: this.selectedTax.transactionType,
-  //     computationLevel: this.selectedTax.applicationLevel === 'P' ? 'Policy' : 'Risk',
-  //     taxMode: '', 
-  //     taxValue: this.selectedTax.taxRate,
-  //     override: ''
-  //   });
-  
-    this.showTaxModal = true;
-  }
+  this.taxForm.patchValue({
+    tax: '',
+    taxType: '',
+    transactionType: '',
+    computationLevel: '',
+    taxMode: '', 
+    taxValue: '',
+    override: ''
+  });
+}
+
+
+  this.showTaxModal = true;
+}
+
 
   closeTaxModal() {
     this.showTaxModal = false;
@@ -861,6 +916,10 @@ logFilter(event: any) {
 
 
 openEditTaxModal() {
+  if (!this.selectedProduct) {
+    this.globalMessagingService.displayErrorMessage('Missing Product', 'Please select a product before editing tax.');
+    return;
+  }
   this.showEditTaxModal = true;
 }
 
