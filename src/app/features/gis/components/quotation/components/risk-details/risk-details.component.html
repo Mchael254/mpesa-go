@@ -968,15 +968,16 @@
                 [tableStyle]="{ 'min-width': '100%', width: '100%' }" class="p-datatable-sm">
                 <ng-template pTemplate="header">
                     <tr>
-                        <th pSortableColumn="shortDescription">ID <p-sortIcon field="shortDescription" /></th>
-                        <th pSortableColumn="heading">
+                        <th class="flexible-header1" style="width: 13%" pSortableColumn="id">
+                            ID <p-sortIcon field="id" />
+                        </th>
+                        <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">
                             Heading <p-sortIcon field="heading" />
                         </th>
-                        <th pSortableColumn="wording">
+                        <th class="flexible-header1" style="width: 35%" pSortableColumn="wording">
                             Wording <p-sortIcon field="wording" />
                         </th>
-                        <th></th>
-                        <th></th>
+                        <th class="flexible-header1" style="width: 15%">Actions</th>
                     </tr>
 
                     <!-- Filter Row -->
@@ -997,87 +998,44 @@
                     </tr>
                 </ng-template>
 
-                <ng-template pTemplate="body" let-selectedClauseList let-editing="editing" let-ri="rowIndex">
-                    <tr [pEditableRow]="selectedClauseList">
-                        <td>{{ selectedClauseList.shortDescription }}
+                <ng-template pTemplate="body" let-clause>
+                    <tr [pSelectableRow]="clause">
+                        <td>{{ clause.shortDescription }}</td>
+                        <td>{{ clause.heading }}</td>
+                        <td pTooltip="{{ clause.wording }}" tooltipPosition="top">
+                            {{ clause.wording | truncate:10 }}
                         </td>
+                        <td style="text-align: right">
+                            <div class="flex justify-end items-center gap-2">
+                                <!-- Edit -->
+                                <span class="p-button-label p-text-bold text-center" [ngStyle]="{
+                    color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280', 
+                    marginRight: '16px',
+                    marginLeft: '10px',
+                    cursor: clause.isEditable === 'Y' ? 'pointer' : 'default',
+                    display: 'inline-block',
+                    width: '60px'  
+                    }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
+                                    [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
+                                    (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
+                                    {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
+                                </span>
 
-                        <td style="
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                overflow-y: auto;
-                max-width: 250px;
-              " pTooltip="{{ selectedClauseList.heading }}" tooltipPosition="top">
-                            <p-cellEditor>
-                                <ng-template pTemplate="input" *ngIf="selectedClauseList.isEditable === 'Y'">
-                                    <input pInputText type="text" [(ngModel)]="selectedClauseList.heading"
-                                        class="form-control form-control-sm" [ngModelOptions]="{ standalone: true }" />
-                                </ng-template>
-                                <ng-template pTemplate="output">
-                                    {{ selectedClauseList.heading || selectedClauseList.description}}
-                                </ng-template>
-                            </p-cellEditor>
-                        </td>
-                        <td style="
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 300px;
-                overflow-y: auto;
-              ">
-                            <p-cellEditor>
-                                <ng-template pTemplate="input">
-                                    <input pInputText type="text" [(ngModel)]="selectedClauseList.wording"
-                                        class="form-control form-control-sm" [ngModelOptions]="{ standalone: true }" />
-                                </ng-template>
-                                <ng-template pTemplate="output">
-                                    {{ selectedClauseList.wording }}
-                                </ng-template>
-                                <!-- Helper icon added next to the wording column -->
-                            </p-cellEditor>
-                        </td>
-                        <td>
-                            <button pButton pRipple type="button" (click)="openHelperModal(selectedClauseList)"
-                                icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
-                        </td>
-                                                    <!-- <td
-                            *ngIf="selectedClauseList.isEditable !== 'Y'"
-                            style="padding-left: 24px"
-                            >
-                            --
-                            </td> -->
-                         <td class="text-center align-middle">
-                            <ng-container *ngIf="selectedClauseList.isEditable === 'Y'; else notEditable">
-                                <div class="d-flex align-items-center justify-content-center gap-2">
-                                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
-                                        class="p-button-rounded p-button-text custom-button">
-                                        Edit
-                                    </button>
-                                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
-                                        icon="pi pi-check"
-                                        class="p-button-rounded p-button-text p-button-success"></button>
-                                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
-                                        icon="pi pi-times"
-                                        class="p-button-rounded p-button-text p-button-danger"></button>
-                                </div>
-                            </ng-container>
-                            <ng-template #notEditable>
-                                <span class="d-block text-muted">--</span>
-                            </ng-template>
+                                <!-- Delete -->
+                                <span class="p-button-label p-text-bold text-center" [ngStyle]="{
+                    color: clause.isMandatory === 'N' ? '#00529B' : '#9CA3AF', 
+                    cursor: clause.isMandatory === 'N' ? 'pointer' : 'not-allowed'
+                  }" [attr.data-bs-toggle]="clause.isMandatory === 'N' ? 'modal' : null"
+                                    [attr.data-bs-target]="clause.isMandatory === 'N' ? '#deleteClause' : null"
+                                    (click)="clause.isMandatory === 'N' && prepareDeleteClause(clause)">
+                                    {{ 'gis.quotation.delete' | translate }}
+                                </span>
+                            </div>
+
                         </td>
                     </tr>
-                    <!-- Modal for each row -->
-                    <p-dialog [(visible)]="selectedClauseList.showHelperModal" [modal]="false"
-                        [style]="{ width: '700px' }">
-                        <ng-container *ngIf="selectedClauseList">
-                            <div pResizable [ngStyle]="{ 'min-width.px': 200, 'min-height.px': 150 }"
-                                (onResize)="onResize($event)">
-                                <p>{{ selectedClauseList.wording }}</p>
-                            </div>
-                        </ng-container>
-                    </p-dialog>
                 </ng-template>
+
                 <ng-template pTemplate="emptymessage">
                     <tr>
                         <td colspan="8" style="padding: 20px; text-align:center" id="empty">
@@ -1089,7 +1047,7 @@
 
         </div>
 
-        <!-- Add risk clause popup -->
+        <!-- Add risk clause modal -->
         <div class="modal fade" id="addClause" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
@@ -1177,6 +1135,59 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- edit risk clause modal -->
+        <div class="modal fade" id="editClause">
+            <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+                <div class="modal-content ps-4 pt-2 pe-4">
+                    <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+                        <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                            {{ 'gis.quotation.edit_clause' | translate }}</p>
+                        <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                            style="border: none;">X
+                        </button>
+                    </div>
+
+                    <div class="d-flex justify-content-between text-black">
+                        <div class="d-flex flex-column bg-gray-300 w-25">
+                            <label for="id">ID</label>
+                            <input type="text" [value]=" selectedRiskClause.shortDescription" pInputText
+                                style="background-color:rgb(215, 212, 212); width:18vw" readonly>
+
+                        </div>
+                        <div class="d-flex flex-column w-50 ">
+                            <label for="heading">Heading</label>
+                            <input class="bg-gray-300" pInputText [value]=" selectedRiskClause.heading | truncate:10"
+                                pTooltip="{{  selectedRiskClause.heading }}"
+                                style="background-color:rgb(215, 212, 212); width:20vw; z-index:auto" readonly>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column mt-5">
+                        <label class="text-dark mt-0" for="comment">Wording</label>
+                        <textarea rows="5" pTextarea [(ngModel)]=" selectedRiskClause.wording"
+                            class="p-inputtextarea w-full" style="border: 1px solid #ced4da;min-height: 130px">
+              </textarea>
+                    </div>
+
+                    <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+                        <button #closeReassignButton type="button" data-bs-dismiss="modal"
+                            style="display: none;"></button>
+                        <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: #00529B;color:white;text-decoration: none;" (click)="editClause()"
+                            [disabled]="!wasModified()">{{ 'gis.quotation.save_changes' | translate }}
+                        </button>
+                        <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                            style="text-decoration: none;">{{
+                            'gis.quotation.cancel' | translate
+                            }}
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
 
 
