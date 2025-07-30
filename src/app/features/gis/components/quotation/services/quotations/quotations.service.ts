@@ -905,13 +905,14 @@ export class QuotationsService {
   }
 
   deleteRiskClause(clauseCode: number, riskCode: number): Observable<any> {
-    return this.api.DELETE(`/v2/quotation-risk-clauses?clauseCodes=${clauseCode}&quotRiskCode=${riskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL
+    return this.api.DELETE(
+      `/v2/quotation-risk-clauses?clauseCodes=${clauseCode}&quotRiskCode=${riskCode}`,
+      API_CONFIG.GIS_QUOTATION_BASE_URL
     ).pipe(
       retry(1),
       catchError(this.errorHandl)
     );
   }
-
 
 
   getTransactionTypes(): Observable<any> {
