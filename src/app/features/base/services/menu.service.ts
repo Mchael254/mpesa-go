@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SidebarMenu } from '../model/sidebar.menu';
-
+import { TranslateService } from '@ngx-translate/core';
 @Injectable({
   providedIn: 'root',
 })
 export class MenuService {
+   constructor(private translate: TranslateService) {
+    
+      
+  }
   private sidebarMenuList = {
     DEFAULT: [
       {
@@ -592,11 +596,73 @@ name:'setups',
 nameSlug:'set-ups',
 menuItems:[
   {
-    name:'',
-    nameSlug:'',
+    name:'coreSetUp',
+    nameSlug:'core-setup',
 subList:[
-{name:'',link:''},
-{name:'',link:''},
+{
+          name: this.translate.instant('base-fms.defineYrs'),
+          link: '/home/fms/',
+        },
+        {
+         name: this.translate.instant('base-fms.closeYrsOperations'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.closeYrs'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.branches'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.businessClasses'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.parameterSetup'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.expenseCategory'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.definebCostCentres'),
+          link: '/home/fms/',
+        },
+        {
+         name: this.translate.instant('base-fms.accountTerms'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.eInterfaceAcc'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.taxSetups'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.approvalRights'),
+          link: '/home/fms/',
+        },
+        {
+         name: this.translate.instant('base-fms.reassignApprovalRights'),
+          link: '/home/fms/',
+        },
+        {
+         name: this.translate.instant('base-fms.passwordManagement'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.workflowSetups'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.subLedgerAccts'),
+          link: '/home/fms/',
+        },
 
 ]
   }
@@ -610,53 +676,162 @@ subList:[
         // icon: 'fa-solid fa-money-check',
 
         menuItems: [
+       
           {
             name: 'GL-Parameters',
-            nameSlug: 'parameters',
+            nameSlug: 'gl-parameters',
             subList: [
-              { name: 'Accounts Setup', link: '' },
-              { name: 'Charts of Accounts', link: '' },
-              { name: 'Define Branch Accounts', link: '' },
-              { name: 'View Branch Accounts', link: '' },
-              { name: 'Define Budgets', link: '' },
-              { name: 'Authorise Budgets', link: '' },
-              { name: 'Revise Budgets', link: '' },
-              { name: 'Opening Balances', link: '' },
-              { name: 'Import Opening Balance', link: '' },
-              { name: 'Recurring Journals', link: '' }
+             {
+          name: this.translate.instant('base-fms.actSetups'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.coT'),
+          link: '/home/fms/',
+        },
+        {
+           name: this.translate.instant('base-fms.dBAccts'),
+          link: '/home/fms/',
+        },
+        {
+           name: this.translate.instant('base-fms.viewBAccts'),
+          link: '/home/fms/',
+        },
+        {
+           name: this.translate.instant('base-fms.defineBudget'),
+          link: '/home/fms/',
+        },
+        {
+           name: this.translate.instant('base-fms.budgetSetUp'),
+          link: '/home/fms/',
+        },{
+           name: this.translate.instant('base-fms.aBudget'),
+          link: '/home/fms/',
+        },
+        {
+           name: this.translate.instant('base-fms.rBudgets'),
+          link: '/home/fms/',
+        },
 
-            ],
-            
+        
+        {
+           name: this.translate.instant('base-fms.oBalances'),
+          link: '/home/fms/',
+        },
+        
+        {
+           name: this.translate.instant('base-fms.iOBalances'),
+          link: '/home/fms/',
+        },
+        {
+           name: this.translate.instant('base-fms.rJournals'),
+          link: '/home/fms/',
+        },
+        {
+           name: this.translate.instant('base-fms.iAcctMapping'),
+          link: '/home/fms/',
+        }
+    
+    ],
           },
           {
             name: 'Gl-Transactions',
-            nameSlug: 'transactions',
+            nameSlug: 'gl-transactions',
             subList: [
-              { name: 'Journal Entries', link: '' },
-              { name: 'View Journal Entries', link: '' },
-              { name: 'Post Transactions', link: '' },
-              { name: 'View Transactions', link: '' },
-              { name: 'Audit Journals', link: '' },
-
-              { name: 'Post Audit Journals', link: '' }
-             
-            ],
+          {
+          name: this.translate.instant('base-fms.jVouchers'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.jEntries'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.aPTransactions'),
+          link: '/home/fms/',
+        },{
+          name: this.translate.instant('base-fms.viewJEntries'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.rTransactions'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.pRTransactions'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.aJournals'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.pAJournals'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.iPosting'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.cRevaluation'),
+          link: '/home/fms/',
+        }
+    
+    ],
           },
           {
             name: 'Gl-Inquiries',
             nameSlug: 'gl-inquires',
             subList: [
-              { name: 'View Transactions', link: '' },
-            { name: 'Audit Trail', link: '' },
-          { name: 'Voucher Inquiries', link: '' },
-        { name: 'Budget Trail', link: '' },
-      { name: 'View Account Balances', link: '' },
-    { name: 'Vouchers Report', link: '' },
-    { name: 'Transactions without Cost Centres', link: '' },
-    { name: 'GL Listing Report', link: '' },
-    { name: 'Transaction Listing Report', link: '' },
-    { name: 'Expense Reports', link: '' },
-    { name: 'DMS Documents', link: '' }
+               {
+          name: this.translate.instant('base-fms.viewTransactions'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.auditTrail'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.vInquiries'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.bTrails'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.vAcctBlc'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.vReports'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.twcCentres'),
+          link: '/home/fms/',
+        },
+        
+         {
+          name: this.translate.instant('base-fms.glListingRpt'),
+          link: '/home/fms/',
+        }, {
+          name: this.translate.instant('base-fms.tListingRpt'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.expnsRpt'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.dmsDoc'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.tTrRpt'),
+          link: '/home/fms/',
+        }
     
     ],
           },
@@ -664,12 +839,27 @@ subList:[
             name: 'Gl-Final Reports',
             nameSlug: 'final-reports',
             subList: [
-              { name: 'Formats', link: '' },
-               { name: 'Reports Apportionment', link: '' },
-                { name: 'Changes in Equity', link: '' },
-                 { name: 'Setups', link: '' },
-                  { name: 'Reports', link: '' }
-                   
+              {
+          name: this.translate.instant('base-fms.formats'),
+          link: '/home/fms/',
+        },
+
+         {
+          name: this.translate.instant('base-fms.rptApportionment'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.changesInEquity'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.setUps'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.rpt'),
+          link: '/home/fms/',
+        }
             ],
           },
         ],
@@ -685,33 +875,307 @@ subList:[
           {
             name: 'Paramaters',
             nameSlug: 'parameters',
-            subList: [{ name: '', link: '' }],
+            subList: [
+                {
+          name: this.translate.instant('base-fms.BankAccounts'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.PaymentMethods'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.TrnTypeBasedR'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.ReceiptingAcc'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.TypesSetup'),
+          link: '/home/fms/',
+        }
+            ],
           },
           {
             name: 'Transactions',
             nameSlug: 'transactions',
-            subList: [{ name: '', link: '' }],
+            subList: [
+               {
+          name: this.translate.instant('base-fms.paymentVouchers'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.BankVoucher'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.BankVoucherBtn'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.RctVoucher'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.CbVoucher'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.pTransactions'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.RVouchers'),
+          link: '/home/fms/',
+        },
+          {
+          name: this.translate.instant('base-fms.ARVouchers'),
+          link: '/home/fms/',
+        }
+            ],
           },
           {
             name: 'Requistions',
             nameSlug: 'requistions',
-            subList: [{ name: '', link: '' }],
+            subList: [
+              {
+          name: this.translate.instant('base-fms.crtRequistion'),
+          link: '/home/fms/',
+        }
+            ],
           },
           {
-            name: 'Cheques',
-            nameSlug: 'cheques',
-            subList: [{ name: '', link: '' }],
+            name: 'payments',
+            nameSlug: 'payments',
+            subList: [
+              {
+          name: this.translate.instant('base-fms.setUpPaymentTemplate'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.setcNumber'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.cRequistion'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.splitCheques'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.authorise'),
+          link: '/home/fms/cheque-authorization',
+        },
+         {
+          name: this.translate.instant('base-fms.print'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.updatePrinted'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.updatePdCheques'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.chequeSMandate'),
+          link: '/home/fms/',
+        },
+        {
+         name: this.translate.instant('base-fms.dispatchCheques'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.cancelPayments'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.authorizeCcheques'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.stalePayment'),
+          link: '/home/fms/',
+        }, 
+        {
+          name: this.translate.instant('base-fms.dispatchChequeP'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.cStatus'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.aFtPayment'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.fileTransferD'),
+          link: '/home/fms/',
+        },{
+          name: this.translate.instant('base-fms.fTransferStatus'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.vatCerts'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.reports'),
+          link: '/home/fms/',
+        }
+            ],
           },
           {
             name: 'Petty cash',
             nameSlug: 'pettycash',
-            subList: [{ name: '', link: '' }],
+            subList: [
+              {
+          name: this.translate.instant('base-fms.settings'),
+          link: '/home/fms/',
+        },
+       {
+          name: this.translate.instant('base-fms.capture'),
+          link: '/home/fms/',
+        },
+       {
+          name: this.translate.instant('base-fms.auth/Approve'),
+          link: '/home/fms/',
+        },
+       {
+          name: this.translate.instant('base-fms.acknowledgePC'),
+          link: '/home/fms/',
+        },
+       {
+          name: this.translate.instant('base-fms.issue'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.captureReturns'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.replenish'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.reverseIssuance'),
+          link: '/home/fms/',
+        },{
+          name: this.translate.instant('base-fms.reverseReturns'),
+          link: '/home/fms/',
+        },{
+          name: this.translate.instant('base-fms.reports'),
+          link: '/home/fms/',
+        }
+            ],
           },
           {
             name: 'Receipts',
             nameSlug: 'receipting',
-            subList: [{ name: 'Receipting', link: '/home/fms/receipt-capture' }],
+            subList: [
+              {
+          name: this.translate.instant('base-fms.receiptingPoints'),
+          link: '/home/fms/',
+        },
+
+        {
+          name: this.translate.instant('base-fms.narration'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.manageReceipt'),
+          link: '/home/fms/receipt-management',
+        },
+        {
+          name: this.translate.instant('base-fms.receipting'),
+          link: '/home/fms/receipt-capture',
+        },
+        {
+          name: this.translate.instant('base-fms.receiptingExceptions'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.receiptAuthorization'),
+          link: '/home/fms/authorize',
+        },
+        {
+          name: this.translate.instant('base-fms.receiptUpload'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.premiumSuspense'),
+          link: '/home/fms/',
+        },
+
+        {
+          name: this.translate.instant('base-fms.directDebits'),
+          link: '/home/fms/',
+        }
+            ],
           },
+           {
+            name: 'reconciliation',
+            nameSlug: 'reconciliation',
+            subList: [
+ {
+          name: this.translate.instant('base-fms.parameters'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.pUnreconciled'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.reconciliation'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.postBankReco'),
+          link: '/home/fms/',
+        },
+         
+         {
+          name: this.translate.instant('base-fms.reconEnquiry'),
+          link: '/home/fms/',
+        }
+            ],
+          },
+           {
+            name: 'Inquires',
+            nameSlug: 'Inquires',
+            subList: [
+              {
+          name: this.translate.instant('base-fms.viewTransactions'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.chequeRequistion'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.cbVoucherListing'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.inquiry'),
+          link: '/home/fms/',
+        }, {
+          name: this.translate.instant('base-fms.auditTrail'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.rctEnquiry'),
+          link: '/home/fms/',
+        }
+            ],
+          },
+          
         ],
         collapsed: true,
       },
@@ -724,22 +1188,90 @@ subList:[
           {
             name: 'Paramaters',
             nameSlug: 'parameters',
-            subList: [{ name: '', link: '' }],
+            subList: [
+              {
+          name: this.translate.instant('base-fms.dAccounts'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.bAcctSetup'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.acctTerms'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.oBalances'),
+          link: '/home/fms/',
+        }
+            ],
           },
           {
             name: 'Transactions',
             nameSlug: 'transactions',
-            subList: [{ name: '', link: '' }],
+            subList: [
+              
+               {
+          name: this.translate.instant('base-fms.viewTransactions'),
+          link: '/home/fms/',
+        }
+            ],
           },
           {
             name: 'Invoices/Cr Notes',
             nameSlug: 'invoices-cr',
-            subList: [{ name: '', link: '' }],
+            subList: [
+              {
+          name: this.translate.instant('base-fms.invoiceSent'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.AInvoice'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.dInvoicesUpload'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.creditNSent'),
+          link: '/home/fms/',
+        },
+
+         {
+          name: this.translate.instant('base-fms.rTransactions'),
+          link: '/home/fms/',
+        }
+            ],
           },
           {
             name: 'Inquires',
             nameSlug: 'inquires',
-            subList: [{ name: '', link: '' }],
+            subList: [
+              {
+          name: this.translate.instant('base-fms.viewInvoices'),
+          link: '/home/fms/',
+        },
+      
+      {
+          name: this.translate.instant('base-fms.viewRct'),
+          link: '/home/fms/',
+        },
+      
+      {
+          name: this.translate.instant('base-fms.acctBalances'),
+          link: '/home/fms/',
+        },
+      {
+          name: this.translate.instant('base-fms.auditTrail'),
+          link: '/home/fms/',
+        },
+      {
+          name: this.translate.instant('base-fms.reports'),
+          link: '/home/fms/',
+        }
+            ],
           },
         ],
         collapsed: true,
@@ -752,22 +1284,94 @@ subList:[
           {
             name: 'Paramaters',
             nameSlug: 'parameters',
-            subList: [{ name: '', link: '' }],
+            subList: [
+                 {
+          name: this.translate.instant('base-fms.sTypes'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.cAccounts'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.bAcctSetup'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.acctTerms'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.oBalances'),
+          link: '/home/fms/',
+        }
+            ],
           },
           {
             name: 'Transactions',
             nameSlug: 'transactions',
-            subList: [{ name: '', link: '' }],
+            subList: [
+              {
+          name: this.translate.instant('base-fms.createInvoices'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.creditorsPayments'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.paymentVouchers'),
+          link: '/home/fms/',
+        },
+        {
+          name: this.translate.instant('base-fms.pTransactions'),
+          link: '/home/fms/',
+        }
+            ],
           },
           {
             name: 'Invoices/DR Notes',
             nameSlug: 'invoices-dr',
-            subList: [{ name: '', link: '' }],
+            subList: [
+               {
+          name: this.translate.instant('base-fms.creditNotesFrmCreditors'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.pCreditNotes'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.contractDetails'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.InvoicesFrmCreditors'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.rTransactions'),
+          link: '/home/fms/',
+        }
+            ],
           },
           {
             name: 'Inquires',
             nameSlug: 'inquires',
-            subList: [{ name: '', link: '' }],
+            subList: [
+               {
+          name: this.translate.instant('base-fms.acctBalances'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.auditTrail'),
+          link: '/home/fms/',
+        },
+         {
+          name: this.translate.instant('base-fms.reports'),
+          link: '/home/fms/',
+        }
+            ],
           },
         ],
         collapsed: true,
