@@ -2531,9 +2531,7 @@ export class RiskDetailsComponent {
   //     });
   //   })
   // }
-  clauseModified: boolean = false;
-  sessionClauses: any[] = [];
-  selectedRiskCode: any
+
   loadSubclassClauses(code: any) {
     if (!code) {
       console.warn("Missing subclass code, skipping clause loading.");
@@ -2565,6 +2563,10 @@ export class RiskDetailsComponent {
     });
   }
 
+  clauseModified: boolean = false;
+  sessionClauses: any[] = [];
+  selectedRiskCode: any;
+
   private fetchAndCacheSubclassClauses(code: string): void {
     this.subclassService.getSubclassClauses(code).subscribe({
       next: (data) => {
@@ -2575,6 +2577,30 @@ export class RiskDetailsComponent {
         this.riskClause = [...this.selectedClause];
         this.sessionClauses = [...this.riskClause];
 
+        const quotationCode = Number(sessionStorage.getItem("quotationCode"));
+        const riskCode = Number(this.selectedRiskCode);
+        this.selectedClause.forEach(clause => {
+          const payload: riskClause = {
+            clauseCode: clause.clauseCode,
+            clauseShortDescription: clause.shortDescription ?? '',
+            quotationCode: quotationCode,
+            riskCode: riskCode,
+            clause: clause.wording?.trim() ?? '',
+            clauseEditable: clause.isEditable ?? 'N',
+            clauseType: clause.clauseType ?? 'CL',
+            clauseHeading: clause.heading ?? ''
+          };
+
+          this.quotationService.addRiskClause(payload).subscribe({
+            next: () => {
+              console.debug("Mandatory clause persisted:", clause.shortDescription);
+            },
+            error: (err) => {
+              console.warn("Clause may already exist or failed to add:", err);
+            }
+          });
+        });
+
         const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
         riskClauseMap[code] = {
           riskClause: this.riskClause,
@@ -2582,13 +2608,13 @@ export class RiskDetailsComponent {
           clauseModified: false
         };
         sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
-        log.debug("risk clause map >>", riskClauseMap)
+        log.debug("risk clause map >>", riskClauseMap);
       },
       error: (err) => {
         console.error("Error fetching subclass clauses:", err);
         this.SubclauseList = [];
       },
-      complete: () => console.log("📦 Fetched and cached subclass clauses.")
+      complete: () => console.log("Fetched and cached subclass clauses.")
     });
   }
 
@@ -2648,7 +2674,7 @@ export class RiskDetailsComponent {
   }
 
   selectedRiskClauses: any;
-  saveRiskClauses(): void {
+  addRiskClauses(): void {
     if (this.selectedRiskClauses?.length) {
       // Combine selected and already mandatory clauses
       this.riskClause = [...this.riskClause, ...this.selectedRiskClauses];
@@ -2739,7 +2765,7 @@ export class RiskDetailsComponent {
     this.originalClauseBeforeEdit = { ...clause };
   }
 
-  editClause(): void {
+  editRiskClause(): void {
     if (!this.selectedRiskClause || !this.wasModified()) return;
 
     const quotationCode = Number(sessionStorage.getItem("quotationCode"));
@@ -2800,7 +2826,7 @@ export class RiskDetailsComponent {
     this.clauseToDelete = clause;
   }
 
-  deleteProductClause(): void {
+  deleteRiskClause(): void {
     if (!this.clauseToDelete) return;
 
     const clauseCode = this.clauseToDelete.clauseCode;
@@ -2833,7 +2859,6 @@ export class RiskDetailsComponent {
       }
     });
   }
-
 
 
   onClauseSelectionChange(selectedClauseList: any) {
