@@ -44,12 +44,12 @@
         </div>
       </div>
 
-      <p-dialog header="Columns" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '330px'}">
+      <p-dialog [header]="columnLabel[language]" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '330px'}">
         <div *ngFor="let col of columns">
           <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="checkChecked" [checked]="col.visible" [(ngModel)]="col.visible">
             <label class="form-check-label" for="checkChecked">
-              {{ col.header | titlecase }}
+              {{ col.label[language] | titlecase }}
             </label>
           </div>
         </div>
@@ -102,11 +102,13 @@
             <ng-container *ngFor="let col of columns">
               <th *ngIf="col.visible"
                   [pSortableColumn]="col.field">
-                {{ col.header | titlecase }}
+                {{ col.label[language] | titlecase }}
                 <p-sortIcon [field]="col.field"></p-sortIcon>
               </th>
             </ng-container>
-            <th>Action</th>
+            <th>
+              {{ actionLabel[language] }}
+            </th>
           </tr>
           <tr>
             <ng-container *ngFor="let col of columns">
