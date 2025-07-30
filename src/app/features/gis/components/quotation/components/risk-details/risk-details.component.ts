@@ -264,7 +264,8 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
-    this.loadPersistentClauses();
+    this.loadPersistedRiskClauses();
+
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
     });
@@ -1948,7 +1949,9 @@ export class RiskDetailsComponent {
         }
       );
 
-    this.loadSubclassClauses(riskSelectedData.subclassCode);
+    this.selectedRiskCode = riskSelectedData.subclassCode;
+    sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
+    this.loadPersistedRiskClauses();
 
   }
   /**
@@ -2533,24 +2536,7 @@ export class RiskDetailsComponent {
       return;
     }
 
-    this.selectedRiskCode = code;
-    sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
-
-    const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
-    const riskSessionData = riskClauseMap[this.selectedRiskCode];
-
-    if (riskSessionData) {
-      this.riskClause = riskSessionData.riskClause || [];
-      this.nonMandatoryClauses = riskSessionData.nonMandatoryClauses || [];
-      this.clauseModified = riskSessionData.clauseModified || false;
-      this.sessionClauses = [...this.riskClause];
-
-      if (this.clauseModified && this.riskClause.length && this.nonMandatoryClauses.length) {
-        console.log('Using modified clauses from sessionStorage, skipping API fetch.');
-        return;
-      }
-    }
-
+    // Fetch fresh clauses only if no usable cache
     this.subclassService.getSubclassClauses(code).subscribe({
       next: (data) => {
         this.SubclauseList = data || [];
@@ -2559,13 +2545,6 @@ export class RiskDetailsComponent {
         this.nonMandatoryClauses = this.SubclauseList.filter(clause => clause.isMandatory === 'N');
         this.riskClause = this.selectedClause;
         this.sessionClauses = [...this.riskClause];
-
-        riskClauseMap[this.selectedRiskCode] = {
-          riskClause: this.selectedClause,
-          nonMandatoryClauses: this.nonMandatoryClauses,
-          clauseModified: false
-        };
-        sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
       },
       error: (err) => {
         console.error('Failed to load subclass clauses:', err);
@@ -2576,6 +2555,33 @@ export class RiskDetailsComponent {
       }
     });
   }
+  
+  private fetchAndCacheSubclassClauses(code: string): void {
+    this.subclassService.getSubclassClauses(code).subscribe({
+      next: (data) => {
+        this.SubclauseList = data || [];
+
+        this.selectedClause = this.SubclauseList.filter(c => c.isMandatory === 'Y');
+        this.nonMandatoryClauses = this.SubclauseList.filter(c => c.isMandatory === 'N');
+        this.riskClause = [...this.selectedClause];
+        this.sessionClauses = [...this.riskClause];
+
+        const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+        riskClauseMap[code] = {
+          riskClause: this.riskClause,
+          nonMandatoryClauses: this.nonMandatoryClauses,
+          clauseModified: false
+        };
+        sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+      },
+      error: (err) => {
+        console.error("Error fetching subclass clauses:", err);
+        this.SubclauseList = [];
+      },
+      complete: () => console.log("📦 Fetched and cached subclass clauses.")
+    });
+  }
+
 
 
   showRiskClauses: boolean = true;
@@ -2592,7 +2598,9 @@ export class RiskDetailsComponent {
 
     if (storedRiskCode) {
       if ((!this.clauses || this.clauses.length === 0) && !this.clausesModified) {
-        this.loadSubclassClauses({ code: storedRiskCode });
+        this.selectedRiskCode = storedRiskCode;
+        this.loadPersistedRiskClauses();
+
       }
 
       this.showClauseModal = true;
@@ -2607,19 +2615,29 @@ export class RiskDetailsComponent {
 
   }
 
-  private loadPersistentClauses() {
+  private loadPersistedRiskClauses(): void {
     const storedRiskCode = sessionStorage.getItem("selectedRiskCode");
     const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+
     if (storedRiskCode && riskClauseMap[storedRiskCode]) {
-      const riskSessionData = riskClauseMap[storedRiskCode];
-      this.riskClause = riskSessionData.riskClause || [];
-      this.nonMandatoryClauses = riskSessionData.nonMandatoryClauses || [];
-      this.clauseModified = riskSessionData.clauseModified || false;
+      const sessionData = riskClauseMap[storedRiskCode];
+      this.selectedRiskCode = storedRiskCode;
+
+      this.riskClause = sessionData.riskClause || [];
+      this.nonMandatoryClauses = sessionData.nonMandatoryClauses || [];
+      this.clauseModified = sessionData.clauseModified || false;
       this.sessionClauses = [...this.riskClause];
+
+      console.log("✅ Loaded persisted clauses from session:", {
+        riskCode: this.selectedRiskCode,
+        sessionClauses: this.sessionClauses
+      });
     } else {
-      console.warn("No stored risk code or clauses found in session storage.");
+      console.warn("❌ No persisted data found. Fetching from API...");
+      this.fetchAndCacheSubclassClauses(storedRiskCode); 
     }
   }
+
   selectedRiskClauses: any;
   saveRiskClauses(): void {
     if (this.selectedRiskClauses?.length) {
@@ -2644,6 +2662,63 @@ export class RiskDetailsComponent {
     }
 
 
+  }
+
+  //edit clause
+  selectedRiskClause: any = {
+    id: '',
+    heading: '',
+    wording: ''
+  };
+  originalClauseBeforeEdit: any = null;
+
+  wasModified(): boolean {
+    if (!this.selectedRiskClause || !this.originalClauseBeforeEdit) return false;
+
+    const newWording = this.selectedRiskClause.wording?.trim();
+    const oldWording = this.originalClauseBeforeEdit.wording?.trim();
+
+    return newWording !== oldWording && newWording.length > 0;
+  }
+
+  populateEditClauseModal(clause: any) {
+    this.selectedRiskClause = { ...clause };
+    this.originalClauseBeforeEdit = { ...clause };
+  }
+
+  editClause() {
+    if (!this.selectedRiskClause) return;
+
+    const replaceClause = (list: any[]) =>
+      list.map(c => c.shortDescription === this.selectedRiskClause.shortDescription ? { ...this.selectedRiskClause } : c);
+
+    // Update all relevant arrays
+    this.sessionClauses = replaceClause(this.sessionClauses);
+    this.riskClause = replaceClause(this.riskClause);
+
+    // Ensure clauseModified flag is set
+    this.clauseModified = true;
+
+    // Update session storage with the modified flag
+    const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+    riskClauseMap[this.selectedRiskCode] = {
+      riskClause: this.riskClause,
+      nonMandatoryClauses: this.nonMandatoryClauses,
+      clauseModified: true  // Explicitly set this to true
+    };
+    sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+
+    // Reset the edit form
+    this.selectedRiskClause = { id: '', heading: '', wording: '' };
+    this.originalClauseBeforeEdit = null;
+
+    this.globalMessagingService.displaySuccessMessage('success', 'Clause edited successfully');
+  }
+
+  //delete risk clause
+  clauseToDelete: any = null;
+  prepareDeleteClause(clause: any) {
+    this.clauseToDelete = clause;
   }
 
   onClauseSelectionChange(selectedClauseList: any) {
