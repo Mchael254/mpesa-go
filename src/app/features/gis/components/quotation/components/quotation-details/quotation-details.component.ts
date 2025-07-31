@@ -38,7 +38,9 @@ const log = new Logger('QuotationDetails');
 export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
-  @ViewChild('dt') table!: Table;
+  @ViewChild('productClauseTable') productClauseTable!: any;
+  @ViewChild('reassignTable') reassignTable!: any;
+
   @ViewChild(Table) private dataTable: Table;
   @ViewChild('reassignProductModal') reassignProductModalElement!: ElementRef;
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
@@ -420,20 +422,19 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.showClientSearchModal = false;
   }
   //search clause
-  filterByshortDescription(event: any): void {
-    const value = event.target.value;
-    this.shortDescriptionSearch = value;
-    this.table.filter(value, 'shortDescription', 'contains');
+  filterByshortDescription(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.productClauseTable.filter(input.value, 'shortDescription', 'contains');
   }
 
-  filterByHeading(event: any): void {
-    const value = event.target.value;
-    this.table.filter(value, 'heading', 'contains');
+  filterByHeading(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.productClauseTable.filter(input.value, 'heading', 'contains');
   }
 
-  filterByWording(event: any): void {
-    const value = event.target.value;
-    this.table.filter(value, 'wording', 'contains');
+  filterByWording(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.productClauseTable.filter(input.value, 'wording', 'contains');
   }
   fetchQuotationDetails(quotationCode: number) {
     log.debug("Quotation Number tot use:", quotationCode)
@@ -1745,12 +1746,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   filterGlobal(event: any): void {
     const value = event.target.value;
     this.globalSearch = value;
-    this.table.filterGlobal(value, 'contains');
+    this.reassignTable.filterGlobal(value, 'contains');
   }
 
   filterByFullName(event: any): void {
     const value = event.target.value;
-    this.table.filter(value, 'name', 'contains');
+    this.reassignTable.filter(value, 'name', 'contains');
   }
 
   onUserSelect(): void {

@@ -1,8 +1,9 @@
 <!-- RISK DETAILS CARD -->
-<div class="card  mb-3 border-0">
-    <div class="card-body border-0" style="padding-top: 0px;">
+<div class="card  mb-3 border-0 ">
+    <div class="card-body border-0 mx-4" style="padding-top: 0px;">
 
-        <p-table [value]="riskDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single" dataKey="code">
+        <p-table [value]="riskDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single" dataKey="code"
+            [paginator]="true" [rows]="3" [rowsPerPageOptions]="[5, 10, 20, 50]">
             <ng-template pTemplate="header">
                 <tr>
                     <th class="flexible-header">{{'gis.quotation.risk_id' | translate}}</th>
@@ -59,7 +60,7 @@
 
                     <div class="modal-body" style="height: 100%; max-height: 500px; overflow-y: auto;">
                         <h5 class="modal-title mt-2 mb-2 addRiskTitle ">Add risk
-                            <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
+                            <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </h5>
 
@@ -255,7 +256,7 @@
 </div>
 <!-- SCHEDULE DETAILS CARD -->
 <div class="card  mb-3">
-    <div class="card-body">
+    <div class="card-body my-4 mx-4">
 
         <!-- Tabs Header -->
         <div class="d-flex justify-content-between align-items-center flex-wrap">
@@ -329,7 +330,7 @@
 </div>
 <!-- SECTION DETAILS CARD -->
 <div class="card mb-3">
-    <div class="card-body">
+    <div class="card-body my-4 mx-4">
         <div class="row">
             <div class="col-4 ">
                 <p class="section-title"> {{'gis.quotation.section_details' | translate}}</p>
@@ -928,7 +929,7 @@
 </div>
 <!-- RISK CLAUSES DETAILS CARD -->
 <div class="card mb-4">
-    <div class="card-body">
+    <div class="card-body my-4 mx-4">
 
         <div class="row">
             <div class="col-4 clause-title">
@@ -1002,8 +1003,14 @@
                     <tr [pSelectableRow]="clause">
                         <td>{{ clause.shortDescription }}</td>
                         <td>{{ clause.heading }}</td>
-                        <td pTooltip="{{ clause.wording }}" tooltipPosition="top">
-                            {{ clause.wording | truncate:10 }}
+                        <td class="position-relative">
+                            <div class="clause-wrapper">
+                                {{ clause.wording | truncate:10 }}
+
+                                <div class="hover-card">
+                                    {{ clause.wording }}
+                                </div>
+                            </div>
                         </td>
                         <td style="text-align: right">
                             <div class="flex justify-end items-center gap-2">
