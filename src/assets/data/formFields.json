@@ -1,6 +1,11 @@
 {
   "id": "client-registration",
   "locale": "en",
+  "formPopulateMassage": {
+    "en": "Please hold on while the form is being populated by the document.",
+    "ke": "Tafadhali subiri wakati fomu inawekwa na hati.",
+    "fr": "Veuillez patienter pendant que le formulaire est rempli par le document."
+  },
   "category": [
     {
       "label": "corporate",
@@ -22,8 +27,8 @@
           "groupOrder": 2,
           "subGroup": [
             {
-              "label": "company contacts",
-              "subGroupId": "company_contacts",
+              "label": "company contact",
+              "subGroupId": "company_contact",
               "addButtonText": {
                 "en": "add company contacts",
                 "ke": "",
