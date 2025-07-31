@@ -408,7 +408,8 @@
       "receiptAuthorization": "Receipt Authorization",
       "receiptUpload": "Receipt Upload",
       "premiumSuspense": "Premium Suspense",
-      "directDebits": "Direct Debits"
+      "directDebits": "Direct Debits",
+      "isRequired": "is required"
     }
   },
   "FORM": {
@@ -3192,7 +3193,7 @@
       "total_amount": "Total Amount",
       "send_sms_alerts": "Send SMS Alerts"
     }
-   
+
   },
   "campaignMngmt": {
     "campaigns": "Campaigns",

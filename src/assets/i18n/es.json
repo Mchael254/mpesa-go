@@ -365,7 +365,8 @@
     "receiptAuthorization": "Autorización de recibo",
     "receiptUpload": "Carga de recibos",
     "premiumSuspense": "Suspense de primas",
-    "directDebits": "Débitos directos"
+    "directDebits": "Débitos directos",
+        "isRequired": "es requerido"
   }
   },
   "shared": {
@@ -2845,7 +2846,7 @@
     "errorMessage": "¡Ocurrió un error!",
     "rctPrintError": "Recibo guardado correctamente, pero no se pudo imprimir el comprobante",
     "pdPrintError": "Recibo guardado correctamente, pero no se pudo imprimir el comprobante",
- 
+
     "receipting": {
       "receipting": "Emisión de recibos",
       "cbReceipting": "Libro de caja-Emisión de recibos",

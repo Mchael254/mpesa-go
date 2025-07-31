@@ -361,7 +361,8 @@
     "receiptAuthorization": "Eingangsgenehmigung",
     "receiptUpload": "Eingangs-Upload",
     "premiumSuspense": "Prämienkontokorrent",
-    "directDebits": "Lastschriften"
+    "directDebits": "Lastschriften",
+       "isRequired": "ist erforderlich"
   }
   },
   "crm": {
@@ -2306,7 +2307,7 @@
     "errorMessage": "Ein Fehler ist aufgetreten!",
     "rctPrintError":"Beleg wurde erfolgreich gespeichert, konnte jedoch nicht gedruckt werden",
     "pdPrintError":"Beleg wurde erfolgreich gespeichert, aber der Bon konnte nicht gedruckt werden",
- 
+
 
     "receipting": {
       "receipting": "Belegerstellung",
