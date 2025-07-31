@@ -147,12 +147,8 @@ export class DynamicSetupTableComponent implements OnInit {
     this.formFields.forEach(field => {
       let validators = [];
 
-      if (field.validations) {
-        field.validations.forEach(validation => {
-          if (validation.type === 'required') {
-            validators.push(Validators.required);
-          }
-        });
+      if (field.isMandatory) {
+        validators.push(Validators.required);
       }
 
       formControls[field.fieldId] = new FormControl('', validators);
@@ -214,7 +210,16 @@ export class DynamicSetupTableComponent implements OnInit {
    *
    * @returns {void}
    */
-  saveDetails() {
+  saveDetails(): void {
+    // Mark all form controls as touched to trigger validation messages
+    this.markFormGroupTouched(this.dynamicModalForm);
+
+    // If form is invalid, stop here
+    if (this.dynamicModalForm.invalid) {
+      // this.dynamicModalForm.markAllAsTouched();
+      log.warn('Form is invalid. Please check the required fields.');
+      return;
+    }
     const formValue = this.dynamicModalForm.getRawValue();
 
     const filtered = Object.fromEntries(
@@ -265,9 +270,101 @@ export class DynamicSetupTableComponent implements OnInit {
       JSON.stringify(this.tableData)
     );
     this.closeModal();
-    return savedFields;
+    // return savedFields;
   }
 
+  /**
+   * Saves the dynamic details modal form data if the form is valid.
+   * If the form is invalid, marks all form controls as touched to display validation errors.
+   */
+  /*saveDetails(): void {
+    // Mark all form controls as touched to trigger validation messages
+    this.markFormGroupTouched(this.dynamicModalForm);
+
+    // If form is invalid, stop here
+    if (this.dynamicModalForm.invalid) {
+      log.warn('Form is invalid. Please check the required fields.');
+      return;
+    }
+
+    // Get raw form values
+    const formValue = this.dynamicModalForm.getRawValue();
+
+    // Filter out null or empty values
+    const filtered = Object.fromEntries(
+      Object.entries(formValue).filter(([_, value]) => value != null && value !== '')
+    );
+    log.info("Filtered form with values", filtered, this.formFields);
+
+    // Create an object to store the saved field values
+    const savedFields: { [key: string]: any } = {};
+
+    // Process each form field
+    if (this.formFields) {
+      this.formFields.forEach((field: FieldModel) => {
+        const fieldValue = filtered[field.fieldId];
+
+        if (fieldValue !== undefined) {
+          // Handle phone number objects specially to extract e164Number
+          if (fieldValue && typeof fieldValue === 'object' && 'e164Number' in fieldValue) {
+            savedFields[field.fieldId] = fieldValue.e164Number;
+            log.info(`Field ${field.fieldId} (tel) value updated to:`, fieldValue.e164Number);
+          } else {
+            savedFields[field.fieldId] = fieldValue;
+            log.info(`Field ${field.fieldId} value updated to:`, fieldValue);
+          }
+        }
+      });
+    }
+
+    // Emit the saved data to parent component
+    this.saveDetailsData.emit({
+      data: this.tableData,
+      subGroupId: this.subGroupId
+    });
+
+    log.info('Saved fields object:', savedFields);
+
+    // Initialize tableData as empty array if it's not already an array
+    if (!Array.isArray(this.tableData)) {
+      this.tableData = [];
+    }
+
+    // Update existing record or add new one
+    if (this.editMode && this.selectedTableRecordIndex !== null && this.selectedTableRecordIndex >= 0) {
+      this.tableData[this.selectedTableRecordIndex] = savedFields;
+    } else {
+      this.tableData.push(savedFields);
+    }
+
+    // Reset form state
+    this.selectedTableRecordDetails = null;
+    this.selectedTableRecordIndex = null;
+    this.editMode = false;
+
+    // Save to session storage
+    this.sessionStorageService.setItem(
+      this.subGroupId,
+      JSON.stringify(this.tableData)
+    );
+
+    // Close the modal
+    this.closeModal();
+  }*/
+
+  /**
+   * Marks all controls in a form group as touched
+   * @param formGroup - The form group to touch
+   */
+  private markFormGroupTouched(formGroup: FormGroup) {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
   /**
    * Toggles the edit mode and opens the dynamic details modal.
    *
@@ -377,17 +474,6 @@ export class DynamicSetupTableComponent implements OnInit {
       default:
         log.info(`no fieldId found`);
     }
-  }
-
-  /**
-   * Gets a form control by its group and field id.
-   *
-   * @param {string} groupId - The group id.
-   * @param {string} fieldId - The field id.
-   * @returns {AbstractControl | null} The form control or null if not found.
-   */
-  getFieldControl(groupId: string, fieldId: string) {
-    return this.dynamicModalForm.get(`${groupId}.${fieldId}`);
   }
 
   /**
