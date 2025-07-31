@@ -914,6 +914,15 @@ export class QuotationsService {
     );
   }
 
+  //revisions
+  getQuotationRevision(quotationCode: number): Observable<any> {
+    return this.api.GET<any[]>(`api/v1/computation-payload?code=${quotationCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+
+
 
   getTransactionTypes(): Observable<any> {
     let page = 0;
