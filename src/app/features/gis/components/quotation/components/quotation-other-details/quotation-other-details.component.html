@@ -18,7 +18,7 @@
 
         <div class="row mt-2 collapse" [ngClass]="{'show': showRevision}">
 
-            <p-table #dt [value]="" styleClass="p-datatable-striped">
+            <p-table #dt [value]="quotationRevision" styleClass="p-datatable-striped">
 
                 <ng-template pTemplate="header">
                     <tr>
@@ -47,6 +47,15 @@
 
                     </tr>
                 </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="3" class="text-center p-4 text-muted">
+                            <p>No revisions available for this quotation</p>
+                        </td>
+                    </tr>
+                </ng-template>
+
             </p-table>
 
         </div>
@@ -68,13 +77,13 @@
                     'text-primary border-top border-start border-end border-bottom-0': activeTab === 'internal',
                     'border-bottom border-top-0 border-start-0 border-end-0 text-muted': activeTab !== 'internal'
                     }" (click)="activeTab = 'internal'">
-                        Internal Comments
+                    Internal Comments
                 </button>
                 <button class="bg-transparent px-3 rounded-1 " [ngClass]="{
                     'text-primary border-top border-start border-end border-bottom-0': activeTab === 'external',
                     'border-bottom border-top-0 border-start-0 border-end-0 text-muted': activeTab !== 'external'
                     }" (click)="activeTab = 'external'">
-                            External Comments
+                    External Comments
                 </button>
             </div>
         </div>
