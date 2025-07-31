@@ -120,6 +120,7 @@ export class NewEntityV2Component implements OnInit {
   cr12Details: Cr12Detail[] = [];
 
   shouldUploadProfilePhoto: boolean = false;
+  isCategorySelected: boolean = false;
   profilePicture: any; // todo: define types
   photoPreviewUrl: string;
   clientFiles: File[] = []
@@ -128,8 +129,10 @@ export class NewEntityV2Component implements OnInit {
   isReadingDocuments: boolean = false;
 
   amlDetailsLabel: string = '';
-
   isPatchingFormValues: boolean = false;
+
+  collapsedGroups: Set<string> = new Set();
+  formPopulateMassage!: any;
 
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
   protected readonly CountryISO = CountryISO;
@@ -158,6 +161,7 @@ export class NewEntityV2Component implements OnInit {
     });
 
     this.createEntityForm();
+    this.collapsedGroups.add('prime_identity');
   }
 
   get fields(): FormArray {
@@ -184,6 +188,7 @@ export class NewEntityV2Component implements OnInit {
   fetchFormFields(category: string): void {
     this.http.get<any>( 'assets/data/formFields.json').subscribe({
       next: (data: any) => {
+        this.formPopulateMassage = data.formPopulateMassage;
         data.category.forEach(item => {
           if (item.label === category) {
             this.formFieldPayload = item.category;
@@ -605,6 +610,7 @@ export class NewEntityV2Component implements OnInit {
         this.category = formValues.category;
         if (formValues.category && formValues.role) this.fetchFormFields(formValues.category);
         this.idType = this.category ==='corporate' ? 'CERT_OF_INCOP_NUMBER' : 'NATIONAL_ID';
+        this.isCategorySelected = formValues.category ? true : false;
         this.updateOrganizationLabel(formValues.category);
         break;
       case 'organizationType':
@@ -1264,7 +1270,7 @@ export class NewEntityV2Component implements OnInit {
    * @param urls
    */
   readScannedDocuments(urls): void {
-    const schema = {
+    /*const schema = {
       withEffectFromDate: "",
       withEffectToDate: "",
       firstName: "",
@@ -1311,7 +1317,169 @@ export class NewEntityV2Component implements OnInit {
       swiftCode: ""
 
       // todo: add contactPersons[], branches[], ownershipDetails[]
-    };
+    };*/
+    const schema = {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ClientSchema",
+      "type": "object",
+      "properties": {
+        "withEffectFromDate": {
+          "type": "string",
+          "format": "date",
+          "description": "The start date from which the data is effective"
+        },
+        "withEffectToDate": {
+          "type": "string",
+          "format": "date",
+          "description": "The end date until which the data is effective"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "Client's first name"
+        },
+        "gender": {
+          "type": "string",
+          "description": "Client's gender (e.g., Male, Female, Other)"
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Client's last name"
+        },
+        "pinNumber": {
+          "type": "string",
+          "description": "Personal Identification Number (PIN)"
+        },
+        "category": {
+          "type": "string",
+          "description": "Client category or classification"
+        },
+        "clientTypeId": {
+          "type": "string",
+          "description": "Identifier for the type of client (e.g., individual, organization)"
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date",
+          "description": "Client's date of birth"
+        },
+        "modeOfIdentityId": {
+          "type": "string",
+          "description": "ID representing the mode of identification (e.g., passport, driver's license)"
+        },
+        "idNumber": {
+          "type": "string",
+          "description": "Identification document number"
+        },
+        "branchId": {
+          "type": "string",
+          "description": "Identifier for the branch associated with the client"
+        },
+        "maritalStatus": {
+          "type": "string",
+          "description": "Client's marital status (e.g., Single, Married)"
+        },
+        "partyId": {
+          "type": "string",
+          "description": "Unique identifier for the party (internal reference)"
+        },
+        "boxNumber": {
+          "type": "string",
+          "description": "Client's P.O. Box number"
+        },
+        "countryId": {
+          "type": "string",
+          "description": "Identifier for the client’s country"
+        },
+        "houseNumber": {
+          "type": "string",
+          "description": "House or apartment number of the client"
+        },
+        "physicalAddress": {
+          "type": "string",
+          "description": "Full physical address of the client"
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "Postal or ZIP code"
+        },
+        "road": {
+          "type": "string",
+          "description": "Name of the road or street"
+        },
+        "townId": {
+          "type": "string",
+          "description": "Identifier for the town/city"
+        },
+        "stateId": {
+          "type": "string",
+          "description": "Identifier for the state or region"
+        },
+        "utilityAddressProof": {
+          "type": "string",
+          "description": "Proof of address document (e.g., utility bill)"
+        },
+        "isUtilityAddress": {
+          "type": "string",
+          "description": "Indicates if the utility address is the same as the physical address"
+        },
+        "emailAddress": {
+          "type": "string",
+          "format": "email",
+          "description": "Client’s email address"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "Client’s main phone number"
+        },
+        "smsNumber": {
+          "type": "string",
+          "description": "Phone number used for SMS communication"
+        },
+        "titleId": {
+          "type": "string",
+          "description": "Title identifier (e.g., Mr., Mrs., Dr.)"
+        },
+        "contactChannel": {
+          "type": "string",
+          "description": "Preferred communication channel"
+        },
+        "websiteUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of client’s website"
+        },
+        "socialMediaUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Link to client’s social media profile"
+        },
+        "accountNumber": {
+          "type": "string",
+          "description": "Bank account number"
+        },
+        "bankBranchId": {
+          "type": "string",
+          "description": "Identifier for the bank branch"
+        },
+        "preferedChannel": {
+          "type": "string",
+          "description": "Client's preferred channel of communication"
+        },
+        "mpayno": {
+          "type": "string",
+          "description": "Mobile payment number (e.g., M-Pesa, mobile wallet)"
+        },
+        "iban": {
+          "type": "string",
+          "description": "International Bank Account Number (IBAN)"
+        },
+        "swiftCode": {
+          "type": "string",
+          "description": "SWIFT code for international banking"
+        }
+      },
+      "required": []
+    }
 
     this.isPatchingFormValues = true;
     this.entityForm.disable();
@@ -1414,6 +1582,23 @@ export class NewEntityV2Component implements OnInit {
           'Successfully Created an Entity'
         );
       });
+  }
+
+
+  /**
+   * Handle section collapse
+   * @param id
+   */
+  toggleCollapse(id: string): void {
+    if (this.collapsedGroups.has(id)) {
+      this.collapsedGroups.delete(id);
+    } else {
+      this.collapsedGroups.add(id);
+    }
+  }
+
+  isCollapsed(id: string): boolean {
+    return this.collapsedGroups.has(id);
   }
 
 
