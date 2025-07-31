@@ -625,7 +625,7 @@ h5.htxt {
 .p-datatable .p-datatable-thead>tr>th {
   padding: 0.6rem 0.6rem;
   font-size: 0.9em;
-  /*background: #BAD0E4;*/
+  background: #BAD0E4;
 }
 
 tr>td>p-celleditor>input {
@@ -770,4 +770,8 @@ p-table tr>th {
     display: block;
     margin-top: 250px;
   }
+}
+
+ngx-intl-tel-input.is-invalid input {
+  border-color: #dc3545 !important;
 }
