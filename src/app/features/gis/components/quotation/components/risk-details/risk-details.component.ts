@@ -208,6 +208,21 @@ export class RiskDetailsComponent {
   tabs = ['Schedule Details', 'Level 2', 'Level 3']; // Dummy tabs for now
   activeTab = 'Schedule Details';
   isEditMode: boolean = false;
+  selectedRiskClauses: any;
+  clauseModified: boolean = false;
+  sessionClauses: any[] = [];
+  selectedRiskCode: any;
+  showRiskClauses: boolean = true;
+  showClauseModal: boolean = false;
+  clausesModified: boolean = false;
+  clauses: any;
+  selectedRiskClause: any = {
+    id: '',
+    heading: '',
+    wording: ''
+  };
+  originalClauseBeforeEdit: any = null;
+  clauseToDelete: any = null;
 
   constructor(
     public subclassService: SubclassesService,
@@ -2578,10 +2593,6 @@ export class RiskDetailsComponent {
     });
   }
 
-  clauseModified: boolean = false;
-  sessionClauses: any[] = [];
-  selectedRiskCode: any;
-
   private fetchAndCacheSubclassClauses(code: string): void {
     this.subclassService.getSubclassClauses(code).subscribe({
       next: (data) => {
@@ -2633,11 +2644,6 @@ export class RiskDetailsComponent {
     });
   }
 
-
-  showRiskClauses: boolean = true;
-  showClauseModal: boolean = false;
-  clausesModified: boolean = false;
-  clauses: any;
   toggleRiskClauses() {
     this.showRiskClauses = !this.showRiskClauses;
 
@@ -2688,7 +2694,6 @@ export class RiskDetailsComponent {
     }
   }
 
-  selectedRiskClauses: any;
   addRiskClauses(): void {
     if (this.selectedRiskClauses?.length) {
       // Combine selected and already mandatory clauses
@@ -2759,13 +2764,6 @@ export class RiskDetailsComponent {
   }
 
   //edit clause
-  selectedRiskClause: any = {
-    id: '',
-    heading: '',
-    wording: ''
-  };
-  originalClauseBeforeEdit: any = null;
-
   wasModified(): boolean {
     if (!this.selectedRiskClause || !this.originalClauseBeforeEdit) return false;
 
@@ -2836,7 +2834,6 @@ export class RiskDetailsComponent {
 
 
   //delete risk clause
-  clauseToDelete: any = null;
   prepareDeleteClause(clause: any) {
     this.clauseToDelete = clause;
   }
