@@ -363,7 +363,8 @@
     "receiptAuthorization": "Autorisation de reçu",
     "receiptUpload": "Téléchargement de reçu",
     "premiumSuspense": "Suspense de prime",
-    "directDebits": "Prélèvements automatiques"
+    "directDebits": "Prélèvements automatiques",
+      "isRequired": "est requis"
   }
   },
   "shared": {
@@ -2846,7 +2847,7 @@
     "errorMessage": "Une erreur s'est produite !",
       "rctPrintError": "Risiti imehifadhiwa kwa mafanikio lakini imeshindikana kuchapisha",
     "pdPrintError": "Risiti imehifadhiwa kwa mafanikio lakini slip imeshindikana kuchapishwa",
-    
+
     "receipting": {
       "receipting": "Emission de reçus",
       "cbReceipting": "Livre de caisse-Emission de reçus",

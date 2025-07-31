@@ -365,7 +365,8 @@
     "receiptAuthorization": "收据授权",
     "receiptUpload": "收据上传",
     "premiumSuspense": "保费暂记",
-    "directDebits": "直接借记"
+    "directDebits": "直接借记",
+      "isRequired": "是必填项"
   }
   },
   "crm": {
@@ -1171,7 +1172,7 @@
   "reject": "拒绝",
   "reject_quote": "拒绝报价单",
   "payment_details": "付款详情",
-  
+
   "quotation_summmary": "报价摘要",
   "quotation_status": "报价状态",
   "ticket_number": "票号",
@@ -2311,7 +2312,7 @@
 "errorMessage": "发生错误",
  "rctPrintError":"收据已成功保存，但无法打印",
     "pdPrintError":"收据已成功保存，但无法打印小票",
-     
+
 
     "receipting": {
       "receipting": "收据处理",
