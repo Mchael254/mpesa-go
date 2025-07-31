@@ -82,13 +82,6 @@
         />
       </div>
       <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-end gap-2">
-        <button class="btn btn-outline-primary">
-          {{ 'crm.importSetup' | translate }}
-        </button>
-        <button class="btn btn-outline-primary">
-          {{ 'crm.exportSetup' | translate }}
-        </button>
-
         <!-- Caret Dropdown-style Button -->
         <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-2"
                 (click)="columnDialogVisible = true"
@@ -183,10 +176,17 @@
       </div>
     </div>
   </div>
-  <div class="float-end my-3">
-    <button class="btn btn-primary">{{ 'crm.preview' | translate }}</button>
-    <button class="btn btn-primary" (click)="publishChanges()">{{ 'crm.publish' | translate }}</button>
-  </div>
+  <ng-container *ngIf="selectedSubModule">
+    <div class="float-start my-3">
+      <button class="btn btn-outline-primary me-2">{{ 'crm.importSetup' | translate }}</button>
+      <button class="btn btn-outline-primary" (click)="openExportSetupModal()">{{ 'crm.exportSetup' | translate }}</button>
+    </div>
+    <div class="float-end my-3">
+      <button class="btn btn-primary">{{ 'crm.preview' | translate }}</button>
+      <button class="btn btn-primary" (click)="publishChanges()">{{ 'crm.publish' | translate }}</button>
+    </div>
+  </ng-container>
+
 </div>
 
 <!--Sub modules modal-->
@@ -709,7 +709,7 @@
                 class="form-select"
               >
                 <option value="">{{ 'crm.selectSection' | translate }}</option>
-                <option *ngFor="let section of sections"
+                <option *ngFor="let section of subSections"
                         value="{{ section?.code}}">
                   {{ section?.originalLabel }}
                 </option>
@@ -1062,4 +1062,84 @@
         ></button>
       </div>
     </div>
+</div>
+
+<!--Export setup modal-->
+<div
+  class="modal fade"
+  #exportSetupModal
+  id="exportSetupModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title text-primary" id="exampleModalLabel">{{ 'crm.exportSetup' | translate }}</h5>
+
+        <button
+          type="button"
+          class="btn-close position-absolute top-0 end-0 m-3"
+          (click)="closeExportSetupModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label" for="subModules">{{ 'crm.subModules' | translate }}</label>
+          <select class="form-select" id="subModules" aria-label="Export type" (change)="onClickExportSubModule($event)">
+            <option value="">Select</option>
+            <option *ngFor="let submodule of subModules"
+                    value="{{ submodule?.code}}" >
+              {{ submodule?.originalLabel }}
+            </option>
+          </select>
+        </div>
+        <div class="mb-3" *ngIf="showExportScreens">
+          <label class="form-label" for="screens">{{ 'crm.screens' | translate }}</label>
+          <select class="form-select" id="screens" aria-label="Export type" (change)="onClickExportScreen($event)">
+            <option value="">Select</option>
+            <option *ngFor="let screen of screens"
+                    value="{{ screen?.code}}">
+              {{ screen?.originalLabel }}
+            </option>
+          </select>
+        </div>
+        <div class="mb-3" *ngIf="showExportSections">
+          <label class="form-label" for="sections">{{ 'crm.sections' | translate }}</label>
+          <select class="form-select" id="sections" aria-label="Export type" (change)="onClickExportSection($event)">
+            <option value="">Select</option>
+            <option *ngFor="let section of sections"
+                    value="{{ section?.code}}">
+              {{ section?.originalLabel }}
+            </option>
+          </select>
+        </div>
+        <div class="mb-3" *ngIf="showExportSubSections">
+          <label class="form-label" for="subSections">{{ 'crm.subSections' | translate }}</label>
+          <select class="form-select" id="subSections" aria-label="Export type" (change)="onClickExportSubSection($event)">
+            <option value="">Select</option>
+            <option *ngFor="let subSection of subSections"
+                    value="{{ subSection?.code}}">
+              {{ subSection?.originalLabel }}
+            </option>
+          </select>
+        </div>
+        <div class="mb-3" *ngIf="showExportSubSections && showExportSubSectionsTwo && subSectionsTwo?.length > 0">
+          <label class="form-label" for="subSectionsTwo">{{ 'crm.subSectionsTwo' | translate }}</label>
+          <select class="form-select" id="subSectionsTwo" aria-label="Export type">
+            <option value="">Select</option>
+            <option *ngFor="let subSectionTwo of subSectionsTwo"
+                    value="{{ subSectionTwo?.code}}">
+              {{ subSectionTwo?.originalLabel }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-outline-primary" (click)="closeExportSetupModal()">{{ 'crm.cancel' | translate }}</button>
+        <button type="button" class="btn btn-primary">{{ 'crm.export' | translate }}</button>
+      </div>
+    </div>
+  </div>
 </div>
