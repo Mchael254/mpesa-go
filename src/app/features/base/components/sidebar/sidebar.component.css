@@ -52,7 +52,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  /* width: 100%; */
   padding: 0.5rem 1rem;
   border: 0;
   background-color: transparent;
@@ -122,7 +122,7 @@
 
 /* Navigation structure */
 .btn-toggle-nav {
-  margin-left: 1.25rem;
+  /* margin-left: 1.25rem; */
 }
 
 .menu-title {
