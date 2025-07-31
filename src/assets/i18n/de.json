@@ -361,7 +361,8 @@
       "receiptAuthorization": "Eingangsgenehmigung",
       "receiptUpload": "Eingangs-Upload",
       "premiumSuspense": "Prämienkontokorrent",
-      "directDebits": "Lastschriften"
+      "directDebits": "Lastschriften",
+       "isRequired": "ist erforderlich"
     }
   },
   "crm": {

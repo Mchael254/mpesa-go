@@ -363,7 +363,8 @@
       "receiptAuthorization": "Autorisation de reçu",
       "receiptUpload": "Téléchargement de reçu",
       "premiumSuspense": "Suspense de prime",
-      "directDebits": "Prélèvements automatiques"
+      "directDebits": "Prélèvements automatiques",
+      "isRequired": "est requis"
     }
   },
   "shared": {

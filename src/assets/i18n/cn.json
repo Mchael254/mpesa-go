@@ -365,7 +365,8 @@
       "receiptAuthorization": "收据授权",
       "receiptUpload": "收据上传",
       "premiumSuspense": "保费暂记",
-      "directDebits": "直接借记"
+      "directDebits": "直接借记",
+      "isRequired": "是必填项"
     }
   },
   "crm": {
