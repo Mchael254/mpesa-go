@@ -17,3 +17,16 @@ export interface TableDetail {
   viewDetailsOnView?: boolean;
   viewMethod?: (rowId: any) => void;
 }
+
+export interface TableFieldLabel {
+  en: string;
+  ke: string;
+  fr: string;
+}
+
+export interface TableFieldConfig {
+  field: string;
+  header: string;
+  visible: boolean;
+  label: TableFieldLabel;
+}

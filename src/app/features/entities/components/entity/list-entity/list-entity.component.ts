@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { BreadCrumbItem } from '../../../../../shared/data/common/BreadCrumbItem';
 import { Pagination } from '../../../../../shared/data/common/pagination';
-import { TableDetail } from '../../../../../shared/data/table-detail';
+import {TableDetail, TableFieldConfig} from '../../../../../shared/data/table-detail';
 import { EntityDto } from '../../../data/entityDto';
 import { LazyLoadEvent } from 'primeng/api';
 import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
@@ -13,11 +13,12 @@ import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AutoUnsubscribe } from '../../../../../shared/services/AutoUnsubscribe';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import {HttpClient} from "@angular/common/http";
+import {UtilService} from "../../../../../shared/services";
 
 const log = new Logger('ListEntityComponent');
 
 type CustomLazyLoadEvent = LazyLoadEvent & { sortField: string | string[] };
-
 
 @Component({
   selector: 'app-list-entity',
@@ -35,13 +36,12 @@ export class ListEntityComponent implements OnInit, OnDestroy {
   isSearching = false;
   searchTerm = '';
   private subscription: Subscription;
-  cols = [
-    { field: 'name', header: 'Name' },
-    { field: 'modeOfIdentityName', header: 'ID Type' },
-    { field: 'identityNumber', header: 'ID Number' },
-    { field: 'pinNumber', header: 'Pin Number' },
-    { field: 'categoryName', header: 'Entity Type' },
-  ];
+  columns: TableFieldConfig[];
+  actionLabel: {};
+  columnLabel: {};
+
+
+  columnDialogVisible: boolean = false;
 
   globalFilterFields = ['name', 'modeOfIdentity.name', 'identityNumber', 'pinNumber', 'categoryName'];
 
@@ -63,14 +63,20 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     name:'', identityNumber:'', modeOfIdentity: {name: ''}, pinNumber:'', categoryName:''
   };
 
+  language: string
+
   constructor(
     private entityService: EntityService,
     private router: Router,
     private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
-    private globalMessagingService: GlobalMessagingService
+    private globalMessagingService: GlobalMessagingService,
+    private utilService: UtilService,
+    private http: HttpClient,
   ) {
-
+    this.utilService.currentLanguage.subscribe(lang => {
+      this.language = lang;
+    });
   }
 
 /**
@@ -78,17 +84,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
  * spinner.
  */
   ngOnInit(): void {
-    this.tableDetails = {
-      cols: this.cols,
-      rows: [],
-      globalFilterFields: this.globalFilterFields,
-      showFilter: false,
-      showSorting: true,
-      paginator: true,
-      url: '/home/entity/view',
-      urlIdentifier: 'id',
-      isLazyLoaded: true
-    }
+    this.fetchTableConfig();
     this.spinner.show();
     log.info(this.entityService.searchTermObject());
     const nameSearch:any = this.entityService.searchTermObject();
@@ -107,6 +103,31 @@ export class ListEntityComponent implements OnInit, OnDestroy {
         });
     }
   this.spinner.hide();
+  }
+
+  fetchTableConfig(): void {
+    this.http.get<any>('assets/data/clientTable.json').subscribe({
+      next: (data) => {
+        this.columns = data.individualTable.columns;
+        this.actionLabel = data.individualTable.actionLabel;
+        this.columnLabel = data.individualTable.columnLabel;
+        this.tableDetails = {
+          cols: this.columns,
+          rows: [],
+          globalFilterFields: this.globalFilterFields,
+          showFilter: false,
+          showSorting: true,
+          paginator: true,
+          url: '/home/entity/view',
+          urlIdentifier: 'id',
+          isLazyLoaded: true
+        }
+        log.info(`table config >>> `, this.columns);
+      },
+      error: (err) => {
+        log.error(`could not fetch `, err);
+      }
+    })
   }
 
 /**
@@ -279,6 +300,36 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     }
 
   }
+
+  /**
+   * Filter records beased on column filter
+   * @param event
+   * @param field
+   */
+  processInput(event: Event, field: string) {
+    switch (field) {
+      case 'name':
+        this.inputName(event);
+        break;
+      case 'modeOfIdentityName':
+        this.inputModeOfIdentityName(event);
+        break;
+      case 'identityNumber':
+        this.inputIdNumber(event);
+        break;
+      case 'pinNumber':
+        this.inputPinNumber(event);
+        break;
+      case 'categoryName':
+        this.inputCategoryName(event);
+        break;
+      default:
+        // do nothing
+
+    }
+  }
+
+
   inputName(event) {
 
     const value = (event.target as HTMLInputElement).value;
@@ -290,6 +341,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     const value = (event.target as HTMLInputElement).value;
     this.filterObject['identityNumber'] = value;
   }
+
   inputModeOfIdentityName(event) {
 
     const value = (event.target as HTMLInputElement).value;
