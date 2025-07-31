@@ -69,6 +69,10 @@ export class CrmScreensConfigComponent implements OnInit {
   showSections: boolean = false;
   showSubSections: boolean = false;
   showSubSectionsTwo: boolean = false;
+  showExportScreens: boolean = false;
+  showExportSections: boolean = false;
+  showExportSubSections: boolean = false;
+  showExportSubSectionsTwo: boolean = false;
   modalId: string = '';
   @ViewChild('dt2') dt2: Table | undefined;
   dynamicConfigBreadCrumbItems: BreadCrumbItem[] = [
@@ -280,9 +284,26 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
-  closeFieldsModal(){
+  closeFieldsModal() {
     this.editMode = false;
     const modal = document.getElementById('fieldsModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
+  openExportSetupModal() {
+    const modal = document.getElementById('exportSetupModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+  closeExportSetupModal() {
+    this.editMode = false;
+    const modal = document.getElementById('exportSetupModal');
     if (modal) {
       modal.classList.remove('show');
       modal.style.display = 'none';
@@ -623,7 +644,7 @@ export class CrmScreensConfigComponent implements OnInit {
       this.selectedSubSectionTwo = subSectionTwo;
       this.subSectionTwoForm.patchValue({
         originalSubSectionTwoLabel: subSectionTwo.originalLabel,
-        section: subSectionTwo.formCode,
+        section: subSectionTwo.formGroupingCode,
         currentSubSectionTwoLabel: subSectionTwo.label?.[this.language],
         visible: subSectionTwo.visible === true ? 'Y' : 'N',
         subSectionTwoLevel: subSectionTwo.order,
@@ -926,6 +947,28 @@ export class CrmScreensConfigComponent implements OnInit {
       this.tableTitle = subSectionTwo.label[this.language];
     }
     this.showFields = subSectionTwo?.hasFields;
+  }
+
+  onClickExportSubModule(event: any) {
+    this.fetchScreens(event.target.value);
+    this.showExportScreens = true;
+  }
+
+  onClickExportScreen(event: any) {
+    this.fetchSections(event.target.value);
+    log.info('screen', event);
+    this.showExportSections = true;
+  }
+
+  onClickExportSection(event: any) {
+    this.fetchSubSections(this.selectedSubModule.code, null, event.target.value);
+    this.showExportSubSections = true;
+    this.showExportSubSectionsTwo = false;
+  }
+
+  onClickExportSubSection(event: any) {
+    this.fetchSubSectionsTwo(event.target.value);
+    this.showExportSubSectionsTwo = true;
   }
 
   filterFields(event: Event) {
