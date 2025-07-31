@@ -1022,7 +1022,11 @@ export interface subclassClauses {
   isLienClause: string,
   clauseExpires: string,
   isRescueClause: string,
-  version: number
+  version: number,
+  wording: string;
+  heading: string;
+  isEditable: string;
+  clauseType: string;
 }
 
 export interface coverPeriods {

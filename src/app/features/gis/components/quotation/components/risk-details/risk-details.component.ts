@@ -25,6 +25,7 @@ import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from "ngx-currency";
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import * as bootstrap from 'bootstrap';
+import { riskClause } from 'src/app/features/gis/data/quotations-dto';
 
 
 const log = new Logger('RiskDetailsComponent');
@@ -1949,9 +1950,12 @@ export class RiskDetailsComponent {
         }
       );
 
-    this.selectedRiskCode = riskSelectedData.subclassCode;
+    this.selectedSubclassCode = riskSelectedData.subclassCode;
+    this.selectedRiskCode = riskSelectedData.code;
+    log.debug("firstRiskCode", this.selectedRiskCode);
     sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
     this.loadPersistedRiskClauses();
+    this.loadSubclassClauses(riskSelectedData.subclassCode);
 
   }
   /**
@@ -2527,24 +2531,27 @@ export class RiskDetailsComponent {
   //     });
   //   })
   // }
-  clauseModified: boolean = false;
-  sessionClauses: any[] = [];
-  selectedRiskCode: any
+
   loadSubclassClauses(code: any) {
     if (!code) {
       console.warn("Missing subclass code, skipping clause loading.");
       return;
     }
 
-    // Fetch fresh clauses only if no usable cache
     this.subclassService.getSubclassClauses(code).subscribe({
       next: (data) => {
         this.SubclauseList = data || [];
 
+        log.debug('subclass ClauseList#####', this.SubclauseList);
+
         this.selectedClause = this.SubclauseList.filter(clause => clause.isMandatory === 'Y');
         this.nonMandatoryClauses = this.SubclauseList.filter(clause => clause.isMandatory === 'N');
-        this.riskClause = this.selectedClause;
-        this.sessionClauses = [...this.riskClause];
+        log.debug('selected subclass ClauseList#####', this.selectedClause);
+        log.debug('Non mandatory  subclass ClauseList#####', this.nonMandatoryClauses);
+
+        this.SubclauseList.forEach(clause => {
+          clause.checked = clause.isMandatory === 'Y';
+        });
       },
       error: (err) => {
         console.error('Failed to load subclass clauses:', err);
@@ -2555,7 +2562,11 @@ export class RiskDetailsComponent {
       }
     });
   }
-  
+
+  clauseModified: boolean = false;
+  sessionClauses: any[] = [];
+  selectedRiskCode: any;
+
   private fetchAndCacheSubclassClauses(code: string): void {
     this.subclassService.getSubclassClauses(code).subscribe({
       next: (data) => {
@@ -2566,6 +2577,30 @@ export class RiskDetailsComponent {
         this.riskClause = [...this.selectedClause];
         this.sessionClauses = [...this.riskClause];
 
+        const quotationCode = Number(sessionStorage.getItem("quotationCode"));
+        const riskCode = Number(this.selectedRiskCode);
+        this.selectedClause.forEach(clause => {
+          const payload: riskClause = {
+            clauseCode: clause.clauseCode,
+            clauseShortDescription: clause.shortDescription ?? '',
+            quotationCode: quotationCode,
+            riskCode: riskCode,
+            clause: clause.wording?.trim() ?? '',
+            clauseEditable: clause.isEditable ?? 'N',
+            clauseType: clause.clauseType ?? 'CL',
+            clauseHeading: clause.heading ?? ''
+          };
+
+          this.quotationService.addRiskClause(payload).subscribe({
+            next: () => {
+              console.debug("Mandatory clause persisted:", clause.shortDescription);
+            },
+            error: (err) => {
+              console.warn("Clause may already exist or failed to add:", err);
+            }
+          });
+        });
+
         const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
         riskClauseMap[code] = {
           riskClause: this.riskClause,
@@ -2573,15 +2608,15 @@ export class RiskDetailsComponent {
           clauseModified: false
         };
         sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+        log.debug("risk clause map >>", riskClauseMap);
       },
       error: (err) => {
         console.error("Error fetching subclass clauses:", err);
         this.SubclauseList = [];
       },
-      complete: () => console.log("📦 Fetched and cached subclass clauses.")
+      complete: () => console.log("Fetched and cached subclass clauses.")
     });
   }
-
 
 
   showRiskClauses: boolean = true;
@@ -2610,7 +2645,7 @@ export class RiskDetailsComponent {
         modal.show();
       }
     } else {
-      this.globalMessagingService.displayErrorMessage('warning', 'You need to select a product first');
+      this.globalMessagingService.displayErrorMessage('warning', 'You need to select a risk first');
     }
 
   }
@@ -2628,40 +2663,84 @@ export class RiskDetailsComponent {
       this.clauseModified = sessionData.clauseModified || false;
       this.sessionClauses = [...this.riskClause];
 
-      console.log("✅ Loaded persisted clauses from session:", {
+      console.log("Loaded persisted clauses from session:", {
         riskCode: this.selectedRiskCode,
         sessionClauses: this.sessionClauses
       });
     } else {
-      console.warn("❌ No persisted data found. Fetching from API...");
-      this.fetchAndCacheSubclassClauses(storedRiskCode); 
+      console.warn("No persisted data found. Fetching from API...");
+      this.fetchAndCacheSubclassClauses(this.selectedSubclassCode);
     }
   }
 
   selectedRiskClauses: any;
-  saveRiskClauses(): void {
+  addRiskClauses(): void {
     if (this.selectedRiskClauses?.length) {
+      // Combine selected and already mandatory clauses
       this.riskClause = [...this.riskClause, ...this.selectedRiskClauses];
       this.sessionClauses = [...this.riskClause];
+
       log.debug("Selected Risk Clauses:", this.selectedRiskClauses);
-      this.nonMandatoryClauses = this.nonMandatoryClauses.filter(clause => !this.selectedRiskClauses
-        .some(sel => sel.shortDescription === clause.shortDescription));
+
+      // Filter out selected from non-mandatory list
+      this.nonMandatoryClauses = this.nonMandatoryClauses.filter(clause =>
+        !this.selectedRiskClauses.some(sel => sel.shortDescription === clause.shortDescription)
+      );
 
       this.clauseModified = true;
+
+      // Store in sessionStorage
       const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
       riskClauseMap[this.selectedRiskCode] = {
         riskClause: this.riskClause,
         nonMandatoryClauses: this.nonMandatoryClauses,
         clauseModified: this.clauseModified
       };
-
       sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+      log.debug("risk clause map after add >>", riskClauseMap);
 
-      this.selectedClauses = [];
-      this.globalMessagingService.displaySuccessMessage("success", "Risk clause added successfully")
+      const quotationCode = Number(sessionStorage.getItem("quotationCode"));
+      const riskCode = Number(this.selectedRiskCode);
+
+      const combinedClauses = [...this.selectedRiskClauses];
+      log.debug("combined clauses >> ", combinedClauses)
+
+      let successCount = 0;
+      let failureCount = 0;
+
+      combinedClauses.forEach(clause => {
+        const singlePayload: riskClause = {
+          clauseCode: clause.clauseCode,
+          clauseShortDescription: clause.shortDescription,
+          quotationCode: quotationCode,
+          riskCode: riskCode,
+          clause: clause.wording,
+          clauseEditable: clause.isEditable,
+          clauseType: clause.clauseType,
+          clauseHeading: clause.heading
+        };
+
+        log.debug("Sending single clause payload:", singlePayload);
+
+        this.quotationService.addRiskClause(singlePayload).subscribe({
+          next: () => {
+            successCount++;
+            if (successCount + failureCount === combinedClauses.length) {
+              this.globalMessagingService.displaySuccessMessage("Success", 'risk clause(s) added successfully');
+            }
+          },
+          error: (err) => {
+            failureCount++;
+            log.error(`Failed to add clause ${clause.clauseCode}:`, err);
+            if (successCount + failureCount === combinedClauses.length) {
+              this.globalMessagingService.displayErrorMessage("Error", `${failureCount} clause(s) failed to save`);
+            }
+          }
+        });
+      });
+
+      this.selectedRiskClauses = [];
     }
-
-
   }
 
   //edit clause
@@ -2686,40 +2765,101 @@ export class RiskDetailsComponent {
     this.originalClauseBeforeEdit = { ...clause };
   }
 
-  editClause() {
-    if (!this.selectedRiskClause) return;
+  editRiskClause(): void {
+    if (!this.selectedRiskClause || !this.wasModified()) return;
 
-    const replaceClause = (list: any[]) =>
-      list.map(c => c.shortDescription === this.selectedRiskClause.shortDescription ? { ...this.selectedRiskClause } : c);
+    const quotationCode = Number(sessionStorage.getItem("quotationCode"));
+    const riskCode = Number(this.selectedRiskCode);
 
-    // Update all relevant arrays
-    this.sessionClauses = replaceClause(this.sessionClauses);
-    this.riskClause = replaceClause(this.riskClause);
-
-    // Ensure clauseModified flag is set
-    this.clauseModified = true;
-
-    // Update session storage with the modified flag
-    const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
-    riskClauseMap[this.selectedRiskCode] = {
-      riskClause: this.riskClause,
-      nonMandatoryClauses: this.nonMandatoryClauses,
-      clauseModified: true  // Explicitly set this to true
+    const payload: riskClause = {
+      clauseCode: this.selectedRiskClause.clauseCode,
+      clauseShortDescription: this.selectedRiskClause.shortDescription ?? '',
+      quotationCode: quotationCode,
+      riskCode: riskCode,
+      clause: this.selectedRiskClause.wording?.trim() ?? '',
+      clauseEditable: this.selectedRiskClause.isEditable ?? 'N',
+      clauseType: this.selectedRiskClause.clauseType ?? 'CL',
+      clauseHeading: this.selectedRiskClause.heading ?? ''
     };
-    sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
 
-    // Reset the edit form
-    this.selectedRiskClause = { id: '', heading: '', wording: '' };
-    this.originalClauseBeforeEdit = null;
+    log.debug("Sending update for clause:", payload);
 
-    this.globalMessagingService.displaySuccessMessage('success', 'Clause edited successfully');
+    this.quotationService.editRiskClause(payload).subscribe({
+      next: () => {
+        // Replace in all relevant arrays
+        const replaceClause = (list: any[]) =>
+          list.map(c => c.shortDescription === this.selectedRiskClause.shortDescription
+            ? { ...this.selectedRiskClause }
+            : c
+          );
+
+        this.sessionClauses = replaceClause(this.sessionClauses);
+        this.riskClause = replaceClause(this.riskClause);
+
+        // Update sessionStorage
+        this.clauseModified = true;
+        const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+        riskClauseMap[this.selectedRiskCode] = {
+          riskClause: this.riskClause,
+          nonMandatoryClauses: this.nonMandatoryClauses,
+          clauseModified: true
+        };
+        sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+
+        // Reset state
+        this.selectedRiskClause = { id: '', heading: '', wording: '' };
+        this.originalClauseBeforeEdit = null;
+
+        this.globalMessagingService.displaySuccessMessage('Success', 'Clause edited successfully');
+      },
+      error: (err) => {
+        log.error("Failed to edit clause:", err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to update clause');
+      }
+    });
   }
+
 
   //delete risk clause
   clauseToDelete: any = null;
   prepareDeleteClause(clause: any) {
     this.clauseToDelete = clause;
   }
+
+  deleteRiskClause(): void {
+    if (!this.clauseToDelete) return;
+
+    const clauseCode = this.clauseToDelete.clauseCode;
+    const riskCode = Number(this.selectedRiskCode);
+
+    this.quotationService.deleteRiskClause(clauseCode, riskCode).subscribe({
+      next: () => {
+        // Remove from local arrays
+        this.sessionClauses = this.sessionClauses.filter(
+          c => c.shortDescription !== this.clauseToDelete.shortDescription
+        );
+        this.riskClause = this.riskClause.filter(
+          c => c.shortDescription !== this.clauseToDelete.shortDescription
+        );
+
+        // Update session storage
+        const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+        if (riskClauseMap[this.selectedRiskCode]) {
+          riskClauseMap[this.selectedRiskCode].riskClause = this.riskClause;
+          riskClauseMap[this.selectedRiskCode].clauseModified = true;
+          sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+        }
+
+        this.globalMessagingService.displaySuccessMessage('Success', 'Clause deleted successfully');
+        this.clauseToDelete = null;
+      },
+      error: (err) => {
+        log.error("Failed to delete clause:", err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete clause');
+      }
+    });
+  }
+
 
   onClauseSelectionChange(selectedClauseList: any) {
     if (selectedClauseList.checked) {

@@ -204,3 +204,14 @@ export interface QuotationDTO {
   user: string;
   quotStage: string;
 }
+
+export interface riskClause {
+  clauseCode: number;
+  clauseShortDescription: string;
+  quotationCode: number;
+  riskCode: number;
+  clause: string;
+  clauseEditable: string;
+  clauseType: string;
+  clauseHeading: string;
+}

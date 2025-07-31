@@ -28,7 +28,7 @@ import { ExternalClaimExp } from '../../../policy/data/policy-dto';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { UtilService } from '../../../../../../shared/services';
 import { map } from "rxjs/operators";
-import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
+import { QuotationsDTO, riskClause } from 'src/app/features/gis/data/quotations-dto';
 import { ComputationPayloadDto, PremiumComputationRequest, ProductLevelPremium } from "../../data/premium-computation";
 import { QuotationDetailsRequestDto } from "../../data/quotation-details";
 import { EmailDto } from "../../../../../../shared/data/common/email-dto";
@@ -613,29 +613,29 @@ export class QuotationsService {
 
 
 
-addTaxes(
-  generatedQuotCode: number,
-  newQpCode: number,
-  payload: any
-): Observable<any> {
-  const params = new HttpParams()
-    .set('generatedQuotCode', generatedQuotCode)
-    .set('newQpCode', newQpCode);
+  addTaxes(
+    generatedQuotCode: number,
+    newQpCode: number,
+    payload: any
+  ): Observable<any> {
+    const params = new HttpParams()
+      .set('generatedQuotCode', generatedQuotCode)
+      .set('newQpCode', newQpCode);
 
-  return this.api.POST<any>(
-    `v2/taxes?${params.toString()}`,
-    payload,                         
-    API_CONFIG.GIS_QUOTATION_BASE_URL
-  );
-}
+    return this.api.POST<any>(
+      `v2/taxes?${params.toString()}`,
+      payload,
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    );
+  }
 
-updateTaxes(payload: any): Observable<any> {
-  return this.api.PUT<any>(
-    'v2/taxes', 
-    payload,
-    API_CONFIG.GIS_QUOTATION_BASE_URL
-  );
-}
+  updateTaxes(payload: any): Observable<any> {
+    return this.api.PUT<any>(
+      'v2/taxes',
+      payload,
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    );
+  }
 
 
 
@@ -889,7 +889,33 @@ updateTaxes(payload: any): Observable<any> {
     )
   }
 
-     getTransactionTypes(): Observable<any> {
+  //risk clauses
+  addRiskClause(payload: riskClause): Observable<any> {
+    return this.api.POST<any>(`v2/quotation-risk-clauses`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+
+  editRiskClause(payload: riskClause): Observable<any> {
+    return this.api.PUT<any>(`v2/quotation-risk-clauses`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+
+  deleteRiskClause(clauseCode: number, riskCode: number): Observable<any> {
+    return this.api.DELETE(
+      `/v2/quotation-risk-clauses?clauseCodes=${clauseCode}&quotRiskCode=${riskCode}`,
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    ).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+
+
+  getTransactionTypes(): Observable<any> {
     let page = 0;
     let size = 1000
     const headers = new HttpHeaders({
