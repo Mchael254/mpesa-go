@@ -406,7 +406,8 @@
       "receiptAuthorization": "Receipt Authorization",
       "receiptUpload": "Receipt Upload",
       "premiumSuspense": "Premium Suspense",
-      "directDebits": "Direct Debits"
+      "directDebits": "Direct Debits",
+      "isRequired": "is required"
     }
   },
   "FORM": {

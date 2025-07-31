@@ -368,7 +368,8 @@
       "receiptAuthorization": "Uidhinishaji wa Stakabadhi",
       "receiptUpload": "Upakiaji wa Stakabadhi",
       "premiumSuspense": "Mashaka ya Malipo",
-      "directDebits": "Malipo ya Moja kwa Moja"
+      "directDebits": "Malipo ya Moja kwa Moja",
+      "isRequired": "inahitajika"
     }
   },
   "crm": {

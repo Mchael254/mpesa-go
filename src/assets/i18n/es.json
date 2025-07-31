@@ -365,7 +365,8 @@
       "receiptAuthorization": "Autorización de recibo",
       "receiptUpload": "Carga de recibos",
       "premiumSuspense": "Suspense de primas",
-      "directDebits": "Débitos directos"
+      "directDebits": "Débitos directos",
+      "isRequired": "es requerido"
     }
   },
   "shared": {

@@ -267,7 +267,7 @@
                           dynamicModalForm.get(field.fieldId)?.hasError(field.isMandatory ? 'required' : '')"
                       >
                         <span class="text-danger">
-                          {{ field.label?.[language] | sentenceCase }} is required.
+                          {{ field.label?.[language] | sentenceCase }} {{ 'serviceDesk.saveDetails' | translate }}.
                         </span>
                       </div>
                     </ng-container>
