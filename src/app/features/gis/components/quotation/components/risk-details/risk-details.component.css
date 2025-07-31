@@ -186,6 +186,7 @@ button:focus {
 
 .btn-close.red-close {
   font-weight: 600;
+  color: #EE3945;
   filter: invert(29%) sepia(96%) saturate(7476%) hue-rotate(354deg) brightness(94%) contrast(123%);
 }
 
@@ -274,6 +275,28 @@ button:focus {
   line-height: 19.89px;
   letter-spacing: 0%;
   color: #00529B;
+}
 
+.clause-wrapper {
+  position: relative;
+  display: inline-block;
+}
 
+.hover-card {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  min-width: 500px;
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+.clause-wrapper:hover .hover-card {
+  display: block;
 }

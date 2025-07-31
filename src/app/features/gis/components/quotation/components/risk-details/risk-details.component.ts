@@ -391,6 +391,9 @@ export class RiskDetailsComponent {
             product => product.productCode === this.selectedProductCode
           )
           this.riskDetails = productDetails?.riskInformation || []
+          const curentlySavedRisk = this.riskDetails?.filter(risk => risk.code == this.quotationRiskCode)
+          log.debug('Currently saved Risk:', curentlySavedRisk)
+          curentlySavedRisk && this.handleRowClick(curentlySavedRisk[0])
           log.debug("Risk information specific to the selected product:", this.riskDetails)
           log.debug("Schedule information specific to the selected product:", this.scheduleList)
           if (this.scheduleList[0]?.details?.level2) {
@@ -1297,7 +1300,7 @@ export class RiskDetailsComponent {
           this.quotationCode = quotationCode
           const quotationNo = data._embedded.quotationNo
 
-          this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
+          // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
 
 
@@ -1308,26 +1311,38 @@ export class RiskDetailsComponent {
           // Call services directly
           return forkJoin([
 
-
+            this.quotationService.getQuotationDetails(quotationCode),
             this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode)
           ]);
         })
       ).subscribe({
-        next: ([premiumRates]: any) => {
+        next: ([quoteDetails, premiumRates]: any) => {
+          this.quotationDetails = quoteDetails
+          const quotationProducts = quoteDetails.quotationProducts || [];
+          // Find the selected product
+          const selectedProduct = quotationProducts.find(product => product.code === this.selectedProduct.code);
+          log.debug("Quotation full details:", quoteDetails);
+          log.debug("Matched product from quotation:", selectedProduct);
+          const matchedRisk: RiskInformation = selectedProduct?.riskInformation?.find(risk =>
+            risk.propertyId === this.riskDetailsForm.value.registrationNumber
+          );
+          log.debug("Matched risk from quotation:", matchedRisk);
+          this.selectedRisk = matchedRisk
 
-          // this.quotationDetails = quoteDetails
-          // log.debug("Quotation List-risk creation method:", this.quotationDetails);
-
+          const currentQuotationRiskCode = matchedRisk.code
+          this.quotationRiskCode = currentQuotationRiskCode
           const result = premiumRates;
           this.sectionPremium = result
           // log.debug("Risk Clauses List:", this.riskClausesList);
           log.debug("RESPONSE AFTER getting premium rates ", this.sectionPremium);
-          // log.debug("Keys in sectionPremium[0]:", Object.keys(this.sectionPremium[0]));
+          const defaultSection = this.sectionPremium.filter(section => section.isMandatory == 'Y')
+          log.debug('the default or mandatory section to be added:', defaultSection)
+          this.selectedSections = defaultSection
+          currentQuotationRiskCode && this.createRiskSection();
+          this.quotationRiskCode && this.createScheduleL1(this.quotationRiskCode)
+          this.riskDetails = selectedProduct?.riskInformation || []
 
-
-          // this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created successfully');
-
-
+          this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
 
         },
         // error: () => this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
@@ -1904,7 +1919,7 @@ export class RiskDetailsComponent {
     // this.onRiskEdit(this.selectedRisk)
     const selectedRiskCode = this.selectedRisk?.code
     this.quotationRiskCode = selectedRiskCode
-    this.quotationRiskCode && this.createScheduleL1(this.quotationRiskCode)
+
     log.debug("Quotation risk code:", this.quotationRiskCode)
     const productDetails = this.quotationDetails.quotationProducts.find(
       product => product.productCode === this.selectedProductCode
@@ -1913,7 +1928,7 @@ export class RiskDetailsComponent {
     this.scheduleList = riskSelectedData.scheduleDetails ? [riskSelectedData.scheduleDetails] : [];
     log.debug("SCHEDULE DETAILS AFTER ROW CLICK:", this.scheduleList)
 
-    this.sectionDetails = riskSelectedData?.riskLimits
+    this.sectionDetails = this.selectedRisk.riskLimits
     log.debug("section DETAILS AFTER ROW CLICK:", this.sectionDetails)
 
     const subclassCode = riskSelectedData.subclassCode;
