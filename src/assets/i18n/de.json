@@ -220,6 +220,7 @@
     "Quotation Enquiry": "Angebotsanfrage",
     "Quotation Sources": "Angebotsquellen",
     "Quotation Numbers": "Angebotsnummern",
+    "isRequired": "ist erforderlich",
     "base-fms": {
       "parameters": "Parameter",
       "defineYrs": "Jahre/Perioden definieren",
@@ -361,8 +362,7 @@
       "receiptAuthorization": "Eingangsgenehmigung",
       "receiptUpload": "Eingangs-Upload",
       "premiumSuspense": "Prämienkontokorrent",
-      "directDebits": "Lastschriften",
-       "isRequired": "ist erforderlich"
+      "directDebits": "Lastschriften"
     }
   },
   "crm": {

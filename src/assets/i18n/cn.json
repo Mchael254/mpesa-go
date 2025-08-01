@@ -224,6 +224,7 @@
     "Quotation Enquiry": "报价查询",
     "Quotation Sources": "报价来源",
     "Quotation Numbers": "报价号码",
+    "isRequired": "是必填项",
     "base-fms": {
       "parameters": "参数",
       "defineYrs": "定义年份/期间",
@@ -365,8 +366,7 @@
       "receiptAuthorization": "收据授权",
       "receiptUpload": "收据上传",
       "premiumSuspense": "保费暂记",
-      "directDebits": "直接借记",
-      "isRequired": "是必填项"
+      "directDebits": "直接借记"
     }
   },
   "crm": {

@@ -227,6 +227,7 @@
     "Quotation Enquiry": "Maswali ya nukuu",
     "Quotation Sources": "Vyanzo vya nukuu",
     "Quotation Numbers": "Nambari za nukuu",
+    "isRequired": "inahitajika",
     "base-fms": {
       "parameters": "Vigezo",
       "defineYrs": "Fafanua Miaka/Vipindi",
@@ -368,8 +369,7 @@
       "receiptAuthorization": "Uidhinishaji wa Stakabadhi",
       "receiptUpload": "Upakiaji wa Stakabadhi",
       "premiumSuspense": "Mashaka ya Malipo",
-      "directDebits": "Malipo ya Moja kwa Moja",
-      "isRequired": "inahitajika"
+      "directDebits": "Malipo ya Moja kwa Moja"
     }
   },
   "crm": {

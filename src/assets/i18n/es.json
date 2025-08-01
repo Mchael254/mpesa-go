@@ -224,6 +224,7 @@
     "Quotation Enquiry": "Consulta de cotización",
     "Quotation Sources": "Fuentes de cotización",
     "Quotation Numbers": "Números de cotización",
+    "isRequired": "es requerido",
     "base-fms": {
       "parameters": "Parámetros",
       "defineYrs": "Definir años/períodos",
@@ -365,8 +366,7 @@
       "receiptAuthorization": "Autorización de recibo",
       "receiptUpload": "Carga de recibos",
       "premiumSuspense": "Suspense de primas",
-      "directDebits": "Débitos directos",
-      "isRequired": "es requerido"
+      "directDebits": "Débitos directos"
     }
   },
   "shared": {
