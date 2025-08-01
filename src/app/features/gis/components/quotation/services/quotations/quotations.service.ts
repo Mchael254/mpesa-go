@@ -12,7 +12,8 @@ import {
   RegexPattern,
   riskSection, RiskValidationDto,
   scheduleDetails,
-  Sources
+  Sources,
+  TaxPayload
 } from '../../data/quotationsDTO';
 import { catchError, Observable, retry, tap, throwError } from 'rxjs';
 import { introducersDTO } from '../../data/introducersDTO';
@@ -616,7 +617,7 @@ export class QuotationsService {
   addTaxes(
     generatedQuotCode: number,
     newQpCode: number,
-    payload: any
+    payload: TaxPayload[]
   ): Observable<any> {
     const params = new HttpParams()
       .set('generatedQuotCode', generatedQuotCode)
@@ -629,7 +630,7 @@ export class QuotationsService {
     );
   }
 
-  updateTaxes(payload: any): Observable<any> {
+  updateTaxes(payload: TaxPayload): Observable<any> {
     return this.api.PUT<any>(
       'v2/taxes',
       payload,

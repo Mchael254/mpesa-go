@@ -1235,4 +1235,18 @@ export class UsersDetailsDto {
   idNumber: string | null;
 }
 
-
+export interface TaxPayload {
+code: number;
+rateDescription: string;
+rate: number;
+rateType: string;
+taxAmount: number;
+productCode: number;
+quotationCode: number;
+transactionCode: string;
+renewalEndorsement: string;
+taxRateCode: string;
+levelCode: string;
+taxType: string;
+riskProductLevel: string;
+}
