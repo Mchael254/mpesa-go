@@ -482,11 +482,12 @@
                             <div class="col-md-6 mb-3">
                               <label>Tax</label>
                               <div class="position-relative" *ngIf="taxTypes && taxTypes.length">
-                                <p-dropdown formControlName="tax" [options]="taxes" optionLabel="description"
-                                  placeholder="Enter tax" optionValue="taxCode"
-                                  class="w-100 p-inputtext-sm slim-dropdown" [showClear]="true" [filter]="true"
-                                  filterBy="description">
-                                </p-dropdown>
+                                <input 
+type="text"
+class="form-control form-control-sm"
+[value]="taxForm.get('rateDescription')?.value"
+readonly
+/>
                                 <div *ngIf="taxForm.get('tax')?.touched && taxForm.get('tax')?.invalid"
                                   class="text-danger small">
                                   Tax is required.
