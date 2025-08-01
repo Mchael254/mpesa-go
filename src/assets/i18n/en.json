@@ -248,9 +248,9 @@
     "Quotation Sources": "Quotation Sources",
     "Quotation Numbers": "Quotation Numbers",
     "Quotation Management": "Quotation Management",
+    "isRequired": "is required",
     "base-fms": {
       "parameters": "Parameters",
-
       "defineYrs": "Define Years/Periods",
       "closeYrsOperations": "Close Years / Periods",
       "closeYrs": "Close Years / Period",
@@ -267,7 +267,6 @@
       "passwordManagement": "Passoword Management",
       "workflowSetups": "WorkFlow setups",
       "subLedgerAccts": "Sub Ledger Accounts",
-
       "actSetups": "Account Setup",
       "coT": "Charts of Accounts",
       "dBAccts": "Define Branch Accounts",
@@ -280,7 +279,6 @@
       "iOBalances": "Import Opening Balances",
       "rJournals": "Recurring Journals",
       "iAcctMapping": "Interface Account Mapping",
-
       "jVouchers": "Journal Vouchers",
       "jEntries": "Journal Entries",
       "aPTransactions": "Authorise/Post Transactions",
@@ -291,7 +289,6 @@
       "pAJournals": "Post Audit Journals",
       "iPosting": "Interface Posting",
       "cRevaluation": "Currency Revaluation",
-
       "vInquiries": "Voucher Inquiries",
       "bTrails": "Budget Trail",
       "vAcctBlc": "View Account Balances",
@@ -302,39 +299,30 @@
       "expnsRpt": "Expense Report",
       "dmsDoc": "DMS Documents",
       "tTrRpt": "Transaction Tracking Report",
-
       "formats": "Formats",
       "rptApportionment": "Report Apportionment",
       "changesInEquity": "Changes In Equity",
       "setUps": "Setups",
       "rpt": "Reports",
-
       "sTypes": "Supplier Types",
       "cAccounts": "Creditors Accounts",
       "bAcctSetup": "Branch Account Setup",
       "acctTerms": "Account Terms",
-
       "dAccounts": "Debtors Accounts",
-
       "createInvoices": "Create Invoices",
       "creditorsPayments": "creditors Payments",
       "paymentVouchers": "Payment Vouchers",
-
       "creditNotesFrmCreditors": "Credit Notes From Creditors",
       "pCreditNotes": "Post Credit Notes",
       "contractDetails": "Contract Details",
       "InvoicesFrmCreditors": "Invoices From Creditors",
-
       "acctBalances": "Account Balances",
-
       "invoiceSent": "invoice Sent to Debtors",
       "AInvoice": "Authorise Invoice Sent to Debtors",
       "dInvoicesUpload": "Debtors Invoice Upload",
       "creditNSent": "Credit Note Sent TO Debtors",
-
       "viewInvoices": "View Invoices to Debtors",
       "viewRct": "View Receipts From Debtors",
-
       "payments": "Payments",
       "BankAccounts": "Bank Accounts",
       "PaymentMethods": "Payment Methods",
@@ -371,7 +359,6 @@
       "updateFileTStatus": "Update File Transfer Status",
       "vatCerts": "VAT/WHTAX Certificates",
       "reports": "Reports",
-
       "settings": "Settings",
       "capture": "Capture",
       "auth/Approve": "Authorise / Approve",
@@ -381,18 +368,15 @@
       "replenish": "Replenish",
       "reverseIssuance": "Reverse Issuance",
       "reverseReturns": "Reverse Returns",
-
       "pUnreconciled": "Previous Unreconciled",
       "postBankReco": "Post Bank Rec.",
       "reconEnquiry": "Recon Enquiry",
-
       "viewTransactions": "View Transactions",
       "chequeRequistion": "Cheque Requistion",
       "cbVoucherListing": "CB Voucher Listing",
       "inquiry": "Inquiry",
       "auditTrail": "Audit Trail",
       "rctEnquiry": "Receipts Enquiry",
-
       "transactions": "Transactions",
       "requistions": "Requistions",
       "cheques": "Cheques",
@@ -406,8 +390,7 @@
       "receiptAuthorization": "Receipt Authorization",
       "receiptUpload": "Receipt Upload",
       "premiumSuspense": "Premium Suspense",
-      "directDebits": "Direct Debits",
-      "isRequired": "is required"
+      "directDebits": "Direct Debits"
     }
   },
   "FORM": {
