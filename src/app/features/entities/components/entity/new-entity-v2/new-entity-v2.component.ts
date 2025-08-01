@@ -33,6 +33,7 @@ import {
   WealthAmlDTO
 } from "../../../data/accountDTO";
 import {DmsService} from "../../../../../shared/services/dms/dms.service";
+import {DmsDocument} from "../../../../../shared/data/common/dmsDocument";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -119,12 +120,19 @@ export class NewEntityV2Component implements OnInit {
   cr12Details: Cr12Detail[] = [];
 
   shouldUploadProfilePhoto: boolean = false;
+  isCategorySelected: boolean = false;
   profilePicture: any; // todo: define types
+  photoPreviewUrl: string;
   clientFiles: File[] = []
+  filesToUpload: DmsDocument[] = [];
   clientDocumentData: any = null; // todo: define types
   isReadingDocuments: boolean = false;
 
   amlDetailsLabel: string = '';
+  isPatchingFormValues: boolean = false;
+
+  collapsedGroups: Set<string> = new Set();
+  formPopulateMassage!: any;
 
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
   protected readonly CountryISO = CountryISO;
@@ -153,6 +161,7 @@ export class NewEntityV2Component implements OnInit {
     });
 
     this.createEntityForm();
+    this.collapsedGroups.add('prime_identity');
   }
 
   get fields(): FormArray {
@@ -179,6 +188,7 @@ export class NewEntityV2Component implements OnInit {
   fetchFormFields(category: string): void {
     this.http.get<any>( 'assets/data/formFields.json').subscribe({
       next: (data: any) => {
+        this.formPopulateMassage = data.formPopulateMassage;
         data.category.forEach(item => {
           if (item.label === category) {
             this.formFieldPayload = item.category;
@@ -375,6 +385,8 @@ export class NewEntityV2Component implements OnInit {
    * create payload for prime identity (primeIdentityPayload)
    */
   saveDetails() : void {
+    this.uploadDocumentToDms();
+
     const formValues = this.entityForm.getRawValue();
     const uploadFormValues = this.uploadForm.getRawValue();
 
@@ -534,7 +546,8 @@ export class NewEntityV2Component implements OnInit {
    * Upload documents to DMS after saving client and uploading profileImage/logo
    */
   uploadDocumentToDms(): void {
-    this.dmsService.saveClientDocs(this.clientFiles[0]).subscribe({
+    log.info(` client files to upload >>> `, this.filesToUpload)
+    this.dmsService.saveClientDocs(this.filesToUpload).subscribe({
       next: (res: any) => {
         log.info(`document uploaded successfully!`, res);
       },
@@ -597,6 +610,7 @@ export class NewEntityV2Component implements OnInit {
         this.category = formValues.category;
         if (formValues.category && formValues.role) this.fetchFormFields(formValues.category);
         this.idType = this.category ==='corporate' ? 'CERT_OF_INCOP_NUMBER' : 'NATIONAL_ID';
+        this.isCategorySelected = formValues.category ? true : false;
         this.updateOrganizationLabel(formValues.category);
         break;
       case 'organizationType':
@@ -1173,6 +1187,12 @@ export class NewEntityV2Component implements OnInit {
         this.uploadGroupSections.docs[index].file = file;
       } else if (uploadType === 'profile') {
         this.uploadGroupSections.photo[0].file = file;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event: any) => {
+          this.photoPreviewUrl = event.target.result;
+        }
       }
 
       switch (uploadType) {
@@ -1181,10 +1201,39 @@ export class NewEntityV2Component implements OnInit {
           break;
         case 'doc':
           this.clientFiles.push(file);
+          this.readFileAsBase64(event);
           break;
         default:
         //do nothing
       }
+    }
+  }
+
+  readFileAsBase64(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0]
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const base64String = reader.result?.toString().split(',')[1];
+
+        let payload: DmsDocument = {
+          actualName: file.name,
+          userName: 'test',
+          docType: file.type,
+          docData: base64String,
+          originalFileName: file.name,
+          clientName: 'test'
+        }
+        this.filesToUpload.push(payload)
+      };
+
+      reader.onerror = err => {
+        log.info(`could not read file >>> `, err);
+      };
+      reader.readAsDataURL(file);
     }
   }
 
@@ -1221,7 +1270,7 @@ export class NewEntityV2Component implements OnInit {
    * @param urls
    */
   readScannedDocuments(urls): void {
-    const schema = {
+    /*const schema = {
       withEffectFromDate: "",
       withEffectToDate: "",
       firstName: "",
@@ -1268,8 +1317,172 @@ export class NewEntityV2Component implements OnInit {
       swiftCode: ""
 
       // todo: add contactPersons[], branches[], ownershipDetails[]
-    };
+    };*/
+    const schema = {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ClientSchema",
+      "type": "object",
+      "properties": {
+        "withEffectFromDate": {
+          "type": "string",
+          "format": "date",
+          "description": "The start date from which the data is effective"
+        },
+        "withEffectToDate": {
+          "type": "string",
+          "format": "date",
+          "description": "The end date until which the data is effective"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "Client's first name"
+        },
+        "gender": {
+          "type": "string",
+          "description": "Client's gender (e.g., Male, Female, Other)"
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Client's last name"
+        },
+        "pinNumber": {
+          "type": "string",
+          "description": "Personal Identification Number (PIN)"
+        },
+        "category": {
+          "type": "string",
+          "description": "Client category or classification"
+        },
+        "clientTypeId": {
+          "type": "string",
+          "description": "Identifier for the type of client (e.g., individual, organization)"
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date",
+          "description": "Client's date of birth"
+        },
+        "modeOfIdentityId": {
+          "type": "string",
+          "description": "ID representing the mode of identification (e.g., passport, driver's license)"
+        },
+        "idNumber": {
+          "type": "string",
+          "description": "Identification document number"
+        },
+        "branchId": {
+          "type": "string",
+          "description": "Identifier for the branch associated with the client"
+        },
+        "maritalStatus": {
+          "type": "string",
+          "description": "Client's marital status (e.g., Single, Married)"
+        },
+        "partyId": {
+          "type": "string",
+          "description": "Unique identifier for the party (internal reference)"
+        },
+        "boxNumber": {
+          "type": "string",
+          "description": "Client's P.O. Box number"
+        },
+        "countryId": {
+          "type": "string",
+          "description": "Identifier for the client’s country"
+        },
+        "houseNumber": {
+          "type": "string",
+          "description": "House or apartment number of the client"
+        },
+        "physicalAddress": {
+          "type": "string",
+          "description": "Full physical address of the client"
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "Postal or ZIP code"
+        },
+        "road": {
+          "type": "string",
+          "description": "Name of the road or street"
+        },
+        "townId": {
+          "type": "string",
+          "description": "Identifier for the town/city"
+        },
+        "stateId": {
+          "type": "string",
+          "description": "Identifier for the state or region"
+        },
+        "utilityAddressProof": {
+          "type": "string",
+          "description": "Proof of address document (e.g., utility bill)"
+        },
+        "isUtilityAddress": {
+          "type": "string",
+          "description": "Indicates if the utility address is the same as the physical address"
+        },
+        "emailAddress": {
+          "type": "string",
+          "format": "email",
+          "description": "Client’s email address"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "Client’s main phone number"
+        },
+        "smsNumber": {
+          "type": "string",
+          "description": "Phone number used for SMS communication"
+        },
+        "titleId": {
+          "type": "string",
+          "description": "Title identifier (e.g., Mr., Mrs., Dr.)"
+        },
+        "contactChannel": {
+          "type": "string",
+          "description": "Preferred communication channel"
+        },
+        "websiteUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of client’s website"
+        },
+        "socialMediaUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Link to client’s social media profile"
+        },
+        "accountNumber": {
+          "type": "string",
+          "description": "Bank account number"
+        },
+        "bankBranchId": {
+          "type": "string",
+          "description": "Identifier for the bank branch"
+        },
+        "preferedChannel": {
+          "type": "string",
+          "description": "Client's preferred channel of communication"
+        },
+        "mpayno": {
+          "type": "string",
+          "description": "Mobile payment number (e.g., M-Pesa, mobile wallet)"
+        },
+        "iban": {
+          "type": "string",
+          "description": "International Bank Account Number (IBAN)"
+        },
+        "swiftCode": {
+          "type": "string",
+          "description": "SWIFT code for international banking"
+        }
+      },
+      "required": []
+    }
 
+    this.isPatchingFormValues = true;
+    this.entityForm.disable();
 
     const requestPayload = {
       assistant_id: "DocumentHubAgent",
@@ -1296,35 +1509,56 @@ export class NewEntityV2Component implements OnInit {
         // todo: extract into method patchFormFields()
         const dataToPatch = {
           ...data,
-          pinNumber: data.pin_number,
-          lastName: data.taxpayer_name,
-          otherNames: data.taxpayer_name,
-          email: data.email_address,
+          pinNumber: data.pinNumber,
+          lastName: data.lastName,
+          otherNames: data.firstName,
+          email: data.emailAddress,
           houseNo: data.building,
-          physicalAddress: data.street_or_road,
-          cityTown: data.city_or_town,
-          postalCode: data.postal_code,
+          physicalAddress: data.physicalAddress,
+          cityTown: data.townId,
+          postalCode: data.postalCode,
         }
 
         this.entityForm.patchValue({
           address_details: {
-            address: '',
-            cityTown: data.city_or_town,
-            countryId: '',
-            postalCode: data.postal_code,
-            physicalAddress: data.street_or_road,
-            pinNumber: data.pin_number,
+            address: data.physicalAddress,
+            cityTown: data.townId,
+            countryId: null,
+            postalCode: data.postalCode,
+            physicalAddress: data.physicalAddress,
+            postalAddress: data.postalAddress,
           },
           prime_identity: {
-            lastName: data.taxpayer_name,
-            otherNames: data.taxpayer_name,
-            email: data.email_address,
+            lastName: data.lastName,
+            otherNames: data.firstName,
+            email: data.emailAddress,
+            pinNumber: data.pinNumber,
+            citizenshipCountryId: data.countryId,
+            dateOfBirth: data.dateOfBirth,
+            gender: data.gender,
+            idNumber: data.idNumber,
+            maritalStatus: data.maritalStatus,
+            modeOfIdentityId: null,
+            wef: data.withEffectFromDate,
+            wet: data.withEffectToDate,
           },
+          contact_details: {
+            telNumber: data.phoneNumber,
+            smsNumber: data.smsNumber,
+            contactChannel: data.contactChannel,
+            email: data.emailAddress,
+            titleId: null // todo: get title
+          }
         });
-        log.info(`scanned document data >>> `, dataToPatch, this.entityForm.getRawValue());
+        log.info(`scanned document data >>> `, typeof dataToPatch, dataToPatch, this.entityForm.getRawValue());
+        this.isPatchingFormValues = false;
+        this.entityForm.enable();
 
       },
-      error: (err) => {}
+      error: (err) => {
+        this.isPatchingFormValues = false;
+        this.entityForm.enable();
+      }
     })
     sessionStorage.removeItem('aiToken')
 
@@ -1348,6 +1582,23 @@ export class NewEntityV2Component implements OnInit {
           'Successfully Created an Entity'
         );
       });
+  }
+
+
+  /**
+   * Handle section collapse
+   * @param id
+   */
+  toggleCollapse(id: string): void {
+    if (this.collapsedGroups.has(id)) {
+      this.collapsedGroups.delete(id);
+    } else {
+      this.collapsedGroups.add(id);
+    }
+  }
+
+  isCollapsed(id: string): boolean {
+    return this.collapsedGroups.has(id);
   }
 
 

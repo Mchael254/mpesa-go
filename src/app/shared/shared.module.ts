@@ -225,6 +225,7 @@ const SERVICES = [
     ProductSearchModalComponent,
     DynamicReportsComponent,
     TruncatePipe,
+    DynamicSetupTableComponent,
     DynamicSetupScreensConfigComponent,
     CrmScreensConfigComponent
 
@@ -255,7 +256,6 @@ const SERVICES = [
         DialogModule,
         FormsModule,
         NgxIntlTelInputModule,
-      DynamicSetupTableComponent
     ],
   exports: [
     ErrorComponent,

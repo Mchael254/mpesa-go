@@ -17,7 +17,7 @@ import { VehicleModelService } from '../../../setups/services/vehicle-model/vehi
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, riskSection } from '../../data/quotationsDTO';
+import { Clause, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, SubclassCoverTypes, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
@@ -25,6 +25,7 @@ import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from "ngx-currency";
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import * as bootstrap from 'bootstrap';
+import { riskClause } from 'src/app/features/gis/data/quotations-dto';
 
 
 const log = new Logger('RiskDetailsComponent');
@@ -54,6 +55,8 @@ const log = new Logger('RiskDetailsComponent');
 
 export class RiskDetailsComponent {
   freeLimitValue: any;
+  sumInsured: number;
+  mandatoryClause: any[];
   getFreeLimitLabel(arg0: any) {
     throw new Error('Method not implemented.');
   }
@@ -159,6 +162,7 @@ export class RiskDetailsComponent {
   // clauseDetail:any;
   selectedClause: subclassClauses[] = [];
   nonMandatoryClauses: subclassClauses[] = [];
+  riskClause: subclassClauses[] = [];
   selectProductCode: any
   showOtherSscheduleDetails: boolean = false;
   formContent: any;
@@ -201,10 +205,32 @@ export class RiskDetailsComponent {
   quotationIsAuthorised: boolean = true; // or false
   yearList: any;
   clientCode: number;
-  showSections: boolean = false;
+  // showSections: boolean = false;
   tabs = ['Schedule Details', 'Level 2', 'Level 3']; // Dummy tabs for now
   activeTab = 'Schedule Details';
   isEditMode: boolean = false;
+  selectedRiskClauses: any;
+  clauseModified: boolean = false;
+  sessionClauses: any[] = [];
+  selectedRiskCode: any;
+  showRiskClauses: boolean = true;
+  showClauseModal: boolean = false;
+  clausesModified: boolean = false;
+  clauses: any;
+  selectedRiskClause: any = {
+    id: '',
+    heading: '',
+    wording: ''
+  };
+  originalClauseBeforeEdit: any = null;
+  clauseToDelete: any = null;
+  selectedClauses: any[] = [];
+
+  columns: { field: string; header: string; visible: boolean }[] = [];
+
+  showSections: boolean = true;
+  showColumnModal = false;
+  columnModalPosition = { top: '0px', left: '0px' };
 
   constructor(
     public subclassService: SubclassesService,
@@ -262,6 +288,8 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
+    this.loadPersistedRiskClauses();
+
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
     });
@@ -386,6 +414,9 @@ export class RiskDetailsComponent {
             product => product.productCode === this.selectedProductCode
           )
           this.riskDetails = productDetails?.riskInformation || []
+          const curentlySavedRisk = this.riskDetails?.filter(risk => risk.code == this.quotationRiskCode)
+          log.debug('Currently saved Risk:', curentlySavedRisk)
+          curentlySavedRisk && this.handleRowClick(curentlySavedRisk[0])
           log.debug("Risk information specific to the selected product:", this.riskDetails)
           log.debug("Schedule information specific to the selected product:", this.scheduleList)
           if (this.scheduleList[0]?.details?.level2) {
@@ -1260,8 +1291,9 @@ export class RiskDetailsComponent {
             binder: this.riskDetailsForm.value.premiumBand,
             agentShortDescription: this.selectedProduct.agentShortDescription,
             riskInformation: riskPayload,
-            limitsOfLiability: [], // can be empty for now
-            taxInformation: [] // optional or empty
+            limitsOfLiability: [],
+            taxInformation: [],
+
           }
         ],
         quotationNumber: this.selectedProduct.quotationNo,
@@ -1282,36 +1314,15 @@ export class RiskDetailsComponent {
         clientCode: this.quotationDetails.clientCode,
         prospectCode: this.quotationDetails.prospectCode,
       };
-      // const riskFormData: any = {
-      //   vehicleMake: formValues?.vehicleMake?.code,
-      //   vehicleModel: formValues?.vehicleModel?.code,
-      //   coverTypeDescription: formValues?.coverTypeDescription.description,
-      //   binderCode: formValues?.binderCode.code,
-      //   coverTypeCode: formValues.coverTypeDescription.coverTypeCode,
-      //   quotationCode: formValues.quotationCode,
-      //   productCode: this.selectedProductCode,
-      //   propertyId: formValues.propertyId,
-      //   coverTypeShortDescription: formValues.coverTypeShortDescription.coverTypeShortDescription,
-      //   subclassCode: formValues.subclassCode.code,
-      //   itemDesc: formValues.itemDesc || this.vehiclemakeModel,
-      //   wef: riskPayload[0].wef,
-      //   wet: riskPayload[0].wet,
-      // }
-      // sessionStorage.setItem('riskFormData', JSON.stringify(riskFormData));
-      // log.debug(riskArray)
+
       this.quotationService.processQuotation(payload).pipe(
         switchMap(data => {
           const quotationCode = data._embedded.quotationCode
           this.quotationCode = quotationCode
           const quotationNo = data._embedded.quotationNo
-          // this.quotationRiskData = data;
-          // const quotationRiskDetails = this.quotationRiskData._embedded[0];
+          this.addProductClauses();
 
-          // if (quotationRiskDetails) {
-          //   this.quotationRiskCode = quotationRiskDetails.riskCode;
-          //   this.quoteProductCode = quotationRiskDetails.quotProductCode;
-          // }
-
+          // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
 
 
@@ -1322,26 +1333,39 @@ export class RiskDetailsComponent {
           // Call services directly
           return forkJoin([
 
-
+            this.quotationService.getQuotationDetails(quotationCode),
             this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode)
           ]);
         })
       ).subscribe({
-        next: ([premiumRates]: any) => {
+        next: ([quoteDetails, premiumRates]: any) => {
+          this.quotationDetails = quoteDetails
+          const quotationProducts = quoteDetails.quotationProducts || [];
+          // Find the selected product
+          const selectedProduct = quotationProducts.find(product => product.code === this.selectedProduct.code);
+          log.debug("Quotation full details:", quoteDetails);
+          log.debug("Matched product from quotation:", selectedProduct);
+          const matchedRisk: RiskInformation = selectedProduct?.riskInformation?.find(risk =>
+            risk.propertyId === this.riskDetailsForm.value.registrationNumber
+          );
+          log.debug("Matched risk from quotation:", matchedRisk);
+          this.selectedRisk = matchedRisk
 
-          // this.quotationDetails = quoteDetails
-          // log.debug("Quotation List-risk creation method:", this.quotationDetails);
-
+          const currentQuotationRiskCode = matchedRisk.code
+          this.quotationRiskCode = currentQuotationRiskCode
           const result = premiumRates;
           this.sectionPremium = result
           // log.debug("Risk Clauses List:", this.riskClausesList);
           log.debug("RESPONSE AFTER getting premium rates ", this.sectionPremium);
-          // log.debug("Keys in sectionPremium[0]:", Object.keys(this.sectionPremium[0]));
+          const defaultSection = this.sectionPremium.filter(section => section.isMandatory == 'Y')
+          log.debug('the default or mandatory section to be added:', defaultSection)
+          this.selectedSections = defaultSection
+          log.debug("quotation risk code:-adding a section", currentQuotationRiskCode)
+          currentQuotationRiskCode && this.createRiskSection();
+          this.quotationRiskCode && this.createScheduleL1(this.quotationRiskCode)
+          this.riskDetails = selectedProduct?.riskInformation || []
 
-
-          // this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created successfully');
-          this.fetchQuotationDetails(this.quotationCode)
-
+          this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
 
         },
         // error: () => this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
@@ -1493,6 +1517,8 @@ export class RiskDetailsComponent {
     const selectedSubclass = this.allMatchingSubclasses.find(subclass => subclass.code === selectedSubclassCode)
     log.debug("Selected SUBCLASS :", selectedSubclass)
 
+    const sumInsured = this.riskDetailsForm.value.value
+    sessionStorage.setItem("sumInsured", sumInsured)
     log.debug("Currency code-quote creation", this.riskDetailsForm.value.propertyId)
     log.debug("Selected Cover", this.riskDetailsForm.value.coverTypeDescription)
     log.debug("ITEM DESC:", this.riskDetailsForm.value.itemDesc)
@@ -1634,9 +1660,6 @@ export class RiskDetailsComponent {
 
 
 
-  toggleSections() {
-    this.showSections = !this.showSections;
-  }
 
 
   // This method Clears the Schedule Detail form by resetting the form model
@@ -1911,10 +1934,12 @@ export class RiskDetailsComponent {
 
     log.debug('Row clicked with data:', data);
     this.selectedRisk = data;
+
+    this.sumInsured = this.selectedRisk.value;
     // this.onRiskEdit(this.selectedRisk)
     const selectedRiskCode = this.selectedRisk?.code
     this.quotationRiskCode = selectedRiskCode
-    this.quotationRiskCode && this.createScheduleL1(this.quotationRiskCode)
+
     log.debug("Quotation risk code:", this.quotationRiskCode)
     const productDetails = this.quotationDetails.quotationProducts.find(
       product => product.productCode === this.selectedProductCode
@@ -1923,9 +1948,11 @@ export class RiskDetailsComponent {
     this.scheduleList = riskSelectedData.scheduleDetails ? [riskSelectedData.scheduleDetails] : [];
     log.debug("SCHEDULE DETAILS AFTER ROW CLICK:", this.scheduleList)
 
-    this.sectionDetails = riskSelectedData?.riskLimits
+    this.sectionDetails = this.selectedRisk.riskLimits
     log.debug("section DETAILS AFTER ROW CLICK:", this.sectionDetails)
-
+    if (this.sectionDetails.length > 0) {
+      // this.setColumnsFromRiskLimit(this.sectionDetails[0]);
+    }
     const subclassCode = riskSelectedData.subclassCode;
     const binderCode = riskSelectedData.binderCode;
     const covertypeCode = riskSelectedData.coverTypeCode;
@@ -1934,26 +1961,89 @@ export class RiskDetailsComponent {
       .subscribe(
         (response) => {
           console.log('Premium rates:', response);
-          // You can assign it to a variable or do more with it:
+
           const sectionPremiumList = response;
-          log.debug("SECTION PREMIUMS-unfiltered:", sectionPremiumList)
-          // Filter out any section in sectionPremiums that already exists in sectionDetails
-          const sectionPremiums = sectionPremiumList.filter(premium =>
-            !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode)
-          );
 
-          // Assign the filtered list back
+          log.debug("SECTION PREMIUMS-unfiltered:", sectionPremiumList);
+
+          const sectionPremiums = sectionPremiumList
+            .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+            .map(premium => {
+              // Check condition for SumInsured — adjust this condition to your actual use case
+              if (premium.isMandatory === 'Y') {
+                return {
+                  ...premium,
+                  limitAmount: this.sumInsured  // Patch with sum insured
+                };
+              }
+              return premium;
+            });
+
           this.sectionPremium = sectionPremiums;
-          log.debug("SECTION PREMIUMS-filtered:", this.sectionPremium)
-
+          log.debug("SECTION PREMIUMS-filtered & patched:", this.sectionPremium);
         },
         (error) => {
-          console.error('Error fetching premium rates:', error);
+          log.error('Error fetching premium rates:', error);
         }
       );
+
+    this.selectedSubclassCode = riskSelectedData.subclassCode;
+    this.selectedRiskCode = riskSelectedData.code;
+    log.debug("firstRiskCode", this.selectedRiskCode);
+    sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
+    this.loadPersistedRiskClauses();
     this.loadSubclassClauses(riskSelectedData.subclassCode);
 
   }
+
+
+  toggleSections(iconElement: HTMLElement): void {
+    this.showSections = !this.showSections;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showColumnModal = true;
+  }
+
+  setColumnsFromRiskLimit(sample: RiskLimit) {
+    const excludedFields = ['code', 'quotationCode', 'quotationProCode', 'productCode']; // adjust as needed
+
+    this.columns = Object.keys(sample)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: this.defaultVisibleFields.includes(key),
+      }));
+
+    // manually add actions column
+    this.columns.push({ field: 'actions', header: 'Actions', visible: true });
+  }
+
+  defaultVisibleFields = [
+    'rowNumber',
+    'calcGroup',
+    'sectionCode',
+    'sectionShortDescription',
+    'limitAmount',
+    'premiumRate',
+    'rateType'
+  ];
+
+  sentenceCase(text: string): string {
+    return text
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (str) => str.toUpperCase());
+  }
+
   /**
 * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
 * state of a Section.
@@ -2198,7 +2288,7 @@ export class RiskDetailsComponent {
     log.debug("Risk Code:", this.quotationRiskCode);
 
     const limitsToSave = this.riskLimitPayload();
-
+    log.debug("Limits to save:", limitsToSave)
     if (this.selectedSections.length === 0) {
       this.globalMessagingService.displayErrorMessage('Error', 'Premium list is empty');
       return;
@@ -2209,7 +2299,7 @@ export class RiskDetailsComponent {
       quotationRiskCode: this.quotationRiskCode,
       riskSections: limitsToSave.map(value => ({
         ...value,
-        quotationCode: this.quotationCode,
+        quotationCode: Number(this.quotationCode),
         quotRiskCode: this.quotationRiskCode
       }))
     };
@@ -2287,7 +2377,7 @@ export class RiskDetailsComponent {
     for (let section of this.selectedSections) {
       limitsToSave.push({
         calcGroup: 1,
-        code: section.code,
+
         compute: "Y",
         description: section.sectionDescription,
         freeLimit: section.freeLimit || 0,
@@ -2311,7 +2401,7 @@ export class RiskDetailsComponent {
   }
   getRiskLimitPayload() {
     let limitsToSave: any[] = [];
-
+    log.debug("Selected sections", this.selectedSections)
     for (let section of this.selectedSections) {
       limitsToSave.push({
         sectionCode: section.sectionCode,
@@ -2501,10 +2591,7 @@ export class RiskDetailsComponent {
       })
     }
   }
-  openHelperModal(selectedClause: any) {
-    // Set the showHelperModal property of the selectedClause to true
-    selectedClause.showHelperModal = true;
-  }
+
   onResize(event: any) {
     this.modalHeight = event.height;
   }
@@ -2527,6 +2614,7 @@ export class RiskDetailsComponent {
   //     });
   //   })
   // }
+
   loadSubclassClauses(code: any) {
     if (!code) {
       console.warn("Missing subclass code, skipping clause loading.");
@@ -2539,9 +2627,9 @@ export class RiskDetailsComponent {
 
         log.debug('subclass ClauseList#####', this.SubclauseList);
 
-        this.selectedClause = this.SubclauseList.filter(clause => clause.isMandatory === 'Y');
+        this.mandatoryClause = this.SubclauseList.filter(clause => clause.isMandatory === 'Y');
         this.nonMandatoryClauses = this.SubclauseList.filter(clause => clause.isMandatory === 'N');
-        log.debug('selected subclass ClauseList#####', this.selectedClause);
+        log.debug('selected subclass ClauseList#####', this.mandatoryClause);
         log.debug('Non mandatory  subclass ClauseList#####', this.nonMandatoryClauses);
 
         this.SubclauseList.forEach(clause => {
@@ -2558,6 +2646,286 @@ export class RiskDetailsComponent {
     });
   }
 
+  private fetchAndCacheSubclassClauses(code: string): void {
+    this.subclassService.getSubclassClauses(code).subscribe({
+      next: (data) => {
+        this.SubclauseList = data || [];
+
+        this.mandatoryClause = this.SubclauseList.filter(c => c.isMandatory === 'Y');
+        this.nonMandatoryClauses = this.SubclauseList.filter(c => c.isMandatory === 'N');
+        this.riskClause = [...this.mandatoryClause];
+        this.sessionClauses = [...this.riskClause];
+
+        const quotationCode = Number(sessionStorage.getItem("quotationCode"));
+        const riskCode = Number(this.selectedRiskCode);
+        this.mandatoryClause.forEach(clause => {
+          const payload: riskClause = {
+            clauseCode: clause.clauseCode,
+            clauseShortDescription: clause.shortDescription ?? '',
+            quotationCode: quotationCode,
+            riskCode: riskCode,
+            clause: clause.wording?.trim() ?? '',
+            clauseEditable: clause.isEditable ?? 'N',
+            clauseType: clause.clauseType ?? 'CL',
+            clauseHeading: clause.heading ?? ''
+          };
+
+          this.quotationService.addRiskClause(payload).subscribe({
+            next: () => {
+              console.debug("Mandatory clause persisted:", clause.shortDescription);
+            },
+            error: (err) => {
+              console.warn("Clause may already exist or failed to add:", err);
+            }
+          });
+        });
+
+        const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+        riskClauseMap[code] = {
+          riskClause: this.riskClause,
+          nonMandatoryClauses: this.nonMandatoryClauses,
+          clauseModified: false
+        };
+        sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+        log.debug("risk clause map >>", riskClauseMap);
+      },
+      error: (err) => {
+        console.error("Error fetching subclass clauses:", err);
+        this.SubclauseList = [];
+      },
+      complete: () => console.log("Fetched and cached subclass clauses.")
+    });
+  }
+
+  toggleRiskClauses() {
+    this.showRiskClauses = !this.showRiskClauses;
+
+  }
+
+  openClauseModal() {
+    const storedRiskCode = sessionStorage.getItem("selectedRiskCode");
+
+    if (storedRiskCode) {
+      if ((!this.clauses || this.clauses.length === 0) && !this.clausesModified) {
+        this.selectedRiskCode = storedRiskCode;
+        this.loadPersistedRiskClauses();
+
+      }
+
+      this.showClauseModal = true;
+      const modalElement = document.getElementById('addClause');
+      if (modalElement) {
+        const modal = new (window as any).bootstrap.Modal(modalElement);
+        modal.show();
+      }
+    } else {
+      this.globalMessagingService.displayErrorMessage('warning', 'You need to select a risk first');
+    }
+
+  }
+
+  private loadPersistedRiskClauses(): void {
+    const storedRiskCode = sessionStorage.getItem("selectedRiskCode");
+    const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+
+    if (storedRiskCode && riskClauseMap[storedRiskCode]) {
+      const sessionData = riskClauseMap[storedRiskCode];
+      this.selectedRiskCode = storedRiskCode;
+
+      this.riskClause = sessionData.riskClause || [];
+      this.nonMandatoryClauses = sessionData.nonMandatoryClauses || [];
+      this.clauseModified = sessionData.clauseModified || false;
+      this.sessionClauses = [...this.riskClause];
+
+      console.log("Loaded persisted clauses from session:", {
+        riskCode: this.selectedRiskCode,
+        sessionClauses: this.sessionClauses
+      });
+    } else {
+      console.warn("No persisted data found. Fetching from API...");
+      this.fetchAndCacheSubclassClauses(this.selectedSubclassCode);
+    }
+  }
+
+  addRiskClauses(): void {
+    if (this.selectedRiskClauses?.length) {
+      // Combine selected and already mandatory clauses
+      this.riskClause = [...this.riskClause, ...this.selectedRiskClauses];
+      this.sessionClauses = [...this.riskClause];
+
+      log.debug("Selected Risk Clauses:", this.selectedRiskClauses);
+
+      // Filter out selected from non-mandatory list
+      this.nonMandatoryClauses = this.nonMandatoryClauses.filter(clause =>
+        !this.selectedRiskClauses.some(sel => sel.shortDescription === clause.shortDescription)
+      );
+
+      this.clauseModified = true;
+
+      // Store in sessionStorage
+      const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+      riskClauseMap[this.selectedRiskCode] = {
+        riskClause: this.riskClause,
+        nonMandatoryClauses: this.nonMandatoryClauses,
+        clauseModified: this.clauseModified
+      };
+      sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+      log.debug("risk clause map after add >>", riskClauseMap);
+
+      const quotationCode = Number(sessionStorage.getItem("quotationCode"));
+      const riskCode = Number(this.selectedRiskCode);
+
+      const combinedClauses = [...this.selectedRiskClauses];
+      log.debug("combined clauses >> ", combinedClauses)
+
+      let successCount = 0;
+      let failureCount = 0;
+
+      combinedClauses.forEach(clause => {
+        const singlePayload: riskClause = {
+          clauseCode: clause.clauseCode,
+          clauseShortDescription: clause.shortDescription,
+          quotationCode: quotationCode,
+          riskCode: riskCode,
+          clause: clause.wording,
+          clauseEditable: clause.isEditable,
+          clauseType: clause.clauseType,
+          clauseHeading: clause.heading
+        };
+
+        log.debug("Sending single clause payload:", singlePayload);
+
+        this.quotationService.addRiskClause(singlePayload).subscribe({
+          next: () => {
+            successCount++;
+            if (successCount + failureCount === combinedClauses.length) {
+              this.globalMessagingService.displaySuccessMessage("Success", 'risk clause(s) added successfully');
+            }
+          },
+          error: (err) => {
+            failureCount++;
+            log.error(`Failed to add clause ${clause.clauseCode}:`, err);
+            if (successCount + failureCount === combinedClauses.length) {
+              this.globalMessagingService.displayErrorMessage("Error", `${failureCount} clause(s) failed to save`);
+            }
+          }
+        });
+      });
+
+      this.selectedRiskClauses = [];
+    }
+  }
+
+  //edit clause
+  wasModified(): boolean {
+    if (!this.selectedRiskClause || !this.originalClauseBeforeEdit) return false;
+
+    const newWording = this.selectedRiskClause.wording?.trim();
+    const oldWording = this.originalClauseBeforeEdit.wording?.trim();
+
+    return newWording !== oldWording && newWording.length > 0;
+  }
+
+  populateEditClauseModal(clause: any) {
+    this.selectedRiskClause = { ...clause };
+    this.originalClauseBeforeEdit = { ...clause };
+  }
+
+  editRiskClause(): void {
+    if (!this.selectedRiskClause || !this.wasModified()) return;
+
+    const quotationCode = Number(sessionStorage.getItem("quotationCode"));
+    const riskCode = Number(this.selectedRiskCode);
+
+    const payload: riskClause = {
+      clauseCode: this.selectedRiskClause.clauseCode,
+      clauseShortDescription: this.selectedRiskClause.shortDescription ?? '',
+      quotationCode: quotationCode,
+      riskCode: riskCode,
+      clause: this.selectedRiskClause.wording?.trim() ?? '',
+      clauseEditable: this.selectedRiskClause.isEditable ?? 'N',
+      clauseType: this.selectedRiskClause.clauseType ?? 'CL',
+      clauseHeading: this.selectedRiskClause.heading ?? ''
+    };
+
+    log.debug("Sending update for clause:", payload);
+
+    this.quotationService.editRiskClause(payload).subscribe({
+      next: () => {
+        // Replace in all relevant arrays
+        const replaceClause = (list: any[]) =>
+          list.map(c => c.shortDescription === this.selectedRiskClause.shortDescription
+            ? { ...this.selectedRiskClause }
+            : c
+          );
+
+        this.sessionClauses = replaceClause(this.sessionClauses);
+        this.riskClause = replaceClause(this.riskClause);
+
+        // Update sessionStorage
+        this.clauseModified = true;
+        const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+        riskClauseMap[this.selectedRiskCode] = {
+          riskClause: this.riskClause,
+          nonMandatoryClauses: this.nonMandatoryClauses,
+          clauseModified: true
+        };
+        sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+
+        // Reset state
+        this.selectedRiskClause = { id: '', heading: '', wording: '' };
+        this.originalClauseBeforeEdit = null;
+
+        this.globalMessagingService.displaySuccessMessage('Success', 'Clause edited successfully');
+      },
+      error: (err) => {
+        log.error("Failed to edit clause:", err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to update clause');
+      }
+    });
+  }
+
+
+  //delete risk clause
+  prepareDeleteClause(clause: any) {
+    this.clauseToDelete = clause;
+  }
+
+  deleteRiskClause(): void {
+    if (!this.clauseToDelete) return;
+
+    const clauseCode = this.clauseToDelete.clauseCode;
+    const riskCode = Number(this.selectedRiskCode);
+
+    this.quotationService.deleteRiskClause(clauseCode, riskCode).subscribe({
+      next: () => {
+        // Remove from local arrays
+        this.sessionClauses = this.sessionClauses.filter(
+          c => c.shortDescription !== this.clauseToDelete.shortDescription
+        );
+        this.riskClause = this.riskClause.filter(
+          c => c.shortDescription !== this.clauseToDelete.shortDescription
+        );
+
+        // Update session storage
+        const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+        if (riskClauseMap[this.selectedRiskCode]) {
+          riskClauseMap[this.selectedRiskCode].riskClause = this.riskClause;
+          riskClauseMap[this.selectedRiskCode].clauseModified = true;
+          sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+        }
+
+        this.globalMessagingService.displaySuccessMessage('Success', 'Clause deleted successfully');
+        this.clauseToDelete = null;
+      },
+      error: (err) => {
+        log.error("Failed to delete clause:", err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete clause');
+      }
+    });
+  }
+
+
   onClauseSelectionChange(selectedClauseList: any) {
     if (selectedClauseList.checked) {
       // ✅ Add to selectedClause if not already included
@@ -2572,53 +2940,12 @@ export class RiskDetailsComponent {
     }
     log.debug("Selected  Risk clause:", this.selectedClause)
 
-    // ✅ Call API with updated selection
-    // this.selectedProductClauses(this.quotationCode);
-    this.captureRiskClause();
+
 
 
   }
 
-  captureRiskClause() {
-    if (this.selectedClause && this.selectedClause.length > 0) {
-      this.selectedClause.forEach(el => {
-        this.quotationService.captureRiskClauses(this.quotationRiskCode, this.selectedSubclassCode, this.quotationCode, el.clauseCode, this.selectProductCode).subscribe(res => {
-          if (res) {
-            log.info(`Response from capture risk endpont`, res);
-          } else {
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              'Something went wrong. Please try Again'
-            );
-          }
-        });
-        console.debug(el.clauseCode);
-      });
-    }
-    // this.quotationService
-    //   .captureRiskClauses(this.quotationRiskCode, this.selectedSubclassCode, this.quotationCode, this.selectedRiskClauseCode, this.selectProductCode)
-    //   .pipe(untilDestroyed(this))
-    //   .subscribe({
-    //     next: (data) => {
-    //       if (data) {
-    //         log.info(`Response from capture risk endpont`, data);
-    //       } else {
-    //         this.globalMessagingService.displayErrorMessage(
-    //           'Error',
-    //           'Something went wrong. Please try Again'
-    //         );
-    //       }
-    //     },
-    //     // error: (err) => {
 
-    //     //   this.globalMessagingService.displayErrorMessage(
-    //     //     'Error',
-    //     //     this.errorMessage
-    //     //   );
-    //     //   log.info(`error >>>`, err);
-    //     // },
-    //   });
-  }
   // onRiskEdit(risk: any) {
   //   this.selectedRisk = risk;
   //   const binderList = JSON.parse(sessionStorage.getItem('binderList'));
@@ -2853,59 +3180,14 @@ export class RiskDetailsComponent {
 
 
 
-  selectedClauses: any[] = [];
+
 
 
   toggleSelectAlls(event: any) {
     // this.clauseList.forEach(clause => (clause.isChecked = this.selectAll));
   }
 
-  saveRiskClauses(): void {
-    const selected = this.SubclauseList?.filter(clause => clause.isChecked) || [];
 
-    if (!selected.length) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one clause to add.');
-      return;
-    }
-
-    const mappedClauses: subclassClauses[] = selected
-
-      .map(clause => {
-        if (!clause?.clauseCode || !clause?.shortDescription) return null;
-
-        return {
-          clauseCode: clause.clauseCode,
-          id: clause.id ?? 0,
-          heading: clause.heading ?? clause.shortDescription,
-          wording: clause.wording ?? clause.shortDescription,
-          shortDescription: clause.shortDescription,
-          subClassCode: clause.subClassCode ?? '',
-          isMandatory: clause.isMandatory ?? false,
-          isLienClause: clause.isLienClause ?? false,
-          clauseExpires: clause.clauseExpires ?? null,
-          isRescueClause: clause.isRescueClause ?? false,
-          version: clause.version ?? 1,
-          isEditable: 'Y',
-        };
-      })
-      .filter(Boolean);
-
-
-
-
-    console.log('Filtered and Mapped Clauses:', mappedClauses);
-
-    this.selectedClause = [...(this.selectedClause || []), ...mappedClauses];
-    this.SubclauseList.forEach(clause => clause.isChecked = false);
-    this.selectedClauses = [];
-
-    if (this.riskClauseTable) {
-      this.riskClauseTable.clear();
-      this.riskClauseTable.reset();
-    }
-
-
-  }
 
 
 
@@ -2985,5 +3267,53 @@ export class RiskDetailsComponent {
         },
 
       })
+  }
+  getProductClausesPayload(): any[] {
+    const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+    const payload: any[] = [];
+
+    Object.keys(allClausesMap).forEach(productCode => {
+      const productData = allClausesMap[productCode];
+      const clauses = productData.productClause || [];
+
+      const productClauseList = clauses.map(clause => ({
+        clauseWording: clause.wording || '',
+        clauseHeading: clause.heading || '',
+        clauseCode: clause.code || 0,
+        clauseType: clause.type || '',
+        clauseEditable: clause.isEditable || 'Y',
+        clauseShortDescription: clause.shortDescription || ''
+      }));
+
+      payload.push({
+        quotationCode: this.selectedProduct?.quotationCode || 0,
+        productCode: this.selectedProduct?.productCode || 0,
+        productClauses: productClauseList
+      });
+    });
+
+    return payload;
+  }
+  addProductClauses() {
+    const clausePayload = this.getProductClausesPayload();
+    this.quotationService.addProductClause(clausePayload)
+      .subscribe({
+        next: (response) => {
+
+          log.debug("Response after adding Risk Clause:", response);
+        },
+        error: (error: HttpErrorResponse) => {
+          log.debug("Error log", error.error.message);
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error.message
+          );
+        },
+
+      })
+  }
+  clearRiskForm() {
+    this.riskDetailsForm.reset
   }
 }

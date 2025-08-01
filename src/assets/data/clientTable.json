@@ -1,0 +1,87 @@
+{
+  "individualTable": {
+    "columns": [
+      {
+        "field": "name",
+        "header": "Name",
+        "visible": true,
+        "label": {
+          "en": "Name",
+          "ke": "Jina",
+          "fr": "Nom"
+        }
+      },
+      {
+        "field": "modeOfIdentityName",
+        "header": "ID Type",
+        "visible": true,
+        "label": {
+          "en": "ID Type",
+          "ke": "Aina ya Kitambulisho",
+          "fr": "Type d'identité"
+        }
+      },
+      {
+        "field": "identityNumber",
+        "header": "ID Number",
+        "visible": true,
+        "label": {
+          "en": "ID Number",
+          "ke": "Nambari ya Kitambulisho",
+          "fr": "Numéro d'identité"
+        }
+      },
+      {
+        "field": "pinNumber",
+        "header": "Pin Number",
+        "visible": true,
+        "label": {
+          "en": "Pin Number",
+          "ke": "Nambari ya PIN",
+          "fr": "Numéro PIN"
+        }
+      },
+      {
+        "field": "categoryName",
+        "header": "Entity Type",
+        "visible": true,
+        "label": {
+          "en": "Entity Type",
+          "ke": "Aina ya Chombo",
+          "fr": "Type d'entité"
+        }
+      },
+      {
+        "field": "email",
+        "header": "Email",
+        "visible": false,
+        "label": {
+          "en": "Email",
+          "ke": "Barua Pepe",
+          "fr": "Courriel"
+        }
+      },
+      {
+        "field": "telephoneNumber",
+        "header": "Telephone Number",
+        "visible": false,
+        "label": {
+          "en": "Telephone Number",
+          "ke": "Nambari ya Simu",
+          "fr": "Numéro de téléphone"
+        }
+      }
+    ],
+    "actionLabel": {
+      "en": "Action",
+      "ke": "Kitendo",
+      "fr": "Action"
+    },
+    "columnLabel": {
+      "en": "Columns",
+      "ke": "Safu",
+      "fr": "Colonnes"
+    }
+  },
+  "corporateTable": []
+}

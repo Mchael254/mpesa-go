@@ -103,11 +103,17 @@
         "fr": "",
         "ke": ""
       },
-      "placeholder": {
+      "uploadBtnLabel": {
         "en": "upload image",
-        "fr": "",
-        "ke": ""
+        "fr": "téléverser une image",
+        "ke": "pakia picha"
       },
+      "editBtnLabel": {
+        "en": "edit",
+        "fr": "modifier",
+        "ke": "hariri"
+      },
+
       "isMandatory": true,
       "options": []
     }

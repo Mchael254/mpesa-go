@@ -3,7 +3,6 @@
     <app-dynamic-breadcrumb [breadCrumbItems]="entityBreadCrumbItems">
     </app-dynamic-breadcrumb>
   </div>
-
   <div class="card mb-3">
     <div class="m-3">
       <div id="upload-section">
@@ -13,25 +12,45 @@
             <ng-container *ngFor="let field of uploadGroupSections?.selects;">
               <div class="col-sm-4">
                 <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
-
                   <ng-container *ngIf="field.type === 'select'">
-                    <label class="form-label" [for]="field.fieldId">
-                      {{ field.label?.[language] | titlecase }}
-                      <span *ngIf="field.isMandatory" class="text-danger">*</span>
-                    </label>
-                    <select
-                      [formControlName]="field.fieldId"
-                      [id]="field.fieldId"
-                      class="form-select"
-                      aria-label="Default select example"
-                      (change)="processSelectOption($event, field.fieldId)"
-                      (click)="fetchSelectOptions('', field.fieldId)"
-                    >
-                      <option value="">- Select {{ field.label?.[language] | titlecase }} -</option>
-                      <option *ngFor="let option of field.options" [value]="option">
-                        {{ option | titlecase }}
-                      </option>
-                    </select>
+                    <ng-container *ngIf="field.fieldId !=='organizationType'">
+                      <label class="form-label" [for]="field.fieldId">
+                        {{ field.label?.[language] | titlecase }}
+                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                      </label>
+                      <select
+                        [formControlName]="field.fieldId"
+                        [id]="field.fieldId"
+                        class="form-select"
+                        aria-label="Default select example"
+                        (change)="processSelectOption($event, field.fieldId)"
+                        (click)="fetchSelectOptions('', field.fieldId)"
+                      >
+                        <option value="">- Select {{ field.label?.[language] | titlecase }} -</option>
+                        <option *ngFor="let option of field.options" [value]="option">
+                          {{ option | titlecase }}
+                        </option>
+                      </select>
+                    </ng-container>
+                    <ng-container *ngIf="field.fieldId ==='organizationType' && isCategorySelected ">
+                      <label class="form-label" [for]="field.fieldId">
+                        {{ field.label?.[language] | titlecase }}
+                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                      </label>
+                      <select
+                        [formControlName]="field.fieldId"
+                        [id]="field.fieldId"
+                        class="form-select"
+                        aria-label="Default select example"
+                        (change)="processSelectOption($event, field.fieldId)"
+                        (click)="fetchSelectOptions('', field.fieldId)"
+                      >
+                        <option value="">- Select {{ field.label?.[language] | titlecase }} -</option>
+                        <option *ngFor="let option of field.options" [value]="option">
+                          {{ option | titlecase }}
+                        </option>
+                      </select>
+                    </ng-container>
                   </ng-container>
                 </div>
               </div>
@@ -39,23 +58,35 @@
 
             <!--profile photo-->
             <ng-container *ngIf="uploadGroupSections?.photo?.length > 0 && shouldUploadProfilePhoto">
-              <div *ngFor="let photo of uploadGroupSections.photo" class="col-sm-4">
+              <div *ngFor="let photo of uploadGroupSections.photo" class="col-sm-6">
                 <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
                   <div class="row" id="upload-image">
                     <div class="col-sm-12">
                       <label for="upload-image" class="form-label">{{ photo.label[language] | titlecase }}</label>
                     </div>
                     <div class="col-sm-12 text-primary">
+
+                      <img
+                        *ngIf="photoPreviewUrl !== '' && photoPreviewUrl"
+                        [src]="photoPreviewUrl"
+                        class="img-thumbnail"
+                        alt="image preview"
+                        id="profile-photo"
+                        style="width: 100px; height: 100px; border-radius: 100%; margin-right: 10px"
+                      >
+
                       <label class="btn btn-outline-primary btn-sm d-inline-flex align-items-center">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> &nbsp; {{ photo.placeholder[language] | titlecase }}
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span *ngIf="!photoPreviewUrl">{{ photo.uploadBtnLabel[language] | titlecase }}</span>
+                        <span *ngIf="photoPreviewUrl">{{ photo.editBtnLabel[language] | titlecase }}</span>
                         <input type="file" hidden (change)="onFileSelected($event, photo, 'profile')">
-                      </label> &nbsp;
+                      </label>
                       <span class="border-end border-primary border-3"></span> &nbsp;
                       <i class="fa-solid fa-info-circle"></i>&nbsp;
                       <span>Note:</span> png, jpeg or jpg
                     </div>
                   </div>
-                  <span *ngIf="photo.file?.name">{{ photo.file?.name }}</span>
+                  <!--<span *ngIf="photo.file?.name">{{ photo.file?.name }}</span>-->
                 </div>
               </div>
             </ng-container>
@@ -109,18 +140,50 @@
     </div>
   </div>
 
+
   <form [formGroup]="entityForm">
+
+    <ng-container *ngIf="isPatchingFormValues" >
+      <div class="lead text-center alert alert-primary">
+        {{ formPopulateMassage[language] }}
+        <div class="spinner-grow text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </ng-container>
+
     <ng-container *ngFor="let group of formGroupSections" [formGroupName]="group.groupId">
       <div class="card mb-3">
         <div class="m-3 text-muted">
-          <div [id]="group.groupId">
-            <div class="row">
-              <h6 class="mb-4 ms-md-5 text-primary">
-                {{ group.groupOrder }}.
-                <!--{{ group?.labels?.[language] | titlecase }}-->
-                {{ group.label | titlecase }}
-              </h6>
 
+          <div class="row">
+            <div class="col-sm-10">
+              <h5 class="mb-4 ms-md-5 text-primary">
+                {{ group.groupOrder }}.
+                {{ group.label | titlecase }}
+              </h5>
+            </div>
+            <div class="col-sm-2 text-end">
+                <span class="p-2 me-5 caret" (click)="toggleCollapse(group.groupId)">
+                  <i class="fa fa-caret-down text-primary"></i>
+                </span>
+            </div>
+          </div>
+
+          <div [id]="group.groupId" class="collapse-container" [class.expanded]="isCollapsed(group.groupId)">
+
+            <ng-container *ngIf="
+              group.subGroup[0].subGroupId === 'banking_information' ||
+              group.subGroup[0].subGroupId=== 'company_contact' ||
+              group.subGroup[0].subGroupId === 'head_office_address'
+              "
+            >
+              <h5 class="text-dark mb-3 pe-md-5 me-md-4 ms-md-5">
+                {{ group.subGroup[0].label | titlecase }}
+              </h5>
+            </ng-container>
+
+            <div class="row">
               <!--form-inputs-->
               <ng-container *ngFor="let field of group.fields; let i = index">
                 <div class="col-sm-4 col-12 mb-3">
@@ -140,13 +203,6 @@
                           [id]="field.fieldId"
                           class="form-control"
                           (keyup)="validateRegex(field, group.groupId)"
-
-                          [class.is-invalid]="getFieldControl(group.groupId, field.fieldId)?.invalid &&
-                            getFieldControl(group.groupId, field.fieldId)?.touched"
-
-                          [class.is-valid]="getFieldControl(group.groupId, field.fieldId)?.valid &&
-                            getFieldControl(group.groupId, field.fieldId)?.touched"
-
                         />
                       </ng-container>
                       <ng-container *ngIf="field.fieldId==='idNumber'">
@@ -161,9 +217,6 @@
                           [id]="field.fieldId"
                           class="form-control"
                           (keyup)="validateRegex(field, group.groupId)"
-
-                          [class.is-invalid]="getFieldControl(group.groupId, field.fieldId)?.invalid && getFieldControl(group.groupId, field.fieldId)?.touched"
-                          [class.is-valid]="getFieldControl(group.groupId, field.fieldId)?.valid && getFieldControl(group.groupId, field.fieldId)?.touched"
                         />
                       </ng-container>
                       <ng-container *ngIf="['smsNumber', 'telNumber'].includes(field.fieldId)">
@@ -204,8 +257,6 @@
                         [placeholder]="field.placeholder"
                         [id]="field.fieldId"
                         class="form-control"
-                        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
-                        [class.is-valid]="entityForm.get(field.fieldId)?.valid && entityForm.get(field.fieldId)?.touched"
                       ></textarea>
                     </ng-container>
 
@@ -221,8 +272,6 @@
                         [placeholder]="field.placeholder"
                         [id]="field.fieldId"
                         class="form-control"
-                        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
-                        [class.is-valid]="entityForm.get(field.fieldId)?.valid && entityForm.get(field.fieldId)?.touched"
                       />
                     </ng-container>
 
@@ -239,8 +288,6 @@
                         [placeholder]="field?.placeholder[language]"
                         [id]="field.fieldId"
                         class="form-control"
-                        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
-                        [class.is-valid]="entityForm.get(field.fieldId)?.valid && entityForm.get(field.fieldId)?.touched"
                       />
                     </ng-container>
 
@@ -258,8 +305,6 @@
                         aria-label="Default select example"
                         (change)="processSelectOption($event, field.fieldId)"
                         (click)="fetchSelectOptions(field.groupId, field.fieldId)"
-                        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
-                        [class.is-valid]="entityForm.get(field.fieldId)?.valid && entityForm.get(field.fieldId)?.touched"
                       >
                         <option value="">---select {{ field.label?.[language] }}---</option>
                         <option *ngFor="let option of field.options" [value]="option">
@@ -279,8 +324,6 @@
                             type="radio"
                             [value]="option"
                             [formControlName]="field.fieldId"
-                            [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
-                            [class.is-valid]="entityForm.get(field.fieldId)?.valid && entityForm.get(field.fieldId)?.touched"
                           >
                           {{ option }}
                         </label>
@@ -297,8 +340,6 @@
                           id="checkDefault"
                           [formControlName]="field.fieldId"
                           [id]="field.fieldId"
-                          [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
-                          [class.is-valid]="entityForm.get(field.fieldId)?.valid && entityForm.get(field.fieldId)?.touched"
                         >
                         <label class="form-label" [for]="field.fieldId" *ngIf="field.type !== 'checkbox'">
                           {{ field.label?.[language] | titlecase }}
@@ -320,24 +361,11 @@
                         </span>
                       </div>
                     </ng-container>
-
                   </div>
                 </div>
               </ng-container>
 
             </div>
-
-            <!--{{ group | json}} dynamic tables-->
-            <!--<div *ngIf="group.groupId === 'wealth_aml_details'">
-              <app-dynamic-setup-table
-                [tableTitle]="group.subGroup[0]?.label"
-                [addButtonText]="group.subGroup[0]?.addButtonText[language]"
-                [emptyTableMessage]="'No record found!'"
-                [formFields]="wealthAmlFormFields"
-                [subGroupId]="'wealth_aml_details'"
-                (saveDetailsData)="fetchSavedDetails($event)"
-              ></app-dynamic-setup-table>
-            </div>-->
 
             <div *ngIf="group.groupId === 'contact_details' && category === 'corporate' && corporateContactDetailsFormField.length > 0">
               <app-dynamic-setup-table
@@ -377,7 +405,7 @@
 
             <div *ngIf="group.groupId === 'wealth_aml_details'">
               <app-dynamic-setup-table
-                [tableTitle]="group.subGroup[0]?.label"
+                [tableTitle]="category !== 'individual' ? group.subGroup[0]?.label : ''"
                 [addButtonText]="group.subGroup[0]?.addButtonText[language]"
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateWealthAmlFormFieldsDetailsFormField"

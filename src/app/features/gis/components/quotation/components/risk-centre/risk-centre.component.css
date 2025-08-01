@@ -39,12 +39,15 @@
 
 .active-tab {
   color: #00529B;
-   border: 1px solid #DCDCDCD9;
+  border: 1px solid #DCDCDCD9;
   border-bottom: none;
   color: #00529B !important;
-  background-color: #fff; /* Optional: to contrast with border */
-  z-index: 1; 
+  background-color: #fff;
+  /* Optional: to contrast with border */
+  font-weight: 500;
+  z-index: 1;
 }
+
 /* Style on hover */
 .nav-tabs .nav-link:hover {
   font-weight: bold;
@@ -62,8 +65,10 @@
 } */
 /* Custom Scrollbar Styles */
 .nav-tabs-wrapper {
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #ccc transparent; /* Firefox */
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: #ccc transparent;
+  /* Firefox */
 
   /* Chrome, Edge, Safari */
   &::-webkit-scrollbar {

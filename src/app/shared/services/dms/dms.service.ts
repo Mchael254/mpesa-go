@@ -39,7 +39,7 @@ export class DmsService{
 
   constructor(
     private parameterService: ParameterService,
-    
+
     private api:ApiService,) {
     this.dmsUrlParameter$.subscribe( dmsUrl =>  this.dmsApiUrl = dmsUrl);
   }
@@ -178,10 +178,10 @@ export class DmsService{
       JSON.stringify(data), API_CONFIG.DMS_SERVICE
     );
   }
- 
- 
-  
-  
+
+
+
+
   deleteDocumentById(docId: string): Observable<SingleDmsDocument> {
     const params = new HttpParams()
       .set('docId', `${docId}`);
