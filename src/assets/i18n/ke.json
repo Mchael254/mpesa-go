@@ -227,6 +227,7 @@
     "Quotation Enquiry": "Maswali ya nukuu",
     "Quotation Sources": "Vyanzo vya nukuu",
     "Quotation Numbers": "Nambari za nukuu",
+    "isRequired": "inahitajika",
     "base-fms": {
       "parameters": "Vigezo",
       "defineYrs": "Fafanua Miaka/Vipindi",

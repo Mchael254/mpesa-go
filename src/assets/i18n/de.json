@@ -220,6 +220,7 @@
     "Quotation Enquiry": "Angebotsanfrage",
     "Quotation Sources": "Angebotsquellen",
     "Quotation Numbers": "Angebotsnummern",
+    "isRequired": "ist erforderlich",
     "base-fms": {
       "parameters": "Parameter",
       "defineYrs": "Jahre/Perioden definieren",

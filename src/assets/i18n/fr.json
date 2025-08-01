@@ -222,6 +222,7 @@
     "Quotation Enquiry": "Demande de devis",
     "Quotation Sources": "Sources de devis",
     "Quotation Numbers": "Numéros de devis",
+    "isRequired": "est requis",
     "base-fms": {
       "parameters": "Paramètres",
       "defineYrs": "Définir les années/périodes",
