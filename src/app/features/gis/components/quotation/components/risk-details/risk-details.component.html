@@ -1,8 +1,9 @@
 <!-- RISK DETAILS CARD -->
-<div class="card  mb-3 border-0">
-    <div class="card-body border-0" style="padding-top: 0px;">
+<div class="card  mb-3 border-0 ">
+    <div class="card-body border-0 mx-4" style="padding-top: 0px;">
 
-        <p-table [value]="riskDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single" dataKey="code">
+        <p-table [value]="riskDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single" dataKey="code"
+            [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 20, 50]">
             <ng-template pTemplate="header">
                 <tr>
                     <th class="flexible-header">{{'gis.quotation.risk_id' | translate}}</th>
@@ -35,7 +36,6 @@
                         </button>
 
                         <!-- Delete Button -->
-
                         <button *ngIf="riskDetails.length > 1" pButton pRipple type="button"
                             class="p-button-text p-button-sm custom-button" pTooltip="Delete Risk" tooltipPosition="top"
                             data-bs-toggle="modal" data-bs-target="#deleteRisk">
@@ -60,8 +60,8 @@
 
                     <div class="modal-body" style="height: 100%; max-height: 500px; overflow-y: auto;">
                         <h5 class="modal-title mt-2 mb-2 addRiskTitle ">Add risk
-                            <button type="button" class="btn-close float-end" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                            <button type="button" class="btn-close red-close float-end" (click)="clearRiskForm()"
+                                data-bs-dismiss="modal" aria-label="Close"></button>
                         </h5>
 
 
@@ -218,7 +218,8 @@
 
                         <div class="mt-4 d-flex justify-content-end">
                             <button type="button" class="btn btn-outline-primary mx-2" id="saveDetails"
-                                data-bs-dismiss="modal">{{'gis.policy.cancel' | translate}}</button>
+                                data-bs-dismiss="modal" (click)="clearRiskForm()">{{'gis.policy.cancel' |
+                                translate}}</button>
                             <button *ngIf="!isEditMode" type="button" class="btn btn-primary " id="saveDetails"
                                 (click)="createRiskDetail()">{{'gis.quotation.save_details' | translate}}</button>
                             <button *ngIf="isEditMode" type="button" class="btn btn-primary " id="saveDetails"
@@ -256,103 +257,88 @@
 </div>
 <!-- SCHEDULE DETAILS CARD -->
 <div class="card  mb-3">
-    <div class="card-body">
+    <div class="card-body my-4 mx-4">
 
         <!-- Tabs Header -->
         <div class="d-flex justify-content-between align-items-center flex-wrap">
             <div class="nav-tabs-wrapper overflow-auto flex-grow-1 me-3">
                 <ul class="nav nav-tabs flex-nowrap mb-0" style="min-width: max-content;">
                     <li class="nav-item" *ngFor="let tab of tabs">
-                        <a class="nav-link" [ngClass]="{ 'active-tab': activeTab === tab }" (click)="activeTab = tab">{{
-                            tab
-                            }}</a>
+                        <a class="nav-link" [ngClass]="{ 'active-tab': activeTab === tab }" (click)="activeTab = tab">
+                            {{ tab }}
+                        </a>
                     </li>
                 </ul>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
-                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                    data-bs-target="#deleteRisk">
-                    Import risk
-                </button>
-                <button type="button" class="btn btn-primary btn-sm">
-                    Add risk
-                </button>
-                <i class="pi border border-black p-1 rounded-1 text-black"
-                    [ngClass]="{ 'pi-caret-up': isCollapsibleOpen, 'pi-caret-down': !isCollapsibleOpen }"
-                    style="font-size: 13px; cursor: pointer; margin-left: 18px;"></i>
             </div>
         </div>
 
         <!-- Tab Content -->
-        <p-table [value]="scheduleList" selectionMode="single" [(selection)]="selectedSchedule" dataKey="code">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th class="flexible-header">{{'gis.quotation.reg_no' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.vehicle_make' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.cubic_capacity' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.year_of_manufacture' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.seating_capacity' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.value' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.body_type' | translate}}</th>
-                    <th class="flexible-header">{{'gis.quotation.cover_type' | translate}}</th>
-                </tr>
-            </ng-template>
+        <div [ngSwitch]="activeTab">
+            <!-- Tab 1 Content -->
+            <div>
+                <p-table [value]="scheduleList" selectionMode="single" [(selection)]="selectedSchedule" dataKey="code">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th class="flexible-header">{{'gis.quotation.reg_no' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.vehicle_make' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.cubic_capacity' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.year_of_manufacture' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.seating_capacity' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.value' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.body_type' | translate}}</th>
+                            <th class="flexible-header">{{'gis.quotation.cover_type' | translate}}</th>
+                        </tr>
+                    </ng-template>
 
-            <ng-template pTemplate="body" let-schedule>
-                <tr (click)="onSelectSchedule(schedule)" [pEditableRow]="schedule"
-                    [class.p-highlight]="schedule === selectedSchedule">
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                    <td class="flexible-header"></td>
-                </tr>
-            </ng-template>
+                    <ng-template pTemplate="body" let-schedule>
+                        <tr (click)="onSelectSchedule(schedule)" [pEditableRow]="schedule"
+                            [class.p-highlight]="schedule === selectedSchedule">
+                            <td class="flexible-header">{{ schedule.details.level1.registrationNumber}}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.Make |sentenceCase }}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.cubicCapacity }}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.yearOfManufacture }}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.carryCapacity }}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.value |number }}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.bodyType |sentenceCase }}</td>
+                            <td class="flexible-header">{{ schedule.details.level1.coverType |sentenceCase }}</td>
+                        </tr>
+                    </ng-template>
 
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="8" style="padding: 20px; text-align: center">
-                        {{ 'gis.quotation.no_data_to_display' | translate }}
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="8" style="padding: 20px; text-align: center">
+                                No schedule Click on + icon to add risk
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+
+            <!-- Tab 2 Content -->
+            <div *ngSwitchCase="'Level 2'">
+
+            </div>
+
+            <!-- Tab 3 Content -->
+            <div *ngSwitchCase="'Level 3'">
+
+            </div>
+        </div>
+
+
 
     </div>
 </div>
 <!-- SECTION DETAILS CARD -->
 <div class="card mb-3">
-    <div class="card-body">
+    <div class="card-body mx-4">
         <div class="row">
-            <div class="col-4 section-title">
-                <strong> {{'gis.quotation.section_details' | translate}}</strong>
+            <div class="col-4 ">
+                <p class="section-title "> {{'gis.quotation.section_details' | translate}}</p>
             </div>
             <div class="col-8 d-flex justify-content-end">
                 <div class="row">
-                    <!-- <div class="col-4" *ngIf="isSectionDetailsOpen">
-                            <button id="openModalButtonAdd"  data-bs-toggle="modal"
-                                data-bs-target="#addSection">Add section</button>
-                             <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#addSection" title="Edit">
-                                <i class="fa-solid fa-plus"></i>
-                            </button> -->
-                    <!-- </div>  -->
-                    <!-- <div class="col-3" *ngIf="isSectionDetailsOpen">
-                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editSection" title="Edit">
-                    <i class="fa-solid fa-pencil"></i>
-                  </button>
-                </div> -->
-                    <!-- <div class="col-4" *ngIf="isSectionDetailsOpen">
-                            <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#deleteSection" title="Delete">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </div> -->
+
                     <div class="col-4 ">
                         <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse"
                             data-bs-target="#sectionDetails" aria-expanded="false"
@@ -374,8 +360,12 @@
                     <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
                    'pi-caret-up': showSections,
                    'pi-caret-down': !showSections
-                 }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                        (click)="toggleSections()"></i>
+                 }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
+                    <!-- <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                        [ngClass]="{ 'pi-caret-up': showSections, 'pi-caret-down': !showSections }"
+                        style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                        (click)="toggleSections(iconTrigger)">
+                    </i> -->
 
                 </div>
             </div>
@@ -396,25 +386,6 @@
                                     aria-label="Close"></button>
                             </h5>
 
-                            <!-- <div class="search-container mb-3">
-                  <span class="search-icon"><i class="fa fa-search"></i></span>
-                  <input type="text" placeholder="Search" id="search-input-Rsection" [(ngModel)]="searchText" />
-                </div> -->
-                            <!-- <div class="scrollable-list">
-                  <div *ngFor="let section of sectionPremium">
-                    <div class="form-check" *ngIf="matchesSearch(section.sectionShortDescription)">
-                      <input class="form-check-input" type="checkbox" [id]="'checkbox-' + section.code"
-                        (change)="onCheckboxChange(section)" />
-                      <label class="form-check-label" [for]="'checkbox-' + section.code">
-                        {{ section.sectionShortDescription }}
-                      </label>
-                    </div>
-                  </div>
-                </div> -->
-                            <!-- <input pInputText type="text" (input)="sectionTable.filterGlobal($event.target.value, 'contains')" placeholder="Search..." #sectionTable> -->
-                            <!-- <input class="form-control-sm mb-2" id="search-input-Rsection" pInputText type="text"
-                                (input)="applyGlobalFilter($event)" placeholder="Search..."> -->
-
                             <p-table #sectionTable [value]="sectionPremium" id="clientTable" dataKey="code"
                                 [tableStyle]="{ 'max-width': '50rem', 'border-spacing': '10 10px' }"
                                 [(selection)]="selectedSections" [resizableColumns]="true" responsiveLayout="scroll"
@@ -431,16 +402,16 @@
                                                 (change)="toggleSelectAll($event)" />
                                         </th>
 
-                                        <th class="equal-width " pSortableColumn="sectionDescription"> {{
+                                        <th class="flexible-header" pSortableColumn="sectionDescription"> {{
                                             'gis.quotation.benefit' |
                                             translate }}<p-sortIcon field="benefit" /></th>
-                                        <th class="equal-width" pSortableColumn="free_limit"> {{
+                                        <th class="flexible-header" pSortableColumn="free_limit"> {{
                                             'gis.quotation.free_limit' | translate }}<p-sortIcon field="free_limit" />
                                         </th>
-                                        <th class="equal-width" pSortableColumn="limit of amount"> {{
+                                        <th class="flexible-header" pSortableColumn="limit of amount"> {{
                                             'gis.quotation.limit_amount' | translate }}<p-sortIcon
                                                 field="limit of amount" /></th>
-                                        <th class="equal-width" pSortableColumn="rate"> {{ 'gis.quotation.rate' |
+                                        <th class="flexible-header" pSortableColumn="rate"> {{ 'gis.quotation.rate' |
                                             translate }} <p-sortIcon field="rate" /></th>
 
                                     </tr>
@@ -469,19 +440,29 @@
                                             <input type="checkbox" id="check_section_{{ section.sectionCode }}"
                                                 [(ngModel)]="section.isChecked">
                                         </td>
-                                        <td class="equal-width">{{ section.sectionDescription |sentenceCase }}</td>
-                                        <td class="equal-width">{{ section.freeLimit | number }}</td>
-                                        <td class="equal-width" [pEditableColumn]="section.limitAmount"
+                                        <td class="flexible-header">{{ section.sectionDescription |sentenceCase }}</td>
+                                        <td class="flexible-header">
+                                            <ng-container
+                                                *ngIf="section.isFreeLimitEditable === 'Y'; else readOnlyFreeLimit">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    [(ngModel)]="section.freeLimit" [options]="currencyObj"
+                                                    currencyMask />
+                                            </ng-container>
+                                            <ng-template #readOnlyFreeLimit>
+                                                {{ section.freeLimit | number }}
+                                            </ng-template>
+                                        </td>
+                                        <td class="flexible-header" [pEditableColumn]="section.limitAmount"
                                             pEditableColumnField="limitAmount">
-                                            <input class=" form-control form-control-sm narrow-input error-border"
+                                            <input class=" form-control form-control-sm  error-border"
                                                 id="section_{{ section.sectionCode }}" [(ngModel)]="section.limitAmount"
                                                 [options]="currencyObj" currencyMask type="text"
                                                 (keydown)="onKeyUp($event, section)"
                                                 [ngClass]="{'error-border': section.isChecked && !section.limitAmount}">
                                         </td>
-                                        <td class="equal-width" [pEditableColumn]="section.rate"
+                                        <td class="flexible-header" [pEditableColumn]="section.rate"
                                             pEditableColumnField="rate">
-                                            <input class="form-control form-control-sm narrow-input error-border"
+                                            <input class="form-control form-control-sm  error-border"
                                                 id="section_{{ section.sectionCode }}" [(ngModel)]="section.rate"
                                                 type="number" (keydown)="onKeyUp($event, section)"
                                                 [ngClass]="{'error-border': section.isChecked && !section.rate}">
@@ -493,7 +474,7 @@
                                 <button type="button" class="btn btn-outline-primary me-2"
                                     data-bs-dismiss="modal">Cancel</button>
                                 <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal"
-                                    (click)="createRiskLimitsNew()">{{'gis.quotation.save_details' |
+                                    (click)="createRiskSection()">{{'gis.quotation.save_details' |
                                     translate}}</button>
                             </div>
                         </div>
@@ -506,8 +487,8 @@
             <div class="modal fade  " id="editSectionModal" #editSectionModal tabindex="-1" role="dialog"
                 aria-labelledby="editSectionLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-body" style="padding-left: 40px; max-height:650px;overflow-y: auto;">
+                    <div class="modal-content" style=" width:700px;">
+                        <div class="modal-body" style="padding-left: 40px; max-height:550px; overflow-y: auto;">
                             <h5 class="modal-title mt-2" id="editScheduleLabel">
                                 Edit section details
                                 <button type="button" class="btn-close red-close float-end"
@@ -515,7 +496,7 @@
                             </h5>
                             <form [formGroup]="sectionDetailsForm">
                                 <!-- **ROW 1** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-1" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
@@ -524,7 +505,8 @@
                                             <div class="col-7">
                                                 <input type="text" id="scheduleInput"
                                                     class="form-control form-control-sm mb-1"
-                                                    formControlName="sectionShortDescription" readonly>
+                                                    formControlName="sectionShortDescription" style="width:300px"
+                                                    readonly>
 
                                             </div>
                                         </div>
@@ -535,7 +517,7 @@
                                                 id="scheduleLabel">{{'gis.quotation.description' | translate}}:</label>
                                             <div class="col-7">
                                                 <input type="text" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                                    class="form-control form-control-sm mb-1" style="width:300px"
                                                     formControlName="sectionShortDescription">
                                             </div>
                                         </div>
@@ -543,14 +525,14 @@
                                 </div>
 
                                 <!-- **ROW 2** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">
                                                 {{'gis.quotation.rate_type' | translate}} :</label>
                                             <div class="col-7">
                                                 <input type="text" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                                    class="form-control form-control-sm mb-1" style="width:300px"
                                                     formControlName="rateType">
                                                 <!-- <select class="form-select form-control-sm mb-1" id="scheduleInput"
                                                     formControlName="rateType">
@@ -576,7 +558,7 @@
 
                                             <div class="col-7">
                                                 <div class="col-7">
-                                                    <input type="text" id="scheduleInput"
+                                                    <input type="text" id="scheduleInput" style="width:300px"
                                                         class="form-control form-control-sm mb-1"
                                                         formControlName="sectionType">
                                                 </div>
@@ -587,7 +569,7 @@
 
                                 </div>
                                 <!-- **ROW 3** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3">
                                             <label class="col-5 col-form-label" id="scheduleLabel">
@@ -596,15 +578,17 @@
                                             <div class="col-7">
                                                 <ng-container *ngIf="isEditable; else readOnlyInput">
                                                     <!-- Editable number input -->
-                                                    <input type="number" class="form-control form-control-sm mb-1"
-                                                        formControlName="freeLimit"
-                                                        [value]="freeLimitValue|translate" />
+                                                    <input type="text" class="form-control form-control-sm mb-1"
+                                                        formControlName="freeLimit" style="width:300px"
+                                                        [value]="freeLimitValue|translate" currencyMask
+                                                        [options]="currencyObj" />
                                                 </ng-container>
 
                                                 <!-- Read-only number input -->
                                                 <ng-template #readOnlyInput>
-                                                    <input type="number" class="form-control form-control-sm mb-1"
-                                                        [value]="freeLimitValue|translate" readonly />
+                                                    <input type="text" class="form-control form-control-sm mb-1"
+                                                        [value]="freeLimitValue|translate" currencyMask
+                                                        [options]="currencyObj" style="width:300px" readonly />
                                                 </ng-template>
                                             </div>
                                         </div>
@@ -616,21 +600,21 @@
                                                 id="scheduleLabel">{{'gis.quotation.limit_amount' | translate}}:</label>
 
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
-                                                    formControlName="limitAmount">
+                                                <input type="text" id="scheduleInput" style="width:300px"
+                                                    class="form-control form-control-sm mb-1" currencyMask
+                                                    [options]="currencyObj" formControlName="limitAmount">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- **ROW 4** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.group' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput" style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="calcGroup">
                                             </div>
@@ -642,7 +626,7 @@
                                                 id="scheduleLabel">{{'gis.quotation.premium_rate' | translate}}:</label>
 
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput" style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="premiumRate">
                                             </div>
@@ -650,13 +634,13 @@
                                     </div>
                                 </div>
                                 <!-- **ROW 5** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.div_by' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput" style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="multiplierDivisionFactor">
                                             </div>
@@ -667,7 +651,7 @@
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.multi_rate' | translate}} :</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput" style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="multiplierRate">
                                             </div>
@@ -675,13 +659,13 @@
                                     </div>
                                 </div>
                                 <!-- **ROW 6** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.div_multi_by' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
+                                                <input type="number" id="scheduleInput" style="width:300px"
                                                     class="form-control form-control-sm mb-1"
                                                     formControlName="multiplierDivisionFactor">
                                             </div>
@@ -692,24 +676,24 @@
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.premium' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
-                                                    formControlName="premiumAmount">
+                                                <input type="text" id="scheduleInput" style="width:300px"
+                                                    class="form-control form-control-sm mb-1" currencyMask
+                                                    [options]="currencyObj" formControlName="premiumAmount">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- **ROW 7** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
-                                            <label for="minmax-buttons" class="col-5 col-form-label"
+                                            <label for="minmax-buttons" class="col-5 col-form-label" style="width:300px"
                                                 id="scheduleLabel">{{'gis.quotation.minimum_premium' |
                                                 translate}}:</label>
                                             <div class="col-7">
-                                                <input type="number" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
-                                                    formControlName="minimumPremium">
+                                                <input type="text" id="scheduleInput" style="width:300px"
+                                                    class="form-control form-control-sm mb-1" currencyMask
+                                                    [options]="currencyObj" formControlName="minimumPremium">
                                             </div>
                                         </div>
                                     </div>
@@ -718,14 +702,14 @@
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.accumulation' | translate}}:</label>
                                             <div class="col-7">
-                                                <input type="text" id="scheduleInput"
+                                                <input type="text" id="scheduleInput" style="width:300px"
                                                     class="form-control form-control-sm mb-1" formControlName="">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- **ROW 8** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
@@ -733,7 +717,7 @@
                                             <div class="col-7">
 
                                                 <textarea type="text" id="scheduleInput"
-                                                    class="form-control form-control-sm mb-1"
+                                                    class="form-control form-control-sm mb-1" style="width:300px"
                                                     formControlName="description"></textarea>
                                             </div>
                                         </div>
@@ -779,7 +763,7 @@
                                     </div>
                                 </div>
                                 <!-- **ROW 9** -->
-                                <div class="row" id="scheduleRows">
+                                <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
                                         <div class="mb-3 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
@@ -868,11 +852,82 @@
                     </div>
                 </div>
             </div>
+            <!-- Column Selector Modal -->
+            <!-- Floating Column Selector -->
+            <div *ngIf="showColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-primary">Select Columns</strong>
+                    <button class="btn-close btn-sm" (click)="showColumnModal = false"></button>
+                </div>
+                <div style="max-height: 250px; overflow-y: auto;">
+                    <div *ngFor="let col of columns">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                                [(ngModel)]="col.visible" [id]="col.field">
+                            <label class="form-check-label" [for]="col.field">
+                                {{ col.header }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <p-table [value]="sectionDetails" [tableStyle]="{ 'min-width': '300px' }" selectionMode="single"
+                [(selection)]="selectedSection" dataKey="code" editMode="row" [paginator]="true" [rows]="2"
+                [rowsPerPageOptions]="[2, 4, 6]">
+
+               
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header"
+                            [pSortableColumn]="col.field">
+                            {{ col.header }}
+                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                        </th>
+                    </tr>
+                </ng-template>
+
+               
+                <ng-template pTemplate="body" let-section let-rowIndex="rowIndex">
+                    <tr (click)="onSelectSection(section)" [pEditableRow]="section">
+                        <td *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header">
+                            <ng-container [ngSwitch]="col.field">
+                                <ng-container *ngSwitchCase="'actions'">
+                                    
+                                    <button pButton type="button" class="p-button-text p-button-sm"
+                                        (click)="onOpenEditSectionModal(section)">
+                                        Edit
+                                    </button>
+                                   
+                                    <button pButton type="button" class="p-button-text p-button-sm text-danger"
+                                        (click)="setSectionToDelete(section)" data-bs-toggle="modal"
+                                        data-bs-target="#deleteSection">
+                                        Delete
+                                    </button>
+                                </ng-container>
+                                <ng-container *ngSwitchDefault>
+                                    {{ section[col.field] }}
+                                </ng-container>
+                            </ng-container>
+                        </td>
+                    </tr>
+                </ng-template>
+
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td [attr.colspan]="columns.length" style="padding: 20px; text-align:center">
+                            No section. Click on + icon to add section.
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table> -->
 
             <p-table [value]="sectionDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single"
                 [(selection)]="selectedSection" dataKey="code" editMode="row" [paginator]="true" [rows]="2"
-                [rowsPerPageOptions]="[2, 4, 6]" [showCurrentPageReport]="true"
-                currentPageReportTemplate="{first} to {last} of {totalRecords}">
+                [rowsPerPageOptions]="[2, 4, 6]">
                 <ng-template pTemplate="header">
                     <tr>
 
@@ -930,14 +985,14 @@
                         <td class="flexible-header">{{sectionArray.rateType}}</td>
 
                         <td class="flexible-header">
-                            <!-- Edit Button -->
+
                             <button pButton pRipple type="button" pInitEditableRow
                                 class="p-button-rounded p-button-text custom-button " pTooltip="" tooltipPosition="top"
                                 (click)="onOpenEditSectionModal(sectionArray)">
                                 Edit
                             </button>
 
-                            <!-- Delete Button -->
+
                             <button pButton pRipple type="button" class="p-button-rounded p-button-text custom-button  "
                                 data-bs-toggle="modal" data-bs-target="#deleteSection"
                                 (click)="setSectionToDelete(sectionArray)">
@@ -959,12 +1014,12 @@
     </div>
 </div>
 <!-- RISK CLAUSES DETAILS CARD -->
-<div class="card mb-4">
-    <div class="card-body">
+<div class="card mb-1">
+    <div class="card-body mx-4">
 
-        <div class="row">
+        <div class="row mb-2">
             <div class="col-4 clause-title">
-                <strong>{{'gis.quotation.risk_clauses' | translate}}</strong>
+                <p class="section-title">{{'gis.quotation.risk_clauses' | translate}}</p>
             </div>
 
             <div class="col-8 d-flex justify-content-end">
@@ -979,19 +1034,111 @@
         <!-- ADD Risk clause BUTTON ROW -->
         <div class="row mb-2" *ngIf="isClausesOpen">
             <div class="col-12 d-flex justify-content-end">
-                <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                    data-bs-target="#addClause"> Add risk Clause
+                <button id="openModalButtonAdd" class="btn btn-primary btn-sm" (click)="openClauseModal()"> Add risk
+                    Clause
                 </button>
 
                 <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
               'pi-caret-up': showSections,
               'pi-caret-down': !showSections
-            }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                    (click)="toggleSections()"></i>
+               }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
             </div>
         </div>
 
-        <!-- Add risk close popup -->
+        <!-- risk clause table -->
+        <div [@slideInOut]="isClausesOpen ? 'open' : 'closed'" class="mt-2 w-100">
+            {{selectedClause}}
+            <p-table #riskClauseTable [value]="sessionClauses" dataKey="clauseCode" editMode="row"
+                [(selection)]="selectedClause" selectionMode="single" [autoLayout]="true" [paginator]="true" [rows]="5"
+                [rowsPerPageOptions]="[5, 10, 20]" [scrollable]="true" responsiveLayout="scroll"
+                [tableStyle]="{ 'min-width': '100%', width: '100%' }">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="flexible-header1" style="width: 13%" pSortableColumn="id">
+                            ID <p-sortIcon field="id" />
+                        </th>
+                        <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">
+                            Heading <p-sortIcon field="heading" />
+                        </th>
+                        <th class="flexible-header1" style="width: 35%" pSortableColumn="wording">
+                            Wording <p-sortIcon field="wording" />
+                        </th>
+                        <th class="flexible-header1" style="width: 15%">Actions</th>
+                    </tr>
+
+
+                </ng-template>
+
+                <ng-template pTemplate="body" let-clause let-columns="columns" let-rowIndex="rowIndex">
+                    <ng-container *ngIf="rowIndex === 0">
+                        <tr>
+                            <td>
+                                <input pInputText type="text" placeholder="" class="form-control form-control-sm"
+                                    (input)="filterShortDesc($event)" />
+                            </td>
+                            <td>
+                                <input pInputText type="text" placeholder="" class="form-control form-control-sm"
+                                    (input)="filterHeading($event)" />
+                            </td>
+                            <td>
+                                <input pInputText type="text" placeholder="" class="form-control form-control-sm"
+                                    (input)="filterWording($event)" />
+                            </td>
+                            <td></td>
+                        </tr>
+                    </ng-container>
+                    <tr [pSelectableRow]="clause">
+                        <td class="flexible-header1">{{ clause.shortDescription }}</td>
+                        <td class="flexible-header1">{{ clause.heading | truncate:5 | sentenceCase }}</td>
+                        <td class="position-relative ">
+                            <div class="clause-wrapper">
+                                {{ clause.wording | truncate:10 | sentenceCase}}
+
+                                <div class="hover-card">
+                                    {{ clause.wording |sentenceCase }}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="flexible-header1" style="text-align: left">
+                            <div class="flex justify-start  gap-2">
+                                <!-- Edit -->
+                                <span class="p-button-label p-text-bold " [ngStyle]="{
+                    color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280', 
+                   
+                    cursor: clause.isEditable === 'Y' ? 'pointer' : 'default',
+                    display: 'inline-block',
+                    width: '60px'  
+                    }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
+                                    [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
+                                    (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
+                                    {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
+                                </span>
+
+                                <!-- Delete -->
+
+                                <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold " [ngStyle]="{
+                                                        color: '#00529B',
+                                                        cursor: 'pointer'
+                                                      }" data-bs-toggle="modal" data-bs-target="#deleteClause"
+                                    (click)="prepareDeleteClause(clause)">
+                                    {{ 'gis.quotation.delete' | translate }}
+                                </span>
+                            </div>
+
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="8" style="padding: 20px; text-align:center" id="empty">
+                            No risk clause Click on + icon to add risk clause</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <!-- Add risk clause modal -->
         <div class="modal fade" id="addClause" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
@@ -1003,69 +1150,76 @@
                                 aria-label="Close"></button>
                         </h5>
 
-                        <p-table #clauseTable [value]="nonMandatoryClauses" dataKey="code" [paginator]="true" [rows]="3"
-                            [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['shortDescription', 'heading']"
-                            [scrollable]="true" scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3"
-                            [(selection)]="selectedClauses" selectionMode="multiple">
-                            <!-- Table Header -->
-                            <ng-template pTemplate="header">
-                                <!-- Column Labels -->
-                                <tr>
-                                    <th style="width: 2%;"></th>
-                                    <th pSortableColumn="id" class="equal-width">
-                                        ID <p-sortIcon field="id" />
-                                    </th>
-                                    <th pSortableColumn="description" class="equal-width">
-                                        Description <p-sortIcon field="description" />
-                                    </th>
-                                </tr>
+                        <ng-container *ngIf="nonMandatoryClauses && nonMandatoryClauses.length > 0; else noMoreClauses">
+                            <p-table #clauseTable [value]="nonMandatoryClauses" dataKey="clauseCode" [paginator]="true"
+                                [rows]="3" [rowsPerPageOptions]="[3, 5, 10]"
+                                [globalFilterFields]="['shortDescription', 'heading']" [scrollable]="true"
+                                scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3"
+                                [(selection)]="selectedRiskClauses" selectionMode="multiple">
+                                <!-- Table Header -->
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th style="width: 3%"><p-tableHeaderCheckbox /></th>
+                                        <th pSortableColumn="id" class="flexible-header">
+                                            ID <p-sortIcon field="id" />
+                                        </th>
+                                        <th pSortableColumn="description" class="flexible-header">
+                                            Description <p-sortIcon field="description" />
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <input class="form-control form-control-sm" pInputText #idFilter type="text"
+                                                (input)="clauseTable.filterGlobal(idFilter.value, 'contains')"
+                                                style="width: 50%;" />
+                                        </td>
+                                        <td>
+                                            <input class="form-control form-control-sm" pInputText #descFilter
+                                                type="text"
+                                                (input)="clauseTable.filterGlobal(descFilter.value, 'contains')"
+                                                style="width: 50%;" />
+                                        </td>
+                                    </tr>
+                                </ng-template>
 
+                                <!-- Table Body -->
+                                <ng-template pTemplate="body" let-clause>
+                                    <tr>
+                                        <td><p-tableCheckbox [value]="clause" /></td>
+                                        <td>{{ clause.shortDescription }}</td>
+                                        <td>{{ clause.heading }}</td>
+                                    </tr>
+                                </ng-template>
 
-                                <tr>
-                                    <td style="padding-top: 10px; padding-bottom: 10px;"></td>
-                                    <td style="padding-top: 10px; padding-bottom: 10px;">
-                                        <input class="form-control form-control-sm" pInputText #globalFilterInput
-                                            type="text" placeholder=""
-                                            (input)="clauseTable.filterGlobal(globalFilterInput.value, 'contains')"
-                                            style="width: 30%;" />
-                                    </td>
-                                    <td style="padding-top: 10px; padding-bottom: 10px;">
-                                        <input class="form-control form-control-sm" #globalFilterInput pInputText
-                                            type="text" placeholder=""
-                                            (input)="clauseTable.filterGlobal(globalFilterInput.value, 'contains')"
-                                            style="width: 30%;" />
-                                    </td>
-                                </tr>
-                            </ng-template>
+                                <!-- No Search Match -->
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td colspan="3" class="text-center p-4 text-muted">
+                                            <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                            <p>No matching clauses found.</p>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </ng-container>
 
-
-
-                            <!-- Empty Message -->
-                            <ng-template pTemplate="emptymessage">
-                                <tr>
-                                    <td colspan="3" class="text-center text-muted py-3">No predefined clauses available.
-                                    </td>
-                                </tr>
-                            </ng-template>
-
-                            <!-- Table Body -->
-                            <ng-template pTemplate="body" let-clause>
-                                <tr>
-                                    <td>
-                                        <input type="checkbox" [(ngModel)]="clause.isChecked" />
-                                    </td>
-                                    <td>{{ clause.shortDescription }}</td>
-                                    <td>{{ clause.heading }}</td>
-                                </tr>
-                            </ng-template>
-                        </p-table>
+                        <!-- No Clauses Left -->
+                        <ng-template #noMoreClauses>
+                            <div class="text-center p-4">
+                                <div style="color: #6c757d; font-size: 16px;">
+                                    <i class="pi pi-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                    <p>No additional clauses are available to add.</p>
+                                </div>
+                            </div>
+                        </ng-template>
 
                         <!-- Buttons -->
                         <div class="mt-4 d-flex justify-content-end">
                             <button type="button" class="btn btn-outline-primary me-2"
                                 data-bs-dismiss="modal">Cancel</button>
                             <button type="button" class="btn btn-primary" id="saveDetails" data-bs-dismiss="modal"
-                                (click)="saveRiskClauses()">
+                                (click)="addRiskClauses()">
                                 Save
                             </button>
                         </div>
@@ -1074,147 +1228,95 @@
             </div>
         </div>
 
-        <div [@slideInOut]="isClausesOpen ? 'open' : 'closed'" class="mt-2 w-100">
-            <p-table #riskClauseTable [value]="selectedClause" dataKey="code" editMode="row"
-                [(selection)]="selectedClause" selectionMode="multiple" [autoLayout]="true" [paginator]="true"
-                [rows]="2" [rowsPerPageOptions]="[2, 4, 6]" [scrollable]="true" [showCurrentPageReport]="true"
-                currentPageReportTemplate="{first} to {last} of {totalRecords} entries" responsiveLayout="scroll"
-                [tableStyle]="{ 'min-width': '100%', width: '100%' }" class="p-datatable-sm">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th pSortableColumn="shortDescription">ID <p-sortIcon field="shortDescription" /></th>
-                        <th pSortableColumn="heading">
-                            Heading <p-sortIcon field="heading" />
-                        </th>
-                        <th pSortableColumn="wording">
-                            Wording <p-sortIcon field="wording" />
-                        </th>
-                        <th></th>
-                        <th></th>
-                    </tr>
+        <!-- edit risk clause modal -->
+        <div class="modal fade" id="editClause">
+            <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+                <div class="modal-content ps-4 pt-2 pe-4">
+                    <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+                        <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                            {{ 'gis.quotation.edit_clause' | translate }}</p>
+                        <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                            style="border: none;">X
+                        </button>
+                    </div>
 
-                    <!-- Filter Row -->
-                    <tr>
-                        <th>
-                            <input pInputText type="text" placeholder="Search by ID"
-                                class="form-control form-control-sm" (input)="filterShortDesc($event)" />
-                        </th>
-                        <th>
-                            <input pInputText type="text" placeholder="Search by heading"
-                                class="form-control form-control-sm" (input)="filterHeading($event)" />
-                        </th>
-                        <th>
-                            <input pInputText type="text" placeholder="Search by Wording"
-                                class="form-control form-control-sm" (input)="filterWording($event)" />
-                        </th>
-                        <th colspan="2"></th>
-                    </tr>
-                </ng-template>
+                    <div class="d-flex justify-content-between text-black">
+                        <div class="d-flex flex-column bg-gray-300 w-25">
+                            <label for="id">ID</label>
+                            <input type="text" [value]=" selectedRiskClause.shortDescription" pInputText
+                                style="background-color:rgb(215, 212, 212); width:18vw" readonly>
 
-                <ng-template pTemplate="body" let-selectedClauseList let-editing="editing" let-ri="rowIndex">
-                    <tr [pEditableRow]="selectedClauseList">
-                        <td>
-                            <!-- <p-tableCheckbox [value]="selectedClauseList"
-(onChange)="selectedProductClauses($event)"
-[(ngModel)]="selectedClauseList.checked"
-[binary]="true">
-></p-tableCheckbox> -->
-                            <!-- <p-checkbox
-[(ngModel)]="selectedClauseList.checked"
-[binary]="true"
-[disabled]="selectedClauseList.isMandatory === 'Y'"
-(onChange)="onClauseSelectionChange(selectedClauseList)"
->
-</p-checkbox> -->
-                            {{ selectedClauseList.shortDescription }}
-                        </td>
+                        </div>
+                        <div class="d-flex flex-column w-50 ">
+                            <label for="heading">Heading</label>
+                            <input class="bg-gray-300" pInputText [value]=" selectedRiskClause.heading | truncate:10"
+                                pTooltip="{{  selectedRiskClause.heading }}"
+                                style="background-color:rgb(215, 212, 212); width:20vw; z-index:auto" readonly>
+                        </div>
+                    </div>
 
-                        <td style="
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                overflow-y: auto;
-                max-width: 250px;
-              " pTooltip="{{ selectedClauseList.heading }}" tooltipPosition="top">
-                            <p-cellEditor>
-                                <ng-template pTemplate="input" *ngIf="selectedClauseList.isEditable === 'Y'">
-                                    <input pInputText type="text" [(ngModel)]="selectedClauseList.heading"
-                                        class="form-control form-control-sm" [ngModelOptions]="{ standalone: true }" />
-                                </ng-template>
-                                <ng-template pTemplate="output">
-                                    {{ selectedClauseList.heading || selectedClauseList.description}}
-                                </ng-template>
-                            </p-cellEditor>
-                        </td>
-                        <td style="
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 300px;
-                overflow-y: auto;
-              ">
-                            <p-cellEditor>
-                                <ng-template pTemplate="input">
-                                    <input pInputText type="text" [(ngModel)]="selectedClauseList.wording"
-                                        class="form-control form-control-sm" [ngModelOptions]="{ standalone: true }" />
-                                </ng-template>
-                                <ng-template pTemplate="output">
-                                    {{ selectedClauseList.wording }}
-                                </ng-template>
-                                <!-- Helper icon added next to the wording column -->
-                            </p-cellEditor>
-                        </td>
-                        <td>
-                            <button pButton pRipple type="button" (click)="openHelperModal(selectedClauseList)"
-                                icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
-                        </td>
-                        <!-- <td
-*ngIf="selectedClauseList.isEditable !== 'Y'"
-style="padding-left: 24px"
->
---
-</td> -->
-                        <td class="text-center align-middle">
-                            <ng-container *ngIf="selectedClauseList.isEditable === 'Y'; else notEditable">
-                                <div class="d-flex align-items-center justify-content-center gap-2">
-                                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
-                                        class="p-button-rounded p-button-text custom-button">
-                                        Edit
-                                    </button>
-                                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
-                                        icon="pi pi-check"
-                                        class="p-button-rounded p-button-text p-button-success"></button>
-                                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
-                                        icon="pi pi-times"
-                                        class="p-button-rounded p-button-text p-button-danger"></button>
-                                </div>
-                            </ng-container>
-                            <ng-template #notEditable>
-                                <span class="d-block text-muted">--</span>
-                            </ng-template>
-                        </td>
-                    </tr>
-                    <!-- Modal for each row -->
-                    <p-dialog [(visible)]="selectedClauseList.showHelperModal" [modal]="false"
-                        [style]="{ width: '700px' }">
-                        <ng-container *ngIf="selectedClauseList">
-                            <div pResizable [ngStyle]="{ 'min-width.px': 200, 'min-height.px': 150 }"
-                                (onResize)="onResize($event)">
-                                <p>{{ selectedClauseList.wording }}</p>
-                            </div>
-                        </ng-container>
-                    </p-dialog>
-                </ng-template>
-                <ng-template pTemplate="emptymessage">
-                    <tr>
-                        <td colspan="8" style="padding: 20px; text-align:center" id="empty">
-                            No risk clause Click on + icon to add risk clause</td>
-                    </tr>
-                </ng-template>
-            </p-table>
+                    <div class="d-flex flex-column mt-5">
+                        <label class="text-dark mt-0" for="comment">Wording</label>
+                        <textarea rows="5" pTextarea [(ngModel)]=" selectedRiskClause.wording"
+                            class="p-inputtextarea w-full" style="border: 1px solid #ced4da;min-height: 130px">
+              </textarea>
+                    </div>
 
+                    <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+                        <button #closeReassignButton type="button" data-bs-dismiss="modal"
+                            style="display: none;"></button>
+                        <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: #00529B;color:white;text-decoration: none;"
+                            (click)="editRiskClause()" [disabled]="!wasModified()">{{ 'gis.quotation.save_changes' |
+                            translate }}
+                        </button>
+                        <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                            style="text-decoration: none;">{{
+                            'gis.quotation.cancel' | translate
+                            }}
+                        </button>
+                    </div>
+
+                </div>
+            </div>
 
         </div>
+
+        <!-- delete clause modal -->
+        <div class="modal fade" id="deleteClause">
+            <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+                <div class="modal-content ps-4 pt-2 pe-4">
+                    <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+                        <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                            {{ 'gis.quotation.delete_clause' | translate }}</p>
+                        <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                            style="border: none;">X
+                        </button>
+                    </div>
+
+                    <div class="d-flex justify-content-between text-black">
+                        <p>Are you sure you want to delete this clause?</p>
+                    </div>
+
+                    <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+                        <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: #00529B;color:white;text-decoration: none;"
+                            (click)="deleteRiskClause()">
+                            {{ 'gis.quotation.delete' | translate }}
+                        </button>
+                        <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                            style="text-decoration: none;">{{
+                            'gis.quotation.cancel' | translate
+                            }}
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
 
     </div>
 </div>

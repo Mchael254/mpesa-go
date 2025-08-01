@@ -205,6 +205,7 @@ export interface QuotationProduct {
   taxInformation: TaxInformation[];
   riskInformation: RiskInformation[];
   limitsOfLiability?: LimitsOfLiability[];
+  productClauses?: ProductClauses[]
 }
 
 export interface TaxInformation {
@@ -302,6 +303,21 @@ export interface LimitsOfLiability {
   type: string;
   code?: number
   quotationValueCode?: number
+}
+export interface ProductClauses {
+  productCode: number;
+  clauseCode: number;
+  quotationProductCode: number;
+  quotationCode: number;
+  quotationNumber: string;
+  clause: string;
+  clauseIsEditable: string;
+  clauseShortDescription: string;
+  clauseHeading: string;
+  clauseType: string;
+  quotationRevisionNumber: number;
+  subclassCode: number;
+
 }
 
 export interface SectionDetail {
@@ -1219,4 +1235,18 @@ export class UsersDetailsDto {
   idNumber: string | null;
 }
 
-
+export interface TaxPayload {
+code: number;
+rateDescription: string;
+rate: number;
+rateType: string;
+taxAmount: number;
+productCode: number;
+quotationCode: number;
+transactionCode: string;
+renewalEndorsement: string;
+taxRateCode: string;
+levelCode: string;
+taxType: string;
+riskProductLevel: string;
+}

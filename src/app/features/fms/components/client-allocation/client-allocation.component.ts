@@ -742,13 +742,18 @@ export class ClientAllocationComponent {
    * Initializes form controls for each transaction in the allocated amounts FormArray.
    */
   // ✅ Initialize form controls for each transaction
+  //removed auto population of balances
+  //  this.fb.group({
+  //         allocatedAmount: [transaction.balance, Validators.required],
+  //         commissionChecked: ['N'],
+  //       })
   private initializeAllocatedAmountControls(): void {
     const allocatedAmountArray = this.allocatedAmountControls;
     allocatedAmountArray.clear(); // Clear existing controls
     this.transactions.forEach((transaction) => {
       allocatedAmountArray.push(
         this.fb.group({
-          allocatedAmount: [transaction.balance, Validators.required],
+          allocatedAmount: [0, Validators.required],
           commissionChecked: ['N'],
         })
       );

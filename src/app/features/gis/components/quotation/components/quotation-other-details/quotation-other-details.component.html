@@ -1,1 +1,137 @@
-<p>quotation-other-details works!</p>
+<!-- revisions -->
+<div class="card mb-4 " style=" position: relative; border: none; border-radius: 5px;">
+
+    <div class="card-body mx-4 mt-2 mb-2">
+        <div class="d-flex flex-column justify-content-between">
+            <h6 style="color: #00529B; font-size: 18px; font-weight: 500; font-family: Roboto; margin-bottom: -3px;">
+                Revisions
+            </h6>
+            <div class="d-flex flex-row-reverse">
+                <div class="border border-black rounded-1 d-flex justify-content-center align-items-center"
+                    style="width: 20px; height: 20px; padding: 2px;">
+                    <i class="pi text-black" [ngClass]="{'pi-caret-up': showRevision, 'pi-caret-down': !showRevision}"
+                        style="font-size: 13px; cursor: pointer;" (click)="toggleRevision()"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row mt-2 collapse" [ngClass]="{'show': showRevision}">
+
+            <p-table #dt [value]="quotationRevisions" styleClass="p-datatable-striped">
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="flexible-header1" pSortableColumn="quotationNo">
+                            Quotation No <p-sortIcon field="quotationNo" />
+                        </th>
+                        <th class="flexible-header1" pSortableColumn="coverFrom">
+                            Cover from <p-sortIcon field="coverFrom" />
+                        </th>
+                        <th class="flexible-header1" pSortableColumn="coverTo">
+                            Cover to <p-sortIcon field="coverTo" />
+                        </th>
+                        <th class="flexible-header1" pSortableColumn="premium">
+                            Premium <p-sortIcon field="coverTo" />
+                        </th>
+                    </tr>
+
+                </ng-template>
+
+                <ng-template pTemplate="body" let-revision>
+                    <tr>
+                        <td>{{ revision.quotationNo }}</td>
+                        <td>{{ revision.coverFrom }}</td>
+                        <td>{{ revision.coverTo }}</td>
+                        <td>{{ revision.premium }}</td>
+
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="4" class="text-center p-4 text-muted">
+                            <p>No revisions available for this quotation</p>
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- comments -->
+<div class="card mb-4 " style=" position: relative; border: none; border-radius: 5px;">
+
+    <div class="card-body mx-4 mt-2 mb-2">
+        <div>
+            <h6 style="color: #00529B; font-size: 18px; font-weight: 500; font-family: Roboto; margin-bottom:12px;"
+                class="mb-5">
+                Comments
+            </h6>
+        </div>
+
+        <div class="row mt-2">
+
+            <p-table #dt [value]="" styleClass="p-datatable-striped" [paginator]="true" [rows]="2"
+                [rowsPerPageOptions]="[5, 10, 20]">
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="flexible-header1" pSortableColumn="comments">
+                            Comments <p-sortIcon field="quotationNo" />
+                        </th>
+                        <th class="flexible-header1" pSortableColumn="commentsBy">
+                            Comments By <p-sortIcon field="coverFrom" />
+                        </th>
+                        <th class="flexible-header1" pSortableColumn="agent">
+                            Agent <p-sortIcon field="agent" />
+                        </th>
+                        <th class="flexible-header1" pSortableColumn="client">
+                            Client <p-sortIcon field="client" />
+                        </th>
+                        <th class="flexible-header1" pSortableColumn="commentDate">
+                            Comment Date <p-sortIcon field="commentDate" />
+                        </th>
+                        <th class="flexible-header1" pSortableColumn="wef">
+                            WEF <p-sortIcon field="wef" />
+                        </th>
+                        <th class="flexible-header1" pSortableColumn="wet">
+                            WET <p-sortIcon field="wet" />
+                        </th>
+                    </tr>
+
+                </ng-template>
+
+                <ng-template pTemplate="body" let-comments>
+                    <tr>
+                        <td>{{ comments.comments }}</td>
+                        <td>{{ comments.commentsBy }}</td>
+                        <td>{{ comments.agent }}</td>
+                        <td>{{ comments.client }}</td>
+                        <td>{{ comments.commentDate }}</td>
+                        <td>{{ comments.wef }}</td>
+                        <td>{{ comments.wet }}</td>
+
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="7" class="text-center p-4 text-muted">
+                            <p>No comments available for this quotation</p>
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,11 +1,11 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Logger, UtilService} from "../../services";
-import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {GlobalMessagingService} from "../../services/messaging/global-messaging.service";
 import {SessionStorageService} from "../../services/session-storage/session-storage.service";
 import {ReusableInputComponent} from "../reusable-input/reusable-input.component";
 import * as bootstrap from 'bootstrap';
-import {CountryISO, NgxIntlTelInputModule, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
+import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
 import {FieldModel} from "../../../features/entities/data/form-config.model";
 import {RegexErrorMessages} from "../../../features/entities/data/field-error.model";
 import {DynamicColumns} from "../../data/dynamic-columns";
@@ -20,33 +20,16 @@ import {ClientTitleDTO} from "../../data/common/client-title-dto";
 import {CountryDto, PostalCodesDTO, StateDto, TownDto} from "../../data/common/countryDto";
 import {BankBranchDTO, BankDTO, FundSourceDTO} from "../../data/common/bank-dto";
 import {AccountsEnum} from "../../../features/entities/data/enums/accounts-enum";
-import {SharedModule} from "../../shared.module";
-import {DialogModule} from "primeng/dialog";
-import {LowerCasePipe, NgForOf, NgIf, TitleCasePipe} from "@angular/common";
-import {TranslateModule} from "@ngx-translate/core";
-import {TableModule} from "primeng/table";
 
 const log = new Logger("DynamicSetupTableComponent");
 @Component({
   selector: 'app-dynamic-setup-table',
   templateUrl: './dynamic-setup-table.component.html',
-  standalone: true,
-  imports: [
-    NgxIntlTelInputModule,
-    DialogModule,
-    TitleCasePipe,
-    FormsModule,
-    LowerCasePipe,
-    NgIf,
-    NgForOf,
-    ReactiveFormsModule,
-    TranslateModule,
-    TableModule
-  ],
   styleUrls: ['./dynamic-setup-table.component.css']
 })
 export class DynamicSetupTableComponent implements OnInit {
-  selectedTableRecordDetails: any;
+  selectedTableRecordDetails: any = null;
+  rowToDelete: any = null;
   tableData: any;
   editMode: boolean = false;
   selectedTableRecordIndex: number | null = null;
@@ -105,6 +88,8 @@ export class DynamicSetupTableComponent implements OnInit {
   communicationChannelsData: AccountsEnum[] = [];
   insurancePurposeData: any[] = [];
 
+  uniqueId: string = `modal_${Math.random().toString(36).substr(2, 9)}`;
+
   constructor(
     private fb: FormBuilder,
     private globalMessagingService: GlobalMessagingService,
@@ -162,12 +147,8 @@ export class DynamicSetupTableComponent implements OnInit {
     this.formFields.forEach(field => {
       let validators = [];
 
-      if (field.validations) {
-        field.validations.forEach(validation => {
-          if (validation.type === 'required') {
-            validators.push(Validators.required);
-          }
-        });
+      if (field.isMandatory) {
+        validators.push(Validators.required);
       }
 
       formControls[field.fieldId] = new FormControl('', validators);
@@ -229,7 +210,16 @@ export class DynamicSetupTableComponent implements OnInit {
    *
    * @returns {void}
    */
-  saveDetails() {
+  saveDetails(): void {
+    // Mark all form controls as touched to trigger validation messages
+    this.markFormGroupTouched(this.dynamicModalForm);
+
+    // If form is invalid, stop here
+    if (this.dynamicModalForm.invalid) {
+      // this.dynamicModalForm.markAllAsTouched();
+      log.warn('Form is invalid. Please check the required fields.');
+      return;
+    }
     const formValue = this.dynamicModalForm.getRawValue();
 
     const filtered = Object.fromEntries(
@@ -280,9 +270,22 @@ export class DynamicSetupTableComponent implements OnInit {
       JSON.stringify(this.tableData)
     );
     this.closeModal();
-    return savedFields;
+    // return savedFields;
   }
 
+  /**
+   * Marks all controls in a form group as touched
+   * @param formGroup - The form group to touch
+   */
+  private markFormGroupTouched(formGroup: FormGroup) {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
   /**
    * Toggles the edit mode and opens the dynamic details modal.
    *
@@ -292,7 +295,8 @@ export class DynamicSetupTableComponent implements OnInit {
    *
    * @returns {void}
    */
-  editSelectedRecord() {
+  editSelectedRecord(rowData: any) {
+    this.selectedTableRecordDetails = rowData;
     if (this.selectedTableRecordDetails) {
       this.editMode = !this.editMode;
       this.selectedTableRecordIndex = this.tableData.findIndex(
@@ -325,13 +329,8 @@ export class DynamicSetupTableComponent implements OnInit {
    *
    * @returns {void}
    */
-  deleteSelectedRecord() {
-    if (!this.selectedTableRecordDetails) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error', 'No record is selected'
-      );
-      return;
-    }
+  deleteSelectedRecord(rowData: any) {
+    this.rowToDelete = rowData;
     this.recordDeleteConfirmationModal.show();
   }
 
@@ -346,7 +345,7 @@ export class DynamicSetupTableComponent implements OnInit {
    * @returns {void}
    */
   confirmRecordDelete() {
-    const index = this.tableData.findIndex((item: any) => item === this.selectedTableRecordDetails);
+    const index = this.tableData.findIndex((item: any) => item === this.rowToDelete);
     if (index !== -1) {
       this.tableData.splice(index, 1);
       this.sessionStorageService.setItem(this.subGroupId, JSON.stringify(this.tableData));
@@ -396,17 +395,6 @@ export class DynamicSetupTableComponent implements OnInit {
       default:
         log.info(`no fieldId found`);
     }
-  }
-
-  /**
-   * Gets a form control by its group and field id.
-   *
-   * @param {string} groupId - The group id.
-   * @param {string} fieldId - The field id.
-   * @returns {AbstractControl | null} The form control or null if not found.
-   */
-  getFieldControl(groupId: string, fieldId: string) {
-    return this.dynamicModalForm.get(`${groupId}.${fieldId}`);
   }
 
   /**

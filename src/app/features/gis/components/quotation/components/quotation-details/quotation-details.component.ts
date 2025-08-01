@@ -22,11 +22,12 @@ import { IntermediaryService } from "../../../../../entities/services/intermedia
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { forkJoin, mergeMap } from 'rxjs';
-import { QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
+import { QuotationDetails, QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
 import { ProductClauseDTO, Products } from '../../../setups/data/gisDTO';
 import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
 import { ClaimsService } from '../../../claim/services/claims.service';
 import * as bootstrap from 'bootstrap';
+import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
 
 const log = new Logger('QuotationDetails');
 
@@ -38,7 +39,11 @@ const log = new Logger('QuotationDetails');
 export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
-  @ViewChild('dt') table!: Table;
+  @ViewChild('productClauseTable') productClauseTable!: any;
+  @ViewChild('addProductClausesTable') addProductClausesTable!: any;
+
+  @ViewChild('reassignTable') reassignTable!: any;
+
   @ViewChild(Table) private dataTable: Table;
   @ViewChild('reassignProductModal') reassignProductModalElement!: ElementRef;
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
@@ -69,7 +74,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   quotationsList: any;
   clientExistingQuotations: any
   quotationNo: any;
-  quotationCode: any;
+  quotationCode: number;
   isChecked: boolean = false;
   show: boolean = false;
   showProducts: boolean = true;
@@ -110,11 +115,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   exchangeRate: number;
   userOrgDetails: UserDetail;
   defaultCurrency: CurrencyDTO;
-  quotationFormDetails: any = null
+  storedQuotationFormDetails: any = null
   motorClassAllowed: string;
   currencyDelimiter: any;
-  quotationDetails: any;
-  quoteToEditData: QuotationList;
+  quotationDetails: QuotationDetails;
   agentName: string;
   branchId: number;
   productDetails: any[] = [];
@@ -169,6 +173,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   productToReassign: any;
   noCommentleft: boolean = false
   reassignProductComment: string;
+  sessionClauses: any;
+  clientToReassignQuotation: any;
+  clientOptions: any;
+  quotationAction: string;
+  marketerList: AgentDTO[] = [];
+  departmentSelected: boolean = false;
 
   constructor(
     public bankService: BankService,
@@ -188,9 +198,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     public claimsService: ClaimsService,
     private renderer: Renderer2
   ) {
-
-    this.quotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
-    log.debug("QUOTATION FORM DETAILS", this.quotationFormDetails)
+    this.quotationAction = sessionStorage.getItem('quotationAction')
+    this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
+    this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
+    this.storedQuotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
+    log.debug("QUOTATION FORM DETAILS", this.storedQuotationFormDetails)
+    const StoredQuotationPayload = JSON.parse(sessionStorage.getItem('quotationPayload'));
+    log.debug("QUOTATION FORM Payload", StoredQuotationPayload)
+    const selectedClientName = sessionStorage.getItem('SelectedClientName')
+    this.selectedClientName = selectedClientName;
+    log.debug("Selected client name:", this.selectedClientName)
     const clientFormDetails = sessionStorage.getItem('clientPayload');
     log.debug("Client form details:", clientFormDetails)
     const clientCode = sessionStorage.getItem('clientCode');
@@ -235,6 +252,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
+    this.getuser();
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
       phone: [''],
@@ -246,7 +264,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     // this.todaysDate = new Date();
     // this.coverToDate = new Date(this.todaysDate);
     //  this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);
-    this.getuser();
     this.createQuotationProductForm();
 
 
@@ -265,13 +282,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.updateCoverToDate(today);
       }
     });
-    this.quoteToEditData = JSON.parse(sessionStorage.getItem("quoteToEditData"));
-    log.debug("quote data to edit: ", this.quoteToEditData);
 
-    if (this.quoteToEditData) {
-      log.debug("load quotation details: ", this.quoteToEditData);
-      this.loadClientQuotation();
-    }
 
     this.loadPersistedClauses();
     this.getUsers();
@@ -407,6 +418,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const clientCode = eventData.id;
     this.selectedClientCode = clientCode;
     this.selectedClientName = eventData.clientFullName
+    sessionStorage.setItem("SelectedClientName", this.selectedClientName);
+    this.quotationForm.controls['client'].setValue(this.selectedClientCode);
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
@@ -414,25 +427,51 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.showClientSearchModal = false;
   }
   //search clause
-  filterByshortDescription(event: any): void {
-    const value = event.target.value;
-    this.shortDescriptionSearch = value;
-    this.table.filter(value, 'shortDescription', 'contains');
+  filterByshortDescription(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.productClauseTable.filter(input.value, 'shortDescription', 'contains');
   }
 
-  filterByHeading(event: any): void {
-    const value = event.target.value;
-    this.table.filter(value, 'heading', 'contains');
+  filterByHeading(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.productClauseTable.filter(input.value, 'heading', 'contains');
   }
 
-  filterByWording(event: any): void {
-    const value = event.target.value;
-    this.table.filter(value, 'wording', 'contains');
+  filterByWording(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.productClauseTable.filter(input.value, 'wording', 'contains');
+  }
+  filterByAddshortDescription(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.addProductClausesTable.filter(input.value, 'shortDescription', 'contains');
   }
 
+  filterByAddHeading(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.addProductClausesTable.filter(input.value, 'heading', 'contains');
+  }
+  fetchQuotationDetails(quotationCode: number) {
+    log.debug("Quotation Number tot use:", quotationCode)
+    this.quotationService.getQuotationDetails(quotationCode)
+      .subscribe({
+        next: (res: any) => {
+          this.quotationDetails = res;
+          log.debug("Quotation details-risk details", this.quotationDetails);
 
-  // Product Clauses
-  sessionClauses: any
+
+        },
+        error: (error: HttpErrorResponse) => {
+          log.debug("Error log", error.error.message);
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error.message
+          );
+        },
+
+      })
+  }
+
   getProductClause(product: any) {
     const productCode = product.code || this.productCode;
     this.productCode = productCode;
@@ -613,92 +652,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
   }
 
-  loadClientQuotation() {
-    log.debug("passed quotation Number:", this.quoteToEditData.quotationNumber);
-    let defaultCode
-    if (this.quoteToEditData.quotationNumber) {
-      defaultCode = this.quoteToEditData.quotationNumber;
-      log.debug("QUOTE Number", defaultCode)
 
-      sessionStorage.setItem("quotationNum", defaultCode);
-    }
-
-    let quotationCode = JSON.stringify(this.quoteToEditData.quotationCode);
-    if (quotationCode) {
-      log.debug("Quotation Code", quotationCode);
-      (sessionStorage.setItem("quotationCode", quotationCode));
-    }
-
-    this.quotationService.getQuotationDetails(defaultCode).subscribe(data => {
-      this.quotationDetails = data;
-      log.debug("Quotation Details-quotation details screen:", this.quotationDetails);
-
-      this.quotationForm.patchValue({
-        quotationCode: this.quotationDetails.code,
-        quotationNo: this.quotationDetails.quotationNo,
-        user: this.quotationDetails.preparedBy,
-        wefDate: new Date(this.quotationDetails.coverFrom),
-        wetDate: new Date(this.quotationDetails.coverTo),
-        expiryDate: new Date(this.quotationDetails.expiryDate),
-        branch: this.quotationDetails.branchCode,
-        currencyCode: this.quotationDetails.currencyCode,
-        agentCode: this.quotationDetails.agentCode,
-        clientType: this.quotationDetails.clientType,
-        source: this.quotationDetails.source?.code,
-        clientCode: this.quotationDetails.clientCode,
-        comments: this.quotationDetails.comments ? this.quotationDetails.comments : null,
-        internalComments: this.quotationDetails.internalComments ? this.quotationDetails.internalComments : null,
-        RFQDate: this.quotationDetails.preparedDate ? new Date(this.quotationDetails.preparedDate) : null,
-        multiUser: this.quotationDetails.multiUser,
-        currencyRate: this.quotationDetails.currencyRate,
-        introducerCode: this.quotationDetails.introducerCode,
-        polPropHoldingCoPrpCode: this.quotationDetails.quotPropHoldingCoPrpCode,
-        chequeRequisition: this.quotationDetails.chequeRequisition,
-        divisionCode: this.quotationDetails.divisionCode,
-        subAgentCode: this.quotationDetails.subAgentCode,
-        prospectCode: this.quotationDetails.prospectCode,
-        marketerAgentCode: this.quotationDetails.marketerAgentCode,
-        frequencyOfPayment: this.quotationDetails.frequencyOfPayment,
-        web: this.quotationDetails.web,
-        travelQuote: this.quotationDetails.travelQuote,
-        organizationCode: this.quotationDetails.organizationCode,
-        subQuote: this.quotationDetails.subQuote,
-        premiumFixed: this.quotationDetails.premiumFixed,
-        action: 'E',
-      });
-
-      log.debug("patched quotation form", this.quotationForm);
-
-      // Set product code
-      const productCode = this.quotationDetails.quotationProducts[0].productCode;
-      this.productService.getProductDetailsByCode(productCode).subscribe(res => {
-        log.debug("response product", res);
-        const selectedProduct = this.ProductDescriptionArray.find((product: {
-          code: number;
-        }) => product.code === res?.code);
-        if (selectedProduct) {
-          this.quotationForm.controls['productCode'].setValue(selectedProduct);
-          this.getProductClause(selectedProduct);
-          this.checkMotorClass();
-        }
-      });
-
-      // Set currency code
-      this.currency.forEach(el => {
-        if (el.symbol === this.quotationDetails.currency) {
-          this.quotationForm.controls['currency'].setValue(el);
-        }
-      });
-
-      // set branch
-      this.branch.forEach(el => {
-        if (el.id === this.quotationDetails.branchCode) {
-          this.quotationForm.controls['branch'].setValue(el);
-        }
-      });
-
-    })
-  }
 
   quickQuoteDetails() {
     this.quickQuotationCode = sessionStorage.getItem('quickQuotationCode');
@@ -852,9 +806,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   saveQuotationDetails() {
     log.debug("Quotation form details >>>>", this.quotationForm)
     log.debug("Selected agent >>>>", this.agentDetails)
+    log.debug("ProductDetails:", this.productDetails)
     if (this.quotationForm.valid) {
       const quotationFormValues = this.quotationForm.getRawValue();
       const quotationPayload = {
+        quotationNumber: this.quotationDetails?.quotationNo,
+        quotationCode: this.quotationCode || null,
         user: this.user,
         branchCode: quotationFormValues.branch.id,
         RFQDate: this.formatDate(quotationFormValues.RFQDate),
@@ -869,14 +826,26 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         wefDate: this.formatDate(this.productDetails[0].coverFrom),
         wetDate: this.formatDate(this.productDetails[0].coverTo),
         frequencyOfPayment: quotationFormValues?.frequencyOfPayment?.value,
+        prospectCode: this.quotationDetails?.prospectCode,
+        premium: this.quotationDetails?.premium,
+        comments: this.quotationDetails?.comments,
+
         quotationProducts: this.productDetails.map((value) => {
+          const existingProduct = this.quotationDetails?.quotationProducts?.find(
+            (p) => p.productCode == value.productCode.code
+          );
+          log.debug('existing product:', existingProduct)
+
           return {
+            code: existingProduct?.code || null, // If editing, use existing code; otherwise null
+            quotationCode: this.quotationCode,
             wef: this.formatDate(value.coverFrom),
             wet: this.formatDate(value.coverTo),
             productCode: value.productCode.code,
             productName: value.productCode.description
-          }
+          };
         })
+
       }
       log.debug("quotation payload to save", quotationPayload);
       this.createQuotation(quotationPayload)
@@ -897,118 +866,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     this.spinner.show()
 
-    /*this.sharedService.setQuotationFormDetails(this.quotationForm.value);
-    sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
-    const quotationFormJson = this.quotationForm.value
-    log.debug("Quotation form details", quotationFormJson)
-    if (this.quotationForm.value.multiUser == 'Y') {
-      /!**
-       * Creates a new quotation with multi-user and navigates to quote assigning.
-       * @param {Object} this.quotationForm.value - The form value representing quotation details.
-       * @param {string} this.user - The user associated with the quotation.
-       * @return {Observable<any>} - An observable of the response containing created quotation data.
-       *!/
-      if (this.quickQuotationDetails) {
-        log.debug("Quick Quotation results")
-        this.router.navigate(['/home/gis/quotation/quote-assigning'])
-        this.spinner.hide()
 
-      } else {
-
-        log.debug("CREATE QUOTATION -Multi user entry is Yes")
-        this.quotationService.processQuotation(quotationPayload).subscribe(data => {
-          this.quotationNo = data;
-          this.spinner.hide()
-          log.debug(this.quotationNo, "Quotation results:")
-          this.router.navigate(['/home/gis/quotation/quote-assigning'])
-        }, (error: HttpErrorResponse) => {
-          log.info(error);
-          this.spinner.hide()
-          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-
-        })
-      }
-
-
-    } else {
-      if (this.isChecked) {
-        /!**
-         * Creates a new quotation with import risks and navigates to import risks page.
-         * @param {Object} this.quotationForm.value - The form value representing quotation details.
-         * @param {string} this.user - The user associated with the quotation.
-         * @return {Observable<any>} - An observable of the response containing created quotation data.
-         *!/
-        if (this.quickQuotationDetails) {
-          this.router.navigate(['/home/gis/quotation/import-risks']);
-          this.spinner.hide();
-          sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationPayload));
-        } else {
-
-          log.debug("CREATE QUOTATION");
-          this.quotationService.processQuotation(quotationPayload).subscribe(
-            (data) => {
-              this.quotationNo = data;
-              this.spinner.hide();
-              log.debug(this.quotationForm.value);
-              log.debug(this.quotationNo, 'quotation number output');
-              this.quotationCode = this.quotationNo._embedded.quotationCode;
-              this.quotationNum = this.quotationNo._embedded.quotationNumber
-              sessionStorage.setItem('quotationNum', this.quotationNum);
-              sessionStorage.setItem('quotationCode', this.quotationCode);
-              sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationPayload));
-              this.router.navigate(['/home/gis/quotation/import-risks']);
-            },
-            (error: HttpErrorResponse) => {
-              log.info(error);
-              this.spinner.hide();
-              this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-            }
-          );
-        }
-      } else {
-        /!**
-         * Creates a new quotation and navigates to risk section details based on user preferences.
-         * @param {Object} this.quotationForm.value - The form value representing quotation details.
-         * @param {string} this.user - The user associated with the quotation.
-         * @return {Observable<any>} - An observable of the response containing created quotation data.
-         *!/
-
-        if (this.quickQuotationDetails) {
-          this.router.navigate(['/home/gis/quotation/risk-center']);
-          this.spinner.hide()
-
-        } else if (this.quoteToEditData) {
-          this.router.navigate(['/home/gis/quotation/risk-center']);
-          this.spinner.hide()
-        } else {
-          sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationPayload));
-
-          log.debug("Quotation form details", quotationPayload)
-          log.debug("CREATE QUOTATION")
-          this.quotationService.processQuotation(quotationPayload).subscribe(data => {
-            this.quotationNo = data;
-            this.spinner.hide()
-            log.debug(this.quotationNo, 'quotation number output');
-            this.quotationCode = this.quotationNo._embedded.quotationCode;
-            this.quotationNum = this.quotationNo._embedded.quotationNumber
-            sessionStorage.setItem('quotationNum', this.quotationNum);
-            sessionStorage.setItem('quotationCode', this.quotationCode);
-            sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationPayload));
-            this.selectedProductClauses(this.quotationCode)
-            this.sharedService.setQuotationDetails(this.quotationNum, this.quotationCode);
-
-            this.router.navigate(['/home/gis/quotation/risk-center']);
-          }, (error: HttpErrorResponse) => {
-            log.info(error);
-            this.spinner.hide()
-            this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-
-          })
-        }
-
-
-      }
-    }*/
   }
 
   /**
@@ -1037,6 +895,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           value: agent
         }));
         log.debug("AGENTS", data)
+        this.marketerList = data.content.filter(agent => agent.accountTypeId == 10)
+        log.debug("Marketer list", this.marketerList)
       })
   }
 
@@ -1325,17 +1185,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("Selected clause:", this.selectedClause)
   }
 
-  // 🔹 API call to add selected clauses
-  selectedProductClauses(quotationCode: string) {
-    if (this.selectedClause && this.selectedClause.length > 0) {
-      this.selectedClause.forEach(el => {
-        this.quotationService.addProductClause(el.code, this.productCode, quotationCode).subscribe(res => {
-          console.debug(res);
-        });
-        console.debug(el.code);
-      });
-    }
-  }
 
   onQuotationTypeChange(value: string): void {
     log.info('SELECTED VALUE:', value)
@@ -1449,15 +1298,17 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
           this.fetchUserOrgId()
         }
-        if (this.quotationFormDetails?.currencyCode) {
-          const selectedCurrency = this.currency.find(currency => currency.id === this.quotationFormDetails?.currencyCode);
+        if (this.storedQuotationFormDetails?.currency) {
+          const selectedCurrency = this.currency.find(currency => currency.id === this.storedQuotationFormDetails?.currency.id);
           if (selectedCurrency) {
-            this.quotationForm.patchValue({ currencyCode: selectedCurrency });
+            this.quotationForm.patchValue({ currency: selectedCurrency });
           }
         } else {
-          this.quotationForm.patchValue({ currencyCode: this.defaultCurrency });
+          this.quotationForm.patchValue({ currency: this.defaultCurrency });
 
         }
+        console.log("Form value here:", this.quotationForm.value);
+
         // QUOTATION SOURCES
         this.quotationSources = sources?.content || [];
         this.quotationSources = this.quotationSources.map((value) => {
@@ -1466,6 +1317,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         });
 
         log.debug("SOURCES", this.quotationSources);
+        if (this.storedQuotationFormDetails?.source) {
+          const selectedSource = this.quotationSources.find(source => source.code === this.storedQuotationFormDetails?.source.code);
+          if (selectedSource) {
+            this.quotationForm.patchValue({ source: selectedSource });
+          }
+        }
 
         // BRANCHES
         this.branch = branches.map((value) => {
@@ -1475,8 +1332,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
         log.info(this.branch, 'this is a branch list');
 
-        if (this.quotationFormDetails?.branch) {
-          const selectedBranch = this.branch.find(branch => branch.id === this.quotationFormDetails?.branch);
+        if (this.storedQuotationFormDetails?.branch) {
+          const selectedBranch = this.branch.find(branch => branch.id === this.storedQuotationFormDetails?.branch.id);
           if (selectedBranch) {
             this.quotationForm.patchValue({ branch: selectedBranch });
           }
@@ -1485,9 +1342,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         // INTRODUCERS
         this.introducers = introducers;
 
+        if (this.storedQuotationFormDetails?.introducer) {
+          const selectedIntroducer = this.introducers.find(introducer => introducer.code === this.storedQuotationFormDetails?.introducer);
+          if (selectedIntroducer) {
+            this.quotationForm.patchValue({ introducer: selectedIntroducer.code });
+          }
+        }
+
         // PRODUCTS
         this.products = products;
-        this.ProductDescriptionArray = this.products.map(product => {
+        this.ProductDescriptionArray = this.products?.map(product => {
           const description = this.capitalizeWord(product.description);
           return {
             code: product.code.toString(), // convert to string
@@ -1499,8 +1363,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         console.log("✅ ProductDescriptionArray with filterText:", this.ProductDescriptionArray);
 
 
-        if (this.quotationFormDetails?.productCode) {
-          const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.quotationFormDetails?.productCode);
+        if (this.storedQuotationFormDetails?.productCode) {
+          const selectedProduct = this.ProductDescriptionArray?.find(product => product.code === this.storedQuotationFormDetails?.productCode);
           if (selectedProduct) {
             this.quotationForm.patchValue({ productCode: selectedProduct });
           }
@@ -1872,7 +1736,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   getUsers() {
-    this.claimsService.getUsers().subscribe({
+    this.claimsService.getUsers(0, 1000).subscribe({
       next: (res => {
         this.users = res;
         this.users = this.users.content;
@@ -1898,12 +1762,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   filterGlobal(event: any): void {
     const value = event.target.value;
     this.globalSearch = value;
-    this.table.filterGlobal(value, 'contains');
+    this.reassignTable.filterGlobal(value, 'contains');
   }
 
   filterByFullName(event: any): void {
     const value = event.target.value;
-    this.table.filter(value, 'name', 'contains');
+    this.reassignTable.filter(value, 'name', 'contains');
   }
 
   onUserSelect(): void {
@@ -1931,6 +1795,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
 
     this.clientToReassignProduct = this.selectedUser.name;
+    if (this.selectedUser.userType == "G") {
+      this.departmentSelected = true
+    }
     this.closeChooseClientReassignModal();
     this.openReassignProductModal(this.productToReassign);
 
@@ -1958,12 +1825,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.closeReassignProductModal();
     this.clientToReassignProduct = null;
     this.productToReassign = null;
-    this.globalMessagingService.displaySuccessMessage('Success', 'Product reassigned');
+    this.globalMessagingService.displaySuccessMessage('Success', 'Product reassigned successfully');
 
   }
 
   openChooseClientReassignModal() {
     this.openModals('chooseClientReassign');
+    this.closeReassignProductModal();
+    this.getUsers();
   }
 
   closeChooseClientReassignModal() {
@@ -1990,8 +1859,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.quotationCode = this.quotationNo._embedded.quotationCode;
         this.quotationNum = this.quotationNo._embedded.quotationNumber
         sessionStorage.setItem('quotationNum', this.quotationNum);
-        sessionStorage.setItem('quotationCode', this.quotationCode);
-        sessionStorage.setItem('quotationFormDetails', JSON.stringify(quotationPayload));
+        sessionStorage.setItem('quotationCode', this.quotationCode.toString());
+        sessionStorage.setItem('quotationPayload', JSON.stringify(quotationPayload));
+        sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
         this.router.navigate(['/home/gis/quotation/risk-center']);
       },
       (error: HttpErrorResponse) => {
