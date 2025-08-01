@@ -466,7 +466,7 @@ textarea {
 }
 
 .custom-close {
-  filter: brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(7451%) hue-rotate(357deg) brightness(102%) contrast(122%);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(7451%) hue-rotate(357deg) brightness(102%) contrast(122%) !important;
   background-color: transparent !important;
   border: none !important;
   outline: none !important;

@@ -40,6 +40,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   @ViewChild('productClauseTable') productClauseTable!: any;
+  @ViewChild('addProductClausesTable') addProductClausesTable!: any;
+
   @ViewChild('reassignTable') reassignTable!: any;
 
   @ViewChild(Table) private dataTable: Table;
@@ -438,6 +440,15 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   filterByWording(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.productClauseTable.filter(input.value, 'wording', 'contains');
+  }
+  filterByAddshortDescription(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.addProductClausesTable.filter(input.value, 'shortDescription', 'contains');
+  }
+
+  filterByAddHeading(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.addProductClausesTable.filter(input.value, 'heading', 'contains');
   }
   fetchQuotationDetails(quotationCode: number) {
     log.debug("Quotation Number tot use:", quotationCode)

@@ -3,7 +3,7 @@
     <div class="card-body border-0 mx-4" style="padding-top: 0px;">
 
         <p-table [value]="riskDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single" dataKey="code"
-            [paginator]="true" [rows]="3" [rowsPerPageOptions]="[5, 10, 20, 50]">
+            [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 20, 50]">
             <ng-template pTemplate="header">
                 <tr>
                     <th class="flexible-header">{{'gis.quotation.risk_id' | translate}}</th>
@@ -442,18 +442,16 @@
                                         </td>
                                         <td class="flexible-header">{{ section.sectionDescription |sentenceCase }}</td>
                                         <td class="flexible-header">
-  <ng-container *ngIf="section.isFreeLimitEditable === 'Y'; else readOnlyFreeLimit">
-    <input
-      type="text"
-      class="form-control form-control-sm"
-      [(ngModel)]="section.freeLimit"
-      currencyMask
-    />
-  </ng-container>
-  <ng-template #readOnlyFreeLimit>
-    {{ section.freeLimit | number }}
-  </ng-template>
-</td>
+                                            <ng-container
+                                                *ngIf="section.isFreeLimitEditable === 'Y'; else readOnlyFreeLimit">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    [(ngModel)]="section.freeLimit" [options]="currencyObj"
+                                                    currencyMask />
+                                            </ng-container>
+                                            <ng-template #readOnlyFreeLimit>
+                                                {{ section.freeLimit | number }}
+                                            </ng-template>
+                                        </td>
                                         <td class="flexible-header" [pEditableColumn]="section.limitAmount"
                                             pEditableColumnField="limitAmount">
                                             <input class=" form-control form-control-sm  error-border"
@@ -476,7 +474,7 @@
                                 <button type="button" class="btn btn-outline-primary me-2"
                                     data-bs-dismiss="modal">Cancel</button>
                                 <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal"
-                                    (click)="createRiskLimitsNew()">{{'gis.quotation.save_details' |
+                                    (click)="createRiskSection()">{{'gis.quotation.save_details' |
                                     translate}}</button>
                             </div>
                         </div>
@@ -1051,7 +1049,7 @@
         <div [@slideInOut]="isClausesOpen ? 'open' : 'closed'" class="mt-2 w-100">
             {{selectedClause}}
             <p-table #riskClauseTable [value]="sessionClauses" dataKey="clauseCode" editMode="row"
-                [(selection)]="selectedClause" selectionMode="single" [autoLayout]="true" [paginator]="true" [rows]="2"
+                [(selection)]="selectedClause" selectionMode="single" [autoLayout]="true" [paginator]="true" [rows]="5"
                 [rowsPerPageOptions]="[5, 10, 20]" [scrollable]="true" responsiveLayout="scroll"
                 [tableStyle]="{ 'min-width': '100%', width: '100%' }">
                 <ng-template pTemplate="header">
