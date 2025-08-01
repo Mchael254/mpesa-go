@@ -685,6 +685,10 @@ p-table tr > th {
   color: var(--primary-color);
 }
 
+table>thead>tr>th {
+  background-color: #BAD0E4 !important;
+}
+
 /* responsive design */
 
 @media (max-width: 1400px) {

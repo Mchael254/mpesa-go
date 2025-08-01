@@ -74,6 +74,12 @@ export class CrmScreensConfigComponent implements OnInit {
   showExportSubSections: boolean = false;
   showExportSubSectionsTwo: boolean = false;
   modalId: string = '';
+  exportSelected: any;
+  selectedExportSubmodule: SubModulesDto;
+  selectedExportScreen: ScreensDto;
+  selectedExportSection: ScreenFormsDto;
+  selectedExportSubSection: FormGroupsDto;
+  selectedExportSubSectionTwo: FormSubGroupsDto;
   @ViewChild('dt2') dt2: Table | undefined;
   dynamicConfigBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -949,26 +955,43 @@ export class CrmScreensConfigComponent implements OnInit {
     this.showFields = subSectionTwo?.hasFields;
   }
 
-  onClickExportSubModule(event: any) {
-    this.fetchScreens(event.target.value);
-    this.showExportScreens = true;
+  onClickExportSubModule() {
+    if (this.selectedExportSubmodule) {
+      this.fetchScreens(this.selectedExportSubmodule.code);
+      this.exportSelected = this.selectedExportSubmodule.label[this.language];
+      this.showExportScreens = true;
+    }
   }
 
-  onClickExportScreen(event: any) {
-    this.fetchSections(event.target.value);
-    log.info('screen', event);
-    this.showExportSections = true;
+  onClickExportScreen() {
+    if (this.selectedExportScreen) {
+      this.fetchSections(this.selectedExportScreen.code);
+      this.exportSelected = this.selectedExportScreen.label[this.language];
+      this.showExportSections = true;
+    }
   }
 
-  onClickExportSection(event: any) {
-    this.fetchSubSections(this.selectedSubModule.code, null, event.target.value);
-    this.showExportSubSections = true;
-    this.showExportSubSectionsTwo = false;
+  onClickExportSection() {
+    if (this.selectedExportSection) {
+      this.fetchSubSections(this.selectedSubModule.code, null, this.selectedExportSection.code);
+      this.exportSelected = this.selectedExportSection.label[this.language];
+      this.showExportSubSections = true;
+      this.showExportSubSectionsTwo = false;
+    }
   }
 
-  onClickExportSubSection(event: any) {
-    this.fetchSubSectionsTwo(event.target.value);
-    this.showExportSubSectionsTwo = true;
+  onClickExportSubSection() {
+    if (this.selectedExportSection) {
+      this.fetchSubSectionsTwo(this.selectedExportSubSection.code);
+      this.exportSelected = this.selectedExportSubSection.label[this.language];
+      this.showExportSubSectionsTwo = true;
+    }
+  }
+
+  onClickExportSubSectionTwo() {
+    if (this.selectedExportSubSectionTwo) {
+      this.exportSelected = this.selectedExportSubSectionTwo.label[this.language];
+    }
   }
 
   filterFields(event: Event) {
@@ -979,6 +1002,31 @@ export class CrmScreensConfigComponent implements OnInit {
   getValidationTypes(validations: any[]): string {
     if (!validations || validations.length === 0) return '';
     return validations.map(v => v.type).join(', ');
+  }
+
+  importSetup() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.json';
+
+    fileInput.onchange = (event: Event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const content = JSON.parse(e.target?.result as string);
+            log.info('Imported setup file:', content);
+            this.globalMessagingService.displayInfoMessage('Success', 'Setup file selected successfully');
+          } catch (err) {
+            this.globalMessagingService.displayErrorMessage('Error', 'Invalid setup file format');
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+
+    fileInput.click();
   }
 
   fetchSubModules() {
