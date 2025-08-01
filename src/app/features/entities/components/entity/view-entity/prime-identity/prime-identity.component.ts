@@ -34,7 +34,6 @@ export class PrimeIdentityComponent implements OnInit {
     countries: CountryDto[],
     maritalStatuses: MaritalStatus[]
   };
-  @Output('openEditModal') openEditModal: EventEmitter<any> = new EventEmitter();
 
   primaryDetailsConfig: any;
   language: string = '';
@@ -78,38 +77,6 @@ export class PrimeIdentityComponent implements OnInit {
     }, 1000);
   }
 
-  /*fetchIdTypes(): void {
-    this.entityService.getIdentityType().subscribe({
-      next: (data: IdentityModeDTO[]) => {
-        this.idTypes = data;
-      },
-      error: err => {
-        log.error(`could not fetch: `, err);
-      }
-    });
-  }
-
-  fetchCountries(): void {
-    this.countryService.getCountries().subscribe({
-      next: (data: CountryDto[]) => {
-        this.countries = data;
-      },
-      error: err => {
-        log.error(`could not fetch: `, err);
-      }
-    });
-  }
-
-  fetchMaritalStatuses(): void {
-    this.maritalStatusService.getMaritalStatus().subscribe({
-      next: (data: MaritalStatus[]) => {
-        this.maritalStatuses = data;
-      },
-      error: err => {
-        log.error(`could not fetch: `, err);
-      }
-    });
-  }*/
 
   fetchSelectOptions(): void {
     forkJoin({
@@ -161,18 +128,16 @@ export class PrimeIdentityComponent implements OnInit {
 
   createEditForm(fields: any[]): void {
     const group: { [key: string]: any } = {};
-
     fields.forEach(field => {
       group[field.fieldId] = [
         field.defaultValue,
         field.isMandatory ? Validators.required : []
       ];
     });
-
     this.editForm = this.fb.group(group);
   }
 
-  patchFormValues(): any {
+  patchFormValues(): void {
     // patch form values
     const dob = this.partyAccountDetails?.dateOfBirth; // from api >>> "2007-04-10T00:00:00.000+00:00"
     const patchData = {
@@ -218,7 +183,7 @@ export class PrimeIdentityComponent implements OnInit {
         const errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
       }
-    })
+    });
     this.closeButton.nativeElement.click();
   }
 

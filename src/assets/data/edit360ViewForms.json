@@ -259,11 +259,208 @@
   },
   "contact": {
     "label": {
-      "en": "contact",
+      "en": "contact details",
       "fr": "contact",
       "ke": "mawasiliano"
     },
-    "fields": []
+    "fields": [
+      {
+        "sectionId": "contact",
+        "fieldId": "branch",
+        "type": "select",
+        "label": {
+          "en": "branch",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": ["NATIONAL_ID", "BIRTH_CERT"]
+      },
+      {
+        "sectionId": "contact",
+        "fieldId": "title",
+        "type": "select",
+        "label": {
+          "en": "title",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "contact",
+        "fieldId": "smsNumber",
+        "type": "tel",
+        "label": {
+          "en": "sms number",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "contact",
+        "fieldId": "telNumber",
+        "type": "tel",
+        "label": {
+          "en": "telephone number",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "contact",
+        "fieldId": "email",
+        "type": "text",
+        "label": {
+          "en": "email",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "johndoe@example.com",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "contact",
+        "fieldId": "contactChannel",
+        "type": "select",
+        "label": {
+          "en": "preferred contact channel",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": ["m", "f"]
+      }
+    ],
+    "buttons": {
+      "cancel": {
+        "sectionId": "prime_identity",
+        "fieldId": "cancel_button",
+        "type": "button",
+        "label": {
+          "en": "cancel",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        }
+      },
+      "save": {
+        "sectionId": "prime_identity",
+        "fieldId": "cancel_button",
+        "type": "button",
+        "label": {
+          "en": "save details",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        }
+      }
+    }
   },
   "address": {
     "label": {
