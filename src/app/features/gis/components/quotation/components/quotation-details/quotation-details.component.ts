@@ -27,6 +27,7 @@ import { ProductClauseDTO, Products } from '../../../setups/data/gisDTO';
 import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
 import { ClaimsService } from '../../../claim/services/claims.service';
 import * as bootstrap from 'bootstrap';
+import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
 
 const log = new Logger('QuotationDetails');
 
@@ -174,6 +175,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   clientToReassignQuotation: any;
   clientOptions: any;
   quotationAction: string;
+  marketerList: AgentDTO[] = [];
+  departmentSelected: boolean = false;
 
   constructor(
     public bankService: BankService,
@@ -881,6 +884,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           value: agent
         }));
         log.debug("AGENTS", data)
+        this.marketerList = data.content.filter(agent => agent.accountTypeId == 10)
+        log.debug("Marketer list", this.marketerList)
       })
   }
 
@@ -1335,7 +1340,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
         // PRODUCTS
         this.products = products;
-        this.ProductDescriptionArray = this.products.map(product => {
+        this.ProductDescriptionArray = this.products?.map(product => {
           const description = this.capitalizeWord(product.description);
           return {
             code: product.code.toString(), // convert to string
@@ -1348,7 +1353,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
         if (this.storedQuotationFormDetails?.productCode) {
-          const selectedProduct = this.ProductDescriptionArray.find(product => product.code === this.storedQuotationFormDetails?.productCode);
+          const selectedProduct = this.ProductDescriptionArray?.find(product => product.code === this.storedQuotationFormDetails?.productCode);
           if (selectedProduct) {
             this.quotationForm.patchValue({ productCode: selectedProduct });
           }
@@ -1720,7 +1725,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   getUsers() {
-    this.claimsService.getUsers().subscribe({
+    this.claimsService.getUsers(0, 1000).subscribe({
       next: (res => {
         this.users = res;
         this.users = this.users.content;
@@ -1779,6 +1784,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
 
     this.clientToReassignProduct = this.selectedUser.name;
+    if (this.selectedUser.userType == "G") {
+      this.departmentSelected = true
+    }
     this.closeChooseClientReassignModal();
     this.openReassignProductModal(this.productToReassign);
 

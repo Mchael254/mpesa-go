@@ -17,7 +17,7 @@ import { VehicleModelService } from '../../../setups/services/vehicle-model/vehi
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, riskSection } from '../../data/quotationsDTO';
+import { Clause, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, SubclassCoverTypes, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
@@ -56,6 +56,7 @@ const log = new Logger('RiskDetailsComponent');
 export class RiskDetailsComponent {
   freeLimitValue: any;
   sumInsured: number;
+  mandatoryClause: any[];
   getFreeLimitLabel(arg0: any) {
     throw new Error('Method not implemented.');
   }
@@ -204,7 +205,7 @@ export class RiskDetailsComponent {
   quotationIsAuthorised: boolean = true; // or false
   yearList: any;
   clientCode: number;
-  showSections: boolean = false;
+  // showSections: boolean = false;
   tabs = ['Schedule Details', 'Level 2', 'Level 3']; // Dummy tabs for now
   activeTab = 'Schedule Details';
   isEditMode: boolean = false;
@@ -223,6 +224,13 @@ export class RiskDetailsComponent {
   };
   originalClauseBeforeEdit: any = null;
   clauseToDelete: any = null;
+  selectedClauses: any[] = [];
+
+  columns: { field: string; header: string; visible: boolean }[] = [];
+
+  showSections: boolean = true;
+  showColumnModal = false;
+  columnModalPosition = { top: '0px', left: '0px' };
 
   constructor(
     public subclassService: SubclassesService,
@@ -1652,9 +1660,6 @@ export class RiskDetailsComponent {
 
 
 
-  toggleSections() {
-    this.showSections = !this.showSections;
-  }
 
 
   // This method Clears the Schedule Detail form by resetting the form model
@@ -1945,7 +1950,9 @@ export class RiskDetailsComponent {
 
     this.sectionDetails = this.selectedRisk.riskLimits
     log.debug("section DETAILS AFTER ROW CLICK:", this.sectionDetails)
-
+    if (this.sectionDetails.length > 0) {
+      // this.setColumnsFromRiskLimit(this.sectionDetails[0]);
+    }
     const subclassCode = riskSelectedData.subclassCode;
     const binderCode = riskSelectedData.binderCode;
     const covertypeCode = riskSelectedData.coverTypeCode;
@@ -1988,6 +1995,55 @@ export class RiskDetailsComponent {
     this.loadSubclassClauses(riskSelectedData.subclassCode);
 
   }
+
+
+  toggleSections(iconElement: HTMLElement): void {
+    this.showSections = !this.showSections;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showColumnModal = true;
+  }
+
+  setColumnsFromRiskLimit(sample: RiskLimit) {
+    const excludedFields = ['code', 'quotationCode', 'quotationProCode', 'productCode']; // adjust as needed
+
+    this.columns = Object.keys(sample)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: this.defaultVisibleFields.includes(key),
+      }));
+
+    // manually add actions column
+    this.columns.push({ field: 'actions', header: 'Actions', visible: true });
+  }
+
+  defaultVisibleFields = [
+    'rowNumber',
+    'calcGroup',
+    'sectionCode',
+    'sectionShortDescription',
+    'limitAmount',
+    'premiumRate',
+    'rateType'
+  ];
+
+  sentenceCase(text: string): string {
+    return text
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (str) => str.toUpperCase());
+  }
+
   /**
 * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
 * state of a Section.
@@ -2535,10 +2591,7 @@ export class RiskDetailsComponent {
       })
     }
   }
-  openHelperModal(selectedClause: any) {
-    // Set the showHelperModal property of the selectedClause to true
-    selectedClause.showHelperModal = true;
-  }
+
   onResize(event: any) {
     this.modalHeight = event.height;
   }
@@ -2574,9 +2627,9 @@ export class RiskDetailsComponent {
 
         log.debug('subclass ClauseList#####', this.SubclauseList);
 
-        this.selectedClause = this.SubclauseList.filter(clause => clause.isMandatory === 'Y');
+        this.mandatoryClause = this.SubclauseList.filter(clause => clause.isMandatory === 'Y');
         this.nonMandatoryClauses = this.SubclauseList.filter(clause => clause.isMandatory === 'N');
-        log.debug('selected subclass ClauseList#####', this.selectedClause);
+        log.debug('selected subclass ClauseList#####', this.mandatoryClause);
         log.debug('Non mandatory  subclass ClauseList#####', this.nonMandatoryClauses);
 
         this.SubclauseList.forEach(clause => {
@@ -2598,14 +2651,14 @@ export class RiskDetailsComponent {
       next: (data) => {
         this.SubclauseList = data || [];
 
-        this.selectedClause = this.SubclauseList.filter(c => c.isMandatory === 'Y');
+        this.mandatoryClause = this.SubclauseList.filter(c => c.isMandatory === 'Y');
         this.nonMandatoryClauses = this.SubclauseList.filter(c => c.isMandatory === 'N');
-        this.riskClause = [...this.selectedClause];
+        this.riskClause = [...this.mandatoryClause];
         this.sessionClauses = [...this.riskClause];
 
         const quotationCode = Number(sessionStorage.getItem("quotationCode"));
         const riskCode = Number(this.selectedRiskCode);
-        this.selectedClause.forEach(clause => {
+        this.mandatoryClause.forEach(clause => {
           const payload: riskClause = {
             clauseCode: clause.clauseCode,
             clauseShortDescription: clause.shortDescription ?? '',
@@ -2887,53 +2940,12 @@ export class RiskDetailsComponent {
     }
     log.debug("Selected  Risk clause:", this.selectedClause)
 
-    // ✅ Call API with updated selection
-    // this.selectedProductClauses(this.quotationCode);
-    this.captureRiskClause();
+
 
 
   }
 
-  captureRiskClause() {
-    if (this.selectedClause && this.selectedClause.length > 0) {
-      this.selectedClause.forEach(el => {
-        this.quotationService.captureRiskClauses(this.quotationRiskCode, this.selectedSubclassCode, this.quotationCode, el.clauseCode, this.selectProductCode).subscribe(res => {
-          if (res) {
-            log.info(`Response from capture risk endpont`, res);
-          } else {
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              'Something went wrong. Please try Again'
-            );
-          }
-        });
-        console.debug(el.clauseCode);
-      });
-    }
-    // this.quotationService
-    //   .captureRiskClauses(this.quotationRiskCode, this.selectedSubclassCode, this.quotationCode, this.selectedRiskClauseCode, this.selectProductCode)
-    //   .pipe(untilDestroyed(this))
-    //   .subscribe({
-    //     next: (data) => {
-    //       if (data) {
-    //         log.info(`Response from capture risk endpont`, data);
-    //       } else {
-    //         this.globalMessagingService.displayErrorMessage(
-    //           'Error',
-    //           'Something went wrong. Please try Again'
-    //         );
-    //       }
-    //     },
-    //     // error: (err) => {
 
-    //     //   this.globalMessagingService.displayErrorMessage(
-    //     //     'Error',
-    //     //     this.errorMessage
-    //     //   );
-    //     //   log.info(`error >>>`, err);
-    //     // },
-    //   });
-  }
   // onRiskEdit(risk: any) {
   //   this.selectedRisk = risk;
   //   const binderList = JSON.parse(sessionStorage.getItem('binderList'));
@@ -3168,7 +3180,7 @@ export class RiskDetailsComponent {
 
 
 
-  selectedClauses: any[] = [];
+
 
 
   toggleSelectAlls(event: any) {
@@ -3284,5 +3296,7 @@ export class RiskDetailsComponent {
 
     return payload;
   }
-
+  clearRiskForm() {
+    this.riskDetailsForm.reset
+  }
 }
