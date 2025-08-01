@@ -436,7 +436,19 @@
                                                 [(ngModel)]="section.isChecked">
                                         </td>
                                         <td class="flexible-header">{{ section.sectionDescription |sentenceCase }}</td>
-                                        <td class="flexible-header">{{ section.freeLimit | number }}</td>
+                                        <td class="flexible-header">
+  <ng-container *ngIf="section.isFreeLimitEditable === 'Y'; else readOnlyFreeLimit">
+    <input
+      type="text"
+      class="form-control form-control-sm"
+      [(ngModel)]="section.freeLimit"
+      currencyMask
+    />
+  </ng-container>
+  <ng-template #readOnlyFreeLimit>
+    {{ section.freeLimit | number }}
+  </ng-template>
+</td>
                                         <td class="flexible-header" [pEditableColumn]="section.limitAmount"
                                             pEditableColumnField="limitAmount">
                                             <input class=" form-control form-control-sm  error-border"
