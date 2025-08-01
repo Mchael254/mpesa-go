@@ -30,12 +30,11 @@ export class QuotationOtherDetailsComponent {
 
   ngOnInit(): void {
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'));
-    log.debug("quote code >>", this.quotationCode);
+    log.debug("quote code-other details >>", this.quotationCode);
     this.clientCode = Number(sessionStorage.getItem('clientCode'));
     log.debug("client code >>", this.quotationCode);
     this.quotationRevisions = this.sortRevisionsByNumber(this.quotationRevisions);
     this.quotationComments = this.sortCommentsByNumber(this.quotationComments);
-
 
   }
 

@@ -2750,7 +2750,7 @@ export class RiskDetailsComponent {
   addRiskClauses(): void {
     if (this.selectedRiskClauses?.length) {
       // Combine selected and already mandatory clauses
-      this.riskClause = [...this.riskClause, ...this.selectedRiskClauses];
+      this.riskClause = [...this.selectedRiskClauses, ...this.riskClause];
       this.sessionClauses = [...this.riskClause];
 
       log.debug("Selected Risk Clauses:", this.selectedRiskClauses);
