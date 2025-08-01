@@ -36,8 +36,7 @@
           <div class="col-sm-4 col-6 mb-3">
             <div class="form-group">
               <label class="quote-label">Email address</label>
-              <input type="email" id="email" class="form-control" formControlName="email"
-                placeholder="Enter your email" />
+              <input type="email" id="email" class="form-control" formControlName="email" placeholder="" />
               <div *ngIf="quotationForm.get('email')?.touched && quotationForm.get('email')?.invalid"
                 class="text-danger form-text">
                 <div *ngIf="quotationForm.get('email')?.errors?.['required']">
@@ -81,7 +80,7 @@
                       <ng-container *ngIf="field.name === 'client' && !newClient">
                         <div class="position-relative" style="cursor: pointer;">
                           <input type="text" class="form-control form-control-sm pe-5" [value]="selectedClientName"
-                            readonly (click)="showClientSearchModal = true" />
+                            readonly (click)="showClientSearchModal = true" style="cursor: pointer;" />
                           <i class="pi pi-search position-absolute"
                             style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
                         </div>
@@ -176,7 +175,7 @@
                     <!-- Agent Field -->
                     <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
                       <p-dropdown formControlName="agents" [options]="agents" optionLabel="label" optionValue="value"
-                        placeholder="Select Agent" [filter]="true" [filterBy]="'label'">
+                        placeholder="" [filter]="true" [filterBy]="'label'">
                       </p-dropdown>
                       <div
                         *ngIf="quotationForm.get('agents')?.hasError('required') && quotationForm.get('agents')?.touched"
@@ -188,7 +187,7 @@
                     <!-- campaign field -->
                     <ng-container *ngIf="field.name === 'campaign' && showCampaignField">
                       <p-dropdown formControlName="campaign" [options]="campaignList" optionLabel="label"
-                        optionValue="value" placeholder="Select Campaign" [filter]="true" [filterBy]="'label'">
+                        optionValue="value" placeholder="" [filter]="true" [filterBy]="'label'">
                       </p-dropdown>
                       <div
                         *ngIf="quotationForm.get('campaign')?.hasError('required') && quotationForm.get('campaign')?.touched"
@@ -241,6 +240,17 @@
                           *ngIf="quotationForm.get('paymentFrequency')?.hasError('required') && quotationForm.get('paymentFrequency')?.touched"
                           class="form-text text-danger">Payment frequency is required.</div>
                       </ng-container>
+                      <!-- Marketer field -->
+                      <ng-container *ngIf="field.name === 'marketer'">
+                        <p-dropdown formControlName="marketer" [options]="marketerList" optionLabel="name"
+                          optionValue="id" placeholder="" [filter]="true" [filterBy]="'name'">
+                        </p-dropdown>
+                        <div
+                          *ngIf="quotationForm.get('marketer')?.hasError('required') && quotationForm.get('marketer')?.touched"
+                          class="form-text text-danger">
+                          Marketer source is required.
+                        </div>
+                      </ng-container>
                     </ng-container>
                     <ng-container *ngSwitchCase="'text'">
 
@@ -259,163 +269,7 @@
 
       </form>
 
-      <!-- <div class="row mb-4" [formGroup]='quotationForm'>
-        <div class="col-sm-4 col-6">
-          <div class="form-group form-group-sm">
-            <br>
-            <label for="source" class="quote-label">Source<span class="required"></span></label>
-            <p-dropdown id="source" formControlName="source" [options]="quotationSources" optionLabel="description"
-              placeholder=" " [filterBy]="'description'" [filter]="true"
-              (onChange)="onSourceChange($event)"></p-dropdown>
-            <div *ngIf="quotationForm.get('source').hasError('required') && quotationForm.get('source').touched"
-              class="form-text text-danger">
-              Source is required.
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-4 col-6">
-          <div class="form-group form-group-sm">
-            <br>
-            <label for="quotationType" class="quote-label">Quotation type</label>
-            <p-dropdown id="quotationType" [options]="quotationType" optionLabel="label" optionValue="value"
-              placeholder=" " [filterBy]="'label'" [filter]="true">
-            </p-dropdown>
-          </div>
-        </div>
-        <div class="col-sm-4 col-6" *ngIf="showIntermediaryField">
-          <div class="form-group form-group-sm">
-            <br>
-            <label for="agent" class="quote-label">Intermediary<span class="required"></span></label>
-            <input type="text" id="agent" class="form-control form-control-sm mb-1" formControlName="agent"
-              data-bs-toggle="modal" data-bs-target="#selectIntermediary" autocomplete="off" [value]="agentName">
-            <div *ngIf="quotationForm.get('agent').hasError('required') && quotationForm.get('agent').touched"
-              class="form-text text-danger">
-              Intermediary is required.
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-4 col-6">
-          <div class="form-group form-group-sm">
-            <br>
-            <label for="branch" class="quote-label">Branch<span class="required"></span></label>
-            <p-dropdown id="branch" formControlName="branch" [options]="branch" optionLabel="name" placeholder=" "
-              value="id" [filterBy]="'name'" [filter]="true"></p-dropdown>
-            <div *ngIf="quotationForm.get('branch').hasError('required') && quotationForm.get('branch').touched"
-              class="form-text text-danger">
-              Branch is required.
-            </div>
-          </div>
-        </div>
 
-        <div class="col-sm-4 col-6">
-          <div class="form-group form-group-sm">
-            <br>
-            <label for="currencyCode" class="quote-label">Currency<span class="required"></span></label><br>
-            <p-dropdown id="currencyCode" formControlName="currencyCode" [options]="currency" optionLabel="name"
-              value="id" [filterBy]="'name'" [filter]="true" (onChange)="fetchUserOrgId()"></p-dropdown>
-            <div
-              *ngIf="quotationForm.get('currencyCode').hasError('required') && quotationForm.get('currencyCode').touched"
-              class="form-text text-danger">
-              Currency is required.
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-4 col-6">
-          <div class="form-group form-group-sm">
-            <br>
-            <label for="rfqDate" class="quote-label">Request for quote date</label>
-            <p-calendar id="rfqDate" inputId="rfqDate" [dateFormat]="dateFormat" formControlName="RFQDate"
-              [minDate]="minDate" (onSelect)="updateQuotationExpiryDate($event)">
-            </p-calendar>
-            <div *ngIf="quotationForm.get('RFQDate').hasError('required') && quotationForm.get('RFQDate').touched"
-              class="form-text text-danger">
-              Request for quote date is required.
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-4 col-6">
-          <div class="form-group form-group-sm">
-            <br>
-            <label for="expiryDate" class="quote-label">Quotation expiry date</label>
-            <p-calendar id="expiryDate" inputId="expiryDate" [dateFormat]="dateFormat" formControlName="expiryDate"
-              [minDate]="minDate">
-            </p-calendar>
-            <div *ngIf="quotationForm.get('expiryDate').hasError('required') && quotationForm.get('expiryDate').touched"
-              class="form-text text-danger">
-              Quotation expiry date is required.
-            </div>
-          </div>
-        </div>
-        <ng-container *ngIf="show" class="row mb-4 collapse" id="collapseExample">
-          <div class="col-sm-4 col-6">
-            <div class="form-group form-group-sm">
-              <br>
-              <label for="introducerCode" class="quote-label">Introducer</label>
-              <p-dropdown id="introducerCode" formControlName="introducerCode" [options]="introducers"
-                optionValue="code" optionLabel="surName" [filterBy]="'surName'" [filter]="true">
-              </p-dropdown>
-            </div>
-          </div>
-          <div class="col-sm-4 col-6">
-            <div class="form-group form-group-sm">
-              <br>
-              <label for="fromCampaign" class="quote-label">Results from campaign</label>
-              <p-dropdown id="fromCampaign" formControlName="fromCampaign" [options]="fromCampaign" optionValue="value"
-                optionLabel="label" [filterBy]="'label'" [filter]="true"></p-dropdown>
-            </div>
-          </div>
-          <div class="col-sm-4 col-6" *ngIf="showCampaignField">
-            <div class="form-group form-group-sm">
-              <br>
-              <label for="campaignName" class="quote-label">Campaign</label>
-              <p-dropdown id="campaignName" [options]="campaignList" optionLabel="campaignName" placeholder=" "
-                [filterBy]="'campaignName'" [filter]="true"></p-dropdown>
-            </div>
-          </div>
-          <div class="col-sm-4 col-6">
-            <div class="form-group form-group-sm">
-              <br>
-              <label for="multiUser" class="quote-label">Multi-user entry</label>
-              <br>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser" id="multiUser"
-                  value="Y">
-                <label class="form-check-label" for="multiUser">Yes</label>
-              </div>
-              <div class="form-check form-check-inline ms-4">
-                <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser" id="multiUser"
-                  value="N">
-                <label class="form-check-label" for="multiUser">No</label>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-4 col-6">
-            <div class="form-group form-group-sm">
-              <br>
-              <label for="internalComments" class="quote-label">Internal comments </label>
-              <input type="text" id="internalComments" class="form-control form-control-sm mb-1"
-                formControlName="internalComments">
-            </div>
-          </div>
-          <div class="col-sm-4 col-6">
-            <div class="form-group form-group-sm">
-              <br>
-              <label for="comments" class="quote-label">External comments </label>
-              <input type="text" id="comments" class="form-control form-control-sm mb-1" formControlName="comments">
-            </div>
-          </div>
-          <div class="col-sm-4 col-6">
-            <div class="form-group form-group-sm">
-              <br>
-              <label for="paymentFrequencies" class="quote-label">Payment Frequencies</label><br>
-              <p-dropdown formControlName="frequencyOfPayment" id="paymentFrequencies" [options]="paymentFrequencies"
-                optionLabel="label" [filterBy]="'label'" [filter]="true">
-              </p-dropdown>
-
-            </div>
-          </div>
-        </ng-container>
-      </div> -->
 
       <p class="more " (click)="toggleDetails()" style="cursor: pointer">
         More Details
@@ -443,8 +297,8 @@
         <div class="col-12 d-flex justify-content-end" style="margin-bottom: 0;">
 
           <div class="d-flex justify-content-center align-items-center">
-            <button type="button" class="btn btn-primary no-hover" data-bs-toggle="modal" data-bs-target="#addProduct"
-              title="Add Product"> Add Product
+            <button type="button" class="btn btn-primary btn-sm no-hover" data-bs-toggle="modal"
+              data-bs-target="#addProduct" title="Add Product"> Add Product
             </button>
             <i class="pi border border-black p-1 rounded-1 text-black"
               [ngClass]="{'pi-caret-up': showProducts, 'pi-caret-down': !showProducts}"
@@ -587,8 +441,8 @@
                     <br>
                     <label for="" class="quote-label">Product</label>
                     <p-dropdown [options]="ProductDescriptionArray" formControlName="productCodes"
-                      optionLabel="filterText" filterBy="filterText" [filter]="true" [showClear]="true"
-                      placeholder="Select Product" class="custom-multiselect">
+                      optionLabel="filterText" filterBy="filterText" [filter]="true" [showClear]="true" placeholder=""
+                      class="custom-multiselect">
 
 
                       <ng-template let-product pTemplate="item">
@@ -711,20 +565,29 @@
                 style="border: none;">X</button>
             </div>
 
-            <div class="w-75 mb-3 mt-2">
-              <p style="color:#000000">Group User</p>
-              <p-dropdown [options]="clientOptions" [(ngModel)]="clientToReassignQuotation" [showClear]="true"
+            <div *ngIf="departmentSelected" class="w-75 mb-2 mt-2">
+              <p class="quote-label">Group User</p>
+              <!-- <p-dropdown [options]="clientOptions" [(ngModel)]="clientToReassignQuotation" [showClear]="true"
                 styleClass="w-full">
-              </p-dropdown>
-            </div>
-
-            <div class="w-75 mb-3 mt-2">
-              <p>Default User</p>
-              <input pInputText type="text" class="form-control" (click)="openChooseClientReassignModal()"
+              </p-dropdown> -->
+              <input pInputText type="select" class="form-control form-control-sm" id="quote-input"
                 [(ngModel)]="clientToReassignProduct">
             </div>
 
-            <div class="w-75 mt-4 mb-3">
+            <div class="w-75 mb-2 mt-2">
+              <p class="quote-label">{{ clientToReassignProduct ? 'Default User' : 'User' }}</p>
+
+              <!-- <input pInputText type="select" class="form-control form-control-sm" id="quote-input"
+                (click)="openChooseClientReassignModal()" [(ngModel)]="clientToReassignProduct"> -->
+              <div class="form-control form-control-sm d-flex align-items-center justify-content-between"
+                id="quote-input" style="cursor: pointer;" (click)="openChooseClientReassignModal()">
+                <span cl>{{ clientToReassignProduct}}</span>
+                <i class="pi pi-chevron-down me-2" style="color: #00529B;font-size: 14px;"></i>
+              </div>
+
+            </div>
+
+            <div class="w-75 mb-3">
               <p>Comments</p>
               <textarea name="reassignProduct" class="form-control" style="height: 70px"
                 [(ngModel)]="reassignProductComment"></textarea>
@@ -768,8 +631,9 @@
 
             <div class="row mt-2">
               <p-table #reassignTable [value]="users" [rows]="3" [paginator]="true"
-                [globalFilterFields]="['id', 'name']" selectionMode="single" [(selection)]="selectedUser"
-                styleClass="p-datatable-striped" (onRowSelect)="onUserSelect()" (onRowUnselect)="onUserUnselect()">
+                [rowsPerPageOptions]="[5, 10, 20, 50]" [globalFilterFields]="['id', 'name']" selectionMode="single"
+                [(selection)]="selectedUser" styleClass="p-datatable-striped" (onRowSelect)="onUserSelect()"
+                (onRowUnselect)="onUserUnselect()">
                 <ng-template pTemplate="header">
                   <tr>
                     <th>User ID</th>
@@ -821,9 +685,8 @@
     </div>
   </div>
 
-
   <!-- Clauses section -->
-  <div class="card mb-3 ">
+  <div class="card mb-3 " *ngIf="productDetails && productDetails.length > 0">
     <div class="card-body my-4 mx-4">
       <div class="row ">
         <div class="col-4">
@@ -837,7 +700,8 @@
 
         <div class="col-12 d-flex justify-content-end mb-1">
           <div class="d-flex justify-content-center align-items-center">
-            <button type="button" class="btn btn-primary no-hover" (click)="openClauseModal()" title="Add Product"> Add
+            <button type="button" class="btn btn-primary btn-sm no-hover" (click)="openClauseModal()"
+              title="Add Product clause"> Add
               clauses
             </button>
             <i class="pi border border-black p-1 rounded-1 text-black"
@@ -849,8 +713,8 @@
       </div>
 
       <!-- clauses table -->
-      <div class="collapse" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
-        <p-table #productClauseTable [value]="sessionClauses " [rows]="3" [rowsPerPageOptions]="[5, 10, 20, 50]"
+      <div class="collapse mb-4" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
+        <p-table #productClauseTable [value]="sessionClauses " [rows]="3" [rowsPerPageOptions]="[5, 10, 20]"
           [paginator]="true" styleClass="p-datatable-striped">
 
           <ng-template pTemplate="header">
@@ -866,20 +730,28 @@
               </th>
               <th class="flexible-header1" style="width: 15%">Actions</th>
             </tr>
-            <tr>
-              <th><input type="text" class="form-control form-control-sm" (input)="filterByshortDescription($event)">
-              </th>
-              <th><input type="text" class="form-control form-control-sm" (input)="filterByHeading($event)"></th>
-              <th><input type="text" class="form-control form-control-sm" (input)="filterByWording($event)"></th>
-              <th></th>
-            </tr>
+
           </ng-template>
 
-          <ng-template pTemplate="body" let-clause>
+          <ng-template pTemplate="body" let-clause let-columns="columns" let-rowIndex="rowIndex">
+            <ng-container *ngIf="rowIndex === 0">
+              <tr>
+                <td>
+                  <input type="text" class="form-control form-control-sm" (input)="filterByshortDescription($event)">
+                </td>
+                <td>
+                  <input type="text" class="form-control form-control-sm" (input)="filterByHeading($event)">
+                </td>
+                <td>
+                  <input type="text" class="form-control form-control-sm" (input)="filterByWording($event)">
+                </td>
+                <td></td>
+              </tr>
+            </ng-container>
             <tr [pSelectableRow]="clause">
               <td class="flexible-header1">{{ clause.shortDescription }}</td>
-              <td class="flexible-header1">{{ clause.heading |sentenceCase}}</td>
-              <td class="position-relative flexible-header1">
+              <td class="flexible-header1">{{ clause.heading | truncate:5 | sentenceCase}}</td>
+              <td class="position-relative ">
                 <div class="clause-wrapper">
                   {{ clause.wording | truncate:10 |sentenceCase}}
 
@@ -890,10 +762,10 @@
               </td>
 
 
-              <td class="flexible-header1" style="text-align: right">
-                <div class="flex justify-end items-center gap-2">
+              <td class="flexible-header1" style="text-align: left">
+                <div class="flex justify-start items-center gap-2">
                   <!-- Edit -->
-                  <span class="p-button-label p-text-bold text-center" [ngStyle]="{
+                  <span class="p-button-label p-text-bold " [ngStyle]="{
                     color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280', 
                     marginRight: '16px',
                     marginLeft: '10px',
