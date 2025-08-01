@@ -714,7 +714,7 @@
 
       <!-- clauses table -->
       <div class="collapse mb-4" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
-        <p-table #productClauseTable [value]="sessionClauses " [rows]="3" [rowsPerPageOptions]="[5, 10, 20]"
+        <p-table #productClauseTable [value]="sessionClauses " [rows]="3" [rowsPerPageOptions]="[3, 10, 20]"
           [paginator]="true" styleClass="p-datatable-striped">
 
           <ng-template pTemplate="header">
@@ -817,7 +817,8 @@
                 <p class="modal-title" id="addClauseLabel" style="color: #00529B; font-weight:600; font-size:20px;">
                   {{ 'gis.quotation.add_product_cluase' | translate }}
                 </p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close custom-close" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
               </div>
 
               <div class="row mt-3">
@@ -829,10 +830,10 @@
                   </div>
                 </div>
 
-                <p-table *ngIf="nonMandatoryProductClause && nonMandatoryProductClause.length > 0" #dt
-                  [value]="nonMandatoryProductClause" [rows]="4" [paginator]="true"
-                  [globalFilterFields]="['id', 'heading']" selectionMode="multiple" [(selection)]="selectedClauses"
-                  stripedRows styleClass="p-datatable-striped" [rowsPerPageOptions]="[5, 10, 20]">
+                <p-table *ngIf="nonMandatoryProductClause && nonMandatoryProductClause.length > 0"
+                  #addProductClausesTable [value]="nonMandatoryProductClause" [rows]="5" [paginator]="true"
+                  selectionMode="multiple" [(selection)]="selectedClauses" stripedRows styleClass="p-datatable-striped"
+                  [rowsPerPageOptions]="[5, 10, 20]">
 
                   <ng-template pTemplate="header">
                     <tr>
@@ -843,21 +844,26 @@
                       <th class="flexible-header1" style="width: 40%" pSortableColumn="heading">
                         Description <p-sortIcon field="code" />
                       </th>
-                    </tr>
-                    <tr>
                       <th></th>
-                      <th>
-                        <input type="text" class="searchInput"
-                          style="border-radius: 3px;border:solid gray 1px;width:80%">
-                      </th>
-                      <th>
-                        <input type="text" class="searchInput" [(ngModel)]="headingSearch"
-                          style="border-radius: 3px;border:solid gray 1px;width:80%">
-                      </th>
                     </tr>
+
                   </ng-template>
 
-                  <ng-template pTemplate="body" let-clause>
+                  <ng-template pTemplate="body" let-clause let-columns="columns" let-rowIndex="rowIndex">
+                    <ng-container *ngIf="rowIndex === 0">
+                      <tr>
+                        <td></td>
+                        <td>
+                          <input type="text" class="form-control form-control-sm"
+                            (input)="filterByAddshortDescription($event)">
+                        </td>
+                        <td>
+                          <input type="text" class="form-control form-control-sm" (input)="filterByAddHeading($event)">
+                        </td>
+
+                        <td></td>
+                      </tr>
+                    </ng-container>
                     <tr>
                       <td style="max-width: 10px; min-width: 10px;">
                         <p-tableCheckbox [value]="clause" />
