@@ -13,32 +13,11 @@ const log = new Logger('RiskDetailsComponent');
 })
 export class QuotationOtherDetailsComponent {
   showRevision: boolean = true;
-  activeTab: 'internal' | 'external' = 'internal';
-  quotationRevision: any[] = [];
+  quotationRevisions: any[] = [];
+  quotationComments: any[] = [];
+  quotationCode: number;
+  clientCode: number;
 
-  dummyQuotationRevisions = [
-    {
-      quotationCode: 1,
-      quotationNo: "Q/HDO/PMT/25/0001346/8",
-      coverFrom: "2025-03-20",
-      coverTo: "2026-03-19",
-      premium: 706200
-    },
-    {
-      quotationCode: 4,
-      quotationNo: "Q/HDO/PMT/25/0001346/7",
-      coverFrom: "2025-03-20",
-      coverTo: "2026-03-19",
-      premium: 706200
-    },
-    {
-      quotationCode: 5,
-      quotationNo: "Q/HDO/PMT/25/0001346/1",
-      coverFrom: "2025-03-20",
-      coverTo: "2026-03-19",
-      premium: 706200
-    }
-  ];
 
   toggleRevision() {
     this.showRevision = !this.showRevision;
@@ -50,15 +29,21 @@ export class QuotationOtherDetailsComponent {
   ) { }
 
   ngOnInit(): void {
-    this.quotationRevision = this.sortRevisionsByNumber(this.dummyQuotationRevisions);
+    this.quotationCode = Number(sessionStorage.getItem('quotationCode'));
+    log.debug("quote code >>", this.quotationCode);
+    this.clientCode = Number(sessionStorage.getItem('clientCode'));
+    log.debug("client code >>", this.quotationCode);
+    this.quotationRevisions = this.sortRevisionsByNumber(this.quotationRevisions);
+    this.quotationComments = this.sortCommentsByNumber(this.quotationComments);
+
+
   }
 
   getQuotationRevision() {
-    const quotationCode = Number(sessionStorage.getItem('quotationCode'));
-    this.quotationService.getQuotationRevision(quotationCode).subscribe({
+    this.quotationService.getQuotationRevision(this.quotationCode).subscribe({
       next: (res: any) => {
-        this.quotationRevision = this.sortRevisionsByNumber(res || []);
-        log.debug("Sorted quotation revisions:", this.quotationRevision);
+        this.quotationRevisions = this.sortRevisionsByNumber(res || []);
+        log.debug("Sorted quotation revisions:", this.quotationRevisions);
       },
       error: (error: HttpErrorResponse) => {
         log.debug("Error log", error.error.message);
@@ -76,5 +61,29 @@ export class QuotationOtherDetailsComponent {
       return getRevisionNumber(b.quotationNo) - getRevisionNumber(a.quotationNo);
     });
   }
+
+  getQuotationComments() {
+    this.quotationService.getQuotationComments(this.clientCode).subscribe({
+      next: (res: any) => {
+        this.quotationComments = this.sortCommentsByNumber(res || []);
+        log.debug("Sorted quotation comments:", this.quotationComments);
+      },
+      error: (error: HttpErrorResponse) => {
+        log.debug("Error log", error.error.message);
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+      }
+    });
+  }
+
+  private sortCommentsByNumber(revisions: any[]): any[] {
+    return [...revisions].sort((a, b) => {
+      const getCommentNumber = (commentNo: string) => {
+        const parts = commentNo.split('/');
+        return parseInt(parts[parts.length - 1], 10);
+      };
+      return getCommentNumber(b.commentNo) - getCommentNumber(a.commentNo);
+    });
+  }
+
 
 }
