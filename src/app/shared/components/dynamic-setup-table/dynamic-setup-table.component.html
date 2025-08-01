@@ -116,10 +116,7 @@
                           [id]="field.fieldId"
                           class="form-control"
                           (keyup)="validateRegex(field, field.groupId)"
-
-                          [class.is-invalid]="getFieldControl(field.groupId, field.fieldId)?.invalid && getFieldControl(field.groupId, field.fieldId)?.touched"
-
-                          [class.is-valid]="getFieldControl(field.groupId, field.fieldId)?.invalid && getFieldControl(field.groupId, field.fieldId)?.touched"
+                          [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
 
                         />
                       </ng-container>
@@ -152,7 +149,6 @@
                         [numberFormat]="PhoneNumberFormat.National"
                         [formControlName]="field.fieldId"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
-                        [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
                       >
                       </ngx-intl-tel-input>
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
@@ -172,7 +168,6 @@
                         [id]="field.fieldId"
                         class="form-control"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
-                        [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
                       ></textarea>
                     </ng-container>
 
@@ -189,7 +184,6 @@
                         [id]="field.fieldId"
                         class="form-control"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
-                        [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
                       />
                     </ng-container>
 
@@ -206,7 +200,6 @@
                         [id]="field.fieldId"
                         class="form-control"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
-                        [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
                       />
                     </ng-container>
 
@@ -224,9 +217,8 @@
                         (change)="processSelectOption($event, field.fieldId)"
                         (click)="fetchSelectOptions(field.fieldId)"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
-                        [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
                       >
-                        <option value="">---select {{ field.label?.[language] | lowercase }}---</option>
+                        <option value=""></option>
                         <option *ngFor="let option of field.options" [value]="option">
                           {{ option | titlecase }}
                         </option>
@@ -244,7 +236,6 @@
                             [value]="option"
                             [formControlName]="field.fieldId"
                             [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
-                            [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
                           >
                           {{ option }}
                         </label>
@@ -261,7 +252,6 @@
                           [formControlName]="field.fieldId"
                           [id]="field.fieldId"
                           [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
-                          [class.is-valid]="dynamicModalForm.get(field.fieldId)?.valid && dynamicModalForm.get(field.fieldId)?.touched"
                         >
                         <label class="form-label" [for]="field.fieldId" *ngIf="field.type !== 'checkbox'">
                           {{ field.label?.[language] | titlecase }}
@@ -277,7 +267,7 @@
                           dynamicModalForm.get(field.fieldId)?.hasError(field.isMandatory ? 'required' : '')"
                       >
                         <span class="text-danger">
-                          * {{ field.label?.[language] }} is required.
+                          {{ field.label?.[language] | sentenceCase }} {{ 'base.isRequired' | translate }}.
                         </span>
                       </div>
                     </ng-container>

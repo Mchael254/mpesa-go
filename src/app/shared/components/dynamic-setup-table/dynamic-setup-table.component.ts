@@ -147,12 +147,8 @@ export class DynamicSetupTableComponent implements OnInit {
     this.formFields.forEach(field => {
       let validators = [];
 
-      if (field.validations) {
-        field.validations.forEach(validation => {
-          if (validation.type === 'required') {
-            validators.push(Validators.required);
-          }
-        });
+      if (field.isMandatory) {
+        validators.push(Validators.required);
       }
 
       formControls[field.fieldId] = new FormControl('', validators);
@@ -214,7 +210,16 @@ export class DynamicSetupTableComponent implements OnInit {
    *
    * @returns {void}
    */
-  saveDetails() {
+  saveDetails(): void {
+    // Mark all form controls as touched to trigger validation messages
+    this.markFormGroupTouched(this.dynamicModalForm);
+
+    // If form is invalid, stop here
+    if (this.dynamicModalForm.invalid) {
+      // this.dynamicModalForm.markAllAsTouched();
+      log.warn('Form is invalid. Please check the required fields.');
+      return;
+    }
     const formValue = this.dynamicModalForm.getRawValue();
 
     const filtered = Object.fromEntries(
@@ -265,9 +270,22 @@ export class DynamicSetupTableComponent implements OnInit {
       JSON.stringify(this.tableData)
     );
     this.closeModal();
-    return savedFields;
+    // return savedFields;
   }
 
+  /**
+   * Marks all controls in a form group as touched
+   * @param formGroup - The form group to touch
+   */
+  private markFormGroupTouched(formGroup: FormGroup) {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
   /**
    * Toggles the edit mode and opens the dynamic details modal.
    *
@@ -377,17 +395,6 @@ export class DynamicSetupTableComponent implements OnInit {
       default:
         log.info(`no fieldId found`);
     }
-  }
-
-  /**
-   * Gets a form control by its group and field id.
-   *
-   * @param {string} groupId - The group id.
-   * @param {string} fieldId - The field id.
-   * @returns {AbstractControl | null} The form control or null if not found.
-   */
-  getFieldControl(groupId: string, fieldId: string) {
-    return this.dynamicModalForm.get(`${groupId}.${fieldId}`);
   }
 
   /**

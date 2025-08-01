@@ -224,6 +224,7 @@
     "Quotation Enquiry": "Consulta de cotización",
     "Quotation Sources": "Fuentes de cotización",
     "Quotation Numbers": "Números de cotización",
+    "isRequired": "es requerido",
     "base-fms": {
       "parameters": "Parámetros",
       "defineYrs": "Definir años/períodos",
