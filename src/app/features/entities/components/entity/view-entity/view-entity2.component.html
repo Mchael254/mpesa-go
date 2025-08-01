@@ -49,6 +49,19 @@
             >
             </app-prime-identity>
           </ng-container>
+
+          <ng-container *ngIf="
+            partyAccountDetails &&
+            tab.title==='contact';"
+          >
+            <app-contact
+              #contactRef
+              [contactDetails]="partyAccountDetails.contactDetails"
+              [accountCode]="partyAccountDetails.accountCode"
+              [contactDetailsConfig]="tab"
+              [formFieldsConfig]="editContactFormConfig"
+            ></app-contact>
+          </ng-container>
         </p-tabPanel>
       </ng-container>
     </p-tabView>

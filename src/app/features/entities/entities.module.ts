@@ -56,6 +56,7 @@ import {CheckboxModule} from "primeng/checkbox";
 import { NewEntityV2Component } from './components/entity/new-entity-v2/new-entity-v2.component';
 import { PrivacyPolicyComponent } from './components/entity/new-entity-v2/privacy-policy/privacy-policy.component';
 import { PrimeIdentityComponent } from './components/entity/view-entity/prime-identity/prime-identity.component';
+import { ContactComponent } from './components/entity/view-entity/contact/contact.component';
 
 @NgModule({
   declarations: [
@@ -100,6 +101,7 @@ import { PrimeIdentityComponent } from './components/entity/view-entity/prime-id
     NewEntityV2Component,
     PrivacyPolicyComponent,
     PrimeIdentityComponent,
+    ContactComponent,
   ],
   imports: [
     CommonModule,
