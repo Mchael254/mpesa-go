@@ -38,6 +38,7 @@ import {HttpClient} from "@angular/common/http";
 import {PrimeIdentityComponent} from "./prime-identity/prime-identity.component";
 import {MaritalStatusService} from "../../../../../shared/services/setups/marital-status/marital-status.service";
 import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
+import {ContactComponent} from "./contact/contact.component";
 
 const log = new Logger('ViewEntityComponent');
 
@@ -51,6 +52,7 @@ export class ViewEntityComponent implements OnInit {
   @ViewChild('rolesDropDown') rolesDropdown;
   @ViewChild(EntityTransactionsComponent) entityTransactionsComponent: EntityTransactionsComponent;
   @ViewChild('primeIdentityRef') primeIdentityComponent!: PrimeIdentityComponent;
+  @ViewChild('contactRef') contactComponent!: ContactComponent;
 
   entityTransactions: EntityTransactionsComponent;
 
@@ -115,6 +117,7 @@ export class ViewEntityComponent implements OnInit {
   language: string = 'en';
 
   editPrimeDetailsFormConfig: any[];
+  editContactFormConfig: any[];
 
   selectOptions: {
     idTypes: IdentityModeDTO[],
@@ -188,6 +191,7 @@ export class ViewEntityComponent implements OnInit {
     this.http.get<any>( 'assets/data/edit360ViewForms.json').subscribe({
       next: (data: any) => {
         this.editPrimeDetailsFormConfig = data.prime_identity;
+        this.editContactFormConfig = data.contact;
       },
       error: err => {
         log.error(err);
@@ -300,7 +304,7 @@ export class ViewEntityComponent implements OnInit {
     this.wealthAmlDetails = partyAccountDetails?.wealthAmlDetails;
     this.nokDetails = partyAccountDetails?.nextOfKinDetailsList;
     // this.fetchTransactions(partyAccountDetails);
-    this.cdr.detectChanges();
+    // this.cdr.detectChanges();
   }
 
   /***
@@ -593,6 +597,9 @@ export class ViewEntityComponent implements OnInit {
     switch (tabTitle) {
       case 'prime_identity':
         this.primeIdentityComponent.openEditPrimeIdentityDialog();
+        break;
+      case 'contact':
+        this.contactComponent.openEditContactDialog();
         break;
       default:
           // do something

@@ -126,6 +126,38 @@
           "fr": "french details",
           "ke": "swahili details"
         },
+        "contact_details": {
+          "branch": {
+            "en": "branch",
+            "fr": "",
+            "ke": ""
+          },
+          "title": {
+            "en": "title",
+            "fr": "",
+            "ke": ""
+          },
+          "tel_number": {
+            "en": "telephone number",
+            "fr": "",
+            "ke": ""
+          },
+          "email": {
+            "en": "email address",
+            "fr": "",
+            "ke": ""
+          },
+          "sms_number": {
+            "en": "sms number",
+            "fr": "",
+            "ke": ""
+          },
+          "preferred_contact_channel": {
+            "en": "preferred contact channel",
+            "fr": "",
+            "ke": ""
+          }
+        },
         "order": 2
       },
       {

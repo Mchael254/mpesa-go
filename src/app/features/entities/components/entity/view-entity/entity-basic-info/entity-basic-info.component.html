@@ -267,8 +267,8 @@
 >
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">
+      <div class="modal-header border-0">
+        <h1 class="modal-title text-primary fs-5">
           {{ "entities.assign_role" | translate }}
         </h1>
         <button
@@ -281,18 +281,25 @@
       </div>
       <div class="modal-body">
         <ng-container *ngFor="let role of unAssignedPartyTypes">
-          <div class="form-check form-check-inline">
-            <input
-              id="assign-role"
-              class="form-check-input"
-              type="radio"
-              (click)="onAssignRole(role)"
-            />
-            <label class="form-check-label">
-              {{ role?.partyTypeName }}
-            </label>
+          <div class="row ms-2 my-1">
+            <div class="form-check form-check-inline">
+              <input
+                id="assign-role"
+                class="form-check-input"
+                type="radio"
+                (click)="selectRole(role)"
+              />
+              <label class="form-check-label">
+                {{ role?.partyTypeName }}
+              </label>
+            </div>
           </div>
         </ng-container>
+        <div class="row">
+          <div class="col-sm-12 text-end">
+            <button class="btn btn-primary" style="font-size: 1rem" (click)="onAssignRole()">Okay</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -36,8 +36,8 @@ export class EntityBasicInfoComponent {
   @Input() unAssignedPartyTypes: PartyTypeDto[];
   @Input() overviewConfig: any;
   basicInfo: any;
-
   language: string = 'en'
+  selectedRole: PartyTypeDto;
 
   constructor(
     private utilService: UtilService,
@@ -51,9 +51,13 @@ export class EntityBasicInfoComponent {
     }, 1000)
   }
 
-  onAssignRole(role: PartyTypeDto) {
+  selectRole(role: PartyTypeDto): void {
+    this.selectedRole = role;
+  }
+
+  onAssignRole(): void {
     this.closebutton.nativeElement.click();
-    this.assignRole.emit(role);
+    this.assignRole.emit(this.selectedRole);
   }
 
   selectPartyTypeRole(role: PartyTypeDto) {
