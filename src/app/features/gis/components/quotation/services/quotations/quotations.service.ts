@@ -917,7 +917,7 @@ export class QuotationsService {
 
   //revisions
   getQuotationRevision(quotationCode: number): Observable<any> {
-    const url = `api/v1/quotation/revisions?parentQuotationCode=${quotationCode}`;
+    const url = `/v1/quotation/revisions?parentQuotationCode=${quotationCode}`;
     return this.api.GET<any[]>(url, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
@@ -926,7 +926,7 @@ export class QuotationsService {
 
   //comments
   getQuotationComments(clientCode: number): Observable<any> {
-    const url = `api/v2/quotation/comments?clientCode=${clientCode}`;
+    const url = `/v2/quotation/comments?clientCode=${clientCode}`;
     return this.api.GET<any[]>(url, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)

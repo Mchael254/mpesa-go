@@ -482,12 +482,8 @@
                             <div class="col-md-6 mb-3">
                               <label>Tax</label>
                               <div class="position-relative" *ngIf="taxTypes && taxTypes.length">
-                                <input 
-type="text"
-class="form-control form-control-sm"
-[value]="taxForm.get('rateDescription')?.value"
-readonly
-/>
+                                <input type="text" class="form-control form-control-sm"
+                                  [value]="taxForm.get('rateDescription')?.value" readonly />
                                 <div *ngIf="taxForm.get('tax')?.touched && taxForm.get('tax')?.invalid"
                                   class="text-danger small">
                                   Tax is required.
@@ -627,12 +623,12 @@ readonly
                                 ID
                                 <p-sortIcon field="id"></p-sortIcon>
                               </th>
-                              <th></th>
+
                               <th class="flexible-header" pSortableColumn="tax-description">
                                 Tax description
                                 <p-sortIcon field="tax-description"></p-sortIcon>
                               </th>
-                              <th></th>
+
                             </tr>
                           </ng-template>
 
@@ -641,14 +637,14 @@ readonly
                               <td>
                                 <input type="text" pInputText class="small-input" />
                               </td>
-                              <td></td>
+
                               <td>
                                 <input type="text" pInputText class="small-input" />
                               </td>
                             </tr>
                             <tr [pSelectableRow]="data">
                               <td>{{ data.taxCode }}</td>
-                              <td></td>
+
                               <td>{{ data.description | sentenceCase }}</td>
                             </tr>
                           </ng-template>

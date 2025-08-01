@@ -487,7 +487,7 @@
             <div class="modal fade  " id="editSectionModal" #editSectionModal tabindex="-1" role="dialog"
                 aria-labelledby="editSectionLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                    <div class="modal-content" style=" width:700px;">
+                    <div class="modal-content" style=" min-width:700px;">
                         <div class="modal-body" style="padding-left: 40px; max-height:550px; overflow-y: auto;">
                             <h5 class="modal-title mt-2" id="editScheduleLabel">
                                 Edit section details
@@ -498,7 +498,7 @@
                                 <!-- **ROW 1** -->
                                 <div class="row mb-1" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.id'
                                                 | translate}} :</label>
@@ -512,7 +512,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.description' | translate}}:</label>
                                             <div class="col-7">
@@ -527,7 +527,7 @@
                                 <!-- **ROW 2** -->
                                 <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">
                                                 {{'gis.quotation.rate_type' | translate}} :</label>
                                             <div class="col-7">
@@ -551,7 +551,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3">
+                                        <div class="mb-1">
                                             <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">
                                                 {{ 'gis.quotation.premium_type' | translate }}:
                                             </label>
@@ -571,7 +571,7 @@
                                 <!-- **ROW 3** -->
                                 <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3">
+                                        <div class="mb-1">
                                             <label class="col-5 col-form-label" id="scheduleLabel">
                                                 {{ 'gis.quotation.free_limit' | translate }} :
                                             </label>
@@ -595,7 +595,7 @@
                                     </div>
 
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.limit_amount' | translate}}:</label>
 
@@ -610,7 +610,7 @@
                                 <!-- **ROW 4** -->
                                 <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.group' | translate}}:</label>
                                             <div class="col-7">
@@ -621,7 +621,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.premium_rate' | translate}}:</label>
 
@@ -636,7 +636,7 @@
                                 <!-- **ROW 5** -->
                                 <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.div_by' | translate}}:</label>
                                             <div class="col-7">
@@ -647,7 +647,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.multi_rate' | translate}} :</label>
                                             <div class="col-7">
@@ -661,7 +661,7 @@
                                 <!-- **ROW 6** -->
                                 <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.div_multi_by' | translate}}:</label>
                                             <div class="col-7">
@@ -672,7 +672,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.premium' | translate}}:</label>
                                             <div class="col-7">
@@ -686,7 +686,7 @@
                                 <!-- **ROW 7** -->
                                 <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label" style="width:300px"
                                                 id="scheduleLabel">{{'gis.quotation.minimum_premium' |
                                                 translate}}:</label>
@@ -698,7 +698,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.accumulation' | translate}}:</label>
                                             <div class="col-7">
@@ -711,7 +711,7 @@
                                 <!-- **ROW 8** -->
                                 <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.remarks' | translate}}:</label>
                                             <div class="col-7">
@@ -723,7 +723,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.declaration' | translate}}:</label>
                                             <div class="col-7">
@@ -765,7 +765,7 @@
                                 <!-- **ROW 9** -->
                                 <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-3 ">
+                                        <div class="mb-1 ">
                                             <label for="minmax-buttons" class="col-5 col-form-label"
                                                 id="scheduleLabel">{{'gis.quotation.compute' | translate}}:</label>
                                             <div class="col-7">
@@ -1047,7 +1047,7 @@
 
         <!-- risk clause table -->
         <div [@slideInOut]="isClausesOpen ? 'open' : 'closed'" class="mt-2 w-100">
-            {{selectedClause}}
+
             <p-table #riskClauseTable [value]="sessionClauses" dataKey="clauseCode" editMode="row"
                 [(selection)]="selectedClause" selectionMode="single" [autoLayout]="true" [paginator]="true" [rows]="5"
                 [rowsPerPageOptions]="[5, 10, 20]" [scrollable]="true" responsiveLayout="scroll"
