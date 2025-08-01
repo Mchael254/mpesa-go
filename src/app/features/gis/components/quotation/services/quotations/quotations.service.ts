@@ -344,10 +344,10 @@ export class QuotationsService {
 
   getAgents(
     page: number | null = 0,
-    size: number | null = 10,
+    size: number | null = 2000,
     sortList: string = 'createdDate',
   ): Observable<Pagination<AgentDTO>> {
-    return this.api.GET<Pagination<AgentDTO>>(`agents?page=${page}&size=${size}&organizationId=2&sortListFields=${sortList}`, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL)
+    return this.api.GET<Pagination<AgentDTO>>(`agents?page=${page}&size=${size}&sortListFields=${sortList}`, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL)
   }
 
   quotationUtils(transactionCode) {
