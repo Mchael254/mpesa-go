@@ -958,6 +958,7 @@ export class ClientAllocationComponent {
     }
     const receiptParticulars = {
       receiptNumber: this.branchReceiptNumber,
+      amount:this.storedData?.amountIssued,
       capturedBy: this.loggedInUser.code,
       systemCode: this.selectedClient.systemCode,
       branchCode: this.defaultBranch?.id || this.selectedBranch?.id,
@@ -1050,6 +1051,7 @@ export class ClientAllocationComponent {
     const receiptParticulars: ReceiptParticularsDTO[] = [
       {
         receiptNumber: this.branchReceiptNumber,
+        amount:this.storedData?.amountIssued,
         capturedBy: this.loggedInUser.code,
         systemCode: this.selectedClient.systemCode,
         branchCode: this.defaultBranch?.id || this.selectedBranch?.id,
