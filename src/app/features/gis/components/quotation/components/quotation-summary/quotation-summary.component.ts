@@ -17,7 +17,7 @@ import { ProductService } from "../../../../services/product/product.service";
 import { AuthService } from "../../../../../../shared/services/auth.service";
 import { BranchService } from "../../../../../../shared/services/setups/branch/branch.service";
 import { BankService } from "../../../../../../shared/services/setups/bank/bank.service";
-import { Logger } from "../../../../../../shared/services";
+import { Logger, UtilService } from "../../../../../../shared/services";
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import {
@@ -57,6 +57,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('dt') table!: Table;
   @ViewChild('closeReassignButton') closeReassignButton: ElementRef;
   @ViewChild('reassignQuotationModal') reassignQuotationModalElement!: ElementRef;
+  @ViewChild('rejectQuotationModal') rejectQuotationModalElement!: ElementRef;
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
   private modals: { [key: string]: bootstrap.Modal } = {};
 
@@ -161,13 +162,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   selectedTax: any = null;
   transactionTypes: any[] = [];
   isEditingTax: boolean = false;
+  rejectComment: string = ''
+  noComment: boolean = false;
+  afterRejectQuote: boolean = false;
   productClauses:ProductClauses[]=[];
   activeRiskTab: string = 'motor';
-
-  
-
-
-
 
 
   constructor(
@@ -186,6 +185,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private clientService: ClientService,
     public claimsService: ClaimsService,
+    public utilService: UtilService,
   ) {
     this.viewQuoteFlag = JSON.parse(sessionStorage.getItem('viewQuoteFlag'));
     log.debug("View Quotation Flag", this.viewQuoteFlag)
@@ -210,6 +210,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.quotationCodeString = sessionStorage.getItem('quotationCode');
+    this.quotationCode = Number(sessionStorage.getItem('quotationCode'));
+    log.debug("two codes", this.quotationCode, this.quotationCodeString)
     this.quotationNumber = sessionStorage.getItem('quotationNumber') || sessionStorage.getItem('quotationNum');
     log.debug('quotationCode', this.quotationCodeString)
     log.debug("quick Quotation number", this.quotationNumber);
@@ -227,7 +229,16 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     if (this.quotationCodeString) {
       this.quotationCode = Number(this.quotationCodeString);
+      log.debug("second code", this.quotationCode)
     }
+    this.quotationService.getQuotationDetails(this.quotationCode)
+      .pipe(untilDestroyed(this)).subscribe((response: any) => {
+        log.debug("Quotation details>>>", response)
+        this.quotationDetails = response
+        if ('Rejected' === response.status) {
+          this.afterRejectQuote = true
+        }
+      });
 
 
     this.clientDetails = JSON.parse(
@@ -310,6 +321,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   ngAfterViewInit() {
     this.modals['chooseClientReassign'] = new bootstrap.Modal(this.chooseClientReassignModal.nativeElement);
     this.modals['reassignQuotation'] = new bootstrap.Modal(this.reassignQuotationModalElement.nativeElement);
+    this.modals['rejectQuotation'] = new bootstrap.Modal(this.rejectQuotationModalElement.nativeElement);
   }
 
   openModals(modalName: string) {
@@ -2114,6 +2126,60 @@ rateType:selectedTaxFromList?.taxCode
     log.debug('reassign Payload', reassignPayload)
 
   }
+
+  //reject quotation
+  openRejectQuotationModal() {
+    this.openModals('rejectQuotation');
+
+  }
+
+  closeRejectQuotationModal() {
+    this.closeModals('rejectQuotation');
+    this.rejectComment = null;
+  }
+
+  rejectQuotation(code: number) {
+    const reasonCancelled = this.rejectComment;
+    const status = 'Rejected';
+    if (!reasonCancelled) {
+      this.noComment = true;
+      setTimeout(() => {
+        this.noComment = false;
+      }, 3000);
+
+      return;
+    }
+
+    this.quotationService.updateQuotationStatus(this.quotationCode, status, reasonCancelled).subscribe({
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage('success', 'quote rejected successfully')
+        log.debug(response);
+        this.afterRejectQuote = true;
+        this.quotationDetails.status = 'Rejected'
+        this.closeRejectQuotationModal();
+        this.navigateToQuoteDetails();
+      },
+      error: (error) => {
+        this.closeRejectQuotationModal();
+        this.globalMessagingService.displayErrorMessage('error', error);
+        log.debug(error);
+
+      }
+
+    })
+
+  }
+
+  navigateToQuoteDetails() {
+    // log.debug("Quotation Object", this.quotationDetails);
+    // sessionStorage.setItem("quotationObject", JSON.stringify(this.quotationDetails));
+    // if (this.afterRejectQuote) {
+    //   this.utilService.clearSessionStorageData()
+    // }
+    this.router.navigate(['/home/gis/quotation']).then(r => {
+    });
+  }
+
 
 
 
