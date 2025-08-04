@@ -431,6 +431,7 @@ export interface AllocationDTO {
 }
 export interface ReceiptParticularsDTO{
   receiptNumber: number;
+  amount:number;
   capturedBy: number;
   systemCode: number;
   branchCode: number;
