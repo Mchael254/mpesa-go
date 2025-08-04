@@ -22,6 +22,7 @@ import { GlobalMessagingService } from "../../../../../../shared/services/messag
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import {
   LimitsOfLiability,
+  ProductClauses,
   QuotationDetails,
   QuotationProduct,
   SubclassSectionPeril,
@@ -47,6 +48,7 @@ interface FileItem {
   styleUrls: ['./quotation-summary.component.css']
 })
 export class QuotationSummaryComponent implements OnInit, OnDestroy {
+  
   viewClientProfile() {
     throw new Error('Method not implemented.');
   }
@@ -159,6 +161,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   selectedTax: any = null;
   transactionTypes: any[] = [];
   isEditingTax: boolean = false;
+  productClauses:ProductClauses[]=[];
+  
 
 
 
@@ -378,6 +382,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.quotationProducts = this.quotationView.quotationProducts;
         this.riskDetails = this.quotationView.quotationProducts[0]?.riskInformation;
         log.debug("Risk Details quotation-summary", this.riskDetails);
+        
 
         this.productDetails = this.quotationView.quotationProducts
 
@@ -1160,7 +1165,7 @@ rateType:selectedTaxFromList?.taxCode
     this.getRiskClauses(data.code);
   }
 
-  handleProductClick(data: any) {
+  handleProductClick(data: QuotationProduct) {
     if (!data) {
       log.debug('Invalid data for row click:', data);
       return;
@@ -1188,7 +1193,8 @@ rateType:selectedTaxFromList?.taxCode
       log.debug("No matching product found for the given code.");
     }
 
-    this.getProductClause(proCode);
+    // this.getProductClause(proCode);
+    this.productClauses=data.productClauses
     this.getProductSubclass(proCode);
     this.fetchSimilarQuotes(quotationProductCode);
   }
@@ -1200,7 +1206,7 @@ rateType:selectedTaxFromList?.taxCode
     })
   }
 
-  getProductSubclass(code: string): void {
+  getProductSubclass(code: number): void {
     this.productService.getProductSubclasses(code).subscribe({
       next: (res) => {
         this.subclassList = res._embedded.product_subclass_dto_list;
