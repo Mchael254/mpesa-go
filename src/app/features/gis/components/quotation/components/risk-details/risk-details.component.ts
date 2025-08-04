@@ -209,6 +209,7 @@ export class RiskDetailsComponent {
   tabs = ['Schedule Details', 'Level 2', 'Level 3']; // Dummy tabs for now
   activeTab = 'Schedule Details';
   isEditMode: boolean = false;
+  isAddMode: boolean = false;
   selectedRiskClauses: any;
   clauseModified: boolean = false;
   sessionClauses: any[] = [];
@@ -268,7 +269,7 @@ export class RiskDetailsComponent {
   public isClausesOpen = false;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedProduct']) {
+    if (changes['selectedProduct'] && this.selectedProduct) {
       console.log("Selected Product-risk details:", this.selectedProduct);
       const selectedProductCode = this.selectedProduct.productCode
       this.selectedProductCode = selectedProductCode
@@ -288,14 +289,12 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
-    this.loadPersistedRiskClauses();
 
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
     });
     this.dateFormat = sessionStorage.getItem('dateFormat');
     log.debug("Date Formart", this.dateFormat)
-    this.getVehicleMake();
     // this.updateRiskDetailsForm();
     this.createScheduleDetailsForm();
     this.createSectionDetailsForm();
@@ -314,10 +313,8 @@ export class RiskDetailsComponent {
       nullable: true,
       align: 'left',
     };
-    this.loadDummyFreeLimit();
 
     this.clientCode = Number(sessionStorage.getItem('insuredCode'))
-    console.log(Object.keys(this.sectionPremium[0]));
 
     // this.clientCode = Number(sessionStorage.getItem('insuredCode'))
     this.loadAllClients();
@@ -366,20 +363,7 @@ export class RiskDetailsComponent {
     this.riskDetailsForm.get('computeField')?.setValue(value ? 'Yes' : 'No'); // Optional
   }
 
-  loadDummyFreeLimit() {
 
-    const dummyResponse = {
-      value: 100000,
-      editable: false
-    };
-
-    this.freeLimitValue = dummyResponse.value;
-    this.isEditable = dummyResponse.editable;
-
-    if (this.isEditable) {
-      this.riskDetailsForm.get('freeLimit')?.setValue(this.freeLimitValue);
-    }
-  }
 
 
   setSectionToDelete(section: any) {
@@ -466,12 +450,19 @@ export class RiskDetailsComponent {
 
   openAddRiskModal() {
     this.modalInstance?.show();
+    this.isEditMode = false
+    this.isAddMode = true
+    this.clearRiskForm()
+    this.riskDetailsForm.reset({
+      insureds: this.riskDetailsForm.get('insureds')?.value
+    });
   }
   openEditRiskModal(risk: RiskInformation) {
     this.isEditMode = true
     this.modalInstance?.show();
 
     log.debug("Selected risk:", risk)
+    log.debug("Risk form Values:", this.riskDetailsForm.value)
     this.riskDetailsForm.patchValue(risk);
     this.riskDetailsForm.patchValue({ subclass: risk.subclass.code });
     this.onSubclassSelected(risk.subclass)
@@ -551,6 +542,8 @@ export class RiskDetailsComponent {
           const riskValue = this.riskDetailsForm.value
           log.debug("risk value for patching:", riskValue)
           if (this.isEditMode) {
+            log.debug("selected risk:", this.selectedRisk)
+
             this.riskDetailsForm.patchValue({ registrationNumber: this.selectedRisk?.propertyId });
             this.riskDetailsForm.patchValue({ riskDescription: this.selectedRisk?.itemDesc });
             this.riskDetailsForm.patchValue({ coverType: this.selectedRisk?.coverTypeCode });
@@ -727,6 +720,7 @@ export class RiskDetailsComponent {
   // }
   loadClientDetails() {
     this.clientService.getClientById(this.insuredCode).subscribe((data: any) => {
+      log.debug("client searching to patch data")
       const client = data;
       client.clientFullName = client.firstName + ' ' + (client.lastName || '');
 
@@ -923,8 +917,9 @@ export class RiskDetailsComponent {
         if (selectedVehicleMake) {
           log.debug("selected vehicle make:", selectedVehicleMake)
           this.riskDetailsForm.patchValue({ vehicleMake: selectedVehicleMake });
+          this.getVehicleModel(selectedVehicleMake.code)
+
         }
-        this.getVehicleModel(selectedVehicleMake.code)
       }
 
 
@@ -1088,35 +1083,20 @@ export class RiskDetailsComponent {
     })
   }
 
-  // onSubclassSelected(event: any) {
-  //   this.selectedSubclassCode = event.value;
-  //   log.debug("Selected subclass code:", this.selectedSubclassCode);
-
-  //   if (this.selectedSubclassCode) {
-  //     this.loadSelectedSubclassRiskFields(this.selectedSubclassCode);
-
-  //     this.fetchTaxes();
-  //     this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
-  //     this.loadAllBinders();
-  //     this.loadSubclassClauses(this.selectedSubclassCode);
-  //     this.getVehicleMake();
-  //     this.fetchYearOfManufacture()
-  //   }
-  // }
-
   async onSubclassSelected(event: any) {
     this.selectedSubclassCode = event.value || event.code;
     log.debug("Selected subclass code:", this.selectedSubclassCode);
-
     if (this.selectedSubclassCode) {
       try {
         await this.loadSelectedSubclassRiskFields(this.selectedSubclassCode);
-
+        const selectedVehicleMake = Number(this.selectedRisk?.scheduleDetails.details.level1.make)
         this.fetchTaxes();
         this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
         this.loadAllBinders();
         this.loadSubclassClauses(this.selectedSubclassCode);
         this.getVehicleMake();
+        this.getVehicleModel(selectedVehicleMake);
+
         this.fetchYearOfManufacture();
       } catch (err) {
         log.error("Failed to load subclass risk fields:", err);
@@ -1321,6 +1301,7 @@ export class RiskDetailsComponent {
           this.quotationCode = quotationCode
           const quotationNo = data._embedded.quotationNo
           this.addProductClauses();
+          this.loadPersistedRiskClauses();
 
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
@@ -1991,8 +1972,7 @@ export class RiskDetailsComponent {
     this.selectedRiskCode = riskSelectedData.code;
     log.debug("firstRiskCode", this.selectedRiskCode);
     sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
-    this.loadPersistedRiskClauses();
-    this.loadSubclassClauses(riskSelectedData.subclassCode);
+    // this.loadSubclassClauses(this.selectedRisk.subclassCode);
 
   }
 
@@ -2598,22 +2578,7 @@ export class RiskDetailsComponent {
   toggleClausesopen() {
     this.isClausesOpen = !this.isClausesOpen;
   }
-  // loadSubclassClauses(code: any) {
-  //   this.subclassService.getSubclassClauses(code).subscribe(data => {
-  //     this.SubclauseList = data;
-  //     // this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.subClassCode == code);
-  //     // this.selectedClauseCode=this.selectedSubClauseList[0].clauseCode;
 
-  //     log.debug('subclass ClauseList#####', this.SubclauseList)
-  //     // ✅ Ensure all mandatory clauses are selected on load
-  //     this.selectedClause = this.SubclauseList.filter(clause => clause.isMandatory === 'Y');
-
-  //     // ✅ Mark mandatory clauses as checked
-  //     this.SubclauseList.forEach(clause => {
-  //       clause.checked = clause.isMandatory === 'Y';
-  //     });
-  //   })
-  // }
 
   loadSubclassClauses(code: any) {
     if (!code) {
@@ -3314,6 +3279,36 @@ export class RiskDetailsComponent {
       })
   }
   clearRiskForm() {
-    this.riskDetailsForm.reset
+    if (this.isAddMode) {
+      log.debug('FORM CLEARED')
+      // const keysToKeep = ['insureds', 'subclass'];
+
+      // // Save values of keys to keep
+      // const keptValues: any = {};
+      // keysToKeep.forEach(key => {
+      //   keptValues[key] = this.riskDetailsForm.get(key)?.value;
+      // });
+
+      // // Remove all controls
+      // Object.keys(this.riskDetailsForm.controls).forEach(controlName => {
+      //   this.riskDetailsForm.removeControl(controlName);
+      // });
+
+      // // Re-add only the kept controls with their previous values
+      // this.formData.forEach(field => {
+      //   if (keysToKeep.includes(field.name)) {
+      //     this.riskDetailsForm.addControl(
+      //       field.name,
+      //       new FormControl(keptValues[field.name])
+      //     );
+      //   }
+      // });
+
+      // Remove dynamic fields from UI backing arrays
+      this.subclassFormData = [];
+    }
+
   }
+
+
 }

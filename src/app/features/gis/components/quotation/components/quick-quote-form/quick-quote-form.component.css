@@ -9,21 +9,22 @@
 
 .subtitle {
   color: #00529B;
- font-family: Roboto;
-font-weight: 500;
-font-size: 24px;
-line-height: 19.89px;
-letter-spacing: 0%;
-margin-top:40px;
-margin-bottom:12px!important;
-}
-.tagline{
   font-family: Roboto;
-font-weight: 400;
-font-size: 20px;
-line-height: 19.89px;
-letter-spacing: 0%;
-color: #000;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 19.89px;
+  letter-spacing: 0%;
+  margin-top: 40px;
+  margin-bottom: 12px !important;
+}
+
+.tagline {
+  font-family: Roboto;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 19.89px;
+  letter-spacing: 0%;
+  color: #000;
 
 }
 
@@ -350,7 +351,7 @@ color: #000;
 /* Search input */
 .search-input {
   width: 300px;
-  height:30px;
+  height: 30px;
 }
 
 /* Product Card Styles */
@@ -389,14 +390,30 @@ color: #000;
   max-width: 100%;
   margin: 0;
 }
-.page-title{
-  margin-left: 15px; 
-   font-size: 20px; 
-   font-weight:600;
+
+.page-title {
+  margin-left: 15px;
+  font-size: 20px;
+  font-weight: 600;
 }
+
 .custom-close-btn {
   width: 2rem;
   height: 2rem;
   filter: brightness(0) saturate(100%) invert(12%) sepia(93%) saturate(5425%) hue-rotate(357deg) brightness(92%) contrast(115%);
   border: none;
+}
+
+.no-product-message {
+  font-family: Roboto;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #808080
+}
+
+.selected-card {
+  background-color: #e7f1ff;
 }
