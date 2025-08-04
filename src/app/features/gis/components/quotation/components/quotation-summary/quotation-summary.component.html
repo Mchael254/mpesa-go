@@ -496,7 +496,7 @@
                             <div class="col-md-6 mb-3">
                               <label>Tax type</label>
                               <p-dropdown formControlName="taxType" [options]="taxTypes" optionLabel="label"
-                                placeholder="Select tax type" class="w-100 p-inputtext-sm slim-dropdown"
+                               optionValue="value" placeholder="Select tax type" class="w-100 p-inputtext-sm slim-dropdown"
                                 [showClear]="true" [filter]="true">
                               </p-dropdown>
                               <div *ngIf="taxForm.get('taxType')?.touched && taxForm.get('taxType')?.invalid"
@@ -508,7 +508,7 @@
                             <div class="col-md-6 mb-3">
                               <label>Transaction type</label>
                               <p-dropdown formControlName="transactionType" [options]="transactionTypes"
-                                optionLabel="description" placeholder="" class="w-100 p-inputtext-sm slim-dropdown"
+                                optionLabel="description"  optionValue="code" placeholder="" class="w-100 p-inputtext-sm slim-dropdown"
                                 [showClear]="true" [filter]="true" filterBy="description">
                               </p-dropdown>
                               <div
@@ -711,7 +711,7 @@
                         <td>{{ data.rateDescription }}</td>
                         <td>{{ data.rate }}</td>
                         <td>{{ data.taxAmount }}</td>
-                        <td>{{ data.rateType }}</td>
+                        <td>{{data.rateType}}</td>
                         <td>{{ data.taxType }}</td>
                         <td>
                           <button class="btn btn-sm borderless-button me-2" (click)="openTaxModal(data)">
