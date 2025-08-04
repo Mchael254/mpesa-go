@@ -30,15 +30,15 @@
                     <td class="flexible-header">
                         <!-- Edit Button -->
                         <button pButton pRipple type="button"
-                            class="p-button-text p-button-sm p-button-info custom-button" pTooltip="Edit Risk"
-                            tooltipPosition="top" (click)="openEditRiskModal(risk)">
+                            class="p-button-text p-button-sm p-button-info custom-button" tooltipPosition="top"
+                            (click)="openEditRiskModal(risk)">
                             Edit
                         </button>
 
                         <!-- Delete Button -->
                         <button *ngIf="riskDetails.length > 1" pButton pRipple type="button"
-                            class="p-button-text p-button-sm custom-button" pTooltip="Delete Risk" tooltipPosition="top"
-                            data-bs-toggle="modal" data-bs-target="#deleteRisk">
+                            class="p-button-text p-button-sm custom-button" tooltipPosition="top" data-bs-toggle="modal"
+                            data-bs-target="#deleteRisk">
                             Delete
                         </button>
                     </td>
@@ -59,12 +59,15 @@
                 <div class="modal-content" style="max-height: 704px; overflow: hidden;min-height: 250px;">
 
                     <div class="modal-body" style="height: 100%; max-height: 500px; overflow-y: auto;">
-                        <h5 class="modal-title mt-2 mb-2 addRiskTitle ">Add risk
-                            <button type="button" class="btn-close red-close float-end" (click)="clearRiskForm()"
-                                data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 *ngIf="!isEditMode" class="modal-title mt-2 mb-2 addRiskTitle ">Add risk
+                            <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
                         </h5>
 
-
+                        <h5 *ngIf="isEditMode" class="modal-title mt-2 mb-2 addRiskTitle ">Edit risk
+                            <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </h5>
                         <form [formGroup]="riskDetailsForm">
                             <div class="row ">
                                 <ng-container *ngFor="let field of formData; let i = index">
@@ -221,9 +224,9 @@
                                 data-bs-dismiss="modal" (click)="clearRiskForm()">{{'gis.policy.cancel' |
                                 translate}}</button>
                             <button *ngIf="!isEditMode" type="button" class="btn btn-primary " id="saveDetails"
-                                (click)="createRiskDetail()">{{'gis.quotation.save_details' | translate}}</button>
+                                (click)="createRiskDetail()">Save</button>
                             <button *ngIf="isEditMode" type="button" class="btn btn-primary " id="saveDetails"
-                                (click)="UpdateRiskDetail()">{{'gis.quotation.save_details' | translate}}</button>
+                                (click)="UpdateRiskDetail()">Save changes</button>
                         </div>
                     </div>
 
