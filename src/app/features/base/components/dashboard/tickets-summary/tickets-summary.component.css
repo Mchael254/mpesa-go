@@ -29,3 +29,7 @@
   color: #00529b;
   text-decoration: underline;
 }
+
+table>thead>tr>th {
+  background-color: #fff !important;
+}
