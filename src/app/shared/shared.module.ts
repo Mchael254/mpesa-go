@@ -109,6 +109,8 @@ import { DynamicSetupTableComponent } from './components/dynamic-setup-table/dyn
 import {DialogModule} from "primeng/dialog";
 import {NgxIntlTelInputModule} from "ngx-intl-tel-input";
 import { TruncatePipe } from './pipes/truncate/truncate.pipe';
+import { DynamicSetupScreensConfigComponent } from './components/dynamic-setup-screens-config/dynamic-setup-screens-config.component';
+import { CrmScreensConfigComponent } from './components/dynamic-setup-screens-config/crm-screens-config/crm-screens-config.component';
 
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
@@ -222,9 +224,10 @@ const SERVICES = [
     AgentSearchModalComponent,
     ProductSearchModalComponent,
     DynamicReportsComponent,
-    DynamicReportsComponent,
     TruncatePipe,
-    DynamicSetupTableComponent
+    DynamicSetupTableComponent,
+    DynamicSetupScreensConfigComponent,
+    CrmScreensConfigComponent
 
   ],
     imports: [

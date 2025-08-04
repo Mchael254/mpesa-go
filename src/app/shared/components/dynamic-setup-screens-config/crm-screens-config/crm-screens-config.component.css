@@ -1,0 +1,31 @@
+.edit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .25rem !important;
+
+}
+
+.edit-row .edit-link {
+  display: none;
+}
+
+.edit-row:hover .edit-link {
+  display: inline;
+}
+.edit-row .form-label {
+  cursor: pointer;
+}
+
+.form-check {
+  clear: both; /* Ensures each item starts on a new line */
+}
+
+.btn-close {
+  margin-left:4rem!important
+}
+
+.highlight {
+  background-color: #e9eef6 !important;
+  font-weight: 500 !important;
+}

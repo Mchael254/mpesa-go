@@ -1,0 +1,38 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="dynamicConfigBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="card">
+    <div class="card-body m-5">
+      <div class="row col-12">
+        <div class="col-md-6">
+          <h3 class="text-primary">{{ 'crm.welcomeToEvolveConfigurator' | translate }}</h3>
+          <h6 class="text-dark">
+            {{ 'crm.selectASystem' | translate }}
+          </h6>
+          <ng-container *ngFor="let system of systems">
+            <div class="form-check my-4 mx-4">
+              <input
+                class="form-check-input select-system"
+                type="radio"
+                name="system"
+                value="{{ system.id }}"
+                (click)="selectSystem(system)"
+                [checked]="selectedSystem?.id === system.id"
+              />
+              <label class="form-check-label" for="{{ system.id }}">
+                {{ system.systemName | titlecase }}
+              </label>
+            </div>
+          </ng-container>
+          <button class="btn btn-primary" [disabled]="!selectedSystem" (click)="routeToSelectedSystem()">{{ 'crm.getStarted' | translate }}</button>
+        </div>
+        <div class="col-md-6">
+          <img alt="evolve configurator" src="assets/images/amico.png" class="img-fluid"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

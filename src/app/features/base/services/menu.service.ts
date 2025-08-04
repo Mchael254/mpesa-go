@@ -1374,6 +1374,21 @@ subList:[
         collapsed: true,
       },
     ],
+    DYNAMIC_SETUP: [
+      {
+        name: 'Dynamic Setup',
+        nameSlug: 'dynamicSetup',
+        // icon: 'fa-solid fa-gears',
+        menuItems: [
+          {
+            name: 'Accounts',
+            link: '/home/crm-screen-setup',
+          },
+        ],
+
+        collapsed: true,
+      },
+    ],
   };
 
   public _sidebarMainMenu = new BehaviorSubject<SidebarMenu[]>([
@@ -1435,6 +1450,12 @@ subList:[
         name: 'Need Analysis Setup',
         link: '/home/setups/need-analysis',
         value: 'SCREEN_SETUP',
+        isActive: true,
+      },
+      {
+        name: 'Dynamic Setup',
+        link: '/home/screen-setup',
+        value: 'DYNAMIC_SETUP',
         isActive: true,
       },
     ];
