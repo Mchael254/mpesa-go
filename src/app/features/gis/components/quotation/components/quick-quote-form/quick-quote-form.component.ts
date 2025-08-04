@@ -533,16 +533,22 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   //     p.description.toLowerCase().includes(search)
   //   );
   // }
-  onSearchChange(search: string) {
-    this.searchChanged.next(search);
-  }
+  // onSearchChange(search: string) {
+  //   log.debug('search word', search)
+  //   this.searchChanged.next(search);
+  // }
+  onInputChange(value: string) {
+    log.debug('search word', value)
 
+    this.searchChanged.next(value);
+  }
   filterProducts(searchText: string) {
     const search = searchText.toLowerCase();
     log.debug("Search product", search);
     this.filteredProducts = this.products.filter(p =>
       p.description.toLowerCase().includes(search)
     );
+    log.debug("filtered products:", this.filteredProducts)
   }
   get productsFormArray(): FormArray {
     return this.quickQuoteForm.get('products') as FormArray;
@@ -2361,4 +2367,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         }
       })
   }
+  toggleProductSelection(product: any) {
+    const selected = this.isProductSelected(product);
+
+    const fakeEvent = { target: { checked: !selected } };
+    this.onCheckboxChange(fakeEvent as any, product);
+  }
+
 }

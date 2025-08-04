@@ -59,6 +59,13 @@
               [phoneValidation]="true" [separateDialCode]="true" [numberFormat]="PhoneNumberFormat.National"
               formControlName="phone">
             </ngx-intl-tel-input>
+
+
+            <div *ngIf="quotationForm.get('phone')?.invalid && quotationForm.get('phone')?.touched"
+              class="form-text text-danger">
+              Invalid phone number
+            </div>
+
           </div>
         </div>
 
