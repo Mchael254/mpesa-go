@@ -66,7 +66,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   comments: string;
   isClientSearchModalVisible = false;
   organizationId: number;
-isModalLoading = false;
+  isModalLoading = false;
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
@@ -123,7 +123,7 @@ isModalLoading = false;
         }
       });
     const organization = this.sessionStorageService.getItem("organizationDetails") as OrganizationDTO;
-  if (organization) {
+    if (organization) {
       this.organizationId = organization.id
     }
 
