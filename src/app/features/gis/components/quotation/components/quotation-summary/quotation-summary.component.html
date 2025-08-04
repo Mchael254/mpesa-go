@@ -392,8 +392,8 @@
                 <!-- CLAUSES -->
                 <div class="tab-pane fade show active" id="nav-clauses" role="tabpanel" aria-labelledby="nav-clauses"
                   tabindex="0">
-                  <p-table [value]="productClauses" #productClauseTable [tableStyle]="{ 'min-width': '50rem' }" [rows]="3" [paginator]="true"
-                    [rowsPerPageOptions]="[3, 6, 9]" [showCurrentPageReport]="true"
+                  <p-table [value]="productClauses" #productClauseTable [tableStyle]="{ 'min-width': '50rem' }"
+                    [rows]="3" [paginator]="true" [rowsPerPageOptions]="[3, 6, 9]" [showCurrentPageReport]="true"
                     currentPageReportTemplate="{first} - {last} of {totalRecords}" class="ui-datatable"
                     responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
                     <ng-template pTemplate="header">
@@ -412,43 +412,30 @@
                           {{ "gis.quotation.wording" | translate }}
                           <p-sortIcon field="clause"></p-sortIcon>
                         </th>
+
                       </tr>
-                      <tr>
-      <th>
-        <input
-          type="text"
-          pInputText
-          placeholder="Filter ID"
-          
-          class="form-control w-50"
-          (input)="filterId($event)"
-        />
-      </th>
-      <th>
-        <input
-          type="text"
-          pInputText
-          placeholder="Filter Heading"
-          class="form-control w-50"
-          (input)="filterHeading($event)"
-        />
-      </th>
-      <th>
-        <input
-          type="text"
-          pInputText
-          placeholder="Filter Wording"
-          class="form-control w-50"
-          (input)="filterWording($event)"
-        />
-      </th>
-    </tr>
+
                     </ng-template>
 
-                    <ng-template pTemplate="body" let-data >
-                      <tr >
-                       
-                        <td>{{ data.clauseCode }}</td>
+                    <ng-template pTemplate="body" let-data let-columns="columns" let-rowIndex="rowIndex">
+                      <ng-container *ngIf="rowIndex === 0">
+                        <tr>
+
+                          <td>
+                            <input type="text" pInputText class="form-control w-50" (input)="filterId($event)" />
+                          </td>
+                          <td>
+                            <input type="text" pInputText class="form-control w-50" (input)="filterHeading($event)" />
+                          </td>
+                          <td>
+                            <input type="text" pInputText class="form-control w-50" (input)="filterWording($event)" />
+                          </td>
+
+                        </tr>
+                      </ng-container>
+                      <tr>
+
+                        <td>{{ data.clauseShortDescription}}</td>
                         <td>{{ data.clauseHeading | sentenceCase }}</td>
                         <td style="
                             white-space: nowrap;
@@ -462,7 +449,7 @@
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
-                     
+
                       <tr>
                         <td colspan="5" class="text-center text-muted py-3">
                           “No product clauses available.”
@@ -505,8 +492,8 @@
                             <div class="col-md-6 mb-3">
                               <label>Tax type</label>
                               <p-dropdown formControlName="taxType" [options]="taxTypes" optionLabel="label"
-                               optionValue="value" placeholder="Select tax type" class="w-100 p-inputtext-sm slim-dropdown"
-                                [showClear]="true" [filter]="true">
+                                optionValue="value" placeholder="Select tax type"
+                                class="w-100 p-inputtext-sm slim-dropdown" [showClear]="true" [filter]="true">
                               </p-dropdown>
                               <div *ngIf="taxForm.get('taxType')?.touched && taxForm.get('taxType')?.invalid"
                                 class="text-danger small">
@@ -517,8 +504,9 @@
                             <div class="col-md-6 mb-3">
                               <label>Transaction type</label>
                               <p-dropdown formControlName="transactionType" [options]="transactionTypes"
-                                optionLabel="description"  optionValue="code" placeholder="" class="w-100 p-inputtext-sm slim-dropdown"
-                                [showClear]="true" [filter]="true" filterBy="description">
+                                optionLabel="description" optionValue="code" placeholder=""
+                                class="w-100 p-inputtext-sm slim-dropdown" [showClear]="true" [filter]="true"
+                                filterBy="description">
                               </p-dropdown>
                               <div
                                 *ngIf="taxForm.get('transactionType')?.touched && taxForm.get('transactionType')?.invalid"
@@ -855,26 +843,22 @@
         <div class="card-body">
           <div class="row">
             <div class="col-4">
-              <p *ngIf="!isRiskCollapsibleOpen" class="card-title mt-2" style="cursor: pointer;" (click)="toggleRiskDetails()">
-  Risks
-</p>
+              <p *ngIf="!isRiskCollapsibleOpen" class="card-title mt-2" style="cursor: pointer;"
+                (click)="toggleRiskDetails()">
+                Risks
+              </p>
 
             </div>
             <div class="col-8 d-flex justify-content-end">
               <div class="row">
                 <div class="col-4" *ngIf="!isRiskCollapsibleOpen">
- <button
-  type="button"
-  id="icon"
-  class="btn btn-primary p-0.5 px-2.5"
-  (click)="toggleRiskDetails()"
-  [attr.aria-expanded]="isRiskCollapsibleOpen"
->
-  <i class="fa-solid" [ngClass]="{
+                  <button type="button" id="icon" class="btn btn-primary p-0.5 px-2.5" (click)="toggleRiskDetails()"
+                    [attr.aria-expanded]="isRiskCollapsibleOpen">
+                    <i class="fa-solid" [ngClass]="{
     'fa-chevron-down': !isRiskCollapsibleOpen,
     'fa-chevron-up': isRiskCollapsibleOpen
   }"></i>
-</button>
+                  </button>
 
 
 
@@ -883,43 +867,43 @@
             </div>
           </div>
 
-       <div class="mt-4" [ngClass]="{ 'collapse': true, 'show': isRiskCollapsibleOpen }" id="riskDetails">
-  <div class="row mb-3">
-    <div class="col-4">
-      <p class="mt-2 fw-semibold" data-bs-toggle="collapse" data-bs-target="#riskDetails">
-        Risk Details
-      </p>
-    </div>
+          <div class="mt-4" [ngClass]="{ 'collapse': true, 'show': isRiskCollapsibleOpen }" id="riskDetails">
+            <div class="row mb-3">
+              <div class="col-4">
+                <p class="mt-2 fw-semibold" data-bs-toggle="collapse" data-bs-target="#riskDetails">
+                  Risk Details
+                </p>
+              </div>
 
-    <div class="col-12">
-      <div class="d-flex justify-content-between align-items-start w-100">
-        
-        <ul class="nav nav-tabs me-auto" id="taxTabs" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" [class.active]="activeRiskTab === 'motor'"
-      (click)="activeRiskTab = 'motor'" type="button">
-      Motor Private
-    </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" [class.active]="activeRiskTab === 'domestic'"
-      (click)="activeRiskTab = 'domestic'" type="button">
-      Domestic
-    </button>
-          </li>
-        </ul>
+              <div class="col-12">
+                <div class="d-flex justify-content-between align-items-start w-100">
 
-        <!-- Toggle button aligned to end -->
-        <button type="button" class="btn btn-primary p-0.5 px-2.5"
-          (click)="toggleRiskDetails()" [attr.aria-expanded]="isRiskCollapsibleOpen">
-          <i class="fa-solid" [ngClass]="{
+                  <ul class="nav nav-tabs me-auto" id="taxTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link" [class.active]="activeRiskTab === 'motor'"
+                        (click)="activeRiskTab = 'motor'" type="button">
+                        Motor Private
+                      </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link" [class.active]="activeRiskTab === 'domestic'"
+                        (click)="activeRiskTab = 'domestic'" type="button">
+                        Domestic
+                      </button>
+                    </li>
+                  </ul>
+
+                  <!-- Toggle button aligned to end -->
+                  <button type="button" class="btn btn-primary p-0.5 px-2.5" (click)="toggleRiskDetails()"
+                    [attr.aria-expanded]="isRiskCollapsibleOpen">
+                    <i class="fa-solid" [ngClass]="{
             'fa-chevron-up': isRiskCollapsibleOpen,
             'fa-chevron-down': !isRiskCollapsibleOpen
           }"></i>
-        </button>
-      </div>
-    </div>
-  </div>
+                  </button>
+                </div>
+              </div>
+            </div>
 
 
 
@@ -935,7 +919,7 @@
                   <th pSortableColumn="icover-from">Cover from<p-sortIcon field="cover-from"></p-sortIcon></th>
                   <th pSortableColumn="cover-to">Cover to<p-sortIcon field="cover-to"></p-sortIcon></th>
                   <th></th>
-                
+
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-data>
@@ -943,31 +927,31 @@
                   (click)="handleRowClick(data)" [class.disabled]="!data?.code">
                   <td>{{ data?.quotationRiskNo || "-" }}</td>
                   <td>{{ data?.propertyId || "-" }}</td>
-                    <td>
+                  <td>
                     {{ data?.subclass?.description || "-" | sentenceCase }}
                   </td>
                   <td>
                     {{ data?.coverTypeDescription || "-" | sentenceCase }}
                   </td>
-                  <td >
+                  <td>
                     {{ data?.sectionsDetails[0]?.limitAmount || 0 | number }}
                   </td>
-                 
+
                   <td>
                     {{ data?.wef}}
                   </td>
-                  <td >
+                  <td>
                     {{ data?.wet}}
                   </td>
                 </tr>
               </ng-template>
-               <ng-template pTemplate="emptymessage">
-                        <tr>
-                        <td colspan="7" class="text-center text-muted py-3">
-                           “No risks available for this product.”
-                        </td>
-                      </tr>
-                    </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="7" class="text-center text-muted py-3">
+                    “No risks available for this product.”
+                  </td>
+                </tr>
+              </ng-template>
 
 
             </p-table>
@@ -1015,16 +999,16 @@
               <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Risk peril</a>
               </li>
-               <li class="nav-item">
+              <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Excess</a>
               </li>
-               <li class="nav-item">
+              <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Comments</a>
               </li>
-               <li class="nav-item">
+              <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Limits of liability</a>
               </li>
-               <li class="nav-item">
+              <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Commissions</a>
               </li>
             </ul>
@@ -1361,13 +1345,13 @@
       </div>
 
       <div class="mb-5">
-        <button type="button" class="btn btn-outline-primary mx-2"
-          (click)="openReassignQuotationModal()" [disabled]="afterRejectQuote">
+        <button type="button" class="btn btn-outline-primary mx-2" (click)="openReassignQuotationModal()"
+          [disabled]="afterRejectQuote">
           {{ "gis.quotation.reassign" | translate }}
         </button>
 
-        <button type="button" class="btn btn-outline-primary"
-          (click)="openRejectQuotationModal()" [disabled]="afterRejectQuote">
+        <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
+          [disabled]="afterRejectQuote">
           {{'gis.quotation.reject' | translate}}
         </button>
       </div>

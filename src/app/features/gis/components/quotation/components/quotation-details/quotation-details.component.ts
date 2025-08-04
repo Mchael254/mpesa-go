@@ -255,7 +255,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.getuser();
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
-      phone: [''],
+      phone: ['', this.newClient ? [Validators.required] : []],
       client: ['', [Validators.minLength(2)]]
     });
     this.loadDetailedQuotationFields();

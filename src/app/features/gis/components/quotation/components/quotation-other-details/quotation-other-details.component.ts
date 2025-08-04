@@ -33,6 +33,8 @@ export class QuotationOtherDetailsComponent {
     log.debug("quote code-other details >>", this.quotationCode);
     this.clientCode = Number(sessionStorage.getItem('clientCode'));
     log.debug("client code >>", this.quotationCode);
+    this.getQuotationRevision();
+    this.getQuotationComments();
     this.quotationRevisions = this.sortRevisionsByNumber(this.quotationRevisions);
     this.quotationComments = this.sortCommentsByNumber(this.quotationComments);
 
