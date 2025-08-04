@@ -1188,13 +1188,6 @@
         </div>
       </div>
 
-
-
-      <!-- reassign -->
-      <button type="button" class="btn btn-outline-primary mx-2" (click)="openReassignQuotationModal()">
-        {{ "gis.quotation.reassign" | translate }}
-      </button>
-
       <!-- Reassign quote Modal 1 (re assign)-->
       <div class="modal fade" id="reassignQuotationModal" #reassignQuotationModal tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="min-width: 200px">
@@ -1332,8 +1325,56 @@
         </div>
       </div>
 
+      <!-- reject quote modal -->
+      <div class="modal fade" id="rejectQuote" #rejectQuotationModal tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="min-width:400px">
+          <div class="modal-content ps-4 pt-2 pe-4">
+            <div class="d-flex justify-content-between align-items-center rounded-3 mb-1">
+              <p class="modal-title fw-bold ms-0">{{ 'gis.quotation.reject_quote' | translate }}</p>
+              <button type="button" data-bs-dismiss="modal" class="btn p-1 text-danger fw-bold" style="border: none;">X
+              </button>
+            </div>
+            <p class="text-dark mb-3">Are you sure you want to reject this quote? </p>
+
+            <p [class.invisible]="!noComment" class="text-danger">Comment is required</p>
+
+            <label class="text-dark mt-0" for="comment">Comment</label>
+            <textarea rows="3" cols="25" pInputTextarea [(ngModel)]="rejectComment">
+
+            </textarea>
+
+            <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
+              <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                style="text-decoration: none;">{{
+                'gis.quotation.cancel' | translate
+                }}
+              </button>
+              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+                (click)="rejectQuotation(quotationDetails.code)">{{
+                'gis.quotation.save_changes' |
+                translate
+                }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-5">
+        <button type="button" class="btn btn-outline-primary mx-2"
+          (click)="openReassignQuotationModal()" [disabled]="afterRejectQuote">
+          {{ "gis.quotation.reassign" | translate }}
+        </button>
+
+        <button type="button" class="btn btn-outline-primary"
+          (click)="openRejectQuotationModal()" [disabled]="afterRejectQuote">
+          {{'gis.quotation.reject' | translate}}
+        </button>
+      </div>
+
 
     </div>
+
     <!-- quotation other details -->
     <div class="tab-pane fade" id="nav-quotation-other-details" role="tabpanel" aria-labelledby="nav-authorization-tab"
       tabindex="0">
@@ -1347,6 +1388,8 @@
       <app-quotation-report></app-quotation-report>
 
     </div>
+
+
 
   </div>
 </div>

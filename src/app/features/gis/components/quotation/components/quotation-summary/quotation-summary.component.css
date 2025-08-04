@@ -592,6 +592,11 @@ tr:hover {
   padding: 0 6px !important;
 }
 
-
-
-
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  resize: none;
+}
