@@ -603,10 +603,7 @@ subList:[
           name: this.translate.instant('base-fms.defineYrs'),
           link: '/home/fms/',
         },
-        {
-         name: this.translate.instant('base-fms.closeYrsOperations'),
-          link: '/home/fms/',
-        },
+      
         {
           name: this.translate.instant('base-fms.closeYrs'),
           link: '/home/fms/',
