@@ -418,10 +418,7 @@ Relationship Management) application. Each object has the following properties: 
           label: this.translate.instant('base.base-fms.defineYrs'),
           link: '/home/fms/',
         },
-        {
-          label: this.translate.instant('base.base-fms.closeYrsOperations'),
-          link: '/home/fms/',
-        },
+      
         {
           label: this.translate.instant('base.base-fms.closeYrs'),
           link: '/home/fms/',
