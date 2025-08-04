@@ -162,6 +162,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   transactionTypes: any[] = [];
   isEditingTax: boolean = false;
   productClauses:ProductClauses[]=[];
+  activeRiskTab: string = 'motor';
+
   
 
 
@@ -202,6 +204,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   public showExternalClaims = false;
   private ngUnsubscribe = new Subject();
   public cdr: ChangeDetectorRef;
+  @ViewChild('productClauseTable') productClauseTable: any;
 
 
 
@@ -423,6 +426,32 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.handleProductClick(this.quotationView.quotationProducts[0])
       });
 
+  }
+
+  get filteredRiskDetails() {
+  return this.riskDetails.filter(risk => {
+    const type = risk?.subclass?.description?.toUpperCase();
+    if (this.activeRiskTab === 'domestic') {
+      return type === 'DOMESTIC';
+    }
+    if (this.activeRiskTab === 'motor') {
+      return type === 'PRIVATE MOTOR';
+    }
+    return true;
+  });
+}
+ filterId(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.productClauseTable.filter(input.value, 'clauseCode', 'contains');
+  }
+
+  filterHeading(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.productClauseTable.filter(input.value, 'clauseHeading', 'contains');
+  }
+  filterWording(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.productClauseTable.filter(input.value, 'clause', 'contains');
   }
 
   getAgent() {
