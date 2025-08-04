@@ -546,7 +546,7 @@ export class UtilService {
       value = Array.isArray(value) ? value[0] : value;
 
       // adding only defined values to the params
-      if (value !== undefined && value !== null && value !== 'null' && value !== '') {
+      if (value !== undefined && value !== null && value !== 'null' && value !== '' && value !== 'undefined') {
         queryParams[key] = value;
       }
 

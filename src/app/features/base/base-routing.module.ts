@@ -5,6 +5,12 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { BaseComponent } from './base.component';
 
 import { AuthGuard } from 'src/app/shared/services/guard/auth-guard.service';
+import {
+  DynamicSetupScreensConfigComponent
+} from "../../shared/components/dynamic-setup-screens-config/dynamic-setup-screens-config.component";
+import {
+  CrmScreensConfigComponent
+} from "../../shared/components/dynamic-setup-screens-config/crm-screens-config/crm-screens-config.component";
 
 const routes: Routes = [
   {
@@ -55,6 +61,14 @@ const routes: Routes = [
     {
       path: 'fms',
       loadChildren: () => import('../fms/fms.module').then(m => m.FmsModule)
+    },
+    {
+      path: 'screen-setup',
+      component: DynamicSetupScreensConfigComponent,
+    },
+    {
+      path: 'crm-screen-setup',
+      component: CrmScreensConfigComponent,
     },
   ],
 }];
