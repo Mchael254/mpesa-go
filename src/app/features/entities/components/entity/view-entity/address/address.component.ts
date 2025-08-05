@@ -89,7 +89,6 @@ export class AddressComponent implements OnInit {
       next:(states) => {
         this.states = states;
         this.clientState = states.find(state => state.id === this.addressDetails?.stateId);
-        console.log(`states  >>>`, this.states, this.clientState, this.addressDetails.stateId);
         this.fetchTowns(this.addressDetails?.stateId);
       },
       error: (err) => {},
@@ -101,7 +100,6 @@ export class AddressComponent implements OnInit {
       next:(towns) => {
         this.towns = towns;
         this.clientTown = towns.find(town => town.id === this.addressDetails?.townId);
-        console.log(`towns >>>`,towns, this.clientTown);
         this.fetchPostalCodes(this.clientTown?.id);
       },
       error: (err) => {},
@@ -118,7 +116,6 @@ export class AddressComponent implements OnInit {
   }
 
   openEditAddressDialog(): void {
-    log.info(`openEditAddressDialog >>> `,);
     this.editButton.nativeElement.click();
     this.setSelectOptions();
     setTimeout(() => {this.patchFormValues()}, 500)
@@ -138,7 +135,6 @@ export class AddressComponent implements OnInit {
       houseNo: this.addressDetails.houseNo,
     }
     this.editForm.patchValue(patchData);
-    log.info(`patchData >>> `, patchData, this.editForm);
   }
 
   editAddressDetails(): void {
@@ -156,18 +152,16 @@ export class AddressComponent implements OnInit {
       // townId: formValues.town,
       road: formValues.road,
       houseNumber: formValues.houseNo,
-      boxNumber: '123',
-      estate: 'test estate',
-      isUtilityAddress: '1233',
-      utilityAddressProof: '222',
-      fax: '123',
-      zip: '123',
-      phoneNumber: '08060911051',
-      modifiedBy: 'Tunde'
-
-
+      // boxNumber: '123',
+      // estate: 'test estate',
+      // isUtilityAddress: '1233',
+      // utilityAddressProof: '222',
+      // fax: '123',
+      // zip: '123',
+      // phoneNumber: '08060911051',
+      // modifiedBy: 'Tunde'
     }
-    log.info(`form values >>> `, formValues, addressDetails, this.addressDetails);
+
     this.clientService.updateClient(this.accountCode, addressDetails).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
@@ -187,7 +181,6 @@ export class AddressComponent implements OnInit {
       this.towns?.length > 0
     ) {
       this.formFieldsConfig.fields.forEach(field => {
-        log.info(`set ${field.fieldId}`);
         switch (field.fieldId) {
           case 'country':
             field.options = this.countries;
@@ -205,7 +198,7 @@ export class AddressComponent implements OnInit {
           default:
             //do nothing
         }
-        this.cdr.detectChanges();
+        // this.cdr.detectChanges();
       });
     }
   }
