@@ -59,8 +59,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('reassignQuotationModal') reassignQuotationModalElement!: ElementRef;
   @ViewChild('rejectQuotationModal') rejectQuotationModalElement!: ElementRef;
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
-   @ViewChild('productClauseTable') productClauseTable: any;
-    @ViewChild('riskClausesTable') riskClausesTable: any;
+  @ViewChild('productClauseTable') productClauseTable: any;
+  @ViewChild('riskClausesTable') riskClausesTable: any;
+  @ViewChild('selectTaxTable') selectTaxTable: any;
   private modals: { [key: string]: bootstrap.Modal } = {};
 
   steps = quoteStepsData;
@@ -168,7 +169,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   noComment: boolean = false;
   afterRejectQuote: boolean = false;
   productClauses: ProductClauses[] = [];
-  activeRiskTab: string = 'motor';
+  activeRiskTab: string = '';
+  products: any[] = [];
+
 
 
   constructor(
@@ -399,9 +402,19 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.quotationProducts = this.quotationView.quotationProducts;
         this.riskDetails = this.quotationView.quotationProducts[0]?.riskInformation;
         log.debug("Risk Details quotation-summary", this.riskDetails);
+        log.debug('quoationProducts', this.quotationProducts)
+
+
+this.products = this.quotationView.quotationProducts;
+
+if (this.products.length > 0) {
+  this.activeRiskTab = this.products[0].code;
+}
+
 
 
         this.productDetails = this.quotationView.quotationProducts
+        log.debug('product details',this.productDetails)
 
         // this.getbranch();
         // this.getPremiumComputationDetails();
@@ -439,47 +452,21 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         });
         this.handleProductClick(this.quotationView.quotationProducts[0])
       });
+      
 
   }
+get filteredRiskDetails() {
+  const currentProduct = this.products.find(p => p.code === this.activeRiskTab);
+  return currentProduct?.riskInformation || [];
+}
 
-  get filteredRiskDetails() {
-    return this.riskDetails.filter(risk => {
-      const type = risk?.subclass?.description?.toUpperCase();
-      if (this.activeRiskTab === 'domestic') {
-        return type === 'DOMESTIC';
-      }
-      if (this.activeRiskTab === 'motor') {
-        return type === 'PRIVATE MOTOR';
-      }
-      return true;
-    });
-  }
-  filterId(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.productClauseTable.filter(input.value, 'clauseShortDescription', 'contains');
-  }
 
-  filterHeading(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.productClauseTable.filter(input.value, 'clauseHeading', 'contains');
-  }
-  filterWording(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.productClauseTable.filter(input.value, 'clause', 'contains');
-  }
-   filterIdRiskclause(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.riskClausesTable.filter(input.value, 'clauseCode', 'contains');
-  }
 
-  filterHeadingRiskclause(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.riskClausesTable.filter(input.value, 'shortDescription', 'contains');
-  }
-  filterWordingRiskclause(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.riskClausesTable.filter(input.value, 'clause', 'contains');
-  }
+  filterTable(event: Event, field: string, tableRef: any) {
+  const input = (event.target as HTMLInputElement).value;
+  tableRef.filter(input, field, 'contains');
+}
+
 
   getAgent() {
     this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(
@@ -1253,6 +1240,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.productClauses = data.productClauses
     this.getProductSubclass(proCode);
     this.fetchSimilarQuotes(quotationProductCode);
+    log.debug('productClauses',this.productClauses)
   }
 
   loadAllSubclass() {
