@@ -468,7 +468,320 @@
       "fr": "adresse",
       "ke": "anwani"
     },
-    "fields": []
+    "fields": [
+      {
+        "sectionId": "address",
+        "fieldId": "address",
+        "type": "text",
+        "label": {
+          "en": "address",
+          "ke": "",
+          "fr": ""
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": ["NATIONAL_ID", "BIRTH_CERT"]
+      },
+      {
+        "sectionId": "address",
+        "fieldId": "country",
+        "type": "select",
+        "label": {
+          "en": "country",
+          "ke": "",
+          "fr": ""
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "address",
+        "fieldId": "county",
+        "type": "select",
+        "label": {
+          "en": "county / state",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "address",
+        "fieldId": "city",
+        "type": "select",
+        "label": {
+          "en": "city / town",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "address",
+        "fieldId": "physicalAddress",
+        "type": "text",
+        "label": {
+          "en": "physical address",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "address",
+        "fieldId": "postalAddress",
+        "type": "text",
+        "label": {
+          "en": "postal address",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": ["m", "f"]
+      },
+      {
+        "sectionId": "address",
+        "fieldId": "postalCode",
+        "type": "select",
+        "label": {
+          "en": "postal code",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": ["m", "f"]
+      },
+      {
+        "sectionId": "address",
+        "fieldId": "town",
+        "type": "select",
+        "label": {
+          "en": "town",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": ["m", "f"]
+      },
+      {
+        "sectionId": "address",
+        "fieldId": "road",
+        "type": "text",
+        "label": {
+          "en": "road",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": ["m", "f"]
+      },
+      {
+        "sectionId": "address",
+        "fieldId": "houseNo",
+        "type": "text",
+        "label": {
+          "en": "house name /no",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": ["m", "f"]
+      }
+    ],
+    "buttons": {
+      "cancel": {
+        "sectionId": "prime_identity",
+        "fieldId": "cancel_button",
+        "type": "button",
+        "label": {
+          "en": "cancel",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        }
+      },
+      "save": {
+        "sectionId": "prime_identity",
+        "fieldId": "cancel_button",
+        "type": "button",
+        "label": {
+          "en": "save details",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        }
+      }
+    }
   },
   "financial": {
     "label": {

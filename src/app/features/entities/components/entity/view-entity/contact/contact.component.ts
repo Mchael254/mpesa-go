@@ -51,17 +51,23 @@ export class ContactComponent implements OnInit {
     private globalMessagingService: GlobalMessagingService,
     private fb: FormBuilder,
     ) {
-    this.utilService.currentLanguage.subscribe(lang => {
+    this.utilService?.currentLanguage.subscribe(lang => {
       this.language = lang;
     });
   }
 
   ngOnInit(): void {
     this.fetchSelectOptions();
-    setTimeout(() => {
-      // this.createEditForm(this.formFieldsConfig.fields);
-      if (this.contactDetails.titleId) this.initData();
-    }, 1000);
+    if (this.contactDetails.titleId) {
+      this.initData()
+    };
+
+    /*setTimeout(() => {
+      console.log(this.contactDetails)
+      if (this.contactDetails.titleId) {
+        this.initData()
+      };
+    }, 1000);*/
   }
 
 
@@ -122,7 +128,6 @@ export class ContactComponent implements OnInit {
   }
 
   openEditContactDialog(): void {
-    // log.info(`openEditContactDialog >>> `,);
     this.editButton.nativeElement.click();
     this.patchFormValues();
   }
@@ -136,12 +141,11 @@ export class ContactComponent implements OnInit {
       ];
     });
     this.editForm = this.fb.group(group);
-    // this.patchFormValues();
   }
 
   patchFormValues(): void {
     const patchData = {
-      branch: this.contactDetails.branch ,
+      branch: this.contactDetails?.branch ,
       title: this.clientTitle.id,
       smsNumber: this.contactDetails?.smsNumber,
       telNumber: this.contactDetails?.phoneNumber,
@@ -163,7 +167,7 @@ export class ContactComponent implements OnInit {
       contactChannel: formValues.contactChannel,
 
     }
-    log.info(`form values >>> `, formValues, contactDetails);
+
     this.clientService.updateClient(this.accountCode, contactDetails).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
