@@ -59,6 +59,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('reassignQuotationModal') reassignQuotationModalElement!: ElementRef;
   @ViewChild('rejectQuotationModal') rejectQuotationModalElement!: ElementRef;
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
+   @ViewChild('productClauseTable') productClauseTable: any;
+    @ViewChild('riskClausesTable') riskClausesTable: any;
   private modals: { [key: string]: bootstrap.Modal } = {};
 
   steps = quoteStepsData;
@@ -204,7 +206,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   public showExternalClaims = false;
   private ngUnsubscribe = new Subject();
   public cdr: ChangeDetectorRef;
-  @ViewChild('productClauseTable') productClauseTable: any;
+ 
 
 
 
@@ -464,6 +466,19 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   filterWording(event: Event) {
     const input = event.target as HTMLInputElement;
     this.productClauseTable.filter(input.value, 'clause', 'contains');
+  }
+   filterIdRiskclause(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.riskClausesTable.filter(input.value, 'clauseCode', 'contains');
+  }
+
+  filterHeadingRiskclause(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.riskClausesTable.filter(input.value, 'shortDescription', 'contains');
+  }
+  filterWordingRiskclause(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.riskClausesTable.filter(input.value, 'clause', 'contains');
   }
 
   getAgent() {
