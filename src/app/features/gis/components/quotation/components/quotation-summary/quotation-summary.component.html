@@ -412,27 +412,48 @@
                           {{ "gis.quotation.wording" | translate }}
                           <p-sortIcon field="clause"></p-sortIcon>
                         </th>
+                        <th></th>
 
                       </tr>
+                                                 <tr>
+                         <th>
+        <input
+          type="text"
+          pInputText
+          placeholder="Filter ID"
+          
+          class="form-control w-70"
+        
+          (input)="filterTable($event, 'clauseShortDescription', productClauseTable)"
+        />
+      </th>
+      <th>
+        <input
+          type="text"
+          pInputText
+          placeholder="Filter heading"
+          class="form-control w-70"
+          (input)="filterTable($event, 'clauseHeading', productClauseTable)"
+        />
+      </th>
+       <th>
+        <input
+          type="text"
+          pInputText
+          placeholder="Filter wording"
+          class="form-control w-70"
+          (input)="filterTable($event, 'clause', productClauseTable)"
+        />
+      </th>
+     
+      
+      <th></th>
+                    </tr>
 
                     </ng-template>
 
-                    <ng-template pTemplate="body" let-data let-columns="columns" let-rowIndex="rowIndex">
-                      <ng-container *ngIf="rowIndex === 0">
-                        <tr>
-
-                          <td>
-                            <input type="text" pInputText class="form-control w-50" (input)="filterId($event)" />
-                          </td>
-                          <td>
-                            <input type="text" pInputText class="form-control w-50" (input)="filterHeading($event)" />
-                          </td>
-                          <td>
-                            <input type="text" pInputText class="form-control w-50" (input)="filterWording($event)" />
-                          </td>
-
-                        </tr>
-                      </ng-container>
+                    <ng-template pTemplate="body" let-data let-columns="columns" >
+                      
                       <tr>
 
                         <td>{{ data.clauseShortDescription}}</td>
@@ -609,7 +630,7 @@
 
                       <!-- Modal Body -->
                       <div class="modal-body">
-                        <p-table [value]="taxes" selectionMode="single" [(selection)]="selectedTax"
+                        <p-table [value]="taxes" #selectTaxTable selectionMode="single" [(selection)]="selectedTax"
                           [tableStyle]="{  'width': '100%' }" [rows]="4" [paginator]="true"
                           [rowsPerPageOptions]="[2, 4, 6]" [showCurrentPageReport]="true"
                           currentPageReportTemplate="{first} - {last} of {totalRecords}" class="ui-datatable"
@@ -625,20 +646,39 @@
                                 Tax description
                                 <p-sortIcon field="tax-description"></p-sortIcon>
                               </th>
+                              <th></th>
+                              <th></th>
 
                             </tr>
+                                      <tr>
+                         <th>
+        <input
+          type="text"
+          pInputText
+          placeholder="Filter ID"
+          
+          class="form-control w-70"
+        
+          (input)="filterTable($event, 'taxCode', selectTaxTable)"
+        />
+      </th>
+      <th>
+        <input
+          type="text"
+          pInputText
+          placeholder="Filter description"
+          class="form-control w-70"
+          (input)="filterTable($event, 'description', selectTaxTable)"
+        />
+      </th>
+     
+      <th></th>
+      <th></th>
+                    </tr>
                           </ng-template>
 
-                          <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
-                            <tr *ngIf="rowIndex === 0">
-                              <td>
-                                <input type="text" pInputText class="small-input" />
-                              </td>
-
-                              <td>
-                                <input type="text" pInputText class="small-input" />
-                              </td>
-                            </tr>
+                          <ng-template pTemplate="body" let-data >
+                           
                             <tr [pSelectableRow]="data">
                               <td>{{ data.taxCode }}</td>
 
@@ -878,20 +918,19 @@
               <div class="col-12">
                 <div class="d-flex justify-content-between align-items-start w-100">
 
-                  <ul class="nav nav-tabs me-auto" id="taxTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link" [class.active]="activeRiskTab === 'motor'"
-                        (click)="activeRiskTab = 'motor'" type="button">
-                        Motor Private
-                      </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link" [class.active]="activeRiskTab === 'domestic'"
-                        (click)="activeRiskTab = 'domestic'" type="button">
-                        Domestic
-                      </button>
-                    </li>
-                  </ul>
+                 <ul class="nav nav-tabs me-auto"  id="taxTabs" role="tablist">
+  <li class="nav-item" role="presentation" *ngFor="let product of products">
+    <button
+      class="nav-link"
+      [class.active]="activeRiskTab === product.code"
+      (click)="activeRiskTab = product.code"
+      type="button"
+    >
+      {{ product.productName }}
+    </button>
+  </li>
+</ul>
+
 
                   <!-- Toggle button aligned to end -->
                   <button type="button" class="btn btn-primary p-0.5 px-2.5" (click)="toggleRiskDetails()"
@@ -1088,7 +1127,7 @@
           placeholder="Filter ID"
           
           class="form-control w-50"
-          (input)="filterIdRiskclause($event)"
+          (input)="filterTable($event,'clauseCode',riskClausesTable)"
         />
       </th>
       <th>
@@ -1097,7 +1136,7 @@
           pInputText
           placeholder="Filter Heading"
           class="form-control w-50"
-          (input)="filterHeadingRiskclause($event)"
+          (input)="filterTable($event,'shortDescription',riskClausesTable)"
         />
       </th>
       <th>
@@ -1106,7 +1145,7 @@
           pInputText
           placeholder="Filter Wording"
           class="form-control w-50"
-          (input)="filterWordingRiskclause($event)"
+          (input)="filterTable($event,'clause',riskClausesTable)"
         />
       </th>
       <th></th>
