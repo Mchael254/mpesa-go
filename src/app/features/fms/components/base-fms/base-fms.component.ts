@@ -528,22 +528,22 @@ Relationship Management) application. Each object has the following properties: 
           label: this.translate.instant('base.base-fms.aBudget'),
           link: '/home/fms/',
         },
-        ,{
+        {
           label: this.translate.instant('base.base-fms.rBudgets'),
           link: '/home/fms/',
         },
 
-        ,{
+        {
           label: this.translate.instant('base.base-fms.oBalances'),
           link: '/home/fms/',
-        },,{
+        },{
           label: this.translate.instant('base.base-fms.iOBalances'),
           link: '/home/fms/',
         },{
           label: this.translate.instant('base.base-fms.rJournals'),
           link: '/home/fms/',
         },
-        ,{
+        {
           label: this.translate.instant('base.base-fms.iAcctMapping'),
           link: '/home/fms/',
         },
