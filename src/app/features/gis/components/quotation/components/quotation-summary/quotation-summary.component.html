@@ -1441,6 +1441,9 @@
       </div>
 
       <div class="mb-5">
+         <button type="button" class="btn btn-outline-primary" (click)="navigateToRiskCenter()">
+          {{'gis.quotation.back' | translate}}
+        </button>
         <button type="button" class="btn btn-outline-primary mx-2" (click)="openReassignQuotationModal()"
           [disabled]="afterRejectQuote">
           {{ "gis.quotation.reassign" | translate }}
