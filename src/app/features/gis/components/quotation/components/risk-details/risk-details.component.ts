@@ -250,7 +250,7 @@ export class RiskDetailsComponent {
   mandatoryClause: any[];
   scheduleLevels: ScheduleLevels[] = [];
   levelTableColumnsMap: { [levelName: string]: Array<{ field: string, header: string }> } = {};
-
+  riskActiveTab: string = 'riskClauses';
 
 
 
@@ -310,7 +310,7 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
-
+    this.loadPersistedRiskClauses();
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
     });
@@ -2017,6 +2017,7 @@ export class RiskDetailsComponent {
   // }
 
   handleRowClick(data: any) {
+    this.loadPersistedRiskClauses();
     if (!data?.code) {
       log.debug('Invalid data for row click:', data);
       return;
@@ -3440,6 +3441,10 @@ export class RiskDetailsComponent {
       this.subclassFormData = [];
     }
 
+  }
+
+  setRiskTab(tab: string): void {
+    this.riskActiveTab = tab;
   }
 
 
