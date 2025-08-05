@@ -933,9 +933,6 @@ export class QuotationsService {
     );
   }
 
-
-
-
   getTransactionTypes(): Observable<any> {
     let page = 0;
     let size = 1000
@@ -950,7 +947,12 @@ export class QuotationsService {
       catchError(this.errorHandl)
     )
   }
-
+  getScheduleLevels(screenCode: string): Observable<any> {
+    return this.api.GET<any>(`v1/schedule-screen-levels?screenCode=${screenCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
 
 }
 

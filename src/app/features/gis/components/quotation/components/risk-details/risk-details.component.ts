@@ -17,8 +17,8 @@ import { VehicleModelService } from '../../../setups/services/vehicle-model/vehi
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection } from '../../data/quotationsDTO';
-import { Premiums, subclassClauses, SubclassCoverTypes, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
+import { Clause, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, ScheduleLevels } from '../../data/quotationsDTO';
+import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
 import { Table } from 'primeng/table';
@@ -54,9 +54,7 @@ const log = new Logger('RiskDetailsComponent');
 })
 
 export class RiskDetailsComponent {
-  freeLimitValue: any;
-  sumInsured: number;
-  mandatoryClause: any[];
+
   getFreeLimitLabel(arg0: any) {
     throw new Error('Method not implemented.');
   }
@@ -191,8 +189,22 @@ export class RiskDetailsComponent {
     regexPattern: string;
     placeholder: string;
     label: string;
-    scheduleLevel: string
+    scheduleLevel: number
     selectOptions?: { label: string; value: any }[];
+  }[];
+  dynamicSubclassFormFields: {
+    type: string;
+    name: string;
+    max: number
+    min: number
+    isMandatory: string;
+    disabled: boolean;
+    readonly: boolean;
+    regexPattern: string;
+    placeholder: string;
+    label: string;
+    scheduleLevel: number
+    selectOptions?: { label: string; value: any }[]
   }[];
   existingPropertyIds: string[] = [];
   dynamicRegexPattern: string;
@@ -206,8 +218,8 @@ export class RiskDetailsComponent {
   yearList: any;
   clientCode: number;
   // showSections: boolean = false;
-  tabs = ['Schedule Details', 'Level 2', 'Level 3']; // Dummy tabs for now
-  activeTab = 'Schedule Details';
+  scheduleTabs: string[] = [];
+  activeTab: string = '';
   isEditMode: boolean = false;
   isAddMode: boolean = false;
   selectedRiskClauses: any;
@@ -232,6 +244,15 @@ export class RiskDetailsComponent {
   showSections: boolean = true;
   showColumnModal = false;
   columnModalPosition = { top: '0px', left: '0px' };
+  selectedSubclassObject: Subclasses;
+  freeLimitValue: any;
+  sumInsured: number;
+  mandatoryClause: any[];
+  scheduleLevels: ScheduleLevels[] = [];
+  levelTableColumnsMap: { [levelName: string]: Array<{ field: string, header: string }> } = {};
+
+
+
 
   constructor(
     public subclassService: SubclassesService,
@@ -294,6 +315,8 @@ export class RiskDetailsComponent {
       subclass: new FormControl(null)
     });
     this.dateFormat = sessionStorage.getItem('dateFormat');
+    const dynamicFormFields = JSON.parse(sessionStorage.getItem('dynamicSubclassFormField'));
+    this.dynamicSubclassFormFields = dynamicFormFields
     log.debug("Date Formart", this.dateFormat)
     // this.updateRiskDetailsForm();
     this.createScheduleDetailsForm();
@@ -397,10 +420,11 @@ export class RiskDetailsComponent {
           const productDetails = this.quotationDetails.quotationProducts.find(
             product => product.productCode === this.selectedProductCode
           )
-          this.riskDetails = productDetails?.riskInformation || []
-          const curentlySavedRisk = this.riskDetails?.filter(risk => risk.code == this.quotationRiskCode)
+          this.riskDetails = productDetails?.riskInformation || [];
+          log.debug('risk details', this.riskDetails)
+          const curentlySavedRisk = this.riskDetails?.find(risk => risk.code == this.quotationRiskCode) || this.riskDetails[0];
           log.debug('Currently saved Risk:', curentlySavedRisk)
-          curentlySavedRisk && this.handleRowClick(curentlySavedRisk[0])
+          curentlySavedRisk && this.handleRowClick(curentlySavedRisk)
           log.debug("Risk information specific to the selected product:", this.riskDetails)
           log.debug("Schedule information specific to the selected product:", this.scheduleList)
           if (this.scheduleList[0]?.details?.level2) {
@@ -517,7 +541,8 @@ export class RiskDetailsComponent {
         next: (response) => {
           const fields = response?.[0]?.fields || [];
           this.subclassFormContent = response;
-          this.subclassFormData = fields.filter(field => field.scheduleLevel === "L1");
+          sessionStorage.setItem('dynamicSubclassFormField', JSON.stringify(fields))
+          this.subclassFormData = fields.filter(field => Number(field.scheduleLevel) === 1);
 
           Object.keys(this.riskDetailsForm.controls).forEach(controlName => {
             const control = this.riskDetailsForm.get(controlName) as any;
@@ -1086,6 +1111,9 @@ export class RiskDetailsComponent {
   async onSubclassSelected(event: any) {
     this.selectedSubclassCode = event.value || event.code;
     log.debug("Selected subclass code:", this.selectedSubclassCode);
+
+    this.selectedSubclassObject = this.allMatchingSubclasses.find(subclass => subclass.code == this.selectedSubclassCode)
+    log.debug("Selected Subclass Object:", this.selectedSubclassObject)
     if (this.selectedSubclassCode) {
       try {
         await this.loadSelectedSubclassRiskFields(this.selectedSubclassCode);
@@ -1306,20 +1334,34 @@ export class RiskDetailsComponent {
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
 
-
+          const screenCode = this.selectedSubclassObject.underwritingScreenCode
 
           const subclasscode = this.selectedSubclassCode
           const binderCode = this.selectedBinderCode || this.defaultBinder[0].code
           const coverTypeCode = this.selectedCoverType.coverTypeCode
           // Call services directly
           return forkJoin([
-
+            this.quotationService.getScheduleLevels(screenCode),
             this.quotationService.getQuotationDetails(quotationCode),
             this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode)
           ]);
         })
       ).subscribe({
-        next: ([quoteDetails, premiumRates]: any) => {
+        next: ([scheduleLevels, quoteDetails, premiumRates]: any) => {
+
+          const data = scheduleLevels._embedded
+          this.scheduleLevels = data;
+          log.debug("data-schedule level response", this.scheduleLevels)
+          // Sort by levelNumber
+          const sortedLevels = this.scheduleLevels.sort((a, b) => a.levelNumber - b.levelNumber);
+
+          // Set the tab labels
+          this.scheduleTabs = sortedLevels.map(level => level.levelName);
+          log.debug("Schedule Tabs:", this.scheduleTabs)
+          // Set activeTab to the levelName where levelNumber === 1
+          const levelOne = sortedLevels.find(level => level.levelNumber === 1);
+          this.activeTab = levelOne?.levelName || this.scheduleTabs[0];
+
           this.quotationDetails = quoteDetails
           const quotationProducts = quoteDetails.quotationProducts || [];
           // Find the selected product
@@ -1907,6 +1949,73 @@ export class RiskDetailsComponent {
   }
 
 
+  // handleRowClick(data: any) {
+  //   if (!data?.code) {
+  //     log.debug('Invalid data for row click:', data);
+  //     return;
+  //   }
+
+  //   log.debug('Row clicked with data:', data);
+  //   this.selectedRisk = data;
+
+  //   this.sumInsured = this.selectedRisk.value;
+  //   // this.onRiskEdit(this.selectedRisk)
+  //   const selectedRiskCode = this.selectedRisk?.code
+  //   this.quotationRiskCode = selectedRiskCode
+
+  //   log.debug("Quotation risk code:", this.quotationRiskCode)
+  //   const productDetails = this.quotationDetails.quotationProducts.find(
+  //     product => product.productCode === this.selectedProductCode
+  //   )
+  //   const riskSelectedData = productDetails.riskInformation.find(risk => risk.code === selectedRiskCode)
+  //   this.scheduleList = riskSelectedData.scheduleDetails ? [riskSelectedData.scheduleDetails] : [];
+  //   log.debug("SCHEDULE DETAILS AFTER ROW CLICK:", this.scheduleList)
+
+  //   this.sectionDetails = this.selectedRisk.riskLimits
+  //   log.debug("section DETAILS AFTER ROW CLICK:", this.sectionDetails)
+
+  //   const subclassCode = riskSelectedData.subclassCode;
+  //   const binderCode = riskSelectedData.binderCode;
+  //   const covertypeCode = riskSelectedData.coverTypeCode;
+
+  //   this.premiumRateService.getCoverTypePremiums(subclassCode, binderCode, covertypeCode)
+  //     .subscribe(
+  //       (response) => {
+  //         console.log('Premium rates:', response);
+
+  //         const sectionPremiumList = response;
+
+  //         log.debug("SECTION PREMIUMS-unfiltered:", sectionPremiumList);
+
+  //         const sectionPremiums = sectionPremiumList
+  //           .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+  //           .map(premium => {
+  //             // Check condition for SumInsured — adjust this condition to your actual use case
+  //             if (premium.isMandatory === 'Y') {
+  //               return {
+  //                 ...premium,
+  //                 limitAmount: this.sumInsured  // Patch with sum insured
+  //               };
+  //             }
+  //             return premium;
+  //           });
+
+  //         this.sectionPremium = sectionPremiums;
+  //         log.debug("SECTION PREMIUMS-filtered & patched:", this.sectionPremium);
+  //       },
+  //       (error) => {
+  //         log.error('Error fetching premium rates:', error);
+  //       }
+  //     );
+
+  //   this.selectedSubclassCode = riskSelectedData.subclassCode;
+  //   this.selectedRiskCode = riskSelectedData.code;
+  //   log.debug("firstRiskCode", this.selectedRiskCode);
+  //   sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
+  //   // this.loadSubclassClauses(this.selectedRisk.subclassCode);
+
+  // }
+
   handleRowClick(data: any) {
     if (!data?.code) {
       log.debug('Invalid data for row click:', data);
@@ -1915,67 +2024,90 @@ export class RiskDetailsComponent {
 
     log.debug('Row clicked with data:', data);
     this.selectedRisk = data;
-
     this.sumInsured = this.selectedRisk.value;
-    // this.onRiskEdit(this.selectedRisk)
-    const selectedRiskCode = this.selectedRisk?.code
-    this.quotationRiskCode = selectedRiskCode
+    const selectedRiskCode = this.selectedRisk?.code;
+    this.quotationRiskCode = selectedRiskCode;
+    log.debug("Quotation risk code:", this.quotationRiskCode);
 
-    log.debug("Quotation risk code:", this.quotationRiskCode)
     const productDetails = this.quotationDetails.quotationProducts.find(
       product => product.productCode === this.selectedProductCode
-    )
-    const riskSelectedData = productDetails.riskInformation.find(risk => risk.code === selectedRiskCode)
+    );
+    const riskSelectedData = productDetails.riskInformation.find(risk => risk.code === selectedRiskCode);
     this.scheduleList = riskSelectedData.scheduleDetails ? [riskSelectedData.scheduleDetails] : [];
-    log.debug("SCHEDULE DETAILS AFTER ROW CLICK:", this.scheduleList)
+    log.debug("SCHEDULE DETAILS AFTER ROW CLICK:", this.scheduleList);
 
-    this.sectionDetails = this.selectedRisk.riskLimits
-    log.debug("section DETAILS AFTER ROW CLICK:", this.sectionDetails)
-    if (this.sectionDetails.length > 0) {
-      // this.setColumnsFromRiskLimit(this.sectionDetails[0]);
-    }
+    this.sectionDetails = this.selectedRisk.riskLimits;
+    log.debug("section DETAILS AFTER ROW CLICK:", this.sectionDetails);
+
     const subclassCode = riskSelectedData.subclassCode;
     const binderCode = riskSelectedData.binderCode;
     const covertypeCode = riskSelectedData.coverTypeCode;
 
-    this.premiumRateService.getCoverTypePremiums(subclassCode, binderCode, covertypeCode)
-      .subscribe(
-        (response) => {
-          console.log('Premium rates:', response);
+    this.selectedSubclassObject = this.allMatchingSubclasses?.find(subclass => subclass.code == subclassCode)
+    const screenCode = this.selectedSubclassObject.underwritingScreenCode
+    // Parallel calls
+    forkJoin({
+      premiumRates: this.premiumRateService.getCoverTypePremiums(subclassCode, binderCode, covertypeCode),
+      scheduleLevels: this.quotationService.getScheduleLevels(screenCode),
+    }).subscribe({
+      next: ({ premiumRates, scheduleLevels }) => {
+        console.log('Premium rates:', premiumRates);
+        console.log('Schedule levels:', scheduleLevels);
 
-          const sectionPremiumList = response;
+        const sectionPremiums = premiumRates
+          .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+          .map(premium => {
+            if (premium.isMandatory === 'Y') {
+              return {
+                ...premium,
+                limitAmount: this.sumInsured
+              };
+            }
+            return premium;
+          });
 
-          log.debug("SECTION PREMIUMS-unfiltered:", sectionPremiumList);
+        this.sectionPremium = sectionPremiums;
+        log.debug("SECTION PREMIUMS-filtered & patched:", this.sectionPremium);
 
-          const sectionPremiums = sectionPremiumList
-            .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
-            .map(premium => {
-              // Check condition for SumInsured — adjust this condition to your actual use case
-              if (premium.isMandatory === 'Y') {
-                return {
-                  ...premium,
-                  limitAmount: this.sumInsured  // Patch with sum insured
-                };
-              }
-              return premium;
+        // SCHEDULES RESPONSE
+        this.scheduleLevels = scheduleLevels?._embedded || [];
+        const sortedLevels = this.scheduleLevels.sort((a, b) => a.levelNumber - b.levelNumber);
+        // Set the tab labels
+        this.scheduleTabs = sortedLevels.map(level => level.levelName);
+        log.debug("Schedule Tabs:", this.scheduleTabs)
+        // Set activeTab to the levelName where levelNumber === 1
+        const levelOne = sortedLevels.find(level => level.levelNumber === 1);
+        this.activeTab = levelOne?.levelName || this.scheduleTabs[0];
+
+        // Map to hold table columns per level
+        this.levelTableColumnsMap = {}; // Example: { 'Level 1': [...], 'Level 2': [...] }
+
+        // Go through each level and extract relevant fields
+        sortedLevels.forEach(level => {
+          const levelName = level.levelName;
+          const columns = this.dynamicSubclassFormFields
+            .filter(field => Number(field.scheduleLevel) === level.levelNumber)
+            .map(field => {
+              return {
+                field: field.name,
+                header: field.label
+              };
             });
 
-          this.sectionPremium = sectionPremiums;
-          log.debug("SECTION PREMIUMS-filtered & patched:", this.sectionPremium);
-        },
-        (error) => {
-          log.error('Error fetching premium rates:', error);
-        }
-      );
+          this.levelTableColumnsMap[levelName] = columns;
+          log.debug('LEVEL TABLE COLUMN', this.levelTableColumnsMap)
+        });
+      },
+      error: (err) => {
+        log.error("Error fetching data in forkJoin:", err);
+      }
+    });
 
     this.selectedSubclassCode = riskSelectedData.subclassCode;
     this.selectedRiskCode = riskSelectedData.code;
     log.debug("firstRiskCode", this.selectedRiskCode);
     sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
-    // this.loadSubclassClauses(this.selectedRisk.subclassCode);
-
   }
-
 
   toggleSections(iconElement: HTMLElement): void {
     this.showSections = !this.showSections;
@@ -2297,7 +2429,7 @@ export class RiskDetailsComponent {
         this.globalMessagingService.displaySuccessMessage('Success', 'Sections Created');
 
         // Fetch updated risk sections after successful creation
-        // this.fetchRiskSections();
+        this.fetchQuotationDetails(this.quotationCode);
       },
       error: (error) => {
         log.error('Error creating risk limits:', error);

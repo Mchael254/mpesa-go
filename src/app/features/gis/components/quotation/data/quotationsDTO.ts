@@ -1236,17 +1236,27 @@ export class UsersDetailsDto {
 }
 
 export interface TaxPayload {
-code: number;
-rateDescription: string;
-rate: number;
-rateType: string;
-taxAmount: number;
-productCode: number;
-quotationCode: number;
-transactionCode: string;
-renewalEndorsement: string;
-taxRateCode: string;
-levelCode: string;
-taxType: string;
-riskProductLevel: string;
+  code: number;
+  rateDescription: string;
+  rate: number;
+  rateType: string;
+  taxAmount: number;
+  productCode: number;
+  quotationCode: number;
+  transactionCode: string;
+  renewalEndorsement: string;
+  taxRateCode: string;
+  levelCode: string;
+  taxType: string;
+  riskProductLevel: string;
 }
+export interface ScheduleLevels {
+  dslCode: number;
+  levelName: string;
+  tableName: string;
+  levelNumber: number;
+  tablePrefix: string;
+  tableForeignKeySequence: string;
+  tableLevelQuery: string | null;
+}
+

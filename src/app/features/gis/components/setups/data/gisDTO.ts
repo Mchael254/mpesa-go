@@ -644,7 +644,7 @@ export interface Subclasses {
   subClassId: String,
   surveyLimitAccumulation: String,
   totalCompanyAccumulationLimit: String,
-  underwritingScreenCode: String,
+  underwritingScreenCode: string,
   uniqueRisk: String,
   useCoverPeriodRate: String,
   webSubclassDetails: String,
