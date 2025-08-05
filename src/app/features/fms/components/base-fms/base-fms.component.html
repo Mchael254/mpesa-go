@@ -71,7 +71,7 @@
                 <div class="custom-list list">
                   <div
                     *ngFor="let item of setups"
-                    (click)="toggleItem(item)"
+                    (click)="toggleItem(item, setups)"
                     [class.active]="item.showSubItems"
                   >
                     <a [routerLink]="item.link" *ngIf="item.link">
@@ -122,7 +122,7 @@
                 <div class="custom-list list">
                   <div
                     *ngFor="let item of GLledger"
-                    (click)="toggleItem(item)"
+                    (click)="toggleItem(item, GLledger)"
                     [class.active]="item.showSubItems"
                   >
                     <a [routerLink]="item.link" *ngIf="item.link">
@@ -172,7 +172,7 @@
                 <div class="custom-list list">
                   <div
                     *ngFor="let item of cashbook"
-                    (click)="toggleItem(item)"
+                    (click)="toggleItem(item, cashbook)"
                     [class.active]="item.showSubItems"
                   >
                     <a [routerLink]="item.link" *ngIf="item.link">
@@ -222,7 +222,7 @@
                 <div class="custom-list list">
                   <div
                     *ngFor="let item of creditors"
-                    (click)="toggleItem(item)"
+                    (click)="toggleItem(item, creditors)"
                     [class.active]="item.showSubItems"
                   >
                     <a [routerLink]="item.link" *ngIf="item.link">
@@ -273,7 +273,7 @@
                 <div class="custom-list list">
                   <div
                     *ngFor="let item of debtors"
-                    (click)="toggleItem(item)"
+                    (click)="toggleItem(item, debtors)"
                     [class.active]="item.showSubItems"
                   >
                     <a [routerLink]="item.link" *ngIf="item.link">

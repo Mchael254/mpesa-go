@@ -25,6 +25,8 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./base-fms.component.css'],
 })
 export class BaseFmsComponent {
+  // A master list of all menu groups
+  allModuleGroups: any[][];
   // Form group for capturing receipt details
   receiptingDetailsForm: FormGroup;
 
@@ -49,6 +51,13 @@ export class BaseFmsComponent {
    */
   ngOnInit(): void {
     this.captureReceiptForm();
+     this.allModuleGroups = [
+      this.setups,
+      this.GLledger,
+      this.cashbook,
+      this.creditors,
+      this.debtors,
+    ];
     this.loggedInUser = this.authService.getCurrentUser();
 
     this.fetchUserDetails();
@@ -400,6 +409,8 @@ const backendError= err.error?.msg ||
       });
     }
   }
+  
+  
 
   /* The `items` property is an array of objects. Each object represents a menu item in a CRM (Customer
 Relationship Management) application. Each object has the following properties: */
@@ -517,22 +528,22 @@ Relationship Management) application. Each object has the following properties: 
           label: this.translate.instant('base.base-fms.aBudget'),
           link: '/home/fms/',
         },
-        ,{
+        {
           label: this.translate.instant('base.base-fms.rBudgets'),
           link: '/home/fms/',
         },
 
-        ,{
+        {
           label: this.translate.instant('base.base-fms.oBalances'),
           link: '/home/fms/',
-        },,{
+        },{
           label: this.translate.instant('base.base-fms.iOBalances'),
           link: '/home/fms/',
         },{
           label: this.translate.instant('base.base-fms.rJournals'),
           link: '/home/fms/',
         },
-        ,{
+        {
           label: this.translate.instant('base.base-fms.iAcctMapping'),
           link: '/home/fms/',
         },
@@ -1182,7 +1193,43 @@ Relationship Management) application. Each object has the following properties: 
    * The function toggles the visibility of sub-items for a given item.
    * @param {any} item - The parameter "item" is of type "any", which means it can be any data type.
    */
-  toggleItem(item: any) {
-    item.showSubItems = !item.showSubItems;
+  
+   
+  /**
+   * Toggles the visibility of a menu item, creating a multi-level accordion effect
+   * across all modules on the page.
+   * - Opening a category in a new module closes all categories in other modules.
+   * - Opening a category within a module closes its sibling categories.
+   *
+   * @param {any} clickedItem The menu item object that was clicked by the user.
+   * @param {Array<any>} currentSiblingGroup The array of items that are siblings to the clicked item.
+   */
+  toggleItem(clickedItem: any, currentSiblingGroup: Array<any>) {
+    // Determine the state the clicked item will be in.
+    const willBeOpen = !clickedItem.showSubItems;
+
+    // --- Core Logic ---
+
+    // 1. Close all categories in ALL OTHER module groups.
+    this.allModuleGroups.forEach(group => {
+      // If the current group is NOT the one we are working in...
+      if (group !== currentSiblingGroup) {
+        // ...close every item inside it.
+        group.forEach(item => (item.showSubItems = false));
+      }
+    });
+
+    // 2. Close all sibling categories within the CURRENT module group.
+    currentSiblingGroup.forEach(item => {
+      // Don't touch the item that was actually clicked.
+      if (item !== clickedItem) {
+        item.showSubItems = false;
+      }
+    });
+
+    // 3. Finally, set the state of the clicked item.
+    // If it was closed, it will now open. If it was already open, the logic above
+    // will have closed it, and it will stay closed.
+    clickedItem.showSubItems = willBeOpen;
   }
 }
