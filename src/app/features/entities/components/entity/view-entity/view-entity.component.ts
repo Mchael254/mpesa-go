@@ -39,6 +39,7 @@ import {PrimeIdentityComponent} from "./prime-identity/prime-identity.component"
 import {MaritalStatusService} from "../../../../../shared/services/setups/marital-status/marital-status.service";
 import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
 import {ContactComponent} from "./contact/contact.component";
+import {AddressComponent} from "./address/address.component";
 
 const log = new Logger('ViewEntityComponent');
 
@@ -53,6 +54,7 @@ export class ViewEntityComponent implements OnInit {
   @ViewChild(EntityTransactionsComponent) entityTransactionsComponent: EntityTransactionsComponent;
   @ViewChild('primeIdentityRef') primeIdentityComponent!: PrimeIdentityComponent;
   @ViewChild('contactRef') contactComponent!: ContactComponent;
+  @ViewChild('addressRef') addressComponent!: AddressComponent;
 
   entityTransactions: EntityTransactionsComponent;
 
@@ -118,6 +120,7 @@ export class ViewEntityComponent implements OnInit {
 
   editPrimeDetailsFormConfig: any[];
   editContactFormConfig: any[];
+  editAddressFormConfig: any[];
 
   selectOptions: {
     idTypes: IdentityModeDTO[],
@@ -192,6 +195,7 @@ export class ViewEntityComponent implements OnInit {
       next: (data: any) => {
         this.editPrimeDetailsFormConfig = data.prime_identity;
         this.editContactFormConfig = data.contact;
+        this.editAddressFormConfig = data.address;
       },
       error: err => {
         log.error(err);
@@ -600,6 +604,9 @@ export class ViewEntityComponent implements OnInit {
         break;
       case 'contact':
         this.contactComponent.openEditContactDialog();
+        break;
+      case 'address':
+        this.addressComponent.openEditAddressDialog();
         break;
       default:
           // do something
