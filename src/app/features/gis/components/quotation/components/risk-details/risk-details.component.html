@@ -1035,21 +1035,62 @@
         </div>
 
         <!-- ADD Risk clause BUTTON ROW -->
-        <div class="row mb-2" *ngIf="isClausesOpen">
-            <div class="col-12 d-flex justify-content-end">
-                <button id="openModalButtonAdd" class="btn btn-primary btn-sm" (click)="openClauseModal()"> Add risk
-                    Clause
-                </button>
+        <div class="row mb-" *ngIf="isClausesOpen">
+            <!-- tab buttons -->
+            <div class="d-flex justify-content-between align-items-end m-0">
+                <div class="d-flex justify-content-between px-1" style="width:60%">
+                    <div>
+                        <button class="btn btn-sm"
+                            [ngClass]="{'text-black border border-secondary': riskActiveTab === 'riskClauses', 'text-primary border-0': riskActiveTab !== 'riskClauses'}"
+                            (click)="setRiskTab('riskClauses')"> {{'gis.quotation.risk_clauses' | translate}}
+                        </button>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm"
+                            [ngClass]="{'text-black border border-secondary': riskActiveTab === 'riskLimits', 'text-primary border-0': riskActiveTab !== 'riskLimits'}"
+                            (click)="setRiskTab('riskLimits')"> {{'gis.quotation.limits_of_liability' | translate}}
+                        </button>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm"
+                            [ngClass]="{'text-black border border-secondary': riskActiveTab === 'riskPerils', 'text-primary border-0': riskActiveTab !== 'riskPerils'}"
+                            (click)="setRiskTab('riskPerils')"> {{'gis.quotation.perils' | translate}}
+                        </button>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm"
+                            [ngClass]="{'text-black border border-secondary': riskActiveTab === 'riskCommissions', 'text-primary border-0': riskActiveTab !== 'riskCommissions'}"
+                            (click)="setRiskTab('riskCommissions')"> {{'gis.quotation.commissions' | translate}}
+                        </button>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm"
+                            [ngClass]="{'text-black border border-secondary': riskActiveTab === 'riskExcesses', 'text-primary border-0': riskActiveTab !== 'riskExcesses'}"
+                            (click)="setRiskTab('riskExcesses')"> {{'gis.quotation.excesses' | translate}}
+                        </button>
+                    </div>
 
-                <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
-              'pi-caret-up': showSections,
-              'pi-caret-down': !showSections
-               }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
+                </div>
+
+                <div class="d-flex align-items-center ms-2 mb-1">
+                    <!-- action buttons -->
+                    <div>
+                        <button id="openModalButtonAdd" class="btn btn-primary btn-sm mb-1" (click)="openClauseModal()">
+                            Add risk Clause
+                        </button>
+
+                        <i class="pi border border-black p-1 rounded-1 text-black mb-1" [ngClass]="{
+                            'pi-caret-up': showSections,
+                            'pi-caret-down': !showSections
+                            }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- risk clause table -->
-        <div [@slideInOut]="isClausesOpen ? 'open' : 'closed'" class="mt-2 w-100">
+        <div *ngIf="riskActiveTab === 'riskClauses'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
+            class="mt-0 w-100">
 
             <p-table #riskClauseTable [value]="sessionClauses" dataKey="clauseCode" editMode="row"
                 [(selection)]="selectedClause" selectionMode="single" [autoLayout]="true" [paginator]="true" [rows]="5"
@@ -1318,6 +1359,125 @@
             </div>
 
         </div>
+
+
+
+        <div *ngIf="riskActiveTab === 'riskLimits'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
+            class="mt-0 w-100">
+            <!-- limits of liablity table -->
+            <h1>{{'gis.quotation.limits_of_liability' | translate}}</h1>
+            <p-table #riskClauseTable [value]="sessionClauses" dataKey="clauseCode" editMode="row"
+                [(selection)]="selectedClause" selectionMode="single" [autoLayout]="true" [paginator]="true" [rows]="5"
+                [rowsPerPageOptions]="[5, 10, 20]" [scrollable]="true" responsiveLayout="scroll"
+                [tableStyle]="{ 'min-width': '100%', width: '100%' }">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th class="flexible-header1" style="width: 13%" pSortableColumn="id">
+                            ID <p-sortIcon field="id" />
+                        </th>
+                        <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">
+                            Heading <p-sortIcon field="heading" />
+                        </th>
+                        <th class="flexible-header1" style="width: 35%" pSortableColumn="wording">
+                            Wording <p-sortIcon field="wording" />
+                        </th>
+                        <th class="flexible-header1" style="width: 15%">Actions</th>
+                    </tr>
+
+                </ng-template>
+
+                <ng-template pTemplate="body" let-clause let-columns="columns" let-rowIndex="rowIndex">
+                    <ng-container *ngIf="rowIndex === 0">
+                        <tr>
+                            <td>
+                                <input pInputText type="text" placeholder="" class="form-control form-control-sm"
+                                    (input)="filterShortDesc($event)" />
+                            </td>
+                            <td>
+                                <input pInputText type="text" placeholder="" class="form-control form-control-sm"
+                                    (input)="filterHeading($event)" />
+                            </td>
+                            <td>
+                                <input pInputText type="text" placeholder="" class="form-control form-control-sm"
+                                    (input)="filterWording($event)" />
+                            </td>
+                            <td></td>
+                        </tr>
+                    </ng-container>
+                    <tr [pSelectableRow]="clause">
+                        <td class="flexible-header1">{{ clause.shortDescription }}</td>
+                        <td class="flexible-header1">{{ clause.heading | truncate:5 | sentenceCase }}</td>
+                        <td class="position-relative ">
+                            <div class="clause-wrapper">
+                                {{ clause.wording | truncate:10 | sentenceCase}}
+
+                                <div class="hover-card">
+                                    {{ clause.wording |sentenceCase }}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="flexible-header1" style="text-align: left">
+                            <div class="flex justify-start  gap-2">
+                                <!-- Edit -->
+                                <span class="p-button-label p-text-bold " [ngStyle]="{
+                    color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280', 
+                   
+                    cursor: clause.isEditable === 'Y' ? 'pointer' : 'default',
+                    display: 'inline-block',
+                    width: '60px'  
+                    }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
+                                    [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
+                                    (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
+                                    {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
+                                </span>
+
+                                <!-- Delete -->
+
+                                <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold " [ngStyle]="{
+                                                        color: '#00529B',
+                                                        cursor: 'pointer'
+                                                      }" data-bs-toggle="modal" data-bs-target="#deleteClause"
+                                    (click)="prepareDeleteClause(clause)">
+                                    {{ 'gis.quotation.delete' | translate }}
+                                </span>
+                            </div>
+
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="8" style="padding: 20px; text-align:center" id="empty">
+                            No risk clause Click on + icon to add risk clause</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+
+        <!-- perils table -->
+        <div *ngIf="riskActiveTab === 'riskPerils'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
+            class="mt-2 w-100">
+
+            <h1>{{'gis.quotation.perils' | translate}}</h1>
+        </div>
+
+        <!-- commissions table -->
+        <div *ngIf="riskActiveTab === 'riskCommissions'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
+            class="mt-2 w-100">
+
+            <h1>{{'gis.quotation.commissions' | translate}}</h1>
+        </div>
+
+        <!-- excesses table -->
+        <div *ngIf="riskActiveTab === 'riskExcesses'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
+            class="mt-2 w-100">
+
+            <h1>{{'gis.quotation.excesses' | translate}}</h1>
+        </div>
+
+
 
 
 
