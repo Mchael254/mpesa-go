@@ -1022,7 +1022,7 @@
 
         <div class="row mb-2">
             <div class="col-4 clause-title">
-                <p class="section-title">{{'gis.quotation.risk_clauses' | translate}}</p>
+                <p class="section-title">{{'gis.quotation.other_risk_details' | translate}}</p>
             </div>
 
             <div class="col-8 d-flex justify-content-end">
@@ -1074,9 +1074,22 @@
 
                 <div class="d-flex align-items-center ms-2 mb-1">
                     <!-- action buttons -->
-                    <div>
-                        <button id="openModalButtonAdd" class="btn btn-primary btn-sm mb-1" (click)="openClauseModal()">
+
+                    <!-- clause action tabs -->
+                    <div *ngIf="riskActiveTab === 'riskClauses'">
+                        <button class="btn btn-primary btn-sm mb-1" (click)="openClauseModal()">
                             Add risk Clause
+                        </button>
+
+                        <i class="pi border border-black p-1 rounded-1 text-black mb-1" [ngClass]="{
+                            'pi-caret-up': showSections,
+                            'pi-caret-down': !showSections
+                            }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
+                    </div>
+                    <!-- limits action tabs -->
+                    <div *ngIf="riskActiveTab === 'riskLimits'">
+                        <button class="btn btn-primary btn-sm mb-1" (click)="openLimitModal()">
+                            Add risk limit
                         </button>
 
                         <i class="pi border border-black p-1 rounded-1 text-black mb-1" [ngClass]="{
@@ -1180,213 +1193,216 @@
                     </tr>
                 </ng-template>
             </p-table>
-        </div>
 
-        <!-- Add risk clause modal -->
-        <div class="modal fade" id="addClause" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
-                <div class="modal-content" id="addSectionModal">
-                    <div class="modal-body">
-                        <h5 class="modal-title mt-2" id="editOtherDetailsLabel">
-                            Add risk clause
-                            <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </h5>
 
-                        <ng-container *ngIf="nonMandatoryClauses && nonMandatoryClauses.length > 0; else noMoreClauses">
-                            <p-table #clauseTable [value]="nonMandatoryClauses" dataKey="clauseCode" [paginator]="true"
-                                [rows]="3" [rowsPerPageOptions]="[3, 5, 10]"
-                                [globalFilterFields]="['shortDescription', 'heading']" [scrollable]="true"
-                                scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3"
-                                [(selection)]="selectedRiskClauses" selectionMode="multiple">
-                                <!-- Table Header -->
-                                <ng-template pTemplate="header">
-                                    <tr>
-                                        <th style="width: 3%"><p-tableHeaderCheckbox /></th>
-                                        <th pSortableColumn="id" class="flexible-header">
-                                            ID <p-sortIcon field="id" />
-                                        </th>
-                                        <th pSortableColumn="description" class="flexible-header">
-                                            Description <p-sortIcon field="description" />
-                                        </th>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>
-                                            <input class="form-control form-control-sm" pInputText #idFilter type="text"
-                                                (input)="clauseTable.filterGlobal(idFilter.value, 'contains')"
-                                                style="width: 50%;" />
-                                        </td>
-                                        <td>
-                                            <input class="form-control form-control-sm" pInputText #descFilter
-                                                type="text"
-                                                (input)="clauseTable.filterGlobal(descFilter.value, 'contains')"
-                                                style="width: 50%;" />
-                                        </td>
-                                    </tr>
-                                </ng-template>
+            <!-- Add risk clause modal -->
+            <div class="modal fade" id="addClause" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
+                    <div class="modal-content" id="addSectionModal">
+                        <div class="modal-body">
+                            <h5 class="modal-title mt-2" id="editOtherDetailsLabel">
+                                Add risk clause
+                                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </h5>
 
-                                <!-- Table Body -->
-                                <ng-template pTemplate="body" let-clause>
-                                    <tr>
-                                        <td><p-tableCheckbox [value]="clause" /></td>
-                                        <td>{{ clause.shortDescription }}</td>
-                                        <td>{{ clause.heading }}</td>
-                                    </tr>
-                                </ng-template>
+                            <ng-container
+                                *ngIf="nonMandatoryClauses && nonMandatoryClauses.length > 0; else noMoreClauses">
+                                <p-table #clauseTable [value]="nonMandatoryClauses" dataKey="clauseCode"
+                                    [paginator]="true" [rows]="3" [rowsPerPageOptions]="[3, 5, 10]"
+                                    [globalFilterFields]="['shortDescription', 'heading']" [scrollable]="true"
+                                    scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3"
+                                    [(selection)]="selectedRiskClauses" selectionMode="multiple">
+                                    <!-- Table Header -->
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th style="width: 3%"><p-tableHeaderCheckbox /></th>
+                                            <th pSortableColumn="id" class="flexible-header">
+                                                ID <p-sortIcon field="id" />
+                                            </th>
+                                            <th pSortableColumn="description" class="flexible-header">
+                                                Description <p-sortIcon field="description" />
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                <input class="form-control form-control-sm" pInputText #idFilter
+                                                    type="text"
+                                                    (input)="clauseTable.filterGlobal(idFilter.value, 'contains')"
+                                                    style="width: 50%;" />
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm" pInputText #descFilter
+                                                    type="text"
+                                                    (input)="clauseTable.filterGlobal(descFilter.value, 'contains')"
+                                                    style="width: 50%;" />
+                                            </td>
+                                        </tr>
+                                    </ng-template>
 
-                                <!-- No Search Match -->
-                                <ng-template pTemplate="emptymessage">
-                                    <tr>
-                                        <td colspan="3" class="text-center p-4 text-muted">
-                                            <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                            <p>No matching clauses found.</p>
-                                        </td>
-                                    </tr>
-                                </ng-template>
-                            </p-table>
-                        </ng-container>
+                                    <!-- Table Body -->
+                                    <ng-template pTemplate="body" let-clause>
+                                        <tr>
+                                            <td><p-tableCheckbox [value]="clause" /></td>
+                                            <td>{{ clause.shortDescription }}</td>
+                                            <td>{{ clause.heading }}</td>
+                                        </tr>
+                                    </ng-template>
 
-                        <!-- No Clauses Left -->
-                        <ng-template #noMoreClauses>
-                            <div class="text-center p-4">
-                                <div style="color: #6c757d; font-size: 16px;">
-                                    <i class="pi pi-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                    <p>No additional clauses are available to add.</p>
+                                    <!-- No Search Match -->
+                                    <ng-template pTemplate="emptymessage">
+                                        <tr>
+                                            <td colspan="3" class="text-center p-4 text-muted">
+                                                <i class="pi pi-search"
+                                                    style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                                <p>No matching clauses found.</p>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </ng-container>
+
+                            <!-- No Clauses Left -->
+                            <ng-template #noMoreClauses>
+                                <div class="text-center p-4">
+                                    <div style="color: #6c757d; font-size: 16px;">
+                                        <i class="pi pi-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                        <p>No additional clauses are available to add.</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </ng-template>
+                            </ng-template>
 
-                        <!-- Buttons -->
-                        <div class="mt-4 d-flex justify-content-end">
-                            <button type="button" class="btn btn-outline-primary me-2"
-                                data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary" id="saveDetails" data-bs-dismiss="modal"
-                                (click)="addRiskClauses()">
-                                Save
+                            <!-- Buttons -->
+                            <div class="mt-4 d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-primary me-2"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="saveDetails" data-bs-dismiss="modal"
+                                    (click)="addRiskClauses()">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- edit risk clause modal -->
+            <div class="modal fade" id="editClause">
+                <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+                    <div class="modal-content ps-4 pt-2 pe-4">
+                        <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+                            <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                                {{ 'gis.quotation.edit_clause' | translate }}</p>
+                            <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                                style="border: none;">X
                             </button>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- edit risk clause modal -->
-        <div class="modal fade" id="editClause">
-            <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
-                <div class="modal-content ps-4 pt-2 pe-4">
-                    <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
-                        <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-                            {{ 'gis.quotation.edit_clause' | translate }}</p>
-                        <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
-                            style="border: none;">X
-                        </button>
-                    </div>
+                        <div class="d-flex justify-content-between text-black">
+                            <div class="d-flex flex-column bg-gray-300 w-25">
+                                <label for="id">ID</label>
+                                <input type="text" [value]=" selectedRiskClause.shortDescription" pInputText
+                                    style="background-color:rgb(215, 212, 212); width:18vw" readonly>
 
-                    <div class="d-flex justify-content-between text-black">
-                        <div class="d-flex flex-column bg-gray-300 w-25">
-                            <label for="id">ID</label>
-                            <input type="text" [value]=" selectedRiskClause.shortDescription" pInputText
-                                style="background-color:rgb(215, 212, 212); width:18vw" readonly>
-
+                            </div>
+                            <div class="d-flex flex-column w-50 ">
+                                <label for="heading">Heading</label>
+                                <input class="bg-gray-300" pInputText
+                                    [value]=" selectedRiskClause.heading | truncate:10"
+                                    pTooltip="{{  selectedRiskClause.heading }}"
+                                    style="background-color:rgb(215, 212, 212); width:20vw; z-index:auto" readonly>
+                            </div>
                         </div>
-                        <div class="d-flex flex-column w-50 ">
-                            <label for="heading">Heading</label>
-                            <input class="bg-gray-300" pInputText [value]=" selectedRiskClause.heading | truncate:10"
-                                pTooltip="{{  selectedRiskClause.heading }}"
-                                style="background-color:rgb(215, 212, 212); width:20vw; z-index:auto" readonly>
-                        </div>
-                    </div>
 
-                    <div class="d-flex flex-column mt-5">
-                        <label class="text-dark mt-0" for="comment">Wording</label>
-                        <textarea rows="5" pTextarea [(ngModel)]=" selectedRiskClause.wording"
-                            class="p-inputtextarea w-full" style="border: 1px solid #ced4da;min-height: 130px">
+                        <div class="d-flex flex-column mt-5">
+                            <label class="text-dark mt-0" for="comment">Wording</label>
+                            <textarea rows="5" pTextarea [(ngModel)]=" selectedRiskClause.wording"
+                                class="p-inputtextarea w-full" style="border: 1px solid #ced4da;min-height: 130px">
               </textarea>
-                    </div>
+                        </div>
 
-                    <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
-                        <button #closeReassignButton type="button" data-bs-dismiss="modal"
-                            style="display: none;"></button>
-                        <button type="button" class="btn" data-bs-dismiss="modal"
-                            style="background-color: #00529B;color:white;text-decoration: none;"
-                            (click)="editRiskClause()" [disabled]="!wasModified()">{{ 'gis.quotation.save_changes' |
-                            translate }}
-                        </button>
-                        <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
-                            style="text-decoration: none;">{{
-                            'gis.quotation.cancel' | translate
-                            }}
-                        </button>
-                    </div>
+                        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+                            <button #closeReassignButton type="button" data-bs-dismiss="modal"
+                                style="display: none;"></button>
+                            <button type="button" class="btn" data-bs-dismiss="modal"
+                                style="background-color: #00529B;color:white;text-decoration: none;"
+                                (click)="editRiskClause()" [disabled]="!wasModified()">{{ 'gis.quotation.save_changes' |
+                                translate }}
+                            </button>
+                            <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                                style="text-decoration: none;">{{
+                                'gis.quotation.cancel' | translate
+                                }}
+                            </button>
+                        </div>
 
+                    </div>
                 </div>
+
+            </div>
+
+            <!-- delete clause modal -->
+            <div class="modal fade" id="deleteClause">
+                <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+                    <div class="modal-content ps-4 pt-2 pe-4">
+                        <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+                            <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                                {{ 'gis.quotation.delete_clause' | translate }}</p>
+                            <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                                style="border: none;">X
+                            </button>
+                        </div>
+
+                        <div class="d-flex justify-content-between text-black">
+                            <p>Are you sure you want to delete this clause?</p>
+                        </div>
+
+                        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+                            <button type="button" class="btn" data-bs-dismiss="modal"
+                                style="background-color: #00529B;color:white;text-decoration: none;"
+                                (click)="deleteRiskClause()">
+                                {{ 'gis.quotation.delete' | translate }}
+                            </button>
+                            <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                                style="text-decoration: none;">{{
+                                'gis.quotation.cancel' | translate
+                                }}
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
 
         </div>
 
-        <!-- delete clause modal -->
-        <div class="modal fade" id="deleteClause">
-            <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
-                <div class="modal-content ps-4 pt-2 pe-4">
-                    <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
-                        <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-                            {{ 'gis.quotation.delete_clause' | translate }}</p>
-                        <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
-                            style="border: none;">X
-                        </button>
-                    </div>
 
-                    <div class="d-flex justify-content-between text-black">
-                        <p>Are you sure you want to delete this clause?</p>
-                    </div>
-
-                    <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
-                        <button type="button" class="btn" data-bs-dismiss="modal"
-                            style="background-color: #00529B;color:white;text-decoration: none;"
-                            (click)="deleteRiskClause()">
-                            {{ 'gis.quotation.delete' | translate }}
-                        </button>
-                        <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
-                            style="text-decoration: none;">{{
-                            'gis.quotation.cancel' | translate
-                            }}
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-
-
-
+        <!-- limits of liablity table -->
         <div *ngIf="riskActiveTab === 'riskLimits'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-0 w-100">
-            <!-- limits of liablity table -->
-            <h1>{{'gis.quotation.limits_of_liability' | translate}}</h1>
-            <p-table #riskClauseTable [value]="sessionClauses" dataKey="clauseCode" editMode="row"
+
+            <p-table #riskClauseTable [value]="addedLimitsOfLiability" dataKey="code" editMode="row" stripedRows
                 [(selection)]="selectedClause" selectionMode="single" [autoLayout]="true" [paginator]="true" [rows]="5"
                 [rowsPerPageOptions]="[5, 10, 20]" [scrollable]="true" responsiveLayout="scroll"
                 [tableStyle]="{ 'min-width': '100%', width: '100%' }">
                 <ng-template pTemplate="header">
                     <tr>
-                        <th class="flexible-header1" style="width: 13%" pSortableColumn="id">
-                            ID <p-sortIcon field="id" />
+                        <th class="flexible-header1" style="width: 30%" pSortableColumn="narration">
+                            Narration <p-sortIcon field="id" />
                         </th>
-                        <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">
-                            Heading <p-sortIcon field="heading" />
+                        <th class="flexible-header1" style="width: 20%" pSortableColumn="value">
+                            Value <p-sortIcon field="heading" />
                         </th>
-                        <th class="flexible-header1" style="width: 35%" pSortableColumn="wording">
-                            Wording <p-sortIcon field="wording" />
-                        </th>
-                        <th class="flexible-header1" style="width: 15%">Actions</th>
+                        <th class="flexible-header1" style="width: 20%">Actions</th>
                     </tr>
+
 
                 </ng-template>
 
-                <ng-template pTemplate="body" let-clause let-columns="columns" let-rowIndex="rowIndex">
+                <ng-template pTemplate="body" let-limit let-columns="columns" let-rowIndex="rowIndex">
                     <ng-container *ngIf="rowIndex === 0">
                         <tr>
                             <td>
@@ -1397,47 +1413,34 @@
                                 <input pInputText type="text" placeholder="" class="form-control form-control-sm"
                                     (input)="filterHeading($event)" />
                             </td>
-                            <td>
-                                <input pInputText type="text" placeholder="" class="form-control form-control-sm"
-                                    (input)="filterWording($event)" />
-                            </td>
                             <td></td>
                         </tr>
                     </ng-container>
-                    <tr [pSelectableRow]="clause">
-                        <td class="flexible-header1">{{ clause.shortDescription }}</td>
-                        <td class="flexible-header1">{{ clause.heading | truncate:5 | sentenceCase }}</td>
-                        <td class="position-relative ">
-                            <div class="clause-wrapper">
-                                {{ clause.wording | truncate:10 | sentenceCase}}
-
-                                <div class="hover-card">
-                                    {{ clause.wording |sentenceCase }}
-                                </div>
-                            </div>
-                        </td>
+                    <tr [pSelectableRow]="limit">
+                        <td pInputText pTooltip="{{ limit.narration }}" tooltipPosition="top">
+                            {{ limit.narration | sentenceCase | truncate:10}}</td>
+                        <td>{{ limit.value}}</td>
                         <td class="flexible-header1" style="text-align: left">
                             <div class="flex justify-start  gap-2">
                                 <!-- Edit -->
                                 <span class="p-button-label p-text-bold " [ngStyle]="{
-                    color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280', 
+                    color: limit.isEditable === 'Y' ? '#00529B' : '#6B7280', 
                    
-                    cursor: clause.isEditable === 'Y' ? 'pointer' : 'default',
+                    cursor: limit.isEditable === 'Y' ? 'pointer' : 'default',
                     display: 'inline-block',
                     width: '60px'  
-                    }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
-                                    [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
-                                    (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
-                                    {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
+                    }" [attr.data-bs-toggle]="limit.isEditable === 'Y' ? 'modal' : null"
+                                    [attr.data-bs-target]="limit.isEditable === 'Y' ? '#editClause' : null"
+                                    (click)="limit.isEditable === 'Y' && populateEditClauseModal(limit)">
+                                    {{ limit.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
                                 </span>
 
                                 <!-- Delete -->
 
-                                <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold " [ngStyle]="{
+                                <span *ngIf="limit.isMandatory === 'N'" class="p-button-label p-text-bold " [ngStyle]="{
                                                         color: '#00529B',
                                                         cursor: 'pointer'
-                                                      }" data-bs-toggle="modal" data-bs-target="#deleteClause"
-                                    (click)="prepareDeleteClause(clause)">
+                                                      }" data-bs-toggle="modal" data-bs-target="#deleteClause">
                                     {{ 'gis.quotation.delete' | translate }}
                                 </span>
                             </div>
@@ -1449,10 +1452,201 @@
                 <ng-template pTemplate="emptymessage">
                     <tr>
                         <td colspan="8" style="padding: 20px; text-align:center" id="empty">
-                            No risk clause Click on + icon to add risk clause</td>
+                            No risk limit available. Click on Add risk limit to add risk limit</td>
                     </tr>
                 </ng-template>
             </p-table>
+
+
+            <!-- Add risk limit modal -->
+            <div class="modal fade" id="addLimit" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
+                    <div class="modal-content" id="addSectionModal">
+                        <div class="modal-body">
+                            <h5 class="modal-title mt-2" id="editOtherDetailsLabel">
+                                Add risk clause
+                                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </h5>
+
+                            <ng-container *ngIf="limitsOfLiability && limitsOfLiability.length > 0; else noMoreLimits">
+                                <p-table #limitTable [value]="limitsOfLiability" dataKey="code"
+                                    [paginator]="true" [rows]="3" [rowsPerPageOptions]="[3, 5, 10]"
+                                    [globalFilterFields]="['narration', 'value']" [scrollable]="true"
+                                    scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3"
+                                    [(selection)]="selectedRiskLimits" selectionMode="multiple">
+                                    <!-- Table Header -->
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th style="width: 3%"><p-tableHeaderCheckbox /></th>
+                                            <th pSortableColumn="narration" class="flexible-header">
+                                                Narration <p-sortIcon field="narration" />
+                                            </th>
+                                            <th pSortableColumn="value" class="flexible-header">
+                                                Value <p-sortIcon field="value" />
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                <input class="form-control form-control-sm" pInputText #narrationFilter
+                                                    type="text"
+                                                    (input)="limitTable.filterGlobal(narrationFilter.value, 'contains')"
+                                                    style="width: 50%;" />
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm" pInputText #valueFilter
+                                                    type="text"
+                                                    (input)="limitTable.filterGlobal(valueFilter.value, 'contains')"
+                                                    style="width: 50%;" />
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+
+                                    <!-- Table Body -->
+                                    <ng-template pTemplate="body" let-limit>
+                                        <tr>
+                                            <td><p-tableCheckbox [value]="limit" /></td>
+                                            <td class="position-relative">
+                                                <div class="limit-wrapper">
+                                                    {{ limit.narration | truncate:10 | sentenceCase }}
+
+                                                    <div class="hover-card">
+                                                        {{ limit.narration | sentenceCase }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{ limit.value }}</td>
+                                        </tr>
+                                    </ng-template>
+
+                                    <!-- No Search Match -->
+                                    <ng-template pTemplate="emptymessage">
+                                        <tr>
+                                            <td colspan="3" class="text-center p-4 text-muted">
+                                                <i class="pi pi-search"
+                                                    style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                                <p>No matching limits found.</p>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </ng-container>
+
+                            <!-- No Clauses Left -->
+                            <ng-template #noMoreLimits>
+                                <div class="text-center p-4">
+                                    <div style="color: #6c757d; font-size: 16px;">
+                                        <i class="pi pi-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                        <p>No additional limits are available to add.</p>
+                                    </div>
+                                </div>
+                            </ng-template>
+
+                            <!-- Buttons -->
+                            <div class="mt-4 d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-primary me-2"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="saveDetails" data-bs-dismiss="modal"
+                                    (click)="addRiskLimit()">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- edit risk limit modal -->
+            <div class="modal fade" id="editClause">
+                <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+                    <div class="modal-content ps-4 pt-2 pe-4">
+                        <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+                            <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                                {{ 'gis.quotation.edit_clause' | translate }}</p>
+                            <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                                style="border: none;">X
+                            </button>
+                        </div>
+
+                        <div class="d-flex justify-content-between text-black">
+                            <div class="d-flex flex-column bg-gray-300 w-25">
+                                <label for="id">ID</label>
+                                <input type="text" [value]=" selectedRiskClause.shortDescription" pInputText
+                                    style="background-color:rgb(215, 212, 212); width:18vw" readonly>
+
+                            </div>
+                            <div class="d-flex flex-column w-50 ">
+                                <label for="heading">Heading</label>
+                                <input class="bg-gray-300" pInputText
+                                    [value]=" selectedRiskClause.heading | truncate:10"
+                                    pTooltip="{{  selectedRiskClause.heading }}"
+                                    style="background-color:rgb(215, 212, 212); width:20vw; z-index:auto" readonly>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-column mt-5">
+                            <label class="text-dark mt-0" for="comment">Wording</label>
+                            <textarea rows="5" pTextarea [(ngModel)]=" selectedRiskClause.wording"
+                                class="p-inputtextarea w-full" style="border: 1px solid #ced4da;min-height: 130px">
+              </textarea>
+                        </div>
+
+                        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+                            <button #closeReassignButton type="button" data-bs-dismiss="modal"
+                                style="display: none;"></button>
+                            <button type="button" class="btn" data-bs-dismiss="modal"
+                                style="background-color: #00529B;color:white;text-decoration: none;"
+                                (click)="editRiskClause()" [disabled]="!wasModified()">{{ 'gis.quotation.save_changes' |
+                                translate }}
+                            </button>
+                            <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                                style="text-decoration: none;">{{
+                                'gis.quotation.cancel' | translate
+                                }}
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- delete limit modal -->
+            <div class="modal fade" id="deleteClause">
+                <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+                    <div class="modal-content ps-4 pt-2 pe-4">
+                        <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+                            <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                                {{ 'gis.quotation.delete_clause' | translate }}</p>
+                            <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                                style="border: none;">X
+                            </button>
+                        </div>
+
+                        <div class="d-flex justify-content-between text-black">
+                            <p>Are you sure you want to delete this clause?</p>
+                        </div>
+
+                        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+                            <button type="button" class="btn" data-bs-dismiss="modal"
+                                style="background-color: #00529B;color:white;text-decoration: none;"
+                                (click)="deleteRiskClause()">
+                                {{ 'gis.quotation.delete' | translate }}
+                            </button>
+                            <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                                style="text-decoration: none;">{{
+                                'gis.quotation.cancel' | translate
+                                }}
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
         </div>
 
 
@@ -1476,10 +1670,6 @@
 
             <h1>{{'gis.quotation.excesses' | translate}}</h1>
         </div>
-
-
-
-
 
     </div>
 </div>
