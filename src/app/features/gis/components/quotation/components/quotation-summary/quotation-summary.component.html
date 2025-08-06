@@ -1611,43 +1611,38 @@
         </div>
       </div>
 
-<<<<<<< Updated upstream
-      <div class="mb-5">
-         <button type="button" class="btn btn-outline-primary" (click)="navigateToRiskCenter()">
-          {{'gis.quotation.back' | translate}}
-        </button>
-=======
-      <div class="mb-5 d-flex">
-        <div>
+    <div class="mb-5 d-flex align-items-center justify-content-between flex-wrap gap-2">
+  <!-- Left-side buttons -->
+  <div class="d-flex gap-2 flex-wrap">
+    <button type="button" class="btn btn-outline-primary" (click)="navigateToRiskCenter()">
+      {{ 'gis.quotation.back' | translate }}
+    </button>
 
->>>>>>> Stashed changes
-        <button type="button" class="btn btn-outline-primary mx-2" (click)="openReassignQuotationModal()"
-          [disabled]="afterRejectQuote">
-          {{ "gis.quotation.reassign" | translate }}
-        </button>
+    <button type="button" class="btn btn-outline-primary" (click)="openReassignQuotationModal()"
+            [disabled]="afterRejectQuote">
+      {{ "gis.quotation.reassign" | translate }}
+    </button>
 
-        <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
-          [disabled]="afterRejectQuote">
-          {{'gis.quotation.reject' | translate}}
-        </button>
-         </div>
-          <div class="ms-auto">
-   <span 
-  [attr.title]="exceptions?.length > 0 ? 'Please resolve exceptions' : null"
-  style="display: inline-block;">
-  
-  <button 
-    type="button" 
-    class="btn btn-outline-primary" 
-    (click)="openRejectQuotationModal()" 
-    [disabled]="exceptions?.length > 0"
-    [ngStyle]="exceptions?.length > 0 ? {'pointer-events': 'none'} : null">
-    Authorize quote
-  </button>
-</span>
-
+    <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
+            [disabled]="afterRejectQuote">
+      {{ 'gis.quotation.reject' | translate }}
+    </button>
   </div>
-      </div>
+
+  <!-- Right-side Authorize button with tooltip -->
+  <span 
+    [attr.title]="exceptions?.length > 0 ? 'Please resolve exceptions' : null"
+    style="display: inline-block;">
+    <button 
+      type="button" 
+      class="btn btn-outline-primary" 
+      (click)="openRejectQuotationModal()" 
+      [disabled]="exceptions?.length > 0">
+      Authorize quote
+    </button>
+  </span>
+</div>
+
 
 
     </div>
