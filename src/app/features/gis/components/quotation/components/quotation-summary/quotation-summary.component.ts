@@ -209,7 +209,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   public showExternalClaims = false;
   private ngUnsubscribe = new Subject();
   public cdr: ChangeDetectorRef;
- 
+
 
 
 
@@ -405,16 +405,16 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         log.debug('quoationProducts', this.quotationProducts)
 
 
-this.products = this.quotationView.quotationProducts;
+        this.products = this.quotationView.quotationProducts;
 
-if (this.products.length > 0) {
-  this.activeRiskTab = this.products[0].code;
-}
+        if (this.products.length > 0) {
+          this.activeRiskTab = this.products[0].code;
+        }
 
 
 
         this.productDetails = this.quotationView.quotationProducts
-        log.debug('product details',this.productDetails)
+        log.debug('product details', this.productDetails)
 
         // this.getbranch();
         // this.getPremiumComputationDetails();
@@ -452,20 +452,20 @@ if (this.products.length > 0) {
         });
         this.handleProductClick(this.quotationView.quotationProducts[0])
       });
-      
+
 
   }
-get filteredRiskDetails() {
-  const currentProduct = this.products.find(p => p.code === this.activeRiskTab);
-  return currentProduct?.riskInformation || [];
-}
+  get filteredRiskDetails() {
+    const currentProduct = this.products.find(p => p.code === this.activeRiskTab);
+    return currentProduct?.riskInformation || [];
+  }
 
 
 
   filterTable(event: Event, field: string, tableRef: any) {
-  const input = (event.target as HTMLInputElement).value;
-  tableRef.filter(input, field, 'contains');
-}
+    const input = (event.target as HTMLInputElement).value;
+    tableRef.filter(input, field, 'contains');
+  }
 
 
   getAgent() {
@@ -1240,7 +1240,7 @@ get filteredRiskDetails() {
     this.productClauses = data.productClauses
     this.getProductSubclass(proCode);
     this.fetchSimilarQuotes(quotationProductCode);
-    log.debug('productClauses',this.productClauses)
+    log.debug('productClauses', this.productClauses)
   }
 
   loadAllSubclass() {
@@ -2142,6 +2142,11 @@ get filteredRiskDetails() {
   }
 
   rejectQuotation(code: number) {
+    if (!code) {
+      this.globalMessagingService.displayErrorMessage('error', 'Create quoatation first');
+      this.closeRejectQuotationModal();
+      return;
+    }
     const reasonCancelled = this.rejectComment;
     const status = 'Rejected';
     if (!reasonCancelled) {
@@ -2181,6 +2186,12 @@ get filteredRiskDetails() {
     // }
     this.router.navigate(['/home/gis/quotation/quotation-management']).then(r => {
     });
+  }
+
+  navigateToRiskCenter() {
+    this.router.navigate(['/home/gis/quotation/risk-center']).then(r => {
+    });
+
   }
 
 
