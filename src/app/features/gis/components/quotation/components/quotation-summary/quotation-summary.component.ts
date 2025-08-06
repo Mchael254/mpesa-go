@@ -25,6 +25,8 @@ import {
   ProductClauses,
   QuotationDetails,
   QuotationProduct,
+  ScheduleDetails,
+  scheduleDetails,
   SubclassSectionPeril,
   TaxInformation,
   TaxPayload
@@ -171,6 +173,20 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   productClauses: ProductClauses[] = [];
   activeRiskTab: string = '';
   products: any[] = [];
+  activeScheduleTab: string = '';
+  scheduleLevels: string[] = [];
+  schedulesData: { [key: string]: any[] } = {};
+  availableScheduleLevels: string[] = [];
+  exceptionsCollapsed: boolean = false;
+  exceptionsData: any;
+  error: string | null = null;
+  exceptionErrorMessage: string | null = null;
+
+
+  
+
+
+
 
 
 
@@ -281,6 +297,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // this.createSmsForm();
     // this.getDocumentTypes();
     this.createTaxForm();
+    this.hasUnderwriterRights();
+  
 
 
     this.menuItems = [
@@ -373,6 +391,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         log.debug('QuotationView', this.quotationView)
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
+        this.user = this.quotationView.preparedBy;
+        log.debug('this user',this.user)
+        this.getExceptions(this.quotationView.code, this.user);
         if (!this.moreDetails) {
           this.quotationDetails = this.quotationView;
           log.debug("MORE DETAILS TEST quotationView", this.quotationDetails)
@@ -484,20 +505,30 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     )
   }
 
-  getSections(data: any) {
+getSections(data: any) {
+  this.riskDetails.forEach((el: { code: any; sectionsDetails: any; scheduleDetails:ScheduleDetails }) => {
+    if (data === el.code) {
+      this.sections = el.sectionsDetails;
 
-    this.riskDetails.forEach((el: { code: any; sectionsDetails: any; scheduleDetails: { level1: any; }; }) => {
+      const details = el.scheduleDetails?.details || {};
+      this.availableScheduleLevels = Object.keys(details); // e.g., ['level1', 'level2']
 
-      if (data === el.code) {
-        this.sections = el.sectionsDetails
-        this.schedules = [el.scheduleDetails?.level1]
-      }
+      this.schedulesData = {};
+      this.availableScheduleLevels.forEach(level => {
+        const levelData = details[level];
+        this.schedulesData[level] = levelData ? [levelData] : [];
+      });
 
-    })
-    log.debug(this.schedules, "schedules Details")
-    log.debug(this.sections, "section Details")
+      this.activeScheduleTab = this.availableScheduleLevels[0] || '';
+    }
+  });
 
-  }
+  log.debug(this.schedulesData, 'schedulesData by level');
+  log.debug(this.sections, 'section Details');
+}
+  getCurrentSchedule() {
+  return this.schedulesData[this.activeScheduleTab] || [];
+}
 
   /**
    * Navigates to the edit details page.
@@ -1206,6 +1237,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.getSections(data.code);
     this.getExcesses(subclassCode);
     this.getRiskClauses(data.code);
+    
   }
 
   handleProductClick(data: QuotationProduct) {
@@ -2193,6 +2225,104 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     });
 
   }
+selectAll = false;
+
+  exceptions = [
+    {
+      id: '001',
+      description: 'Inadequate cover',
+      remark: 'NCD not applied',
+      authorized: 'No',
+      setStandard: 20,
+      usedStandard: 30,
+      authorizedBy: null,
+      authorizedDate: null,
+      selected: false
+    },
+    {
+      id: '002',
+      description: 'Inadequate cover',
+      remark: 'NCD not applied',
+      authorized: 'No',
+      setStandard: 20,
+      usedStandard: 30,
+      authorizedBy: null,
+      authorizedDate: null,
+      selected: false
+    }
+  ];
+
+  remarkOptions = [
+    { label: 'NCD not applied', value: 'NCD not applied' },
+    { label: 'Incorrect class', value: 'Incorrect class' },
+    { label: 'Low premium', value: 'Low premium' }
+  ];
+
+  toggleAll() {
+    this.exceptions.forEach(e => (e.selected = this.selectAll));
+  }
+  logCheckbox(row: any) {
+  console.log('Selected row:', row);
+}
+
+
+getExceptions(quotationCode:number,username:string){
+
+  this.quotationService.getExceptions(quotationCode,username).subscribe({
+    next:(res)=>{
+      log.debug('exception Response:', res);
+        this.exceptionsData = res;
+    },
+    error:(error)=>{
+      log.error('Error fetching exceptions:', error);
+        this.error = 'Something went wrong while fetching exceptions.';
+    }
+  })
+
+}
+authorizeSelectedExceptions(): void {
+  const selected = this.exceptions?.filter(ex => ex.selected);
+
+  if (!selected || selected.length === 0) {
+  
+    this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
+    return;
+  }
+
+
+  // Proceed with authorization logic
+  if (this.hasUnderwriterRights()) {
+    log.debug('Authorizing as underwriter:', selected);
+    // this.quotationService.authorizeExceptions(selected).subscribe({
+    //   next: (res) => {
+    //     this.globalMessagingService.displaySuccessMessage('Success', 'Exceptions authorized successfully');
+    //     this.getExceptions(); // Or reload your data
+    //   },
+    //   error: (err) => {
+    //     this.globalMessagingService.displayErrorMessage('Authorization Error', 'Could not authorize exceptions');
+    //     console.error(err);
+    //   }
+    // });
+  } else {
+    // 🔁 If no rights, prompt for reassignment
+    // this.openReassignModal();
+  }
+}
+
+
+
+hasUnderwriterRights(): boolean {
+  const rolesString = sessionStorage.getItem('account_roles');
+log.debug('Raw roles string from sessionStorage:', rolesString);
+
+  const roles = JSON.parse(rolesString || '[]');
+  log.debug('Parsed roles array:', roles);
+
+  const hasRights = roles.includes('underwriter');
+  log.debug('Has underwriter rights:', hasRights);
+
+  return hasRights;
+}
 
 
 

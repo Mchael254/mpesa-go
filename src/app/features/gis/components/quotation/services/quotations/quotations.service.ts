@@ -638,6 +638,32 @@ export class QuotationsService {
     );
   }
 
+ 
+ 
+//  getExceptions(quotationCode: number, user: string): Observable<any> {
+//     return this.api.POST<any>(`v2/authorise/manage-exceptions?quotationCode=${quotationCode}&def=QUOTE&user=${user}`, null,API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+//       retry(1),
+//       catchError(this.errorHandl)
+//     )
+  // }
+ getExceptions(quotationCode: number, user: string): Observable<any> {
+  const params = new HttpParams()
+    .set('quotationCode', quotationCode.toString())
+    .set('def', 'QUOTE')
+    .set('user', user);
+
+  return this.api.POST(
+    `v2/authorise/manage-exceptions?${params.toString()}`,
+    null,
+
+  
+    API_CONFIG.GIS_QUOTATION_BASE_URL
+  );
+}
+
+
+
+
 
 
 
