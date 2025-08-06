@@ -620,6 +620,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   addLimitsOfLiability() {
     const productCode = this.quotationDetails?.quotationProducts[0].code
     log.debug("Product Code", productCode)
+    const newQpCode = productCode;
     // Transform the list to match the expected structure
     const transformedList = this.limitsOfLiabilityList.map(item => ({
       code: item.code,
@@ -632,7 +633,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
     log.debug("Transformed limits liability list", transformedList)
 
     // Call the service to add the transformed limits of liability
-    this.quotationService.addLimitsOfLiability(transformedList).pipe(untilDestroyed(this)).subscribe({
+    this.quotationService.addLimitsOfLiability(newQpCode, transformedList).pipe(untilDestroyed(this)).subscribe({
       next: (response: any) => {
         const result = response._embedded;
         log.debug("RESPONSE AFTER ADDING LIST ", result);

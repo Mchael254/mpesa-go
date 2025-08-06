@@ -597,7 +597,6 @@ export interface Clause {
 export interface CreateLimitsOfLiability {
   code?: number;
   scheduleValueCode: number;
-  quotationProductCode: number;
   value: string;
   narration: string | null;
   type: string;

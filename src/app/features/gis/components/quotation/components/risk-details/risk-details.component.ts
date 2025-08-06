@@ -17,7 +17,7 @@ import { VehicleModelService } from '../../../setups/services/vehicle-model/vehi
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, ScheduleLevels } from '../../data/quotationsDTO';
+import { Clause, CreateLimitsOfLiability, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, ScheduleLevels } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
@@ -60,6 +60,7 @@ export class RiskDetailsComponent {
   }
   @Input() selectedProduct!: any;
   @ViewChild('sectionTable') sectionTable!: Table;
+  @ViewChild('limitTable') limitTable!: Table;
   @ViewChild('addRiskModal') addRiskModalRef!: ElementRef;
   @ViewChild('addRiskSection') addRiskSectionRef!: ElementRef;
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
@@ -239,6 +240,9 @@ export class RiskDetailsComponent {
   clauseToDelete: any = null;
   selectedClauses: any[] = [];
 
+  showRiskLimits: boolean = true;
+  showLimitModal: boolean = false
+
   columns: { field: string; header: string; visible: boolean }[] = [];
 
   showSections: boolean = true;
@@ -311,6 +315,7 @@ export class RiskDetailsComponent {
 
   ngOnInit(): void {
     this.loadPersistedRiskClauses();
+    this.loadLimitsOfLiability();
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
     });
@@ -342,7 +347,24 @@ export class RiskDetailsComponent {
     // this.clientCode = Number(sessionStorage.getItem('insuredCode'))
     this.loadAllClients();
 
+    // limits of liability persistence from session
+    const savedLimits = sessionStorage.getItem('limitsOfLiability');
+    if (savedLimits) {
+      this.allLimitsMap = JSON.parse(savedLimits);
+      const allPersistedLimits = Object.values(this.allLimitsMap).flat();
+      this.addedLimitsOfLiability = [...allPersistedLimits];
+      log.debug("Persisted added limits", this.addedLimitsOfLiability);
+    }
+
+    // Load available limits
+    const availableLimits = sessionStorage.getItem('availableLimitsOfLiability');
+    if (availableLimits) {
+      this.limitsOfLiability = JSON.parse(availableLimits);
+      log.debug("Available limits loaded", this.limitsOfLiability);
+    }
+
   }
+
   ngOnDestroy(): void { }
 
   ngAfterViewInit(): void {
@@ -420,6 +442,8 @@ export class RiskDetailsComponent {
           const productDetails = this.quotationDetails.quotationProducts.find(
             product => product.productCode === this.selectedProductCode
           )
+          this.quoteProductCode = productDetails.code;
+          log.debug("limit qpcode", this.quoteProductCode);
           this.riskDetails = productDetails?.riskInformation || [];
           log.debug('risk details', this.riskDetails)
           const curentlySavedRisk = this.riskDetails?.find(risk => risk.code == this.quotationRiskCode) || this.riskDetails[0];
@@ -730,19 +754,6 @@ export class RiskDetailsComponent {
     });
   }
 
-
-
-  // loadClientDetails() {
-  //   this.clientService.getClientById(this.insuredCode).subscribe((data: any) => {
-  //     this.selectedClientList = data;
-  //     log.debug('Selected Client Details:', this.selectedClientList);
-
-  //     this.clientName = this.selectedClientList?.firstName + ' ' + this.selectedClientList?.lastName;
-  //     log.debug("Client NAME", this.clientName)
-
-
-  //   });
-  // }
   loadClientDetails() {
     this.clientService.getClientById(this.insuredCode).subscribe((data: any) => {
       log.debug("client searching to patch data")
@@ -2253,6 +2264,9 @@ export class RiskDetailsComponent {
     if (this.sectionTable) {
       this.sectionTable.filterGlobal(filterValue, 'contains');
     }
+    if (this.limitTable) {
+      this.limitTable.filterGlobal(filterValue, 'contains');
+    }
   }
 
   /**
@@ -3446,6 +3460,135 @@ export class RiskDetailsComponent {
   setRiskTab(tab: string): void {
     this.riskActiveTab = tab;
   }
+
+  //limits of liability
+  limitsOfLiability: any[] = [];
+  loadLimitsOfLiability(): void {
+    const subclassCode = this.selectedSubclassCode;
+    if (!subclassCode) return;
+
+    const sessionKey = `availableLimitsOfLiability_${subclassCode}`;
+    const savedAvailable = sessionStorage.getItem(sessionKey);
+
+    // Restore added limits map (from session) for all subclasses
+    const savedLimits = sessionStorage.getItem('limitsOfLiability');
+    if (savedLimits) {
+      this.allLimitsMap = JSON.parse(savedLimits);
+      const allPersisted = Object.values(this.allLimitsMap).flat();
+      this.addedLimitsOfLiability = [...allPersisted];
+      // log.debug("Restored added limits from session:", this.addedLimitsOfLiability);
+    } else {
+      this.allLimitsMap = {};
+    }
+
+    // Load available limits from session or fetch
+    if (savedAvailable) {
+      this.limitsOfLiability = JSON.parse(savedAvailable);
+      // log.debug(`Loaded limits for subclass ${subclassCode} from session:`, this.limitsOfLiability);
+    } else {
+      this.quotationService.getLimitsOfLiability(subclassCode, 'L').subscribe({
+        next: (data) => {
+          this.limitsOfLiability = data?._embedded || [];
+          sessionStorage.setItem(sessionKey, JSON.stringify(this.limitsOfLiability));
+          // log.debug(`Fetched limits for subclass ${subclassCode} from API:`, this.limitsOfLiability);
+        },
+        error: (err) => {
+          log.error(`Failed to fetch limits for subclass ${subclassCode}:`, err);
+          this.globalMessagingService.displayErrorMessage('Error', 'Could not load limits of liability');
+        }
+      });
+    }
+  }
+
+  openLimitModal(): void {
+    if (!this.selectedSubclassCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'No subclass selected');
+      return;
+    }
+
+    log.debug("Opening limits modal for subclass:", this.selectedSubclassCode);
+
+    this.showLimitModal = true;
+
+    const modalElement = document.getElementById('addLimit');
+    if (modalElement) {
+      const modal = new (window as any).bootstrap.Modal(modalElement);
+      modal.show();
+    }
+
+    this.loadLimitsOfLiability();
+  }
+
+
+  // add limits of liability
+  addedLimitsOfLiability: any[] = [];
+  selectedRiskLimits: any[] = [];
+  allLimitsMap: { [qpCode: string]: any[] } = {};
+
+  addRiskLimit(): void {
+    if (!this.selectedRiskLimits?.length) return;
+
+    const newQpCode = this.quoteProductCode;
+    const subclassCode = this.selectedRisk?.subclassCode;
+    if (!subclassCode) {
+      console.error('Subclass code is missing');
+      return;
+    }
+
+    const limitsPayload: CreateLimitsOfLiability[] = this.selectedRiskLimits.map(limit => ({
+      scheduleValueCode: limit.quotationValueCode,
+      value: this.cleanCurrencyValue(limit.value),
+      narration: limit.narration,
+      type: 'L'
+    }));
+
+    this.quotationService.addLimitsOfLiability(newQpCode, limitsPayload).subscribe({
+      next: () => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Limits of liability added successfully');
+
+        const updatedLimits = this.selectedRiskLimits.map(limit => ({
+          ...limit,
+          value: this.cleanCurrencyValue(limit.value),
+          isModified: false,
+          qpCode: newQpCode
+        }));
+
+        // Append unique new limits
+        const existingCodes = new Set(this.addedLimitsOfLiability.map(l => l.code));
+        const newUniqueLimits = updatedLimits.filter(l => !existingCodes.has(l.code));
+
+        this.addedLimitsOfLiability = [...this.addedLimitsOfLiability, ...newUniqueLimits];
+
+        // Persist updated added limits map by subclass
+        if (!this.allLimitsMap[subclassCode]) {
+          this.allLimitsMap[subclassCode] = [];
+        }
+        this.allLimitsMap[subclassCode] = [...this.allLimitsMap[subclassCode], ...newUniqueLimits];
+        sessionStorage.setItem('limitsOfLiability', JSON.stringify(this.allLimitsMap));
+
+        // Remove added from available
+        const addedCodes = new Set(this.selectedRiskLimits.map(l => l.code));
+        this.limitsOfLiability = this.limitsOfLiability.filter(l => !addedCodes.has(l.code));
+        const sessionKey = `availableLimitsOfLiability_${subclassCode}`;
+        sessionStorage.setItem(sessionKey, JSON.stringify(this.limitsOfLiability));
+
+        this.selectedRiskLimits = [];
+      },
+      error: (err) => {
+        console.error('Error adding limits of liability', err);
+      }
+    });
+  }
+
+
+
+
+
+  cleanCurrencyValue(value: string): string {
+    return value.replace(/[^\d.]/g, '');
+  }
+
+
 
 
 }
