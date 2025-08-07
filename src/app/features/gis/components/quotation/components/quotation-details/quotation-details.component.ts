@@ -744,6 +744,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     this.userCode = this.userDetails.code;
     log.debug('User Code ', this.userCode);
+    sessionStorage.setItem('userCode', JSON.stringify(this.userCode))
 
     this.dateFormat = this.userDetails?.orgDateFormat;
     log.debug('Organization Date Format:', this.dateFormat);
