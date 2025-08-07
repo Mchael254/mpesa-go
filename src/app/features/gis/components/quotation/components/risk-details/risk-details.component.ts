@@ -269,6 +269,7 @@ export class RiskDetailsComponent {
 
   showExcessModal: boolean = false;
   selectedExcesses: any[] = [];
+  excessesData: any[] = [];
 
   constructor(
     public subclassService: SubclassesService,
@@ -3727,7 +3728,6 @@ export class RiskDetailsComponent {
   }
 
   //excesses
-  excessesData: any[] = [];
   loadExcesses(): void {
     const subclassCode = this.selectedSubclassCode;
     const scheduleType = 'E';
@@ -3735,7 +3735,7 @@ export class RiskDetailsComponent {
     this.quotationService.getExcesses(subclassCode, scheduleType).subscribe({
       next: (response) => {
         console.log('Excesses data:', response);
-         this.excessesData = response?._embedded || [];
+        this.excessesData = response?._embedded || [];
       },
       error: (error) => {
         console.error('Error fetching excesses:', error);
