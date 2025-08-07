@@ -5,7 +5,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { QuotationsService } from '../../services/quotations/quotations.service';
-import { introducersDTO } from '../../data/introducersDTO';
+import { Introducer } from '../../data/introducersDTO';
 import { ProductSubclassService } from '../../../setups/services/product-subclass/product-subclass.service';
 import { Table } from 'primeng/table';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -41,6 +41,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   @ViewChild('productClauseTable') productClauseTable!: any;
   @ViewChild('addProductClausesTable') addProductClausesTable!: any;
+  @ViewChild('selectIntroducerTable') selectIntroducerTable!: any;
 
   @ViewChild('reassignTable') reassignTable!: any;
 
@@ -80,7 +81,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   showProducts: boolean = true;
   showClauses: boolean = true;
   quotationNum: string;
-  introducers: introducersDTO[] = [];
+  introducers: Introducer[] = [];
+  selectedIntroducer: Introducer | null = null;
   userDetails: any;
   selected: any;
   quotationSources: QuotationSource[] = [];
@@ -149,7 +151,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     placeholder: string;
     label: string;
     scheduleLevel: string
-    isPriority: string;
+    isPriority: 'Y' | 'N';
   }[];
   SearchCountryField = SearchCountryField;
   CountryISO = CountryISO;
@@ -179,6 +181,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   quotationAction: string;
   marketerList: AgentDTO[] = [];
   departmentSelected: boolean = false;
+  showIntroducerSearchModal = false;
+  selectedIntroducerName: string;
 
   constructor(
     public bankService: BankService,
@@ -1341,7 +1345,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
         // INTRODUCERS
         this.introducers = introducers;
-
+        log.debug('introducers:', this.introducers)
         if (this.storedQuotationFormDetails?.introducer) {
           const selectedIntroducer = this.introducers.find(introducer => introducer.code === this.storedQuotationFormDetails?.introducer);
           if (selectedIntroducer) {
@@ -1871,5 +1875,22 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }
     );
 
+  }
+  filterByName(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectIntroducerTable.filter(input.value, 'surName', 'contains');
+  }
+  filterByStaffNo(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectIntroducerTable.filter(input.value, 'staffNo', 'contains');
+  }
+  filterByCompany(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectIntroducerTable.filter(input.value, 'groupCompany', 'contains');
+  }
+  saveIntroducer(introducer: Introducer) {
+    log.debug("Selected Introducer", introducer)
+    this.selectedIntroducerName = introducer?.surName
+    this.showIntroducerSearchModal = false
   }
 }

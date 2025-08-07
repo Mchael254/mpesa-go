@@ -16,7 +16,6 @@ import { QuotationsClientDetailsComponent } from './components/quotations-client
 import { QuotationDetailsComponent } from './components/quotation-details/quotation-details.component';
 import { ImportRisksComponent } from './components/import-risks/import-risks.component';
 import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
-import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
 import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
 import { TreeModule } from 'primeng/tree';
 import { InputTextModule } from 'primeng/inputtext';
@@ -32,7 +31,7 @@ import { ReviseReuseQuotationComponent } from './components/revise-reuse-quotati
 import { QuotationConversionComponent } from './components/quotation-conversion/quotation-conversion.component';
 import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
 import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
-import {  CheckboxModule } from 'primeng/checkbox';
+import { CheckboxModule } from 'primeng/checkbox';
 import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
 import { TagModule } from 'primeng/tag';
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
@@ -60,7 +59,6 @@ import { QuotationReportComponent } from './components/quotation-report/quotatio
     QuotationDetailsComponent,
     ImportRisksComponent,
     QuoteAssigningComponent,
-    RiskSectionDetailsComponent,
     QuotationSummaryComponent,
     CoverTypesComparisonComponent,
     CreateClientComponent,
@@ -83,35 +81,35 @@ import { QuotationReportComponent } from './components/quotation-report/quotatio
 
 
   ],
-    imports: [
-        CommonModule,
-        QuotationRoutingModule,
-        TableModule,
-        FormsModule,
-        ReactiveFormsModule,
-        SharedModule,
-        CalendarModule,
-        DialogModule,
-        InputTextModule,
-        DropdownModule,
-        MenuModule,
-        PanelMenuModule,
-        TreeModule,
-        FileUploadModule,
-        BadgeModule,
-        RadioButtonModule,
-        NgxCurrencyDirective,
-        RadioButtonModule,
-        NgxIntlTelInputModule,
-        EntitiesModule,
-        CheckboxModule,
-        TagModule,
-        CardModule,
-        BreadcrumbModule,
-        OverlayPanelModule,
-        MultiSelectModule
+  imports: [
+    CommonModule,
+    QuotationRoutingModule,
+    TableModule,
+    FormsModule,
+    ReactiveFormsModule,
+    SharedModule,
+    CalendarModule,
+    DialogModule,
+    InputTextModule,
+    DropdownModule,
+    MenuModule,
+    PanelMenuModule,
+    TreeModule,
+    FileUploadModule,
+    BadgeModule,
+    RadioButtonModule,
+    NgxCurrencyDirective,
+    RadioButtonModule,
+    NgxIntlTelInputModule,
+    EntitiesModule,
+    CheckboxModule,
+    TagModule,
+    CardModule,
+    BreadcrumbModule,
+    OverlayPanelModule,
+    MultiSelectModule
 
-    ],
+  ],
   providers: [DatePipe],
 
 

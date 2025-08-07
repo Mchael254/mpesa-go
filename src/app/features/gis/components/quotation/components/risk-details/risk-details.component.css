@@ -177,6 +177,12 @@ button:focus {
 .modal-title {
   margin-bottom: 15px;
   color: #00529B;
+  font-family: Roboto;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: 0%;
 }
 
 .delete-title {
@@ -306,6 +312,5 @@ button:focus {
   white-space: nowrap;
   width: auto;
   text-align: left;
-
 
 }
