@@ -260,7 +260,10 @@ export class RiskDetailsComponent {
   activeFormFields: { type: string; name: string; max: number; min: number; isMandatory: string; disabled: boolean; readonly: boolean; regexPattern: string; placeholder: string; label: string; scheduleLevel: number; selectOptions?: { label: string; value: any; }[]; }[];
   activeModalTab: ScheduleTab | null = null;
   scheduleOtherDetailsForm: FormGroup;
-
+  addedLimitsOfLiability: any[] = [];
+  selectedRiskLimits: any[] = [];
+  allLimitsMap: { [qpCode: string]: any[] } = {};
+  limitsOfLiability: any[] = [];
 
   constructor(
     public subclassService: SubclassesService,
@@ -3597,7 +3600,6 @@ export class RiskDetailsComponent {
   }
 
   //limits of liability
-  limitsOfLiability: any[] = [];
   loadLimitsOfLiability(): void {
     const subclassCode = this.selectedSubclassCode;
     if (!subclassCode) return;
@@ -3656,10 +3658,6 @@ export class RiskDetailsComponent {
 
 
   // add limits of liability
-  addedLimitsOfLiability: any[] = [];
-  selectedRiskLimits: any[] = [];
-  allLimitsMap: { [qpCode: string]: any[] } = {};
-
   addRiskLimit(): void {
     if (!this.selectedRiskLimits?.length) return;
 
@@ -3714,10 +3712,6 @@ export class RiskDetailsComponent {
       }
     });
   }
-
-
-
-
 
   cleanCurrencyValue(value: string): string {
     return value.replace(/[^\d.]/g, '');
