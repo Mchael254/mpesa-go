@@ -245,6 +245,7 @@ export interface RiskInformation {
   clauseCodes: number[];
   subclass: Subclass;
   coverDays: number;
+  fp: number;
   quotationCode?: number
   quotationProductCode?: number
   scheduleDetails?: scheduleDetails;
@@ -1258,4 +1259,9 @@ export interface ScheduleLevels {
   tableForeignKeySequence: string;
   tableLevelQuery: string | null;
 }
+export interface ScheduleTab {
+  levelNumber: number;
+  levelName: string;
+}
+
 
