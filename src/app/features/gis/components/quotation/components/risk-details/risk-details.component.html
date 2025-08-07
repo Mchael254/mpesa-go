@@ -262,72 +262,164 @@
 <div class="card  mb-3">
     <div class="card-body my-4 mx-4">
 
-        <!-- Tabs Header -->
+        <!-- TABS -->
         <div class="d-flex justify-content-between align-items-center flex-wrap">
             <div class="nav-tabs-wrapper overflow-auto flex-grow-1 me-3">
                 <ul class="nav nav-tabs flex-nowrap mb-0" style="min-width: max-content;">
                     <li class="nav-item" *ngFor="let tab of scheduleTabs">
-                        <a class="nav-link" [ngClass]="{ 'active-tab': activeTab === tab }" (click)="activeTab = tab">
-                            {{ tab |sentenceCase }}
+                        <a class="nav-link" [ngClass]="{ 'active-tab': activeTab?.levelNumber === tab.levelNumber }"
+                            (click)="activeTab = tab">
+                            {{ tab.levelName | sentenceCase }}
                         </a>
                     </li>
                 </ul>
             </div>
         </div>
 
-        <!-- Tab Content -->
-        <div [ngSwitch]="activeTab">
-            <!-- Tab 1 Content -->
-            <div>
-                <p-table [value]="scheduleList" selectionMode="single" [(selection)]="selectedSchedule" dataKey="code">
-                    <ng-template pTemplate="header">
+        <!-- ACTIVE TAB CONTEXT -->
+        <div *ngIf="activeTab as tab">
+            <!-- ADD BUTTON for level > 1 -->
+            <div class="d-flex justify-content-end my-2" *ngIf="tab.levelNumber !== 1">
+                <button class="btn btn-sm btn-primary" (click)="onAddOtherSchedule(tab)">
+                    Add {{ tab.levelName | sentenceCase }}
+                </button>
+            </div>
+
+            <!-- TABLE -->
+            <div *ngIf="levelTableColumnsMap[tab.levelName]">
+                <p-table [columns]="levelTableColumnsMap[tab.levelName]" [value]="levelDataMap[tab.levelName] || []"
+                    selectionMode="single" [(selection)]="selectedSchedule" dataKey="code">
+                    <!-- Header -->
+                    <ng-template pTemplate="header" let-columns>
                         <tr>
-                            <th class="flexible-header">{{'gis.quotation.reg_no' | translate}}</th>
-                            <th class="flexible-header">{{'gis.quotation.vehicle_make' | translate}}</th>
-                            <th class="flexible-header">{{'gis.quotation.cubic_capacity' | translate}}</th>
-                            <th class="flexible-header">{{'gis.quotation.year_of_manufacture' | translate}}</th>
-                            <th class="flexible-header">{{'gis.quotation.seating_capacity' | translate}}</th>
-                            <th class="flexible-header">{{'gis.quotation.value' | translate}}</th>
-                            <th class="flexible-header">{{'gis.quotation.body_type' | translate}}</th>
-                            <th class="flexible-header">{{'gis.quotation.cover_type' | translate}}</th>
+                            <th *ngFor="let col of columns" class="flexible-header">
+                                {{ col.header }}
+                            </th>
                         </tr>
                     </ng-template>
 
-                    <ng-template pTemplate="body" let-schedule>
-                        <tr (click)="onSelectSchedule(schedule)" [pEditableRow]="schedule"
-                            [class.p-highlight]="schedule === selectedSchedule">
-                            <td class="flexible-header">{{ schedule.details.level1.registrationNumber}}</td>
-                            <td class="flexible-header">{{ schedule.details.level1.Make |sentenceCase }}</td>
-                            <td class="flexible-header">{{ schedule.details.level1.cubicCapacity }}</td>
-                            <td class="flexible-header">{{ schedule.details.level1.yearOfManufacture }}</td>
-                            <td class="flexible-header">{{ schedule.details.level1.carryCapacity }}</td>
-                            <td class="flexible-header">{{ schedule.details.level1.value |number }}</td>
-                            <td class="flexible-header">{{ schedule.details.level1.bodyType |sentenceCase }}</td>
-                            <td class="flexible-header">{{ schedule.details.level1.coverType |sentenceCase }}</td>
+                    <!-- Body -->
+                    <ng-template pTemplate="body" let-row let-columns="columns">
+                        <tr (click)="onSelectSchedule(row?.__originalSchedule)" [pEditableRow]="row"
+                            [class.p-highlight]="row?.__originalSchedule === selectedSchedule">
+                            <td *ngFor="let col of columns" class="flexible-header">
+                                <!-- Actions Column -->
+                                <ng-container *ngIf="col.field === 'actions'; else defaultCell">
+                                    <button pButton pRipple type="button"
+                                        class="p-button-text p-button-sm p-button-info custom-button" tooltip="Edit">
+                                        Edit
+                                    </button>
+
+                                    <button *ngIf="levelDataMap[tab.levelName]?.length > 1" pButton pRipple
+                                        type="button" class="p-button-text p-button-sm custom-button"
+                                        data-bs-toggle="modal" data-bs-target="#deleteRisk" tooltip="Delete">
+                                        Delete
+                                    </button>
+                                </ng-container>
+
+                                <!-- Default Cell Content -->
+                                <ng-template #defaultCell>
+                                    {{ row[col.field] }}
+                                </ng-template>
+                            </td>
                         </tr>
                     </ng-template>
 
+                    <!-- Empty Message -->
                     <ng-template pTemplate="emptymessage">
                         <tr>
-                            <td colspan="8" style="padding: 20px; text-align: center">
-                                No schedule Click on + icon to add risk
+                            <td [attr.colspan]="levelTableColumnsMap[tab.levelName]?.length || 1" class="text-center">
+                                No schedule. Click on + icon to add schedule.
                             </td>
                         </tr>
                     </ng-template>
                 </p-table>
             </div>
-
-            <!-- Tab 2 Content -->
-            <div *ngSwitchCase="'Level 2'">
-
-            </div>
-
-            <!-- Tab 3 Content -->
-            <div *ngSwitchCase="'Level 3'">
-
-            </div>
         </div>
 
+        <div class="modal fade" id="addOtherDetailsModal" tabindex="-1" aria-labelledby="addOtherDetailsModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content" style=" max-width:700px;">
+                    <form [formGroup]="scheduleOtherDetailsForm">
+
+
+                        <div class="modal-body">
+                            <h5 class="modal-title mt-2 mb-4 ">Add {{ activeModalTab?.levelName |
+                                sentenceCase }}
+
+                                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </h5>
+                            <div class="row">
+                                <ng-container *ngFor="let field of activeFormFields; let i = index">
+                                    <div class="col-sm-6 mb-4">
+                                        <div class="form-group">
+                                            <label *ngIf="field.name" [attr.for]="i + field.name" class="form-label"
+                                                [ngClass]="{ 'required': field.isMandatory === 'Y' }">
+                                                {{ field.label | translate }}
+                                            </label>
+
+                                            <!-- Text -->
+                                            <input *ngIf="field.type === 'text'" type="text" class="form-control"
+                                                [formControlName]="field.name"
+                                                [attr.placeholder]="field.label | translate" />
+
+                                            <!-- Select -->
+                                            <ng-container
+                                                *ngIf="field.name !== 'insureds' && riskDetailsForm?.contains(field.name)">
+                                                <p-dropdown *ngIf="field.type === 'select'"
+                                                    [formControlName]="field.name" [options]="field.selectOptions"
+                                                    optionLabel="label" optionValue="value" [filter]="true"
+                                                    [showClear]="true" [attr.placeholder]="field.label | translate"
+                                                    (onChange)="field.name === 'subclass' && onSubclassSelected($event)">
+                                                </p-dropdown>
+                                            </ng-container>
+
+                                            <!-- Insured dropdown -->
+                                            <ng-container *ngIf="field.name === 'insureds' && clientsData?.length">
+                                                <p-dropdown formControlName="insureds" [options]="clientsData"
+                                                    optionLabel="clientFullName" optionValue="id"
+                                                    placeholder="Select Insured" [filter]="true"
+                                                    filterBy="clientFullName">
+                                                </p-dropdown>
+                                            </ng-container>
+
+                                            <!-- Date -->
+                                            <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
+                                                dateFormat="yy-mm-dd" [showIcon]="true"
+                                                [attr.placeholder]="field.label | translate">
+                                            </p-calendar>
+
+                                            <!-- Number -->
+                                            <input *ngIf="field.type === 'number'" type="number" class="form-control"
+                                                [formControlName]="field.name"
+                                                [attr.placeholder]="field.label | translate" />
+
+                                            <!-- Currency -->
+                                            <input *ngIf="field.type === 'currency'" type="text" class="form-control"
+                                                currencyMask [options]="currencyObj" [formControlName]="field.name"
+                                                [attr.placeholder]="field.label | translate" />
+
+                                            <!-- Validation error -->
+                                            <div *ngIf="riskDetailsForm.get(field.name)?.invalid && riskDetailsForm.get(field.name)?.touched"
+                                                class="text-danger small mt-1">
+                                                {{ field.label | translate }} is required.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
 
     </div>
@@ -1482,4 +1574,8 @@
 
 
     </div>
+</div>
+<div class="float-end mb-4">
+
+    <button class="btn btn-primary" >Next</button>
 </div>

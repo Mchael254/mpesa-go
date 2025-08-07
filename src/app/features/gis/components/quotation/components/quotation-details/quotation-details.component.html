@@ -29,7 +29,7 @@
           <!-- Client Name -->
           <div class="col-sm-4 col-6 mb-3">
             <label class="quote-label">Client name</label>
-            <input type="text" class="form-control" formControlName="client" />
+            <input type="text" class="form-control" formControlName="client" id="quote-input" />
           </div>
 
           <!-- Email Address -->
@@ -86,8 +86,9 @@
                       <!-- CLIENT SEARCH -->
                       <ng-container *ngIf="field.name === 'client' && !newClient">
                         <div class="position-relative" style="cursor: pointer;">
-                          <input type="text" class="form-control form-control-sm pe-5" [value]="selectedClientName"
-                            readonly (click)="showClientSearchModal = true" style="cursor: pointer;" />
+                          <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
+                            [value]="selectedClientName" readonly (click)="showClientSearchModal = true"
+                            style="cursor: pointer;" />
                           <i class="pi pi-search position-absolute"
                             style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
                         </div>
@@ -139,16 +140,21 @@
                           *ngIf="quotationForm.get('currencyCode')?.hasError('required') && quotationForm.get('currencyCode')?.touched"
                           class="form-text text-danger">Currency is required.</div>
                       </ng-container>
+                      <ng-container *ngIf="field.name === 'introducer' ">
+                        <div class="position-relative" style="cursor: pointer;">
+                          <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
+                            [value]="selectedIntroducerName" readonly (click)="showIntroducerSearchModal = true"
+                            style="cursor: pointer;" formControlName="introducer" />
+                          <i class="pi pi-search position-absolute"
+                            style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
+                        </div>
+                        <button *ngIf="showIntroducerSearchModal" data-bs-toggle="modal"
+                          data-bs-target="#searchIntroducer" style="display: none;">
 
-                      <!-- INTRODUCER -->
-                      <ng-container *ngIf="field.name === 'introducer'">
-                        <p-dropdown formControlName="introducer" [options]="introducers" optionLabel="surName"
-                          optionValue="code" placeholder=" " [filter]="true" [filterBy]="'surName'">
-                        </p-dropdown>
-                        <div
-                          *ngIf="quotationForm.get('introducer')?.hasError('required') && quotationForm.get('introducer')?.touched"
-                          class="form-text text-danger">Introducer is required.</div>
+                        </button>
+
                       </ng-container>
+
                     </ng-container>
 
                     <!-- DATE -->
@@ -211,75 +217,64 @@
                   </ng-container>
                 </div>
               </div>
+
             </ng-container>
-          </ng-container>
-        </div>
+            <!-- NON-PRIORITY FIELDS (toggle with show) -->
 
-        <!-- NON-PRIORITY FIELDS (toggle with show) -->
-        <div class="row mt-2" *ngIf="show">
-          <ng-container *ngFor="let field of detailedQuotationFormData">
-            <ng-container *ngIf="field.isPriority === 'N'">
-              <div class="col-sm-4 col-6 mb-4">
-                <div class="form-group form-group-sm">
-                  <label *ngIf="field.name && !(newClient && field.name === 'client')" class="quote-label"
-                    [ngClass]="{ 'required': field.isMandatory === 'Y' }">
-                    {{ field.label | translate }}
-                  </label>
+            <div class="col-sm-4 col-6  " *ngIf="show && field.isPriority === 'N'">
+              <div class="form-group form-group-sm">
+                <label *ngIf="field.name && !(newClient && field.name === 'client')" class="quote-label"
+                  [ngClass]="{ 'required': field.isMandatory === 'Y' }">
+                  {{ field.label | translate }}
+                </label>
 
-                  <ng-container [ngSwitch]="field.type">
-                    <ng-container *ngSwitchCase="'select'">
-                      <!-- INTRODUCER -->
-                      <ng-container *ngIf="field.name === 'introducer'">
-                        <p-dropdown formControlName="introducer" [options]="introducers" optionLabel="surName"
-                          optionValue="code" placeholder=" " [filter]="true" [filterBy]="'surName'">
-                        </p-dropdown>
-                        <div
-                          *ngIf="quotationForm.get('introducer')?.hasError('required') && quotationForm.get('introducer')?.touched"
-                          class="form-text text-danger">Introducer is required.</div>
-                      </ng-container>
+                <ng-container [ngSwitch]="field.type">
 
-                      <!-- PAYMENT FREQUENCY -->
-                      <ng-container *ngIf="field.name === 'paymentFrequency'">
-                        <p-dropdown formControlName="paymentFrequency" [options]="paymentFrequencies"
-                          optionLabel="label" optionValue="value" placeholder=" " [filter]="true" [filterBy]="'label'">
-                        </p-dropdown>
-                        <div
-                          *ngIf="quotationForm.get('paymentFrequency')?.hasError('required') && quotationForm.get('paymentFrequency')?.touched"
-                          class="form-text text-danger">Payment frequency is required.</div>
-                      </ng-container>
-                      <!-- Marketer field -->
-                      <ng-container *ngIf="field.name === 'marketer'">
-                        <p-dropdown formControlName="marketer" [options]="marketerList" optionLabel="name"
-                          optionValue="id" placeholder="" [filter]="true" [filterBy]="'name'">
-                        </p-dropdown>
-                        <div
-                          *ngIf="quotationForm.get('marketer')?.hasError('required') && quotationForm.get('marketer')?.touched"
-                          class="form-text text-danger">
-                          Marketer source is required.
-                        </div>
-                      </ng-container>
+                  <ng-container *ngSwitchCase="'select'">
+
+
+                    <!-- PAYMENT FREQUENCY -->
+                    <ng-container *ngIf="field.name === 'paymentFrequency'">
+                      <p-dropdown formControlName="paymentFrequency" [options]="paymentFrequencies" optionLabel="label"
+                        optionValue="value" placeholder=" " [filter]="true" [filterBy]="'label'">
+                      </p-dropdown>
+                      <div
+                        *ngIf="quotationForm.get('paymentFrequency')?.hasError('required') && quotationForm.get('paymentFrequency')?.touched"
+                        class="form-text text-danger">Payment frequency is required.</div>
                     </ng-container>
-                    <ng-container *ngSwitchCase="'text'">
-
-
-                      <input type="text" id="quote-input" class="form-control form-control-sm"
-                        [formControlName]="field.name">
-
+                    <!-- Marketer field -->
+                    <ng-container *ngIf="field.name === 'marketer'">
+                      <p-dropdown formControlName="marketer" [options]="marketerList" optionLabel="name"
+                        optionValue="id" placeholder="" [filter]="true" [filterBy]="'name'">
+                      </p-dropdown>
+                      <div
+                        *ngIf="quotationForm.get('marketer')?.hasError('required') && quotationForm.get('marketer')?.touched"
+                        class="form-text text-danger">
+                        Marketer source is required.
+                      </div>
                     </ng-container>
                   </ng-container>
-                </div>
+                  <ng-container *ngSwitchCase="'text'">
+
+
+                    <input type="text" id="quote-input" class="form-control form-control-sm"
+                      [formControlName]="field.name">
+
+                  </ng-container>
+                </ng-container>
               </div>
-            </ng-container>
+            </div>
           </ng-container>
         </div>
+
 
 
       </form>
 
 
 
-      <p class="more " (click)="toggleDetails()" style="cursor: pointer">
-        More Details
+      <p class="more mt-4" (click)="toggleDetails()" style="cursor: pointer">
+        Show more details
         <span class="ml-1">
           <i class="pi" [ngClass]="{'pi-angle-double-up': show, 'pi-angle-double-down': !show}"
             style="font-size: 13px"></i>
@@ -985,7 +980,74 @@
       </div>
     </div>
   </div>
+  <!-- Introducer Modal -->
+  <div id="searchIntroducer" *ngIf="showIntroducerSearchModal" class="modal fade show" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="width:700px">
+      <div class="modal-content">
 
+        <!-- Modal Body -->
+        <div class="modal-body">
+          <h5 class="modal-title mt-2 mb-2" id="editOtherDetailsLabel">Select introducer
+            <button type="button" class="btn-close float-end red-close" aria-label="Close"
+              (click)="showIntroducerSearchModal = false"></button>
+          </h5>
+
+          <p-table #selectIntroducerTable [value]="introducers" [tableStyle]="{'min-width': '300px'}" [rows]="5"
+            [paginator]="true" selectionMode="single" dataKey="code" [rowsPerPageOptions]="[5, 10, 20]"
+            [(selection)]="selectedIntroducer">
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="flexible-header1" style="width: 30%" pSortableColumn="id">
+                  Name <p-sortIcon field="name" />
+                </th>
+                <th class="flexible-header1" style="width: 40%" pSortableColumn="heading">
+                  Staff no. <p-sortIcon field="staffNo" />
+                </th>
+                <th class="flexible-header1" style="width: 40%" pSortableColumn="heading">
+                  Company <p-sortIcon field="Company" />
+                </th>
+              </tr>
+
+            </ng-template>
+
+            <ng-template pTemplate="body" let-introducer let-columns="columns" let-rowIndex="rowIndex">
+              <ng-container *ngIf="rowIndex === 0">
+                <tr>
+                  <td>
+                    <input type="text" class="form-control form-control-sm" (input)="filterByName($event)">
+                  </td>
+                  <td>
+                    <input type="text" class="form-control form-control-sm" (input)="filterByStaffNo($event)">
+                  </td>
+                  <td>
+                    <input type="text" class="form-control form-control-sm" (input)="filterByCompany($event)">
+                  </td>
+
+                </tr>
+              </ng-container>
+              <tr [class.p-highlight]="introducer === selectedIntroducer" [pSelectableRow]="introducer" class="point">
+
+                <td>{{ introducer.surName }}</td>
+                <td>{{ introducer.staffNo }}</td>
+                <td>{{ introducer.groupCompany }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div> <!-- Modal Footer -->
+        <div class="mt-4 mb-4 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-outline-primary" (click)="showIntroducerSearchModal = false"
+            id="cancelDetails">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-primary" id="saveDetails" (click)="saveIntroducer(selectedIntroducer)">
+            Save
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
 
   <div class="float-end mb-4">

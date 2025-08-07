@@ -67,6 +67,7 @@
 
 ::ng-deep .p-calendar .p-inputtext {
   padding-right: 2.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.20);
   /* Add space for the icon */
 }
 
@@ -132,6 +133,12 @@
   line-height: 24px;
   background-color: #BAD0E4;
   /* 150% */
+}
+
+::ng-deep .p-datatable .p-datatable-tbody>tr.p-highlight {
+  background-color: #ddedfb !important;
+  color: inherit !important;
+  /* Optional: maintain text color */
 }
 
 #quote-input {

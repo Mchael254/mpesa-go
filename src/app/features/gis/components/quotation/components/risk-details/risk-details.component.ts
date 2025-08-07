@@ -17,7 +17,7 @@ import { VehicleModelService } from '../../../setups/services/vehicle-model/vehi
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, ScheduleLevels } from '../../data/quotationsDTO';
+import { Clause, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, ScheduleLevels, ScheduleTab } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
@@ -218,8 +218,8 @@ export class RiskDetailsComponent {
   yearList: any;
   clientCode: number;
   // showSections: boolean = false;
-  scheduleTabs: string[] = [];
-  activeTab: string = '';
+  scheduleTabs: ScheduleTab[] = [];
+  activeTab: ScheduleTab | null = null;
   isEditMode: boolean = false;
   isAddMode: boolean = false;
   selectedRiskClauses: any;
@@ -252,6 +252,10 @@ export class RiskDetailsComponent {
   levelTableColumnsMap: { [levelName: string]: Array<{ field: string, header: string }> } = {};
   riskActiveTab: string = 'riskClauses';
 
+  levelDataMap: { [levelName: string]: any[] } = {};
+  activeFormFields: { type: string; name: string; max: number; min: number; isMandatory: string; disabled: boolean; readonly: boolean; regexPattern: string; placeholder: string; label: string; scheduleLevel: number; selectOptions?: { label: string; value: any; }[]; }[];
+  activeModalTab: ScheduleTab | null = null;
+  scheduleOtherDetailsForm: FormGroup;
 
 
   constructor(
@@ -296,7 +300,7 @@ export class RiskDetailsComponent {
       this.selectedProductCode = selectedProductCode
       this.loadSelectedProductRiskFields(selectedProductCode)
       this.getProductSubclass(selectedProductCode)
-      // this.checkMotorClass()
+      this.checkMotorClass(selectedProductCode)
       const quoatationNo = this.selectedProduct.quotationNo
       const quoatationCode = this.selectedProduct.quotationCode
       this.fetchQuotationDetails(quoatationCode)
@@ -764,22 +768,12 @@ export class RiskDetailsComponent {
     });
   }
 
-  checkMotorClass() {
-    this.productService.getProductDetailsByCode(this.selectedProductCode).subscribe(res => {
+  checkMotorClass(productCode: number) {
+    this.productService.getProductDetailsByCode(productCode).subscribe(res => {
       log.debug("Product Response", res);
       this.motorClassAllowed = res.allowMotorClass
       log.debug("Motor class Allowed:", this.motorClassAllowed)
-      if (this.motorClassAllowed === 'Y') {
-        this.showMotorSubclassFields = true;
-        this.showNonMotorSubclassFields = false;
 
-        // this.motorProduct = true;
-      } else if (this.motorClassAllowed == 'N') {
-        this.showNonMotorSubclassFields = true;
-        this.showMotorSubclassFields = false;
-
-        // this.motorProduct = false;
-      }
 
 
     });
@@ -1334,33 +1328,19 @@ export class RiskDetailsComponent {
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
 
-          const screenCode = this.selectedSubclassObject.underwritingScreenCode
+
 
           const subclasscode = this.selectedSubclassCode
           const binderCode = this.selectedBinderCode || this.defaultBinder[0].code
           const coverTypeCode = this.selectedCoverType.coverTypeCode
           // Call services directly
           return forkJoin([
-            this.quotationService.getScheduleLevels(screenCode),
             this.quotationService.getQuotationDetails(quotationCode),
             this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode)
           ]);
         })
       ).subscribe({
-        next: ([scheduleLevels, quoteDetails, premiumRates]: any) => {
-
-          const data = scheduleLevels._embedded
-          this.scheduleLevels = data;
-          log.debug("data-schedule level response", this.scheduleLevels)
-          // Sort by levelNumber
-          const sortedLevels = this.scheduleLevels.sort((a, b) => a.levelNumber - b.levelNumber);
-
-          // Set the tab labels
-          this.scheduleTabs = sortedLevels.map(level => level.levelName);
-          log.debug("Schedule Tabs:", this.scheduleTabs)
-          // Set activeTab to the levelName where levelNumber === 1
-          const levelOne = sortedLevels.find(level => level.levelNumber === 1);
-          this.activeTab = levelOne?.levelName || this.scheduleTabs[0];
+        next: ([quoteDetails, premiumRates]: any) => {
 
           this.quotationDetails = quoteDetails
           const quotationProducts = quoteDetails.quotationProducts || [];
@@ -1377,7 +1357,21 @@ export class RiskDetailsComponent {
           const currentQuotationRiskCode = matchedRisk.code
           this.quotationRiskCode = currentQuotationRiskCode
           const result = premiumRates;
-          this.sectionPremium = result
+          // this.sectionPremium = result
+
+          const sectionPremiums = result
+            .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+            .map(premium => {
+              if (premium.isMandatory === 'Y') {
+                return {
+                  ...premium,
+                  limitAmount: this.sumInsured
+                };
+              }
+              return premium;
+            });
+
+          this.sectionPremium = sectionPremiums;
           // log.debug("Risk Clauses List:", this.riskClausesList);
           log.debug("RESPONSE AFTER getting premium rates ", this.sectionPremium);
           const defaultSection = this.sectionPremium.filter(section => section.isMandatory == 'Y')
@@ -2074,29 +2068,77 @@ export class RiskDetailsComponent {
         this.scheduleLevels = scheduleLevels?._embedded || [];
         const sortedLevels = this.scheduleLevels.sort((a, b) => a.levelNumber - b.levelNumber);
         // Set the tab labels
-        this.scheduleTabs = sortedLevels.map(level => level.levelName);
+        this.scheduleTabs = sortedLevels
+          .sort((a, b) => a.levelNumber - b.levelNumber)
+          .map(level => ({
+            levelNumber: level.levelNumber,
+            levelName: level.levelName,
+          }));
         log.debug("Schedule Tabs:", this.scheduleTabs)
-        // Set activeTab to the levelName where levelNumber === 1
-        const levelOne = sortedLevels.find(level => level.levelNumber === 1);
-        this.activeTab = levelOne?.levelName || this.scheduleTabs[0];
-
-        // Map to hold table columns per level
-        this.levelTableColumnsMap = {}; // Example: { 'Level 1': [...], 'Level 2': [...] }
+        // Set the first tab as the active one by default
+        this.activeTab = this.scheduleTabs[0];        // Map to hold table columns per level
+        this.levelTableColumnsMap = {};
+        this.levelDataMap = {};
+        // Go through each level and extract relevant fields
+        // Define preferred columns for Level 1
+        const level1PreferredColumns = [
+          { field: 'registrationNumber', header: 'Registration Number' },
+          { field: 'make', header: 'Make' },
+          { field: 'cubicCapacity', header: 'Cubic Capacity' },
+          { field: 'yearOfManufacture', header: 'Year Of Manufacture' },
+          { field: 'carryCapacity', header: 'Seating Capacity' },
+          { field: 'value', header: 'Value' },
+          { field: 'bodyType', header: 'Body Type' },
+          { field: 'coverType', header: 'Cover Type' }
+        ];
 
         // Go through each level and extract relevant fields
         sortedLevels.forEach(level => {
           const levelName = level.levelName;
-          const columns = this.dynamicSubclassFormFields
-            .filter(field => Number(field.scheduleLevel) === level.levelNumber)
-            .map(field => {
-              return {
+          const levelNumber = level.levelNumber;
+          const levelKey = `level${levelNumber}`; // e.g., level2
+
+          // 1. Determine if motor class is allowed
+          const isMotorClassAllowed = this.motorClassAllowed === 'Y';
+
+          // 2. Define columns
+          let columns;
+
+          if (levelNumber === 1 && isMotorClassAllowed) {
+            // Use preferred columns for level 1 if motorClassAllowed
+            columns = level1PreferredColumns;
+          } else {
+            // Dynamically generate columns from subclass form fields
+            columns = this.dynamicSubclassFormFields
+              .filter(field => Number(field.scheduleLevel) === levelNumber)
+              .map(field => ({
                 field: field.name,
                 header: field.label
-              };
-            });
+              }));
+
+            // Add "Actions" column for levels 2 and above
+            if (levelNumber >= 2) {
+              columns.push({
+                field: 'actions',
+                header: 'Actions',
+                isAction: true, // helps in template logic
+              });
+            }
+          }
 
           this.levelTableColumnsMap[levelName] = columns;
-          log.debug('LEVEL TABLE COLUMN', this.levelTableColumnsMap)
+          log.debug('LEVEL TABLE COLUMN:', this.levelTableColumnsMap);
+
+          // 3. Map level-specific data and attach original schedule
+          const levelData = (this.scheduleList || [])
+            .filter(schedule => !!schedule.details?.[levelKey])
+            .map(schedule => ({
+              ...schedule.details[levelKey],
+              __originalSchedule: schedule
+            }));
+
+          this.levelDataMap[levelName] = levelData;
+          log.debug('LEVEL COLUMN DATA:', this.levelDataMap);
         });
       },
       error: (err) => {
@@ -2335,6 +2377,7 @@ export class RiskDetailsComponent {
           productCode: this.selectedProductCode,
         },
         coverDays: this.selectedRisk.coverDays,
+        fp: 0
       };
       return [riskPayload]
     }
@@ -3353,6 +3396,96 @@ export class RiskDetailsComponent {
           this.scheduleData = createdSchedule;
           this.scheduleList = this.scheduleData._embedded;
           log.debug("Schedule List:", this.scheduleList);
+
+          this.selectedSubclassObject = this.allMatchingSubclasses?.find(subclass => subclass.code == this.selectedSubclassCode)
+          const screenCode = this.selectedSubclassObject.underwritingScreenCode
+          this.quotationService.getScheduleLevels(screenCode).subscribe({
+            next: (scheduleLevels) => {
+              this.scheduleLevels = scheduleLevels?._embedded || [];
+              const sortedLevels = this.scheduleLevels.sort((a, b) => a.levelNumber - b.levelNumber);
+              // Set the tab labels
+              this.scheduleTabs = sortedLevels
+                .sort((a, b) => a.levelNumber - b.levelNumber)
+                .map(level => ({
+                  levelNumber: level.levelNumber,
+                  levelName: level.levelName,
+                }));
+              log.debug("Schedule Tabs:", this.scheduleTabs)
+              // Set the first tab as the active one by default
+              this.activeTab = this.scheduleTabs[0];
+              this.levelTableColumnsMap = {};
+              this.levelDataMap = {};
+              // Define preferred columns for Level 1
+              const level1PreferredColumns = [
+                { field: 'registrationNumber', header: 'Registration Number' },
+                { field: 'make', header: 'Make' },
+                { field: 'cubicCapacity', header: 'Cubic Capacity' },
+                { field: 'yearOfManufacture', header: 'Year Of Manufacture' },
+                { field: 'carryCapacity', header: 'Seating Capacity' },
+                { field: 'value', header: 'Value' },
+                { field: 'bodyType', header: 'Body Type' },
+                { field: 'coverType', header: 'Cover Type' }
+              ];
+
+              // Go through each level and extract relevant fields
+              sortedLevels.forEach(level => {
+                const levelName = level.levelName;
+                const levelNumber = level.levelNumber;
+                const levelKey = `level${levelNumber}`; // e.g., level2
+
+                // 1. Determine if motor class is allowed
+                const isMotorClassAllowed = this.motorClassAllowed === 'Y';
+
+                // 2. Define columns
+                let columns;
+
+                if (levelNumber === 1 && isMotorClassAllowed) {
+                  // Use preferred columns for level 1 if motorClassAllowed
+                  columns = level1PreferredColumns;
+                } else {
+                  // Dynamically generate columns from subclass form fields
+                  columns = this.dynamicSubclassFormFields
+                    .filter(field => Number(field.scheduleLevel) === levelNumber)
+                    .map(field => ({
+                      field: field.name,
+                      header: field.label
+                    }));
+
+                  // Add "Actions" column for levels 2 and above
+                  if (levelNumber >= 2) {
+                    columns.push({
+                      field: 'actions',
+                      header: 'Actions',
+                      isAction: true, // helps in template logic
+                    });
+                  }
+                }
+
+                this.levelTableColumnsMap[levelName] = columns;
+                log.debug('LEVEL TABLE COLUMN:', this.levelTableColumnsMap);
+
+                // 3. Map level-specific data and attach original schedule
+                const levelData = (this.scheduleList || [])
+                  .filter(schedule => !!schedule.details?.[levelKey])
+                  .map(schedule => ({
+                    ...schedule.details[levelKey],
+                    __originalSchedule: schedule
+                  }));
+
+                this.levelDataMap[levelName] = levelData;
+                log.debug('LEVEL COLUMN DATA:', this.levelDataMap);
+              });
+
+            },
+            error: (error: HttpErrorResponse) => {
+              log.debug("Error log", error.error.message);
+
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                error.error.message
+              );
+            },
+          })
           this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created successfully');
         },
         error: (error: HttpErrorResponse) => {
@@ -3442,10 +3575,151 @@ export class RiskDetailsComponent {
     }
 
   }
-
+  getButtonLabel(levelNumber: number): string {
+    return levelNumber === 2 ? 'Motor Details' : 'Other Details';
+  }
   setRiskTab(tab: string): void {
     this.riskActiveTab = tab;
   }
+  onAddOtherSchedule(tab: any): void {
+    this.activeModalTab = tab;
+    this.activeFormFields = this.dynamicSubclassFormFields.filter(
+      field => Number(field.scheduleLevel) === tab.levelNumber
+    );
 
+    // Build reactive form
+    const group: { [key: string]: any } = {};
+    this.activeFormFields.forEach(field => {
+      group[field.name] = new FormControl('', field.isMandatory === 'Y' ? Validators.required : null);
+    });
+
+    this.scheduleOtherDetailsForm = this.fb.group(group);
+
+    // Show Bootstrap modal
+    setTimeout(() => {
+      const modalElement = document.getElementById('addOtherDetailsModal');
+      if (modalElement) {
+        const bsModal = new bootstrap.Modal(modalElement);
+        bsModal.show();
+      }
+    });
+  }
+  computePremium() {
+    const premiumComputationPayload = this.generatePremiumComputationPayload(this.quotationDetails)
+    log.debug("Premium comp payload:", premiumComputationPayload)
+    this.quotationService.computePremium(premiumComputationPayload).subscribe({
+      next: (response) => {
+        log.debug("REspone after computing premium:", response)
+      }
+    })
+  }
+  generatePremiumComputationPayload(quotationData: QuotationDetails): any {
+    return {
+      entityUniqueCode: 0,
+      interfaceType: "QUOTATION",
+      frequencyOfPayment: quotationData.frequencyOfPayment || "A",
+      transactionStatus: "NB",
+      quotationStatus: "Draft",
+      products: quotationData.quotationProducts?.map(product => ({
+        code: product.productCode,
+        expiryPeriod: "Y",
+        description: product.productName,
+        withEffectFrom: product.wef,
+        withEffectTo: product.wet,
+        risks: product.riskInformation?.map(risk => ({
+          code: risk.code.toString(),
+          propertyId: risk.propertyId,
+          binderDto: {
+            code: risk.binderCode || 0,
+            maxExposure: 0,
+            currencyCode: quotationData.currencyCode,
+            currencyRate: quotationData.currencyRate || 1
+          },
+          baseCurrencyCode: quotationData.currencyCode,
+          prorata: null,
+          itemDescription: risk.itemDesc,
+          emlBasedOn: null,
+          noClaimDiscountLevel: risk.ncdLevel || 0,
+          subclassCoverTypeDto: [{
+            subclassCode: risk.subclassCode,
+            description: risk.subclass?.description || '',
+            coverTypeCode: risk.coverTypeCode,
+            minimumPremium: risk.riskLimits[0]?.minimumPremium || 0,
+            coverTypeShortDescription: risk.coverTypeShortDescription,
+            coverTypeDescription: risk.coverTypeDescription,
+            limits: risk.riskLimits?.map(limit => ({
+              description: limit.sectionShortDescription,
+              code: limit.code,
+              riskCode: risk.code,
+              calculationGroup: limit.calcGroup,
+              rowNumber: limit.rowNumber,
+              rateDivisionFactor: limit.rateDivisionFactor,
+              premiumRate: limit.premiumRate,
+              rateType: limit.rateType,
+              sectionType: limit.sectionType,
+              limitAmount: risk.value,
+              freeLimit: limit.freeLimit,
+              compute: limit.compute,
+              section: {
+                code: limit.sectionCode,
+                description: limit.sectionShortDescription,
+                limitAmount: risk.value,
+                isMandatory: null
+              },
+              multiplierRate: limit.multiplierRate,
+              multiplierDivisionFactor: limit.multiplierDivisionFactor,
+              dualBasis: limit.dualBasis,
+              shortDescription: limit.sectionShortDescription
+            })) || [],
+            limitPremium: risk.riskLimits?.map(limit => ({
+              sectCode: limit.sectionCode,
+              premium: limit.premiumAmount || 0,
+              description: limit.sectionShortDescription,
+              limitAmount: risk.value,
+              isMandatory: null,
+              calculationGroup: limit.calcGroup,
+              compute: limit.compute,
+              dualBasis: limit.dualBasis,
+              rateDivisionFactor: limit.rateDivisionFactor,
+              rateType: limit.rateType,
+              rowNumber: limit.rowNumber,
+              premiumRate: limit.premiumRate,
+              freeLimit: limit.freeLimit,
+              sectionType: limit.sectionType,
+              multiplierRate: limit.multiplierRate,
+              shortDescription: limit.sectionShortDescription
+            })) || []
+          }],
+          enforceCovertypeMinimumPremium: "Y",
+          commissionRate: risk.commissionRate || 0,
+          sumInsured: risk.value,
+          useOfProperty: risk.subclass.description, // Default value
+          taxes: product.taxInformation?.map(tax => ({
+            taxRateType: tax.rateType,
+            applicationLevel: null,
+            code: tax.code || 0,
+            divisionFactor: 0,
+            taxRate: tax.rate || 0,
+            rangeTo: 0,
+            rangeFrom: 0,
+            rateDescription: tax.rateDescription || "",
+            taxCode: tax.code || "",
+            minPremium: 0,
+            sumInsured: 0,
+            premium: 0,
+            quotationProductCode: 0
+          })) || [],
+          subclassSection: { code: risk.subclassCode },
+          age: 0 // Hardcoded as requested
+        })) || []
+      })) || [],
+      currency: { rate: quotationData.currencyRate || 1 },
+      dateWithEffectTo: quotationData.coverTo,
+      dateWithEffectFrom: quotationData.coverFrom,
+      underwritingYear: new Date().getFullYear(),
+      coinsuranceLeader: "N",
+      coinsurancePercentage: 0
+    };
+  }
 
 }
