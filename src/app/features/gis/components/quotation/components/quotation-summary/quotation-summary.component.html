@@ -1543,10 +1543,13 @@
       </div>
 
       <div class="mb-5 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        
         <!-- Left-side buttons -->
         <div class="d-flex gap-2 flex-wrap">
-          <button type="button" class="btn btn-outline-primary" (click)="navigateToRiskCenter()">
-            {{ 'gis.quotation.back' | translate }}
+          <button
+            style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"
+            (click)="navigateToRiskCenter()">
+             {{ 'gis.quotation.back' | translate }}
           </button>
 
           <button type="button" class="btn btn-outline-primary" (click)="openReassignQuotationModal()"
