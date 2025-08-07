@@ -129,7 +129,6 @@
                                     </div>
                                 </ng-container>
 
-
                                 <!-- dynamic subclass fields -->
                                 <ng-container *ngFor="let field of subclassFormData; let j = index">
                                     <div class="col-sm-6 col-6 mb-4">
@@ -159,7 +158,6 @@
                                                     class="form-control form-control-sm mb-1 bg-light text-muted"
                                                     formControlName="riskDescription" [readonly]="true"
                                                     [value]="vehiclemakeModel">
-
 
                                             </ng-container>
 
@@ -214,10 +212,6 @@
                                 </ng-container>
                             </div>
                         </form>
-
-
-
-
 
 
                         <div class="mt-4 d-flex justify-content-end">
@@ -1547,7 +1541,7 @@
                                     aria-label="Close"></button>
                             </h5>
 
-                            <ng-container *ngIf="limitsOfLiability && limitsOfLiability.length > 0; else noMoreLimits">
+                            <ng-container>
                                 <p-table #limitTable [value]="limitsOfLiability" dataKey="code" [paginator]="true"
                                     [rows]="3" [rowsPerPageOptions]="[3, 5, 10]"
                                     [globalFilterFields]="['narration', 'value']" [scrollable]="true"
@@ -1597,17 +1591,21 @@
                                             <td>{{ limit.value }}</td>
                                         </tr>
                                     </ng-template>
-
-                                    <!-- No Search Match -->
+                                     
+                                    <!-- empty table -->
                                     <ng-template pTemplate="emptymessage">
-                                        <tr>
-                                            <td colspan="3" class="text-center p-4 text-muted">
-                                                <i class="pi pi-search"
-                                                    style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                                <p>No matching limits found.</p>
+                                        <tr class="empty-message-row">
+                                            <td colspan="3" class="text-center py-4">
+                                                <div class="empty-message-content">
+                                                    <p><strong>No clauses available </strong>There are currently no
+                                                        clauses to add</p>
+                                                </div>
                                             </td>
                                         </tr>
                                     </ng-template>
+
+                                    <!-- No Search Match -->
+                                   
                                 </p-table>
                             </ng-container>
 
@@ -1783,7 +1781,7 @@
                 <ng-template pTemplate="emptymessage">
                     <tr>
                         <td colspan="8" style="padding: 20px; text-align:center" id="empty">
-                            No risk excess available. Click on Add risk excess to add risk excesses</td>
+                            <strong>No risk clauses available.</strong> Click on Add risk excess to add risk clauses</td>
                     </tr>
                 </ng-template>
 
@@ -1852,7 +1850,7 @@
                                         </tr>
                                     </ng-template>
 
-                                    <!-- No Search Match -->
+                                    <!-- empty table -->
                                     <ng-template pTemplate="emptymessage">
                                         <tr class="empty-message-row">
                                             <td colspan="3" class="text-center py-4">
