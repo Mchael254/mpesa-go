@@ -36,7 +36,8 @@
           <div class="col-sm-4 col-6 mb-3">
             <div class="form-group">
               <label class="quote-label">Email address</label>
-              <input type="email" id="email" class="form-control" formControlName="email" placeholder="" />
+              <input type="email" id="email" class="form-control" formControlName="email" id="quote-input"
+                placeholder="" />
               <div *ngIf="quotationForm.get('email')?.touched && quotationForm.get('email')?.invalid"
                 class="text-danger form-text">
                 <div *ngIf="quotationForm.get('email')?.errors?.['required']">
@@ -755,7 +756,7 @@
               <td class="flexible-header1">{{ clause.heading | truncate:5 | sentenceCase}}</td>
               <td class="position-relative ">
                 <div class="clause-wrapper">
-                  {{ clause.wording | truncate:10 |sentenceCase}}
+                  {{ clause.wording | truncate:8 |sentenceCase}}
 
                   <div class="hover-card">
                     {{ clause.wording|sentenceCase }}
