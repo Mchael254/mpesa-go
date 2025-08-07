@@ -16,7 +16,7 @@ import {
   TaxPayload
 } from '../../data/quotationsDTO';
 import { catchError, Observable, retry, tap, throwError } from 'rxjs';
-import { introducersDTO } from '../../data/introducersDTO';
+import { Introducer } from '../../data/introducersDTO';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
 import { Pagination } from '../../../../../../shared/data/common/pagination';
 import { riskClauses } from '../../../setups/data/gisDTO';
@@ -245,18 +245,18 @@ export class QuotationsService {
   /**
    * Retrieves introducers using an HTTP GET request.
    * @method getIntroducers
-   * @return {Observable<introducersDTO>} - An observable of the response containing introducers data.
+   * @return {Observable<Introducer>} - An observable of the response containing introducers data.
    */
-  getIntroducers(): Observable<introducersDTO[]> {
+  getIntroducers(): Observable<Introducer[]> {
     let page = 0;
-    let size = 10
+    let size = 10000
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
       'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
-    return this.api.GET<introducersDTO[]>(`api/v1/introducers?page=${page}&size=${size}`, API_CONFIG.GIS_SETUPS_BASE_URL);
+    return this.api.GET<Introducer[]>(`api/v1/introducers?page=${page}&size=${size}`, API_CONFIG.GIS_SETUPS_BASE_URL);
   }
 
   /**
@@ -637,6 +637,32 @@ export class QuotationsService {
       API_CONFIG.GIS_QUOTATION_BASE_URL
     );
   }
+
+ 
+ 
+//  getExceptions(quotationCode: number, user: string): Observable<any> {
+//     return this.api.POST<any>(`v2/authorise/manage-exceptions?quotationCode=${quotationCode}&def=QUOTE&user=${user}`, null,API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+//       retry(1),
+//       catchError(this.errorHandl)
+//     )
+  // }
+ getExceptions(quotationCode: number, user: string): Observable<any> {
+  const params = new HttpParams()
+    .set('quotationCode', quotationCode.toString())
+    .set('def', 'QUOTE')
+    .set('user', user);
+
+  return this.api.POST(
+    `v2/authorise/manage-exceptions?${params.toString()}`,
+    null,
+
+  
+    API_CONFIG.GIS_QUOTATION_BASE_URL
+  );
+}
+
+
+
 
 
 

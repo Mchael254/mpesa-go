@@ -6,7 +6,6 @@ import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quo
 import {
   QuotationsClientDetailsComponent
 } from './components/quotations-client-details/quotations-client-details.component';
-import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
 import { QuotationDetailsComponent } from './components/quotation-details/quotation-details.component';
 import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
 import { ImportRisksComponent } from './components/import-risks/import-risks.component';
