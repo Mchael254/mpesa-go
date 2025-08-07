@@ -26,6 +26,7 @@ import { NgxCurrencyConfig } from "ngx-currency";
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import * as bootstrap from 'bootstrap';
 import { riskClause } from 'src/app/features/gis/data/quotations-dto';
+import { Router } from '@angular/router';
 
 
 const log = new Logger('RiskDetailsComponent');
@@ -61,6 +62,8 @@ export class RiskDetailsComponent {
   @Input() selectedProduct!: any;
   @ViewChild('sectionTable') sectionTable!: Table;
   @ViewChild('limitTable') limitTable!: Table;
+  @ViewChild('excessTable') excessTable!: Table;
+
   @ViewChild('addRiskModal') addRiskModalRef!: ElementRef;
   @ViewChild('addRiskSection') addRiskSectionRef!: ElementRef;
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
@@ -240,7 +243,6 @@ export class RiskDetailsComponent {
   clauseToDelete: any = null;
   selectedClauses: any[] = [];
 
-  showRiskLimits: boolean = true;
   showLimitModal: boolean = false
 
   columns: { field: string; header: string; visible: boolean }[] = [];
@@ -254,7 +256,7 @@ export class RiskDetailsComponent {
   mandatoryClause: any[];
   scheduleLevels: ScheduleLevels[] = [];
   levelTableColumnsMap: { [levelName: string]: Array<{ field: string, header: string }> } = {};
-  riskActiveTab: string = 'riskClauses';
+  riskActiveTab: string = 'riskExcesses';
 
   levelDataMap: { [levelName: string]: any[] } = {};
   activeFormFields: { type: string; name: string; max: number; min: number; isMandatory: string; disabled: boolean; readonly: boolean; regexPattern: string; placeholder: string; label: string; scheduleLevel: number; selectOptions?: { label: string; value: any; }[]; }[];
@@ -264,6 +266,9 @@ export class RiskDetailsComponent {
   selectedRiskLimits: any[] = [];
   allLimitsMap: { [qpCode: string]: any[] } = {};
   limitsOfLiability: any[] = [];
+
+  showExcessModal: boolean = false;
+  selectedExcesses: any[] = [];
 
   constructor(
     public subclassService: SubclassesService,
@@ -284,7 +289,8 @@ export class RiskDetailsComponent {
     public productService: ProductsService,
     public fb: FormBuilder,
     public cdr: ChangeDetectorRef,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private router: Router
 
   ) {
     this.quotationCode = sessionStorage.getItem('quotationCode');
@@ -3718,7 +3724,42 @@ export class RiskDetailsComponent {
     return value.replace(/[^\d.]/g, '');
   }
 
+  //excesses
+  excessesData: any[] = [];
+  loadExcesses(): void {
+    const subclassCode = this.selectedSubclassCode;
+    const scheduleType = 'E';
 
+    this.quotationService.getExcesses(subclassCode, scheduleType).subscribe({
+      next: (response) => {
+        console.log('Excesses data:', response);
+         this.excessesData = response?._embedded || [];
+      },
+      error: (error) => {
+        console.error('Error fetching excesses:', error);
+
+      }
+    });
+  }
+
+  openExcessModal(): void {
+    if (!this.selectedSubclassCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'No subclass selected');
+      return;
+    }
+
+    log.debug("Opening excessess modal for subclass:", this.selectedSubclassCode);
+
+    this.showExcessModal = true;
+
+    const modalElement = document.getElementById('addExcess');
+    if (modalElement) {
+      const modal = new (window as any).bootstrap.Modal(modalElement);
+      modal.show();
+    }
+
+    this.loadExcesses();
+  }
 
   onAddOtherSchedule(tab: any): void {
     this.activeModalTab = tab;
@@ -3859,6 +3900,11 @@ export class RiskDetailsComponent {
       coinsuranceLeader: "N",
       coinsurancePercentage: 0
     };
+  }
+
+  navigateToRiskDetails() {
+    this.router.navigate(['/home/gis/quotation/quotation-details']).then(r => {
+    });
   }
 
 }
