@@ -698,8 +698,9 @@ export class QuotationsService {
     return this.api.GET<Observable<any>>(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
-  addLimitsOfLiability(data: CreateLimitsOfLiability[]): Observable<any> {
-    return this.api.POST<any>(`v2/limits-of-liability`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+  addLimitsOfLiability(newQpCode: number, limitPayload: CreateLimitsOfLiability[]): Observable<any> {
+    const queryParam = `?newQpCode=${newQpCode}`;
+    return this.api.POST<any>(`v2/limits-of-liability${queryParam}`, JSON.stringify(limitPayload), API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
   addClauses(
