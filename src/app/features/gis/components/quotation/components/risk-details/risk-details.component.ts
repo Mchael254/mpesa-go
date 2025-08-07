@@ -3592,6 +3592,7 @@ export class RiskDetailsComponent {
     }
 
   }
+  //
   getButtonLabel(levelNumber: number): string {
     return levelNumber === 2 ? 'Motor Details' : 'Other Details';
   }
