@@ -8,7 +8,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {DynamicScreensSetupService} from "../../../services/setups/dynamic-screen-config/dynamic-screens-setup.service";
 import {
   ConfigFormFieldsDto,
-  DynamicScreenSetupDto,
+  DynamicScreenSetupDto, DynamicSetupImportDto,
   FormGroupsDto, FormSubGroupsDto, MultilingualText,
   ScreenFormsDto,
   ScreensDto,
@@ -80,6 +80,7 @@ export class CrmScreensConfigComponent implements OnInit {
   selectedExportSection: ScreenFormsDto;
   selectedExportSubSection: FormGroupsDto;
   selectedExportSubSectionTwo: FormSubGroupsDto;
+  exportData: DynamicSetupImportDto;
   @ViewChild('dt2') dt2: Table | undefined;
   dynamicConfigBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -126,6 +127,9 @@ export class CrmScreensConfigComponent implements OnInit {
     this.fetchSubModules();
   }
 
+  /**
+   * Creates the form for the sub modules.
+   */
   createSubModuleForm(): void {
     this.subModulesForm = this.fb.group({
       originalSubModulesLabel: [{ value: '', disabled: true }],
@@ -136,6 +140,9 @@ export class CrmScreensConfigComponent implements OnInit {
     });
   }
 
+  /**
+   * Creates the form for the screens.
+   */
   createScreensForm(): void {
     this.screensForm = this.fb.group({
       originalScreenLabel: [{ value: '', disabled: true }],
@@ -146,6 +153,9 @@ export class CrmScreensConfigComponent implements OnInit {
     });
   }
 
+  /**
+   * Creates the form for the sections.
+   */
   createSectionsForm(): void {
     this.sectionsForm = this.fb.group({
       originalSectionLabel: [{ value: '', disabled: true }],
@@ -156,6 +166,9 @@ export class CrmScreensConfigComponent implements OnInit {
     });
   }
 
+  /**
+   * Creates the form for the sub sections.
+   */
   createSubSectionsForm(): void {
     this.subSectionsForm = this.fb.group({
       originalSubSectionLabel: [{ value: '', disabled: true }],
@@ -166,6 +179,9 @@ export class CrmScreensConfigComponent implements OnInit {
     });
   }
 
+  /**
+   * Creates the form for the sub sections two.
+   */
   createSubSectionsTwoForm(): void {
     this.subSectionTwoForm = this.fb.group({
       originalSubSectionTwoLabel: [{ value: '', disabled: true }],
@@ -176,6 +192,9 @@ export class CrmScreensConfigComponent implements OnInit {
     });
   }
 
+  /**
+   * Creates the form for the fields.
+   */
   createFieldsForm(): void {
     this.fieldsForm = this.fb.group({
       originalFieldLabel: [{ value: '', disabled: true }],
@@ -193,10 +212,16 @@ export class CrmScreensConfigComponent implements OnInit {
     });
   }
 
+  /**
+   * Returns the validations form array.
+   */
   get validations() {
     return this.fieldsForm.get('validations') as FormArray;
   }
 
+  /**
+   * Opens the sub modules modal.
+   */
   openSubModulesModal() {
     const modal = document.getElementById('subModuleModal');
     if (modal) {
@@ -205,6 +230,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the sub modules modal.
+   */
   closeSubModulesModal() {
     this.editMode = false;
     const modal = document.getElementById('subModuleModal');
@@ -214,6 +242,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Opens the screens modal.
+   */
   openScreensModal() {
     const modal = document.getElementById('screensModal');
     if (modal) {
@@ -222,6 +253,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the screens modal.
+   */
   closeScreensModal(){
     this.editMode = false;
     const modal = document.getElementById('screensModal');
@@ -231,6 +265,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Opens the sections modal.
+   */
   openSectionsModal() {
     const modal = document.getElementById('sectionsModal');
     if (modal) {
@@ -239,6 +276,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the sections modal.
+   */
   closeSectionsModal(){
     this.editMode = false;
     const modal = document.getElementById('sectionsModal');
@@ -248,6 +288,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Opens the sub sections modal.
+   */
   openSubSectionsModal() {
     const modal = document.getElementById('subSectionsModal');
     if (modal) {
@@ -256,6 +299,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the sub sections modal.
+   */
   closeSubSectionsModal(){
     this.editMode = false;
     const modal = document.getElementById('subSectionsModal');
@@ -265,6 +311,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Opens the sub sections two modal.
+   */
   openSubSectionTwoModal() {
     const modal = document.getElementById('subSectionTwoModal');
     if (modal) {
@@ -273,6 +322,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the sub sections two modal.
+   */
   closeSubSectionTwoModal(){
     this.editMode = false;
     const modal = document.getElementById('subSectionTwoModal');
@@ -282,6 +334,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Opens the fields modal.
+   */
   openFieldsModal() {
     const modal = document.getElementById('fieldsModal');
     if (modal) {
@@ -290,6 +345,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the fields modal.
+   */
   closeFieldsModal() {
     this.editMode = false;
     const modal = document.getElementById('fieldsModal');
@@ -299,6 +357,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Opens the export setup modal.
+   */
   openExportSetupModal() {
     const modal = document.getElementById('exportSetupModal');
     if (modal) {
@@ -307,6 +368,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the export setup modal.
+   */
   closeExportSetupModal() {
     this.editMode = false;
     const modal = document.getElementById('exportSetupModal');
@@ -316,6 +380,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Opens the multilingual modal.
+   */
   openMultilingualModal() {
     const modal = document.getElementById('multilingualModal');
     if (modal) {
@@ -324,6 +391,10 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the multilingual modal.
+   * @param yesClicked - A boolean value indicating whether the yes button was clicked or not.
+   */
   closeMultilingualModal(yesClicked?: boolean) {
     this.editMode = false;
     const modal = document.getElementById('multilingualModal');
@@ -356,6 +427,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Saves the changes made to the sub modules.
+   */
   saveSubModules() {
     const data = this.subModulesForm.getRawValue();
     log.info('subModules', data);
@@ -387,6 +461,9 @@ export class CrmScreensConfigComponent implements OnInit {
     this.openMultilingualModal();
   }
 
+  /**
+   * Saves the changes made to the screens.
+   */
   saveScreens() {
     const data = this.screensForm.getRawValue();
     const screen = this.selectedScreen;
@@ -415,6 +492,9 @@ export class CrmScreensConfigComponent implements OnInit {
     this.openMultilingualModal();
   }
 
+  /**
+   * Saves the changes made to the sections.
+   */
   saveSections() {
     const data = this.sectionsForm.getRawValue();
     log.info('sections', data);
@@ -444,6 +524,9 @@ export class CrmScreensConfigComponent implements OnInit {
     this.openMultilingualModal();
   }
 
+  /**
+   * Saves the changes made to the sub sections.
+   */
   saveSubSections() {
     const data = this.subSectionsForm.getRawValue();
     log.info('subSections', data);
@@ -475,6 +558,9 @@ export class CrmScreensConfigComponent implements OnInit {
     this.openMultilingualModal();
   }
 
+  /**
+   * Saves the changes made to the sub sections two.
+   */
   saveSubSectionTwo(): void {
     const data = this.subSectionTwoForm.getRawValue();
     log.info('subSections 2', data);
@@ -515,6 +601,9 @@ export class CrmScreensConfigComponent implements OnInit {
   }
 
 
+  /**
+   * Saves the changes made to the fields.
+   */
   saveFieldProperties() {
     const data = this.fieldsForm.getRawValue();
     log.info('fields form', data);
@@ -563,6 +652,10 @@ export class CrmScreensConfigComponent implements OnInit {
     this.openMultilingualModal();
   }
 
+  /**
+   * Edits the selected sub module.
+   * @param subModule The selected sub module to edit.
+   */
   editSubModule(subModule?: any) {
     if (subModule) {
       this.editMode = !this.editMode;
@@ -583,6 +676,10 @@ export class CrmScreensConfigComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  /**
+   * Edits the selected screen.
+   * @param screen The selected screen to edit.
+   */
   editScreens(screen?: any) {
     if (screen) {
       this.editMode = !this.editMode;
@@ -603,6 +700,10 @@ export class CrmScreensConfigComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  /**
+   * Edits the selected section.
+   * @param section The selected section to edit.
+   */
   editSections(section?: any) {
     if (section) {
       this.editMode = !this.editMode;
@@ -623,6 +724,10 @@ export class CrmScreensConfigComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  /**
+   * Edits the selected sub section.
+   * @param subSection The selected sub section to edit.
+   */
   editSubSections(subSection?: any) {
     if (subSection) {
       this.editMode = !this.editMode;
@@ -643,6 +748,10 @@ export class CrmScreensConfigComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  /**
+   * Edits the selected sub section 2.
+   * @param subSectionTwo The selected sub section 2 to edit.
+   */
   editSubSectionsTwo(subSectionTwo?: any) {
     if (subSectionTwo) {
       this.editMode = !this.editMode;
@@ -663,6 +772,10 @@ export class CrmScreensConfigComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  /**
+   * Patches the current validations messages from the provided validations to the form.
+   * @param validations The validations containing the messages.
+   */
   editSelectedRecord(selectedRecord?: any) {
     this.selectedTableRecordDetails = selectedRecord;
     log.info('selectedTableRecordDetails', this.selectedTableRecordDetails)
@@ -706,6 +819,10 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Selects the language for the current application.
+   * @param value The language object containing the code and class.
+   */
   selectLanguage(value){
     // this.translate.use(value.code)
     this.defaultLanguage = value.class;
@@ -738,6 +855,10 @@ export class CrmScreensConfigComponent implements OnInit {
     // this.utilService.setLanguage(value.code);
   }
 
+  /**
+   * Patches the current validations messages from the provided validations to the form.
+   * @param validations The validations containing the messages.
+   */
   patchValidationsMessages(validations: Validation[]) {
     const validationsFA = this.fieldsForm.get('validations') as FormArray;
     validationsFA.clear();
@@ -751,6 +872,12 @@ export class CrmScreensConfigComponent implements OnInit {
     });
   }
 
+  /**
+   * Updates the multilingual label of the provided dto with the current value from the form.
+   * @param dto The dto containing the label to update.
+   * @param form The form containing the current value.
+   * @param labelField The name of the label form control.
+   */
   updateMultilingualLabel(
     dto: { label: MultilingualText },
     form: FormGroup,
@@ -763,6 +890,12 @@ export class CrmScreensConfigComponent implements OnInit {
     dto.label[this.language] = form.get(labelField)?.value || '';
   }
 
+  /**
+   * Patches the current label value from the provided dto to the form.
+   * @param form The form to patch the value to.
+   * @param dto The dto containing the label to patch.
+   * @param labelField The name of the label form control.
+   */
   patchCurrentLabel(
     form: FormGroup,
     dto: { label: MultilingualText },
@@ -775,6 +908,12 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Updates the multilingual placeholder of the provided dto with the current value from the form.
+   * @param dto The dto containing the placeholder to update.
+   * @param form The form containing the current value.
+   * @param placeholderField The name of the placeholder form control.
+   */
   updateMultilingualPlaceholder(
     dto: { placeholder: MultilingualText },
     form: FormGroup,
@@ -787,6 +926,12 @@ export class CrmScreensConfigComponent implements OnInit {
     dto.placeholder[this.language] = form.get(placeholderField)?.value || '';
   }
 
+  /**
+   * Patches the current placeholder value from the provided dto to the form.
+   * @param form The form to patch the value to.
+   * @param dto The dto containing the placeholder to patch.
+   * @param placeholderField The name of the placeholder form control.
+   */
   patchCurrentPlaceholder(
     form: FormGroup,
     dto: { placeholder: MultilingualText },
@@ -799,6 +944,12 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Updates the multilingual tooltip words of the provided dto with the current value from the form.
+   * @param dto The dto containing the tooltip words to update.
+   * @param form The form containing the current value.
+   * @param tooltipField The name of the tooltip words form control.
+   */
   updateMultilingualTooltipWords(
     dto: { tooltip: MultilingualText },
     form: FormGroup,
@@ -811,6 +962,12 @@ export class CrmScreensConfigComponent implements OnInit {
     dto.tooltip[this.language] = form.get(tooltipField)?.value || '';
   }
 
+  /**
+   * Patches the current tooltip words value from the provided dto to the form.
+   * @param form The form to patch the value to.
+   * @param dto The dto containing the tooltip words.
+   * @param tooltipField The name of the tooltip words form control.
+   */
   patchCurrentTooltipWords(
     form: FormGroup,
     dto: { tooltip: MultilingualText },
@@ -824,6 +981,9 @@ export class CrmScreensConfigComponent implements OnInit {
     }
   }
 
+  /**
+   * Saves the current validation messages from the form to the selected table record details.
+   */
   saveValidationsMessages() {
     const validationsFA = this.fieldsForm.get('validations') as FormArray;
     const formValidations = validationsFA.getRawValue();
@@ -842,6 +1002,9 @@ export class CrmScreensConfigComponent implements OnInit {
     });
   }
 
+  /**
+   * Publishes the changes to the dynamic screens setup.
+   */
   publishChanges() {
     const payload: DynamicScreenSetupDto = {
       fields: this.tableData,
@@ -868,6 +1031,11 @@ export class CrmScreensConfigComponent implements OnInit {
       });
   }
 
+  /**
+   * Adds a new section to the form.
+   * The section is initialized with a group containing three controls: type, value, and message.
+   * The type control is required and its value is used to enable or disable the value and message controls.
+   */
   addSection() {
     const group = this.fb.group({
       type: [null, Validators.required],
@@ -888,10 +1056,19 @@ export class CrmScreensConfigComponent implements OnInit {
     this.validations.push(group);
   }
 
+  /**
+   * Removes the section at the given index from the form.
+   * @param index The index of the section to remove.
+   */
   removeSection(index: number) {
     this.validations.removeAt(index);
   }
 
+  /**
+   * Returns the list of available validations excluding the one selected.
+   * @param currentType the type of the validation to exclude
+   * @returns the list of available validations
+   */
   getRemainingValidations(currentType?: string | null) {
     const selected = this.validations.controls
       .map(ctrl => ctrl.get('type')?.value)
@@ -899,6 +1076,11 @@ export class CrmScreensConfigComponent implements OnInit {
     return this.availableValidations.filter(v => !selected.includes(v));
   }
 
+  /**
+   * Handles the selection of a sub-module.
+   * Fetches the screens and form fields for the selected sub-module.
+   * @param subModule - The selected sub-module.
+   */
   onClickSubModule(subModule: SubModulesDto) {
     this.selectedSubModule = subModule;
     this.selectedScreen = null;
@@ -909,6 +1091,11 @@ export class CrmScreensConfigComponent implements OnInit {
     this.showScreens = true;
   }
 
+  /**
+   * Handles the selection of a screen.
+   * Fetches the sections and form fields for the selected screen.
+   * @param screen - The selected screen.
+   */
   onClickScreen(screen: ScreensDto) {
     this.selectedScreen = screen;
     this.selectedSection = null;
@@ -921,6 +1108,11 @@ export class CrmScreensConfigComponent implements OnInit {
     this.showSections = true;
   }
 
+  /**
+   * Handles the selection of a section.
+   * Fetches the sub-sections and form fields for the selected section.
+   * @param section - The selected section.
+   */
   onClickSection(section: ScreenFormsDto) {
     this.selectedSection = section;
     this.fetchSubSections(this.selectedSubModule.code, null, section.code);
@@ -935,6 +1127,11 @@ export class CrmScreensConfigComponent implements OnInit {
     this.selectedSubSectionTwo = null;
   }
 
+  /**
+   * Handles the selection of a sub-section.
+   * Fetches the sub-sections two and form fields for the selected sub-section.
+   * @param subSection - The selected sub-section.
+   */
   onClickSubSection(subSection: FormGroupsDto) {
     this.selectedSubSection = subSection;
     if (subSection?.hasFields === true) {
@@ -946,6 +1143,11 @@ export class CrmScreensConfigComponent implements OnInit {
     this.showSubSectionsTwo = true;
   }
 
+  /**
+   * Handles the selection of a sub-section two.
+   * Fetches the form fields for the selected sub-section two.
+   * @param subSectionTwo - The selected sub-section two.
+   */
   onClickSubSectionTwo(subSectionTwo: FormSubGroupsDto) {
     this.selectedSubSectionTwo = subSectionTwo;
     if (subSectionTwo?.hasFields === true) {
@@ -955,55 +1157,93 @@ export class CrmScreensConfigComponent implements OnInit {
     this.showFields = subSectionTwo?.hasFields;
   }
 
+  /**
+   * Exports the selected submodule setup data as a JSON file.
+   */
   onClickExportSubModule() {
     if (this.selectedExportSubmodule) {
       this.fetchScreens(this.selectedExportSubmodule.code);
+      this.exportScreenSetupJson(this.selectedExportSubmodule.code);
       this.exportSelected = this.selectedExportSubmodule.label[this.language];
       this.showExportScreens = true;
     }
   }
 
+  /**
+   * Exports the selected screen setup data as a JSON file.
+   */
   onClickExportScreen() {
     if (this.selectedExportScreen) {
       this.fetchSections(this.selectedExportScreen.code);
+      this.exportScreenSetupJson(this.selectedExportSubmodule.code, this.selectedExportScreen.code);
       this.exportSelected = this.selectedExportScreen.label[this.language];
       this.showExportSections = true;
     }
   }
 
+  /**
+   * Exports the selected section setup data as a JSON file.
+   */
   onClickExportSection() {
     if (this.selectedExportSection) {
       this.fetchSubSections(this.selectedSubModule.code, null, this.selectedExportSection.code);
+      this.exportScreenSetupJson(this.selectedExportSubmodule.code, this.selectedExportScreen.code, this.selectedExportSection.code);
       this.exportSelected = this.selectedExportSection.label[this.language];
       this.showExportSubSections = true;
       this.showExportSubSectionsTwo = false;
     }
   }
 
+  /**
+   * Exports the selected subsection setup data as a JSON file.
+   */
   onClickExportSubSection() {
     if (this.selectedExportSection) {
       this.fetchSubSectionsTwo(this.selectedExportSubSection.code);
       this.exportSelected = this.selectedExportSubSection.label[this.language];
+      this.exportScreenSetupJson(this.selectedExportSubmodule.code, this.selectedExportScreen.code, this.selectedExportSection.code, this.selectedExportSubSection.code);
       this.showExportSubSectionsTwo = true;
     }
   }
 
+  /**
+   * Exports the selected subsection two setup data as a JSON file.
+   */
   onClickExportSubSectionTwo() {
     if (this.selectedExportSubSectionTwo) {
       this.exportSelected = this.selectedExportSubSectionTwo.label[this.language];
+      this.exportScreenSetupJson(this.selectedExportSubmodule.code, this.selectedExportScreen.code, this.selectedExportSection.code, this.selectedExportSubSection.code, this.selectedExportSubSectionTwo.code);
     }
   }
 
+  /**
+   * Filters the field table based on the input value.
+   * @param event - The input event
+   */
   filterFields(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dt2.filter(filterValue, 'label.' + this.language, 'contains');
   }
 
+  /**
+   * Returns a comma-separated string of the validation types for a given field.
+   * @param validations - The list of validations
+   */
   getValidationTypes(validations: any[]): string {
     if (!validations || validations.length === 0) return '';
     return validations.map(v => v.type).join(', ');
   }
 
+  /**
+   * Imports a setup file (JSON) from the user's local machine.
+   *
+   * @remarks
+   * This function creates a hidden file input element and programmatically
+   * clicks it to open the file dialog. When a file is selected, it reads the
+   * file content using the FileReader API and calls the importScreenSetupCall
+   * function to import the setup data. If the file is not a valid JSON file,
+   * it displays an error message.
+   */
   importSetup() {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -1017,7 +1257,8 @@ export class CrmScreensConfigComponent implements OnInit {
           try {
             const content = JSON.parse(e.target?.result as string);
             log.info('Imported setup file:', content);
-            this.globalMessagingService.displayInfoMessage('Success', 'Setup file selected successfully');
+            this.importScreenSetupCall(content);
+
           } catch (err) {
             this.globalMessagingService.displayErrorMessage('Error', 'Invalid setup file format');
           }
@@ -1029,6 +1270,13 @@ export class CrmScreensConfigComponent implements OnInit {
     fileInput.click();
   }
 
+  /**
+   * Fetches the sub modules based on the given parameters.
+   *
+   * @remarks
+   * This function fetches the sub modules based on the given parameters and
+   * assigns the result to the subModules property.
+   */
   fetchSubModules() {
     this.dynamicScreensSetupService.fetchSubModules(null, "account_management")
       .subscribe({
@@ -1042,6 +1290,13 @@ export class CrmScreensConfigComponent implements OnInit {
       });
   }
 
+  /**
+   * Fetches the screens based on the given parameters.
+   *
+   * @remarks
+   * This function fetches the screens based on the given parameters and
+   * assigns the result to the screens property.
+   */
   fetchScreens(subModuleCode?: number) {
     this.dynamicScreensSetupService.fetchScreens(subModuleCode)
       .subscribe({
@@ -1055,6 +1310,13 @@ export class CrmScreensConfigComponent implements OnInit {
       });
   }
 
+  /**
+   * Fetches the sections based on the given parameters.
+   *
+   * @remarks
+   * This function fetches the sections based on the given parameters and
+   * assigns the result to the sections property.
+   */
   fetchSections(screenCode?: number) {
     this.dynamicScreensSetupService.fetchSections(screenCode)
       .subscribe({
@@ -1068,6 +1330,13 @@ export class CrmScreensConfigComponent implements OnInit {
       });
   }
 
+  /**
+   * Fetches the sub sections based on the given parameters.
+   *
+   * @remarks
+   * This function fetches the sub sections based on the given parameters and
+   * assigns the result to the subSections property.
+   */
   fetchSubSections(subModuleCode?: number, screenCode?: number, formCode?: number) {
     this.dynamicScreensSetupService.fetchGroups(subModuleCode, screenCode, formCode)
       .subscribe({
@@ -1081,6 +1350,13 @@ export class CrmScreensConfigComponent implements OnInit {
       });
   }
 
+  /**
+   * Fetches the sub sections 2 based on the given parameters.
+   *
+   * @remarks
+   * This function fetches the sub sections 2 based on the given parameters and
+   * assigns the result to the subSectionsTwo property.
+   */
   fetchSubSectionsTwo(groupCode?: number) {
     this.dynamicScreensSetupService.fetchSubGroups(groupCode)
       .subscribe({
@@ -1094,6 +1370,13 @@ export class CrmScreensConfigComponent implements OnInit {
       });
   }
 
+  /**
+   * Fetches the form fields based on the given parameters.
+   *
+   * @remarks
+   * This function fetches the form fields based on the given parameters and
+   * assigns the result to the tableData property.
+   */
   fetchFormFields(subModuleCode?: number, screenCode?: number, formCode?: number, formGroupingsCode?: number, formSubGroupCode?: number) {
     this.dynamicScreensSetupService.fetchFormFields(subModuleCode, screenCode, formCode, formGroupingsCode, formSubGroupCode)
       .subscribe({
@@ -1101,6 +1384,72 @@ export class CrmScreensConfigComponent implements OnInit {
           this.tableData = data;
           log.info("fields>>", data);
           this.disableProtectedFields();
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        }
+      });
+  }
+
+  /**
+   * Exports the screen setup data as a JSON blob.
+   *
+   * @remarks
+   * This function fetches the export data for the given parameters and assigns
+   * the result to the exportData property.
+   */
+  exportScreenSetupJson(subModuleCode: number, screenCode?: number, formCode?: number, formGroupCode?: number, formSubGroupCode?: number) {
+    this.dynamicScreensSetupService.exportScreenSetup(subModuleCode, screenCode, formCode, formGroupCode, formSubGroupCode)
+      .subscribe({
+        next: (data) => {
+          this.exportData = data;
+          log.info("export>>", data);
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        }
+      });
+  }
+
+  /**
+   * Downloads the export data as a JSON file.
+   *
+   * @remarks
+   * This function creates a blob from the export data, creates a URL for the blob,
+   * creates a link element, sets the href attribute of the link to the blob URL,
+   * sets the download attribute of the link to 'setup.json', clicks the link to
+   * trigger the download, and then revokes the blob URL.
+   */
+  exportJson() {
+    if (this.exportData) {
+      const blob = new Blob([JSON.stringify(this.exportData)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'setup.json';
+      a.click();
+      window.URL.revokeObjectURL(url);
+      this.closeExportSetupModal();
+    }
+  }
+
+  /**
+   * Imports a screen setup from the given data.
+   *
+   * @remarks
+   * This function makes a request to the import screen setup endpoint and passes
+   * the given data as the request body. If the request is successful, it reloads
+   * the page. If the request fails, it displays an error message using the global
+   * messaging service.
+   *
+   * @param data - The data to import.
+   */
+  importScreenSetupCall(data: any) {
+    this.dynamicScreensSetupService.importScreenSetup(data)
+      .subscribe({
+        next: (data) => {
+          log.info("import>>", data);
+          window.location.reload();
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);

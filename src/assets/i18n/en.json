@@ -253,7 +253,7 @@
     "base-fms": {
       "parameters": "Parameters",
       "defineYrs": "Define Years/Periods",
-     
+
       "closeYrs": "Close Years / Period",
       "branches": "Branches",
       "businessClasses": "Business Classes",
@@ -634,7 +634,9 @@
     "welcomeToEvolveConfigurator": "Welcome to Evolve Configurator",
     "selectASystem": "Select a system to start customizing your screen, layout and fields",
     "getStarted": "Get started",
-    "updateInAnotherLanguage": "Do you want to update changes in another language"
+    "updateInAnotherLanguage": "Do you want to update changes in another language",
+    "export": "export",
+    "publishedChangesWillBeExported": "Please note that only published changes will be exported"
   },
   "entities": {
     "account_number": "Account Number",
