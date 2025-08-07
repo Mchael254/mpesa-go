@@ -177,6 +177,12 @@ button:focus {
 .modal-title {
   margin-bottom: 15px;
   color: #00529B;
+  font-family: Roboto;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: 0%;
 }
 
 .delete-title {
@@ -282,6 +288,12 @@ button:focus {
   display: inline-block;
 }
 
+.limit-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+
 .hover-card {
   display: none;
   position: absolute;
@@ -307,5 +319,16 @@ button:focus {
   width: auto;
   text-align: left;
 
+}
 
+.no-border-bottom {
+  border-bottom: none !important;
+  border: 1px solid #00000033;
+  font-family: Roboto;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0%;
+  color: #495057;
 }

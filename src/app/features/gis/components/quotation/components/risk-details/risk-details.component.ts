@@ -17,8 +17,8 @@ import { VehicleModelService } from '../../../setups/services/vehicle-model/vehi
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection } from '../../data/quotationsDTO';
-import { Premiums, subclassClauses, SubclassCoverTypes, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
+import { Clause, CreateLimitsOfLiability, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, ScheduleLevels, ScheduleTab } from '../../data/quotationsDTO';
+import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
 import { Table } from 'primeng/table';
@@ -54,14 +54,13 @@ const log = new Logger('RiskDetailsComponent');
 })
 
 export class RiskDetailsComponent {
-  freeLimitValue: any;
-  sumInsured: number;
-  mandatoryClause: any[];
+
   getFreeLimitLabel(arg0: any) {
     throw new Error('Method not implemented.');
   }
   @Input() selectedProduct!: any;
   @ViewChild('sectionTable') sectionTable!: Table;
+  @ViewChild('limitTable') limitTable!: Table;
   @ViewChild('addRiskModal') addRiskModalRef!: ElementRef;
   @ViewChild('addRiskSection') addRiskSectionRef!: ElementRef;
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
@@ -191,8 +190,22 @@ export class RiskDetailsComponent {
     regexPattern: string;
     placeholder: string;
     label: string;
-    scheduleLevel: string
+    scheduleLevel: number
     selectOptions?: { label: string; value: any }[];
+  }[];
+  dynamicSubclassFormFields: {
+    type: string;
+    name: string;
+    max: number
+    min: number
+    isMandatory: string;
+    disabled: boolean;
+    readonly: boolean;
+    regexPattern: string;
+    placeholder: string;
+    label: string;
+    scheduleLevel: number
+    selectOptions?: { label: string; value: any }[]
   }[];
   existingPropertyIds: string[] = [];
   dynamicRegexPattern: string;
@@ -206,8 +219,8 @@ export class RiskDetailsComponent {
   yearList: any;
   clientCode: number;
   // showSections: boolean = false;
-  tabs = ['Schedule Details', 'Level 2', 'Level 3']; // Dummy tabs for now
-  activeTab = 'Schedule Details';
+  scheduleTabs: ScheduleTab[] = [];
+  activeTab: ScheduleTab | null = null;
   isEditMode: boolean = false;
   isAddMode: boolean = false;
   selectedRiskClauses: any;
@@ -227,11 +240,30 @@ export class RiskDetailsComponent {
   clauseToDelete: any = null;
   selectedClauses: any[] = [];
 
+  showRiskLimits: boolean = true;
+  showLimitModal: boolean = false
+
   columns: { field: string; header: string; visible: boolean }[] = [];
 
   showSections: boolean = true;
   showColumnModal = false;
   columnModalPosition = { top: '0px', left: '0px' };
+  selectedSubclassObject: Subclasses;
+  freeLimitValue: any;
+  sumInsured: number;
+  mandatoryClause: any[];
+  scheduleLevels: ScheduleLevels[] = [];
+  levelTableColumnsMap: { [levelName: string]: Array<{ field: string, header: string }> } = {};
+  riskActiveTab: string = 'riskClauses';
+
+  levelDataMap: { [levelName: string]: any[] } = {};
+  activeFormFields: { type: string; name: string; max: number; min: number; isMandatory: string; disabled: boolean; readonly: boolean; regexPattern: string; placeholder: string; label: string; scheduleLevel: number; selectOptions?: { label: string; value: any; }[]; }[];
+  activeModalTab: ScheduleTab | null = null;
+  scheduleOtherDetailsForm: FormGroup;
+  addedLimitsOfLiability: any[] = [];
+  selectedRiskLimits: any[] = [];
+  allLimitsMap: { [qpCode: string]: any[] } = {};
+  limitsOfLiability: any[] = [];
 
   constructor(
     public subclassService: SubclassesService,
@@ -275,7 +307,7 @@ export class RiskDetailsComponent {
       this.selectedProductCode = selectedProductCode
       this.loadSelectedProductRiskFields(selectedProductCode)
       this.getProductSubclass(selectedProductCode)
-      // this.checkMotorClass()
+      this.checkMotorClass(selectedProductCode)
       const quoatationNo = this.selectedProduct.quotationNo
       const quoatationCode = this.selectedProduct.quotationCode
       this.fetchQuotationDetails(quoatationCode)
@@ -289,11 +321,14 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
-
+    this.loadPersistedRiskClauses();
+    this.loadLimitsOfLiability();
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
     });
     this.dateFormat = sessionStorage.getItem('dateFormat');
+    const dynamicFormFields = JSON.parse(sessionStorage.getItem('dynamicSubclassFormField'));
+    this.dynamicSubclassFormFields = dynamicFormFields
     log.debug("Date Formart", this.dateFormat)
     // this.updateRiskDetailsForm();
     this.createScheduleDetailsForm();
@@ -319,7 +354,24 @@ export class RiskDetailsComponent {
     // this.clientCode = Number(sessionStorage.getItem('insuredCode'))
     this.loadAllClients();
 
+    // limits of liability persistence from session
+    const savedLimits = sessionStorage.getItem('limitsOfLiability');
+    if (savedLimits) {
+      this.allLimitsMap = JSON.parse(savedLimits);
+      const allPersistedLimits = Object.values(this.allLimitsMap).flat();
+      this.addedLimitsOfLiability = [...allPersistedLimits];
+      log.debug("Persisted added limits", this.addedLimitsOfLiability);
+    }
+
+    // Load available limits
+    const availableLimits = sessionStorage.getItem('availableLimitsOfLiability');
+    if (availableLimits) {
+      this.limitsOfLiability = JSON.parse(availableLimits);
+      log.debug("Available limits loaded", this.limitsOfLiability);
+    }
+
   }
+
   ngOnDestroy(): void { }
 
   ngAfterViewInit(): void {
@@ -397,10 +449,13 @@ export class RiskDetailsComponent {
           const productDetails = this.quotationDetails.quotationProducts.find(
             product => product.productCode === this.selectedProductCode
           )
-          this.riskDetails = productDetails?.riskInformation || []
-          const curentlySavedRisk = this.riskDetails?.filter(risk => risk.code == this.quotationRiskCode)
+          this.quoteProductCode = productDetails.code;
+          log.debug("limit qpcode", this.quoteProductCode);
+          this.riskDetails = productDetails?.riskInformation || [];
+          log.debug('risk details', this.riskDetails)
+          const curentlySavedRisk = this.riskDetails?.find(risk => risk.code == this.quotationRiskCode) || this.riskDetails[0];
           log.debug('Currently saved Risk:', curentlySavedRisk)
-          curentlySavedRisk && this.handleRowClick(curentlySavedRisk[0])
+          curentlySavedRisk && this.handleRowClick(curentlySavedRisk)
           log.debug("Risk information specific to the selected product:", this.riskDetails)
           log.debug("Schedule information specific to the selected product:", this.scheduleList)
           if (this.scheduleList[0]?.details?.level2) {
@@ -517,7 +572,8 @@ export class RiskDetailsComponent {
         next: (response) => {
           const fields = response?.[0]?.fields || [];
           this.subclassFormContent = response;
-          this.subclassFormData = fields.filter(field => field.scheduleLevel === "L1");
+          sessionStorage.setItem('dynamicSubclassFormField', JSON.stringify(fields))
+          this.subclassFormData = fields.filter(field => Number(field.scheduleLevel) === 1);
 
           Object.keys(this.riskDetailsForm.controls).forEach(controlName => {
             const control = this.riskDetailsForm.get(controlName) as any;
@@ -705,19 +761,6 @@ export class RiskDetailsComponent {
     });
   }
 
-
-
-  // loadClientDetails() {
-  //   this.clientService.getClientById(this.insuredCode).subscribe((data: any) => {
-  //     this.selectedClientList = data;
-  //     log.debug('Selected Client Details:', this.selectedClientList);
-
-  //     this.clientName = this.selectedClientList?.firstName + ' ' + this.selectedClientList?.lastName;
-  //     log.debug("Client NAME", this.clientName)
-
-
-  //   });
-  // }
   loadClientDetails() {
     this.clientService.getClientById(this.insuredCode).subscribe((data: any) => {
       log.debug("client searching to patch data")
@@ -739,22 +782,12 @@ export class RiskDetailsComponent {
     });
   }
 
-  checkMotorClass() {
-    this.productService.getProductDetailsByCode(this.selectedProductCode).subscribe(res => {
+  checkMotorClass(productCode: number) {
+    this.productService.getProductDetailsByCode(productCode).subscribe(res => {
       log.debug("Product Response", res);
       this.motorClassAllowed = res.allowMotorClass
       log.debug("Motor class Allowed:", this.motorClassAllowed)
-      if (this.motorClassAllowed === 'Y') {
-        this.showMotorSubclassFields = true;
-        this.showNonMotorSubclassFields = false;
 
-        // this.motorProduct = true;
-      } else if (this.motorClassAllowed == 'N') {
-        this.showNonMotorSubclassFields = true;
-        this.showMotorSubclassFields = false;
-
-        // this.motorProduct = false;
-      }
 
 
     });
@@ -1086,6 +1119,9 @@ export class RiskDetailsComponent {
   async onSubclassSelected(event: any) {
     this.selectedSubclassCode = event.value || event.code;
     log.debug("Selected subclass code:", this.selectedSubclassCode);
+
+    this.selectedSubclassObject = this.allMatchingSubclasses.find(subclass => subclass.code == this.selectedSubclassCode)
+    log.debug("Selected Subclass Object:", this.selectedSubclassObject)
     if (this.selectedSubclassCode) {
       try {
         await this.loadSelectedSubclassRiskFields(this.selectedSubclassCode);
@@ -1313,13 +1349,13 @@ export class RiskDetailsComponent {
           const coverTypeCode = this.selectedCoverType.coverTypeCode
           // Call services directly
           return forkJoin([
-
             this.quotationService.getQuotationDetails(quotationCode),
             this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode)
           ]);
         })
       ).subscribe({
         next: ([quoteDetails, premiumRates]: any) => {
+
           this.quotationDetails = quoteDetails
           const quotationProducts = quoteDetails.quotationProducts || [];
           // Find the selected product
@@ -1335,7 +1371,21 @@ export class RiskDetailsComponent {
           const currentQuotationRiskCode = matchedRisk.code
           this.quotationRiskCode = currentQuotationRiskCode
           const result = premiumRates;
-          this.sectionPremium = result
+          // this.sectionPremium = result
+
+          const sectionPremiums = result
+            .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+            .map(premium => {
+              if (premium.isMandatory === 'Y') {
+                return {
+                  ...premium,
+                  limitAmount: this.sumInsured
+                };
+              }
+              return premium;
+            });
+
+          this.sectionPremium = sectionPremiums;
           // log.debug("Risk Clauses List:", this.riskClausesList);
           log.debug("RESPONSE AFTER getting premium rates ", this.sectionPremium);
           const defaultSection = this.sectionPremium.filter(section => section.isMandatory == 'Y')
@@ -1907,7 +1957,75 @@ export class RiskDetailsComponent {
   }
 
 
+  // handleRowClick(data: any) {
+  //   if (!data?.code) {
+  //     log.debug('Invalid data for row click:', data);
+  //     return;
+  //   }
+
+  //   log.debug('Row clicked with data:', data);
+  //   this.selectedRisk = data;
+
+  //   this.sumInsured = this.selectedRisk.value;
+  //   // this.onRiskEdit(this.selectedRisk)
+  //   const selectedRiskCode = this.selectedRisk?.code
+  //   this.quotationRiskCode = selectedRiskCode
+
+  //   log.debug("Quotation risk code:", this.quotationRiskCode)
+  //   const productDetails = this.quotationDetails.quotationProducts.find(
+  //     product => product.productCode === this.selectedProductCode
+  //   )
+  //   const riskSelectedData = productDetails.riskInformation.find(risk => risk.code === selectedRiskCode)
+  //   this.scheduleList = riskSelectedData.scheduleDetails ? [riskSelectedData.scheduleDetails] : [];
+  //   log.debug("SCHEDULE DETAILS AFTER ROW CLICK:", this.scheduleList)
+
+  //   this.sectionDetails = this.selectedRisk.riskLimits
+  //   log.debug("section DETAILS AFTER ROW CLICK:", this.sectionDetails)
+
+  //   const subclassCode = riskSelectedData.subclassCode;
+  //   const binderCode = riskSelectedData.binderCode;
+  //   const covertypeCode = riskSelectedData.coverTypeCode;
+
+  //   this.premiumRateService.getCoverTypePremiums(subclassCode, binderCode, covertypeCode)
+  //     .subscribe(
+  //       (response) => {
+  //         console.log('Premium rates:', response);
+
+  //         const sectionPremiumList = response;
+
+  //         log.debug("SECTION PREMIUMS-unfiltered:", sectionPremiumList);
+
+  //         const sectionPremiums = sectionPremiumList
+  //           .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+  //           .map(premium => {
+  //             // Check condition for SumInsured — adjust this condition to your actual use case
+  //             if (premium.isMandatory === 'Y') {
+  //               return {
+  //                 ...premium,
+  //                 limitAmount: this.sumInsured  // Patch with sum insured
+  //               };
+  //             }
+  //             return premium;
+  //           });
+
+  //         this.sectionPremium = sectionPremiums;
+  //         log.debug("SECTION PREMIUMS-filtered & patched:", this.sectionPremium);
+  //       },
+  //       (error) => {
+  //         log.error('Error fetching premium rates:', error);
+  //       }
+  //     );
+
+  //   this.selectedSubclassCode = riskSelectedData.subclassCode;
+  //   this.selectedRiskCode = riskSelectedData.code;
+  //   log.debug("firstRiskCode", this.selectedRiskCode);
+  //   sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
+  //   // this.loadSubclassClauses(this.selectedRisk.subclassCode);
+
+  // }
+
   handleRowClick(data: any) {
+    this.loadPersistedRiskClauses();
     if (!data?.code) {
       log.debug('Invalid data for row click:', data);
       return;
@@ -1915,67 +2033,138 @@ export class RiskDetailsComponent {
 
     log.debug('Row clicked with data:', data);
     this.selectedRisk = data;
-
     this.sumInsured = this.selectedRisk.value;
-    // this.onRiskEdit(this.selectedRisk)
-    const selectedRiskCode = this.selectedRisk?.code
-    this.quotationRiskCode = selectedRiskCode
+    const selectedRiskCode = this.selectedRisk?.code;
+    this.quotationRiskCode = selectedRiskCode;
+    log.debug("Quotation risk code:", this.quotationRiskCode);
 
-    log.debug("Quotation risk code:", this.quotationRiskCode)
     const productDetails = this.quotationDetails.quotationProducts.find(
       product => product.productCode === this.selectedProductCode
-    )
-    const riskSelectedData = productDetails.riskInformation.find(risk => risk.code === selectedRiskCode)
+    );
+    const riskSelectedData = productDetails.riskInformation.find(risk => risk.code === selectedRiskCode);
     this.scheduleList = riskSelectedData.scheduleDetails ? [riskSelectedData.scheduleDetails] : [];
-    log.debug("SCHEDULE DETAILS AFTER ROW CLICK:", this.scheduleList)
+    log.debug("SCHEDULE DETAILS AFTER ROW CLICK:", this.scheduleList);
 
-    this.sectionDetails = this.selectedRisk.riskLimits
-    log.debug("section DETAILS AFTER ROW CLICK:", this.sectionDetails)
-    if (this.sectionDetails.length > 0) {
-      // this.setColumnsFromRiskLimit(this.sectionDetails[0]);
-    }
+    this.sectionDetails = this.selectedRisk.riskLimits;
+    log.debug("section DETAILS AFTER ROW CLICK:", this.sectionDetails);
+
     const subclassCode = riskSelectedData.subclassCode;
     const binderCode = riskSelectedData.binderCode;
     const covertypeCode = riskSelectedData.coverTypeCode;
 
-    this.premiumRateService.getCoverTypePremiums(subclassCode, binderCode, covertypeCode)
-      .subscribe(
-        (response) => {
-          console.log('Premium rates:', response);
+    this.selectedSubclassObject = this.allMatchingSubclasses?.find(subclass => subclass.code == subclassCode)
+    const screenCode = this.selectedSubclassObject.underwritingScreenCode
+    // Parallel calls
+    forkJoin({
+      premiumRates: this.premiumRateService.getCoverTypePremiums(subclassCode, binderCode, covertypeCode),
+      scheduleLevels: this.quotationService.getScheduleLevels(screenCode),
+    }).subscribe({
+      next: ({ premiumRates, scheduleLevels }) => {
+        console.log('Premium rates:', premiumRates);
+        console.log('Schedule levels:', scheduleLevels);
 
-          const sectionPremiumList = response;
+        const sectionPremiums = premiumRates
+          .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+          .map(premium => {
+            if (premium.isMandatory === 'Y') {
+              return {
+                ...premium,
+                limitAmount: this.sumInsured
+              };
+            }
+            return premium;
+          });
 
-          log.debug("SECTION PREMIUMS-unfiltered:", sectionPremiumList);
+        this.sectionPremium = sectionPremiums;
+        log.debug("SECTION PREMIUMS-filtered & patched:", this.sectionPremium);
 
-          const sectionPremiums = sectionPremiumList
-            .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
-            .map(premium => {
-              // Check condition for SumInsured — adjust this condition to your actual use case
-              if (premium.isMandatory === 'Y') {
-                return {
-                  ...premium,
-                  limitAmount: this.sumInsured  // Patch with sum insured
-                };
-              }
-              return premium;
-            });
+        // SCHEDULES RESPONSE
+        this.scheduleLevels = scheduleLevels?._embedded || [];
+        const sortedLevels = this.scheduleLevels.sort((a, b) => a.levelNumber - b.levelNumber);
+        // Set the tab labels
+        this.scheduleTabs = sortedLevels
+          .sort((a, b) => a.levelNumber - b.levelNumber)
+          .map(level => ({
+            levelNumber: level.levelNumber,
+            levelName: level.levelName,
+          }));
+        log.debug("Schedule Tabs:", this.scheduleTabs)
+        // Set the first tab as the active one by default
+        this.activeTab = this.scheduleTabs[0];        // Map to hold table columns per level
+        this.levelTableColumnsMap = {};
+        this.levelDataMap = {};
+        // Go through each level and extract relevant fields
+        // Define preferred columns for Level 1
+        const level1PreferredColumns = [
+          { field: 'registrationNumber', header: 'Registration Number' },
+          { field: 'make', header: 'Make' },
+          { field: 'cubicCapacity', header: 'Cubic Capacity' },
+          { field: 'yearOfManufacture', header: 'Year Of Manufacture' },
+          { field: 'carryCapacity', header: 'Seating Capacity' },
+          { field: 'value', header: 'Value' },
+          { field: 'bodyType', header: 'Body Type' },
+          { field: 'coverType', header: 'Cover Type' }
+        ];
 
-          this.sectionPremium = sectionPremiums;
-          log.debug("SECTION PREMIUMS-filtered & patched:", this.sectionPremium);
-        },
-        (error) => {
-          log.error('Error fetching premium rates:', error);
-        }
-      );
+        // Go through each level and extract relevant fields
+        sortedLevels.forEach(level => {
+          const levelName = level.levelName;
+          const levelNumber = level.levelNumber;
+          const levelKey = `level${levelNumber}`; // e.g., level2
+
+          // 1. Determine if motor class is allowed
+          const isMotorClassAllowed = this.motorClassAllowed === 'Y';
+
+          // 2. Define columns
+          let columns;
+
+          if (levelNumber === 1 && isMotorClassAllowed) {
+            // Use preferred columns for level 1 if motorClassAllowed
+            columns = level1PreferredColumns;
+          } else {
+            // Dynamically generate columns from subclass form fields
+            columns = this.dynamicSubclassFormFields
+              .filter(field => Number(field.scheduleLevel) === levelNumber)
+              .map(field => ({
+                field: field.name,
+                header: field.label
+              }));
+
+            // Add "Actions" column for levels 2 and above
+            if (levelNumber >= 2) {
+              columns.push({
+                field: 'actions',
+                header: 'Actions',
+                isAction: true, // helps in template logic
+              });
+            }
+          }
+
+          this.levelTableColumnsMap[levelName] = columns;
+          log.debug('LEVEL TABLE COLUMN:', this.levelTableColumnsMap);
+
+          // 3. Map level-specific data and attach original schedule
+          const levelData = (this.scheduleList || [])
+            .filter(schedule => !!schedule.details?.[levelKey])
+            .map(schedule => ({
+              ...schedule.details[levelKey],
+              __originalSchedule: schedule
+            }));
+
+          this.levelDataMap[levelName] = levelData;
+          log.debug('LEVEL COLUMN DATA:', this.levelDataMap);
+        });
+      },
+      error: (err) => {
+        log.error("Error fetching data in forkJoin:", err);
+      }
+    });
 
     this.selectedSubclassCode = riskSelectedData.subclassCode;
     this.selectedRiskCode = riskSelectedData.code;
     log.debug("firstRiskCode", this.selectedRiskCode);
     sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
-    // this.loadSubclassClauses(this.selectedRisk.subclassCode);
-
   }
-
 
   toggleSections(iconElement: HTMLElement): void {
     this.showSections = !this.showSections;
@@ -2120,6 +2309,9 @@ export class RiskDetailsComponent {
     if (this.sectionTable) {
       this.sectionTable.filterGlobal(filterValue, 'contains');
     }
+    if (this.limitTable) {
+      this.limitTable.filterGlobal(filterValue, 'contains');
+    }
   }
 
   /**
@@ -2202,6 +2394,7 @@ export class RiskDetailsComponent {
           productCode: this.selectedProductCode,
         },
         coverDays: this.selectedRisk.coverDays,
+        fp: 0
       };
       return [riskPayload]
     }
@@ -2297,7 +2490,7 @@ export class RiskDetailsComponent {
         this.globalMessagingService.displaySuccessMessage('Success', 'Sections Created');
 
         // Fetch updated risk sections after successful creation
-        // this.fetchRiskSections();
+        this.fetchQuotationDetails(this.quotationCode);
       },
       error: (error) => {
         log.error('Error creating risk limits:', error);
@@ -3056,6 +3249,8 @@ export class RiskDetailsComponent {
             if (index !== -1) {
               this.riskDetails.splice(index, 1);
             }
+            this.fetchQuotationDetails(this.selectedRisk.quotationCode)
+
             // Clear the selected risk
             this.selectedRisk = null;
 
@@ -3220,6 +3415,96 @@ export class RiskDetailsComponent {
           this.scheduleData = createdSchedule;
           this.scheduleList = this.scheduleData._embedded;
           log.debug("Schedule List:", this.scheduleList);
+
+          this.selectedSubclassObject = this.allMatchingSubclasses?.find(subclass => subclass.code == this.selectedSubclassCode)
+          const screenCode = this.selectedSubclassObject.underwritingScreenCode
+          this.quotationService.getScheduleLevels(screenCode).subscribe({
+            next: (scheduleLevels) => {
+              this.scheduleLevels = scheduleLevels?._embedded || [];
+              const sortedLevels = this.scheduleLevels.sort((a, b) => a.levelNumber - b.levelNumber);
+              // Set the tab labels
+              this.scheduleTabs = sortedLevels
+                .sort((a, b) => a.levelNumber - b.levelNumber)
+                .map(level => ({
+                  levelNumber: level.levelNumber,
+                  levelName: level.levelName,
+                }));
+              log.debug("Schedule Tabs:", this.scheduleTabs)
+              // Set the first tab as the active one by default
+              this.activeTab = this.scheduleTabs[0];
+              this.levelTableColumnsMap = {};
+              this.levelDataMap = {};
+              // Define preferred columns for Level 1
+              const level1PreferredColumns = [
+                { field: 'registrationNumber', header: 'Registration Number' },
+                { field: 'make', header: 'Make' },
+                { field: 'cubicCapacity', header: 'Cubic Capacity' },
+                { field: 'yearOfManufacture', header: 'Year Of Manufacture' },
+                { field: 'carryCapacity', header: 'Seating Capacity' },
+                { field: 'value', header: 'Value' },
+                { field: 'bodyType', header: 'Body Type' },
+                { field: 'coverType', header: 'Cover Type' }
+              ];
+
+              // Go through each level and extract relevant fields
+              sortedLevels.forEach(level => {
+                const levelName = level.levelName;
+                const levelNumber = level.levelNumber;
+                const levelKey = `level${levelNumber}`; // e.g., level2
+
+                // 1. Determine if motor class is allowed
+                const isMotorClassAllowed = this.motorClassAllowed === 'Y';
+
+                // 2. Define columns
+                let columns;
+
+                if (levelNumber === 1 && isMotorClassAllowed) {
+                  // Use preferred columns for level 1 if motorClassAllowed
+                  columns = level1PreferredColumns;
+                } else {
+                  // Dynamically generate columns from subclass form fields
+                  columns = this.dynamicSubclassFormFields
+                    .filter(field => Number(field.scheduleLevel) === levelNumber)
+                    .map(field => ({
+                      field: field.name,
+                      header: field.label
+                    }));
+
+                  // Add "Actions" column for levels 2 and above
+                  if (levelNumber >= 2) {
+                    columns.push({
+                      field: 'actions',
+                      header: 'Actions',
+                      isAction: true, // helps in template logic
+                    });
+                  }
+                }
+
+                this.levelTableColumnsMap[levelName] = columns;
+                log.debug('LEVEL TABLE COLUMN:', this.levelTableColumnsMap);
+
+                // 3. Map level-specific data and attach original schedule
+                const levelData = (this.scheduleList || [])
+                  .filter(schedule => !!schedule.details?.[levelKey])
+                  .map(schedule => ({
+                    ...schedule.details[levelKey],
+                    __originalSchedule: schedule
+                  }));
+
+                this.levelDataMap[levelName] = levelData;
+                log.debug('LEVEL COLUMN DATA:', this.levelDataMap);
+              });
+
+            },
+            error: (error: HttpErrorResponse) => {
+              log.debug("Error log", error.error.message);
+
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                error.error.message
+              );
+            },
+          })
           this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created successfully');
         },
         error: (error: HttpErrorResponse) => {
@@ -3309,6 +3594,273 @@ export class RiskDetailsComponent {
     }
 
   }
+  //
+  getButtonLabel(levelNumber: number): string {
+    return levelNumber === 2 ? 'Motor Details' : 'Other Details';
+  }
+  setRiskTab(tab: string): void {
+    this.riskActiveTab = tab;
+  }
 
+  //limits of liability
+  loadLimitsOfLiability(): void {
+    const subclassCode = this.selectedSubclassCode;
+    if (!subclassCode) return;
+
+    const sessionKey = `availableLimitsOfLiability_${subclassCode}`;
+    const savedAvailable = sessionStorage.getItem(sessionKey);
+
+    // Restore added limits map (from session) for all subclasses
+    const savedLimits = sessionStorage.getItem('limitsOfLiability');
+    if (savedLimits) {
+      this.allLimitsMap = JSON.parse(savedLimits);
+      const allPersisted = Object.values(this.allLimitsMap).flat();
+      this.addedLimitsOfLiability = [...allPersisted];
+      // log.debug("Restored added limits from session:", this.addedLimitsOfLiability);
+    } else {
+      this.allLimitsMap = {};
+    }
+
+    // Load available limits from session or fetch
+    if (savedAvailable) {
+      this.limitsOfLiability = JSON.parse(savedAvailable);
+      // log.debug(`Loaded limits for subclass ${subclassCode} from session:`, this.limitsOfLiability);
+    } else {
+      this.quotationService.getLimitsOfLiability(subclassCode, 'L').subscribe({
+        next: (data) => {
+          this.limitsOfLiability = data?._embedded || [];
+          sessionStorage.setItem(sessionKey, JSON.stringify(this.limitsOfLiability));
+          // log.debug(`Fetched limits for subclass ${subclassCode} from API:`, this.limitsOfLiability);
+        },
+        error: (err) => {
+          log.error(`Failed to fetch limits for subclass ${subclassCode}:`, err);
+          this.globalMessagingService.displayErrorMessage('Error', 'Could not load limits of liability');
+        }
+      });
+    }
+  }
+
+  openLimitModal(): void {
+    if (!this.selectedSubclassCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'No subclass selected');
+      return;
+    }
+
+    log.debug("Opening limits modal for subclass:", this.selectedSubclassCode);
+
+    this.showLimitModal = true;
+
+    const modalElement = document.getElementById('addLimit');
+    if (modalElement) {
+      const modal = new (window as any).bootstrap.Modal(modalElement);
+      modal.show();
+    }
+
+    this.loadLimitsOfLiability();
+  }
+
+
+  // add limits of liability
+  addRiskLimit(): void {
+    if (!this.selectedRiskLimits?.length) return;
+
+    const newQpCode = this.quoteProductCode;
+    const subclassCode = this.selectedRisk?.subclassCode;
+    if (!subclassCode) {
+      console.error('Subclass code is missing');
+      return;
+    }
+
+    const limitsPayload: CreateLimitsOfLiability[] = this.selectedRiskLimits.map(limit => ({
+      scheduleValueCode: limit.quotationValueCode,
+      value: this.cleanCurrencyValue(limit.value),
+      narration: limit.narration,
+      type: 'L'
+    }));
+
+    this.quotationService.addLimitsOfLiability(newQpCode, limitsPayload).subscribe({
+      next: () => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Limits of liability added successfully');
+
+        const updatedLimits = this.selectedRiskLimits.map(limit => ({
+          ...limit,
+          value: this.cleanCurrencyValue(limit.value),
+          isModified: false,
+          qpCode: newQpCode
+        }));
+
+        // Append unique new limits
+        const existingCodes = new Set(this.addedLimitsOfLiability.map(l => l.code));
+        const newUniqueLimits = updatedLimits.filter(l => !existingCodes.has(l.code));
+
+        this.addedLimitsOfLiability = [...this.addedLimitsOfLiability, ...newUniqueLimits];
+
+        // Persist updated added limits map by subclass
+        if (!this.allLimitsMap[subclassCode]) {
+          this.allLimitsMap[subclassCode] = [];
+        }
+        this.allLimitsMap[subclassCode] = [...this.allLimitsMap[subclassCode], ...newUniqueLimits];
+        sessionStorage.setItem('limitsOfLiability', JSON.stringify(this.allLimitsMap));
+
+        // Remove added from available
+        const addedCodes = new Set(this.selectedRiskLimits.map(l => l.code));
+        this.limitsOfLiability = this.limitsOfLiability.filter(l => !addedCodes.has(l.code));
+        const sessionKey = `availableLimitsOfLiability_${subclassCode}`;
+        sessionStorage.setItem(sessionKey, JSON.stringify(this.limitsOfLiability));
+
+        this.selectedRiskLimits = [];
+      },
+      error: (err) => {
+        console.error('Error adding limits of liability', err);
+      }
+    });
+  }
+
+  cleanCurrencyValue(value: string): string {
+    return value.replace(/[^\d.]/g, '');
+  }
+
+
+
+  onAddOtherSchedule(tab: any): void {
+    this.activeModalTab = tab;
+    this.activeFormFields = this.dynamicSubclassFormFields.filter(
+      field => Number(field.scheduleLevel) === tab.levelNumber
+    );
+
+    // Build reactive form
+    const group: { [key: string]: any } = {};
+    this.activeFormFields.forEach(field => {
+      group[field.name] = new FormControl('', field.isMandatory === 'Y' ? Validators.required : null);
+    });
+
+    this.scheduleOtherDetailsForm = this.fb.group(group);
+
+    // Show Bootstrap modal
+    setTimeout(() => {
+      const modalElement = document.getElementById('addOtherDetailsModal');
+      if (modalElement) {
+        const bsModal = new bootstrap.Modal(modalElement);
+        bsModal.show();
+      }
+    });
+  }
+  computePremium() {
+    const premiumComputationPayload = this.generatePremiumComputationPayload(this.quotationDetails)
+    log.debug("Premium comp payload:", premiumComputationPayload)
+    this.quotationService.computePremium(premiumComputationPayload).subscribe({
+      next: (response) => {
+        log.debug("REspone after computing premium:", response)
+      }
+    })
+  }
+  generatePremiumComputationPayload(quotationData: QuotationDetails): any {
+    return {
+      entityUniqueCode: 0,
+      interfaceType: "QUOTATION",
+      frequencyOfPayment: quotationData.frequencyOfPayment || "A",
+      transactionStatus: "NB",
+      quotationStatus: "Draft",
+      products: quotationData.quotationProducts?.map(product => ({
+        code: product.productCode,
+        expiryPeriod: "Y",
+        description: product.productName,
+        withEffectFrom: product.wef,
+        withEffectTo: product.wet,
+        risks: product.riskInformation?.map(risk => ({
+          code: risk.code.toString(),
+          propertyId: risk.propertyId,
+          binderDto: {
+            code: risk.binderCode || 0,
+            maxExposure: 0,
+            currencyCode: quotationData.currencyCode,
+            currencyRate: quotationData.currencyRate || 1
+          },
+          baseCurrencyCode: quotationData.currencyCode,
+          prorata: null,
+          itemDescription: risk.itemDesc,
+          emlBasedOn: null,
+          noClaimDiscountLevel: risk.ncdLevel || 0,
+          subclassCoverTypeDto: [{
+            subclassCode: risk.subclassCode,
+            description: risk.subclass?.description || '',
+            coverTypeCode: risk.coverTypeCode,
+            minimumPremium: risk.riskLimits[0]?.minimumPremium || 0,
+            coverTypeShortDescription: risk.coverTypeShortDescription,
+            coverTypeDescription: risk.coverTypeDescription,
+            limits: risk.riskLimits?.map(limit => ({
+              description: limit.sectionShortDescription,
+              code: limit.code,
+              riskCode: risk.code,
+              calculationGroup: limit.calcGroup,
+              rowNumber: limit.rowNumber,
+              rateDivisionFactor: limit.rateDivisionFactor,
+              premiumRate: limit.premiumRate,
+              rateType: limit.rateType,
+              sectionType: limit.sectionType,
+              limitAmount: risk.value,
+              freeLimit: limit.freeLimit,
+              compute: limit.compute,
+              section: {
+                code: limit.sectionCode,
+                description: limit.sectionShortDescription,
+                limitAmount: risk.value,
+                isMandatory: null
+              },
+              multiplierRate: limit.multiplierRate,
+              multiplierDivisionFactor: limit.multiplierDivisionFactor,
+              dualBasis: limit.dualBasis,
+              shortDescription: limit.sectionShortDescription
+            })) || [],
+            limitPremium: risk.riskLimits?.map(limit => ({
+              sectCode: limit.sectionCode,
+              premium: limit.premiumAmount || 0,
+              description: limit.sectionShortDescription,
+              limitAmount: risk.value,
+              isMandatory: null,
+              calculationGroup: limit.calcGroup,
+              compute: limit.compute,
+              dualBasis: limit.dualBasis,
+              rateDivisionFactor: limit.rateDivisionFactor,
+              rateType: limit.rateType,
+              rowNumber: limit.rowNumber,
+              premiumRate: limit.premiumRate,
+              freeLimit: limit.freeLimit,
+              sectionType: limit.sectionType,
+              multiplierRate: limit.multiplierRate,
+              shortDescription: limit.sectionShortDescription
+            })) || []
+          }],
+          enforceCovertypeMinimumPremium: "Y",
+          commissionRate: risk.commissionRate || 0,
+          sumInsured: risk.value,
+          useOfProperty: risk.subclass.description, // Default value
+          taxes: product.taxInformation?.map(tax => ({
+            taxRateType: tax.rateType,
+            applicationLevel: null,
+            code: tax.code || 0,
+            divisionFactor: 0,
+            taxRate: tax.rate || 0,
+            rangeTo: 0,
+            rangeFrom: 0,
+            rateDescription: tax.rateDescription || "",
+            taxCode: tax.code || "",
+            minPremium: 0,
+            sumInsured: 0,
+            premium: 0,
+            quotationProductCode: 0
+          })) || [],
+          subclassSection: { code: risk.subclassCode },
+          age: 0 // Hardcoded as requested
+        })) || []
+      })) || [],
+      currency: { rate: quotationData.currencyRate || 1 },
+      dateWithEffectTo: quotationData.coverTo,
+      dateWithEffectFrom: quotationData.coverFrom,
+      underwritingYear: new Date().getFullYear(),
+      coinsuranceLeader: "N",
+      coinsurancePercentage: 0
+    };
+  }
 
 }

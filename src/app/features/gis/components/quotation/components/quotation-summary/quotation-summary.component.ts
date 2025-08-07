@@ -25,6 +25,8 @@ import {
   ProductClauses,
   QuotationDetails,
   QuotationProduct,
+  ScheduleDetails,
+  scheduleDetails,
   SubclassSectionPeril,
   TaxInformation,
   TaxPayload
@@ -59,8 +61,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('reassignQuotationModal') reassignQuotationModalElement!: ElementRef;
   @ViewChild('rejectQuotationModal') rejectQuotationModalElement!: ElementRef;
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
-   @ViewChild('productClauseTable') productClauseTable: any;
-    @ViewChild('riskClausesTable') riskClausesTable: any;
+  @ViewChild('productClauseTable') productClauseTable: any;
+  @ViewChild('riskClausesTable') riskClausesTable: any;
+  @ViewChild('selectTaxTable') selectTaxTable: any;
   private modals: { [key: string]: bootstrap.Modal } = {};
 
   steps = quoteStepsData;
@@ -168,7 +171,23 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   noComment: boolean = false;
   afterRejectQuote: boolean = false;
   productClauses: ProductClauses[] = [];
-  activeRiskTab: string = 'motor';
+  activeRiskTab: string = '';
+  products: any[] = [];
+  activeScheduleTab: string = '';
+  scheduleLevels: string[] = [];
+  schedulesData: { [key: string]: any[] } = {};
+  availableScheduleLevels: string[] = [];
+  exceptionsCollapsed: boolean = false;
+  exceptionsData: any;
+  error: string | null = null;
+  exceptionErrorMessage: string | null = null;
+
+
+  
+
+
+
+
 
 
   constructor(
@@ -206,7 +225,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   public showExternalClaims = false;
   private ngUnsubscribe = new Subject();
   public cdr: ChangeDetectorRef;
- 
+
 
 
 
@@ -278,6 +297,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // this.createSmsForm();
     // this.getDocumentTypes();
     this.createTaxForm();
+    this.hasUnderwriterRights();
+  
 
 
     this.menuItems = [
@@ -370,6 +391,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         log.debug('QuotationView', this.quotationView)
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
+        this.user = this.quotationView.preparedBy;
+        log.debug('this user',this.user)
+        this.getExceptions(this.quotationView.code, this.user);
         if (!this.moreDetails) {
           this.quotationDetails = this.quotationView;
           log.debug("MORE DETAILS TEST quotationView", this.quotationDetails)
@@ -399,9 +423,19 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.quotationProducts = this.quotationView.quotationProducts;
         this.riskDetails = this.quotationView.quotationProducts[0]?.riskInformation;
         log.debug("Risk Details quotation-summary", this.riskDetails);
+        log.debug('quoationProducts', this.quotationProducts)
+
+
+        this.products = this.quotationView.quotationProducts;
+
+        if (this.products.length > 0) {
+          this.activeRiskTab = this.products[0].code;
+        }
+
 
 
         this.productDetails = this.quotationView.quotationProducts
+        log.debug('product details', this.productDetails)
 
         // this.getbranch();
         // this.getPremiumComputationDetails();
@@ -440,46 +474,20 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.handleProductClick(this.quotationView.quotationProducts[0])
       });
 
-  }
 
+  }
   get filteredRiskDetails() {
-    return this.riskDetails.filter(risk => {
-      const type = risk?.subclass?.description?.toUpperCase();
-      if (this.activeRiskTab === 'domestic') {
-        return type === 'DOMESTIC';
-      }
-      if (this.activeRiskTab === 'motor') {
-        return type === 'PRIVATE MOTOR';
-      }
-      return true;
-    });
-  }
-  filterId(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.productClauseTable.filter(input.value, 'clauseShortDescription', 'contains');
+    const currentProduct = this.products.find(p => p.code === this.activeRiskTab);
+    return currentProduct?.riskInformation || [];
   }
 
-  filterHeading(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.productClauseTable.filter(input.value, 'clauseHeading', 'contains');
-  }
-  filterWording(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.productClauseTable.filter(input.value, 'clause', 'contains');
-  }
-   filterIdRiskclause(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.riskClausesTable.filter(input.value, 'clauseCode', 'contains');
+
+
+  filterTable(event: Event, field: string, tableRef: any) {
+    const input = (event.target as HTMLInputElement).value;
+    tableRef.filter(input, field, 'contains');
   }
 
-  filterHeadingRiskclause(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.riskClausesTable.filter(input.value, 'shortDescription', 'contains');
-  }
-  filterWordingRiskclause(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.riskClausesTable.filter(input.value, 'clause', 'contains');
-  }
 
   getAgent() {
     this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(
@@ -497,20 +505,30 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     )
   }
 
-  getSections(data: any) {
+getSections(data: any) {
+  this.riskDetails.forEach((el: { code: any; sectionsDetails: any; scheduleDetails:ScheduleDetails }) => {
+    if (data === el.code) {
+      this.sections = el.sectionsDetails;
 
-    this.riskDetails.forEach((el: { code: any; sectionsDetails: any; scheduleDetails: { level1: any; }; }) => {
+      const details = el.scheduleDetails?.details || {};
+      this.availableScheduleLevels = Object.keys(details); // e.g., ['level1', 'level2']
 
-      if (data === el.code) {
-        this.sections = el.sectionsDetails
-        this.schedules = [el.scheduleDetails?.level1]
-      }
+      this.schedulesData = {};
+      this.availableScheduleLevels.forEach(level => {
+        const levelData = details[level];
+        this.schedulesData[level] = levelData ? [levelData] : [];
+      });
 
-    })
-    log.debug(this.schedules, "schedules Details")
-    log.debug(this.sections, "section Details")
+      this.activeScheduleTab = this.availableScheduleLevels[0] || '';
+    }
+  });
 
-  }
+  log.debug(this.schedulesData, 'schedulesData by level');
+  log.debug(this.sections, 'section Details');
+}
+  getCurrentSchedule() {
+  return this.schedulesData[this.activeScheduleTab] || [];
+}
 
   /**
    * Navigates to the edit details page.
@@ -1219,6 +1237,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.getSections(data.code);
     this.getExcesses(subclassCode);
     this.getRiskClauses(data.code);
+    
   }
 
   handleProductClick(data: QuotationProduct) {
@@ -1253,6 +1272,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.productClauses = data.productClauses
     this.getProductSubclass(proCode);
     this.fetchSimilarQuotes(quotationProductCode);
+    log.debug('productClauses', this.productClauses)
   }
 
   loadAllSubclass() {
@@ -2154,6 +2174,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   rejectQuotation(code: number) {
+    if (!code) {
+      this.globalMessagingService.displayErrorMessage('error', 'Create quoatation first');
+      this.closeRejectQuotationModal();
+      return;
+    }
     const reasonCancelled = this.rejectComment;
     const status = 'Rejected';
     if (!reasonCancelled) {
@@ -2194,6 +2219,110 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.router.navigate(['/home/gis/quotation/quotation-management']).then(r => {
     });
   }
+
+  navigateToRiskCenter() {
+    this.router.navigate(['/home/gis/quotation/risk-center']).then(r => {
+    });
+
+  }
+selectAll = false;
+
+  exceptions = [
+    {
+      id: '001',
+      description: 'Inadequate cover',
+      remark: 'NCD not applied',
+      authorized: 'No',
+      setStandard: 20,
+      usedStandard: 30,
+      authorizedBy: null,
+      authorizedDate: null,
+      selected: false
+    },
+    {
+      id: '002',
+      description: 'Inadequate cover',
+      remark: 'NCD not applied',
+      authorized: 'No',
+      setStandard: 20,
+      usedStandard: 30,
+      authorizedBy: null,
+      authorizedDate: null,
+      selected: false
+    }
+  ];
+
+  remarkOptions = [
+    { label: 'NCD not applied', value: 'NCD not applied' },
+    { label: 'Incorrect class', value: 'Incorrect class' },
+    { label: 'Low premium', value: 'Low premium' }
+  ];
+
+  toggleAll() {
+    this.exceptions.forEach(e => (e.selected = this.selectAll));
+  }
+  logCheckbox(row: any) {
+  console.log('Selected row:', row);
+}
+
+
+getExceptions(quotationCode:number,username:string){
+
+  this.quotationService.getExceptions(quotationCode,username).subscribe({
+    next:(res)=>{
+      log.debug('exception Response:', res);
+        this.exceptionsData = res;
+    },
+    error:(error)=>{
+      log.error('Error fetching exceptions:', error);
+        this.error = 'Something went wrong while fetching exceptions.';
+    }
+  })
+
+}
+authorizeSelectedExceptions(): void {
+  const selected = this.exceptions?.filter(ex => ex.selected);
+
+  if (!selected || selected.length === 0) {
+  
+    this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
+    return;
+  }
+
+
+  // Proceed with authorization logic
+  if (this.hasUnderwriterRights()) {
+    log.debug('Authorizing as underwriter:', selected);
+    // this.quotationService.authorizeExceptions(selected).subscribe({
+    //   next: (res) => {
+    //     this.globalMessagingService.displaySuccessMessage('Success', 'Exceptions authorized successfully');
+    //     this.getExceptions(); // Or reload your data
+    //   },
+    //   error: (err) => {
+    //     this.globalMessagingService.displayErrorMessage('Authorization Error', 'Could not authorize exceptions');
+    //     console.error(err);
+    //   }
+    // });
+  } else {
+    // 🔁 If no rights, prompt for reassignment
+    // this.openReassignModal();
+  }
+}
+
+
+
+hasUnderwriterRights(): boolean {
+  const rolesString = sessionStorage.getItem('account_roles');
+log.debug('Raw roles string from sessionStorage:', rolesString);
+
+  const roles = JSON.parse(rolesString || '[]');
+  log.debug('Parsed roles array:', roles);
+
+  const hasRights = roles.includes('underwriter');
+  log.debug('Has underwriter rights:', hasRights);
+
+  return hasRights;
+}
 
 
 

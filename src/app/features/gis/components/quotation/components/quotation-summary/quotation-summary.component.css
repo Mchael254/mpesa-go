@@ -6,6 +6,7 @@
   line-height: 18px;
   border-right: 0px;
 }
+
 .card-title {
   color: #000;
   font-size: 16px;
@@ -13,6 +14,7 @@
   font-weight: 700;
   line-height: 18px;
 }
+
 /* card-title-collapsed{
   color: red;
   font-size: 16px;
@@ -27,20 +29,24 @@
   font-weight: 700;
   line-height: 18px;
 }
+
 #icon {
   background-color: #e4e7eb;
   border-radius: 100px;
   border: none;
 }
+
 #icon i {
   color: #00529b;
 }
+
 .label {
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
 }
+
 .content {
   color: #000;
   font-size: 14px;
@@ -50,6 +56,7 @@
   white-space: nowrap;
   overflow: visible;
 }
+
 /* .cancel {
   color: #00529b;
   font-size: 16px;
@@ -62,10 +69,12 @@
 li {
   cursor: pointer;
 }
+
 #report-checks {
   margin-right: 100px;
 }
-.nav-item > .active {
+
+.nav-item>.active {
   color: var(--primary-color);
 }
 
@@ -74,20 +83,25 @@ li {
   border-radius: 100px;
   border: none;
 }
+
 #icon i {
   color: #00529b;
 }
+
 .fa-pencil {
   color: #00529b;
 }
+
 .fa-trash-can {
   color: #00529b;
 }
+
 #messageLabel {
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
 }
+
 .titleButton {
   border-radius: 4px;
   background: #e4e7eb;
@@ -113,15 +127,12 @@ li {
   line-height: 18px;
 }
 
-::ng-deep
-  .p-panelmenu
-  .p-panelmenu-header
-  .p-panelmenu-header-content
-  .p-panelmenu-header-action {
+::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content .p-panelmenu-header-action {
   color: #00529b;
   padding: 0.25rem;
   font-weight: 700;
 }
+
 .point {
   cursor: pointer;
 }
@@ -130,9 +141,11 @@ ul {
   list-style-type: none;
   cursor: pointer;
 }
+
 ul li a.active {
   color: #00529b;
 }
+
 .browse-link {
   color: #00529b;
   cursor: pointer;
@@ -169,7 +182,8 @@ ul li a.active {
 }
 
 :host ::ng-deep .modal-lg {
-  max-width: 800px; /* Increased from default 500px */
+  max-width: 800px;
+  /* Increased from default 500px */
   width: 90%;
 }
 
@@ -184,14 +198,17 @@ ul li a.active {
 
 :host ::ng-deep .p-dropdown-panel {
   /* Make dropdown panel width smaller */
-  max-width: 300px !important; /* Adjust this value as needed */
+  max-width: 300px !important;
+  /* Adjust this value as needed */
   width: auto !important;
 }
 
 :host ::ng-deep .p-dropdown-item {
   /* Make option text smaller */
-  font-size: 0.875rem !important; /* Adjust this value as needed */
-  padding: 0.5rem 0.75rem !important; /* Optionally adjust padding for better spacing */
+  font-size: 0.875rem !important;
+  /* Adjust this value as needed */
+  padding: 0.5rem 0.75rem !important;
+  /* Optionally adjust padding for better spacing */
 }
 
 :host ::ng-deep .p-dropdown-filter {
@@ -200,7 +217,8 @@ ul li a.active {
 }
 
 :host ::ng-deep .p-dropdown-panel .p-dropdown-items {
-  padding: 0.25rem 0 !important; /* Reduce padding around the options list */
+  padding: 0.25rem 0 !important;
+  /* Reduce padding around the options list */
 }
 
 /* If you also want to adjust the selected item text size in the dropdown */
@@ -220,8 +238,10 @@ ul li a.active {
 :host ::ng-deep .form-control,
 :host ::ng-deep .form-select,
 :host ::ng-deep .p-dropdown {
-  margin-left: -0.3rem; /* Pull inputs slightly to the left */
+  margin-left: -0.3rem;
+  /* Pull inputs slightly to the left */
 }
+
 .sub-title {
   color: rgba(0, 0, 0, 0.25);
   font-size: 15px;
@@ -289,11 +309,11 @@ li {
   margin-right: 100px;
 }
 
-.nav-item > .active {
+.nav-item>.active {
   color: #00529b;
 }
 
-.nav-item > .nav-link {
+.nav-item>.nav-link {
   font-size: 16px;
 }
 
@@ -351,11 +371,7 @@ li {
   line-height: 18px;
 }
 
-::ng-deep
-  .p-panelmenu
-  .p-panelmenu-header
-  .p-panelmenu-header-content
-  .p-panelmenu-header-action {
+::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content .p-panelmenu-header-action {
   color: #00529b;
   padding: 0.25rem;
   font-weight: 700;
@@ -418,7 +434,7 @@ ul li a.active {
   margin-left: -10px;
 }
 
-::ng-deep .p-datatable .p-datatable-thead > tr > th {
+::ng-deep .p-datatable .p-datatable-thead>tr>th {
   font-family: Roboto;
   font-size: 14px;
   font-style: normal;
@@ -432,7 +448,13 @@ ul li a.active {
   white-space: nowrap;
   width: auto;
   text-align: left;
-  
+
+}
+
+::ng-deep .p-datatable .p-datatable-tbody>tr.p-highlight {
+  background-color: #ddedfb !important;
+  color: inherit !important;
+  /* Optional: maintain text color */
 }
 
 /* .ui-datatable th, .ui-datatable td {
@@ -445,8 +467,10 @@ ul li a.active {
 }
 
 .scrollable-list {
-  max-height: 100px; /* Adjust the height as needed */
-  overflow-y: auto; /* Enables vertical scrolling */
+  max-height: 100px;
+  /* Adjust the height as needed */
+  overflow-y: auto;
+  /* Enables vertical scrolling */
   padding-left: 0px;
   list-style: none;
 }
@@ -454,7 +478,8 @@ ul li a.active {
 .scrollable-list li {
   cursor: pointer;
   padding: 4px;
-  border-bottom: 1px solid #ddd; /* Optional: Separates list items */
+  border-bottom: 1px solid #ddd;
+  /* Optional: Separates list items */
   font-size: 16px;
 }
 
@@ -473,14 +498,17 @@ ul li a.active {
 }
 
 .selected-row {
-  background-color: #e0e0e0 !important; /* Light grey */
+  background-color: #e0e0e0 !important;
+  /* Light grey */
 }
 
 tr:hover {
-  background-color: #e0e0e0 !important; /* Same as selected color */
+  background-color: #e0e0e0 !important;
+  /* Same as selected color */
   cursor: pointer;
 }
-.deleteMessage{
+
+.deleteMessage {
   color: #000;
   font-size: 16px;
   font-family: Roboto;
@@ -489,42 +517,54 @@ tr:hover {
   line-height: normal;
   text-align: center;
 }
+
 .disabled {
   pointer-events: none;
   opacity: 0.6;
 }
+
 .custom-btn-primary:hover,
 .custom-btn-primary:disabled {
-  background-color: #00529b !important; 
+  background-color: #00529b !important;
 
   color: white !important;
   border-color: #00529b !important;
 }
 
 .custom-btn-primary:disabled {
-  opacity:  0.6 !important;  /* Ensure it doesn't look faded */
-  pointer-events: none; /* Keeps it unclickable */
+  opacity: 0.6 !important;
+  /* Ensure it doesn't look faded */
+  pointer-events: none;
+  /* Keeps it unclickable */
 }
+
 .custom-outline-btn:hover {
-  background-color: #00529b !important; /* Primary color on hover */
+  background-color: #00529b !important;
+  /* Primary color on hover */
   color: white !important;
   border-color: #00529b !important;
 }
 
 /* Ensure disabled button still looks like an outline */
 .custom-outline-btn:disabled {
-  background-color: transparent !important; /* Keep it as an outline */
-  color: #00529b !important; /* Primary text color */
+  background-color: transparent !important;
+  /* Keep it as an outline */
+  color: #00529b !important;
+  /* Primary text color */
   border-color: #00529b !important;
-  opacity: 0.6 !important; /* Prevent fading */
-  pointer-events: none; /* Still unclickable */
+  opacity: 0.6 !important;
+  /* Prevent fading */
+  pointer-events: none;
+  /* Still unclickable */
 }
+
 .nav-link.sub-title {
   color: rgba(0, 0, 0, 0.7);
   background-color: transparent;
   font-weight: 700;
   font-size: 16px;
 }
+
 .btn-close {
   filter: brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(7451%) hue-rotate(357deg) brightness(102%) contrast(122%);
   background-color: transparent !important;
@@ -532,11 +572,13 @@ tr:hover {
   outline: none !important;
   box-shadow: none !important;
 }
+
 .btn-lightblue {
   background-color: #ffff;
   color: #00529B;
   border-color: #00529B;
 }
+
 ::ng-deep .p-datatable .p-datatable-thead>tr>th {
   /* padding: 0.3rem 1rem;  */
   /* padding: 0.1rem 0.1rem; */
@@ -550,18 +592,20 @@ tr:hover {
   /* 150% */
 }
 
-.card-title-p{
-  
+.card-title-p {
+
   font-family: Roboto;
   font-size: 16px;
   color: #000000;
   font-weight: 700;
 
 }
+
 .small-input {
   width: 80px;
   height: 30px;
 }
+
 .borderless-button {
   border: none;
   background: transparent;
@@ -570,13 +614,14 @@ tr:hover {
   font-size: 14px;
 }
 
-.modal-title{
-  margin-left:1.2rem;
+.modal-title {
+  margin-left: 1.2rem;
 }
 
 .no-border-header {
   border-bottom: none !important;
 }
+
 ::ng-deep .slim-dropdown .p-dropdown {
   height: 32px !important;
   font-size: 13px;
@@ -599,4 +644,8 @@ textarea {
   border-radius: 5px;
   font-size: 16px;
   resize: none;
+}
+
+.card-title {
+  color: #00529b;
 }

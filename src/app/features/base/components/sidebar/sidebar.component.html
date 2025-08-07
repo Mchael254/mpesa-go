@@ -17,11 +17,12 @@
     </li>
 
     <ng-container *ngFor="let item of sidebarMainMenuList; let i = index">
+      <!-- made a change here by adding isidebarMainMenuList argument in toggleMenuItem function -->
       <li>
         <button
           class="btn btn-toggle align-items-center rounded dropdown-toggle"
           [class.collapsed]="!isExpanded(item.nameSlug)"
-          (click)="toggleMenuItem(item)"
+          (click)="toggleMenuItem(item, sidebarMainMenuList)"
           [attr.aria-expanded]="isExpanded(item.nameSlug)"
         >
           <span class="menu-title">
@@ -55,11 +56,12 @@
                 </div>
 
                 <!-- Submenu for three-level depth -->
+                <!-- made a change here by adding item.menuItems argument  in toggleMenuItem function-->
                 <ng-container *ngIf="menuItem.subList?.length > 0">
                   <button
                     class="btn btn-toggle align-items-center rounded dropdown-toggle"
                     [class.collapsed]="!isExpanded(menuItem.nameSlug)"
-                    (click)="toggleMenuItem(menuItem)"
+                    (click)="toggleMenuItem(menuItem, item.menuItems)"
                     [attr.aria-expanded]="isExpanded(menuItem.nameSlug)"
                     style="font-size: 12px"
                   >

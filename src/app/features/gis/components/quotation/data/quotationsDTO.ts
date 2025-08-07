@@ -245,6 +245,7 @@ export interface RiskInformation {
   clauseCodes: number[];
   subclass: Subclass;
   coverDays: number;
+  fp: number;
   quotationCode?: number
   quotationProductCode?: number
   scheduleDetails?: scheduleDetails;
@@ -597,7 +598,6 @@ export interface Clause {
 export interface CreateLimitsOfLiability {
   code?: number;
   scheduleValueCode: number;
-  quotationProductCode: number;
   value: string;
   narration: string | null;
   type: string;
@@ -1236,17 +1236,32 @@ export class UsersDetailsDto {
 }
 
 export interface TaxPayload {
-code: number;
-rateDescription: string;
-rate: number;
-rateType: string;
-taxAmount: number;
-productCode: number;
-quotationCode: number;
-transactionCode: string;
-renewalEndorsement: string;
-taxRateCode: string;
-levelCode: string;
-taxType: string;
-riskProductLevel: string;
+  code: number;
+  rateDescription: string;
+  rate: number;
+  rateType: string;
+  taxAmount: number;
+  productCode: number;
+  quotationCode: number;
+  transactionCode: string;
+  renewalEndorsement: string;
+  taxRateCode: string;
+  levelCode: string;
+  taxType: string;
+  riskProductLevel: string;
 }
+export interface ScheduleLevels {
+  dslCode: number;
+  levelName: string;
+  tableName: string;
+  levelNumber: number;
+  tablePrefix: string;
+  tableForeignKeySequence: string;
+  tableLevelQuery: string | null;
+}
+export interface ScheduleTab {
+  levelNumber: number;
+  levelName: string;
+}
+
+
