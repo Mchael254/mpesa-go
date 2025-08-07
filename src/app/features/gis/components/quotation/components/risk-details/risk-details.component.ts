@@ -3255,6 +3255,8 @@ export class RiskDetailsComponent {
             if (index !== -1) {
               this.riskDetails.splice(index, 1);
             }
+            this.fetchQuotationDetails(this.selectedRisk.quotationCode)
+
             // Clear the selected risk
             this.selectedRisk = null;
 

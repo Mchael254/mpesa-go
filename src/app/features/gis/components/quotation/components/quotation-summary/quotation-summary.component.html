@@ -964,32 +964,7 @@
 
 
             </p-table>
-            <!-- Delete Risk Modal -->
-            <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog" aria-labelledby="deleteRisk"
-              aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content" id="deleteRisk">
-                  <div class="modal-body">
-                    <p class="deleteMessage mt-4 mb-4">
-                      {{
-                      "gis.policy.are_you_sure_you_want_to_delete" | translate
-                      }}
-                    </p>
-                    <div class="d-flex justify-content-center mb-3">
-                      <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
-                        (click)="deleteRisk()">
-                        {{ "gis.policy.yes_delete" | translate }}
-                      </button>
-                    </div>
-                    <div class="d-flex justify-content-center mb-2">
-                      <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">
-                        {{ "gis.policy.no_im_not" | translate }}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+
             <br />
             <ul class="nav nav-underline mt-2 mb-4">
               <li class="nav-item">
@@ -1026,10 +1001,11 @@
               <div class="tab-pane fade show active" id="nav-sections" role="tabpanel" aria-labelledby="nav-sections"
                 tabindex="0">
                 <p-table [value]="sections" [tableStyle]="{ 'min-width': '50rem' }" [paginator]="true" [rows]="2"
-                  [rowsPerPageOptions]="[2,4,6]" [scrollable]="true" responsiveLayout="scroll">
+                  [rowsPerPageOptions]="[2,4,6]" [scrollable]="true" responsiveLayout="scroll" class="ui-datatable">
                   <ng-template pTemplate="header">
                     <tr>
-                      <th pSortableColumn="row-num">Row number<p-sortIcon field="row-num"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="row-num">Row number<p-sortIcon
+                          field="row-num"></p-sortIcon></th>
                       <th class="flexible-header" pSortableColumn="group">Group<p-sortIcon field="group"></p-sortIcon>
                       </th>
                       <th class="flexible-header" pSortableColumn="code">Code<p-sortIcon field="code"></p-sortIcon></th>
@@ -1041,27 +1017,19 @@
                           field="premium-rate"></p-sortIcon></th>
                       <th class="flexible-header" pSortableColumn="rate-type">Rate Type<p-sortIcon
                           field="rate-type"></p-sortIcon></th>
-                      <th></th>
+
 
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-data>
                     <tr>
-                      <td class="flexible-header">
-                        {{ data.rowNumber }}
-                      </td>
+                      <td class="flexible-header"> {{ data.rowNumber }} </td>
                       <td class="flexible-header">{{ data.calcGroup }}</td>
-                      <td class="flexible-header">
-                        {{ data.sectionCode }}
-                      </td>
-                      <td class="flexible-header">{{ data.freeLimit }}</td>
+                      <td class="flexible-header"> {{ data.sectionCode }} </td>
+                      <td class="flexible-header">{{ data.sectionShortDescription |sentenceCase }}</td>
                       <td class="flexible-header">{{ data.limitAmount }}</td>
-                      <td class="flexible-header">
-                        {{ data.premiumRate| number }}
-                      </td>
-                      <td class="flexible-header">
-                        {{ data.rateType }}
-                      </td>
+                      <td class="flexible-header">{{ data.premiumRate| number }}</td>
+                      <td class="flexible-header">{{ data.rateType }}</td>
 
                     </tr>
                   </ng-template>
