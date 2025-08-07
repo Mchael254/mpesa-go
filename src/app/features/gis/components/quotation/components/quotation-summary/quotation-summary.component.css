@@ -600,3 +600,6 @@ textarea {
   font-size: 16px;
   resize: none;
 }
+.card-title{
+  color: #00529b;
+}
