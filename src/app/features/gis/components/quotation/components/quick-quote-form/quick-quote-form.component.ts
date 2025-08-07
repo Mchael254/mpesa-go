@@ -937,6 +937,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   computationPayload(): PremiumComputationRequest {
     const formValues = this.quickQuoteForm.getRawValue();
+    log.debug("QUICK QUOTE FORM VALUES B4VCOMP", formValues)
     const withEffectFrom = new Date(formValues.effectiveDate);
     let payload = {
       transactionStatus: "NB",
