@@ -129,7 +129,6 @@
                                     </div>
                                 </ng-container>
 
-
                                 <!-- dynamic subclass fields -->
                                 <ng-container *ngFor="let field of subclassFormData; let j = index">
                                     <div class="col-sm-6 col-6 mb-4">
@@ -159,7 +158,6 @@
                                                     class="form-control form-control-sm mb-1 bg-light text-muted"
                                                     formControlName="riskDescription" [readonly]="true"
                                                     [value]="vehiclemakeModel">
-
 
                                             </ng-container>
 
@@ -214,10 +212,6 @@
                                 </ng-container>
                             </div>
                         </form>
-
-
-
-
 
 
                         <div class="mt-4 d-flex justify-content-end">
@@ -1127,8 +1121,9 @@
             </div>
         </div>
 
-        <!-- ADD Risk clause BUTTON ROW -->
+        <!-- Other risk details action buttons -->
         <div class="row mb-" *ngIf="isClausesOpen">
+
             <!-- tab buttons -->
             <div class="d-flex justify-content-between align-items-end m-0">
                 <div class="d-flex justify-content-between px-1" style="width:60%">
@@ -1165,8 +1160,8 @@
 
                 </div>
 
+                <!-- action buttons -->
                 <div class="d-flex align-items-center ms-2 mb-1">
-                    <!-- action buttons -->
 
                     <!-- clause action tabs -->
                     <div *ngIf="riskActiveTab === 'riskClauses'">
@@ -1179,6 +1174,7 @@
                             'pi-caret-down': !showSections
                             }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
                     </div>
+
                     <!-- limits action tabs -->
                     <div *ngIf="riskActiveTab === 'riskLimits'">
                         <button class="btn btn-primary btn-sm mb-1" (click)="openLimitModal()">
@@ -1190,11 +1186,23 @@
                             'pi-caret-down': !showSections
                             }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
                     </div>
+
+                    <!-- excess action tabs -->
+                    <div *ngIf="riskActiveTab === 'riskExcesses'">
+                        <button class="btn btn-primary btn-sm mb-1" (click)="openExcessModal()">
+                            Add risk excess
+                        </button>
+
+                        <i class="pi border border-black p-1 rounded-1 text-black mb-1" [ngClass]="{
+                            'pi-caret-up': showSections,
+                            'pi-caret-down': !showSections
+                            }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- risk clause table -->
+        <!-- risk excess table -->
         <div *ngIf="riskActiveTab === 'riskClauses'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-0 w-100">
 
@@ -1477,6 +1485,8 @@
         <!-- limits of liablity table -->
         <div *ngIf="riskActiveTab === 'riskLimits'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-0 w-100">
+
+            <!-- limits table -->
             <p-table #limitTable [value]="addedLimitsOfLiability" dataKey="code" [paginator]="true" [rows]="3"
                 [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['narration', 'value']" [scrollable]="true"
                 scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3" [(selection)]="selectedRiskLimits"
@@ -1531,7 +1541,7 @@
                                     aria-label="Close"></button>
                             </h5>
 
-                            <ng-container *ngIf="limitsOfLiability && limitsOfLiability.length > 0; else noMoreLimits">
+                            <ng-container>
                                 <p-table #limitTable [value]="limitsOfLiability" dataKey="code" [paginator]="true"
                                     [rows]="3" [rowsPerPageOptions]="[3, 5, 10]"
                                     [globalFilterFields]="['narration', 'value']" [scrollable]="true"
@@ -1581,17 +1591,21 @@
                                             <td>{{ limit.value }}</td>
                                         </tr>
                                     </ng-template>
-
-                                    <!-- No Search Match -->
+                                     
+                                    <!-- empty table -->
                                     <ng-template pTemplate="emptymessage">
-                                        <tr>
-                                            <td colspan="3" class="text-center p-4 text-muted">
-                                                <i class="pi pi-search"
-                                                    style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                                <p>No matching limits found.</p>
+                                        <tr class="empty-message-row">
+                                            <td colspan="3" class="text-center py-4">
+                                                <div class="empty-message-content">
+                                                    <p><strong>No clauses available </strong>There are currently no
+                                                        clauses to add</p>
+                                                </div>
                                             </td>
                                         </tr>
                                     </ng-template>
+
+                                    <!-- No Search Match -->
+                                   
                                 </p-table>
                             </ng-container>
 
@@ -1620,7 +1634,7 @@
             </div>
 
             <!-- edit risk limit modal -->
-            <div class="modal fade" id="editClause">
+            <!-- <div class="modal fade" id="editClause">
                 <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
                     <div class="modal-content ps-4 pt-2 pe-4">
                         <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
@@ -1672,10 +1686,10 @@
                     </div>
                 </div>
 
-            </div>
+            </div> -->
 
             <!-- delete limit modal -->
-            <div class="modal fade" id="deleteClause">
+            <!-- <div class="modal fade" id="deleteClause">
                 <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
                     <div class="modal-content ps-4 pt-2 pe-4">
                         <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
@@ -1706,7 +1720,7 @@
                     </div>
                 </div>
 
-            </div>
+            </div> -->
 
         </div>
 
@@ -1729,12 +1743,148 @@
         <div *ngIf="riskActiveTab === 'riskExcesses'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-2 w-100">
 
-            <h1>{{'gis.quotation.excesses' | translate}}</h1>
+            <!-- excesses table -->
+            <p-table #limitTable [value]="excessesData" dataKey="code" [paginator]="true" [rows]="3"
+                [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['narration', 'value']" [scrollable]="true"
+                scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3" [(selection)]="selectedExcesses"
+                selectionMode="multiple">
+                <!-- Table Header -->
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="narration" class="flexible-header">
+                            Narration <p-sortIcon field="narration" />
+                        </th>
+                        <th pSortableColumn="value" class="flexible-header">
+                            Value <p-sortIcon field="value" />
+                        </th>
+                    </tr>
+
+                </ng-template>
+
+                <!-- Table Body -->
+                <ng-template pTemplate="body" let-excess>
+                    <tr>
+                        <td class="position-relative">
+                            <div class="limit-wrapper" pTooltip="{{excess.narration}}" tooltipPosition="top">
+                                {{ excess.narration | truncate:10 | sentenceCase }}
+
+                                <div class="hover-card">
+                                    {{ excess.narration | sentenceCase }}
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ excess.value }}</td>
+                    </tr>
+
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="8" style="padding: 20px; text-align:center" id="empty">
+                            <strong>No risk clauses available.</strong> Click on Add risk excess to add risk clauses</td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+
+            <!-- Add risk excess modal -->
+            <div class="modal fade" id="addExcess" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
+                    <div class="modal-content" id="addSectionModal">
+                        <div class="modal-body">
+                            <h5 class="modal-title mt-2" id="editOtherDetailsLabel">
+                                Add risk excess
+                                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </h5>
+
+                            <ng-container>
+                                <p-table #excessTable [value]="excessesData" dataKey="code" [paginator]="true"
+                                    [rows]="3" [rowsPerPageOptions]="[3, 5, 10]"
+                                    [globalFilterFields]="['narration', 'value']" [scrollable]="true"
+                                    scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3"
+                                    [(selection)]="selectedRiskLimits" selectionMode="multiple">
+                                    <!-- Table Header -->
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th style="width: 3%"><p-tableHeaderCheckbox /></th>
+                                            <th pSortableColumn="narration" class="flexible-header">
+                                                Narration <p-sortIcon field="narration" />
+                                            </th>
+                                            <th pSortableColumn="value" class="flexible-header">
+                                                Value <p-sortIcon field="value" />
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                <input class="form-control form-control-sm" pInputText #narrationFilter
+                                                    type="text"
+                                                    (input)="excessTable.filterGlobal(narrationFilter.value, 'contains')"
+                                                    style="width: 50%;" />
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm" pInputText #valueFilter
+                                                    type="text"
+                                                    (input)="excessTable.filterGlobal(valueFilter.value, 'contains')"
+                                                    style="width: 50%;" />
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+
+                                    <!-- Table Body -->
+                                    <ng-template pTemplate="body" let-excess>
+                                        <tr>
+                                            <td><p-tableCheckbox [value]="excess" /></td>
+                                            <td class="position-relative">
+                                                <div class="excess-wrapper">
+                                                    {{ excess.narration | truncate:10 | sentenceCase }}
+
+                                                    <div class="hover-card">
+                                                        {{ excess.narration | sentenceCase }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{ excess.value }}</td>
+                                        </tr>
+                                    </ng-template>
+
+                                    <!-- empty table -->
+                                    <ng-template pTemplate="emptymessage">
+                                        <tr class="empty-message-row">
+                                            <td colspan="3" class="text-center py-4">
+                                                <div class="empty-message-content">
+                                                    <p><strong>No clauses available </strong>There are currently no
+                                                        clauses to add</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </ng-container>
+
+                            <!-- Buttons -->
+                            <div class="mt-4 d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-primary me-2"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="saveDetails" data-bs-dismiss="modal"
+                                    (click)="addRiskLimit()">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
 </div>
-<div class="float-end mb-4">
 
+<div class="mt-2 d-flex justify-content-between mx-3">
+    <button style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"
+        (click)="navigateToRiskDetails()">Back</button>
     <button class="btn btn-primary">Next</button>
 </div>
