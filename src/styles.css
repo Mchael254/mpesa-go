@@ -182,6 +182,7 @@ tr.ng-star-inserted {
   padding-left: 52px;
   width: 100%;
   margin-left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.20);
 }
 
 .input-group span {
