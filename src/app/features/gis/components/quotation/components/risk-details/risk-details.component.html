@@ -36,9 +36,8 @@
                         </button>
 
                         <!-- Delete Button -->
-                        <button *ngIf="riskDetails.length > 1" pButton pRipple type="button"
-                            class="p-button-text p-button-sm custom-button" tooltipPosition="top" data-bs-toggle="modal"
-                            data-bs-target="#deleteRisk">
+                        <button pButton pRipple type="button" class="p-button-text p-button-sm custom-button"
+                            tooltipPosition="top" data-bs-toggle="modal" data-bs-target="#deleteRisk">
                             Delete
                         </button>
                     </td>
@@ -157,9 +156,11 @@
                                             </ng-container>
                                             <ng-container *ngIf="field.name === 'riskDescription'">
                                                 <input type="text" id="quote-input"
-                                                    class="form-control form-control-sm mb-1"
-                                                    formControlName="riskDescription" [value]="vehiclemakeModel"
-                                                    readonly>
+                                                    class="form-control form-control-sm mb-1 bg-light text-muted"
+                                                    formControlName="riskDescription" [readonly]="true"
+                                                    [value]="vehiclemakeModel">
+
+
                                             </ng-container>
 
                                             <!-- select fields -->
@@ -1108,8 +1109,7 @@
         </div>
     </div>
 </div>
-
-<!-- Other risk details card -->
+<!-- RISK OTHER DETAILS CARD -->
 <div class="card mb-1">
     <div class="card-body mx-4">
 
@@ -1135,31 +1135,31 @@
                 <div class="d-flex justify-content-between px-1" style="width:60%">
                     <div>
                         <button class="btn btn-sm"
-                            [ngClass]="{'text-black border border-secondary': riskActiveTab === 'riskClauses', 'text-primary border-0': riskActiveTab !== 'riskClauses'}"
+                            [ngClass]="{'no-border-bottom': riskActiveTab === 'riskClauses', 'text-primary border-0': riskActiveTab !== 'riskClauses'}"
                             (click)="setRiskTab('riskClauses')"> {{'gis.quotation.risk_clauses' | translate}}
                         </button>
                     </div>
                     <div>
                         <button class="btn btn-sm"
-                            [ngClass]="{'text-black border border-secondary': riskActiveTab === 'riskLimits', 'text-primary border-0': riskActiveTab !== 'riskLimits'}"
+                            [ngClass]="{'no-border-bottom': riskActiveTab === 'riskLimits', 'text-primary border-0': riskActiveTab !== 'riskLimits'}"
                             (click)="setRiskTab('riskLimits')"> {{'gis.quotation.limits_of_liability' | translate}}
                         </button>
                     </div>
                     <div>
                         <button class="btn btn-sm"
-                            [ngClass]="{'text-black border border-secondary': riskActiveTab === 'riskPerils', 'text-primary border-0': riskActiveTab !== 'riskPerils'}"
+                            [ngClass]="{'no-border-bottom': riskActiveTab === 'riskPerils', 'text-primary border-0': riskActiveTab !== 'riskPerils'}"
                             (click)="setRiskTab('riskPerils')"> {{'gis.quotation.perils' | translate}}
                         </button>
                     </div>
                     <div>
                         <button class="btn btn-sm"
-                            [ngClass]="{'text-black border border-secondary': riskActiveTab === 'riskCommissions', 'text-primary border-0': riskActiveTab !== 'riskCommissions'}"
+                            [ngClass]="{'no-border-bottom': riskActiveTab === 'riskCommissions', 'text-primary border-0': riskActiveTab !== 'riskCommissions'}"
                             (click)="setRiskTab('riskCommissions')"> {{'gis.quotation.commissions' | translate}}
                         </button>
                     </div>
                     <div>
                         <button class="btn btn-sm"
-                            [ngClass]="{'text-black border border-secondary': riskActiveTab === 'riskExcesses', 'text-primary border-0': riskActiveTab !== 'riskExcesses'}"
+                            [ngClass]="{'no-border-bottom': riskActiveTab === 'riskExcesses', 'text-primary border-0': riskActiveTab !== 'riskExcesses'}"
                             (click)="setRiskTab('riskExcesses')"> {{'gis.quotation.excesses' | translate}}
                         </button>
                     </div>
@@ -1256,7 +1256,7 @@
                         <td class="flexible-header1">{{ clause.heading | truncate:5 | sentenceCase }}</td>
                         <td class="position-relative ">
                             <div class="clause-wrapper">
-                                {{ clause.wording | truncate:10 | sentenceCase}}
+                                {{ clause.wording | truncate:5 | sentenceCase}}
 
                                 <div class="hover-card">
                                     {{ clause.wording |sentenceCase }}
@@ -1314,8 +1314,7 @@
                                     aria-label="Close"></button>
                             </h5>
 
-                            <ng-container
-                                *ngIf="nonMandatoryClauses && nonMandatoryClauses.length > 0; else noMoreClauses">
+                            <ng-container>
                                 <p-table #clauseTable [value]="nonMandatoryClauses" dataKey="clauseCode"
                                     [paginator]="true" [rows]="3" [rowsPerPageOptions]="[3, 5, 10]"
                                     [globalFilterFields]="['shortDescription', 'heading']" [scrollable]="true"
@@ -1368,18 +1367,21 @@
                                             </td>
                                         </tr>
                                     </ng-template>
+                                    <!-- No Clauses Left -->
+                                    <ng-template pTemplate="emptymessage">
+                                        <tr>
+                                            <td colspan="3" class="text-center p-4 ">
+                                                <p><strong> No clauses available. </strong>There are currently no
+                                                    clauses to
+                                                    add.</p>
+                                            </td>
+                                        </tr>
+
+                                    </ng-template>
                                 </p-table>
                             </ng-container>
 
-                            <!-- No Clauses Left -->
-                            <ng-template #noMoreClauses>
-                                <div class="text-center p-4">
-                                    <div style="color: #6c757d; font-size: 16px;">
-                                        <i class="pi pi-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                        <p>No additional clauses are available to add.</p>
-                                    </div>
-                                </div>
-                            </ng-template>
+
 
                             <!-- Buttons -->
                             <div class="mt-4 d-flex justify-content-end">
@@ -1540,7 +1542,7 @@
                     <div class="modal-content" id="addSectionModal">
                         <div class="modal-body">
                             <h5 class="modal-title mt-2" id="editOtherDetailsLabel">
-                                Add risk clause
+                                Add limits of liability
                                 <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </h5>
