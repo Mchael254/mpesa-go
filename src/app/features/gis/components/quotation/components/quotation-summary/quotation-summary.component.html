@@ -211,7 +211,7 @@
         <div class="card-body">
           <div class="row">
             <div class="col-4">
-              <p class="card-title mt-2" class="card-title-p mt-2">Products</p>
+              <p class="card-title mt-2">Products</p>
             </div>
             <div class="col-8 d-flex justify-content-end">
               <div class="row">
@@ -413,7 +413,9 @@
                           <p-sortIcon field="clause"></p-sortIcon>
                         </th>
 
+
                       </tr>
+
 
                     </ng-template>
 
@@ -422,15 +424,18 @@
                         <tr>
 
                           <td>
-                            <input type="text" pInputText class="form-control w-50" (input)="filterId($event)" />
+                            <input type="text" pInputText class="form-control w-70"
+                              (input)="filterTable($event, 'clauseShortDescription', productClauseTable)" />
                           </td>
                           <td>
-                            <input type="text" pInputText class="form-control w-50" (input)="filterHeading($event)" />
-                          </td>
-                          <td>
-                            <input type="text" pInputText class="form-control w-50" (input)="filterWording($event)" />
+                            <input type="text" pInputText class="form-control w-70"
+                              (input)="filterTable($event, 'clauseHeading', productClauseTable)" />
                           </td>
 
+                          <td>
+                            <input type="text" pInputText class="form-control w-70"
+                              (input)="filterTable($event, 'clause', productClauseTable)" />
+                          </td>
                         </tr>
                       </ng-container>
                       <tr>
@@ -609,7 +614,7 @@
 
                       <!-- Modal Body -->
                       <div class="modal-body">
-                        <p-table [value]="taxes" selectionMode="single" [(selection)]="selectedTax"
+                        <p-table [value]="taxes" #selectTaxTable selectionMode="single" [(selection)]="selectedTax"
                           [tableStyle]="{  'width': '100%' }" [rows]="4" [paginator]="true"
                           [rowsPerPageOptions]="[2, 4, 6]" [showCurrentPageReport]="true"
                           currentPageReportTemplate="{first} - {last} of {totalRecords}" class="ui-datatable"
@@ -626,19 +631,27 @@
                                 <p-sortIcon field="tax-description"></p-sortIcon>
                               </th>
 
+
                             </tr>
+
                           </ng-template>
 
-                          <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
-                            <tr *ngIf="rowIndex === 0">
-                              <td>
-                                <input type="text" pInputText class="small-input" />
-                              </td>
+                          <ng-template pTemplate="body" let-data let-columns="columns" let-rowIndex="rowIndex">
+                            <ng-container *ngIf="rowIndex === 0">
+                              <tr>
 
-                              <td>
-                                <input type="text" pInputText class="small-input" />
-                              </td>
-                            </tr>
+                                <td>
+                                  <input type="text" pInputText placeholder="" class="form-control w-70"
+                                    (input)="filterTable($event, 'taxCode', selectTaxTable)" />
+                                </td>
+                                <td>
+                                  <input type="text" pInputText placeholder="" class="form-control w-70"
+                                    (input)="filterTable($event, 'description', selectTaxTable)" />
+                                </td>
+
+
+                              </tr>
+                            </ng-container>
                             <tr [pSelectableRow]="data">
                               <td>{{ data.taxCode }}</td>
 
@@ -879,19 +892,14 @@
                 <div class="d-flex justify-content-between align-items-start w-100">
 
                   <ul class="nav nav-tabs me-auto" id="taxTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link" [class.active]="activeRiskTab === 'motor'"
-                        (click)="activeRiskTab = 'motor'" type="button">
-                        Motor Private
-                      </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link" [class.active]="activeRiskTab === 'domestic'"
-                        (click)="activeRiskTab = 'domestic'" type="button">
-                        Domestic
+                    <li class="nav-item" role="presentation" *ngFor="let product of products">
+                      <button class="nav-link" [class.active]="activeRiskTab === product.code"
+                        (click)="activeRiskTab = product.code" type="button">
+                        {{ product.productName |sentenceCase }}
                       </button>
                     </li>
                   </ul>
+
 
                   <!-- Toggle button aligned to end -->
                   <button type="button" class="btn btn-primary p-0.5 px-2.5" (click)="toggleRiskDetails()"
@@ -907,7 +915,8 @@
 
 
 
-            <p-table [value]="filteredRiskDetails" [tableStyle]="{ 'min-width': '50rem' }" class="ui-datatable"[paginator]="true" [rows]="2" [rowsPerPageOptions]="[2,4,6]" [scrollable]="true" responsiveLayout="scroll"
+            <p-table [value]="filteredRiskDetails" [tableStyle]="{ 'min-width': '50rem' }" class="ui-datatable"
+              [paginator]="true" [rows]="2" [rowsPerPageOptions]="[2,4,6]" [scrollable]="true" responsiveLayout="scroll"
               styleClass="p-datatable-striped">
               <ng-template pTemplate="header">
                 <tr>
@@ -955,32 +964,7 @@
 
 
             </p-table>
-            <!-- Delete Risk Modal -->
-            <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog" aria-labelledby="deleteRisk"
-              aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content" id="deleteRisk">
-                  <div class="modal-body">
-                    <p class="deleteMessage mt-4 mb-4">
-                      {{
-                      "gis.policy.are_you_sure_you_want_to_delete" | translate
-                      }}
-                    </p>
-                    <div class="d-flex justify-content-center mb-3">
-                      <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
-                        (click)="deleteRisk()">
-                        {{ "gis.policy.yes_delete" | translate }}
-                      </button>
-                    </div>
-                    <div class="d-flex justify-content-center mb-2">
-                      <button type="button" class="btn btn-outline-primary px-5" data-bs-dismiss="modal">
-                        {{ "gis.policy.no_im_not" | translate }}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+
             <br />
             <ul class="nav nav-underline mt-2 mb-4">
               <li class="nav-item">
@@ -997,7 +981,7 @@
               </li>
               <br />
               <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Risk peril</a>
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-peril">Risk peril</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Excess</a>
@@ -1016,101 +1000,87 @@
               <!-- SECTIONS -->
               <div class="tab-pane fade show active" id="nav-sections" role="tabpanel" aria-labelledby="nav-sections"
                 tabindex="0">
-                <p-table [value]="sections" [tableStyle]="{ 'min-width': '50rem' }"[paginator]="true" [rows]="2" [rowsPerPageOptions]="[2,4,6]" [scrollable]="true" responsiveLayout="scroll">
+                <p-table [value]="sections" [tableStyle]="{ 'min-width': '50rem' }" [paginator]="true" [rows]="2"
+                  [rowsPerPageOptions]="[2,4,6]" [scrollable]="true" responsiveLayout="scroll" class="ui-datatable">
                   <ng-template pTemplate="header">
                     <tr>
-                      <th pSortableColumn="row-num">Row number<p-sortIcon field="row-num"></p-sortIcon></th>
-                      <th class="flexible-header"pSortableColumn="group">Group<p-sortIcon field="group"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="row-num">Row number<p-sortIcon
+                          field="row-num"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="group">Group<p-sortIcon field="group"></p-sortIcon>
+                      </th>
                       <th class="flexible-header" pSortableColumn="code">Code<p-sortIcon field="code"></p-sortIcon></th>
-                      <th class="flexible-header"pSortableColumn="benefit">Benefit<p-sortIcon field="benefit"></p-sortIcon></th>
-                      <th class="flexible-header" pSortableColumn="limit-amount">Limit amount<p-sortIcon field="limit-amount"></p-sortIcon></th>
-                      <th class=" flexible-header" pSortableColumn="premium-rate">Premium rate<p-sortIcon field="premium-rate"></p-sortIcon></th>
-                      <th class="flexible-header" pSortableColumn="rate-type">Rate Type<p-sortIcon field="rate-type"></p-sortIcon></th>
-                      <th></th>
-                    
+                      <th class="flexible-header" pSortableColumn="benefit">Benefit<p-sortIcon
+                          field="benefit"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="limit-amount">Limit amount<p-sortIcon
+                          field="limit-amount"></p-sortIcon></th>
+                      <th class=" flexible-header" pSortableColumn="premium-rate">Premium rate<p-sortIcon
+                          field="premium-rate"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="rate-type">Rate Type<p-sortIcon
+                          field="rate-type"></p-sortIcon></th>
+
+
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-data>
                     <tr>
-                      <td class="flexible-header">
-                        {{ data.rowNumber }}
-                      </td>
+                      <td class="flexible-header"> {{ data.rowNumber }} </td>
                       <td class="flexible-header">{{ data.calcGroup }}</td>
-                      <td class="flexible-header">
-                        {{ data.sectionCode }}
-                      </td>
-                      <td class="flexible-header">{{ data.freeLimit }}</td>
+                      <td class="flexible-header"> {{ data.sectionCode }} </td>
+                      <td class="flexible-header">{{ data.sectionShortDescription |sentenceCase }}</td>
                       <td class="flexible-header">{{ data.limitAmount }}</td>
-                      <td class="flexible-header">
-                        {{ data.premiumRate| number }}
-                      </td>
-                      <td class="flexible-header">
-                        {{ data.rateType }}
-                      </td>
-                    
+                      <td class="flexible-header">{{ data.premiumRate| number }}</td>
+                      <td class="flexible-header">{{ data.rateType }}</td>
+
                     </tr>
                   </ng-template>
-                   <ng-template pTemplate="emptymessage">
-                        <tr>
-                        <td colspan="7" class="text-center text-muted py-3">
-                           “No sections available for this product.”
-                        </td>
-                      </tr>
-                    </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="7" class="text-center text-muted py-3">
+                        “No sections available for this product.”
+                      </td>
+                    </tr>
+                  </ng-template>
                 </p-table>
               </div>
               <!-- RISK CLAUSES -->
               <div class="tab-pane fade" id="nav-riskClauses" role="tabpanel" aria-labelledby="nav-riskClauses"
                 tabindex="0">
-                <p-table [value]="riskClauses" #riskClausesTable dataKey="code" editMode="row" [tableStyle]="{ 'width': '100%' }"
-                [paginator]="true" [rows]="2" [rowsPerPageOptions]="[2,4,6]" [scrollable]="true" responsiveLayout="scroll"
-                  responsiveLayout="scroll" class="ui-datatable" [autoLayout]="true">
+                <p-table [value]="riskClauses" #riskClausesTable dataKey="code" editMode="row"
+                  [tableStyle]="{ 'width': '100%' }" [paginator]="true" [rows]="2" [rowsPerPageOptions]="[2,4,6]"
+                  [scrollable]="true" responsiveLayout="scroll" responsiveLayout="scroll" class="ui-datatable"
+                  [autoLayout]="true">
                   <ng-template pTemplate="header">
                     <tr>
-                       <th class="flexible-header1" pSortableColumn="id">
-                            ID <p-sortIcon field="id" />
-                        </th>
-                        <th class="flexible-header1"  pSortableColumn="heading">
-                            Heading <p-sortIcon field="heading" />
-                        </th>
-                        <th class="flexible-header1" pSortableColumn="wording">
-                            Wording <p-sortIcon field="wording" />
-                        </th>
-                        <th></th>
-                        <th></th>
-                      
+                      <th class="flexible-header1" pSortableColumn="id">
+                        ID <p-sortIcon field="id" />
+                      </th>
+                      <th class="flexible-header1" pSortableColumn="heading">
+                        Heading <p-sortIcon field="heading" />
+                      </th>
+                      <th class="flexible-header1" pSortableColumn="wording">
+                        Wording <p-sortIcon field="wording" />
+                      </th>
+                      <th></th>
+                      <th></th>
+
+
                     </tr>
                     <tr>
-                         <th>
-        <input
-          type="text"
-          pInputText
-          placeholder="Filter ID"
-          
-          class="form-control w-50"
-          (input)="filterIdRiskclause($event)"
-        />
-      </th>
-      <th>
-        <input
-          type="text"
-          pInputText
-          placeholder="Filter Heading"
-          class="form-control w-50"
-          (input)="filterHeadingRiskclause($event)"
-        />
-      </th>
-      <th>
-        <input
-          type="text"
-          pInputText
-          placeholder="Filter Wording"
-          class="form-control w-50"
-          (input)="filterWordingRiskclause($event)"
-        />
-      </th>
-      <th></th>
-      <th></th>
+                      <th>
+                        <input type="text" pInputText placeholder="Filter ID" class="form-control w-70"
+                          (input)="filterTable($event,'clauseCode',riskClausesTable)" />
+                      </th>
+                      <th>
+                        <input type="text" pInputText placeholder="Filter Heading" class="form-control w-70"
+                          (input)="filterTable($event,'shortDescription',riskClausesTable)" />
+                      </th>
+                      <th>
+                        <input type="text" pInputText placeholder="Filter Wording" class="form-control w-70"
+                          (input)="filterTable($event,'clause',riskClausesTable)" />
+                      </th>
+                      <th></th>
+                      <th></th>
+
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-selectedClauseList let-editing="editing" let-ri="rowIndex">
@@ -1123,31 +1093,32 @@
                         selectedClauseList.shortDescription | sentenceCase
                         }}
                       </td>
-<td style="
-  max-width: 300px;
-  max-height: 100px;
+                      <td style="
+  min-width: 800px;
+  max-width: 1100px;
   overflow: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
   padding-right: 10px;
 ">
-  <p-cellEditor>
-    <ng-template pTemplate="input">
-      <input pInputText type="text" [(ngModel)]="selectedClauseList.clause"
-        class="form-control form-control-sm" [ngModelOptions]="{ standalone: true }" />
-    </ng-template>
-    <ng-template pTemplate="output">
-      <div style="max-height: 100px; overflow: auto;">
-        {{ selectedClauseList.clause }}
-      </div>
-    </ng-template>
-  </p-cellEditor>
-</td>
+                        <p-cellEditor>
+                          <ng-template pTemplate="input">
+                            <input pInputText type="text" [(ngModel)]="selectedClauseList.clause"
+                              class="form-control form-control-sm" [ngModelOptions]="{ standalone: true }" />
+                          </ng-template>
+                          <ng-template pTemplate="output">
+                            <div style="max-height: 120px; overflow: auto;">
+                              {{ selectedClauseList.clause }}
+                            </div>
+                          </ng-template>
+                        </p-cellEditor>
+                      </td>
 
-                      
+
+
                       <td>
                         <button pButton pRipple type="button" (click)="openHelperModal(selectedClauseList)"
-                          icon="pi pi-info-circle" class="p-button-rounded p-button-text" style="margin-left: 40px"></button>
+                          icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
                       </td>
                       <td>{{ selectedClauseList.clauseEditable }}</td>
                     </tr>
@@ -1164,37 +1135,51 @@
                       </ng-container>
                     </p-dialog>
                   </ng-template>
-                   <ng-template pTemplate="emptymessage">
-                        <tr>
-                        <td colspan="4" class="text-center text-muted py-3">
-                           “No Clauses available for this product.”
-                        </td>
-                      </tr>
-                    </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="4" class="text-center text-muted py-3">
+                        “No Clauses available for this product.”
+                      </td>
+                    </tr>
+                  </ng-template>
                 </p-table>
               </div>
               <!-- SCHEDULES -->
               <div class="tab-pane fade" id="nav-schedules" role="tabpanel" aria-labelledby="nav-schedules"
                 tabindex="0">
-                <p-table [value]="schedules" [tableStyle]="{ 'min-width': '50rem' }">
+                <!-- Dynamic Tabs -->
+                <ul class="nav nav-tabs mb-3">
+                  <li class="nav-item" *ngFor="let tab of availableScheduleLevels">
+                    <button class="nav-link" [ngClass]="{ active: activeScheduleTab === tab }"
+                      (click)="activeScheduleTab = tab">
+                      {{ tab.replace('level', 'Level ') }}
+                    </button>
+                  </li>
+                </ul>
+
+                <p-table [value]="getCurrentSchedule()" [tableStyle]="{ 'width': '100%' }">
                   <ng-template pTemplate="header">
                     <tr>
-                      <th class="flexible-header">Reg no.</th>
-                      <th class="flexible-header">Vehicle make</th>
-                      <th class="flexible-header">Cubic capacity</th>
-                      <th class="flexible-header">Year of manufacture</th>
-                      <th class="flexible-header">Seating capacity</th>
-                      <th class="flexible-header">Value</th>
-                      <th class="flexible-header">Body type</th>
-                      <th class="flexible-header">Cover type</th>
+                      <th class="flexible-header" pSortableColumn="make">Vehicle make<p-sortIcon
+                          field="make"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="cubicCapacity">Cubic capacity<p-sortIcon
+                          field="cubicCapacity"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="yearOfManufacture">Year of manufacture<p-sortIcon
+                          field="yearOfManufacture"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="carryingCapacity">Seating capacity<p-sortIcon
+                          field="carryingCapacity"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="value">Value<p-sortIcon field="value"></p-sortIcon>
+                      </th>
+                      <th class="flexible-header" pSortableColumn="bodyType">Body type<p-sortIcon
+                          field="bodyType"></p-sortIcon></th>
+
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-data>
                     <tr>
                       <td class="flexible-header">
-                        {{ data.registrationNumber }}
+                        {{ data.make }}
                       </td>
-                      <td class="flexible-header">{{ data.Make }}</td>
                       <td class="flexible-header">{{ data.cubicCapacity }}</td>
                       <td class="flexible-header">
                         {{ data.yearOfManufacture }}
@@ -1202,7 +1187,56 @@
                       <td class="flexible-header">{{ data.carryCapacity }}</td>
                       <td class="flexible-header">{{ data.value }}</td>
                       <td class="flexible-header">{{ data.bodyType }}</td>
-                      <td class="flexible-header">{{ data.coverType }}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="5" class="text-center text-muted py-3">
+                        “No schedules for this risk.”
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+
+
+              <!-- Risk peril-->
+              <div class="tab-pane fade" id="nav-peril" role="tabpanel" aria-labelledby="nav-schedules" tabindex="0">
+
+
+                <p-table [value]="getCurrentSchedule()" [tableStyle]="{ 'width': '100%' }">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th class="flexible-header" pSortableColumn="id">ID<p-sortIcon field="id"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="cubicCapacity">Peril<p-sortIcon
+                          field="cubicCapacity"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="yearOfManufacture">Type<p-sortIcon
+                          field="yearOfManufacture"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="carryingCapacity">SI/Limits<p-sortIcon
+                          field="carryingCapacity"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="value">Limit description<p-sortIcon
+                          field="value"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="bodyType">Person limit<p-sortIcon
+                          field="bodyType"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="bodyType">Limit amount<p-sortIcon
+                          field="bodyType"></p-sortIcon></th>
+                      <th class="flexible-header" pSortableColumn="bodyType">Claim amount<p-sortIcon
+                          field="bodyType"></p-sortIcon></th>
+
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-data>
+                    <tr>
+                      <td class="flexible-header">
+                        {{ data.make }}
+                      </td>
+                      <td class="flexible-header">{{ data.cubicCapacity }}</td>
+                      <td class="flexible-header">
+                        {{ data.yearOfManufacture }}
+                      </td>
+                      <td class="flexible-header">{{ data.carryCapacity }}</td>
+                      <td class="flexible-header">{{ data.value }}</td>
+                      <td class="flexible-header">{{ data.bodyType }}</td>
                     </tr>
                   </ng-template>
                 </p-table>
@@ -1228,6 +1262,113 @@
           </div>
         </div>
       </div>
+
+      <!-- Exceptions Card -->
+      <div class="card mb-4" *ngIf="exceptions?.length > 0">
+        <div class="card-body">
+
+          <!-- Title & Toggle -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <p class="card-title mt-2 mb-0">Exceptions</p>
+
+            <!-- Collapse/Expand Button -->
+            <button type="button" id="icon" class="btn btn-primary " [attr.aria-expanded]="!exceptionsCollapsed"
+              (click)="exceptionsCollapsed = !exceptionsCollapsed">
+              <i class="fa-solid" [ngClass]="exceptionsCollapsed ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
+            </button>
+
+          </div>
+
+          <!-- Authorize Button (Shown when open) -->
+          <div *ngIf="!exceptionsCollapsed" class="mb-3 d-flex justify-content-end">
+            <button class="btn btn-primary btn-sm" (click)="authorizeSelectedExceptions()">Authorize exceptions</button>
+          </div>
+
+          <!-- Exceptions Table -->
+          <div *ngIf="!exceptionsCollapsed">
+            <p-table [value]="exceptions" [scrollable]="true" scrollHeight="200px" responsiveLayout="scroll"
+              [tableStyle]="{ 'width': '100%' }">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th><p-checkbox name="selectAll" [(ngModel)]="selectAll" (onChange)="toggleAll()"
+                      [binary]="true"></p-checkbox></th>
+                  <th pSortableColumn="id">
+                    ID
+                    <p-sortIcon field="id"></p-sortIcon>
+                  </th>
+
+                  <th pSortableColumn="description">
+                    Description
+                    <p-sortIcon field="description"></p-sortIcon>
+                  </th>
+
+                  <th pSortableColumn="remark">
+                    Remarks
+                    <p-sortIcon field="remark"></p-sortIcon>
+                  </th>
+
+                  <th pSortableColumn="authorized">
+                    Authorized
+                    <p-sortIcon field="authorized"></p-sortIcon>
+                  </th>
+
+                  <th pSortableColumn="setStandard">
+                    Set standard
+                    <p-sortIcon field="setStandard"></p-sortIcon>
+                  </th>
+
+                  <th pSortableColumn="usedStandard">
+                    Used standard
+                    <p-sortIcon field="usedStandard"></p-sortIcon>
+                  </th>
+
+                  <th pSortableColumn="authorizedBy">
+                    Authorized by
+                    <p-sortIcon field="authorizedBy"></p-sortIcon>
+                  </th>
+
+                  <th pSortableColumn="authorizedDate">
+                    <span style="white-space: nowrap;">
+                      Authorized date
+                      <p-sortIcon field="authorizedDate"></p-sortIcon>
+                    </span>
+                  </th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-row>
+                <tr>
+                  <td><p-checkbox name="row_{{ row.id }}" [(ngModel)]="row.selected" [binary]="true">
+                    </p-checkbox>
+                  </td>
+                  <td>{{ row.id }}</td>
+                  <td>{{ row.description }}</td>
+                  <td>
+                    <p-dropdown [options]="remarkOptions" [(ngModel)]="row.remark" placeholder="Select remark"
+                      [style]="{width: '180px'}"></p-dropdown>
+                  </td>
+                  <td>{{ row.authorized }}</td>
+                  <td>{{ row.setStandard }}</td>
+                  <td>{{ row.usedStandard }}</td>
+                  <td>{{ row.authorizedBy || '—' }}</td>
+                  <td>{{ row.authorizedDate || '—' }}</td>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="9" class="text-center text-muted py-3">
+                    "No exceptions available."
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+
+        </div>
+      </div>
+
+
 
       <!-- Reassign quote Modal 1 (re assign)-->
       <div class="modal fade" id="reassignQuotationModal" #reassignQuotationModal tabindex="-1" aria-hidden="true">
@@ -1401,17 +1542,33 @@
         </div>
       </div>
 
-      <div class="mb-5">
-        <button type="button" class="btn btn-outline-primary mx-2" (click)="openReassignQuotationModal()"
-          [disabled]="afterRejectQuote">
-          {{ "gis.quotation.reassign" | translate }}
-        </button>
+      <div class="mb-5 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <!-- Left-side buttons -->
+        <div class="d-flex gap-2 flex-wrap">
+          <button type="button" class="btn btn-outline-primary" (click)="navigateToRiskCenter()">
+            {{ 'gis.quotation.back' | translate }}
+          </button>
 
-        <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
-          [disabled]="afterRejectQuote">
-          {{'gis.quotation.reject' | translate}}
-        </button>
+          <button type="button" class="btn btn-outline-primary" (click)="openReassignQuotationModal()"
+            [disabled]="afterRejectQuote">
+            {{ "gis.quotation.reassign" | translate }}
+          </button>
+
+          <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
+            [disabled]="afterRejectQuote">
+            {{ 'gis.quotation.reject' | translate }}
+          </button>
+        </div>
+
+        <!-- Right-side Authorize button with tooltip -->
+        <span [attr.title]="exceptions?.length > 0 ? 'Please resolve exceptions' : null" style="display: inline-block;">
+          <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
+            [disabled]="exceptions?.length > 0">
+            Authorize quote
+          </button>
+        </span>
       </div>
+
 
 
     </div>
