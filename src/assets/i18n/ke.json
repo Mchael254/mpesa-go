@@ -525,7 +525,9 @@
     "welcomeToEvolveConfigurator": "Karibu kwenye Evolve Configurator",
     "selectASystem": "Chagua mfumo ili kuanza kubadilisha skrini, mpangilio na viwanja vyako",
     "getStarted": "Anza sasa",
-    "updateInAnotherLanguage": "Unataka kusasisha mabadiliko kwa lugha nyingine?"
+    "updateInAnotherLanguage": "Unataka kusasisha mabadiliko kwa lugha nyingine?",
+    "export": "Hamisha",
+    "publishedChangesWillBeExported": "Tafadhali kumbuka kuwa ni mabadiliko yaliyochapishwa pekee yatakayohamishwa"
   },
   "entities": {
     "account_number": "Nambari ya Akaunti",

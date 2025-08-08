@@ -177,6 +177,14 @@ export class ClientService {
     );
   }
 
+  updateClientSection(client_id: number, client: {}): Observable<ClientDTO> {
+    return this.api.POST<ClientDTO>(
+      `v2/api/clients/${client_id}`,
+      JSON.stringify(client),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
   getClientById(id: number): Observable<ClientDTO> {
     return this.api.GET<ClientDTO>(
       `clients/${id}`,

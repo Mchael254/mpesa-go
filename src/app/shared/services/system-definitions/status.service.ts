@@ -24,4 +24,12 @@ export class StatusService {
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
+
+  getClientStatus(): Observable<StatusDTO[]> {
+    return this.api.GET<StatusDTO[]>(
+      `system-definitions/client-status`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
 }
