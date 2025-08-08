@@ -168,7 +168,7 @@ export class ContactComponent implements OnInit {
 
     }
 
-    this.clientService.updateClient(this.accountCode, contactDetails).subscribe({
+    this.clientService.updateClientSection(this.accountCode, contactDetails).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
       },

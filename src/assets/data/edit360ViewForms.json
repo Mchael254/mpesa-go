@@ -732,7 +732,7 @@
       },
       {
         "sectionId": "address",
-        "fieldId": "houseNo",
+        "fieldId": "houseNumber",
         "type": "text",
         "label": {
           "en": "house name /no",

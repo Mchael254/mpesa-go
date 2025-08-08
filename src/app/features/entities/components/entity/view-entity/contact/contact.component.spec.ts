@@ -25,7 +25,7 @@ describe('ContactComponent', () => {
 
   const mockClientService = {
     getClientTitles: jest.fn().mockReturnValue(of([clientTitles])),
-    updateClient: jest.fn().mockReturnValue(of({}))
+    updateClientSection: jest.fn().mockReturnValue(of({}))
   }
 
   const mockBranchService = {
@@ -275,7 +275,7 @@ describe('ContactComponent', () => {
       conctactChannel: ['EMAIL']
     });
 
-    mockClientService.updateClient.mockReturnValue(of({}));
+    mockClientService.updateClientSection.mockReturnValue(of({}));
 
     component.closeButton = {
       nativeElement: { click: jest.fn() }
@@ -283,7 +283,7 @@ describe('ContactComponent', () => {
 
     component.editContactDetails();
 
-    expect(mockClientService.updateClient).toHaveBeenCalled();
+    expect(mockClientService.updateClientSection).toHaveBeenCalled();
     expect(component.closeButton.nativeElement.click).toHaveBeenCalled();
   })
 });

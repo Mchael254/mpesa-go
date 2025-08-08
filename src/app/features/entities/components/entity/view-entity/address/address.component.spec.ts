@@ -75,7 +75,7 @@ describe('AddressComponent', () => {
 
   const mockClientService = {
     getClientTitles: jest.fn().mockReturnValue(of([])),
-    updateClient: jest.fn().mockReturnValue(of({}))
+    updateClientSection: jest.fn().mockReturnValue(of({}))
   }
 
   let mockMessagingService = {
@@ -499,7 +499,7 @@ describe('AddressComponent', () => {
 
     component.editAddressDetails();
 
-    expect(mockClientService.updateClient).toHaveBeenCalled();
+    expect(mockClientService.updateClientSection).toHaveBeenCalled();
     expect(mockMessagingService.displaySuccessMessage).toHaveBeenCalled();
   });
 

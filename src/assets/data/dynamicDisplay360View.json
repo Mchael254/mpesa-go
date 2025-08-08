@@ -37,7 +37,15 @@
             "fr": "statut"
           }
         },
-        "order": 1
+        "order": 1,
+        "applicable_status": {
+          "active": ["active", "suspended", "inactive", "blacklisted"],
+          "inactive": ["active", "suspended", "inactive", "blacklisted"],
+          "blacklisted": ["active", "suspended", "inactive", "blacklisted"],
+          "ready": ["ready", "active", "blacklisted"],
+          "suspended": ["active", "suspended", "inactive", "blacklisted"],
+          "draft": ["draft", "ready"]
+        }
       },
       {
         "title": "transactions",
