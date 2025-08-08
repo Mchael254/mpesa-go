@@ -522,7 +522,9 @@
     "welcomeToEvolveConfigurator": "欢迎使用 Evolve 配置器",
     "selectASystem": "选择一个系统开始自定义您的屏幕、布局和字段",
     "getStarted": "开始",
-    "updateInAnotherLanguage": "您想在其他语言中更新更改吗？"
+    "updateInAnotherLanguage": "您想在其他语言中更新更改吗？",
+    "export": "导出",
+    "publishedChangesWillBeExported": "请注意，只有已发布的更改将被导出"
   },
   "entities": {
     "account_number": "帐号",

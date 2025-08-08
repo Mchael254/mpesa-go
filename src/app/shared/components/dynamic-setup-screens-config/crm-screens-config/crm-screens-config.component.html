@@ -205,6 +205,7 @@
           <span class="nav-item dropdown">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
               <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
+              <i class="fas fa-angle-down text-primary ms-2"></i>
             </button>
             <ul class="dropdown-menu">
               <li *ngFor="let language of languages">
@@ -317,6 +318,7 @@
           <span class="nav-item dropdown">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
               <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
+              <i class="fas fa-angle-down text-primary ms-2"></i>
             </button>
             <ul class="dropdown-menu">
               <li *ngFor="let language of languages">
@@ -434,6 +436,7 @@
           <span class="nav-item dropdown">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
               <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
+              <i class="fas fa-angle-down text-primary ms-2"></i>
             </button>
             <ul class="dropdown-menu">
               <li *ngFor="let language of languages">
@@ -550,6 +553,7 @@
           <span class="nav-item dropdown">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
               <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
+              <i class="fas fa-angle-down text-primary ms-2"></i>
             </button>
             <ul class="dropdown-menu">
               <li *ngFor="let language of languages">
@@ -666,6 +670,7 @@
           <span class="nav-item dropdown">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
               <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
+              <i class="fas fa-angle-down text-primary ms-2"></i>
             </button>
             <ul class="dropdown-menu">
               <li *ngFor="let language of languages">
@@ -782,6 +787,7 @@
           <span class="nav-item dropdown">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
               <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
+              <i class="fas fa-angle-down text-primary ms-2"></i>
             </button>
             <ul class="dropdown-menu">
               <li *ngFor="let language of languages">
@@ -850,7 +856,7 @@
                 id="inputType"
                 class="form-select"
               >
-                <option value="">{{ 'crm.selectType' | translate }}</option>
+                <option value=""></option>
                 <option value="text">text</option>
                 <option value="select">select</option>
                 <option value="number">number</option>
@@ -876,11 +882,11 @@
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="mandatory" value="Y" formControlName="mandatory">
-                <label class="form-check-label text-dark" for="mandatory">Yes</label>
+                <label class="form-check-label text-dark" for="mandatory">{{ 'entities.yes' | translate }}</label>
               </div>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="mandatory" value="N" formControlName="mandatory">
-                <label class="form-check-label text-dark" for="mandatory">No</label>
+                <label class="form-check-label text-dark" for="mandatory">{{ 'entities.no' | translate }}</label>
               </div>
             </div>
             <div class="col-md-6 mb-3">
@@ -970,7 +976,7 @@
                   <!-- Validation type dropdown -->
                   <div class="col-md-3">
                     <select class="form-select" formControlName="type">
-                      <option [ngValue]="null">-- Select Validation --</option>
+                      <option [ngValue]=""></option>
                       <option
                         *ngFor="let option of getRemainingValidations(group.get('type')?.value)"
                         [value]="option"
@@ -1003,7 +1009,7 @@
                   <!-- Remove button -->
                   <div class="col-md-1 align-content-center">
                     <span role="button" (click)="removeSection(i)">
-                      <i class="fa fa-trash text-danger"></i>
+                      <i class="fa fa-trash-can text-danger"></i>
                     </span>
                   </div>
                 </div>
@@ -1076,8 +1082,6 @@
     <div class="modal-content">
       <div class="modal-header d-block border-bottom-0">
         <h5 class="modal-title text-primary" id="exampleModalLabel">{{ 'crm.exportSetup' | translate }}</h5>
-          {{exportSelected}}
-
 
         <button
           type="button"
@@ -1093,7 +1097,7 @@
             <i class="fas fa-info text-primary" style="font-size: 1.0rem;"></i>
           </div>
           <div>
-            <label class="text-muted">Please note that only published changes will be exported</label>
+            <label class="text-muted">{{ 'crm.publishedChangesWillBeExported' | translate }}</label>
           </div>
         </div>
       </div>
@@ -1101,7 +1105,7 @@
         <div class="mb-3">
           <label class="form-label" for="subModules">{{ 'crm.subModules' | translate }}</label>
           <select class="form-select" id="subModules" aria-label="Export type" (change)="onClickExportSubModule()" [(ngModel)]="selectedExportSubmodule">
-            <option [ngValue]="null">Select</option>
+            <option [ngValue]=""></option>
             <option *ngFor="let submodule of subModules"
                     [ngValue]="submodule">
               {{ submodule?.label?.[language] }}
@@ -1111,7 +1115,7 @@
         <div class="mb-3" *ngIf="showExportScreens">
           <label class="form-label" for="screens">{{ 'crm.screens' | translate }}</label>
           <select class="form-select" id="screens" aria-label="Export type" (change)="onClickExportScreen()" [(ngModel)]="selectedExportScreen">
-            <option [ngValue]="null">Select</option>
+            <option [ngValue]=""></option>
             <option *ngFor="let screen of screens"
                     [ngValue]="screen">
               {{ screen?.label?.[language] }}
@@ -1121,7 +1125,7 @@
         <div class="mb-3" *ngIf="showExportSections">
           <label class="form-label" for="sections">{{ 'crm.sections' | translate }}</label>
           <select class="form-select" id="sections" aria-label="Export type" (change)="onClickExportSection()" [(ngModel)]="selectedExportSection">
-            <option [ngValue]="null">Select</option>
+            <option [ngValue]=""></option>
             <option *ngFor="let section of sections"
                     [ngValue]="section">
               {{ section?.label?.[language] }}
@@ -1131,7 +1135,7 @@
         <div class="mb-3" *ngIf="showExportSubSections">
           <label class="form-label" for="subSections">{{ 'crm.subSections' | translate }}</label>
           <select class="form-select" id="subSections" aria-label="Export type" (change)="onClickExportSubSection()" [(ngModel)]="selectedExportSubSection">
-            <option [ngValue]="null">Select</option>
+            <option [ngValue]=""></option>
             <option *ngFor="let subSection of subSections"
                     [ngValue]="subSection">
               {{ subSection?.label?.[language] }}
@@ -1141,7 +1145,7 @@
         <div class="mb-3" *ngIf="showExportSubSections && showExportSubSectionsTwo && subSectionsTwo?.length > 0">
           <label class="form-label" for="subSectionsTwo">{{ 'crm.subSectionsTwo' | translate }}</label>
           <select class="form-select" id="subSectionsTwo" aria-label="Export type" (change)="onClickExportSubSectionTwo()" [(ngModel)]="selectedExportSubSectionTwo">
-            <option [ngValue]="null">Select</option>
+            <option [ngValue]=""></option>
             <option *ngFor="let subSectionTwo of subSectionsTwo"
                     [ngValue]="subSectionTwo">
               {{ subSectionTwo?.label?.[language] }}
@@ -1149,9 +1153,15 @@
           </select>
         </div>
       </div>
-      <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-outline-primary" (click)="closeExportSetupModal()">{{ 'crm.cancel' | translate }}</button>
-        <button type="button" class="btn btn-primary">{{ 'crm.export' | translate }}</button>
+      <div class="modal-footer border-top-0 d-block">
+        <div class="col-md-6 float-start" *ngIf="exportSelected">
+          <label class="form-label w-100">Exporting: </label>
+          <div class="mt-2">{{exportSelected | sentenceCase}}</div>
+        </div>
+        <div class="float-end">
+          <button type="button" class="btn btn-outline-primary me-2" (click)="closeExportSetupModal()">{{ 'crm.cancel' | translate }}</button>
+          <button type="button" class="btn btn-primary" (click)="exportJson()">{{ 'crm.export' | translate }}</button>
+        </div>
       </div>
     </div>
   </div>

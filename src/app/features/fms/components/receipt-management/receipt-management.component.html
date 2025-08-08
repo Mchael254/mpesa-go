@@ -454,6 +454,7 @@
                       type="button"
                       class="btn btn-link printbtn"
                       *ngIf="receipt.printed == 'Y'"
+                      (click)="printReceipt(i, receipt.no)"
                     >
                       {{ "fms.receipt-management.reprint" | translate }}
                     </button>

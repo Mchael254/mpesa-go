@@ -3,7 +3,7 @@ import {ApiService} from "../../api/api.service";
 import {Observable} from "rxjs/internal/Observable";
 import {API_CONFIG} from "../../../../../environments/api_service_config";
 import {
-  ConfigFormFieldsDto, DynamicScreenSetupDto,
+  ConfigFormFieldsDto, DynamicScreenSetupDto, DynamicSetupImportDto,
   FormGroupsDto, FormSubGroupsDto,
   ScreenFormsDto,
   ScreensDto,
@@ -115,6 +115,36 @@ export class DynamicScreensSetupService {
   updateScreenSetup(data: DynamicScreenSetupDto): Observable<DynamicScreenSetupDto> {
     return this.api.PUT<DynamicScreenSetupDto>(
       `dynamic-screens-setup/screen-setup`,
+      data,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
+  exportScreenSetup(
+    subModuleCode: number,
+    screenCode?: number,
+    formCode?: number,
+    formGroupingsCode?: number,
+    formSubGroupCode?: number,
+  ): Observable<DynamicSetupImportDto> {
+    const params = new HttpParams()
+      .set('subModuleCode', `${subModuleCode}`)
+      .set('screenCode', `${screenCode}`)
+      .set('formCode', `${formCode}`)
+      .set('formGroupCode', `${formGroupingsCode}`)
+      .set('formSubGroupCode', `${formSubGroupCode}`);
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+
+    return this.api.GET<DynamicSetupImportDto>(
+      `dynamic-screens-setup/export`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      paramObject
+    );
+  }
+
+  importScreenSetup(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `dynamic-screens-setup/import`,
       data,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
