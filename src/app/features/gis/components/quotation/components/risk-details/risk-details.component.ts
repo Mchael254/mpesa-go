@@ -26,6 +26,7 @@ import { NgxCurrencyConfig } from "ngx-currency";
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import * as bootstrap from 'bootstrap';
 import { riskClause } from 'src/app/features/gis/data/quotations-dto';
+import { Router } from '@angular/router';
 
 
 const log = new Logger('RiskDetailsComponent');
@@ -61,6 +62,8 @@ export class RiskDetailsComponent {
   @Input() selectedProduct!: any;
   @ViewChild('sectionTable') sectionTable!: Table;
   @ViewChild('limitTable') limitTable!: Table;
+  @ViewChild('excessTable') excessTable!: Table;
+
   @ViewChild('addRiskModal') addRiskModalRef!: ElementRef;
   @ViewChild('addRiskSection') addRiskSectionRef!: ElementRef;
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
@@ -240,7 +243,6 @@ export class RiskDetailsComponent {
   clauseToDelete: any = null;
   selectedClauses: any[] = [];
 
-  showRiskLimits: boolean = true;
   showLimitModal: boolean = false
 
   columns: { field: string; header: string; visible: boolean }[] = [];
@@ -254,7 +256,7 @@ export class RiskDetailsComponent {
   mandatoryClause: any[];
   scheduleLevels: ScheduleLevels[] = [];
   levelTableColumnsMap: { [levelName: string]: Array<{ field: string, header: string }> } = {};
-  riskActiveTab: string = 'riskClauses';
+  riskActiveTab: string = 'riskExcesses';
 
   levelDataMap: { [levelName: string]: any[] } = {};
   activeFormFields: { type: string; name: string; max: number; min: number; isMandatory: string; disabled: boolean; readonly: boolean; regexPattern: string; placeholder: string; label: string; scheduleLevel: number; selectOptions?: { label: string; value: any; }[]; }[];
@@ -264,6 +266,10 @@ export class RiskDetailsComponent {
   selectedRiskLimits: any[] = [];
   allLimitsMap: { [qpCode: string]: any[] } = {};
   limitsOfLiability: any[] = [];
+
+  showExcessModal: boolean = false;
+  selectedExcesses: any[] = [];
+  excessesData: any[] = [];
 
   constructor(
     public subclassService: SubclassesService,
@@ -284,7 +290,8 @@ export class RiskDetailsComponent {
     public productService: ProductsService,
     public fb: FormBuilder,
     public cdr: ChangeDetectorRef,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private router: Router
 
   ) {
     this.quotationCode = sessionStorage.getItem('quotationCode');
@@ -1269,6 +1276,8 @@ export class RiskDetailsComponent {
     log.debug("Insured code:", this.insuredCode)
     this.riskDetailsForm.get('insureds').setValue(this.insuredCode);
     this.selectedBinderCode = this.riskDetailsForm.value.premiumBand
+    const selectedBinderObj = this.binderListDetails.find(binder => binder.code === this.selectedBinderCode)
+    log.debug("SELECTED BINDER OBJ", selectedBinderObj)
     // validate inputs
     if (this.riskDetailsForm.invalid) {
       Object.keys(this.riskDetailsForm.controls).forEach(field => {
@@ -1304,7 +1313,7 @@ export class RiskDetailsComponent {
             wet: this.selectedProduct.wet,
             totalSumInsured: this.selectedProduct.totalSumInsured,
             converted: this.selectedProduct.converted,
-            binder: this.riskDetailsForm.value.premiumBand,
+            binder: selectedBinderObj.binder_name,
             agentShortDescription: this.selectedProduct.agentShortDescription,
             riskInformation: riskPayload,
             limitsOfLiability: [],
@@ -1367,12 +1376,14 @@ export class RiskDetailsComponent {
           );
           log.debug("Matched risk from quotation:", matchedRisk);
           this.selectedRisk = matchedRisk
+          this.sectionDetails = this.selectedRisk.riskLimits;
 
           const currentQuotationRiskCode = matchedRisk.code
           this.quotationRiskCode = currentQuotationRiskCode
           const result = premiumRates;
           // this.sectionPremium = result
-
+          this.sumInsured = matchedRisk.value
+          log.debug("Sum insured:", this.sumInsured)
           const sectionPremiums = result
             .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
             .map(premium => {
@@ -3717,10 +3728,44 @@ export class RiskDetailsComponent {
   }
 
   cleanCurrencyValue(value: string): string {
-    return value.replace(/[^\d.]/g, '');
+    return value?.replace(/[^\d.]/g, '');
   }
 
+  //excesses
+  loadExcesses(): void {
+    const subclassCode = this.selectedSubclassCode;
+    const scheduleType = 'E';
 
+    this.quotationService.getExcesses(subclassCode, scheduleType).subscribe({
+      next: (response) => {
+        console.log('Excesses data:', response);
+        this.excessesData = response?._embedded || [];
+      },
+      error: (error) => {
+        console.error('Error fetching excesses:', error);
+
+      }
+    });
+  }
+
+  openExcessModal(): void {
+    if (!this.selectedSubclassCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'No subclass selected');
+      return;
+    }
+
+    log.debug("Opening excessess modal for subclass:", this.selectedSubclassCode);
+
+    this.showExcessModal = true;
+
+    const modalElement = document.getElementById('addExcess');
+    if (modalElement) {
+      const modal = new (window as any).bootstrap.Modal(modalElement);
+      modal.show();
+    }
+
+    this.loadExcesses();
+  }
 
   onAddOtherSchedule(tab: any): void {
     this.activeModalTab = tab;
@@ -3746,7 +3791,7 @@ export class RiskDetailsComponent {
     });
   }
   computePremium() {
-    const premiumComputationPayload = this.generatePremiumComputationPayload(this.quotationDetails)
+    const premiumComputationPayload = this.generatePremiumPayload(this.quotationDetails)
     log.debug("Premium comp payload:", premiumComputationPayload)
     this.quotationService.computePremium(premiumComputationPayload).subscribe({
       next: (response) => {
@@ -3754,113 +3799,276 @@ export class RiskDetailsComponent {
       }
     })
   }
-  generatePremiumComputationPayload(quotationData: QuotationDetails): any {
+  // generatePremiumComputationPayload(quotationData: QuotationDetails): any {
+  //   return {
+  //     entityUniqueCode: 0,
+  //     interfaceType: "QUOTATION",
+  //     frequencyOfPayment: quotationData.frequencyOfPayment || "A",
+  //     transactionStatus: "NB",
+  //     quotationStatus: "Draft",
+  //     products: quotationData.quotationProducts?.map(product => ({
+  //       code: product.productCode,
+  //       expiryPeriod: "Y",
+  //       description: product.productName,
+  //       withEffectFrom: product.wef,
+  //       withEffectTo: product.wet,
+  //       risks: product.riskInformation?.map(risk => ({
+  //         code: risk.code.toString(),
+  //         propertyId: risk.propertyId,
+  //         binderDto: {
+  //           code: risk.binderCode || 0,
+  //           maxExposure: 0,
+  //           currencyCode: quotationData.currencyCode,
+  //           currencyRate: quotationData.currencyRate || 1
+  //         },
+  //         baseCurrencyCode: quotationData.currencyCode,
+  //         prorata: 'S',
+  //         itemDescription: risk.itemDesc,
+  //         emlBasedOn: null,
+  //         noClaimDiscountLevel: risk.ncdLevel || 0,
+  //         subclassCoverTypeDto: [{
+  //           subclassCode: risk.subclassCode,
+  //           description: risk.subclass?.description || '',
+  //           coverTypeCode: risk.coverTypeCode,
+  //           minimumPremium: risk.riskLimits[0]?.minimumPremium || 0,
+  //           coverTypeShortDescription: risk.coverTypeShortDescription,
+  //           coverTypeDescription: risk.coverTypeDescription,
+  //           limits: risk.riskLimits?.map(limit => ({
+  //             description: limit.sectionShortDescription,
+  //             code: limit.code,
+  //             riskCode: risk.code,
+  //             calculationGroup: limit.calcGroup,
+  //             rowNumber: limit.rowNumber,
+  //             rateDivisionFactor: limit.rateDivisionFactor,
+  //             premiumRate: limit.premiumRate,
+  //             rateType: limit.rateType,
+  //             sectionType: limit.sectionType,
+  //             limitAmount: risk.value,
+  //             freeLimit: limit.freeLimit,
+  //             compute: limit.compute,
+  //             section: {
+  //               code: limit.sectionCode,
+  //               description: limit.sectionShortDescription,
+  //               limitAmount: risk.value,
+  //               isMandatory: null
+  //             },
+  //             multiplierRate: limit.multiplierRate,
+  //             multiplierDivisionFactor: limit.multiplierDivisionFactor,
+  //             dualBasis: limit.dualBasis,
+  //             shortDescription: limit.sectionShortDescription
+  //           })) || [],
+  //           limitPremium: risk.riskLimits?.map(limit => ({
+  //             sectCode: limit.sectionCode,
+  //             premium: limit.premiumAmount || 0,
+  //             description: limit.sectionShortDescription,
+  //             limitAmount: risk.value,
+  //             isMandatory: null,
+  //             calculationGroup: limit.calcGroup,
+  //             compute: limit.compute,
+  //             dualBasis: limit.dualBasis,
+  //             rateDivisionFactor: limit.rateDivisionFactor,
+  //             rateType: limit.rateType,
+  //             rowNumber: limit.rowNumber,
+  //             premiumRate: limit.premiumRate,
+  //             freeLimit: limit.freeLimit,
+  //             sectionType: limit.sectionType,
+  //             multiplierRate: limit.multiplierRate,
+  //             shortDescription: limit.sectionShortDescription
+  //           })) || []
+  //         }],
+  //         enforceCovertypeMinimumPremium: "Y",
+  //         commissionRate: risk.commissionRate || 0,
+  //         sumInsured: risk.value,
+  //         useOfProperty: risk.subclass.description, // Default value
+  //         taxes: product.taxInformation?.map(tax => ({
+  //           taxRateType: tax.rateType,
+  //           applicationLevel: null,
+  //           code: tax.code || 0,
+  //           divisionFactor: 0,
+  //           taxRate: tax.rate || 0,
+  //           rangeTo: 0,
+  //           rangeFrom: 0,
+  //           rateDescription: tax.rateDescription || "",
+  //           taxCode: tax.code || "",
+  //           minPremium: 0,
+  //           sumInsured: 0,
+  //           premium: 0,
+  //           quotationProductCode: 0
+  //         })) || [],
+  //         subclassSection: { code: risk.subclassCode },
+  //         age: 0 // Hardcoded as requested
+  //       })) || []
+  //     })) || [],
+  //     currency: { rate: quotationData.currencyRate || 1 },
+  //     dateWithEffectTo: quotationData.coverTo,
+  //     dateWithEffectFrom: quotationData.coverFrom,
+  //     underwritingYear: new Date().getFullYear(),
+  //     coinsuranceLeader: "N",
+  //     coinsurancePercentage: 0
+  //   };
+  // }
+  generatePremiumPayload(quotationData: any): any {
+    const currentDate = new Date().toISOString();
+    const product = quotationData.quotationProducts[0];
+    const risk = product.riskInformation[0];
+    const riskLimit = risk.riskLimits[0];
+    const vehicleDetails = risk.scheduleDetails.details.level1;
+
     return {
-      entityUniqueCode: 0,
-      interfaceType: "QUOTATION",
-      frequencyOfPayment: quotationData.frequencyOfPayment || "A",
-      transactionStatus: "NB",
-      quotationStatus: "Draft",
-      products: quotationData.quotationProducts?.map(product => ({
-        code: product.productCode,
-        expiryPeriod: "Y",
-        description: product.productName,
-        withEffectFrom: product.wef,
-        withEffectTo: product.wet,
-        risks: product.riskInformation?.map(risk => ({
-          code: risk.code.toString(),
-          propertyId: risk.propertyId,
-          binderDto: {
-            code: risk.binderCode || 0,
-            maxExposure: 0,
-            currencyCode: quotationData.currencyCode,
-            currencyRate: quotationData.currencyRate || 1
-          },
-          baseCurrencyCode: quotationData.currencyCode,
-          prorata: null,
-          itemDescription: risk.itemDesc,
-          emlBasedOn: null,
-          noClaimDiscountLevel: risk.ncdLevel || 0,
-          subclassCoverTypeDto: [{
-            subclassCode: risk.subclassCode,
-            description: risk.subclass?.description || '',
-            coverTypeCode: risk.coverTypeCode,
-            minimumPremium: risk.riskLimits[0]?.minimumPremium || 0,
-            coverTypeShortDescription: risk.coverTypeShortDescription,
-            coverTypeDescription: risk.coverTypeDescription,
-            limits: risk.riskLimits?.map(limit => ({
-              description: limit.sectionShortDescription,
-              code: limit.code,
-              riskCode: risk.code,
-              calculationGroup: limit.calcGroup,
-              rowNumber: limit.rowNumber,
-              rateDivisionFactor: limit.rateDivisionFactor,
-              premiumRate: limit.premiumRate,
-              rateType: limit.rateType,
-              sectionType: limit.sectionType,
-              limitAmount: risk.value,
-              freeLimit: limit.freeLimit,
-              compute: limit.compute,
-              section: {
-                code: limit.sectionCode,
-                description: limit.sectionShortDescription,
+      payload: {
+        entityUniqueCode: 0,
+        interfaceType: "QUOTATION",
+        frequencyOfPayment: quotationData.frequencyOfPayment || "A",
+        transactionStatus: "EX",
+        quotationStatus: "Active",
+        products: [{
+          code: product.productCode,
+          expiryPeriod: "Y",
+          description: product.productName,
+          withEffectFrom: product.wef,
+          withEffectTo: product.wet,
+          risks: [{
+            code: risk.code.toString(),
+            propertyId: risk.propertyId,
+            binderDto: {
+              code: risk.binderCode || 0,
+              maxExposure: 0,
+              currencyCode: quotationData.currencyCode,
+              currencyRate: quotationData.currencyRate || 0
+            },
+            baseCurrencyCode: quotationData.currencyCode,
+            prorata: "S",
+            rescueServiceDto: {
+              code: 0,
+              shortDescription: "string",
+              applicationLevel: "string",
+              rescueServiceTaxDto: {
+                taxRate: 0,
+                taxRateDivisionFactor: 0,
+                taxRateType: "FXD"
+              }
+            },
+            itemDescription: risk.itemDesc,
+            emlBasedOn: "SI",
+            noClaimDiscountLevel: risk.ncdLevel || 0,
+            subclassCoverTypeDto: [{
+              subclassCode: risk.subclassCode,
+              description: risk.subclass.description,
+              coverTypeCode: risk.coverTypeCode,
+              minimumAnnualPremium: 0,
+              minimumPremium: riskLimit.minimumPremium || 0,
+              coverTypeShortDescription: risk.coverTypeShortDescription,
+              coverTypeDescription: risk.coverTypeDescription,
+              limits: [{
+                description: riskLimit.sectionShortDescription,
+                code: riskLimit.code,
+                riskCode: risk.code,
+                calculationGroup: riskLimit.calcGroup,
+                declarationSection: "Y",
+                rowNumber: riskLimit.rowNumber,
+                rateDivisionFactor: riskLimit.rateDivisionFactor,
+                premiumRate: riskLimit.premiumRate,
+                rateType: riskLimit.rateType,
+                sectionType: riskLimit.sectionType,
+                firstLoss: "Y",
+                firstLossAmountPercent: "string",
+                firstLossValue: 0,
                 limitAmount: risk.value,
-                isMandatory: null
-              },
-              multiplierRate: limit.multiplierRate,
-              multiplierDivisionFactor: limit.multiplierDivisionFactor,
-              dualBasis: limit.dualBasis,
-              shortDescription: limit.sectionShortDescription
+                freeLimit: riskLimit.freeLimit,
+                topLocRate: 0,
+                topLocDivFact: 0,
+                emlPercentage: 0,
+                compute: riskLimit.compute,
+                section: {
+                  code: riskLimit.sectionCode,
+                  description: riskLimit.sectionShortDescription,
+                  limitAmount: risk.value,
+                  isMandatory: "Y"
+                },
+                multiplierRate: riskLimit.multiplierRate,
+                multiplierDivisionFactor: riskLimit.multiplierDivisionFactor,
+                minimumPremium: riskLimit.minimumPremium,
+                annualPremium: 0,
+                premiumAmount: riskLimit.premiumAmount,
+                dualBasis: riskLimit.dualBasis,
+                shortDescription: riskLimit.sectionShortDescription,
+                sumInsuredRate: 0,
+                limitPeriod: 0,
+                indemFstPeriod: 0,
+                indemPeriod: 0,
+                indemFstPeriodPercentage: 0,
+                indemRemPeriodPercentage: 0
+              }],
+              computedPremium: 0,
+              limitPremium: [{
+                sectCode: riskLimit.sectionCode,
+                premium: riskLimit.premiumAmount,
+                description: riskLimit.sectionShortDescription,
+                limitAmount: risk.value,
+                isMandatory: "Y",
+                calculationGroup: riskLimit.calcGroup,
+                compute: riskLimit.compute,
+                dualBasis: riskLimit.dualBasis,
+                rateDivisionFactor: riskLimit.rateDivisionFactor,
+                rateType: riskLimit.rateType,
+                rowNumber: riskLimit.rowNumber,
+                premiumRate: riskLimit.premiumRate,
+                freeLimit: riskLimit.freeLimit,
+                sectionType: riskLimit.sectionType,
+                multiplierRate: riskLimit.multiplierRate,
+                shortDescription: riskLimit.sectionShortDescription,
+                sumInsuredRate: 0
+              }],
+              taxComputation: [{
+                code: 0,
+                premium: 0,
+                description: "string"
+              }]
+            }],
+            enforceCovertypeMinimumPremium: "Y",
+            futurePremium: 0,
+            commissionRate: risk.commissionRate || 0,
+            effectiveDateWithEffectTo: currentDate,
+            endorseRemove: "Y",
+            sumInsured: risk.value,
+            useOfProperty: vehicleDetails.bodyType === "TRUCK" ? "Commercial" : "Private",
+            taxes: product.taxInformation?.map(tax => ({
+              taxRateType: tax.rateType || "SRG",
+              applicationLevel: "PRODUCT",
+              code: tax.code || 0,
+              divisionFactor: tax.divisionFactor || 0,
+              taxRate: tax.rate || 0,
+              rangeTo: 0,
+              rangeFrom: 0,
+              rateDescription: tax.description || "string",
+              taxCode: tax.taxCode || "string",
+              minPremium: tax.minimumPremium || 0,
+              sumInsured: 0,
+              premium: 0,
+              quotationProductCode: 0
             })) || [],
-            limitPremium: risk.riskLimits?.map(limit => ({
-              sectCode: limit.sectionCode,
-              premium: limit.premiumAmount || 0,
-              description: limit.sectionShortDescription,
-              limitAmount: risk.value,
-              isMandatory: null,
-              calculationGroup: limit.calcGroup,
-              compute: limit.compute,
-              dualBasis: limit.dualBasis,
-              rateDivisionFactor: limit.rateDivisionFactor,
-              rateType: limit.rateType,
-              rowNumber: limit.rowNumber,
-              premiumRate: limit.premiumRate,
-              freeLimit: limit.freeLimit,
-              sectionType: limit.sectionType,
-              multiplierRate: limit.multiplierRate,
-              shortDescription: limit.sectionShortDescription
-            })) || []
-          }],
-          enforceCovertypeMinimumPremium: "Y",
-          commissionRate: risk.commissionRate || 0,
-          sumInsured: risk.value,
-          useOfProperty: risk.subclass.description, // Default value
-          taxes: product.taxInformation?.map(tax => ({
-            taxRateType: tax.rateType,
-            applicationLevel: null,
-            code: tax.code || 0,
-            divisionFactor: 0,
-            taxRate: tax.rate || 0,
-            rangeTo: 0,
-            rangeFrom: 0,
-            rateDescription: tax.rateDescription || "",
-            taxCode: tax.code || "",
-            minPremium: 0,
-            sumInsured: 0,
-            premium: 0,
-            quotationProductCode: 0
-          })) || [],
-          subclassSection: { code: risk.subclassCode },
-          age: 0 // Hardcoded as requested
-        })) || []
-      })) || [],
-      currency: { rate: quotationData.currencyRate || 1 },
-      dateWithEffectTo: quotationData.coverTo,
-      dateWithEffectFrom: quotationData.coverFrom,
-      underwritingYear: new Date().getFullYear(),
-      coinsuranceLeader: "N",
-      coinsurancePercentage: 0
+            subclassSection: {
+              code: risk.subclassCode
+            }
+          }]
+        }],
+        currency: {
+          rate: quotationData.currencyRate || 0
+        },
+        dateWithEffectTo: currentDate,
+        dateWithEffectFrom: currentDate,
+        underwritingYear: 9999,
+        age: 0, // Hardcoded as requested
+        coinsuranceLeader: "Y",
+        coinsurancePercentage: 0
+      },
+      quotationCode: quotationData.code
     };
+  }
+
+  navigateToRiskDetails() {
+    this.router.navigate(['/home/gis/quotation/quotation-details']).then(r => {
+    });
   }
 
 }

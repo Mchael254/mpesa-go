@@ -927,15 +927,14 @@
                   <th pSortableColumn="premium-band">Premium band<p-sortIcon field="premium-band"></p-sortIcon></th>
                   <th pSortableColumn="icover-from">Cover from<p-sortIcon field="cover-from"></p-sortIcon></th>
                   <th pSortableColumn="cover-to">Cover to<p-sortIcon field="cover-to"></p-sortIcon></th>
-                  <th></th>
 
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-data>
                 <tr [class.p-highlight]="data === selectedRisk" [pSelectableRow]="riskDetails" class="point"
                   (click)="handleRowClick(data)" [class.disabled]="!data?.code">
-                  <td>{{ data?.quotationRiskNo || "-" }}</td>
                   <td>{{ data?.propertyId || "-" }}</td>
+                  <td>{{ data?.itemDesc || "-" }}</td>
                   <td>
                     {{ data?.subclass?.description || "-" | sentenceCase }}
                   </td>
@@ -943,7 +942,7 @@
                     {{ data?.coverTypeDescription || "-" | sentenceCase }}
                   </td>
                   <td>
-                    {{ data?.sectionsDetails[0]?.limitAmount || 0 | number }}
+                    {{ data?.binderCode }}
                   </td>
 
                   <td>
@@ -1543,10 +1542,13 @@
       </div>
 
       <div class="mb-5 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        
         <!-- Left-side buttons -->
         <div class="d-flex gap-2 flex-wrap">
-          <button type="button" class="btn btn-outline-primary" (click)="navigateToRiskCenter()">
-            {{ 'gis.quotation.back' | translate }}
+          <button
+            style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"
+            (click)="navigateToRiskCenter()">
+             {{ 'gis.quotation.back' | translate }}
           </button>
 
           <button type="button" class="btn btn-outline-primary" (click)="openReassignQuotationModal()"
