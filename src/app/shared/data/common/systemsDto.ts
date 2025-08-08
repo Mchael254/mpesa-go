@@ -7,6 +7,7 @@ export interface SystemsDto {
 export interface StatusDTO {
   name: string;
   value: string;
+  actionLabel?: string;
 }
 
 export interface SystemModule {

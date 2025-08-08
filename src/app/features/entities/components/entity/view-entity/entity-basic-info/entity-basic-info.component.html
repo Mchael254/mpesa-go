@@ -1,5 +1,6 @@
 
 <!--{{ overviewConfig | json }}-->
+<!--{{ partyAccountDetails.status | json }}-->
 
 <div class="row g-3 align-items-center">
   <!-- Profile Section -->
@@ -60,16 +61,18 @@
     <div *ngIf="partyAccountDetails?.status" class="row text-end">
       <div class="col-sm-8">
         <label for="status" class="col-form-label">
-          <!--{{ "entities.status" | translate }}-->
           {{ basicInfo?.status[language] | titlecase }}
         </label>
       </div>
       <div class="col-sm-4">
-        <select id="status" class="form-select form-select-sm" aria-label="Default select example">
-          <option selected>Ready</option>
-          <option value="1">One</option>
-          <option value="2">Two</option>
-          <option value="3">Three</option>
+        <select id="status" class="form-select form-select-sm" aria-label="Default select example" (change)="processSelectedStatus($event)">
+          <option
+            *ngFor="let status of applicableStatuses"
+            [value]="status.value"
+            [selected]="status.value === selectedClientStatus.value"
+          >
+            {{ status.name }}
+          </option>
         </select>
       </div>
     </div>
@@ -304,3 +307,70 @@
     </div>
   </div>
 </div>
+
+
+<div class="modal fade" id="statusModalToggle" aria-hidden="true" aria-labelledby="statusModalToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h1 class="modal-title fs-5 text-primary" id="statusModalToggleLabel">Status</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-check" *ngFor="let status of actionableStatuses">
+          <input
+            class="form-check-input"
+            type="radio"
+            [value]="status.value"
+            name="statusGroup"
+            [id]="status.name"
+            [checked]="status.name === selectedClientStatus.value"
+            (change)="onStatusChange(status.value)">
+
+          <label class="form-check-label" [for]="status.name">
+            {{ status.actionLabel | titlecase }}
+          </label>
+        </div>
+
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-primary" data-bs-target="#statusModalToggle2" data-bs-toggle="modal">Okay</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="statusModalToggle2" aria-hidden="true" aria-labelledby="statusModalToggleLabel2" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h1 class="modal-title fs-5 text-primary" id="statusModalToggleLabel2">{{ selectedClientStatus.actionLabel | titlecase }} client</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h6 class="text-dark mb-3">Are you sure you want to {{ selectedClientStatus.actionLabel }} this client?</h6>
+        <ng-container *ngIf='!["R", "D"].includes(partyAccountDetails.status)'>
+          <div class="my-3">
+            <label for="statusComment" class="form-label">Comments</label>
+            <textarea #commentInput class="form-control" id="statusComment" rows="3"></textarea>
+          </div>
+        </ng-container>
+        <ng-container *ngIf='["R", "D"].includes(partyAccountDetails.status)'>
+          <!--<div class="my-3">
+            ready or draft
+          </div>-->
+        </ng-container>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-outline-primary" data-bs-target="#statusModalToggle" data-bs-toggle="modal">Cancel</button>
+        <ng-container *ngIf='!["R", "D"].includes(partyAccountDetails.status)'>
+          <button class="btn btn-primary" data-bs-dismiss="modal" (click)="changeClientStatus()">{{ selectedClientStatus.actionLabel | titlecase }}</button>
+        </ng-container>
+        <ng-container *ngIf='["R", "D"].includes(partyAccountDetails.status)'>
+          <button class="btn btn-outline-primary">Re-assign</button>
+          <button class="btn btn-primary" data-bs-dismiss="modal" (click)="changeClientStatus()">{{ selectedClientStatus.name | titlecase }}</button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+<button class="btn btn-primary" style="visibility: hidden" data-bs-target="#statusModalToggle" data-bs-toggle="modal" #statusModalButton>Open status modal</button>

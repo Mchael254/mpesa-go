@@ -57,6 +57,7 @@ import { NewEntityV2Component } from './components/entity/new-entity-v2/new-enti
 import { PrivacyPolicyComponent } from './components/entity/new-entity-v2/privacy-policy/privacy-policy.component';
 import { PrimeIdentityComponent } from './components/entity/view-entity/prime-identity/prime-identity.component';
 import { ContactComponent } from './components/entity/view-entity/contact/contact.component';
+import { AddressComponent } from './components/entity/view-entity/address/address.component';
 
 @NgModule({
   declarations: [
@@ -102,6 +103,7 @@ import { ContactComponent } from './components/entity/view-entity/contact/contac
     PrivacyPolicyComponent,
     PrimeIdentityComponent,
     ContactComponent,
+    AddressComponent,
   ],
   imports: [
     CommonModule,

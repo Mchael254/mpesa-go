@@ -4,7 +4,7 @@
     <td>
       <div class="row">
         <div class="col-sm-4">
-          {{ contactDetailsConfig?.contact_details?.branch[language] | titlecase }}
+          {{ contactDetailsConfig?.contact_details?.branch[language] || '---' | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
           {{ contactDetails.branch }}
@@ -14,7 +14,7 @@
     <td>
       <div class="row" *ngIf="clientTitle?.description">
         <div class="col-sm-4">
-          {{ contactDetailsConfig?.contact_details?.title[language] | titlecase }}
+          {{ contactDetailsConfig?.contact_details?.title[language] || '---' | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
           {{ clientTitle?.description }}
@@ -24,7 +24,7 @@
     <td>
       <div class="row">
         <div class="col-sm-5">
-          {{ contactDetailsConfig?.contact_details?.sms_number[language] | titlecase }}
+          {{ contactDetailsConfig?.contact_details?.sms_number[language] || '---' | titlecase }}
         </div>
         <div class="col-sm-7 fw-bold">
           {{ contactDetails?.smsNumber }}
@@ -36,7 +36,7 @@
     <td>
       <div class="row">
         <div class="col-sm-5">
-          {{ contactDetailsConfig?.contact_details?.tel_number[language] | titlecase }}
+          {{ contactDetailsConfig?.contact_details?.tel_number[language] || '---' | titlecase }}
         </div>
         <div class="col-sm-7 fw-bold">
           {{ contactDetails?.phoneNumber }}
@@ -46,7 +46,7 @@
     <td>
       <div class="row">
         <div class="col-sm-4">
-          {{ contactDetailsConfig?.contact_details?.email[language] | titlecase }}
+          {{ contactDetailsConfig?.contact_details?.email[language] || '---' | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
           {{ contactDetails?.emailAddress | lowercase }}
@@ -56,7 +56,7 @@
     <td>
       <div class="row">
         <div class="col-sm-5">
-          {{ contactDetailsConfig?.contact_details?.preferred_contact_channel[language] | titlecase }}
+          {{ contactDetailsConfig?.contact_details?.preferred_contact_channel[language] || '---' | titlecase }}
         </div>
         <div class="col-sm-7 fw-bold">
           {{ contactDetails?.contactChannel | uppercase }}
@@ -79,7 +79,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-4 text-primary" id="editContactModalLabel">
-          {{ formFieldsConfig.label[language] | titlecase }}
+          {{ formFieldsConfig?.label[language] || '---' | titlecase }}
         </h1>
         <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -90,13 +90,13 @@
               <ng-container *ngFor="let field of formFieldsConfig.fields">
                 <div class="col-md-6">
                   <label [for]="field.fieldId" class="form-label">
-                    {{ field.label[language] | titlecase }}
+                    {{ field?.label[language] || '---' | titlecase }}
                   </label>
                   <!-- Text input -->
                   <input
                     *ngIf="field.type === 'text' || field.type === 'email'"
                     [formControlName]="field.fieldId"
-                    [placeholder]="field.placeholder[language] || ''"
+                    [placeholder]="field?.placeholder[language] || ''"
                     [id]="field.fieldId"
                     type="text"
                     class="form-control"
@@ -148,10 +148,10 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-          {{ formFieldsConfig.buttons.cancel.label[language] | sentenceCase }}
+          {{ formFieldsConfig?.buttons?.cancel?.label[language] || '---' | titlecase }}
         </button>
         <button type="button" class="btn btn-primary" (click)="editContactDetails()">
-          {{ formFieldsConfig.buttons.save.label[language] | sentenceCase }}
+          {{ formFieldsConfig?.buttons?.save?.label[language] || '---' | titlecase }}
         </button>
       </div>
     </div>

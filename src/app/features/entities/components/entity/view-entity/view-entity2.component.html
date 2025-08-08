@@ -62,6 +62,20 @@
               [formFieldsConfig]="editContactFormConfig"
             ></app-contact>
           </ng-container>
+
+          <ng-container *ngIf="
+            partyAccountDetails &&
+            tab.title==='address';"
+          >
+            <app-address
+              #addressRef
+              [addressDetails]="partyAccountDetails.address"
+              [accountCode]="partyAccountDetails.accountCode"
+              [addressDetailsConfig]="tab"
+              [formFieldsConfig]="editAddressFormConfig"
+            ></app-address>
+          </ng-container>
+
         </p-tabPanel>
       </ng-container>
     </p-tabView>
