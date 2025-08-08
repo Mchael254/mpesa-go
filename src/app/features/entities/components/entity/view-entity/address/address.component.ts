@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Logger, UtilService} from "../../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
@@ -24,6 +24,8 @@ export class AddressComponent implements OnInit {
   @Input() formFieldsConfig: any;
   @Input() addressDetails: any;
   @Input() accountCode: number;
+
+  @Output() fetchClientDetails = new EventEmitter<void>();
 
   countries: CountryDto[];
   clientCountry: CountryDto;
@@ -70,7 +72,6 @@ export class AddressComponent implements OnInit {
       ];
     });
     this.editForm = this.fb.group(group);
-    // this.patchFormValues();
   }
 
   fetchCountries(): void {
@@ -128,11 +129,11 @@ export class AddressComponent implements OnInit {
       county: this.clientState.id,
       city: this.clientTown.id,
       physicalAddress: this.addressDetails.physicalAddress,
-      postalAddress: this.addressDetails.postalAddress,
+      postalAddress: this.addressDetails.residentialAddress,
       postalCode: this.addressDetails.postalCode,
       town: this.clientTown.id,
       road: this.addressDetails.road,
-      houseNo: this.addressDetails.houseNo,
+      houseNumber: this.addressDetails.houseNumber,
     }
     this.editForm.patchValue(patchData);
   }
@@ -141,30 +142,22 @@ export class AddressComponent implements OnInit {
     const formValues = this.editForm.getRawValue();
     const addressDetails = {
       ...this.addressDetails,
-      address: 'test address',
       countryId: formValues.country,
       stateId: formValues.county,
       townId: formValues.city,
       physicalAddress: formValues.physicalAddress,
-      residentialAddress: formValues.physicalAddress,
-      postalAddress: formValues.postalAddress,
+      residentialAddress: formValues.postalAddress,
+      // postalAddress: formValues.residentialAddress || formValues.postalAddress,
       postalCode: formValues.postalCode,
       // townId: formValues.town,
       road: formValues.road,
-      houseNumber: formValues.houseNo,
-      // boxNumber: '123',
-      // estate: 'test estate',
-      // isUtilityAddress: '1233',
-      // utilityAddressProof: '222',
-      // fax: '123',
-      // zip: '123',
-      // phoneNumber: '08060911051',
-      // modifiedBy: 'Tunde'
+      houseNumber: formValues.houseNumber,
     }
 
-    this.clientService.updateClient(this.accountCode, addressDetails).subscribe({
+    this.clientService.updateClientSection(this.accountCode, {address: addressDetails}).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
+        this.addressDetails = data.address;
       },
       error: err => {
         const errorMessage = err?.error?.message ?? err.message;
