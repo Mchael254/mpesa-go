@@ -37,7 +37,15 @@
             "fr": "statut"
           }
         },
-        "order": 1
+        "order": 1,
+        "applicable_status": {
+          "active": ["active", "suspended", "inactive", "blacklisted"],
+          "inactive": ["active", "suspended", "inactive", "blacklisted"],
+          "blacklisted": ["active", "suspended", "inactive", "blacklisted"],
+          "ready": ["ready", "active", "blacklisted"],
+          "suspended": ["active", "suspended", "inactive", "blacklisted"],
+          "draft": ["draft", "ready"]
+        }
       },
       {
         "title": "transactions",
@@ -166,6 +174,53 @@
           "en": "address",
           "fr": "french details",
           "ke": "swahili details"
+        },
+        "address_details": {
+          "country": {
+            "en": "country",
+            "fr": "",
+            "ke": ""
+          },
+          "county": {
+            "en": "county",
+            "fr": "",
+            "ke": ""
+          },
+          "city": {
+            "en": "city",
+            "fr": "",
+            "ke": ""
+          },
+          "physical_address": {
+            "en": "physical address",
+            "fr": "",
+            "ke": ""
+          },
+          "postal_address": {
+            "en": "postal address",
+            "fr": "",
+            "ke": ""
+          },
+          "postal_code": {
+            "en": "postal code",
+            "fr": "",
+            "ke": ""
+          },
+          "town": {
+            "en": "town",
+            "fr": "",
+            "ke": ""
+          },
+          "road": {
+            "en": "road",
+            "fr": "",
+            "ke": ""
+          },
+          "house_no": {
+            "en": "house name/no",
+            "fr": "",
+            "ke": ""
+          }
         },
         "order": 3
       },

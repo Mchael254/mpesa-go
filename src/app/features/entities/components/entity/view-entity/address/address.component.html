@@ -1,0 +1,191 @@
+<ng-container *ngIf="editForm && this.countries && this.states && this.towns; else loadingContent">
+<!--{{ addressDetails | json }}-->
+  <table class="table table-borderless">
+    <tbody>
+    <tr>
+      <td>
+        <div class="row">
+          <div class="col-sm-4">
+            {{ addressDetailsConfig?.address_details?.country[language] | titlecase }}
+          </div>
+          <div class="col-sm-8 fw-bold" *ngIf="clientCountry">
+            {{ clientCountry.name | titlecase }}
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="row">
+          <div class="col-sm-4">
+            {{ addressDetailsConfig?.address_details?.county[language] | titlecase }}
+          </div>
+          <div class="col-sm-8 fw-bold" *ngIf="clientState">
+            {{ clientState?.name | titlecase }}
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="row">
+          <div class="col-sm-4">
+            {{ addressDetailsConfig?.address_details?.city[language] | titlecase }}
+          </div>
+          <div class="col-sm-8 fw-bold" *ngIf="clientTown">
+            {{ clientTown.name | titlecase }}
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="row">
+          <div class="col-sm-4">
+            {{ addressDetailsConfig?.address_details?.physical_address[language] | titlecase }}
+          </div>
+          <div class="col-sm-8 fw-bold">
+            {{ addressDetails?.physicalAddress | titlecase }}
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="row">
+          <div class="col-sm-4">
+            {{ addressDetailsConfig?.address_details?.postal_address[language] | titlecase }}
+          </div>
+          <div class="col-sm-8 fw-bold">
+            {{ addressDetails?.residentialAddress | titlecase }}
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="row">
+          <div class="col-sm-4">
+            {{ addressDetailsConfig?.address_details?.postal_code[language] | titlecase }}
+          </div>
+          <div class="col-sm-8 fw-bold">
+            {{ addressDetails?.postalCode | uppercase }}
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="row">
+          <div class="col-sm-4">
+            {{ addressDetailsConfig?.address_details?.town[language] | titlecase }}
+          </div>
+          <div class="col-sm-8 fw-bold">
+            {{ clientTown?.name | titlecase }}
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="row">
+          <div class="col-sm-4">
+            {{ addressDetailsConfig?.address_details?.road[language] | titlecase }}
+          </div>
+          <div class="col-sm-8 fw-bold">
+            {{ addressDetails?.road | titlecase }}
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="row">
+          <div class="col-sm-4">
+            {{ addressDetailsConfig?.address_details?.house_no[language] | titlecase }}
+          </div>
+          <div class="col-sm-8 fw-bold">
+            {{ addressDetails?.houseNumber | uppercase }}
+          </div>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+
+
+  <!--edit prime details modal-->
+  <button #editButton type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editAddressModal" hidden>
+    Open Edit Address Modal
+  </button>
+
+  <!-- Modal -->
+  <div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h1 class="modal-title fs-4 text-primary" id="editAddressModalLabel">
+            {{ formFieldsConfig.label[language] | titlecase }}
+          </h1>
+          <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ng-container
+            *ngIf="
+          editForm && this.countries && this.states && this.towns;
+          else loadingForm
+          "
+          > <!--todo: fix condition-->
+            <form [formGroup]="editForm">
+              <div class="row g-3">
+                <ng-container *ngFor="let field of formFieldsConfig.fields">
+                  <div class="col-md-6">
+                    <label [for]="field.fieldId" class="form-label">
+                      {{ field.label[language] | titlecase }}
+                    </label>
+                    <!-- Text input -->
+                    <input
+                      *ngIf="field.type === 'text' || field.type === 'email'"
+                      [formControlName]="field.fieldId"
+                      [placeholder]="field.placeholder[language] || ''"
+                      [id]="field.fieldId"
+                      type="text"
+                      class="form-control"
+                    />
+
+                    <!--select input-->
+                    <select
+                      *ngIf="field.type === 'select'"
+                      [formControlName]="field.fieldId"
+                      [id]="field.fieldId"
+                      class="form-select"
+                      (change)="processSelectOption($event, field.fieldId)"
+                    >
+                      <option *ngFor="let opt of field.options" [value]="opt.id ? opt.id : opt.value">
+                        {{ opt.name || opt.description || opt.label | uppercase }}
+                      </option>
+                    </select>
+
+                  </div>
+                </ng-container>
+              </div>
+            </form>
+          </ng-container>
+          <ng-template #loadingForm>
+            <div class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+            {{ formFieldsConfig.buttons.cancel.label[language] | sentenceCase }}
+          </button>
+          <button type="button" class="btn btn-primary" (click)="editAddressDetails()">
+            {{ formFieldsConfig.buttons.save.label[language] | sentenceCase }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ng-container>
+
+<ng-template #loadingContent>
+  <div class="row">
+    <div class="col-sm-12">
+      <p class="lead">Loading content...</p>
+    </div>
+  </div>
+</ng-template>

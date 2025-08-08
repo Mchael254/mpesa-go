@@ -1,3 +1,28 @@
+export interface AddressModel {
+  id: number;
+  accountId: number;
+  houseNumber: string;
+  road: string;
+  estate: string | null;
+  townId: number;
+  stateId: number;
+  countryId: number;
+  phoneNumber: string;
+  fax: string | null;
+  postalCode: string;
+  zip: string | null;
+  boxNumber: string;
+  physicalAddress: string;
+  residentialAddress: string;
+  isUtilityAddress: 'Y' | 'N';
+  utilityAddressProof: string;
+  createdBy: string | null;
+  createdDate: string | null;
+  modifiedBy: string | null;
+  modifiedDate: string | null;
+}
+
+
 export interface ClientDTO {
   branchCode: number,
   category: string,
@@ -31,7 +56,8 @@ export interface ClientDTO {
   withEffectFromDate: string,
   clientTypeName: string
   clientFullName: string
-  code:number //added
+  code:number, //added
+  address?: AddressModel,
 }
 export interface ClientTypeDTO {
   category: string,
