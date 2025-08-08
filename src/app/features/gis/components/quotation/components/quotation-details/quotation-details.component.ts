@@ -1335,14 +1335,34 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           return { ...value, name: capitalizedDescription };
         });
 
-        log.info(this.branch, 'this is a branch list');
+        log.debug(this.branch, 'this is a branch list');
 
-        if (this.storedQuotationFormDetails?.branch) {
-          const selectedBranch = this.branch.find(branch => branch.id === this.storedQuotationFormDetails?.branch.id);
-          if (selectedBranch) {
-            this.quotationForm.patchValue({ branch: selectedBranch });
+        const userCode = sessionStorage.getItem("userCode");
+
+        this.quotationService.getUserBranches(userCode).subscribe({
+          next: (userBranches) => {
+            if (!userBranches?.length) return;
+
+            //Get the first user branchId
+            const firstUserBranchId = userBranches[0].branchId;
+
+            //Match it against the full branch list
+            const matchedBranch = this.branch.find(b => b.id === firstUserBranchId);
+
+            if (matchedBranch) {
+              this.quotationForm.patchValue({
+                branch: matchedBranch
+              });
+
+              // log.debug('User\'s matched branch preselected:', matchedBranch);
+            } else {
+              log.warn('No matching branch found for user branchId:', firstUserBranchId);
+            }
+          },
+          error: (err) => {
+            console.error('Error fetching user branches:', err);
           }
-        }
+        });
 
         // INTRODUCERS
         this.introducers = introducers;
