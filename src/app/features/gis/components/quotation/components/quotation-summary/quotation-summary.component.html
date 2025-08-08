@@ -856,7 +856,7 @@
         <div class="card-body">
           <div class="row">
             <div class="col-4">
-              <p *ngIf="!isRiskCollapsibleOpen" class="card-title mt-2" style="cursor: pointer;"
+              <p  class="card-title mt-2" style="cursor: pointer;"
                 (click)="toggleRiskDetails()">
                 Risks
               </p>
@@ -864,7 +864,7 @@
             </div>
             <div class="col-8 d-flex justify-content-end">
               <div class="row">
-                <div class="col-4" *ngIf="!isRiskCollapsibleOpen">
+                <div class="col-4" >
                   <button type="button" id="icon" class="btn btn-primary p-0.5 px-2.5" (click)="toggleRiskDetails()"
                     [attr.aria-expanded]="isRiskCollapsibleOpen">
                     <i class="fa-solid" [ngClass]="{
@@ -883,9 +883,9 @@
           <div class="mt-4" [ngClass]="{ 'collapse': true, 'show': isRiskCollapsibleOpen }" id="riskDetails">
             <div class="row mb-3">
               <div class="col-4">
-                <p class="mt-2 fw-semibold" data-bs-toggle="collapse" data-bs-target="#riskDetails">
+                <!-- <p class="mt-2 fw-semibold" data-bs-toggle="collapse" data-bs-target="#riskDetails">
                   Risk Details
-                </p>
+                </p> -->
               </div>
 
               <div class="col-12">
@@ -902,13 +902,13 @@
 
 
                   <!-- Toggle button aligned to end -->
-                  <button type="button" class="btn btn-primary p-0.5 px-2.5" (click)="toggleRiskDetails()"
+                  <!-- <button type="button" class="btn btn-primary p-0.5 px-2.5" (click)="toggleRiskDetails()"
                     [attr.aria-expanded]="isRiskCollapsibleOpen">
                     <i class="fa-solid" [ngClass]="{
             'fa-chevron-up': isRiskCollapsibleOpen,
             'fa-chevron-down': !isRiskCollapsibleOpen
           }"></i>
-                  </button>
+                  </button> -->
                 </div>
               </div>
             </div>
@@ -1044,104 +1044,118 @@
               <!-- RISK CLAUSES -->
               <div class="tab-pane fade" id="nav-riskClauses" role="tabpanel" aria-labelledby="nav-riskClauses"
                 tabindex="0">
-                <p-table [value]="riskClauses" #riskClausesTable dataKey="code" editMode="row"
-                  [tableStyle]="{ 'width': '100%' }" [paginator]="true" [rows]="2" [rowsPerPageOptions]="[2,4,6]"
-                  [scrollable]="true" responsiveLayout="scroll" responsiveLayout="scroll" class="ui-datatable"
-                  [autoLayout]="true">
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th class="flexible-header1" pSortableColumn="id">
-                        ID <p-sortIcon field="id" />
-                      </th>
-                      <th class="flexible-header1" pSortableColumn="heading">
-                        Heading <p-sortIcon field="heading" />
-                      </th>
-                      <th class="flexible-header1" pSortableColumn="wording">
-                        Wording <p-sortIcon field="wording" />
-                      </th>
-                      <th></th>
-                      <th></th>
+               <p-table 
+  [value]="riskClauses" 
+  #riskClausesTable 
+  dataKey="code" 
+  editMode="row"
+  [tableStyle]="{ 'width': '100%' }" 
+  [paginator]="true" 
+  [rows]="2" 
+  [rowsPerPageOptions]="[2,4,6]"
+  [scrollable]="true" 
+  responsiveLayout="scroll" 
+  class="ui-datatable"
+  [autoLayout]="true">
 
+  <!-- HEADER -->
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="flexible-header1" pSortableColumn="id">
+        ID <p-sortIcon field="id"></p-sortIcon>
+      </th>
+      <th class="flexible-header1" pSortableColumn="heading">
+        Heading <p-sortIcon field="heading"></p-sortIcon>
+      </th>
+      <th class="flexible-header1" pSortableColumn="wording">
+        Wording <p-sortIcon field="wording"></p-sortIcon>
+      </th>
+      <th></th>
+      <th></th>
+    </tr>
+  </ng-template>
 
-                    </tr>
-                    <tr>
-                      <th>
-                        <input type="text" pInputText placeholder="Filter ID" class="form-control w-70"
-                          (input)="filterTable($event,'clauseCode',riskClausesTable)" />
-                      </th>
-                      <th>
-                        <input type="text" pInputText placeholder="Filter Heading" class="form-control w-70"
-                          (input)="filterTable($event,'shortDescription',riskClausesTable)" />
-                      </th>
-                      <th>
-                        <input type="text" pInputText placeholder="Filter Wording" class="form-control w-70"
-                          (input)="filterTable($event,'clause',riskClausesTable)" />
-                      </th>
-                      <th></th>
-                      <th></th>
+  <!-- BODY -->
+  <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
+    
+    <!-- FILTER ROW -->
+    <ng-container *ngIf="rowIndex === 0">
+      <tr>
+        <td>
+          <input 
+            type="text" 
+            pInputText 
+            class="form-control w-70"
+            (input)="filterTable($event,'clauseCode',riskClausesTable)" />
+        </td>
+        <td>
+          <input 
+            type="text" 
+            pInputText 
+            class="form-control w-70"
+            (input)="filterTable($event,'shortDescription',riskClausesTable)" />
+        </td>
+        <td>
+          <input 
+            type="text" 
+            pInputText 
+            class="form-control w-70"
+            (input)="filterTable($event,'clause',riskClausesTable)" 
+            />
+        </td>
+        <td></td>
+        <td></td>
+      </tr>
+    </ng-container>
 
-                    </tr>
-                  </ng-template>
-                  <ng-template pTemplate="body" let-selectedClauseList let-editing="editing" let-ri="rowIndex">
-                    <tr [pEditableRow]="selectedClauseList">
-                      <td>
-                        {{ selectedClauseList.clauseCode }}
-                      </td>
-                      <td>
-                        {{
-                        selectedClauseList.shortDescription | sentenceCase
-                        }}
-                      </td>
-                      <td style="
-  min-width: 800px;
-  max-width: 1100px;
-  overflow: auto;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  padding-right: 10px;
-">
-                        <p-cellEditor>
-                          <ng-template pTemplate="input">
-                            <input pInputText type="text" [(ngModel)]="selectedClauseList.clause"
-                              class="form-control form-control-sm" [ngModelOptions]="{ standalone: true }" />
-                          </ng-template>
-                          <ng-template pTemplate="output">
-                            <div style="max-height: 120px; overflow: auto;">
-                              {{ selectedClauseList.clause }}
-                            </div>
-                          </ng-template>
-                        </p-cellEditor>
-                      </td>
+    <!-- DATA ROWS -->
+      <tr [pEditableRow]="data">
+        <td>{{ data.clauseCode }}</td>
+        <td>{{ data.shortDescription | sentenceCase }}</td>
+        <td style="width: 100%; white-space: pre-wrap; word-wrap: break-word;">
+  <p-cellEditor>
+    <ng-template pTemplate="input">
+      <input 
+        pInputText 
+        type="text" 
+        [(ngModel)]="data.clause"
+        class="form-control form-control-sm w-100"
+        [ngModelOptions]="{ standalone: true }" />
+    </ng-template>
+    <ng-template pTemplate="output">
+      <div style="white-space: pre-wrap; word-wrap: break-word;">
+        {{ data.clause }}
+      </div>
+    </ng-template>
+  </p-cellEditor>
+</td>
 
+      </tr>
 
+    <!-- MODAL -->
+    <p-dialog [(visible)]="data.showHelperModal" [modal]="false" [style]="{ width: '700px' }">
+      <ng-container *ngIf="data">
+        <div 
+          pResizable 
+          [ngStyle]="{ 'min-width.px': 200, 'min-height.px': 150 }" 
+          (onResize)="onResize($event)">
+          <p>{{ data.clause }}</p>
+        </div>
+      </ng-container>
+    </p-dialog>
 
-                      <td>
-                        <button pButton pRipple type="button" (click)="openHelperModal(selectedClauseList)"
-                          icon="pi pi-info-circle" class="p-button-rounded p-button-text"></button>
-                      </td>
-                      <td>{{ selectedClauseList.clauseEditable }}</td>
-                    </tr>
-                    <!-- Modal for each row -->
-                    <p-dialog [(visible)]="selectedClauseList.showHelperModal" [modal]="false"
-                      [style]="{ width: '700px' }">
-                      <ng-container *ngIf="selectedClauseList">
-                        <div pResizable [ngStyle]="{
-                            'min-width.px': 200,
-                            'min-height.px': 150
-                          }" (onResize)="onResize($event)">
-                          <p>{{ selectedClauseList.clause }}</p>
-                        </div>
-                      </ng-container>
-                    </p-dialog>
-                  </ng-template>
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td colspan="4" class="text-center text-muted py-3">
-                        “No Clauses available for this product.”
-                      </td>
-                    </tr>
-                  </ng-template>
-                </p-table>
+  </ng-template>
+
+  <!-- EMPTY MESSAGE -->
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="5" class="text-center text-muted py-3">
+        “No Clauses available for this product.”
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
               </div>
               <!-- SCHEDULES -->
               <div class="tab-pane fade" id="nav-schedules" role="tabpanel" aria-labelledby="nav-schedules"
