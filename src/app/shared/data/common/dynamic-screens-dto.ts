@@ -125,3 +125,12 @@ export interface DynamicScreenSetupDto {
   screens: ScreensDto[];
   subModules: SubModulesDto[];
 }
+
+export interface DynamicSetupImportDto {
+  subModules: SubModulesDto[],
+  screens: ScreensDto[],
+  forms: ScreenFormsDto[],
+  groups: FormGroupsDto[],
+  fields: ConfigFormFieldsDto[],
+  subGroup: FormSubGroupsDto[],
+}
