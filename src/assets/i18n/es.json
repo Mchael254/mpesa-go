@@ -548,7 +548,9 @@
     "welcomeToEvolveConfigurator": "Bienvenido a Evolve Configurator",
     "selectASystem": "Seleccione un sistema para comenzar a personalizar su pantalla, diseño y campos",
     "getStarted": "Empezar",
-    "updateInAnotherLanguage": "¿Desea actualizar los cambios en otro idioma?"
+    "updateInAnotherLanguage": "¿Desea actualizar los cambios en otro idioma?",
+    "export": "Exportar",
+    "publishedChangesWillBeExported": "Tenga en cuenta que solo se exportarán los cambios publicados"
   },
   "entities": {
     "account_number": "Número de cuenta",
