@@ -253,7 +253,6 @@
     "base-fms": {
       "parameters": "Parameters",
       "defineYrs": "Define Years/Periods",
-
       "closeYrs": "Close Years / Period",
       "branches": "Branches",
       "businessClasses": "Business Classes",
@@ -1123,7 +1122,6 @@
     "quotation": {
       "basic_premium": "Premium",
       "benefit": "Benefit",
-      "back": "Back",
       "add_product": "Add product",
       "are_you_sure_you_want_to_delete_schedule": "Are you sure you want to delete this schedule",
       "authorized_driver": "Authorized Driver",
@@ -1144,6 +1142,7 @@
       "agent": "Agent",
       "agent_id": "Agent id",
       "applicable_modules": "Applicable modules",
+      "back": "Back",
       "batch_number": "Batch No.",
       "benefits": "Benefits",
       "binder": "Binder",
@@ -1267,9 +1266,9 @@
       "notes": "Notes",
       "options": "Options",
       "other_details": "Other Details",
-      "other_risk_details":"Other risk details",
+      "other_risk_details": "Other risk details",
       "payment_details": "Payment details",
-      "perils":"Perils",
+      "perils": "Perils",
       "period_of_insurance": "Period of insurance",
       "phone_number": "Phone Number",
       "pin": "Pin",

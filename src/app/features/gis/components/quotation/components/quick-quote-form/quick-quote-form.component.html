@@ -366,7 +366,7 @@
       *ngIf="product.riskLevelPremiums.length > 0">
 
       <div class="product-comparison-title mx-4">
-        {{ product.description }} <span>- {{ 'gis.quotation.cover_types' | translate }}</span>
+        {{ product.description | sentenceCase }} <span>- {{ 'gis.quotation.cover_types' | translate }}</span>
       </div>
       <button type="button" id="icon-chevron" class="btn btn-primary">
         <i class="fa" [ngClass]="expandedComparisonStates[i] ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
@@ -376,12 +376,18 @@
     <!-- Card Body -->
     <div *ngIf="expandedComparisonStates[i]" class="card-body collapsible-body">
       <div *ngFor="let risk of product.riskLevelPremiums; let j = index">
-        <p class="mb-3 mx-4 m-0 d-flex align-items-center">
+        <!-- <p class="mb-3 mx-4 m-0 d-flex align-items-center">
           <i class="fa me-2" [ngClass]="expandedCoverTypeIndexes[i] === j ? 'fa-chevron-up' : 'fa-chevron-down'"
             (click)="toggleCoverType(i, j)" style="cursor: pointer;">
           </i>
           {{ risk?.propertyId }} {{ risk?.sumInsured | currency: selectedCurrencySymbol || '' : 'symbol' }}
+        </p> -->
+        <p class="mb-3 mx-4 m-0 d-flex align-items-center" (click)="toggleCoverType(i, j)" style="cursor: pointer;">
+          <i class="fa me-2" [ngClass]="expandedCoverTypeIndexes[i] === j ? 'fa-chevron-up' : 'fa-chevron-down'">
+          </i>
+          {{ risk?.propertyId }} {{ risk?.sumInsured | currency: selectedCurrencySymbol || '' : 'symbol' }}
         </p>
+
         <app-cover-types-comparison [isExpanded]="expandedCoverTypeIndexes[i] === j"
           (additionalBenefitsEvent)="listenToBenefitsAddition($event)"
           (additionalBenefitsRemovedEvent)="removeBenefit($event)" (selectedCoverEvent)="selectCovers(product, $event)"

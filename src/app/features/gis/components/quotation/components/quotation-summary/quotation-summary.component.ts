@@ -186,10 +186,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   
 
 
-
-
-
-
   constructor(
     public quotationService: QuotationsService,
     private router: Router,
