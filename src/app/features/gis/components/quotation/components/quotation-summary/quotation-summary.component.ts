@@ -2266,8 +2266,9 @@ getExceptions(quotationCode:number,username:string){
 
   this.quotationService.getExceptions(quotationCode,username).subscribe({
     next:(res)=>{
-      log.debug('exception Response:', res);
+      log.debug('exceptions', res);
         this.exceptionsData = res;
+        log.debug('exceptionData',this.exceptionsData)
     },
     error:(error)=>{
       log.error('Error fetching exceptions:', error);
