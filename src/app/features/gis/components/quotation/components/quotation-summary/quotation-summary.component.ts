@@ -2287,23 +2287,53 @@ authorizeSelectedExceptions(): void {
   }
 
 
-  // Proceed with authorization logic
-  if (this.hasUnderwriterRights()) {
-    log.debug('Authorizing as underwriter:', selected);
-    // this.quotationService.authorizeExceptions(selected).subscribe({
-    //   next: (res) => {
-    //     this.globalMessagingService.displaySuccessMessage('Success', 'Exceptions authorized successfully');
-    //     this.getExceptions(); // Or reload your data
-    //   },
-    //   error: (err) => {
-    //     this.globalMessagingService.displayErrorMessage('Authorization Error', 'Could not authorize exceptions');
-    //     console.error(err);
-    //   }
-    // });
-  } else {
-    // 🔁 If no rights, prompt for reassignment
-    // this.openReassignModal();
+  
+if (this.hasUnderwriterRights()) {
+  
+  log.debug('Quotation status:', this.quotationView.status);
+
+  if (this.quotationView.status === 'AUTHORISED') {
+    this.globalMessagingService.displayInfoMessage(
+      'Info',
+      'This quotation is already authorised'
+    );
+    return; 
   }
+
+  log.debug('Authorizing as underwriter:', selected);
+
+  this.quotationService
+    .getAuthorise(this.quotationView.code, this.quotationView.preparedBy)
+    .subscribe({
+      next: (res) => {
+        if (res.status === 'SUCCESS') {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            res.message ||'Exceptions authorised successfully'
+          );
+        } else {
+          this.globalMessagingService.displayErrorMessage(
+            'Authorization Error',
+            res.message || 'Could not authorise exceptions'
+          );
+        }
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Authorization Error',
+          'Could not authorise exceptions'
+        );
+        log.error(err);
+      }
+    });
+}
+else {
+    this.globalMessagingService.displayErrorMessage(
+      'Authorization Error',
+      'You do not have rights to authorize; please reassign.'
+    )
+  }
+   this.openChooseClientReassignModal();
 }
 
 
