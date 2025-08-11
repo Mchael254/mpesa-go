@@ -215,3 +215,20 @@ export interface riskClause {
   clauseType: string;
   clauseHeading: string;
 }
+
+export interface riskPeril {
+  quotationCode: number;
+  quotationRiskCode: number;
+  subclassSectionPerilCode: number;
+  perilLIimit: number;
+  perilType: string;
+  sumInsuredOrLimit: string;
+  excessType: string;
+  excess: number;
+  excessMinimum: number;
+  excessMaximum: number;
+  expireOnClaim: string;
+  personLimit: number;
+  claimLimit: number;
+  description: string;
+}
