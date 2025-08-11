@@ -1655,6 +1655,7 @@ export class RiskDetailsComponent {
         productCode: this.selectedProductCode,
       },
       coverDays: null,
+      fp: 0
     };
 
     // let risk = {
