@@ -1622,6 +1622,7 @@ export class RiskDetailsComponent {
         productCode: this.selectedProductCode,
       },
       coverDays: null,
+      fp: 0
     };
 
     // let risk = {
@@ -3692,7 +3693,7 @@ export class RiskDetailsComponent {
     if (!this.selectedRiskLimits?.length) return;
 
     const newQpCode = this.quoteProductCode;
-    log.debug("newQpCode",newQpCode)
+    log.debug("newQpCode", newQpCode)
     const subclassCode = this.selectedRisk?.subclassCode;
     if (!subclassCode) {
       console.error('Subclass code is missing');
