@@ -2303,7 +2303,7 @@ if (this.hasUnderwriterRights()) {
   log.debug('Authorizing as underwriter:', selected);
 
   this.quotationService
-    .getAuthorise(this.quotationView.code, this.quotationView.preparedBy)
+    .AuthoriseExceptions(this.quotationView.code, this.quotationView.preparedBy)
     .subscribe({
       next: (res) => {
         if (res.status === 'SUCCESS') {
