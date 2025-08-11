@@ -79,7 +79,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   prodCode: any
   riskDetails: any
   quotationProducts: any
-  taxDetails: TaxInformation[] = []
+  taxDetails: TaxInformation[] = [];
   clauses: any;
   user: any;
   clientCode: any;

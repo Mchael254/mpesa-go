@@ -1103,7 +1103,7 @@
         </div>
     </div>
 </div>
-<!-- RISK OTHER DETAILS CARD -->
+<!-- OTHER RISK DETAILS CARD -->
 <div class="card mb-1">
     <div class="card-body mx-4">
 
@@ -1187,6 +1187,18 @@
                             }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
                     </div>
 
+                    <!-- perils action tabs -->
+                    <div *ngIf="riskActiveTab === 'riskPerils'">
+                        <button class="btn btn-primary btn-sm mb-1" (click)="openPerilsModal()">
+                            Add Perils
+                        </button>
+
+                        <i class="pi border border-black p-1 rounded-1 text-black mb-1" [ngClass]="{
+                            'pi-caret-up': showSections,
+                            'pi-caret-down': !showSections
+                            }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
+                    </div>
+
                     <!-- excess action tabs -->
                     <div *ngIf="riskActiveTab === 'riskExcesses'">
                         <button class="btn btn-primary btn-sm mb-1" (click)="openExcessModal()">
@@ -1202,10 +1214,10 @@
             </div>
         </div>
 
-        <!-- risk clause table -->
+        <!-- risk clauses -->
         <div *ngIf="riskActiveTab === 'riskClauses'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-0 w-100">
-
+            <!-- risk clause table -->
             <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="true" [rows]="3"
                 [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['shortDescription', 'wording', 'heading']"
                 [scrollable]="true" scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3"
@@ -1304,7 +1316,6 @@
                 </ng-template>
 
             </p-table>
-
 
             <!-- Add risk clause modal -->
             <div class="modal fade" id="addClause" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
@@ -1492,11 +1503,10 @@
             <!-- limits table -->
             <p-table #addedlimitTable [value]="addedLimitsOfLiability" dataKey="code" [paginator]="true" [rows]="3"
                 [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['narration', 'value']" [scrollable]="true"
-                scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3" [(selection)]="selectedRiskLimits"
-                selectionMode="multiple">
+                scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3">
                 <!-- Table Header -->
                 <ng-template pTemplate="header">
-                    <tr>
+                    <tr class="mt-2">
                         <th pSortableColumn="narration" class="flexible-header" style="width: 40%">
                             Narration <p-sortIcon field="narration" />
                         </th>
@@ -1770,11 +1780,287 @@
         </div>
 
 
-        <!-- perils table -->
+        <!-- perils -->
         <div *ngIf="riskActiveTab === 'riskPerils'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-2 w-100">
 
-            <h1>{{'gis.quotation.perils' | translate}}</h1>
+            <!-- perils table -->
+            <p-table #perilTable [value]="perils" dataKey="code" [paginator]="true" [rows]="3"
+                [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['narration', 'value']" [scrollable]="true"
+                scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3">
+                <!-- Table Header -->
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="narration" style="width: 15%">
+                            ID <p-sortIcon field="narration" />
+                        </th>
+                        <th pSortableColumn="value" style="width: 35%">
+                            Description <p-sortIcon field="value" />
+                        </th>
+                        <th pSortableColumn="value" style="width: 35%">
+                            Section <p-sortIcon field="value" />
+                        </th>
+                        <th style="width: 15%">Actions</th>
+                    </tr>
+                    <tr class="py-2">
+                        <td class="px-3">
+                            <input class="form-control form-control-sm my-1" pInputText #narrationFilter type="text"
+                                (input)="perilTable.filterGlobal(narrationFilter.value, 'contains')"
+                                style="width: 100%;" />
+                        </td>
+                        <td class="px-3">
+                            <input class="form-control form-control-sm my-1" pInputText #valueFilter type="text"
+                                (input)="perilTable.filterGlobal(valueFilter.value, 'contains')" style="width: 80%;" />
+                        </td>
+                        <td class="px-3">
+                            <input class="form-control form-control-sm my-1" pInputText #valueFilter type="text"
+                                (input)="perilTable.filterGlobal(valueFilter.value, 'contains')" style="width: 80%;" />
+                        </td>
+                        <td></td>
+                    </tr>
+                </ng-template>
+
+                <!-- Table Body -->
+                <ng-template pTemplate="body" let-peril>
+                    <tr>
+                        <td style="width: 15%"> {{peril.sectionCode}} </td>
+                        <td style="width: 35%" class="position-relative">
+                            <div class="clause-wrapper">
+                                {{ peril.description | truncate:10 | sentenceCase }}
+                                <div class="hover-card">
+                                    {{ peril.description | sentenceCase }}
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 35%">{{peril.sectionDescription}}</td>
+                        <td style="width: 15%; text-align: left">
+                            <div class="flex justify-start gap-2">
+                                <!-- Edit -->
+                                <span class="p-button-label p-text-bold" [ngStyle]="{
+                        color: peril.isEditable === 'Y' ? '#00529B' : '#6B7280', 
+                        cursor: peril.isEditable === 'Y' ? 'pointer' : 'default',
+                        display: 'inline-block',
+                        width: '60px'  
+                    }" [attr.data-bs-toggle]="peril.isEditable === 'Y' ? 'modal' : null"
+                                    [attr.data-bs-target]="peril.isEditable === 'Y' ? '#editClause' : null"
+                                    (click)="peril.isEditable === 'Y' && populateEditClauseModal(peril)">
+                                    {{ peril.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
+                                </span>
+
+                                <!-- Delete -->
+                                <span *ngIf="peril.isMandatory === 'N'" class="p-button-label p-text-bold" [ngStyle]="{
+                        color: '#00529B',
+                        cursor: 'pointer'
+                    }" data-bs-toggle="modal" data-bs-target="#deleteClause" (click)="prepareDeleteClause(peril)">
+                                    {{ 'gis.quotation.delete' | translate }}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <!-- empty table and no search -->
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="4" class="text-center p-4 text-muted">
+                            <ng-container *ngIf="perils?.length > 0; else noClauses">
+                                <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                <p>No matching clauses found.</p>
+                            </ng-container>
+                            <ng-template #noClauses>
+                                <p><strong>No clauses available.</strong> There are currently no clauses to add.</p>
+                            </ng-template>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <!-- Add risk peril modal 1 -->
+            <div class="modal fade" id="perilsModal" #perilsModal tabindex="-1" role="dialog"
+                aria-labelledby="addSectionLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
+                    <div class="modal-content" id="addSectionModal">
+                        <div class="modal-body">
+                            <h5 class="modal-title mt-1 mb-2" id="editOtherDetailsLabel">
+                                Add peril
+                                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </h5>
+
+                            <ng-container>
+                                <p-table #perilTable [value]="perils" dataKey="code" [paginator]="true" [rows]="3"
+                                    [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['narration', 'value']"
+                                    [scrollable]="true" responsiveLayout="scroll" class="mt-3"
+                                    [(selection)]="selectedPeril" selectionMode="single"
+                                    (onRowSelect)="onPerilSelected($event.data)">
+                                    <!-- Table Header -->
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th style="width: 35%" pSortableColumn="value" class="flexible-header">
+                                                Section description <p-sortIcon field="value" />
+                                            </th>
+                                            <th style="width: 35%" pSortableColumn="value" class="flexible-header">
+                                                Description <p-sortIcon field="value" />
+                                            </th>
+                                        </tr>
+                                        <tr class="mb-1">
+                                            <td class="py-2">
+                                                <input class="form-control form-control-sm my-1" pInputText
+                                                    #narrationFilter type="text"
+                                                    (input)="perilTable.filterGlobal(narrationFilter.value, 'contains')"
+                                                    style="width: 40%;" />
+                                            </td>
+                                            <td class="py-2">
+                                                <input class="form-control form-control-sm my-1" pInputText
+                                                    #narrationFilter type="text"
+                                                    (input)="perilTable.filterGlobal(narrationFilter.value, 'contains')"
+                                                    style="width: 60%;" />
+                                            </td>
+
+                                        </tr>
+                                    </ng-template>
+
+                                    <!-- Table Body -->
+                                    <ng-template pTemplate="body" let-peril>
+                                        <tr [pSelectableRow]="peril">
+                                            <td class="position-relative">
+                                                <div class="clause-wrapper">
+                                                    {{ peril.description | truncate:10 | sentenceCase }}
+                                                    <div class="hover-card">
+                                                        {{ peril.description | sentenceCase }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="position-relative">
+                                                <div class="clause-wrapper">
+                                                    {{ peril.sectionDescription | truncate:10 | sentenceCase }}
+                                                    <div class="hover-card">
+                                                        {{ peril.sectionDescription | sentenceCase }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+
+
+                                    <!-- empty table and no search -->
+                                    <ng-template pTemplate="emptymessage">
+                                        <tr>
+                                            <td colspan="3" class="text-center p-4 text-muted">
+                                                <ng-container *ngIf="limitsOfLiability?.length > 0; else noClauses">
+                                                    <i class="pi pi-search"
+                                                        style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                                    <p>No matching clauses found.</p>
+                                                </ng-container>
+                                                <ng-template #noClauses>
+                                                    <p><strong>No clauses available.</strong> There are currently no
+                                                        clauses to add.</p>
+                                                </ng-template>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+
+                                </p-table>
+
+                            </ng-container>
+
+                            <!-- Buttons -->
+                            <div class="mt-4 d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-primary me-2"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="saveDetails" data-bs-dismiss="modal"
+                                    (click)="addRiskLimit()">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add risk peril modal 2 -->
+            <div class="modal fade" id="choosePerilsModal" #choosePerilsModal tabindex="-1"
+                aria-labelledby="perilDetailsLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="perilDetailsLabel">Peril Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <form [formGroup]="perilDetailsForm">
+                                <div class="row mb-3">
+                                    <!-- First Row -->
+                                    <div class="col-md-6">
+                                        <label>Peril</label>
+                                        <input type="text" class="form-control" formControlName="description" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Type</label>
+                                        <input type="number" class="form-control" formControlName="excess" />
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <!-- Second Row -->
+                                    <div class="col-md-6">
+                                        <label>Person limit</label>
+                                        <input type="number" class="form-control" formControlName="personLimit" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Claim limit</label>
+                                        <input type="number" class="form-control" formControlName="claimLimit" />
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label>Excess</label>
+                                        <input type="number" class="form-control" formControlName="excess" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Excess maximum</label>
+                                        <input type="number" class="form-control" formControlName="excessMax" />
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label>ID</label>
+                                        <input type="number" class="form-control" formControlName="excess" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Sum insured limit</label>
+                                        <input type="number" class="form-control" formControlName="excess" />
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label>Limit amount</label>
+                                        <input type="number" class="form-control" formControlName="excess" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Excess type</label>
+                                        <input type="number" class="form-control" formControlName="excess" />
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>Excess minimum</label>
+                                    <input type="number" class="form-control" formControlName="excessMin" />
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn  btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" (click)="addPerils()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- commissions table -->
@@ -1789,7 +2075,7 @@
             class="mt-2 w-100">
 
             <!-- excesses table -->
-            <p-table #limitTable [value]="addedExcessess" dataKey="code" [paginator]="true" [rows]="3"
+            <p-table #excessTable [value]="addedExcessess" dataKey="code" [paginator]="true" [rows]="3"
                 [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['narration', 'value']" [scrollable]="true"
                 scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3">
                 <!-- Table Header -->
@@ -1801,6 +2087,19 @@
                         <th pSortableColumn="value" class="flexible-header">
                             Value <p-sortIcon field="value" />
                         </th>
+                        <th>Actions</th>
+                    </tr>
+                    <tr class="py-2">
+                        <td class="px-3">
+                            <input class="form-control form-control-sm my-1" pInputText #narrationFilter type="text"
+                                (input)="excessTable.filterGlobal(narrationFilter.value, 'contains')"
+                                style="width: 40%;" />
+                        </td>
+                        <td class="px-3">
+                            <input class="form-control form-control-sm my-1" pInputText #valueFilter type="text"
+                                (input)="excessTable.filterGlobal(valueFilter.value, 'contains')" style="width: 70%;" />
+                        </td>
+                        <td style="width: 30%"></td>
                     </tr>
 
                 </ng-template>
@@ -1818,6 +2117,33 @@
                             </div>
                         </td>
                         <td>{{ excess.value }}</td>
+                        <td class="flexible-header1" style="text-align: left">
+                            <div class="flex justify-start  gap-2">
+                                <!-- Edit -->
+                                <span class="p-button-label p-text-bold " [ngStyle]="{
+                    color: excess.isEditable === 'Y' ? '#00529B' : '#6B7280', 
+                   
+                    cursor: excess.isEditable === 'Y' ? 'pointer' : 'default',
+                    display: 'inline-block',
+                    width: '60px'  
+                    }" [attr.data-bs-toggle]="excess.isEditable === 'Y' ? 'modal' : null"
+                                    [attr.data-bs-target]="excess.isEditable === 'Y' ? '#editClause' : null"
+                                    (click)="excess.isEditable === 'Y' && populateEditClauseModal(excess)">
+                                    {{ excess.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
+                                </span>
+
+                                <!-- Delete -->
+
+                                <span *ngIf="excess.isMandatory === 'N'" class="p-button-label p-text-bold " [ngStyle]="{
+                                                        color: '#00529B',
+                                                        cursor: 'pointer'
+                                                      }" data-bs-toggle="modal" data-bs-target="#deleteClause"
+                                    (click)="prepareDeleteClause(excess)">
+                                    {{ 'gis.quotation.delete' | translate }}
+                                </span>
+                            </div>
+
+                        </td>
                     </tr>
 
                 </ng-template>
