@@ -638,28 +638,28 @@ export class QuotationsService {
     );
   }
 
- 
- 
-//  getExceptions(quotationCode: number, user: string): Observable<any> {
-//     return this.api.POST<any>(`v2/authorise/manage-exceptions?quotationCode=${quotationCode}&def=QUOTE&user=${user}`, null,API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
-//       retry(1),
-//       catchError(this.errorHandl)
-//     )
+
+
+  //  getExceptions(quotationCode: number, user: string): Observable<any> {
+  //     return this.api.POST<any>(`v2/authorise/manage-exceptions?quotationCode=${quotationCode}&def=QUOTE&user=${user}`, null,API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+  //       retry(1),
+  //       catchError(this.errorHandl)
+  //     )
   // }
- getExceptions(quotationCode: number, user: string): Observable<any> {
-  const params = new HttpParams()
-    .set('quotationCode', quotationCode.toString())
-    .set('def', 'QUOTE')
-    .set('user', user);
+  getExceptions(quotationCode: number, user: string): Observable<any> {
+    const params = new HttpParams()
+      .set('quotationCode', quotationCode.toString())
+      .set('def', 'QUOTE')
+      .set('user', user);
 
-  return this.api.POST(
-    `v2/authorise/manage-exceptions?${params.toString()}`,
-    null,
+    return this.api.POST(
+      `v2/authorise/manage-exceptions?${params.toString()}`,
+      null,
 
-  
-    API_CONFIG.GIS_QUOTATION_BASE_URL
-  );
-}
+
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    );
+  }
 
 
 
@@ -696,6 +696,11 @@ export class QuotationsService {
     const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET<Observable<any>>(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
+
+  addExcesses(newQpCode: number, excessesPayload: CreateLimitsOfLiability[]): Observable<any> {
+    const queryParam = `?newQpCode=${newQpCode}`;
+    return this.api.POST<any>(`v2/limits-of-liability${queryParam}`, JSON.stringify(excessesPayload), API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
   addLimitsOfLiability(newQpCode: number, limitPayload: CreateLimitsOfLiability[]): Observable<any> {
@@ -979,6 +984,13 @@ export class QuotationsService {
       retry(1),
       catchError(this.errorHandl)
     )
+  }
+
+  getUserBranches(userCode: string): Observable<any> {
+    return this.api.GET<any>(`user-branches?userCode=${userCode}`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
   }
 
 }

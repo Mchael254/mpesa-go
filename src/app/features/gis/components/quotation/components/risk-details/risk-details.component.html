@@ -1202,52 +1202,53 @@
             </div>
         </div>
 
-        <!-- risk excess table -->
+        <!-- risk clause table -->
         <div *ngIf="riskActiveTab === 'riskClauses'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-0 w-100">
 
-            <p-table #riskClauseTable [value]="sessionClauses" dataKey="clauseCode" editMode="row"
-                [(selection)]="selectedClause" selectionMode="single" [autoLayout]="true" [paginator]="true" [rows]="5"
-                [rowsPerPageOptions]="[5, 10, 20]" [scrollable]="true" responsiveLayout="scroll"
-                [tableStyle]="{ 'min-width': '100%', width: '100%' }">
+            <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="true" [rows]="3"
+                [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['shortDescription', 'wording', 'heading']"
+                [scrollable]="true" scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3"
+                [(selection)]="selectedClause" selectionMode="multiple">
+                <!-- Table Header -->
                 <ng-template pTemplate="header">
                     <tr>
-                        <th class="flexible-header1" style="width: 13%" pSortableColumn="id">
-                            ID <p-sortIcon field="id" />
+                        <th pSortableColumn="narration" class="flexible-header" style="width: 13%">
+                            ID <p-sortIcon field="narration" />
                         </th>
-                        <th class="flexible-header1" style="width: 20%" pSortableColumn="heading">
-                            Heading <p-sortIcon field="heading" />
+                        <th pSortableColumn="value" class="flexible-header" style="width: 20%">
+                            Heading <p-sortIcon field="value" />
                         </th>
-                        <th class="flexible-header1" style="width: 35%" pSortableColumn="wording">
-                            Wording <p-sortIcon field="wording" />
+                        <th pSortableColumn="value" class="flexible-header" style="width: 35%">
+                            Wording <p-sortIcon field="value" />
                         </th>
-                        <th class="flexible-header1" style="width: 15%">Actions</th>
+                        <th style="width: 15%">Actions</th>
                     </tr>
-
-
+                    <tr class="py-2">
+                        <td class="px-3"> <!-- Horizontal padding for cells -->
+                            <input class="form-control form-control-sm my-1" pInputText #idFilter type="text"
+                                (input)="riskClauseTable.filterGlobal(idFilter.value, 'contains')"
+                                style="width: 70%;" />
+                        </td>
+                        <td class="px-3"> <!-- Horizontal padding for cells -->
+                            <input class="form-control form-control-sm my-1" pInputText #headingFilter type="text"
+                                (input)="riskClauseTable.filterGlobal(headingFilter.value, 'contains')"
+                                style="width: 50%;" />
+                        </td>
+                        <td class="px-3"> <!-- Horizontal padding for cells -->
+                            <input class="form-control form-control-sm my-1" pInputText #valueFilter type="text"
+                                (input)="riskClauseTable.filterGlobal(valueFilter.value, 'contains')"
+                                style="width: 50%;" />
+                        </td>
+                        <td></td>
+                    </tr>
                 </ng-template>
 
-                <ng-template pTemplate="body" let-clause let-columns="columns" let-rowIndex="rowIndex">
-                    <ng-container *ngIf="rowIndex === 0">
-                        <tr>
-                            <td>
-                                <input pInputText type="text" placeholder="" class="form-control form-control-sm"
-                                    (input)="filterShortDesc($event)" />
-                            </td>
-                            <td>
-                                <input pInputText type="text" placeholder="" class="form-control form-control-sm"
-                                    (input)="filterHeading($event)" />
-                            </td>
-                            <td>
-                                <input pInputText type="text" placeholder="" class="form-control form-control-sm"
-                                    (input)="filterWording($event)" />
-                            </td>
-                            <td></td>
-                        </tr>
-                    </ng-container>
-                    <tr [pSelectableRow]="clause">
-                        <td class="flexible-header1">{{ clause.shortDescription }}</td>
-                        <td class="flexible-header1">{{ clause.heading | truncate:5 | sentenceCase }}</td>
+                <!-- Table Body -->
+                <ng-template pTemplate="body" let-clause>
+                    <tr>
+                        <td>{{clause.shortDescription}}</td>
+                        <td>{{clause.heading}}</td>
                         <td class="position-relative ">
                             <div class="clause-wrapper">
                                 {{ clause.wording | truncate:5 | sentenceCase}}
@@ -1289,10 +1290,19 @@
 
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td colspan="8" style="padding: 20px; text-align:center" id="empty">
-                            No risk clause Click on + icon to add risk clause</td>
+                        <td colspan="3" class="text-center p-4 text-muted">
+                            <ng-container *ngIf="sessionClauses?.length > 0; else noClauses">
+                                <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                <p>No matching clauses found.</p>
+                            </ng-container>
+                            <ng-template #noClauses>
+                                <p><strong>No clauses available.</strong> There are currently no
+                                    clauses to add.</p>
+                            </ng-template>
+                        </td>
                     </tr>
                 </ng-template>
+
             </p-table>
 
 
@@ -1351,31 +1361,24 @@
                                         </tr>
                                     </ng-template>
 
-                                    <!-- No Search Match -->
+                                    <!-- empty and search -->
                                     <ng-template pTemplate="emptymessage">
                                         <tr>
                                             <td colspan="3" class="text-center p-4 text-muted">
-                                                <i class="pi pi-search"
-                                                    style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                                <p>No matching clauses found.</p>
+                                                <ng-container *ngIf="nonMandatoryClauses?.length > 0; else noClauses">
+                                                    <i class="pi pi-search"
+                                                        style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                                    <p>No matching clauses found.</p>
+                                                </ng-container>
+                                                <ng-template #noClauses>
+                                                    <p><strong>No clauses available.</strong> There are currently no
+                                                        clauses to add.</p>
+                                                </ng-template>
                                             </td>
                                         </tr>
-                                    </ng-template>
-                                    <!-- No Clauses Left -->
-                                    <ng-template pTemplate="emptymessage">
-                                        <tr>
-                                            <td colspan="3" class="text-center p-4 ">
-                                                <p><strong> No clauses available. </strong>There are currently no
-                                                    clauses to
-                                                    add.</p>
-                                            </td>
-                                        </tr>
-
                                     </ng-template>
                                 </p-table>
                             </ng-container>
-
-
 
                             <!-- Buttons -->
                             <div class="mt-4 d-flex justify-content-end">
@@ -1482,48 +1485,96 @@
 
         </div>
 
-        <!-- limits of liablity table -->
+        <!-- limits of liablity -->
         <div *ngIf="riskActiveTab === 'riskLimits'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-0 w-100">
 
             <!-- limits table -->
-            <p-table #limitTable [value]="addedLimitsOfLiability" dataKey="code" [paginator]="true" [rows]="3"
+            <p-table #addedlimitTable [value]="addedLimitsOfLiability" dataKey="code" [paginator]="true" [rows]="3"
                 [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['narration', 'value']" [scrollable]="true"
                 scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3" [(selection)]="selectedRiskLimits"
                 selectionMode="multiple">
                 <!-- Table Header -->
                 <ng-template pTemplate="header">
                     <tr>
-                        <th pSortableColumn="narration" class="flexible-header">
+                        <th pSortableColumn="narration" class="flexible-header" style="width: 40%">
                             Narration <p-sortIcon field="narration" />
                         </th>
-                        <th pSortableColumn="value" class="flexible-header">
+                        <th pSortableColumn="value" class="flexible-header" style="width: 40%">
                             Value <p-sortIcon field="value" />
                         </th>
+                        <th style="width: 20%">Actions</th>
                     </tr>
-
+                    <tr class="py-2"> <!-- Vertical padding for row -->
+                        <td class="px-3"> <!-- Horizontal padding for cells -->
+                            <input class="form-control form-control-sm my-1" pInputText #narrationFilter type="text"
+                                (input)="addedlimitTable.filterGlobal(narrationFilter.value, 'contains')"
+                                style="width: 70%;" />
+                        </td>
+                        <td class="px-3"> <!-- Horizontal padding for cells -->
+                            <input class="form-control form-control-sm my-1" pInputText #valueFilter type="text"
+                                (input)="addedlimitTable.filterGlobal(valueFilter.value, 'contains')"
+                                style="width: 50%;" />
+                        </td>
+                        <td></td>
+                    </tr>
                 </ng-template>
 
                 <!-- Table Body -->
                 <ng-template pTemplate="body" let-limit>
                     <tr>
-                        <td class="position-relative">
-                            <div class="limit-wrapper" pTooltip="{{limit.narration}}" tooltipPosition="top">
-                                {{ limit.narration | truncate:10 | sentenceCase }}
+                        <td class="position-relative ">
+                            <div class="clause-wrapper">
+                                {{ limit.narration | truncate:5 | sentenceCase}}
 
                                 <div class="hover-card">
-                                    {{ limit.narration | sentenceCase }}
+                                    {{ limit.narration |sentenceCase }}
                                 </div>
                             </div>
                         </td>
                         <td>{{ limit.value }}</td>
+                        <td class="flexible-header1" style="text-align: left">
+                            <div class="flex justify-start  gap-2">
+                                <!-- Edit -->
+                                <span class="p-button-label p-text-bold " [ngStyle]="{
+                    color: limit.isEditable === 'Y' ? '#00529B' : '#6B7280', 
+                   
+                    cursor: limit.isEditable === 'Y' ? 'pointer' : 'default',
+                    display: 'inline-block',
+                    width: '60px'  
+                    }" [attr.data-bs-toggle]="limit.isEditable === 'Y' ? 'modal' : null"
+                                    [attr.data-bs-target]="limit.isEditable === 'Y' ? '#editClause' : null"
+                                    (click)="limit.isEditable === 'Y' && populateEditClauseModal(limit)">
+                                    {{ limit.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
+                                </span>
+
+                                <!-- Delete -->
+
+                                <span *ngIf="limit.isMandatory === 'N'" class="p-button-label p-text-bold " [ngStyle]="{
+                                                        color: '#00529B',
+                                                        cursor: 'pointer'
+                                                      }" data-bs-toggle="modal" data-bs-target="#deleteClause"
+                                    (click)="prepareDeleteClause(limit)">
+                                    {{ 'gis.quotation.delete' | translate }}
+                                </span>
+                            </div>
+
+                        </td>
                     </tr>
                 </ng-template>
 
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td colspan="8" style="padding: 20px; text-align:center" id="empty">
-                            No risk limit available. Click on Add risk limit to add risk limit</td>
+                        <td colspan="3" class="text-center p-4 text-muted">
+                            <ng-container *ngIf="addedLimitsOfLiability?.length > 0; else noClauses">
+                                <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                <p>No matching clauses found.</p>
+                            </ng-container>
+                            <ng-template #noClauses>
+                                <p><strong>No clauses available.</strong> There are currently no
+                                    clauses to add.</p>
+                            </ng-template>
+                        </td>
                     </tr>
                 </ng-template>
 
@@ -1551,26 +1602,26 @@
                                     <ng-template pTemplate="header">
                                         <tr>
                                             <th style="width: 3%"><p-tableHeaderCheckbox /></th>
-                                            <th pSortableColumn="narration" class="flexible-header">
+                                            <th style="width: 60%" pSortableColumn="narration" class="flexible-header">
                                                 Narration <p-sortIcon field="narration" />
                                             </th>
-                                            <th pSortableColumn="value" class="flexible-header">
+                                            <th style="width: 40%" pSortableColumn="value" class="flexible-header">
                                                 Value <p-sortIcon field="value" />
                                             </th>
                                         </tr>
-                                        <tr>
+                                        <tr class="mb-1">
                                             <td></td>
-                                            <td>
-                                                <input class="form-control form-control-sm" pInputText #narrationFilter
-                                                    type="text"
+                                            <td class="py-2">
+                                                <input class="form-control form-control-sm my-1" pInputText
+                                                    #narrationFilter type="text"
                                                     (input)="limitTable.filterGlobal(narrationFilter.value, 'contains')"
-                                                    style="width: 50%;" />
+                                                    style="width: 60%;" />
                                             </td>
-                                            <td>
-                                                <input class="form-control form-control-sm" pInputText #valueFilter
+                                            <td class="py-2">
+                                                <input class="form-control form-control-sm my-1" pInputText #valueFilter
                                                     type="text"
                                                     (input)="limitTable.filterGlobal(valueFilter.value, 'contains')"
-                                                    style="width: 50%;" />
+                                                    style="width: 60%;" />
                                             </td>
                                         </tr>
                                     </ng-template>
@@ -1580,7 +1631,7 @@
                                         <tr>
                                             <td><p-tableCheckbox [value]="limit" /></td>
                                             <td class="position-relative">
-                                                <div class="limit-wrapper">
+                                                <div class="clause-wrapper">
                                                     {{ limit.narration | truncate:10 | sentenceCase }}
 
                                                     <div class="hover-card">
@@ -1592,33 +1643,26 @@
                                         </tr>
                                     </ng-template>
 
-                                    <!-- empty table -->
+                                    <!-- empty table and no search -->
                                     <ng-template pTemplate="emptymessage">
-                                        <tr class="empty-message-row">
-                                            <td colspan="3" class="text-center py-4">
-                                                <div class="empty-message-content">
-                                                    <p><strong>No limits of liability available </strong>There are
-                                                        currently no
-                                                        limits of liability to add</p>
-                                                </div>
+                                        <tr>
+                                            <td colspan="3" class="text-center p-4 text-muted">
+                                                <ng-container *ngIf="limitsOfLiability?.length > 0; else noClauses">
+                                                    <i class="pi pi-search"
+                                                        style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                                    <p>No matching clauses found.</p>
+                                                </ng-container>
+                                                <ng-template #noClauses>
+                                                    <p><strong>No clauses available.</strong> There are currently no
+                                                        clauses to add.</p>
+                                                </ng-template>
                                             </td>
                                         </tr>
                                     </ng-template>
 
-                                    <!-- No Search Match -->
-
                                 </p-table>
-                            </ng-container>
 
-                            <!-- No Clauses Left -->
-                            <ng-template #noMoreLimits>
-                                <div class="text-center p-4">
-                                    <div style="color: #6c757d; font-size: 16px;">
-                                        <i class="pi pi-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                        <p>No additional limits are available to add.</p>
-                                    </div>
-                                </div>
-                            </ng-template>
+                            </ng-container>
 
                             <!-- Buttons -->
                             <div class="mt-4 d-flex justify-content-end">
@@ -1745,10 +1789,9 @@
             class="mt-2 w-100">
 
             <!-- excesses table -->
-            <p-table #limitTable [value]="excessesData" dataKey="code" [paginator]="true" [rows]="3"
+            <p-table #limitTable [value]="addedExcessess" dataKey="code" [paginator]="true" [rows]="3"
                 [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['narration', 'value']" [scrollable]="true"
-                scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3" [(selection)]="selectedExcesses"
-                selectionMode="multiple">
+                scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3">
                 <!-- Table Header -->
                 <ng-template pTemplate="header">
                     <tr>
@@ -1766,7 +1809,7 @@
                 <ng-template pTemplate="body" let-excess>
                     <tr>
                         <td class="position-relative">
-                            <div class="limit-wrapper" pTooltip="{{excess.narration}}" tooltipPosition="top">
+                            <div class="clause-wrapper">
                                 {{ excess.narration | truncate:10 | sentenceCase }}
 
                                 <div class="hover-card">
@@ -1779,10 +1822,18 @@
 
                 </ng-template>
 
+                <!-- empty table and no search -->
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td colspan="8" style="padding: 20px; text-align:center" id="empty">
-                            <strong>No excesses available.</strong> Click on Add risk excess to add excesses
+                        <td colspan="3" class="text-center p-4 text-muted">
+                            <ng-container *ngIf="addedExcessess?.length > 0; else noClauses">
+                                <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                <p>No matching clauses found.</p>
+                            </ng-container>
+                            <ng-template #noClauses>
+                                <p><strong>No clauses available.</strong> There are currently no
+                                    clauses to add.</p>
+                            </ng-template>
                         </td>
                     </tr>
                 </ng-template>
@@ -1806,7 +1857,7 @@
                                     [rows]="3" [rowsPerPageOptions]="[3, 5, 10]"
                                     [globalFilterFields]="['narration', 'value']" [scrollable]="true"
                                     scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3"
-                                    [(selection)]="selectedRiskLimits" selectionMode="multiple">
+                                    [(selection)]="selectedExcessess" selectionMode="multiple">
                                     <!-- Table Header -->
                                     <ng-template pTemplate="header">
                                         <tr>
@@ -1840,7 +1891,7 @@
                                         <tr>
                                             <td><p-tableCheckbox [value]="excess" /></td>
                                             <td class="position-relative">
-                                                <div class="excess-wrapper">
+                                                <div class="clause-wrapper">
                                                     {{ excess.narration | truncate:10 | sentenceCase }}
 
                                                     <div class="hover-card">
@@ -1852,14 +1903,19 @@
                                         </tr>
                                     </ng-template>
 
-                                    <!-- empty table -->
+                                    <!-- empty table and no search -->
                                     <ng-template pTemplate="emptymessage">
-                                        <tr class="empty-message-row">
-                                            <td colspan="3" class="text-center py-4">
-                                                <div class="empty-message-content">
-                                                    <p><strong>No excesses available </strong>There are currently no
-                                                        excesses to add</p>
-                                                </div>
+                                        <tr>
+                                            <td colspan="3" class="text-center p-4 text-muted">
+                                                <ng-container *ngIf="excessesData?.length > 0; else noClauses">
+                                                    <i class="pi pi-search"
+                                                        style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                                    <p>No matching clauses found.</p>
+                                                </ng-container>
+                                                <ng-template #noClauses>
+                                                    <p><strong>No clauses available.</strong> There are currently no
+                                                        clauses to add.</p>
+                                                </ng-template>
                                             </td>
                                         </tr>
                                     </ng-template>
@@ -1871,7 +1927,7 @@
                                 <button type="button" class="btn btn-outline-primary me-2"
                                     data-bs-dismiss="modal">Cancel</button>
                                 <button type="button" class="btn btn-primary" id="saveDetails" data-bs-dismiss="modal"
-                                    (click)="addRiskLimit()">
+                                    (click)="addExcesses()">
                                     Save
                                 </button>
                             </div>
