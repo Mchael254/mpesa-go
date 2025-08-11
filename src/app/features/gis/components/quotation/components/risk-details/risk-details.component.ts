@@ -62,14 +62,14 @@ export class RiskDetailsComponent {
   @Input() selectedProduct!: any;
   @ViewChild('sectionTable') sectionTable!: Table;
   @ViewChild('limitTable') limitTable!: Table;
+  @ViewChild('addedlimitTable') addedlimitTable!: Table;
   @ViewChild('excessTable') excessTable!: Table;
-
+  @ViewChild('riskClauseTable') riskClauseTable!: Table;
   @ViewChild('addRiskModal') addRiskModalRef!: ElementRef;
   @ViewChild('addRiskSection') addRiskSectionRef!: ElementRef;
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
   private modals: { [key: string]: bootstrap.Modal } = {};
 
-  @ViewChild('riskClauseTable') riskClauseTable: any;
   modalInstance: any;
   sectionInstance: any;
 
@@ -267,6 +267,9 @@ export class RiskDetailsComponent {
   allLimitsMap: { [qpCode: string]: any[] } = {};
   limitsOfLiability: any[] = [];
 
+  addedExcessess: any[] = [];
+  allExcessesMap: { [qpCode: string]: any[] } = {};
+  selectedExcessess: any[] = [];
   showExcessModal: boolean = false;
   selectedExcesses: any[] = [];
   excessesData: any[] = [];
@@ -328,8 +331,14 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
+    const savedSubclass = sessionStorage.getItem('selectedSubclassCode');
+    if (savedSubclass) {
+      this.selectedSubclassCode = savedSubclass;
+      this.loadExcesses();
+    }
     this.loadPersistedRiskClauses();
     this.loadLimitsOfLiability();
+
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
     });
@@ -1351,9 +1360,10 @@ export class RiskDetailsComponent {
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
 
-
-
-          const subclasscode = this.selectedSubclassCode
+          const subclasscode = this.selectedSubclassCode;
+          if (subclasscode) {
+            sessionStorage.setItem('selectedSubclassCode', subclasscode);
+          }
           const binderCode = this.selectedBinderCode || this.defaultBinder[0].code
           const coverTypeCode = this.selectedCoverType.coverTypeCode
           // Call services directly
@@ -2322,6 +2332,12 @@ export class RiskDetailsComponent {
     }
     if (this.limitTable) {
       this.limitTable.filterGlobal(filterValue, 'contains');
+    }
+    if (this.addedlimitTable) {
+      this.addedlimitTable.filterGlobal(filterValue, 'contains');
+    }
+    if (this.riskClauseTable) {
+      this.riskClauseTable.filterGlobal(filterValue, 'contains');
     }
   }
 
@@ -3653,7 +3669,7 @@ export class RiskDetailsComponent {
 
   openLimitModal(): void {
     if (!this.selectedSubclassCode) {
-      this.globalMessagingService.displayErrorMessage('Error', 'No subclass selected');
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
       return;
     }
 
@@ -3676,6 +3692,7 @@ export class RiskDetailsComponent {
     if (!this.selectedRiskLimits?.length) return;
 
     const newQpCode = this.quoteProductCode;
+    log.debug("newQpCode",newQpCode)
     const subclassCode = this.selectedRisk?.subclassCode;
     if (!subclassCode) {
       console.error('Subclass code is missing');
@@ -3731,26 +3748,56 @@ export class RiskDetailsComponent {
     return value?.replace(/[^\d.]/g, '');
   }
 
+
   //excesses
   loadExcesses(): void {
+    const savedSubclass = sessionStorage.getItem('selectedSubclassCode');
+    if (savedSubclass) {
+      this.selectedSubclassCode = savedSubclass;
+    }
     const subclassCode = this.selectedSubclassCode;
-    const scheduleType = 'E';
+    if (!subclassCode) {
+      this.addedExcessess = [];
+      this.excessesData = [];
+      return;
+    }
 
-    this.quotationService.getExcesses(subclassCode, scheduleType).subscribe({
-      next: (response) => {
-        console.log('Excesses data:', response);
-        this.excessesData = response?._embedded || [];
-      },
-      error: (error) => {
-        console.error('Error fetching excesses:', error);
+    const sessionKey = `availableExcessess_${subclassCode}`;
+    const savedAvailable = sessionStorage.getItem(sessionKey);
 
-      }
-    });
+    const savedExcessess = sessionStorage.getItem('excessesData');
+    if (savedExcessess) {
+      this.allExcessesMap = JSON.parse(savedExcessess);
+
+      this.addedExcessess = [...(this.allExcessesMap[subclassCode] || [])];
+      log.debug(`Restored added excesses for subclass ${subclassCode}:`, this.addedExcessess);
+    } else {
+      this.allExcessesMap = {};
+      this.addedExcessess = [];
+    }
+
+    if (savedAvailable) {
+      this.excessesData = JSON.parse(savedAvailable);
+      log.debug(`Loaded available excesses for subclass ${subclassCode} from session:`, this.excessesData);
+    } else {
+      this.quotationService.getExcesses(subclassCode, 'E').subscribe({
+        next: (data) => {
+          this.excessesData = data?._embedded || [];
+          sessionStorage.setItem(sessionKey, JSON.stringify(this.excessesData));
+          log.debug(`Fetched available excesses for subclass ${subclassCode} from API:`, this.excessesData);
+        },
+        error: (err) => {
+          log.error(`Failed to fetch excesses for subclass ${subclassCode}:`, err);
+          this.globalMessagingService.displayErrorMessage('Error', 'Could not load excesses');
+        }
+      });
+    }
   }
+
 
   openExcessModal(): void {
     if (!this.selectedSubclassCode) {
-      this.globalMessagingService.displayErrorMessage('Error', 'No subclass selected');
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
       return;
     }
 
@@ -3766,6 +3813,73 @@ export class RiskDetailsComponent {
 
     this.loadExcesses();
   }
+
+  // add excesses
+  addExcesses(): void {
+    if (!this.selectedExcessess?.length) return;
+
+    const newQpCode = this.quoteProductCode;
+    const subclassCode = this.selectedRisk?.subclassCode;
+    if (!subclassCode) {
+      console.error('Subclass code is missing');
+      return;
+    }
+
+    // Build payload for DB
+    const excessesPayload: CreateLimitsOfLiability[] = this.selectedExcessess.map(limit => ({
+      scheduleValueCode: limit.quotationValueCode,
+      value: this.cleanCurrencyValue(limit.value),
+      narration: limit.narration,
+      type: 'E'
+    }));
+
+    this.quotationService.addExcesses(newQpCode, excessesPayload).subscribe({
+      next: () => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Excesses added successfully');
+
+        // Prepare the newly added excesses for UI/session
+        const updatedExcesses = this.selectedExcessess.map(limit => ({
+          ...limit,
+          value: this.cleanCurrencyValue(limit.value),
+          isModified: false,
+          qpCode: newQpCode
+        }));
+
+        // Filter only unique ones to avoid duplicates in UI
+        const existingCodes = new Set(this.addedExcessess.map(l => l.code));
+        const newUniqueExcessess = updatedExcesses.filter(l => !existingCodes.has(l.code));
+
+        // Update UI table
+        this.addedExcessess = [...this.addedExcessess, ...newUniqueExcessess];
+        log.debug("Updated addedExcessess:", this.addedExcessess);
+
+        // Persist to sessionStorage map by subclass
+        if (!this.allExcessesMap[subclassCode]) {
+          this.allExcessesMap[subclassCode] = [];
+        }
+        this.allExcessesMap[subclassCode] = [
+          ...this.allExcessesMap[subclassCode],
+          ...newUniqueExcessess
+        ];
+        sessionStorage.setItem('excessesData', JSON.stringify(this.allExcessesMap));
+
+        // Remove newly added from available modal list
+        const addedCodes = new Set(this.selectedExcessess.map(l => l.code));
+        this.excessesData = this.excessesData.filter(l => !addedCodes.has(l.code));
+
+        const sessionKey = `availableExcessess_${subclassCode}`;
+        sessionStorage.setItem(sessionKey, JSON.stringify(this.excessesData));
+
+        // Clear selection
+        this.selectedExcessess = [];
+      },
+      error: (err) => {
+        console.error('Error adding Excesses', err);
+        this.globalMessagingService.displayErrorMessage("Error", "Error adding Excesses");
+      }
+    });
+  }
+
 
   onAddOtherSchedule(tab: any): void {
     this.activeModalTab = tab;
