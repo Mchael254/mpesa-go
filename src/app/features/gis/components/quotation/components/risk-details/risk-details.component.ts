@@ -25,7 +25,7 @@ import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from "ngx-currency";
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import * as bootstrap from 'bootstrap';
-import { riskClause } from 'src/app/features/gis/data/quotations-dto';
+import { riskClause, riskPeril } from 'src/app/features/gis/data/quotations-dto';
 import { Router } from '@angular/router';
 
 
@@ -68,6 +68,9 @@ export class RiskDetailsComponent {
   @ViewChild('addRiskModal') addRiskModalRef!: ElementRef;
   @ViewChild('addRiskSection') addRiskSectionRef!: ElementRef;
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
+  @ViewChild('perilsModal') perilsModalElement!: ElementRef;
+  @ViewChild('choosePerilsModal') choosePerilsModalElement!: ElementRef;
+
   private modals: { [key: string]: bootstrap.Modal } = {};
 
   modalInstance: any;
@@ -256,7 +259,7 @@ export class RiskDetailsComponent {
   mandatoryClause: any[];
   scheduleLevels: ScheduleLevels[] = [];
   levelTableColumnsMap: { [levelName: string]: Array<{ field: string, header: string }> } = {};
-  riskActiveTab: string = 'riskExcesses';
+  riskActiveTab: string = 'riskPerils';
 
   levelDataMap: { [levelName: string]: any[] } = {};
   activeFormFields: { type: string; name: string; max: number; min: number; isMandatory: string; disabled: boolean; readonly: boolean; regexPattern: string; placeholder: string; label: string; scheduleLevel: number; selectOptions?: { label: string; value: any; }[]; }[];
@@ -271,8 +274,16 @@ export class RiskDetailsComponent {
   allExcessesMap: { [qpCode: string]: any[] } = {};
   selectedExcessess: any[] = [];
   showExcessModal: boolean = false;
-  selectedExcesses: any[] = [];
   excessesData: any[] = [];
+
+  addedPerils: any[] = [];
+  allPerilsMap: { [qpCode: string]: any[] } = {};
+  selectedPeril: any = null;
+  showPerilsModal: boolean = false;
+  perils: any[] = [];
+  perilDetailsForm: FormGroup;
+
+
 
   constructor(
     public subclassService: SubclassesService,
@@ -331,6 +342,23 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
+    this.perilDetailsForm = this.fb.group({
+      quotationCode: [null],
+      quotationRiskCode: [null],
+      subclassSectionPerilCode: [null],
+      perilLIimit: [null],
+      perilType: [''],
+      sumInsuredOrLimit: [''],
+      excessType: [''],
+      excess: [null],
+      excessMinimum: [null],
+      excessMaximum: [null],
+      expireOnClaim: [''],
+      personLimit: [null],
+      claimLimit: [null],
+      description: ['']
+    });
+
     const savedSubclass = sessionStorage.getItem('selectedSubclassCode');
     if (savedSubclass) {
       this.selectedSubclassCode = savedSubclass;
@@ -391,6 +419,9 @@ export class RiskDetailsComponent {
   ngOnDestroy(): void { }
 
   ngAfterViewInit(): void {
+    this.modals['perils'] = new bootstrap.Modal(this.perilsModalElement.nativeElement);
+    this.modals['choosePerils'] = new bootstrap.Modal(this.choosePerilsModalElement.nativeElement);
+
     this.modals['editSection'] = new bootstrap.Modal(this.editSectionModal.nativeElement);
 
     // Initialize addRiskModal
@@ -409,6 +440,8 @@ export class RiskDetailsComponent {
       });
     }
   }
+
+
 
   openModals(modalName: string) {
     this.modals[modalName]?.show();
@@ -3880,6 +3913,164 @@ export class RiskDetailsComponent {
       }
     });
   }
+
+  //Perils
+  openChoosePerilsModal() {
+    this.closePerilsModal();
+    this.openModals('choosePerils');
+
+  }
+
+  openPerilsModal() {
+    this.openModals('perils');
+    this.loadPerils();
+  }
+
+  closeChoosePerilsModal() {
+    this.closeModals('choosePerils');
+  }
+
+  closePerilsModal() {
+    this.closeModals('perils');
+  }
+
+  loadPerils(): void {
+    this.quotationService.getSubclassSectionPeril(this.selectedSubclassCode, 0, 10)
+      .subscribe({
+        next: (data) => {
+          this.perils = data?._embedded || [];
+          log.debug("these are perils", this.perils)
+        },
+        error: (err) => {
+          console.error('Error fetching subclass section perils', err);
+        }
+      });
+  }
+
+  // add perils
+  onPerilSelected(peril: any): void {
+
+    this.selectedPeril = peril;
+
+    this.perilDetailsForm.patchValue({
+      quotationCode: this.selectedProduct?.quotationCode,
+      quotationRiskCode: this.selectedRisk?.code,
+      subclassSectionPerilCode: peril.subclassSectionPerilCode,
+      perilLIimit: peril.perilLIimit,
+      perilType: peril.perilType,
+      sumInsuredOrLimit: peril.sumInsuredOrLimit,
+      excessType: peril.excessType,
+      excess: peril.excess,
+      excessMinimum: peril.excessMinimum,
+      excessMaximum: peril.excessMaximum,
+      expireOnClaim: peril.expireOnClaim,
+      personLimit: peril.personLimit,
+      claimLimit: peril.claimLimit,
+      description: peril.description
+    });
+    this.openChoosePerilsModal();
+
+
+  }
+
+  addPerils(): void {
+    if (!this.selectedPeril?.length) return;
+
+    const newQpCode = this.quoteProductCode;
+    const subclassCode = this.selectedRisk?.subclassCode;
+    if (!subclassCode) {
+      console.error('Subclass code is missing');
+      return;
+    }
+
+    // Build payload for DB
+    const perilsPayload: riskPeril[] = this.selectedPeril.map(limit => ({
+      quotationCode: this.selectedProduct?.quotationCode,
+      quotationRiskCode: this.selectedRisk?.code,
+      subclassSectionPerilCode: limit.subclassSectionPerilCode,
+      perilLIimit: limit.perilLIimit,
+      perilType: limit.perilType,
+      sumInsuredOrLimit: limit.sumInsuredOrLimit,
+      excessType: limit.excessType,
+      excess: limit.excess,
+      excessMinimum: limit.excessMinimum,
+      excessMaximum: limit.excessMaximum,
+      expireOnClaim: limit.expireOnClaim,
+      personLimit: limit.personLimit,
+      claimLimit: limit.claimLimit,
+      description: limit.description
+
+    }));
+
+    perilsPayload.forEach(peril => {
+      this.quotationService.addSubclassSectionPeril(peril).subscribe({
+        next: () => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Excesses added successfully');
+
+          // Prepare the newly added perils for UI/session
+          const updatedPerils = this.selectedPeril.map(limit => ({
+            ...limit,
+            value: this.cleanCurrencyValue(limit.value),
+            isModified: false,
+            qpCode: newQpCode
+          }));
+
+          // Filter only unique ones to avoid duplicates in UI
+          const existingCodes = new Set(this.addedPerils.map(l => l.code));
+          const newUniquePerils = updatedPerils.filter(l => !existingCodes.has(l.code));
+
+          // Update UI table
+          this.addedPerils = [...this.addedPerils, ...newUniquePerils];
+          log.debug("Updated addedPerils:", this.addedPerils);
+
+          // Persist to sessionStorage map by subclass
+          if (!this.allPerilsMap[subclassCode]) {
+            this.allPerilsMap[subclassCode] = [];
+          }
+          this.allPerilsMap[subclassCode] = [
+            ...this.allPerilsMap[subclassCode],
+            ...newUniquePerils
+          ];
+          sessionStorage.setItem('perils', JSON.stringify(this.allPerilsMap));
+
+          // Remove newly added from available modal list
+          const addedCodes = new Set(this.selectedPeril.map(l => l.code));
+          this.perils = this.perils.filter(l => !addedCodes.has(l.code));
+
+          const sessionKey = `availablePerils_${subclassCode}`;
+          sessionStorage.setItem(sessionKey, JSON.stringify(this.perils));
+
+          // Clear selection
+          this.selectedPeril = [];
+        },
+        error: (err) => {
+          console.error('Error adding Excesses', err);
+          this.globalMessagingService.displayErrorMessage("Error", "Error adding Excesses");
+        }
+      });
+    });
+
+
+  }
+
+  // openPerilsModal(): void {
+  //   if (!this.selectedSubclassCode) {
+  //     this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+  //     return;
+  //   }
+
+  //   log.debug("Opening perils modal for subclass:", this.selectedSubclassCode);
+
+  //   this.showPerilsModal = true;
+
+  //   const modalElement = document.getElementById('addPerils');
+  //   if (modalElement) {
+  //     const modal = new (window as any).bootstrap.Modal(modalElement);
+  //     modal.show();
+  //   }
+
+  //   this.loadPerils();
+  // }
 
 
   onAddOtherSchedule(tab: any): void {
