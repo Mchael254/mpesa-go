@@ -661,6 +661,18 @@ export class QuotationsService {
     );
   }
 
+  AuthoriseExceptions(quotationCode: number, user: string): Observable<any> {
+  const params = new HttpParams()
+    .set('quotationCode', quotationCode.toString())
+    .set('user', user);
+
+  return this.api.POST(
+    `v2/authorise?${params.toString()}`,
+    null,
+    API_CONFIG.GIS_QUOTATION_BASE_URL
+  );
+}
+
 
 
 

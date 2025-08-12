@@ -1277,7 +1277,7 @@
       </div>
 
       <!-- Exceptions Card -->
-      <div class="card mb-4" *ngIf="exceptions?.length > 0">
+      <div class="card mb-4" *ngIf="exceptionsData?.length > 0">
         <div class="card-body">
 
           <!-- Title & Toggle -->
@@ -1299,7 +1299,7 @@
 
           <!-- Exceptions Table -->
           <div *ngIf="!exceptionsCollapsed">
-            <p-table [value]="exceptions" [scrollable]="true" scrollHeight="200px" responsiveLayout="scroll"
+            <p-table [value]="exceptionsData" [scrollable]="true" scrollHeight="200px" responsiveLayout="scroll"
               [tableStyle]="{ 'width': '100%' }">
               <ng-template pTemplate="header">
                 <tr>
@@ -1578,8 +1578,8 @@
 
         <!-- Right-side Authorize button with tooltip -->
         <span [attr.title]="exceptions?.length > 0 ? 'Please resolve exceptions' : null" style="display: inline-block;">
-          <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
-            [disabled]="exceptions?.length > 0">
+          <button type="button" class="btn btn-outline-primary"
+            [disabled]="exceptionsData?.length > 0">
             Authorize quote
           </button>
         </span>
