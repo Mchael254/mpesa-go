@@ -1,3 +1,5 @@
+<!--{{ otpFormFields | json }}-->
+
 <div class="px-5">
   <p>Share OTP Via</p>
   <ul class="nav nav-underline">
@@ -44,13 +46,14 @@
             <button
               class="btn btn-outline-primary send-verify-button ms-5"
               (click)="processInput(field.fieldId)"
+              [disabled]="(field.fieldId === 'otp_sms' || field.fieldId === 'otp_email') && countdownTime!==0"
             >
-              Verify OTP
+              {{ field.buttonLabel[language] }}
             </button>
           </div>
         </div>
       </ng-container>
-      <p class="lead text-primary">OTP code expires in 0:30</p>
+      <p class="lead text-primary">OTP code expires in {{ countdownTime }}</p>
     </form>
 
   </div>
