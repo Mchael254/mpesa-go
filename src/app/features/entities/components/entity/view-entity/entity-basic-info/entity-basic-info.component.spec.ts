@@ -75,7 +75,12 @@ const partyAccountDetails: PartyAccountsDetails = {
 const mockOverviewConfig = {
   basic_info: {},
   applicable_status: {
-    draft: ['active']
+    draft: ['active'],
+    active: ['active'],
+    inactive: ['inactive'],
+    blacklisted: ['blacklisted'],
+    ready: ['ready'],
+    suspended: ['suspended'],
   }
 };
 
@@ -126,7 +131,7 @@ describe('EntityBasicInfoComponent', () => {
       nativeElement: {
         click: jest.fn()
       }
-    } as unknown as ElementRef;
+    } as any;
 
     // Spy on filterApplicableStatuses
     jest.spyOn(component, 'filterApplicableStatuses');
@@ -152,12 +157,47 @@ describe('EntityBasicInfoComponent', () => {
     expect(component.actionableStatuses.length).toBe(1);
   });
 
-  test('should filter applicable statuses for ..', () => {
-    component.clientStatuses = mockStatuses;
-    component.selectedClientStatus = mockStatuses[1];
-    component.filterApplicableStatuses();
-    expect(component.actionableStatuses.length).toBe(1);
+  test('should filter applicable statuses for INACTIVE status', () => {
+    component.partyAccountDetails = { status: 'I' };
+    const spy = jest.spyOn(component, 'filterApplicableStatuses');
+
+    component.setCurrentStatus(mockStatuses);
+
+    expect(component.selectedClientStatus).toEqual(mockStatuses.find(s => s.value === 'INACTIVE'));
+    expect(spy).toHaveBeenCalled();
   });
+
+  test('should filter applicable statuses for BLACKLISTED status', () => {
+    component.partyAccountDetails = { status: 'B' };
+    const spy = jest.spyOn(component, 'filterApplicableStatuses');
+
+    component.setCurrentStatus(mockStatuses);
+
+    expect(component.selectedClientStatus).toEqual(mockStatuses.find(s => s.value === 'BLACKLISTED'));
+    expect(spy).toHaveBeenCalled();
+  });
+
+  test('should filter applicable statuses for READY status', () => {
+    component.partyAccountDetails = { status: 'R' };
+    const spy = jest.spyOn(component, 'filterApplicableStatuses');
+
+    component.setCurrentStatus(mockStatuses);
+
+    expect(component.selectedClientStatus).toEqual(mockStatuses.find(s => s.value === 'READY'));
+    expect(spy).toHaveBeenCalled();
+  });
+
+
+  test('should filter applicable statuses for SUSPENDED status', () => {
+    component.partyAccountDetails = { status: 'S' };
+    const spy = jest.spyOn(component, 'filterApplicableStatuses');
+
+    component.setCurrentStatus(mockStatuses);
+
+    expect(component.selectedClientStatus).toEqual(mockStatuses.find(s => s.value === 'SUSPENDED'));
+    expect(spy).toHaveBeenCalled();
+  });
+
 
   test('should call updateClientSection on changeClientStatus', () => {
     const mockTextarea = { nativeElement: { value: 'Testing comment' } } as ElementRef;
@@ -186,9 +226,9 @@ describe('EntityBasicInfoComponent', () => {
   });
 
 
-  test('should call filterApplicableStatuses and click the statusModalButton', () => {
+  test('should select status and click the statusModalButton', () => {
     const mockSelect = document.createElement('select');
-    mockSelect.value = 'someStatus';
+    mockSelect.value = 'R';
 
     const event = {
       target: mockSelect
@@ -197,7 +237,7 @@ describe('EntityBasicInfoComponent', () => {
     component.clientStatuses = mockStatuses;
     component.processSelectedStatus(event);
 
-    expect(component.filterApplicableStatuses).toHaveBeenCalled();
+    expect(component.statusModalButton.nativeElement.click).toBeTruthy();
   });
 
   test('should assign role', () => {

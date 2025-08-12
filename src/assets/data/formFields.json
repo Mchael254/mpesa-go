@@ -885,7 +885,12 @@
             "ke": ""
           },
           "isMandatory": false,
-          "options": []
+          "options": [],
+          "buttonLabel": {
+            "en": "Send OTP",
+            "ke": "",
+            "fr": ""
+          }
         },
         {
           "groupId": "privacy_policy",
@@ -915,7 +920,12 @@
             "ke": ""
           },
           "isMandatory": false,
-          "options": []
+          "options": [],
+          "buttonLabel": {
+            "en": "Send OTP",
+            "ke": "",
+            "fr": ""
+          }
         },
         {
           "groupId": "privacy_policy",
@@ -923,7 +933,7 @@
           "fieldId": "enter_otp",
           "type": "number",
           "label": {
-            "en": "Enter OTP",
+            "en": "Verify OTP",
             "ke": "",
             "fr": ""
           },
@@ -945,7 +955,12 @@
             "ke": ""
           },
           "isMandatory": false,
-          "options": []
+          "options": [],
+          "buttonLabel": {
+            "en": "Verify OTP",
+            "ke": "",
+            "fr": ""
+          }
         },
 
         {

@@ -14,6 +14,7 @@ import {API_CONFIG} from '../../../../../environments/api_service_config';
 import {UtilService} from '../../../../shared/services';
 import {AppConfigService} from "../../../../core/config/app-config-service";
 import {AiDocumentHubRequest, AiFileUploadMetadata} from "../../data/ai-file-upload-metadata.model";
+import {OtpRequestPayload} from "../../data/otp-request.model";
 
 @Injectable({
   providedIn: 'root',
@@ -185,6 +186,22 @@ export class ClientService {
     );
   }
 
+  requestOtp(optRequestPayload: OtpRequestPayload): Observable<any> {
+    return this.api.POST<any>(
+      `otp/request/`,
+      optRequestPayload,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  verifyOtp(optRequestPayload: OtpRequestPayload): Observable<any> {
+    return this.api.POST<any>(
+      `otp/verify/`,
+      optRequestPayload,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
   getClientById(id: number): Observable<ClientDTO> {
     return this.api.GET<ClientDTO>(
       `clients/${id}`,
@@ -253,6 +270,5 @@ export class ClientService {
     sessionStorage.setItem('aiToken', token);
     return this.http.post<any>(url, payload)
   }
-
 
 }

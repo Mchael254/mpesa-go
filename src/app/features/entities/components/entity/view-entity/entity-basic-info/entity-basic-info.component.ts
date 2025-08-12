@@ -16,6 +16,7 @@ import { PartyTypeDto } from '../../../../data/partyTypeDto';
 import {StatusService} from "../../../../../../shared/services/system-definitions/status.service";
 import {StatusDTO} from "../../../../../../shared/data/common/systemsDto";
 import {ClientService} from "../../../../services/client/client.service";
+import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 
 const log = new Logger('EntityBasicInfoComponent');
 
@@ -42,7 +43,7 @@ export class EntityBasicInfoComponent {
   language: string = 'en'
   selectedRole: PartyTypeDto;
   clientStatuses: StatusDTO[];
-  selectedClientStatus: StatusDTO = { name: "DRAFT", value: "DRAFT", actionLabel: "draft" };
+  selectedClientStatus: StatusDTO;
   applicableStatuses: StatusDTO[] = [];
   actionableStatuses: StatusDTO[] = [];
 
@@ -50,6 +51,7 @@ export class EntityBasicInfoComponent {
     private utilService: UtilService,
     private statusService: StatusService,
     private clientService: ClientService,
+    private globalMessagingService: GlobalMessagingService,
   ) {
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
@@ -93,9 +95,13 @@ export class EntityBasicInfoComponent {
       case 'B':
         this.selectedClientStatus = statuses.find(status => (status.value).toUpperCase() === 'BLACKLISTED');
         break;
+      case 'S':
+        this.selectedClientStatus = statuses.find(status => (status.value).toUpperCase() === 'SUSPENDED');
+        break;
       default:
         // do nothing
     }
+
     this.filterApplicableStatuses();
   }
 
@@ -118,14 +124,20 @@ export class EntityBasicInfoComponent {
   }
 
   processSelectedStatus(event: Event): void {
-    // const selectElement = event.target as HTMLSelectElement;
-    // const selectedValue = selectElement.value;
-    this.filterApplicableStatuses();
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedValue = selectElement.value;
+    this.selectedClientStatus = this.clientStatuses.find(status => (status.value).toUpperCase() === selectedValue.toUpperCase());
     this.statusModalButton.nativeElement.click();
   }
 
-  onStatusChange(status: string) {
-    this.selectedClientStatus = this.clientStatuses.find(s => s.value === status); // update selected status manually
+  initiateReassignStatus(task: string): void {
+    this.statusModalButton.nativeElement.click();
+    // set global variable called action
+    // if action is re-assign, adjust modal display
+    //  call second modal to select client
+    // call first modal after selecting client
+    //saved rea-assign status
+    log.info(`task: ${task}`);
   }
 
   changeClientStatus(): void {
@@ -138,7 +150,9 @@ export class EntityBasicInfoComponent {
 
     // update status
     this.clientService.updateClientSection(accountCode, { status, comment }).subscribe({
-      next: data => {},
+      next: data => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Client status updated successfully');
+      },
       error: err => {
         log.info(`status not updated >>> `, err)
       }

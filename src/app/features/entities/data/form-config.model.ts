@@ -40,6 +40,7 @@ export interface FieldModel {
   options: any[];
   appliesTo: AppliesToEnum;
   doc?: any;
+  buttonLabel?: {}
 }
 
 export interface Validation {
