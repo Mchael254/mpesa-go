@@ -29,3 +29,15 @@
   background-color: #e9eef6 !important;
   font-weight: 500 !important;
 }
+
+.icon-circle {
+  display: inline-block;
+  color: #00529b;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  text-align: center;
+  line-height: 19px;
+  cursor: pointer;
+  border: #00529b 2px solid;
+}
