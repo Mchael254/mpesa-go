@@ -963,7 +963,9 @@
                 <span class="text-dark me-2">{{ 'crm.validations' | translate }}</span>
                 <button class="btn btn-link p-0 text-primary" (click)="addSection()"
                         [disabled]="getRemainingValidations().length === 0 || selectedTableRecordDetails?.isProtected === true">
-                  <i class="fas fa-plus-circle fa-lg"></i>
+                  <span class="icon-circle">
+                    <i class="fa-solid fa-plus"></i>
+                  </span>
                 </button>
               </div>
 
