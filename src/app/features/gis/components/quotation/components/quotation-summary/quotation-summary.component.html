@@ -989,7 +989,7 @@
                 <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Comments</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Limits of liability</a>
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-limits">Limits of liability</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Commissions</a>
@@ -1254,19 +1254,40 @@
                   </ng-template>
                 </p-table>
               </div>
-              <!-- EXCESSES -->
-              <div class="tab-pane fade" id="nav-excesses" role="tabpanel" aria-labelledby="nav-excesses" tabindex="0">
-                <p-table [value]="excessesList" [tableStyle]="{ 'min-width': '50rem' }">
+              <!-- Limits of liablility -->
+              <div class="tab-pane fade" id="nav-limits" role="tabpanel" aria-labelledby="nav-limits" tabindex="0">
+                <p-table [value]="limitsRiskofLiability" #limitsRiskofLiabilityTable >
                   <ng-template pTemplate="header">
                     <tr>
-                      <th>Narration</th>
-                      <th>Value</th>
+                      <th pSortableColumn="narration">Narration<p-sortIcon field="narration"></p-sortIcon></th>
+                      <th pSortableColumn="value" >Value<p-sortIcon field="value"></p-sortIcon></th>
+                      <th></th>
+                      <th></th>
                     </tr>
                   </ng-template>
-                  <ng-template pTemplate="body" let-data>
+                  <ng-template pTemplate="body" let-data let-columns="columns" let-rowIndex="rowIndex">
+                          <tr *ngIf="rowIndex === 0">
+        <td colspan="4">
+          <input type="text"
+                 pInputText
+                 placeholder=""
+                (input)="filterTable($event,'description',limitsRiskofLiabilityTable)"
+                 style="width: 150px;height: 40px; margin-left:0" />
+        </td>
+      </tr>
+
                     <tr>
                       <td>{{ data.description }}</td>
                       <td>{{ data.excess }}</td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="4" class="text-center text-muted py-3">
+                        “No limit of liability available for this risk.”
+                      </td>
                     </tr>
                   </ng-template>
                 </p-table>
@@ -1357,7 +1378,7 @@
                   <td>{{ row.id }}</td>
                   <td>{{ row.description }}</td>
                   <td>
-                    <p-dropdown [options]="remarkOptions" [(ngModel)]="row.remark" placeholder="Select remark"
+                    <p-dropdown [options]="" [(ngModel)]="row.remark" placeholder="Select remark"
                       [style]="{width: '180px'}"></p-dropdown>
                   </td>
                   <td>{{ row.authorized }}</td>
@@ -1577,7 +1598,7 @@
         </div>
 
         <!-- Right-side Authorize button with tooltip -->
-        <span [attr.title]="exceptions?.length > 0 ? 'Please resolve exceptions' : null" style="display: inline-block;">
+        <span [attr.title]="exceptionsData?.length > 0 ? 'Please resolve exceptions' : null" style="display: inline-block;">
           <button type="button" class="btn btn-outline-primary"
             [disabled]="exceptionsData?.length > 0">
             Authorize quote

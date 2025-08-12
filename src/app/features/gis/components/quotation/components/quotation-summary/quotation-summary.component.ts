@@ -181,6 +181,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   exceptionsData: any;
   error: string | null = null;
   exceptionErrorMessage: string | null = null;
+  limitsRiskofLiability: any;
+  selectAll = false;
+
 
 
   
@@ -413,6 +416,21 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.coverTo = this.convertDate(this.quotationView.coverTo)
         this.expiryDate = this.convertDate(this.quotationDetails?.expiryDate)
         this.source = this.quotationView.source?.description
+
+
+        // Extract subclassCode and quotationProductCode
+      const firstProduct = this.quotationView.quotationProducts?.[0];
+      const firstRisk = firstProduct?.riskInformation?.[0];
+      const subclassCode = firstRisk?.subclassCode;
+      const quotationProductCode = firstRisk?.quotationProductCode;
+
+      log.debug('Subclass Code:', subclassCode);
+      log.debug('Quotation Product Code:', quotationProductCode);
+
+      
+      if (subclassCode && quotationProductCode) {
+        this.getLimitsofLiability(quotationProductCode, subclassCode);
+      }
 
 
         // Extract product details
@@ -2221,41 +2239,9 @@ getSections(data: any) {
     });
 
   }
-selectAll = false;
-
-  exceptions = [
-    {
-      id: '001',
-      description: 'Inadequate cover',
-      remark: 'NCD not applied',
-      authorized: 'No',
-      setStandard: 20,
-      usedStandard: 30,
-      authorizedBy: null,
-      authorizedDate: null,
-      selected: false
-    },
-    {
-      id: '002',
-      description: 'Inadequate cover',
-      remark: 'NCD not applied',
-      authorized: 'No',
-      setStandard: 20,
-      usedStandard: 30,
-      authorizedBy: null,
-      authorizedDate: null,
-      selected: false
-    }
-  ];
-
-  remarkOptions = [
-    { label: 'NCD not applied', value: 'NCD not applied' },
-    { label: 'Incorrect class', value: 'Incorrect class' },
-    { label: 'Low premium', value: 'Low premium' }
-  ];
 
   toggleAll() {
-    this.exceptions.forEach(e => (e.selected = this.selectAll));
+    this.exceptionsData.forEach(e => (e.selected = this.selectAll));
   }
   logCheckbox(row: any) {
   console.log('Selected row:', row);
@@ -2267,7 +2253,7 @@ getExceptions(quotationCode:number,username:string){
   this.quotationService.getExceptions(quotationCode,username).subscribe({
     next:(res)=>{
       log.debug('exceptions', res);
-        this.exceptionsData = res;
+        this.exceptionsData = res._embedded;
         log.debug('exceptionData',this.exceptionsData)
     },
     error:(error)=>{
@@ -2277,8 +2263,26 @@ getExceptions(quotationCode:number,username:string){
   })
 
 }
+
+
+
+getLimitsofLiability(quotationProductCode:number,subClassCode:number){
+
+  this.quotationService.getRIskLimitsOfLiability(quotationProductCode,subClassCode).subscribe({
+    next:(res)=>{
+      log.debug('limits of liability',res);
+      this.limitsRiskofLiability=res._embedded;
+    },
+    error:(error)=>{
+      log.error('Error fetching limits of liability:', error);
+        this.error = 'Something went wrong while limits of liability'
+
+    }
+  })
+
+}
 authorizeSelectedExceptions(): void {
-  const selected = this.exceptions?.filter(ex => ex.selected);
+  const selected = this.exceptionsData?.filter(ex => ex.selected);
 
   if (!selected || selected.length === 0) {
   
