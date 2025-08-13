@@ -27,6 +27,7 @@ import {
 import { TimeScale } from 'chart.js';
 import {AuthService} from '../../../../shared/services/auth.service';
 import { Pagination } from 'src/app/shared/data/common/pagination';
+
 @Component({
   selector: 'app-receipt-management',
   templateUrl: './receipt-management.component.html',
@@ -104,7 +105,7 @@ checkActiveTab:any;
     private receiptManagementService: ReceiptManagementService,
     private globalMessagingService: GlobalMessagingService,
     private sessionStorage: SessionStorageService,
-    private translate: TranslateService,
+    public translate: TranslateService,
     private router: Router,
     private fb: FormBuilder,
     private authService: AuthService
