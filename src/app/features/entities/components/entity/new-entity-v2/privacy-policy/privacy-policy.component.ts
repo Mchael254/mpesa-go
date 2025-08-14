@@ -1,7 +1,14 @@
 import {Component, Input} from '@angular/core';
 import {FieldModel} from "../../../../data/form-config.model";
-import {UtilService} from "../../../../../../shared/services";
+import {Logger, UtilService} from "../../../../../../shared/services";
 import {FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {AuthService} from "../../../../../../shared/services/auth.service";
+import {Profile} from "../../../../../../shared/data/auth/profile";
+import {ClientService} from "../../../../services/client/client.service";
+import {OtpRequestPayload} from "../../../../data/otp-request.model";
+import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
+
+const log = new Logger('PrivacyPolicyInfoComponent');
 
 @Component({
   selector: 'app-privacy-policy',
@@ -16,10 +23,14 @@ export class PrivacyPolicyComponent {
   shouldShowFields: boolean = false
   language: string = 'en';
   otpForm!: FormGroup;
+  currentUser!: Profile;
+  countdownTime: number = 0;
 
   constructor(
     private utilService: UtilService,
     private fb: FormBuilder,
+    private clientService: ClientService,
+    private globalMessagingService: GlobalMessagingService,
   ) {
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
@@ -58,7 +69,49 @@ export class PrivacyPolicyComponent {
 
   processInput(fieldId: string): void {
     const formValues = this.otpForm.getRawValue();
-    console.log(formValues, fieldId);
+    const requestPayload = {
+      recipient: formValues.otp_email || formValues.otp_sms,
+      purpose: formValues.otp_sms  ? 'CPV' : 'CEV',
+      channel: formValues.otp_sms ? 'sms' : 'email',
+      otpCode: formValues.enter_otp
+    }
+
+    if (fieldId === 'otp_email' || fieldId === 'otp_sms') {
+      this.requestOtp(requestPayload)
+    } else if (fieldId === 'enter_otp') {
+      this.verifyOtp(requestPayload)
+    }
+  }
+
+  requestOtp(requestPayload: OtpRequestPayload): void {
+    this.otpCountdownTimer()
+    this.clientService.requestOtp(requestPayload).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage('Success', res);
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+      },
+    });
+  }
+
+  verifyOtp(requestPayload: OtpRequestPayload): void {
+    this.clientService.verifyOtp(requestPayload).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage('Success', res);
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+      },
+    });
+  }
+
+  otpCountdownTimer() {
+    this.countdownTime = 30;
+    let timer = setInterval(() => {
+      this.countdownTime -= 1;
+      if (this.countdownTime === 0) clearInterval(timer);
+    }, 1000)
   }
 
 

@@ -4,11 +4,17 @@
     margin: 32px 32px 422px; */
   padding: 40px 0 96px;
   border-radius: 5px;
-  background-color: #fff;
+  /* background-color: #fff; */
 }
 
 .main {
-  margin-left: 10px;
+  /* margin-left: 10px; */
+  background-color: #ffffff;
+  padding: 40px 0  10px;
+  padding-left: 30px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
 }
 .Receipt-management {
   width: 191px;
@@ -120,7 +126,8 @@ position: static;
   white-space: nowrap;
 }
 .Line-195 {
-  width: 1216px;
+  /* width: 1216px; */
+ 
   height: 2px;
   flex-grow: 0;
 
