@@ -233,6 +233,7 @@ export interface PartyAccountsDetails {
     account?: AccountDetailsDTO;
     box_number?: string;
     country_id?: number;
+    countryId?: number;
     estate?: string;
     fax?: string;
     house_number?: string;

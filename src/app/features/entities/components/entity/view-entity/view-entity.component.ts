@@ -40,6 +40,7 @@ import {MaritalStatusService} from "../../../../../shared/services/setups/marita
 import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
 import {ContactComponent} from "./contact/contact.component";
 import {AddressComponent} from "./address/address.component";
+import {FinancialComponent} from "./financial/financial.component";
 
 const log = new Logger('ViewEntityComponent');
 
@@ -55,6 +56,7 @@ export class ViewEntityComponent implements OnInit {
   @ViewChild('primeIdentityRef') primeIdentityComponent!: PrimeIdentityComponent;
   @ViewChild('contactRef') contactComponent!: ContactComponent;
   @ViewChild('addressRef') addressComponent!: AddressComponent;
+  @ViewChild('financialRef') financialComponent!: FinancialComponent;
 
   entityTransactions: EntityTransactionsComponent;
 
@@ -118,9 +120,10 @@ export class ViewEntityComponent implements OnInit {
 
   language: string = 'en';
 
-  editPrimeDetailsFormConfig: any[];
-  editContactFormConfig: any[];
-  editAddressFormConfig: any[];
+  editPrimeDetailsFormConfig: any;
+  editContactFormConfig: any;
+  editAddressFormConfig: any;
+  editFinancialFormConfig: any;
 
   selectOptions: {
     idTypes: IdentityModeDTO[],
@@ -196,6 +199,7 @@ export class ViewEntityComponent implements OnInit {
         this.editPrimeDetailsFormConfig = data.prime_identity;
         this.editContactFormConfig = data.contact;
         this.editAddressFormConfig = data.address;
+        this.editFinancialFormConfig = data.financial;
       },
       error: err => {
         log.error(err);
@@ -606,6 +610,12 @@ export class ViewEntityComponent implements OnInit {
         this.contactComponent.openEditContactDialog();
         break;
       case 'address':
+        this.addressComponent.openEditAddressDialog();
+        break;
+      case 'financial':
+        this.financialComponent.openEditFinancialDialog();
+        break;
+      case 'wealthAml':
         this.addressComponent.openEditAddressDialog();
         break;
       default:

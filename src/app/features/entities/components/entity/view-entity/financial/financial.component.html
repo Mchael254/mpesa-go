@@ -1,0 +1,216 @@
+<!--{{ financialDetails | json }}-->
+<!--{{ countryId | json }}-->
+
+<!--<ng-container *ngIf="editForm && countries && states && towns; else loadingContent">-->
+<table class="table table-borderless">
+  <tbody>
+  <tr>
+    <td>
+      <div class="row">
+        <div class="col-sm-4">
+          {{ financialDetailsConfig?.financial_details?.bank_name[language] | titlecase }}
+        </div>
+        <div class="col-sm-8 fw-bold" *ngIf="true">
+          {{ financialDetails.bankBranchId }}
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="row">
+        <div class="col-sm-4">
+          {{ financialDetailsConfig?.financial_details?.branch_name[language] | titlecase }}
+        </div>
+        <div class="col-sm-8 fw-bold">
+          {{ financialDetails?.bankBranchId  }}
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="row">
+        <div class="col-sm-4">
+          {{ financialDetailsConfig?.financial_details?.account_number[language] | titlecase }}
+        </div>
+        <div class="col-sm-8 fw-bold">
+          {{ financialDetails.accountNumber | titlecase }}
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div class="row">
+        <div class="col-sm-4">
+          {{ financialDetailsConfig?.financial_details?.currency[language] | titlecase }}
+        </div>
+        <div class="col-sm-8 fw-bold">
+          {{ financialDetails?.currencyId  }}
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="row">
+        <div class="col-sm-4">
+          {{ financialDetailsConfig?.financial_details?.wef[language] | titlecase }}
+        </div>
+        <div class="col-sm-8 fw-bold">
+          {{ financialDetails?.effectiveFromDate | titlecase }}
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="row">
+        <div class="col-sm-4">
+          {{ financialDetailsConfig?.financial_details?.wet[language] | titlecase }}
+        </div>
+        <div class="col-sm-8 fw-bold">
+          {{ financialDetails?.effectiveToDate | uppercase }}
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div class="row">
+        <div class="col-sm-4">
+          {{ financialDetailsConfig?.financial_details?.mobile_money_number[language] | titlecase }}
+        </div>
+        <div class="col-sm-8 fw-bold">
+          {{ financialDetails?.mpayno | titlecase }}
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="row">
+        <div class="col-sm-4">
+          {{ financialDetailsConfig?.financial_details?.iban[language] | titlecase }}
+        </div>
+        <div class="col-sm-8 fw-bold">
+          {{ financialDetails?.iban | titlecase }}
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="row">
+        <div class="col-sm-4">
+          {{ financialDetailsConfig?.financial_details?.swift_code[language] | titlecase }}
+        </div>
+        <div class="col-sm-8 fw-bold">
+          {{ financialDetails?.swiftCode | uppercase }}
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div class="row">
+        <div class="col-sm-4">
+          {{ financialDetailsConfig?.financial_details?.preferred_payment_channel[language] | titlecase }}
+        </div>
+        <div class="col-sm-8 fw-bold">
+          <!--          {{ clientTown?.name | titlecase }}-->
+        </div>
+      </div>
+    </td>
+    <td>
+    </td>
+    <td>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+
+
+<!--edit modal-->
+<button #editButton type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editFinancialModal" hidden>
+  Open Edit Financial Modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="editFinancialModal" tabindex="-1" aria-labelledby="editFinancialModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h1 class="modal-title fs-4 text-primary" id="editFinancialModalLabel">
+          {{ formFieldsConfig.label[language] | titlecase }}
+        </h1>
+        <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ng-container
+          *ngIf="
+              editForm;
+              else loadingForm
+            "
+        >
+          <form [formGroup]="editForm">
+            <div class="row g-3">
+              <ng-container *ngFor="let field of formFieldsConfig.fields">
+                <div class="col-md-6">
+                  <label [for]="field.fieldId" class="form-label">
+                    {{ field.label[language] | titlecase }}
+                  </label>
+                  <!-- Text input -->
+                  <input
+                    *ngIf="field.type === 'text' || field.type === 'email'"
+                    [formControlName]="field.fieldId"
+                    [placeholder]="field.placeholder[language] || ''"
+                    [id]="field.fieldId"
+                    type="text"
+                    class="form-control"
+                  />
+
+                  <!--select input-->
+                  <select
+                    *ngIf="field.type === 'select'"
+                    [formControlName]="field.fieldId"
+                    [id]="field.fieldId"
+                    class="form-select"
+
+                  >
+                    <option *ngFor="let opt of field.options" [value]="opt.id ? opt.id : opt.value">
+                      {{ opt.name || opt.description || opt.label | uppercase }}
+                    </option>
+                  </select>
+
+                  <!--Date-->
+                  <ng-container *ngIf="field.type === 'date'">
+                    <label class="form-label" [for]="field.fieldId">
+                      {{ field.label?.[language] | titlecase }}
+                      <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      [formControlName]="field.fieldId"
+                      [placeholder]="field.placeholder"
+                      [id]="field.fieldId"
+                      class="form-control"
+                    />
+                  </ng-container>
+                </div>
+              </ng-container>
+            </div>
+          </form>
+        </ng-container>
+        <ng-template #loadingForm>
+          <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+          {{ formFieldsConfig.buttons.cancel.label[language] | sentenceCase }}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="editFinancialDetails()">
+          {{ formFieldsConfig.buttons.save.label[language] | sentenceCase }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--</ng-container>-->
+
