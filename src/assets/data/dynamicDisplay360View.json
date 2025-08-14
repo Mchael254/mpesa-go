@@ -231,6 +231,58 @@
           "fr": "french details",
           "ke": "swahili details"
         },
+        "financial_details": {
+          "bank_name": {
+            "en": "bank name",
+            "fr": "",
+            "ke": ""
+          },
+          "branch_name": {
+            "en": "branch name",
+            "fr": "",
+            "ke": ""
+          },
+          "account_number": {
+            "en": "account number",
+            "fr": "",
+            "ke": ""
+          },
+          "currency": {
+            "en": "currency",
+            "fr": "",
+            "ke": ""
+          },
+          "wef": {
+            "en": "with effect from",
+            "fr": "",
+            "ke": ""
+          },
+          "wet": {
+            "en": "with effect to",
+            "fr": "",
+            "ke": ""
+          },
+          "mobile_money_number": {
+            "en": "mobile money number",
+            "fr": "",
+            "ke": ""
+          },
+          "iban": {
+            "en": "iban",
+            "fr": "",
+            "ke": ""
+          },
+          "swift_code": {
+            "en": "swift code",
+            "fr": "",
+            "ke": ""
+          },
+          "preferred_payment_channel": {
+            "en": "preferred payment channel",
+            "fr": "",
+            "ke": ""
+          }
+        },
         "order": 5
       },
       {

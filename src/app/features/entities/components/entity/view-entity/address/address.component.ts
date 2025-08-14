@@ -4,9 +4,8 @@ import {Logger, UtilService} from "../../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import {CountryDto, PostalCodesDTO, StateDto, TownDto} from "../../../../../../shared/data/common/countryDto";
 import {CountryService} from "../../../../../../shared/services/setups/country/country.service";
-import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
 import {ClientService} from "../../../../services/client/client.service";
-import {ClientTitleDTO} from "../../../../../../shared/data/common/client-title-dto";
+import {Observable} from "rxjs";
 
 const log = new Logger('AddressComponent');
 
@@ -25,18 +24,21 @@ export class AddressComponent implements OnInit {
   @Input() addressDetails: any;
   @Input() accountCode: number;
 
-  @Output() fetchClientDetails = new EventEmitter<void>();
-
   countries: CountryDto[];
   clientCountry: CountryDto;
+  countries$: Observable<CountryDto[]>;
 
   states: StateDto[];
   clientState: StateDto;
+  states$: Observable<StateDto[]>;
 
-  towns: TownDto[];
+  towns: TownDto[] = [];
   clientTown: TownDto;
-  postalCodes: PostalCodesDTO[];
+  towns$: Observable<TownDto[]>;
+
+  postalCodes: PostalCodesDTO[] = [];
   clientPostalCode: PostalCodesDTO
+  postalCodes$: Observable<PostalCodesDTO[]>
 
   language: string = 'en';
   editForm: FormGroup;
@@ -53,13 +55,9 @@ export class AddressComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.countries$ = this.countryService.getCountries();
     this.fetchCountries();
-    setTimeout(() => {
-      if (this.countries && this.addressDetails) {
-
-      }
-    }, 1000)
-    this.createEditForm(this.formFieldsConfig.fields)
+    this.createEditForm(this.formFieldsConfig.fields);
   }
 
 
@@ -75,13 +73,16 @@ export class AddressComponent implements OnInit {
   }
 
   fetchCountries(): void {
-    this.countryService.getCountries().subscribe({
+    this.countries$.subscribe({
       next: (countries: CountryDto[]) => {
         this.countries = countries;
         this.clientCountry = countries.find(country => country.id === this.addressDetails.countryId);
-        this.fetchStates(this.clientCountry.id);
+        this.fetchStates(this.clientCountry?.id);
       },
-      error: (err) => {}
+      error: (err) => {
+        this.countries = [];
+        this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+      }
     })
   }
 
@@ -92,7 +93,10 @@ export class AddressComponent implements OnInit {
         this.clientState = states.find(state => state.id === this.addressDetails?.stateId);
         this.fetchTowns(this.addressDetails?.stateId);
       },
-      error: (err) => {},
+      error: (err) => {
+        this.states = [];
+        this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+      },
     })
   }
 
@@ -103,7 +107,10 @@ export class AddressComponent implements OnInit {
         this.clientTown = towns.find(town => town.id === this.addressDetails?.townId);
         this.fetchPostalCodes(this.clientTown?.id);
       },
-      error: (err) => {},
+      error: (err) => {
+        this.towns = [];
+        this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+      },
     })
   }
 
@@ -112,7 +119,10 @@ export class AddressComponent implements OnInit {
       next: (postalCodes: PostalCodesDTO[]) => {
         this.postalCodes = postalCodes;
       },
-      error: (err) => {},
+      error: (err) => {
+        this.postalCodes = [];
+        this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+      },
     });
   }
 
@@ -125,15 +135,15 @@ export class AddressComponent implements OnInit {
   patchFormValues(): void {
     const patchData = {
       address: '',
-      country: this.clientCountry.id,
-      county: this.clientState.id,
-      city: this.clientTown.id,
-      physicalAddress: this.addressDetails.physicalAddress,
-      postalAddress: this.addressDetails.residentialAddress,
-      postalCode: this.addressDetails.postalCode,
-      town: this.clientTown.id,
-      road: this.addressDetails.road,
-      houseNumber: this.addressDetails.houseNumber,
+      country: this.clientCountry?.id,
+      county: this.clientState?.id,
+      city: this.clientTown?.id,
+      physicalAddress: this.addressDetails?.physicalAddress,
+      postalAddress: this.addressDetails?.residentialAddress,
+      postalCode: this.addressDetails?.postalCode,
+      town: this.clientTown?.id,
+      road: this.addressDetails?.road,
+      houseNumber: this.addressDetails?.houseNumber,
     }
     this.editForm.patchValue(patchData);
   }
@@ -158,6 +168,7 @@ export class AddressComponent implements OnInit {
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
         this.addressDetails = data.address;
+        this.fetchCountries();
       },
       error: err => {
         const errorMessage = err?.error?.message ?? err.message;
@@ -168,11 +179,10 @@ export class AddressComponent implements OnInit {
   }
 
   setSelectOptions(): void {
-    if (
-      this.countries?.length > 0 &&
-      this.states?.length > 0 &&
-      this.towns?.length > 0
-    ) {
+  // &&
+  //   this.states?.length > 0 &&
+  //   this.towns?.length > 0
+    if (this.countries?.length > 0) {
       this.formFieldsConfig.fields.forEach(field => {
         switch (field.fieldId) {
           case 'country':

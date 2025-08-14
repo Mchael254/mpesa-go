@@ -62,11 +62,19 @@ export class PrivacyPolicyComponent {
     this.otpForm = this.fb.group(group);
   }
 
+  /**
+   * show selected from template (SMS | Email)
+   * @param selectedTab
+   */
   showSelectedTab(selectedTab: string): void {
     this.selectedTab = selectedTab;
     this.shouldShowFields = true;
   }
 
+  /**
+   * Process the selected input and call appropriate method to either request or verify OTP
+   * @param fieldId
+   */
   processInput(fieldId: string): void {
     const formValues = this.otpForm.getRawValue();
     const requestPayload = {
@@ -83,6 +91,10 @@ export class PrivacyPolicyComponent {
     }
   }
 
+  /**
+   * Call request OTP API and trigger countdown timer
+   * @param requestPayload
+   */
   requestOtp(requestPayload: OtpRequestPayload): void {
     this.otpCountdownTimer()
     this.clientService.requestOtp(requestPayload).subscribe({
@@ -95,6 +107,10 @@ export class PrivacyPolicyComponent {
     });
   }
 
+  /**
+   * Call verify OTP API
+   * @param requestPayload
+   */
   verifyOtp(requestPayload: OtpRequestPayload): void {
     this.clientService.verifyOtp(requestPayload).subscribe({
       next: (res) => {
@@ -106,6 +122,9 @@ export class PrivacyPolicyComponent {
     });
   }
 
+  /**
+   * triggered to countdown time for OTP
+   */
   otpCountdownTimer() {
     this.countdownTime = 30;
     let timer = setInterval(() => {

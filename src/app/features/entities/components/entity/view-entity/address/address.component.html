@@ -1,4 +1,4 @@
-<ng-container *ngIf="editForm && this.countries && this.states && this.towns; else loadingContent">
+<!--<ng-container *ngIf="editForm && countries && states && towns; else loadingContent">-->
 <!--{{ addressDetails | json }}-->
   <table class="table table-borderless">
     <tbody>
@@ -121,9 +121,9 @@
         <div class="modal-body">
           <ng-container
             *ngIf="
-          editForm && this.countries && this.states && this.towns;
-          else loadingForm
-          "
+              editForm && countries?.length > 0;
+              else loadingForm
+            "
           > <!--todo: fix condition-->
             <form [formGroup]="editForm">
               <div class="row g-3">
@@ -180,12 +180,12 @@
     </div>
   </div>
 
-</ng-container>
+<!--</ng-container>-->
 
-<ng-template #loadingContent>
+<!--<ng-template #loadingContent>
   <div class="row">
     <div class="col-sm-12">
       <p class="lead">Loading content...</p>
     </div>
   </div>
-</ng-template>
+</ng-template>-->
