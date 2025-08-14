@@ -328,3 +328,10 @@ button:focus {
   letter-spacing: 0%;
   color: #495057;
 }
+
+.p-inputtext {
+    padding: 0.375rem 0.75rem; /* Match Bootstrap form-control */
+    font-size: 1rem; 
+}
+
+
