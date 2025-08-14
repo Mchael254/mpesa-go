@@ -940,7 +940,7 @@ getRIskLimitsOfLiability(
   }
 
   addSubclassSectionPeril(perilsPayload: riskPeril): Observable<any> {
-    return this.api.POST<any>(`v2/quotation-risk-clauses`, perilsPayload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+    return this.api.POST<any>(`v2/quotation-risk-excesses`, perilsPayload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     );
