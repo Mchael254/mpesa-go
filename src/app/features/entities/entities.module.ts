@@ -58,6 +58,8 @@ import { PrivacyPolicyComponent } from './components/entity/new-entity-v2/privac
 import { PrimeIdentityComponent } from './components/entity/view-entity/prime-identity/prime-identity.component';
 import { ContactComponent } from './components/entity/view-entity/contact/contact.component';
 import { AddressComponent } from './components/entity/view-entity/address/address.component';
+import { FinancialComponent } from './components/entity/view-entity/financial/financial.component';
+import { WealthAmlComponent } from './components/entity/view-entity/wealth-aml/wealth-aml.component';
 
 @NgModule({
   declarations: [
@@ -104,6 +106,8 @@ import { AddressComponent } from './components/entity/view-entity/address/addres
     PrimeIdentityComponent,
     ContactComponent,
     AddressComponent,
+    FinancialComponent,
+    WealthAmlComponent,
   ],
   imports: [
     CommonModule,

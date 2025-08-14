@@ -1,3 +1,6 @@
+import {ContactDetailsDTO} from "./AgentDTO";
+import {ContactDetails} from "./accountDTO";
+
 export interface AddressModel {
   id: number;
   accountId: number;
@@ -58,6 +61,7 @@ export interface ClientDTO {
   clientFullName: string
   code:number, //added
   address?: AddressModel,
+  contactDetails?: any,
 }
 export interface ClientTypeDTO {
   category: string,

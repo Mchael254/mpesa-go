@@ -1,71 +1,73 @@
-<table class="table table-borderless">
-  <tbody>
-  <tr>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ contactDetailsConfig?.contact_details?.branch[language] || '---' | titlecase }}
+<ng-container *ngIf="contactDetails">
+  <table class="table table-borderless">
+    <tbody>
+    <tr>
+      <td>
+        <div class="row">
+          <div class="col-sm-4">
+            {{ contactDetailsConfig?.contact_details?.branch[language] || '---' | titlecase }}
+          </div>
+          <div class="col-sm-8 fw-bold">
+            {{ contactDetails?.branch }}
+          </div>
         </div>
-        <div class="col-sm-8 fw-bold">
-          {{ contactDetails.branch }}
+      </td>
+      <td>
+        <div class="row" *ngIf="clientTitle?.description">
+          <div class="col-sm-4">
+            {{ contactDetailsConfig?.contact_details?.title[language] || '---' | titlecase }}
+          </div>
+          <div class="col-sm-8 fw-bold">
+            {{ clientTitle?.description }}
+          </div>
         </div>
-      </div>
-    </td>
-    <td>
-      <div class="row" *ngIf="clientTitle?.description">
-        <div class="col-sm-4">
-          {{ contactDetailsConfig?.contact_details?.title[language] || '---' | titlecase }}
+      </td>
+      <td>
+        <div class="row">
+          <div class="col-sm-5">
+            {{ contactDetailsConfig?.contact_details?.sms_number[language] || '---' | titlecase }}
+          </div>
+          <div class="col-sm-7 fw-bold">
+            {{ contactDetails?.smsNumber }}
+          </div>
         </div>
-        <div class="col-sm-8 fw-bold">
-          {{ clientTitle?.description }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="row">
+          <div class="col-sm-5">
+            {{ contactDetailsConfig?.contact_details?.tel_number[language] || '---' | titlecase }}
+          </div>
+          <div class="col-sm-7 fw-bold">
+            {{ contactDetails?.phoneNumber }}
+          </div>
         </div>
-      </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-5">
-          {{ contactDetailsConfig?.contact_details?.sms_number[language] || '---' | titlecase }}
+      </td>
+      <td>
+        <div class="row">
+          <div class="col-sm-4">
+            {{ contactDetailsConfig?.contact_details?.email[language] || '---' | titlecase }}
+          </div>
+          <div class="col-sm-8 fw-bold">
+            {{ contactDetails?.emailAddress | lowercase }}
+          </div>
         </div>
-        <div class="col-sm-7 fw-bold">
-          {{ contactDetails?.smsNumber }}
+      </td>
+      <td>
+        <div class="row">
+          <div class="col-sm-5">
+            {{ contactDetailsConfig?.contact_details?.preferred_contact_channel[language] || '---' | titlecase }}
+          </div>
+          <div class="col-sm-7 fw-bold">
+            {{ contactDetails?.contactChannel | uppercase }}
+          </div>
         </div>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <div class="row">
-        <div class="col-sm-5">
-          {{ contactDetailsConfig?.contact_details?.tel_number[language] || '---' | titlecase }}
-        </div>
-        <div class="col-sm-7 fw-bold">
-          {{ contactDetails?.phoneNumber }}
-        </div>
-      </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ contactDetailsConfig?.contact_details?.email[language] || '---' | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ contactDetails?.emailAddress | lowercase }}
-        </div>
-      </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-5">
-          {{ contactDetailsConfig?.contact_details?.preferred_contact_channel[language] || '---' | titlecase }}
-        </div>
-        <div class="col-sm-7 fw-bold">
-          {{ contactDetails?.contactChannel | uppercase }}
-        </div>
-      </div>
-    </td>
-  </tr>
-  </tbody>
-</table>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</ng-container>
 
 
 <!--edit prime details modal-->
@@ -84,7 +86,7 @@
         <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <ng-container *ngIf=" editForm; else loadingForm"> <!--todo: fix condition-->
+        <ng-container *ngIf=" editForm; else loadingForm">
           <form [formGroup]="editForm">
             <div class="row g-3">
               <ng-container *ngFor="let field of formFieldsConfig.fields">

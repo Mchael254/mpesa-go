@@ -7,7 +7,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import _default from "chart.js/dist/core/core.interaction";
 import index = _default.modes.index;
 import {group} from "@angular/animations";
-import {forkJoin} from "rxjs";
+import {forkJoin, Observable} from "rxjs";
 import {BranchService} from "../../../../../../shared/services/setups/branch/branch.service";
 import {OrganizationBranchDto} from "../../../../../../shared/data/common/organization-branch-dto";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
@@ -30,6 +30,8 @@ export class ContactComponent implements OnInit {
   @Input() formFieldsConfig: any;
   @Input() contactDetails: any;
   @Input() accountCode: number;
+
+  clientTitle$: Observable<ClientTitleDTO[]>;
 
   // contactDetailsConfig: any;
   language: string = 'en';
@@ -54,33 +56,26 @@ export class ContactComponent implements OnInit {
     this.utilService?.currentLanguage.subscribe(lang => {
       this.language = lang;
     });
+    log.info('form fields config >>> ', this.formFieldsConfig);
   }
 
   ngOnInit(): void {
     this.fetchSelectOptions();
-    if (this.contactDetails.titleId) {
-      this.initData()
-    };
-
-    /*setTimeout(() => {
-      console.log(this.contactDetails)
-      if (this.contactDetails.titleId) {
-        this.initData()
-      };
-    }, 1000);*/
+    this.clientTitle$ = this.clientService.getClientTitles();
+    this.initData();
+    if (this.formFieldsConfig.fields.length > 0) this.createEditForm(this.formFieldsConfig.fields);
   }
 
 
   initData(): void {
-    this.clientService.getClientTitles().subscribe({
+    this.clientTitle$.subscribe({
       next: (res: ClientTitleDTO[]) => {
         this.clientTitles = res;
         const index =  res.findIndex(title =>  title.id === this.contactDetails?.titleId)
         this.clientTitle = res[index];
-        this.createEditForm(this.formFieldsConfig.fields);
       },
       error: err => {
-
+        this.globalMessagingService.displayErrorMessage('Error', err?.error?.message);
       }
     });
   }
@@ -141,18 +136,19 @@ export class ContactComponent implements OnInit {
       ];
     });
     this.editForm = this.fb.group(group);
+    log.info('edit form  >>> ', this.editForm);
   }
 
   patchFormValues(): void {
     const patchData = {
       branch: this.contactDetails?.branch ,
-      title: this.clientTitle.id,
+      title: this.clientTitle?.id,
       smsNumber: this.contactDetails?.smsNumber,
       telNumber: this.contactDetails?.phoneNumber,
       email: this.contactDetails?.emailAddress,
       contactChannel: this.contactDetails?.contactChannel
     }
-    this.editForm.patchValue(patchData);
+    this.editForm?.patchValue(patchData);
     log.info(`patched form >>> `, this.editForm, patchData);
   }
 
@@ -168,9 +164,11 @@ export class ContactComponent implements OnInit {
 
     }
 
-    this.clientService.updateClientSection(this.accountCode, contactDetails).subscribe({
+    this.clientService.updateClientSection(this.accountCode, { contactDetails }).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
+        this.contactDetails = data.contactDetails;
+        this.initData();
       },
       error: err => {
         const errorMessage = err?.error?.message ?? err.message;

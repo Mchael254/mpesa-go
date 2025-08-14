@@ -789,7 +789,320 @@
       "fr": "financier",
       "ke": "kifedha"
     },
-    "fields": []
+    "fields": [
+      {
+        "sectionId": "financial",
+        "fieldId": "bankName",
+        "type": "select",
+        "label": {
+          "en": "bank name",
+          "ke": "",
+          "fr": ""
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "financial",
+        "fieldId": "branchName",
+        "type": "select",
+        "label": {
+          "en": "branch name",
+          "ke": "",
+          "fr": ""
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "financial",
+        "fieldId": "accountNumber",
+        "type": "text",
+        "label": {
+          "en": "branch name",
+          "ke": "",
+          "fr": ""
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "financial",
+        "fieldId": "currency",
+        "type": "select",
+        "label": {
+          "en": "currency",
+          "ke": "",
+          "fr": ""
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "financial",
+        "fieldId": "wet",
+        "type": "date",
+        "label": {
+          "en": "with effect from",
+          "ke": "",
+          "fr": ""
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "financial",
+        "fieldId": "wef",
+        "type": "date",
+        "label": {
+          "en": "with effect to",
+          "ke": "",
+          "fr": ""
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "financial",
+        "fieldId": "mobileMoneyNumber",
+        "type": "text",
+        "label": {
+          "en": "mobile money number",
+          "ke": "",
+          "fr": ""
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "financial",
+        "fieldId": "iban",
+        "type": "text",
+        "label": {
+          "en": "international bank account number",
+          "ke": "",
+          "fr": ""
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "financial",
+        "fieldId": "swiftCode",
+        "type": "text",
+        "label": {
+          "en": "swift code",
+          "ke": "",
+          "fr": ""
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "financial",
+        "fieldId": "preferredPaymentMethod",
+        "type": "select",
+        "label": {
+          "en": "preferred payment method",
+          "ke": "",
+          "fr": ""
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      }
+    ],
+    "buttons": {
+      "cancel": {
+        "sectionId": "prime_identity",
+        "fieldId": "cancel_button",
+        "type": "button",
+        "label": {
+          "en": "cancel",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        }
+      },
+      "save": {
+        "sectionId": "prime_identity",
+        "fieldId": "cancel_button",
+        "type": "button",
+        "label": {
+          "en": "save details",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        }
+      }
+    }
   },
   "wealth_aml": {
     "label": {
