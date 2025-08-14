@@ -1,4 +1,4 @@
-<!--{{ dynamicDisplay | json }}-->
+<!--{{ partyAccountDetails | json }}-->
 <div *ngIf="dynamicDisplay" class="entity-container">
   <ng-container *ngFor="let display of dynamicDisplay">
     <p-tabView>
@@ -49,15 +49,15 @@
             >
             </app-prime-identity>
           </ng-container>
-
           <ng-container *ngIf="
             partyAccountDetails &&
-            tab.title==='contact';"
+            editContactFormConfig?.fields.length > 0 &&
+            tab.title==='contact'"
           >
             <app-contact
               #contactRef
-              [contactDetails]="partyAccountDetails.contactDetails"
-              [accountCode]="partyAccountDetails.accountCode"
+              [contactDetails]="partyAccountDetails?.contactDetails"
+              [accountCode]="partyAccountDetails?.accountCode"
               [contactDetailsConfig]="tab"
               [formFieldsConfig]="editContactFormConfig"
             ></app-contact>
@@ -74,6 +74,21 @@
               [addressDetailsConfig]="tab"
               [formFieldsConfig]="editAddressFormConfig"
             ></app-address>
+          </ng-container>
+
+          <ng-container *ngIf="
+            partyAccountDetails &&
+            tab.title==='financial'"
+          >
+            <app-financial
+              #financialRef
+              [financialDetails]="partyAccountDetails.paymentDetails"
+              [accountCode]="partyAccountDetails.accountCode"
+              [financialDetailsConfig]="tab"
+              [formFieldsConfig]="editFinancialFormConfig"
+              [countryId]="partyAccountDetails?.address?.countryId"
+            >
+            </app-financial>
           </ng-container>
 
         </p-tabPanel>
