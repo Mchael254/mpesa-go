@@ -220,7 +220,7 @@ export interface riskPeril {
   quotationCode: number;
   quotationRiskCode: number;
   subclassSectionPerilCode: number;
-  perilLIimit: number;
+  perilLimit: number;
   perilType: string;
   sumInsuredOrLimit: string;
   excessType: string;
