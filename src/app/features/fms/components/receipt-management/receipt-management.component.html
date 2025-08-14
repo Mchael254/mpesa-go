@@ -1,4 +1,29 @@
-<div class="body-container">
+<div class="container ms-2">
+  <div class="row me-4 mt-1 align-items-center">
+    <div class="col-8">
+      <app-dynamic-breadcrumb
+        [breadCrumbItems]="[
+      {
+        label: 'FMS',
+        url: '/home/fms',
+      },
+      {
+        label:  this.translate.instant('base.Cashbook'),
+        url: '/home/fms/',
+      },
+      {
+        label: this.translate.instant('fms.receipting.receipting'),
+        url: '/home/fms/',
+      },
+      {
+        label: this.translate.instant('base.base-fms.manageReceipt'),
+        url: ''
+      }
+    ]"
+      >
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
   <div class="main">
     <form [formGroup]="cancelForm">
       <h5 class="Receipt-management">
@@ -22,11 +47,11 @@
           {{ "fms.receipt-management.cancellation" | translate }}
         </button>
       </div>
-      <div class="Line-195"></div>
+      <div class="col md-10 Line-195"></div>
 
       <!-- Cancellation Table -->
       <div class="row mt-3" *ngIf="cancellationDeactivated">
-        <div class="col-md-10">
+        <div class="col-md-11">
           <p-table
             responsiveLayout="scroll"
             class="table-striped"
@@ -41,20 +66,25 @@
           >
             <ng-template pTemplate="header">
               <tr>
-                <th class="header-bg">
+                <th class="header-bg" pSortableColumn="branchReceiptCode">
                   {{ "fms.receipt-management.receiptNumber" | translate }}
+                  <p-sortIcon field="branchReceiptCode"></p-sortIcon>
                 </th>
-                <th class="header-bg">
+                <th class="header-bg" pSortableColumn="receiptDate">
                   {{ "fms.receipt-management.receiptDate" | translate }}
+                  <p-sortIcon field="receiptDate"></p-sortIcon>
                 </th>
-                <th class="header-bg">
+                <th class="header-bg" pSortableColumn="receivedFrom">
                   {{ "fms.receipt-management.receivedFrom" | translate }}
+                  <p-sortIcon field="receivedFrom"></p-sortIcon>
                 </th>
-                <th class="header-bg">
+                <th class="header-bg" pSortableColumn="amount">
                   {{ "fms.receipt-management.amount" | translate }}
+                  <p-sortIcon field="amount"></p-sortIcon>
                 </th>
-                <th class="header-bg">
+                <th class="header-bg" pSortableColumn="paymentMode">
                   {{ "fms.receipt-management.paymentMethod" | translate }}
+                  <p-sortIcon field="paymentMode"></p-sortIcon>
                 </th>
                 <th class="header-bg">
                   {{ "fms.receipting.actions" | translate }}
@@ -334,7 +364,7 @@
       <!-- END OF RECEIPT CANCELLATION MODAL -->
       <!-- start of printing table data -->
       <div class="row mt-3" *ngIf="printingEnabled">
-        <div class="col-md-10">
+        <div class="col-md-11">
           <p-table
             responsiveLayout="scroll"
             class="table-striped"
@@ -349,20 +379,25 @@
           >
             <ng-template pTemplate="header">
               <tr>
-                <th class="header-bg">
+                <th class="header-bg" pSortableColumn="branchReceiptCode">
                   {{ "fms.receipt-management.receiptNumber" | translate }}
+                  <p-sortIcon field="branchReceiptCode"></p-sortIcon>
                 </th>
-                <th class="header-bg">
+                <th class="header-bg" pSortableColumn="receiptDate">
                   {{ "fms.receipt-management.receiptDate" | translate }}
+                  <p-sortIcon field="receiptDate"></p-sortIcon>
                 </th>
-                <th class="header-bg">
+                <th class="header-bg" pSortableColumn="receivedFrom">
                   {{ "fms.receipt-management.receivedFrom" | translate }}
+                  <p-sortIcon field="receivedFrom"></p-sortIcon>
                 </th>
-                <th class="header-bg">
+                <th class="header-bg" pSortableColumn="amount">
                   {{ "fms.receipt-management.amount" | translate }}
+                  <p-sortIcon field="amount"></p-sortIcon>
                 </th>
-                <th class="header-bg">
+                <th class="header-bg" pSortableColumn="paymentMode">
                   {{ "fms.receipt-management.paymentMethod" | translate }}
+                  <p-sortIcon field="paymentMode"></p-sortIcon>
                 </th>
                 <th class="header-bg">
                   {{ "fms.receipting.actions" | translate }}

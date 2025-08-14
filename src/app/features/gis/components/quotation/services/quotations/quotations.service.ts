@@ -672,6 +672,25 @@ export class QuotationsService {
     API_CONFIG.GIS_QUOTATION_BASE_URL
   );
 }
+getRIskLimitsOfLiability(
+  subclassCode: number,
+  quotationProductCode: number
+): Observable<any> {
+  const paramsObj: { [param: string]: string } = {};
+
+
+  paramsObj['subclassCode'] = subclassCode.toString();
+  paramsObj['quotationProductCode'] = quotationProductCode.toString();
+  paramsObj['scheduleType'] = 'L';
+
+  const params = new HttpParams({ fromObject: paramsObj });
+
+  return this.api.GET<any>(
+    `v2/limits-of-liability`,
+    API_CONFIG.GIS_QUOTATION_BASE_URL,
+    params
+  );
+}
 
 
 
