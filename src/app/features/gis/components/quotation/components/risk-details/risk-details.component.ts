@@ -68,8 +68,8 @@ export class RiskDetailsComponent {
   @ViewChild('addRiskModal') addRiskModalRef!: ElementRef;
   @ViewChild('addRiskSection') addRiskSectionRef!: ElementRef;
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
-  @ViewChild('perilsModal') perilsModalElement!: ElementRef;
-  @ViewChild('choosePerilsModal') choosePerilsModalElement!: ElementRef;
+  @ViewChild('perilsModal') perilsModal!: ElementRef;
+  @ViewChild('choosePerilsModal') choosePerilsModal!: ElementRef;
 
   private modals: { [key: string]: bootstrap.Modal } = {};
 
@@ -259,7 +259,7 @@ export class RiskDetailsComponent {
   mandatoryClause: any[];
   scheduleLevels: ScheduleLevels[] = [];
   levelTableColumnsMap: { [levelName: string]: Array<{ field: string, header: string }> } = {};
-  riskActiveTab: string = 'riskPerils';
+  riskActiveTab: string = 'riskClauses';
 
   levelDataMap: { [levelName: string]: any[] } = {};
   activeFormFields: { type: string; name: string; max: number; min: number; isMandatory: string; disabled: boolean; readonly: boolean; regexPattern: string; placeholder: string; label: string; scheduleLevel: number; selectOptions?: { label: string; value: any; }[]; }[];
@@ -282,6 +282,22 @@ export class RiskDetailsComponent {
   showPerilsModal: boolean = false;
   perils: any[] = [];
   perilDetailsForm: FormGroup;
+  perilTypeOptions = [
+    { label: 'Self', value: 'SL' },
+    { label: 'Third party', value: 'TP' },
+    { label: 'Both', value: 'BO' }
+  ];
+  excessTypeOptions = [
+    { label: 'Percentage', value: 'P' },
+    { label: 'Amount', value: 'A' }
+  ];
+  sumInsuredOptions = [
+    { label: 'Risk sum insured', value: 'SI' },
+    { label: 'Section SI/Limit', value: 'SL' },
+    { label: 'Peril limit', value: 'PL' },
+    { label: 'Unlimited', value: 'UL' },
+    { label: 'Extension', value: 'EL' }
+  ];
 
 
 
@@ -342,23 +358,7 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
-    this.perilDetailsForm = this.fb.group({
-      quotationCode: [null],
-      quotationRiskCode: [null],
-      subclassSectionPerilCode: [null],
-      perilLIimit: [null],
-      perilType: [''],
-      sumInsuredOrLimit: [''],
-      excessType: [''],
-      excess: [null],
-      excessMinimum: [null],
-      excessMaximum: [null],
-      expireOnClaim: [''],
-      personLimit: [null],
-      claimLimit: [null],
-      description: ['']
-    });
-
+    this.initializePerilDetails();
     const savedSubclass = sessionStorage.getItem('selectedSubclassCode');
     if (savedSubclass) {
       this.selectedSubclassCode = savedSubclass;
@@ -419,8 +419,6 @@ export class RiskDetailsComponent {
   ngOnDestroy(): void { }
 
   ngAfterViewInit(): void {
-    this.modals['perils'] = new bootstrap.Modal(this.perilsModalElement.nativeElement);
-    this.modals['choosePerils'] = new bootstrap.Modal(this.choosePerilsModalElement.nativeElement);
 
     this.modals['editSection'] = new bootstrap.Modal(this.editSectionModal.nativeElement);
 
@@ -439,6 +437,25 @@ export class RiskDetailsComponent {
         keyboard: false
       });
     }
+  }
+
+  private initializePerilDetails() {
+    this.perilDetailsForm = this.fb.group({
+      description: [''],
+      shortDescription: [''],
+      claimLimit: [null, Validators.required],
+      personLimit: [null],
+      excess: [null],
+      excessMax: [null],
+      excessMin: [null],
+      tlExcessType: [null],
+      plExcessType: [null],
+      perilLimit: [null],
+      subclassSectionPerilCode: [null],
+      perilType: [null],
+      sumInsuredOrLimit: [null],
+      expireOnClaim: [null]
+    });
   }
 
 
@@ -3915,23 +3932,47 @@ export class RiskDetailsComponent {
   }
 
   //Perils
-  openChoosePerilsModal() {
-    this.closePerilsModal();
-    this.openModals('choosePerils');
-
-  }
-
   openPerilsModal() {
-    this.openModals('perils');
     this.loadPerils();
-  }
-
-  closeChoosePerilsModal() {
-    this.closeModals('choosePerils');
+    this.closeChoosePerilsModal();
+    new bootstrap.Modal(this.perilsModal.nativeElement).show();
   }
 
   closePerilsModal() {
-    this.closeModals('perils');
+    document.activeElement && (document.activeElement as HTMLElement).blur();
+    bootstrap.Modal.getInstance(this.perilsModal.nativeElement)?.hide();
+  }
+
+  openChoosePerilsModal() {
+    this.perilDetailsForm.reset();
+    this.selectedPeril = null;
+    new bootstrap.Modal(this.choosePerilsModal.nativeElement).show();
+  }
+
+  closeChoosePerilsModal() {
+    document.activeElement && (document.activeElement as HTMLElement).blur();
+    bootstrap.Modal.getInstance(this.choosePerilsModal.nativeElement)?.hide();
+  }
+
+  selectRiskLimit() {
+    this.perilDetailsForm.patchValue({
+      description: this.selectedPeril.description,
+      shortDescription: this.selectedPeril.shortDescription,
+      claimLimit: this.selectedPeril.claimLimit,
+      personLimit: this.selectedPeril.personLimit,
+      excess: this.selectedPeril.excess,
+      excessMax: this.selectedPeril.excessMax,
+      excessMin: this.selectedPeril.excessMin,
+      tlExcessType: this.selectedPeril.tlExcessType,
+      plExcessType: this.selectedPeril.plExcessType,
+      perilLimit: this.selectedPeril.perilLimit,
+      subclassSectionPerilCode: this.selectedPeril.code,
+      expireOnClaim: this.selectedPeril.expireOnClaim,
+      perilType: this.selectedPeril.plExcessType,
+    });
+    this.closePerilsModal();
+    new bootstrap.Modal(this.choosePerilsModal.nativeElement).show();
+
   }
 
   loadPerils(): void {
@@ -3947,131 +3988,75 @@ export class RiskDetailsComponent {
       });
   }
 
-  // add perils
-  onPerilSelected(peril: any): void {
-
-    this.selectedPeril = peril;
-
-    this.perilDetailsForm.patchValue({
-      quotationCode: this.selectedProduct?.quotationCode,
-      quotationRiskCode: this.selectedRisk?.code,
-      subclassSectionPerilCode: peril.subclassSectionPerilCode,
-      perilLIimit: peril.perilLIimit,
-      perilType: peril.perilType,
-      sumInsuredOrLimit: peril.sumInsuredOrLimit,
-      excessType: peril.excessType,
-      excess: peril.excess,
-      excessMinimum: peril.excessMinimum,
-      excessMaximum: peril.excessMaximum,
-      expireOnClaim: peril.expireOnClaim,
-      personLimit: peril.personLimit,
-      claimLimit: peril.claimLimit,
-      description: peril.description
-    });
-    this.openChoosePerilsModal();
-
-
-  }
-
   addPerils(): void {
-    if (!this.selectedPeril?.length) return;
-
-    const newQpCode = this.quoteProductCode;
+    const quotationCode = this.selectedProduct?.quotationCode;
     const subclassCode = this.selectedRisk?.subclassCode;
+
     if (!subclassCode) {
       console.error('Subclass code is missing');
       return;
     }
 
-    // Build payload for DB
-    const perilsPayload: riskPeril[] = this.selectedPeril.map(limit => ({
-      quotationCode: this.selectedProduct?.quotationCode,
+    const formValues = this.perilDetailsForm.value;
+
+    const perilsPayload: riskPeril = {
       quotationRiskCode: this.selectedRisk?.code,
-      subclassSectionPerilCode: limit.subclassSectionPerilCode,
-      perilLIimit: limit.perilLIimit,
-      perilType: limit.perilType,
-      sumInsuredOrLimit: limit.sumInsuredOrLimit,
-      excessType: limit.excessType,
-      excess: limit.excess,
-      excessMinimum: limit.excessMinimum,
-      excessMaximum: limit.excessMaximum,
-      expireOnClaim: limit.expireOnClaim,
-      personLimit: limit.personLimit,
-      claimLimit: limit.claimLimit,
-      description: limit.description
+      quotationCode,
+      subclassSectionPerilCode: formValues.subclassSectionPerilCode,
+      perilLimit: 3000,
+      perilType: formValues.plExcessType,
+      sumInsuredOrLimit: formValues.sumInsuredOrLimit,
+      excessType: formValues.tlExcessType,
+      excess: formValues.excess,
+      excessMinimum: formValues.excessMin,
+      excessMaximum: formValues.excessMax,
+      expireOnClaim: formValues.expireOnClaim,
+      personLimit: formValues.personLimit,
+      claimLimit: formValues.claimLimit,
+      description: formValues.description
+    };
 
-    }));
+    log.debug("perils payload", perilsPayload);
 
-    perilsPayload.forEach(peril => {
-      this.quotationService.addSubclassSectionPeril(peril).subscribe({
-        next: () => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'Excesses added successfully');
+    this.quotationService.addSubclassSectionPeril(perilsPayload).subscribe({
+      next: () => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Excesses added successfully');
 
-          // Prepare the newly added perils for UI/session
-          const updatedPerils = this.selectedPeril.map(limit => ({
-            ...limit,
-            value: this.cleanCurrencyValue(limit.value),
-            isModified: false,
-            qpCode: newQpCode
-          }));
+        // Prepare the newly added peril for UI/session
+        const newPeril = {
+          ...this.selectedPeril,
+          value: this.cleanCurrencyValue(this.selectedPeril?.value),
+          isModified: false
+        };
 
-          // Filter only unique ones to avoid duplicates in UI
-          const existingCodes = new Set(this.addedPerils.map(l => l.code));
-          const newUniquePerils = updatedPerils.filter(l => !existingCodes.has(l.code));
-
-          // Update UI table
-          this.addedPerils = [...this.addedPerils, ...newUniquePerils];
-          log.debug("Updated addedPerils:", this.addedPerils);
-
-          // Persist to sessionStorage map by subclass
-          if (!this.allPerilsMap[subclassCode]) {
-            this.allPerilsMap[subclassCode] = [];
-          }
-          this.allPerilsMap[subclassCode] = [
-            ...this.allPerilsMap[subclassCode],
-            ...newUniquePerils
-          ];
-          sessionStorage.setItem('perils', JSON.stringify(this.allPerilsMap));
-
-          // Remove newly added from available modal list
-          const addedCodes = new Set(this.selectedPeril.map(l => l.code));
-          this.perils = this.perils.filter(l => !addedCodes.has(l.code));
-
-          const sessionKey = `availablePerils_${subclassCode}`;
-          sessionStorage.setItem(sessionKey, JSON.stringify(this.perils));
-
-          // Clear selection
-          this.selectedPeril = [];
-        },
-        error: (err) => {
-          console.error('Error adding Excesses', err);
-          this.globalMessagingService.displayErrorMessage("Error", "Error adding Excesses");
+        // Update UI table if not already present
+        if (!this.addedPerils.some(l => l.code === newPeril.code)) {
+          this.addedPerils = [...this.addedPerils, newPeril];
         }
-      });
+        log.debug("Updated addedPerils:", this.addedPerils);
+
+        // Persist to sessionStorage map by subclass
+        if (!this.allPerilsMap[subclassCode]) {
+          this.allPerilsMap[subclassCode] = [];
+        }
+        if (!this.allPerilsMap[subclassCode].some(l => l.code === newPeril.code)) {
+          this.allPerilsMap[subclassCode] = [...this.allPerilsMap[subclassCode], newPeril];
+        }
+        sessionStorage.setItem('perils', JSON.stringify(this.allPerilsMap));
+
+        // Remove newly added from available modal list
+        this.perils = this.perils.filter(l => l.code !== newPeril.code);
+        sessionStorage.setItem(`availablePerils_${subclassCode}`, JSON.stringify(this.perils));
+
+        // Clear selection
+        this.selectedPeril = null;
+      },
+      error: (err) => {
+        console.error('Error adding Excesses', err);
+        this.globalMessagingService.displayErrorMessage("Error", "Error adding Excesses");
+      }
     });
-
-
   }
-
-  // openPerilsModal(): void {
-  //   if (!this.selectedSubclassCode) {
-  //     this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
-  //     return;
-  //   }
-
-  //   log.debug("Opening perils modal for subclass:", this.selectedSubclassCode);
-
-  //   this.showPerilsModal = true;
-
-  //   const modalElement = document.getElementById('addPerils');
-  //   if (modalElement) {
-  //     const modal = new (window as any).bootstrap.Modal(modalElement);
-  //     modal.show();
-  //   }
-
-  //   this.loadPerils();
-  // }
-
 
   onAddOtherSchedule(tab: any): void {
     this.activeModalTab = tab;
