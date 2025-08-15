@@ -43,10 +43,10 @@
       },
       {
         "field": "categoryName",
-        "header": "Entity Type",
+        "header": "Category",
         "visible": true,
         "label": {
-          "en": "Entity Type",
+          "en": "Category",
           "ke": "Aina ya Chombo",
           "fr": "Type d'entité"
         }

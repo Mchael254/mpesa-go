@@ -1,11 +1,32 @@
 <!--{{ partyAccountDetails | json }}-->
+
+<!--<div *ngIf="dynamicDisplay" class="entity-container">
+  <ng-container *ngFor="let display of dynamicDisplay">
+    <ng-container >
+      <ul class="nav nav-underline">
+        <li class="nav-item" *ngFor="let tab of display?.tabs">
+          <a class="nav-link active" aria-current="page" href="#">
+            {{ tab.label[language] | titlecase }}
+          </a>
+        </li>
+      </ul>
+    </ng-container>
+  </ng-container>
+</div>-->
+
 <div *ngIf="dynamicDisplay" class="entity-container">
   <ng-container *ngFor="let display of dynamicDisplay">
     <p-tabView>
       <ng-container *ngFor="let tab of display?.tabs">
         <p-tabPanel>
           <ng-template pTemplate="header" >
-            <span class="text-primary m-2" (click)="selectTab(tab)">
+            <span
+              class="m-2 tab-title" (click)="selectTab(tab)"
+              [ngClass]="{
+                'text-primary': tab.title === selectedTab || tab.title === selectedSubTab,
+                'text-dark': tab.title !== selectedTab || tab.title !== selectedSubTab
+                }"
+            >
               {{ tab.label[language] | titlecase }}
             </span>
             <span
