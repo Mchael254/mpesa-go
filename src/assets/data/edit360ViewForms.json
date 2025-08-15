@@ -853,7 +853,7 @@
         "fieldId": "accountNumber",
         "type": "text",
         "label": {
-          "en": "branch name",
+          "en": "account number",
           "ke": "",
           "fr": ""
         },
@@ -908,7 +908,7 @@
       },
       {
         "sectionId": "financial",
-        "fieldId": "wet",
+        "fieldId": "wef",
         "type": "date",
         "label": {
           "en": "with effect from",
@@ -937,7 +937,7 @@
       },
       {
         "sectionId": "financial",
-        "fieldId": "wef",
+        "fieldId": "wet",
         "type": "date",
         "label": {
           "en": "with effect to",
@@ -966,7 +966,7 @@
       },
       {
         "sectionId": "financial",
-        "fieldId": "mobileMoneyNumber",
+        "fieldId": "mpayno",
         "type": "text",
         "label": {
           "en": "mobile money number",

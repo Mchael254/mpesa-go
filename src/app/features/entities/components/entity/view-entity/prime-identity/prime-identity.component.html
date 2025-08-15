@@ -1,3 +1,5 @@
+<!--{{ primeDetails | json }}-->
+
 <table class="table table-borderless">
   <tbody>
   <tr>
@@ -7,7 +9,7 @@
           {{ primaryDetailsConfig?.party_type[language] | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
-          {{ partyAccountDetails?.partyType?.partyTypeName }}
+          {{ primeDetails?.partyType?.partyTypeName }}
         </div>
       </div>
     </td>
@@ -17,7 +19,7 @@
           {{ primaryDetailsConfig?.id_type[language] | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
-          {{ partyAccountDetails?.modeOfIdentity?.name }}
+          {{ primeDetails?.modeOfIdentity?.name }}
         </div>
       </div>
     </td>
@@ -27,7 +29,7 @@
           {{ primaryDetailsConfig?.id_number[language] | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
-          {{ partyAccountDetails?.modeOfIdentityNumber }}
+          {{ primeDetails?.modeOfIdentityNumber }}
         </div>
       </div>
     </td>
@@ -39,7 +41,7 @@
           {{ primaryDetailsConfig?.pin_number[language] | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
-          {{ partyAccountDetails?.pinNumber }}
+          {{ primeDetails?.pinNumber }}
         </div>
       </div>
     </td>
@@ -49,7 +51,7 @@
           {{ primaryDetailsConfig?.dob[language] | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
-          {{ partyAccountDetails?.dateOfBirth | date }}
+          {{ primeDetails?.dateOfBirth | date }}
         </div>
       </div>
     </td>
@@ -59,7 +61,7 @@
           {{ primaryDetailsConfig?.citizenship[language] | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
-          {{ partyAccountDetails?.country }}
+          {{ primeDetails?.wealthAmlDetails.nationalityCountryId }}
         </div>
       </div>
     </td>
@@ -71,7 +73,7 @@
           {{ primaryDetailsConfig?.gender[language] | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
-          {{ partyAccountDetails?.gender }}
+          {{ primeDetails?.gender }}
         </div>
       </div>
     </td>
@@ -81,7 +83,7 @@
           {{ primaryDetailsConfig?.marital_status[language] | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
-          {{ partyAccountDetails?.status }}
+          {{ primeDetails?.wealthAmlDetails.maritalStatus }}
         </div>
       </div>
     </td>

@@ -211,12 +211,12 @@ export class AddressComponent implements OnInit {
     log.info(`processSelectOption >>> `, fieldId, selectedOption);
 
     switch (fieldId) {
-      case 'country': // update list of states/county by selected country
+      case 'country':
         this.countryService.getMainCityStatesByCountry(selectedOption).subscribe({
           next: states => {
             this.formFieldsConfig.fields.forEach(field => {
               if (field.fieldId === 'county') field.options = states;
-            })
+            });
           },
           error: err => {},
         })
