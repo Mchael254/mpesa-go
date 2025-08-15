@@ -3944,6 +3944,10 @@ export class RiskDetailsComponent {
   }
 
   openChoosePerilsModal() {
+    if (!this.selectedSubclassCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+      return;
+    }
     this.perilDetailsForm.reset();
     this.selectedPeril = null;
     new bootstrap.Modal(this.choosePerilsModal.nativeElement).show();
@@ -3989,7 +3993,10 @@ export class RiskDetailsComponent {
   }
 
   addPerils(): void {
+    if (!this.selectedPeril) return;
+
     const quotationCode = this.selectedProduct?.quotationCode;
+    const quotationRiskCode = this.selectedRisk?.code;
     const subclassCode = this.selectedRisk?.subclassCode;
 
     if (!subclassCode) {
@@ -3999,8 +4006,9 @@ export class RiskDetailsComponent {
 
     const formValues = this.perilDetailsForm.value;
 
-    const perilsPayload: riskPeril = {
-      quotationRiskCode: this.selectedRisk?.code,
+    // Build payload for DB
+    const perilPayload: riskPeril = {
+      quotationRiskCode,
       quotationCode,
       subclassSectionPerilCode: formValues.subclassSectionPerilCode,
       perilLimit: 3000,
@@ -4016,11 +4024,12 @@ export class RiskDetailsComponent {
       description: formValues.description
     };
 
-    log.debug("perils payload", perilsPayload);
+    log.debug("Peril payload", perilPayload);
 
-    this.quotationService.addSubclassSectionPeril(perilsPayload).subscribe({
+    this.quotationService.addSubclassSectionPeril(perilPayload).subscribe({
       next: () => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Excesses added successfully');
+        this.globalMessagingService.displaySuccessMessage('Success', 'Peril added successfully');
+        this.closeChoosePerilsModal();
 
         // Prepare the newly added peril for UI/session
         const newPeril = {
@@ -4029,7 +4038,7 @@ export class RiskDetailsComponent {
           isModified: false
         };
 
-        // Update UI table if not already present
+        // Add only if not already present
         if (!this.addedPerils.some(l => l.code === newPeril.code)) {
           this.addedPerils = [...this.addedPerils, newPeril];
         }
@@ -4040,11 +4049,14 @@ export class RiskDetailsComponent {
           this.allPerilsMap[subclassCode] = [];
         }
         if (!this.allPerilsMap[subclassCode].some(l => l.code === newPeril.code)) {
-          this.allPerilsMap[subclassCode] = [...this.allPerilsMap[subclassCode], newPeril];
+          this.allPerilsMap[subclassCode] = [
+            ...this.allPerilsMap[subclassCode],
+            newPeril
+          ];
         }
-        sessionStorage.setItem('perils', JSON.stringify(this.allPerilsMap));
+        sessionStorage.setItem('perilsData', JSON.stringify(this.allPerilsMap));
 
-        // Remove newly added from available modal list
+        // Remove from available list
         this.perils = this.perils.filter(l => l.code !== newPeril.code);
         sessionStorage.setItem(`availablePerils_${subclassCode}`, JSON.stringify(this.perils));
 
@@ -4052,8 +4064,8 @@ export class RiskDetailsComponent {
         this.selectedPeril = null;
       },
       error: (err) => {
-        console.error('Error adding Excesses', err);
-        this.globalMessagingService.displayErrorMessage("Error", "Error adding Excesses");
+        console.error('Error adding Peril', err);
+        this.globalMessagingService.displayErrorMessage("Error", "Error adding Peril");
       }
     });
   }
