@@ -329,13 +329,14 @@
                         </tr>
                     </ng-template>
                 </p-table>
+
             </div>
         </div>
 
         <div class="modal fade" id="addOtherDetailsModal" tabindex="-1" aria-labelledby="addOtherDetailsModalLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable">
-                <div class="modal-content" style=" max-width:700px;">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content mx-4 " style=" max-width:700px;">
                     <form [formGroup]="scheduleOtherDetailsForm">
 
 
@@ -354,47 +355,39 @@
                                                 [ngClass]="{ 'required': field.isMandatory === 'Y' }">
                                                 {{ field.label | translate }}
                                             </label>
+                                            <ng-container *ngIf="field.name === 'authorisedDriver'">
+                                                <input type="text" id="quote-input"
+                                                    class="form-control form-control-sm mb-1 bg-light text-muted"
+                                                    formControlName="authorisedDriver" [value]="clientName">
 
+                                            </ng-container>
                                             <!-- Text -->
-                                            <input *ngIf="field.type === 'text'" type="text" class="form-control"
-                                                [formControlName]="field.name"
-                                                [attr.placeholder]="field.label | translate" />
+                                            <input *ngIf="field.name !== 'authorisedDriver' && field.type === 'text'"
+                                                type="text" class="form-control" [formControlName]="field.name" />
 
                                             <!-- Select -->
-                                            <ng-container
-                                                *ngIf="field.name !== 'insureds' && riskDetailsForm?.contains(field.name)">
+                                            <ng-container *ngIf=" scheduleOtherDetailsForm?.contains(field.name)">
                                                 <p-dropdown *ngIf="field.type === 'select'"
                                                     [formControlName]="field.name" [options]="field.selectOptions"
                                                     optionLabel="label" optionValue="value" [filter]="true"
-                                                    [showClear]="true" [attr.placeholder]="field.label | translate"
-                                                    (onChange)="field.name === 'subclass' && onSubclassSelected($event)">
+                                                    [showClear]="true">
                                                 </p-dropdown>
                                             </ng-container>
 
-                                            <!-- Insured dropdown -->
-                                            <ng-container *ngIf="field.name === 'insureds' && clientsData?.length">
-                                                <p-dropdown formControlName="insureds" [options]="clientsData"
-                                                    optionLabel="clientFullName" optionValue="id"
-                                                    placeholder="Select Insured" [filter]="true"
-                                                    filterBy="clientFullName">
-                                                </p-dropdown>
-                                            </ng-container>
+
 
                                             <!-- Date -->
                                             <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
-                                                dateFormat="yy-mm-dd" [showIcon]="true"
-                                                [attr.placeholder]="field.label | translate">
+                                                dateFormat="yy-mm-dd" [showIcon]="true">
                                             </p-calendar>
 
                                             <!-- Number -->
                                             <input *ngIf="field.type === 'number'" type="number" class="form-control"
-                                                [formControlName]="field.name"
-                                                [attr.placeholder]="field.label | translate" />
+                                                [formControlName]="field.name" />
 
                                             <!-- Currency -->
                                             <input *ngIf="field.type === 'currency'" type="text" class="form-control"
-                                                currencyMask [options]="currencyObj" [formControlName]="field.name"
-                                                [attr.placeholder]="field.label | translate" />
+                                                currencyMask [options]="currencyObj" [formControlName]="field.name" />
 
                                             <!-- Validation error -->
                                             <div *ngIf="riskDetailsForm.get(field.name)?.invalid && riskDetailsForm.get(field.name)?.touched"
@@ -407,11 +400,16 @@
                             </div>
                         </div>
 
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Save</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        </div>
+
                     </form>
+                    <div class="mt-4 mb-4 d-flex justify-content-end">
+                        <button type="button" class="btn btn-outline-primary mx-2" id="saveDetails"
+                            data-bs-dismiss="modal">{{'gis.policy.cancel' |
+                            translate}}</button>
+
+                        <button type="button" class="btn btn-primary " id="saveDetails" (click)=onOtherDetailSave()>Save
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1260,7 +1258,7 @@
                 <ng-template pTemplate="body" let-clause>
                     <tr>
                         <td>{{clause.shortDescription}}</td>
-                        <td>{{clause.heading}}</td>
+                        <td>{{clause.heading | truncate:3 | sentenceCase}}</td>
                         <td class="position-relative ">
                             <div class="clause-wrapper">
                                 {{ clause.wording | truncate:5 | sentenceCase}}
@@ -1578,11 +1576,11 @@
                         <td colspan="3" class="text-center p-4 text-muted">
                             <ng-container *ngIf="addedLimitsOfLiability?.length > 0; else noClauses">
                                 <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                <p>No matching clauses found.</p>
+                                <p>No matching limits of liability found.</p>
                             </ng-container>
                             <ng-template #noClauses>
-                                <p><strong>No clauses available.</strong> There are currently no
-                                    clauses to add.</p>
+                                <p><strong>No limits of liability available.</strong> There are currently no
+                                    limits of liability to add.</p>
                             </ng-template>
                         </td>
                     </tr>
@@ -2179,11 +2177,11 @@
                         <td colspan="3" class="text-center p-4 text-muted">
                             <ng-container *ngIf="addedExcessess?.length > 0; else noClauses">
                                 <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                <p>No matching clauses found.</p>
+                                <p>No matching excesses found.</p>
                             </ng-container>
                             <ng-template #noClauses>
-                                <p><strong>No clauses available.</strong> There are currently no
-                                    clauses to add.</p>
+                                <p><strong>No excesses available.</strong> There are currently no
+                                    excesses to add.</p>
                             </ng-template>
                         </td>
                     </tr>
@@ -2261,11 +2259,11 @@
                                                 <ng-container *ngIf="excessesData?.length > 0; else noClauses">
                                                     <i class="pi pi-search"
                                                         style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                                    <p>No matching clauses found.</p>
+                                                    <p>No matching excesses found.</p>
                                                 </ng-container>
                                                 <ng-template #noClauses>
-                                                    <p><strong>No clauses available.</strong> There are currently no
-                                                        clauses to add.</p>
+                                                    <p><strong>No excesses available.</strong> There are currently no
+                                                        excesses to add.</p>
                                                 </ng-template>
                                             </td>
                                         </tr>
@@ -2295,5 +2293,5 @@
 <div class="mt-2 d-flex justify-content-between mx-3">
     <button style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"
         (click)="navigateToRiskDetails()">Back</button>
-    <button class="btn btn-primary">Next</button>
+    <button class="btn btn-primary" (click)="computePremium()">Next</button>
 </div>
