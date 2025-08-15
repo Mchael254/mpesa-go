@@ -12,6 +12,7 @@ import {forkJoin} from "rxjs";
 import {ClientService} from "../../../../services/client/client.service";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import {group} from "@angular/animations";
+import {ClientDTO} from "../../../../data/ClientDTO";
 
 const log = new Logger('PrimeIdentityComponent');
 
@@ -47,6 +48,8 @@ export class PrimeIdentityComponent implements OnInit {
     { id: 2, name: 'female', shtDesc: 'f'},
   ]
 
+  primeDetails: any;
+
   constructor(
     private utilService: UtilService,
     private fb: FormBuilder,
@@ -67,6 +70,18 @@ export class PrimeIdentityComponent implements OnInit {
     setTimeout(() => {
       this.primaryDetailsConfig = this.primeDetailsConfig.primary_details;
       this.createEditForm(this.formFieldsConfig.fields)
+      this.primeDetails = {
+        modeOfIdentityNumber: this.partyAccountDetails.modeOfIdentityNumber,
+        partyType: this.partyAccountDetails.partyType,
+        modeOfIdentity: this.partyAccountDetails.modeOfIdentity,
+        pinNumber: this.partyAccountDetails.pinNumber,
+        dateOfBirth: this.partyAccountDetails.dateOfBirth,
+        address: this.partyAccountDetails.address,
+        gender: this.partyAccountDetails.gender,
+        maritalStatus: this.partyAccountDetails.status,
+        country: this.partyAccountDetails.country,
+        wealthAmlDetails: this.partyAccountDetails.wealthAmlDetails,
+      }
       /*if (this.selectOptions) {
         const idTypes = this.selectOptions.idTypes;
         const countries = this.selectOptions.countries;
@@ -141,13 +156,13 @@ export class PrimeIdentityComponent implements OnInit {
     // patch form values
     const dob = this.partyAccountDetails?.dateOfBirth; // from api >>> "2007-04-10T00:00:00.000+00:00"
     const patchData = {
-      id_type: this.partyAccountDetails?.modeOfIdentity.name,
-      id_number: this.partyAccountDetails?.modeOfIdentityNumber,
-      pin_number: this.partyAccountDetails?.pinNumber,
+      id_type: this.primeDetails?.modeOfIdentity.name,
+      id_number: this.primeDetails?.modeOfIdentityNumber,
+      pin_number: this.primeDetails?.pinNumber,
       dob: new Date(dob).toISOString().split('T')[0],
-      citizenship: this.partyAccountDetails?.country, // todo: not available from backend
-      gender: this.partyAccountDetails?.gender, // todo: not available from backend
-      marital_status: '' // todo: not available from backend
+      citizenship: this.primeDetails?.citizenshipCountryId, // todo: not available from backend
+      gender: this.primeDetails?.gender, // todo: not available from backend
+      marital_status: this.primeDetails.maritalStatus // todo: not available from backend
     }
     this.editForm.patchValue(patchData)
     log.info(`patched form values >>> `, this.editForm.value);
@@ -163,7 +178,7 @@ export class PrimeIdentityComponent implements OnInit {
 
   editPrimeDetails(): void {
     const formValues = this.editForm.value;
-    const clientDetails = {
+    const partyAccountDetails = {
       ...this.partyAccountDetails,
       idNumber: formValues.id_number,
       modeOfIdentity: formValues.id_type,
@@ -174,10 +189,25 @@ export class PrimeIdentityComponent implements OnInit {
       maritalStatus: formValues.marital_status,
     }
 
-    log.info(`client details to post >>> `, clientDetails)
-    this.clientService.updateClient(this.partyAccountDetails.accountCode, clientDetails).subscribe({
+
+    log.info(`client details to post >>> `, partyAccountDetails)
+    this.clientService.updateClientSection(this.partyAccountDetails.accountCode, {...partyAccountDetails}).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
+        this.primeDetails = {
+          ...this.primeDetails,
+          // modeOfIdentityNumber: this.partyAccountDetails.modeOfIdentityNumber,
+          // partyType: this.partyAccountDetails.partyType,
+          // modeOfIdentity: this.partyAccountDetails.modeOfIdentity,
+          // pinNumber: this.partyAccountDetails.pinNumber,
+          // dateOfBirth: this.partyAccountDetails.dateOfBirth,
+          // address: this.partyAccountDetails.address,
+          // gender: this.partyAccountDetails.gender,
+          // maritalStatus: this.partyAccountDetails.status,
+          // country: this.partyAccountDetails.country,
+          // wealthAmlDetails: this.partyAccountDetails.wealthAmlDetails,
+        }
+
       },
       error: err => {
         const errorMessage = err?.error?.message ?? err.message;
