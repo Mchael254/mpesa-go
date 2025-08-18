@@ -1,1 +1,91 @@
-<p>wealth-aml works!</p>
+
+
+<div class="row">
+  <div class="col-sm-2 offset-sm-10 text-end mb-3">
+      <span class="p-1 me-5 caret" (click)="columnDialogVisible = true">
+        <i class="fa fa-caret-down text-primary"></i>
+      </span>
+  </div>
+</div>
+
+<p-dialog [header]="''" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '600px'}">
+  <div class="row">
+    <ng-container *ngFor="let col of columns">
+      <div class="col-sm-6">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="checkChecked" [checked]="col.visible" [(ngModel)]="col.visible">
+          <label class="form-check-label" for="checkChecked">
+            {{ col.header | titlecase }}
+          </label>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</p-dialog>
+
+<p-table
+  (onLazyLoad)="lazyLoadEntity($event)"
+  [autoLayout]="true"
+  [lazy]="true"
+  [paginator]="true"
+  [rowHover]="true"
+  [resizableColumns]="true"
+  [showCurrentPageReport]="true"
+  [rows]="pageSize || 5"
+  [totalRecords]="totalRecords"
+  [value]="wealthAmlDetails"
+  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+  responsiveLayout="stack"
+  [scrollable]="true"
+  scrollHeight="400px"
+  currentPageReportTemplate="{first} - {last} of {totalRecords}"
+  [globalFilterFields]=globalFilterFields
+>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <ng-container *ngFor="let col of columns">
+        <th *ngIf="col.visible">
+          {{ col.header | titlecase }}
+          <!--<p-sortIcon [field]="col.field"></p-sortIcon>-->
+        </th>
+      </ng-container>
+      <th>
+        <!--{{ actionLabel[language] }}-->
+      </th>
+    </tr>
+    <!--<tr>
+      <ng-container *ngFor="let col of columns">
+        <th *ngIf="col.visible">
+          <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, col.field)" (input)="processInput($event, col.field)">
+        </th>
+      </ng-container>
+      <th></th>
+    </tr>-->
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData>
+    <tr [pSelectableRow]="rowData">
+      <ng-container *ngFor="let col of columns">
+        <td *ngIf="col.visible">
+          {{ rowData[col.field] }}
+        </td>
+      </ng-container>
+
+      <td *ngIf="columns?.length > 0">
+        <div class="actions">
+          <button type="button" class="btn btn-link text-primary">
+            Edit
+          </button>
+          <button type="button" class="btn btn-link text-primary">
+            Delete
+          </button>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="8">No Wealth/AML details Found.</td>
+    </tr>
+  </ng-template>
+</p-table>
