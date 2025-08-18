@@ -1,20 +1,15 @@
-import { ChangeDetectorRef, Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
-import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
+import { Logger } from '../../../../../../shared/shared.module'
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { ProductService } from 'src/app/features/lms/service/product/product.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { PolicyService } from '../../../policy/services/policy.service';
 import { BinderService } from '../../../setups/services/binder/binder.service';
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { RiskClausesService } from '../../../setups/services/risk-clauses/risk-clauses.service';
 import { SectionsService } from '../../../setups/services/sections/sections.service';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
@@ -46,11 +41,7 @@ export class RiskCentreComponent {
   isCollapsed = false;
 
   constructor(
-    private router: Router,
-    private messageService: MessageService,
     public subclassService: SubclassesService,
-    private subclassCoverTypesService: SubClassCoverTypesService,
-    private gisService: ProductService,
     public sharedService: SharedQuotationsService,
     public binderService: BinderService,
     public clientService: ClientService,
@@ -63,15 +54,10 @@ export class RiskCentreComponent {
     public premiumRateService: PremiumRateService,
     public riskClauseService: RiskClausesService,
     public globalMessagingService: GlobalMessagingService,
-    private policyService: PolicyService,
     public productService: ProductsService,
-
-
-
 
     public fb: FormBuilder,
     public cdr: ChangeDetectorRef,
-    private renderer: Renderer2
 
   ) {
     this.quotationCode = sessionStorage.getItem('quotationCode');
@@ -128,7 +114,14 @@ export class RiskCentreComponent {
   scrollRight(): void {
     this.scrollContainer.nativeElement.scrollBy({ left: 150, behavior: 'smooth' });
   }
+
   showAddRiskModal() {
+    if (!this.passedProductList || this.passedProductList.length === 0) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please add a product first.');
+      return;
+    }
+
     this.RiskDetailsComponent.openAddRiskModal();
   }
+
 }
