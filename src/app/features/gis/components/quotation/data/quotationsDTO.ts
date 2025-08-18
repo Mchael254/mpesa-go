@@ -406,7 +406,7 @@ export interface subclassCovertypeSection {
 
 export interface scheduleDetails {
   details: {
-    level1: {
+    level1?: {
       bodyType: string,
       yearOfManufacture: number,
       color: string,

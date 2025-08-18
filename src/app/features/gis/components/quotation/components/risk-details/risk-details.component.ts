@@ -17,7 +17,7 @@ import { VehicleModelService } from '../../../setups/services/vehicle-model/vehi
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, CreateLimitsOfLiability, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, ScheduleLevels, ScheduleTab } from '../../data/quotationsDTO';
+import { Clause, CreateLimitsOfLiability, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
@@ -298,6 +298,7 @@ export class RiskDetailsComponent {
     { label: 'Unlimited', value: 'UL' },
     { label: 'Extension', value: 'EL' }
   ];
+  limitationOfUse: any[] = [];
 
 
 
@@ -370,6 +371,7 @@ export class RiskDetailsComponent {
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
     });
+    this.scheduleOtherDetailsForm = this.fb.group({});
     this.dateFormat = sessionStorage.getItem('dateFormat');
     const dynamicFormFields = JSON.parse(sessionStorage.getItem('dynamicSubclassFormField'));
     this.dynamicSubclassFormFields = dynamicFormFields
@@ -845,6 +847,9 @@ export class RiskDetailsComponent {
 
       // Pre-select the dropdown
       this.riskDetailsForm.patchValue({ insureds: client.id });
+      //Setting insured as the authorized driver
+
+
     });
   }
 
@@ -3315,7 +3320,7 @@ export class RiskDetailsComponent {
     log.debug("Selected Risk to be deleted", this.selectedRisk)
     if (this.selectedRisk) {
       this.quotationService
-        .deleteRisk(this.selectedRisk.code)
+        .deleteDetailedQuotationRisk(Number(this.selectedRisk.code))
         .pipe(untilDestroyed(this))
         .subscribe({
           next: (response: any) => {
@@ -4071,6 +4076,7 @@ export class RiskDetailsComponent {
   }
 
   onAddOtherSchedule(tab: any): void {
+    log.debug("DYNAMIC SUBCLASS FORM FIELDS", this.dynamicSubclassFormFields)
     this.activeModalTab = tab;
     this.activeFormFields = this.dynamicSubclassFormFields.filter(
       field => Number(field.scheduleLevel) === tab.levelNumber
@@ -4083,7 +4089,13 @@ export class RiskDetailsComponent {
     });
 
     this.scheduleOtherDetailsForm = this.fb.group(group);
+    log.debug("Schedule other details client before", this.scheduleOtherDetailsForm.value)
 
+    if (!this.scheduleOtherDetailsForm.contains('authorisedDriver')) {
+      this.scheduleOtherDetailsForm.addControl('authorisedDriver', new FormControl('', Validators.required));
+    }
+    this.scheduleOtherDetailsForm.patchValue({ authorisedDriver: this.clientName });
+    log.debug("Schedule other details client", this.scheduleOtherDetailsForm.value)
     // Show Bootstrap modal
     setTimeout(() => {
       const modalElement = document.getElementById('addOtherDetailsModal');
@@ -4092,286 +4104,365 @@ export class RiskDetailsComponent {
         bsModal.show();
       }
     });
+    this.fetchLimitationOfUse();
+
   }
   computePremium() {
-    const premiumComputationPayload = this.generatePremiumPayload(this.quotationDetails)
+    const premiumComputationPayload = this.generatePremiumComputationPayload(this.quotationDetails)
     log.debug("Premium comp payload:", premiumComputationPayload)
     this.quotationService.computePremium(premiumComputationPayload).subscribe({
       next: (response) => {
-        log.debug("REspone after computing premium:", response)
+        log.debug("Respone after saving payload:", response)
+      },
+      error: (error) => {
+        this.globalMessagingService.displayErrorMessage("Error", error.error.message);
       }
     })
   }
-  // generatePremiumComputationPayload(quotationData: QuotationDetails): any {
-  //   return {
-  //     entityUniqueCode: 0,
-  //     interfaceType: "QUOTATION",
-  //     frequencyOfPayment: quotationData.frequencyOfPayment || "A",
-  //     transactionStatus: "NB",
-  //     quotationStatus: "Draft",
-  //     products: quotationData.quotationProducts?.map(product => ({
-  //       code: product.productCode,
-  //       expiryPeriod: "Y",
-  //       description: product.productName,
-  //       withEffectFrom: product.wef,
-  //       withEffectTo: product.wet,
-  //       risks: product.riskInformation?.map(risk => ({
-  //         code: risk.code.toString(),
-  //         propertyId: risk.propertyId,
-  //         binderDto: {
-  //           code: risk.binderCode || 0,
-  //           maxExposure: 0,
-  //           currencyCode: quotationData.currencyCode,
-  //           currencyRate: quotationData.currencyRate || 1
-  //         },
-  //         baseCurrencyCode: quotationData.currencyCode,
-  //         prorata: 'S',
-  //         itemDescription: risk.itemDesc,
-  //         emlBasedOn: null,
-  //         noClaimDiscountLevel: risk.ncdLevel || 0,
-  //         subclassCoverTypeDto: [{
-  //           subclassCode: risk.subclassCode,
-  //           description: risk.subclass?.description || '',
-  //           coverTypeCode: risk.coverTypeCode,
-  //           minimumPremium: risk.riskLimits[0]?.minimumPremium || 0,
-  //           coverTypeShortDescription: risk.coverTypeShortDescription,
-  //           coverTypeDescription: risk.coverTypeDescription,
-  //           limits: risk.riskLimits?.map(limit => ({
-  //             description: limit.sectionShortDescription,
-  //             code: limit.code,
-  //             riskCode: risk.code,
-  //             calculationGroup: limit.calcGroup,
-  //             rowNumber: limit.rowNumber,
-  //             rateDivisionFactor: limit.rateDivisionFactor,
-  //             premiumRate: limit.premiumRate,
-  //             rateType: limit.rateType,
-  //             sectionType: limit.sectionType,
-  //             limitAmount: risk.value,
-  //             freeLimit: limit.freeLimit,
-  //             compute: limit.compute,
-  //             section: {
-  //               code: limit.sectionCode,
-  //               description: limit.sectionShortDescription,
-  //               limitAmount: risk.value,
-  //               isMandatory: null
-  //             },
-  //             multiplierRate: limit.multiplierRate,
-  //             multiplierDivisionFactor: limit.multiplierDivisionFactor,
-  //             dualBasis: limit.dualBasis,
-  //             shortDescription: limit.sectionShortDescription
-  //           })) || [],
-  //           limitPremium: risk.riskLimits?.map(limit => ({
-  //             sectCode: limit.sectionCode,
-  //             premium: limit.premiumAmount || 0,
-  //             description: limit.sectionShortDescription,
-  //             limitAmount: risk.value,
-  //             isMandatory: null,
-  //             calculationGroup: limit.calcGroup,
-  //             compute: limit.compute,
-  //             dualBasis: limit.dualBasis,
-  //             rateDivisionFactor: limit.rateDivisionFactor,
-  //             rateType: limit.rateType,
-  //             rowNumber: limit.rowNumber,
-  //             premiumRate: limit.premiumRate,
-  //             freeLimit: limit.freeLimit,
-  //             sectionType: limit.sectionType,
-  //             multiplierRate: limit.multiplierRate,
-  //             shortDescription: limit.sectionShortDescription
-  //           })) || []
-  //         }],
-  //         enforceCovertypeMinimumPremium: "Y",
-  //         commissionRate: risk.commissionRate || 0,
-  //         sumInsured: risk.value,
-  //         useOfProperty: risk.subclass.description, // Default value
-  //         taxes: product.taxInformation?.map(tax => ({
-  //           taxRateType: tax.rateType,
-  //           applicationLevel: null,
-  //           code: tax.code || 0,
-  //           divisionFactor: 0,
-  //           taxRate: tax.rate || 0,
-  //           rangeTo: 0,
-  //           rangeFrom: 0,
-  //           rateDescription: tax.rateDescription || "",
-  //           taxCode: tax.code || "",
-  //           minPremium: 0,
-  //           sumInsured: 0,
-  //           premium: 0,
-  //           quotationProductCode: 0
-  //         })) || [],
-  //         subclassSection: { code: risk.subclassCode },
-  //         age: 0 // Hardcoded as requested
-  //       })) || []
-  //     })) || [],
-  //     currency: { rate: quotationData.currencyRate || 1 },
-  //     dateWithEffectTo: quotationData.coverTo,
-  //     dateWithEffectFrom: quotationData.coverFrom,
-  //     underwritingYear: new Date().getFullYear(),
-  //     coinsuranceLeader: "N",
-  //     coinsurancePercentage: 0
-  //   };
-  // }
-  generatePremiumPayload(quotationData: any): any {
-    const currentDate = new Date().toISOString();
-    const product = quotationData.quotationProducts[0];
-    const risk = product.riskInformation[0];
-    const riskLimit = risk.riskLimits[0];
-    const vehicleDetails = risk.scheduleDetails.details.level1;
-
+  generatePremiumComputationPayload(quotationData: QuotationDetails): any {
     return {
-      payload: {
-        entityUniqueCode: 0,
-        interfaceType: "QUOTATION",
-        frequencyOfPayment: quotationData.frequencyOfPayment || "A",
-        transactionStatus: "EX",
-        quotationStatus: "Active",
-        products: [{
-          code: product.productCode,
-          expiryPeriod: "Y",
-          description: product.productName,
-          withEffectFrom: product.wef,
-          withEffectTo: product.wet,
-          risks: [{
-            code: risk.code.toString(),
-            propertyId: risk.propertyId,
-            binderDto: {
-              code: risk.binderCode || 0,
-              maxExposure: 0,
-              currencyCode: quotationData.currencyCode,
-              currencyRate: quotationData.currencyRate || 0
-            },
-            baseCurrencyCode: quotationData.currencyCode,
-            prorata: "S",
-            rescueServiceDto: {
-              code: 0,
-              shortDescription: "string",
-              applicationLevel: "string",
-              rescueServiceTaxDto: {
-                taxRate: 0,
-                taxRateDivisionFactor: 0,
-                taxRateType: "FXD"
-              }
-            },
-            itemDescription: risk.itemDesc,
-            emlBasedOn: "SI",
-            noClaimDiscountLevel: risk.ncdLevel || 0,
-            subclassCoverTypeDto: [{
-              subclassCode: risk.subclassCode,
-              description: risk.subclass.description,
-              coverTypeCode: risk.coverTypeCode,
-              minimumAnnualPremium: 0,
-              minimumPremium: riskLimit.minimumPremium || 0,
-              coverTypeShortDescription: risk.coverTypeShortDescription,
-              coverTypeDescription: risk.coverTypeDescription,
-              limits: [{
-                description: riskLimit.sectionShortDescription,
-                code: riskLimit.code,
-                riskCode: risk.code,
-                calculationGroup: riskLimit.calcGroup,
-                declarationSection: "Y",
-                rowNumber: riskLimit.rowNumber,
-                rateDivisionFactor: riskLimit.rateDivisionFactor,
-                premiumRate: riskLimit.premiumRate,
-                rateType: riskLimit.rateType,
-                sectionType: riskLimit.sectionType,
-                firstLoss: "Y",
-                firstLossAmountPercent: "string",
-                firstLossValue: 0,
+      entityUniqueCode: 0,
+      interfaceType: "QUOTATION",
+      frequencyOfPayment: quotationData.frequencyOfPayment || "A",
+      transactionStatus: "NB",
+      quotationStatus: "Draft",
+      products: quotationData.quotationProducts?.map(product => ({
+        code: product.productCode,
+        expiryPeriod: "Y",
+        description: product.productName,
+        withEffectFrom: product.wef,
+        withEffectTo: product.wet,
+        risks: product.riskInformation?.map(risk => ({
+          code: risk.code.toString(),
+          propertyId: risk.propertyId,
+          binderDto: {
+            code: risk.binderCode || 0,
+            maxExposure: 0,
+            currencyCode: quotationData.currencyCode,
+            currencyRate: quotationData.currencyRate || 1
+          },
+          baseCurrencyCode: quotationData.currencyCode,
+          prorata: 'S',
+          itemDescription: risk.itemDesc,
+          emlBasedOn: null,
+          noClaimDiscountLevel: risk.ncdLevel || 0,
+          subclassCoverTypeDto: [{
+            subclassCode: risk.subclassCode,
+            description: risk.subclass?.description || '',
+            coverTypeCode: risk.coverTypeCode,
+            minimumPremium: risk.riskLimits[0]?.minimumPremium || 0,
+            coverTypeShortDescription: risk.coverTypeShortDescription,
+            coverTypeDescription: risk.coverTypeDescription,
+            limits: risk.riskLimits?.map(limit => ({
+              description: limit.sectionShortDescription,
+              code: limit.code,
+              riskCode: risk.code,
+              calculationGroup: limit.calcGroup,
+              rowNumber: limit.rowNumber,
+              rateDivisionFactor: limit.rateDivisionFactor,
+              premiumRate: limit.premiumRate,
+              rateType: limit.rateType,
+              sectionType: limit.sectionType,
+              limitAmount: risk.value,
+              freeLimit: limit.freeLimit,
+              compute: limit.compute,
+              section: {
+                code: limit.sectionCode,
+                description: limit.sectionShortDescription,
                 limitAmount: risk.value,
-                freeLimit: riskLimit.freeLimit,
-                topLocRate: 0,
-                topLocDivFact: 0,
-                emlPercentage: 0,
-                compute: riskLimit.compute,
-                section: {
-                  code: riskLimit.sectionCode,
-                  description: riskLimit.sectionShortDescription,
-                  limitAmount: risk.value,
-                  isMandatory: "Y"
-                },
-                multiplierRate: riskLimit.multiplierRate,
-                multiplierDivisionFactor: riskLimit.multiplierDivisionFactor,
-                minimumPremium: riskLimit.minimumPremium,
-                annualPremium: 0,
-                premiumAmount: riskLimit.premiumAmount,
-                dualBasis: riskLimit.dualBasis,
-                shortDescription: riskLimit.sectionShortDescription,
-                sumInsuredRate: 0,
-                limitPeriod: 0,
-                indemFstPeriod: 0,
-                indemPeriod: 0,
-                indemFstPeriodPercentage: 0,
-                indemRemPeriodPercentage: 0
-              }],
-              computedPremium: 0,
-              limitPremium: [{
-                sectCode: riskLimit.sectionCode,
-                premium: riskLimit.premiumAmount,
-                description: riskLimit.sectionShortDescription,
-                limitAmount: risk.value,
-                isMandatory: "Y",
-                calculationGroup: riskLimit.calcGroup,
-                compute: riskLimit.compute,
-                dualBasis: riskLimit.dualBasis,
-                rateDivisionFactor: riskLimit.rateDivisionFactor,
-                rateType: riskLimit.rateType,
-                rowNumber: riskLimit.rowNumber,
-                premiumRate: riskLimit.premiumRate,
-                freeLimit: riskLimit.freeLimit,
-                sectionType: riskLimit.sectionType,
-                multiplierRate: riskLimit.multiplierRate,
-                shortDescription: riskLimit.sectionShortDescription,
-                sumInsuredRate: 0
-              }],
-              taxComputation: [{
-                code: 0,
-                premium: 0,
-                description: "string"
-              }]
-            }],
-            enforceCovertypeMinimumPremium: "Y",
-            futurePremium: 0,
-            commissionRate: risk.commissionRate || 0,
-            effectiveDateWithEffectTo: currentDate,
-            endorseRemove: "Y",
-            sumInsured: risk.value,
-            useOfProperty: vehicleDetails.bodyType === "TRUCK" ? "Commercial" : "Private",
-            taxes: product.taxInformation?.map(tax => ({
-              taxRateType: tax.rateType || "SRG",
-              applicationLevel: "PRODUCT",
-              code: tax.code || 0,
-              divisionFactor: tax.divisionFactor || 0,
-              taxRate: tax.rate || 0,
-              rangeTo: 0,
-              rangeFrom: 0,
-              rateDescription: tax.description || "string",
-              taxCode: tax.taxCode || "string",
-              minPremium: tax.minimumPremium || 0,
-              sumInsured: 0,
-              premium: 0,
-              quotationProductCode: 0
+                isMandatory: null
+              },
+              multiplierRate: limit.multiplierRate,
+              multiplierDivisionFactor: limit.multiplierDivisionFactor,
+              dualBasis: limit.dualBasis,
+              shortDescription: limit.sectionShortDescription
             })) || [],
-            subclassSection: {
-              code: risk.subclassCode
-            }
-          }]
-        }],
-        currency: {
-          rate: quotationData.currencyRate || 0
-        },
-        dateWithEffectTo: currentDate,
-        dateWithEffectFrom: currentDate,
-        underwritingYear: 9999,
-        age: 0, // Hardcoded as requested
-        coinsuranceLeader: "Y",
-        coinsurancePercentage: 0
-      },
-      quotationCode: quotationData.code
+            limitPremium: risk.riskLimits?.map(limit => ({
+              sectCode: limit.sectionCode,
+              premium: limit.premiumAmount || 0,
+              description: limit.sectionShortDescription,
+              limitAmount: risk.value,
+              isMandatory: null,
+              calculationGroup: limit.calcGroup,
+              compute: limit.compute,
+              dualBasis: limit.dualBasis,
+              rateDivisionFactor: limit.rateDivisionFactor,
+              rateType: limit.rateType,
+              rowNumber: limit.rowNumber,
+              premiumRate: limit.premiumRate,
+              freeLimit: limit.freeLimit,
+              sectionType: limit.sectionType,
+              multiplierRate: limit.multiplierRate,
+              shortDescription: limit.sectionShortDescription
+            })) || []
+          }],
+          enforceCovertypeMinimumPremium: "Y",
+          commissionRate: risk.commissionRate || 0,
+          sumInsured: risk.value,
+          useOfProperty: risk.subclass.description, // Default value
+          taxes: product.taxInformation?.map(tax => ({
+            taxRateType: tax.rateType,
+            applicationLevel: null,
+            code: tax.code || 0,
+            divisionFactor: 0,
+            taxRate: tax.rate || 0,
+            rangeTo: 0,
+            rangeFrom: 0,
+            rateDescription: tax.rateDescription || "",
+            taxCode: tax.code || "",
+            minPremium: 0,
+            sumInsured: 0,
+            premium: 0,
+            quotationProductCode: 0
+          })) || [],
+          subclassSection: { code: risk.subclassCode },
+          age: 0 // Hardcoded as requested
+        })) || []
+      })) || [],
+      currency: { rate: quotationData.currencyRate || 1 },
+      dateWithEffectTo: quotationData.coverTo,
+      dateWithEffectFrom: quotationData.coverFrom,
+      underwritingYear: new Date().getFullYear(),
+      coinsuranceLeader: "N",
+      coinsurancePercentage: 0
     };
   }
+  // generatePremiumPayload(quotationData: any): any {
+  //   const currentDate = new Date().toISOString();
+  //   const product = quotationData.quotationProducts[0];
+  //   const risk = product.riskInformation[0];
+  //   const riskLimit = risk.riskLimits[0];
+  //   const vehicleDetails = risk.scheduleDetails.details.level1;
+
+  //   return {
+  //     payload: {
+  //       entityUniqueCode: 0,
+  //       interfaceType: "QUOTATION",
+  //       frequencyOfPayment: quotationData.frequencyOfPayment || "A",
+  //       transactionStatus: "EX",
+  //       quotationStatus: "Active",
+  //       products: [{
+  //         code: product.productCode,
+  //         expiryPeriod: "Y",
+  //         description: product.productName,
+  //         withEffectFrom: product.wef,
+  //         withEffectTo: product.wet,
+  //         risks: [{
+  //           code: risk.code.toString(),
+  //           propertyId: risk.propertyId,
+  //           binderDto: {
+  //             code: risk.binderCode || 0,
+  //             maxExposure: 0,
+  //             currencyCode: quotationData.currencyCode,
+  //             currencyRate: quotationData.currencyRate || 0
+  //           },
+  //           baseCurrencyCode: quotationData.currencyCode,
+  //           prorata: "S",
+  //           rescueServiceDto: {
+  //             code: 0,
+  //             shortDescription: "string",
+  //             applicationLevel: "string",
+  //             rescueServiceTaxDto: {
+  //               taxRate: 0,
+  //               taxRateDivisionFactor: 0,
+  //               taxRateType: "FXD"
+  //             }
+  //           },
+  //           itemDescription: risk.itemDesc,
+  //           emlBasedOn: "SI",
+  //           noClaimDiscountLevel: risk.ncdLevel || 0,
+  //           subclassCoverTypeDto: [{
+  //             subclassCode: risk.subclassCode,
+  //             description: risk.subclass.description,
+  //             coverTypeCode: risk.coverTypeCode,
+  //             minimumAnnualPremium: 0,
+  //             minimumPremium: riskLimit.minimumPremium || 0,
+  //             coverTypeShortDescription: risk.coverTypeShortDescription,
+  //             coverTypeDescription: risk.coverTypeDescription,
+  //             limits: [{
+  //               description: riskLimit.sectionShortDescription,
+  //               code: riskLimit.code,
+  //               riskCode: risk.code,
+  //               calculationGroup: riskLimit.calcGroup,
+  //               declarationSection: "Y",
+  //               rowNumber: riskLimit.rowNumber,
+  //               rateDivisionFactor: riskLimit.rateDivisionFactor,
+  //               premiumRate: riskLimit.premiumRate,
+  //               rateType: riskLimit.rateType,
+  //               sectionType: riskLimit.sectionType,
+  //               firstLoss: "Y",
+  //               firstLossAmountPercent: "string",
+  //               firstLossValue: 0,
+  //               limitAmount: risk.value,
+  //               freeLimit: riskLimit.freeLimit,
+  //               topLocRate: 0,
+  //               topLocDivFact: 0,
+  //               emlPercentage: 0,
+  //               compute: riskLimit.compute,
+  //               section: {
+  //                 code: riskLimit.sectionCode,
+  //                 description: riskLimit.sectionShortDescription,
+  //                 limitAmount: risk.value,
+  //                 isMandatory: "Y"
+  //               },
+  //               multiplierRate: riskLimit.multiplierRate,
+  //               multiplierDivisionFactor: riskLimit.multiplierDivisionFactor,
+  //               minimumPremium: riskLimit.minimumPremium,
+  //               annualPremium: 0,
+  //               premiumAmount: riskLimit.premiumAmount,
+  //               dualBasis: riskLimit.dualBasis,
+  //               shortDescription: riskLimit.sectionShortDescription,
+  //               sumInsuredRate: 0,
+  //               limitPeriod: 0,
+  //               indemFstPeriod: 0,
+  //               indemPeriod: 0,
+  //               indemFstPeriodPercentage: 0,
+  //               indemRemPeriodPercentage: 0
+  //             }],
+  //             computedPremium: 0,
+  //             limitPremium: [{
+  //               sectCode: riskLimit.sectionCode,
+  //               premium: riskLimit.premiumAmount,
+  //               description: riskLimit.sectionShortDescription,
+  //               limitAmount: risk.value,
+  //               isMandatory: "Y",
+  //               calculationGroup: riskLimit.calcGroup,
+  //               compute: riskLimit.compute,
+  //               dualBasis: riskLimit.dualBasis,
+  //               rateDivisionFactor: riskLimit.rateDivisionFactor,
+  //               rateType: riskLimit.rateType,
+  //               rowNumber: riskLimit.rowNumber,
+  //               premiumRate: riskLimit.premiumRate,
+  //               freeLimit: riskLimit.freeLimit,
+  //               sectionType: riskLimit.sectionType,
+  //               multiplierRate: riskLimit.multiplierRate,
+  //               shortDescription: riskLimit.sectionShortDescription,
+  //               sumInsuredRate: 0
+  //             }],
+  //             taxComputation: [{
+  //               code: 0,
+  //               premium: 0,
+  //               description: "string"
+  //             }]
+  //           }],
+  //           enforceCovertypeMinimumPremium: "Y",
+  //           futurePremium: 0,
+  //           commissionRate: risk.commissionRate || 0,
+  //           effectiveDateWithEffectTo: currentDate,
+  //           endorseRemove: "Y",
+  //           sumInsured: risk.value,
+  //           useOfProperty: vehicleDetails.bodyType === "TRUCK" ? "Commercial" : "Private",
+  //           taxes: product.taxInformation?.map(tax => ({
+  //             taxRateType: tax.rateType || "SRG",
+  //             applicationLevel: "PRODUCT",
+  //             code: tax.code || 0,
+  //             divisionFactor: tax.divisionFactor || 0,
+  //             taxRate: tax.rate || 0,
+  //             rangeTo: 0,
+  //             rangeFrom: 0,
+  //             rateDescription: tax.description || "string",
+  //             taxCode: tax.taxCode || "string",
+  //             minPremium: tax.minimumPremium || 0,
+  //             sumInsured: 0,
+  //             premium: 0,
+  //             quotationProductCode: 0
+  //           })) || [],
+  //           subclassSection: {
+  //             code: risk.subclassCode
+  //           }
+  //         }]
+  //       }],
+  //       currency: {
+  //         rate: quotationData.currencyRate || 0
+  //       },
+  //       dateWithEffectTo: currentDate,
+  //       dateWithEffectFrom: currentDate,
+  //       underwritingYear: 9999,
+  //       age: 0, // Hardcoded as requested
+  //       coinsuranceLeader: "Y",
+  //       coinsurancePercentage: 0
+  //     },
+  //     quotationCode: quotationData.code
+  //   };
+  // }
 
   navigateToRiskDetails() {
     this.router.navigate(['/home/gis/quotation/quotation-details']).then(r => {
     });
   }
 
+  fetchLimitationOfUse() {
+    this.quotationService.fetchLimitationOfUse().subscribe({
+      next: (response: any) => {
+        log.debug("Limitations of use", response)
+        this.limitationOfUse = response._embedded
+        // Inject into the subclass formData
+        this.activeFormFields = this.activeFormFields.map(field => {
+          if (field.name === 'limitationsUse') {
+            return {
+              ...field,
+              selectOptions: this.limitationOfUse.map(limitation => ({
+                label: limitation.description,
+                value: limitation.description
+              }))
+            };
+          }
+          return field;
+        });
+
+      },
+      error: (error) => {
+        this.globalMessagingService.displayErrorMessage("Error", error.error.message);
+      }
+    })
+  }
+  onOtherDetailSave() {
+    log.debug("ADD OTHER SCHEDULE FORM:", this.scheduleOtherDetailsForm.value)
+    if (this.scheduleOtherDetailsForm.value) {
+      this.createScheduleL2()
+    }
+  }
+  createScheduleL2() {
+    // Prepare schedule payload
+    const schedulePayloadL2 = this.prepareSchedulePayloadL2();
+    log.debug("Schedule payload l2:", schedulePayloadL2)
+    this.quotationService.createSchedule(schedulePayloadL2)
+      .subscribe({
+        next: (createdScheduleL2: any) => {
+          const scheduleListL2 = createdScheduleL2._embedded;
+          log.debug("Schedule List l2:", scheduleListL2);
+
+
+          this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Level 2 created successfully');
+        },
+        error: (error: HttpErrorResponse) => {
+          log.debug("Error log", error.error.message);
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error.message
+          );
+        },
+
+      })
+  }
+  prepareSchedulePayloadL2() {
+    const schedule = this.scheduleOtherDetailsForm.value;
+    const schedulePayloadL2: scheduleDetails[] = [{
+      details: {
+        level2: {
+          code: null, // set as needed
+          geographicalLimits: schedule.geographicalLimits,
+          deductibleDesc: schedule.deductibleDesc,
+          limitationUse: schedule.limitationUse,
+          authorisedDriver: schedule.authorisedDriver
+        }
+      },
+      riskCode: this.quotationRiskCode,
+      transactionType: 'Q',
+      version: 0
+    }];
+
+    return schedulePayloadL2;
+  }
 }

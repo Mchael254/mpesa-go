@@ -662,41 +662,35 @@ export class QuotationsService {
   }
 
   AuthoriseExceptions(quotationCode: number, user: string): Observable<any> {
-  const params = new HttpParams()
-    .set('quotationCode', quotationCode.toString())
-    .set('user', user);
+    const params = new HttpParams()
+      .set('quotationCode', quotationCode.toString())
+      .set('user', user);
 
-  return this.api.POST(
-    `v2/authorise?${params.toString()}`,
-    null,
-    API_CONFIG.GIS_QUOTATION_BASE_URL
-  );
-}
-getRIskLimitsOfLiability(
-  subclassCode: number,
-  quotationProductCode: number
-): Observable<any> {
-  const paramsObj: { [param: string]: string } = {};
-
-
-  paramsObj['subclassCode'] = subclassCode.toString();
-  paramsObj['quotationProductCode'] = quotationProductCode.toString();
-  paramsObj['scheduleType'] = 'L';
-
-  const params = new HttpParams({ fromObject: paramsObj });
-
-  return this.api.GET<any>(
-    `v2/limits-of-liability`,
-    API_CONFIG.GIS_QUOTATION_BASE_URL,
-    params
-  );
-}
+    return this.api.POST(
+      `v2/authorise?${params.toString()}`,
+      null,
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    );
+  }
+  getRIskLimitsOfLiability(
+    subclassCode: number,
+    quotationProductCode: number
+  ): Observable<any> {
+    const paramsObj: { [param: string]: string } = {};
 
 
+    paramsObj['subclassCode'] = subclassCode.toString();
+    paramsObj['quotationProductCode'] = quotationProductCode.toString();
+    paramsObj['scheduleType'] = 'L';
 
+    const params = new HttpParams({ fromObject: paramsObj });
 
-
-
+    return this.api.GET<any>(
+      `v2/limits-of-liability`,
+      API_CONFIG.GIS_QUOTATION_BASE_URL,
+      params
+    );
+  }
 
 
   getClauses(
@@ -1031,7 +1025,19 @@ getRIskLimitsOfLiability(
       catchError(this.errorHandl)
     );
   }
+  deleteDetailedQuotationRisk(quotationRiskCode: number) {
+    return this.api.DELETE(`v2/quotation/detailed-quot-risk?quotationRiskCode=${quotationRiskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
 
+  }
+  fetchLimitationOfUse() {
+    return this.api.GET(`v2/limitation-of-use`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
 
 
 
