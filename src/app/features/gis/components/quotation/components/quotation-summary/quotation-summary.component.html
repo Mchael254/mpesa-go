@@ -985,10 +985,10 @@
                 <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Excess</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Comments</a>
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-comments">Comments</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-limits">Limits of liability</a>
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-limits-liability">Limits of liability</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Commissions</a>
@@ -1227,9 +1227,106 @@
                   </ng-template>
                 </p-table>
               </div>
+
+
+                <!-- Excess-->
+
+
+                              <div class="tab-pane fade" id="nav-excesses" role="tabpanel" aria-labelledby="nav-limits" tabindex="0">
+                <p-table [value]="excesses" #excessesTable >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th pSortableColumn="narration">Narration<p-sortIcon field="narration"></p-sortIcon></th>
+                      <th pSortableColumn="value" >Value<p-sortIcon field="value"></p-sortIcon></th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-data let-columns="columns" let-rowIndex="rowIndex">
+                          <tr *ngIf="rowIndex === 0">
+        <td colspan="4">
+          <input type="text"
+                 pInputText
+                 placeholder=""
+                (input)="filterTable($event,'description',excessesTable)"
+                 style="width: 150px;height: 40px; margin-left:0" />
+        </td>
+      </tr>
+
+                    <tr>
+                      <td>{{ data.description }}</td>
+                      <td>{{ data.excess }}</td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="4" class="text-center text-muted py-3">
+                        “No excesses available for this risk.”
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            
+          
+                 <!-- Comments -->
+              <div class="tab-pane fade" id="nav-comments" role="tabpanel" aria-labelledby="nav-riskClauses"
+                tabindex="0">
+               <p-table 
+  [value]="comments" 
+[tableStyle]="{ 'width': '100%' }" 
+  [scrollable]="true" 
+  responsiveLayout="scroll" 
+  class="ui-datatable"
+  [autoLayout]="true">
+
+  <!-- HEADER -->
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="flexible-header1" pSortableColumn="description">
+        Description <p-sortIcon field="description"></p-sortIcon>
+      </th>
+      <th class="flexible-header1" pSortableColumn="details">
+        Details <p-sortIcon field="details"></p-sortIcon>
+      </th>
+     
+      <th></th>
+      <th></th>
+    </tr>
+  </ng-template>
+
+  <!-- BODY -->
+  <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
+    
+   
+
+    <!-- DATA ROWS -->
+      <tr [pEditableRow]="data">
+        <td>{{ data.description }}</td>
+        <td>{{ data.details | sentenceCase }}</td>
+ 
+
+      </tr>
+
+   
+
+  </ng-template>
+
+  <!-- EMPTY MESSAGE -->
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="4" class="text-center text-muted py-3">
+        “No comments available for this risk.”
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+ </div>
               <!-- Limits of liablility -->
-              <div class="tab-pane fade" id="nav-limits" role="tabpanel" aria-labelledby="nav-limits" tabindex="0">
-                <p-table [value]="limitsRiskofLiability" #limitsRiskofLiabilityTable>
+              <div class="tab-pane fade" id="nav-limits-liability" role="tabpanel" aria-labelledby="nav-limits" tabindex="0">
+                <p-table [value]="limitsRiskofLiability" #limitsRiskofLiabilityTable >
                   <ng-template pTemplate="header">
                     <tr>
                       <th pSortableColumn="narration">Narration<p-sortIcon field="narration"></p-sortIcon></th>
