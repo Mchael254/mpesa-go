@@ -112,6 +112,19 @@
             </app-financial>
           </ng-container>
 
+          <ng-container *ngIf="
+            partyAccountDetails &&
+            tab.title==='wealth_aml'"
+          >
+            <app-wealth-aml
+              #wealthAmlRef
+              [wealthAmlDetails]="partyAccountDetails.wealthAmlDetails"
+              [accountCode]="partyAccountDetails.accountCode"
+              [wealthAmlDetailsConfig]="tab"
+              [formFieldsConfig]="editWealthAmlFormConfig"
+            ></app-wealth-aml>
+          </ng-container>
+
         </p-tabPanel>
       </ng-container>
     </p-tabView>
