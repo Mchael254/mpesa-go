@@ -962,9 +962,20 @@ getRiskLimitsOfLiability(
     );
   }
 
-  updateSubclassSectionPeril(id: string | number): Observable<any> {
-  return this.api.GET<any>(`v2/quotation-risk-excesses/${id}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
-}
+  getQuotationPerils(riskCode: string | number): Observable<any> {
+    return this.api.GET<any>(`v2/quotation-excesses?riskCode=${riskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+
+  updateSubclassSectionPeril(id: string | number, perilPayload: riskPeril): Observable<any> {
+    return this.api.PUT<any>(`v2/quotation-risk-excesses/${id}`, JSON.stringify(perilPayload), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+  deleteSubclassSectionPeril(id: string | number): Observable<any> {
+    return this.api.DELETE<any>(`v2/quotation-risk-excesses/${id}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+
 
   reviseQuotation(quotCode: number, newQuote: string = "N"): Observable<any> {
     return this.api.POST<any[]>(`v2/revise?quotCode=${quotCode}&newQuote=${newQuote}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL,);
