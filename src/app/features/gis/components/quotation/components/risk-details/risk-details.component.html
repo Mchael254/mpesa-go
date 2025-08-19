@@ -1821,7 +1821,7 @@
                 <!-- Table Body -->
                 <ng-template pTemplate="body" let-peril>
                     <tr>
-                        <td style="width: 15%"> {{peril.sectionCode}} </td>
+                        <td style="width: 15%"> {{peril.perilShortDescription}} </td>
                         <td style="width: 35%" class="position-relative">
                             <div class="clause-wrapper">
                                 {{ peril.description | truncate:10 | sentenceCase }}
@@ -1830,21 +1830,20 @@
                                 </div>
                             </div>
                         </td>
-                        <td style="width: 35%">{{peril.sectionDescription}}</td>
+                        <td style="width: 35%">{{ peril.sumInsuredOrLimitDesc }}</td>
                         <td style="width: 15%; text-align: left">
                             <div class="flex justify-start gap-2">
                                 <!-- Edit -->
                                 <span class="p-button-label p-text-bold"
                                     style="color: #00529B; cursor: pointer; display: inline-block; width: 60px"
-                                    data-bs-toggle="modal" data-bs-target="#editClause"
-                                    (click)="populateEditClauseModal(peril)">
+                                    (click)="populatePerilEditModal(peril)">
                                     {{ 'gis.quotation.edit' | translate }}
                                 </span>
 
                                 <!-- Delete -->
                                 <span class="p-button-label p-text-bold" style="color: #00529B; cursor: pointer"
-                                    data-bs-toggle="modal" data-bs-target="#deleteClause"
-                                    (click)="prepareDeleteClause(peril)">
+                                    data-bs-toggle="modal" data-bs-target="#deletePeril"
+                                    (click)="prepareDeletePeril(peril)">
                                     {{ 'gis.quotation.delete' | translate }}
                                 </span>
                             </div>
@@ -1926,9 +1925,9 @@
                                             </td>
                                             <td class="position-relative">
                                                 <div class="clause-wrapper">
-                                                    {{ peril.sectionDescription | truncate:10 | sentenceCase }}
+                                                    {{ peril.shortDescription | truncate:10 | sentenceCase }}
                                                     <div class="hover-card">
-                                                        {{ peril.sectionDescription | sentenceCase }}
+                                                        {{ peril.shortDescription | sentenceCase }}
                                                     </div>
                                                 </div>
                                             </td>
@@ -1981,7 +1980,7 @@
                             <h5 class="modal-title" id="perilDetailsLabel">
                                 {{ isEditMode ? 'Edit Peril' : 'Peril Details' }}
                             </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close" (click)="closeChoosePerilsModal()"  aria-label="Close"></button>
                         </div>
 
                         <div class="modal-body">
@@ -1993,18 +1992,17 @@
                                         <label>Peril</label>
                                         <span class="p-input-icon-right w-100">
                                             <input type="text" pInputText formControlName="description" class="w-100"
-                                                [readonly]="isEditMode" [ngClass]="{ 'bg-light': isEditMode }"
-                                                (click)="!isEditMode && openPerilsModal()" />
-                                            <i *ngIf="!isEditMode" class="pi pi-search" (click)="openPerilsModal()"
+                                                [readonly]="isPerilEditMode" [ngClass]="{ 'bg-light': isPerilEditMode }"
+                                                (click)="!isPerilEditMode && openPerilsModal()" />
+                                            <i *ngIf="!isPerilEditMode" class="pi pi-search" (click)="openPerilsModal()"
                                                 style="cursor:pointer"></i>
-                                            <i *ngIf="isEditMode" class="pi pi-lock" style="color: #6B7280"></i>
                                         </span>
                                     </div>
 
                                     <div class="col-md-6">
                                         <label>ID</label>
                                         <input type="text" class="form-control" formControlName="shortDescription"
-                                            [readonly]="isEditMode" [ngClass]="{ 'bg-light': isEditMode }" />
+                                            [readonly]="isPerilEditMode" [ngClass]="{ 'bg-light': isPerilEditMode }" />
                                     </div>
                                 </div>
 
@@ -2077,17 +2075,54 @@
                             </form>
                         </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-primary"
-                                data-bs-dismiss="modal">Cancel</button>
+                        <div class="modal-footer justify-content-end">
+                            <button type="button" class="btn btn-outline-primary me-2" (click)="closeChoosePerilsModal()">
+                                Cancel
+                            </button>
                             <button type="button" class="btn btn-primary"
                                 (click)="isPerilEditMode ? updatePeril() : addPerils()">
                                 {{ isEditMode ? 'Update' : 'Save' }}
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>
+
+            <!-- delete peril modal -->
+            <div class="modal fade" id="deletePeril">
+                <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+                    <div class="modal-content ps-4 pt-2 pe-4">
+                        <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+                            <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                                {{ 'gis.quotation.delete_clause' | translate }}</p>
+                            <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                                style="border: none;">X
+                            </button>
+                        </div>
+
+                        <div class="d-flex justify-content-between text-black">
+                            <p>Are you sure you want to delete this peril?</p>
+                        </div>
+
+                        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+                            <button type="button" class="btn" data-bs-dismiss="modal"
+                                style="background-color: #00529B;color:white;text-decoration: none;"
+                                (click)="deletePeril()">
+                                {{ 'gis.quotation.delete' | translate }}
+                            </button>
+                            <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                                style="text-decoration: none;">{{
+                                'gis.quotation.cancel' | translate
+                                }}
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
         </div>
 
         <!-- commissions table -->
