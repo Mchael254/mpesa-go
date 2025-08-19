@@ -4,14 +4,14 @@
 
 <div class="row g-3 align-items-center">
   <!-- Profile Section -->
-  <div class="col-sm-4">
+  <div class="col-sm-5">
     <div class="row profile g-2">
       <div class="col-sm-3">
         <img
           class="profile-image"
           src="{{
             entityPartyIdDetails?.profileImage ||
-              '../../../../../../../assets/images/headshot.png'
+              '../../../../../../../assets/images/profile_picture_placeholder.png'
           }}"
           alt="{{ entityPartyIdDetails?.name | titlecase }}"
         />
@@ -43,7 +43,7 @@
   </div>
 
   <!-- Assign Role Button -->
-  <div class="col-sm-4">
+  <div class="col-sm-3">
     <h5 style="visibility: hidden;">Assign role button</h5> <!--this is for layout purposes and should not be displayed-->
     <button
       class="btn btn-primary btn-sm"
@@ -80,7 +80,7 @@
   </div>
 
   <!-- WEF/WET Fields -->
-  <div class="col-sm-4">
+  <div class="col-sm-5">
     <div class="row">
       <div class="offset-sm-3 col-sm-9 mt-3">
         <ng-container

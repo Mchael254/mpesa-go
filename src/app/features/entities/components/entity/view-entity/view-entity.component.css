@@ -262,6 +262,14 @@
   transition: 0.2s;
 }
 
+.tab-title {
+  font-size: 1.2em;
+}
+
+::ng-deep .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  padding: 0.9rem;
+}
+
 
 /* responsive */
 @media (max-width: 576px) {
