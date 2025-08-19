@@ -430,8 +430,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
       
       if (subclassCode && quotationProductCode) {
-        this.getLimitsofLiability(quotationProductCode, subclassCode,'L');
-        this.getLimitsofLiability(quotationProductCode,subclassCode,'E')
+       
       }
 
     
@@ -1250,11 +1249,16 @@ getSections(data: any) {
     this.selectedRisk = data;
     const subclassCode = data.subclassCode
     log.debug("SUBCLASS CODE:", subclassCode)
+    const firstProduct = this.quotationView.quotationProducts?.[0];
+    const firstRisk = firstProduct?.riskInformation?.[0];
+    const quotationProductCode = firstRisk?.quotationProductCode;
 
     // Call all methods sequentially
     this.getSections(data.code);
     this.getExcesses(subclassCode);
     this.getRiskClauses(data.code);
+    this.getLimitsofLiability(quotationProductCode, subclassCode,'L');
+    this.getLimitsofLiability(quotationProductCode,subclassCode,'E')
     
   }
 
