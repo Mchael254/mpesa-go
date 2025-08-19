@@ -940,6 +940,10 @@ export class QuotationsService {
     );
   }
 
+  updateSubclassSectionPeril(id: string | number): Observable<any> {
+  return this.api.GET<any>(`v2/quotation-risk-excesses/${id}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+}
+
   reviseQuotation(quotCode: number, newQuote: string = "N"): Observable<any> {
     return this.api.POST<any[]>(`v2/revise?quotCode=${quotCode}&newQuote=${newQuote}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL,);
   }
