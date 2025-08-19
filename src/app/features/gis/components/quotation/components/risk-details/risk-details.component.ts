@@ -277,7 +277,7 @@ export class RiskDetailsComponent {
   excessesData: any[] = [];
 
   addedPerils: any[] = [];
-  allPerilsMap: { [qpCode: string]: any[] } = {};
+  allPerilsMap: { [key: string]: any[] } = {};
   selectedPeril: any = null;
   showPerilsModal: boolean = false;
   perils: any[] = [];
@@ -299,6 +299,8 @@ export class RiskDetailsComponent {
     { label: 'Extension', value: 'EL' }
   ];
   limitationOfUse: any[] = [];
+  editingPeril: any = null;
+  isPerilEditMode: boolean = false;
 
 
 
@@ -360,6 +362,7 @@ export class RiskDetailsComponent {
 
   ngOnInit(): void {
     this.initializePerilDetails();
+    this.loadPerils();
     const savedSubclass = sessionStorage.getItem('selectedSubclassCode');
     if (savedSubclass) {
       this.selectedSubclassCode = savedSubclass;
@@ -3881,7 +3884,7 @@ export class RiskDetailsComponent {
       return;
     }
 
-    // Build payload for DB
+
     const excessesPayload: CreateLimitsOfLiability[] = this.selectedExcessess.map(limit => ({
       scheduleValueCode: limit.quotationValueCode,
       value: this.cleanCurrencyValue(limit.value),
@@ -3893,7 +3896,6 @@ export class RiskDetailsComponent {
       next: () => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Excesses added successfully');
 
-        // Prepare the newly added excesses for UI/session
         const updatedExcesses = this.selectedExcessess.map(limit => ({
           ...limit,
           value: this.cleanCurrencyValue(limit.value),
@@ -3901,15 +3903,12 @@ export class RiskDetailsComponent {
           qpCode: newQpCode
         }));
 
-        // Filter only unique ones to avoid duplicates in UI
         const existingCodes = new Set(this.addedExcessess.map(l => l.code));
         const newUniqueExcessess = updatedExcesses.filter(l => !existingCodes.has(l.code));
 
-        // Update UI table
         this.addedExcessess = [...this.addedExcessess, ...newUniqueExcessess];
         log.debug("Updated addedExcessess:", this.addedExcessess);
 
-        // Persist to sessionStorage map by subclass
         if (!this.allExcessesMap[subclassCode]) {
           this.allExcessesMap[subclassCode] = [];
         }
@@ -3919,14 +3918,12 @@ export class RiskDetailsComponent {
         ];
         sessionStorage.setItem('excessesData', JSON.stringify(this.allExcessesMap));
 
-        // Remove newly added from available modal list
         const addedCodes = new Set(this.selectedExcessess.map(l => l.code));
         this.excessesData = this.excessesData.filter(l => !addedCodes.has(l.code));
 
         const sessionKey = `availableExcessess_${subclassCode}`;
         sessionStorage.setItem(sessionKey, JSON.stringify(this.excessesData));
 
-        // Clear selection
         this.selectedExcessess = [];
       },
       error: (err) => {
@@ -3937,10 +3934,82 @@ export class RiskDetailsComponent {
   }
 
   //Perils
-  openPerilsModal() {
-    this.loadPerils();
+  onSubclassChange(): void {
+    if (this.selectedSubclassCode) {
+      if (this.allPerilsMap[this.selectedSubclassCode]) {
+        this.addedPerils = [...this.allPerilsMap[this.selectedSubclassCode]];
+      } else {
+        this.addedPerils = [];
+      }
+
+      this.loadPerils();
+    }
+  }
+
+  loadPerils(): void {
+    const savedSubclass = sessionStorage.getItem('selectedSubclassCode');
+    if (savedSubclass) {
+      this.selectedSubclassCode = savedSubclass;
+    }
+
+    const subclassCode = this.selectedSubclassCode;
+    if (!subclassCode) {
+      this.addedPerils = [];
+      this.perils = [];
+      return;
+    }
+
+    const sessionKey = `availablePerils_${subclassCode}`;
+    const savedAvailable = sessionStorage.getItem(sessionKey);
+
+    const savedPerils = sessionStorage.getItem('perilsData');
+    if (savedPerils) {
+      this.allPerilsMap = JSON.parse(savedPerils);
+
+      this.addedPerils = [...(this.allPerilsMap[subclassCode] || [])];
+      console.log(`Restored added perils for subclass ${subclassCode}:`, this.addedPerils);
+    } else {
+      this.allPerilsMap = {};
+      this.addedPerils = [];
+    }
+
+    if (savedAvailable) {
+      this.perils = JSON.parse(savedAvailable);
+      console.log(`Loaded available perils for subclass ${subclassCode} from session:`, this.perils);
+    } else {
+      this.quotationService.getSubclassSectionPeril(subclassCode, 0, 10)
+        .subscribe({
+          next: (data) => {
+            this.perils = data?._embedded || [];
+
+            if (this.allPerilsMap[subclassCode]) {
+              const addedCodes = this.allPerilsMap[subclassCode].map((p: any) => p.code);
+              this.perils = this.perils.filter((p: any) => !addedCodes.includes(p.code));
+            }
+
+            sessionStorage.setItem(sessionKey, JSON.stringify(this.perils));
+            console.log(`Fetched available perils for subclass ${subclassCode} from API:`, this.perils);
+          },
+          error: (err) => {
+            console.error(`Failed to fetch perils for subclass ${subclassCode}:`, err);
+            this.globalMessagingService.displayErrorMessage('Error', 'Could not load perils');
+          }
+        });
+    }
+  }
+
+  openPerilsModal(): void {
+    if (!this.selectedSubclassCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+      return;
+    }
+
+    console.log("Opening perils modal for subclass:", this.selectedSubclassCode);
+
     this.closeChoosePerilsModal();
     new bootstrap.Modal(this.perilsModal.nativeElement).show();
+
+    this.loadPerils();
   }
 
   closePerilsModal() {
@@ -3948,9 +4017,18 @@ export class RiskDetailsComponent {
     bootstrap.Modal.getInstance(this.perilsModal.nativeElement)?.hide();
   }
 
-  openChoosePerilsModal() {
+  openChoosePerilsModal(): void {
+    if (!this.selectedSubclassCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+      return;
+    }
+
+    // Reset for new peril mode
+    this.isPerilEditMode = false;
+    this.editingPeril = null;
     this.perilDetailsForm.reset();
     this.selectedPeril = null;
+
     new bootstrap.Modal(this.choosePerilsModal.nativeElement).show();
   }
 
@@ -3977,24 +4055,13 @@ export class RiskDetailsComponent {
     });
     this.closePerilsModal();
     new bootstrap.Modal(this.choosePerilsModal.nativeElement).show();
-
-  }
-
-  loadPerils(): void {
-    this.quotationService.getSubclassSectionPeril(this.selectedSubclassCode, 0, 10)
-      .subscribe({
-        next: (data) => {
-          this.perils = data?._embedded || [];
-          log.debug("these are perils", this.perils)
-        },
-        error: (err) => {
-          console.error('Error fetching subclass section perils', err);
-        }
-      });
   }
 
   addPerils(): void {
+    if (!this.selectedPeril) return;
+
     const quotationCode = this.selectedProduct?.quotationCode;
+    const quotationRiskCode = this.selectedRisk?.code;
     const subclassCode = this.selectedRisk?.subclassCode;
 
     if (!subclassCode) {
@@ -4004,11 +4071,11 @@ export class RiskDetailsComponent {
 
     const formValues = this.perilDetailsForm.value;
 
-    const perilsPayload: riskPeril = {
-      quotationRiskCode: this.selectedRisk?.code,
+    const perilPayload: riskPeril = {
+      quotationRiskCode,
       quotationCode,
       subclassSectionPerilCode: formValues.subclassSectionPerilCode,
-      perilLimit: 3000,
+      perilLimit: 0,
       perilType: formValues.plExcessType,
       sumInsuredOrLimit: formValues.sumInsuredOrLimit,
       excessType: formValues.tlExcessType,
@@ -4021,46 +4088,149 @@ export class RiskDetailsComponent {
       description: formValues.description
     };
 
-    log.debug("perils payload", perilsPayload);
+    console.log("Peril payload", perilPayload);
 
-    this.quotationService.addSubclassSectionPeril(perilsPayload).subscribe({
+    this.quotationService.addSubclassSectionPeril(perilPayload).subscribe({
       next: () => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Excesses added successfully');
+        this.globalMessagingService.displaySuccessMessage('Success', 'Peril added successfully');
+        this.closeChoosePerilsModal();
 
-        // Prepare the newly added peril for UI/session
         const newPeril = {
           ...this.selectedPeril,
           value: this.cleanCurrencyValue(this.selectedPeril?.value),
           isModified: false
         };
 
-        // Update UI table if not already present
-        if (!this.addedPerils.some(l => l.code === newPeril.code)) {
+        if (!this.addedPerils.some(p => p.code === newPeril.code)) {
           this.addedPerils = [...this.addedPerils, newPeril];
-        }
-        log.debug("Updated addedPerils:", this.addedPerils);
+          console.log("Updated addedPerils:", this.addedPerils);
 
-        // Persist to sessionStorage map by subclass
-        if (!this.allPerilsMap[subclassCode]) {
-          this.allPerilsMap[subclassCode] = [];
-        }
-        if (!this.allPerilsMap[subclassCode].some(l => l.code === newPeril.code)) {
-          this.allPerilsMap[subclassCode] = [...this.allPerilsMap[subclassCode], newPeril];
-        }
-        sessionStorage.setItem('perils', JSON.stringify(this.allPerilsMap));
+          if (!this.allPerilsMap[subclassCode]) {
+            this.allPerilsMap[subclassCode] = [];
+          }
+          this.allPerilsMap[subclassCode] = [
+            ...this.allPerilsMap[subclassCode],
+            newPeril
+          ];
+          sessionStorage.setItem('perilsData', JSON.stringify(this.allPerilsMap));
+          this.perils = this.perils.filter(p => p.code !== newPeril.code);
 
-        // Remove newly added from available modal list
-        this.perils = this.perils.filter(l => l.code !== newPeril.code);
-        sessionStorage.setItem(`availablePerils_${subclassCode}`, JSON.stringify(this.perils));
+          const sessionKey = `availablePerils_${subclassCode}`;
+          sessionStorage.setItem(sessionKey, JSON.stringify(this.perils));
+        }
 
-        // Clear selection
         this.selectedPeril = null;
       },
       error: (err) => {
-        console.error('Error adding Excesses', err);
-        this.globalMessagingService.displayErrorMessage("Error", "Error adding Excesses");
+        console.error('Error adding Peril', err);
+        this.globalMessagingService.displayErrorMessage("Error", "Error adding Peril");
       }
     });
+  }
+
+  //edit perils
+  populatePerilEditClauseModal(peril: any): void {
+    this.isEditMode = true;
+    this.editingPeril = { ...peril }; // Create a copy to avoid direct mutation
+
+    // Populate the form with existing peril data
+    this.perilDetailsForm.patchValue({
+      description: peril.description,
+      shortDescription: peril.shortDescription,
+      claimLimit: peril.claimLimit,
+      personLimit: peril.personLimit,
+      excess: peril.excess,
+      excessMax: peril.excessMax,
+      excessMin: peril.excessMin,
+      tlExcessType: peril.tlExcessType,
+      plExcessType: peril.plExcessType,
+      perilLimit: peril.perilLimit,
+      subclassSectionPerilCode: peril.code,
+      expireOnClaim: peril.expireOnClaim,
+      perilType: peril.plExcessType,
+      sumInsuredOrLimit: peril.sumInsuredOrLimit
+    });
+
+    console.log("Editing peril:", peril);
+  }
+
+  updatePeril(): void {
+    if (!this.editingPeril) return;
+
+    const quotationCode = this.selectedProduct?.quotationCode;
+    const quotationRiskCode = this.selectedRisk?.code;
+    const subclassCode = this.selectedRisk?.subclassCode;
+
+    if (!subclassCode) {
+      console.error('Subclass code is missing');
+      return;
+    }
+
+    const formValues = this.perilDetailsForm.value;
+
+    // Build payload for DB update
+    const perilPayload: riskPeril = {
+      quotationRiskCode,
+      quotationCode,
+      subclassSectionPerilCode: formValues.subclassSectionPerilCode,
+      perilLimit: formValues.perilLimit || 0,
+      perilType: formValues.plExcessType,
+      sumInsuredOrLimit: formValues.sumInsuredOrLimit,
+      excessType: formValues.tlExcessType,
+      excess: formValues.excess,
+      excessMinimum: formValues.excessMin,
+      excessMaximum: formValues.excessMax,
+      expireOnClaim: formValues.expireOnClaim,
+      personLimit: formValues.personLimit,
+      claimLimit: formValues.claimLimit,
+      description: formValues.description
+    };
+
+    console.log("Update peril payload", perilPayload);
+
+    // Call your update service method (you'll need to create this in your service)
+    this.quotationService.updateSubclassSectionPeril(this.quotationRiskCode)
+      .subscribe({
+        next: () => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Peril updated successfully');
+          this.closeChoosePerilsModal();
+
+          // Update the peril in memory
+          const updatedPeril = {
+            ...this.editingPeril,
+            ...formValues,
+            value: this.cleanCurrencyValue(formValues.value || this.editingPeril.value),
+            isModified: true
+          };
+
+          // Update in addedPerils array
+          const perilIndex = this.addedPerils.findIndex(p => p.code === this.editingPeril.code);
+          if (perilIndex !== -1) {
+            this.addedPerils[perilIndex] = updatedPeril;
+            this.addedPerils = [...this.addedPerils]; // Trigger change detection
+          }
+
+          // Update in persistent storage
+          if (this.allPerilsMap[subclassCode]) {
+            const mapIndex = this.allPerilsMap[subclassCode].findIndex(p => p.code === this.editingPeril.code);
+            if (mapIndex !== -1) {
+              this.allPerilsMap[subclassCode][mapIndex] = updatedPeril;
+              sessionStorage.setItem('perilsData', JSON.stringify(this.allPerilsMap));
+            }
+          }
+
+          console.log("Updated peril:", updatedPeril);
+          console.log("Updated addedPerils:", this.addedPerils);
+
+          // Reset edit state
+          this.isEditMode = false;
+          this.editingPeril = null;
+        },
+        error: (err) => {
+          console.error('Error updating Peril', err);
+          this.globalMessagingService.displayErrorMessage("Error", "Error updating Peril");
+        }
+      });
   }
 
   onAddOtherSchedule(tab: any): void {
