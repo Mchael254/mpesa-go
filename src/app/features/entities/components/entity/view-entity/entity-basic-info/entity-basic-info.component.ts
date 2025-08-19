@@ -59,8 +59,8 @@ export class EntityBasicInfoComponent {
 
     setTimeout(() => {
       this.basicInfo = this.overviewConfig?.basic_info;
+      this.fetchClientStatuses();
     }, 1000);
-    this.fetchClientStatuses();
   }
 
 
@@ -152,6 +152,10 @@ export class EntityBasicInfoComponent {
     this.clientService.updateClientSection(accountCode, { status, comment }).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client status updated successfully');
+        this.partyAccountDetails.status = data.status;
+        // this.setCurrentStatus(this.clientStatuses);
+        this.filterApplicableStatuses();
+        log.info('partyAccountDetails >>> ', data);
       },
       error: err => {
         log.info(`status not updated >>> `, err)

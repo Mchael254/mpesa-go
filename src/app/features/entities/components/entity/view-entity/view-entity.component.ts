@@ -124,6 +124,7 @@ export class ViewEntityComponent implements OnInit {
   editContactFormConfig: any;
   editAddressFormConfig: any;
   editFinancialFormConfig: any;
+  editWealthAmlFormConfig: any;
 
   selectOptions: {
     idTypes: IdentityModeDTO[],
@@ -193,6 +194,7 @@ export class ViewEntityComponent implements OnInit {
     });
   }
 
+
   edit360ViewFormsConfig(): void {
     this.http.get<any>( 'assets/data/edit360ViewForms.json').subscribe({
       next: (data: any) => {
@@ -200,6 +202,7 @@ export class ViewEntityComponent implements OnInit {
         this.editContactFormConfig = data.contact;
         this.editAddressFormConfig = data.address;
         this.editFinancialFormConfig = data.financial;
+        this.editWealthAmlFormConfig = data.wealth_aml;
       },
       error: err => {
         log.error(err);
