@@ -183,6 +183,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   exceptionErrorMessage: string | null = null;
   limitsRiskofLiability: any;
   selectAll = false;
+  comments:any;
 
 
 
@@ -429,8 +430,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
       
       if (subclassCode && quotationProductCode) {
-        this.getLimitsofLiability(quotationProductCode, subclassCode);
+       
       }
+
+    
 
 
         // Extract product details
@@ -1246,11 +1249,16 @@ getSections(data: any) {
     this.selectedRisk = data;
     const subclassCode = data.subclassCode
     log.debug("SUBCLASS CODE:", subclassCode)
+    const firstProduct = this.quotationView.quotationProducts?.[0];
+    const firstRisk = firstProduct?.riskInformation?.[0];
+    const quotationProductCode = firstRisk?.quotationProductCode;
 
     // Call all methods sequentially
     this.getSections(data.code);
     this.getExcesses(subclassCode);
     this.getRiskClauses(data.code);
+    this.getLimitsofLiability(quotationProductCode, subclassCode,'L');
+    this.getLimitsofLiability(quotationProductCode,subclassCode,'E')
     
   }
 
@@ -2266,21 +2274,41 @@ getExceptions(quotationCode:number,username:string){
 
 
 
-getLimitsofLiability(quotationProductCode:number,subClassCode:number){
+getLimitsofLiability(subClassCode: number, quotationProductCode: number, scheduleType: 'L' | 'E') {
+  this.quotationService.getRiskLimitsOfLiability(subClassCode, quotationProductCode, scheduleType)
+    .subscribe({
+      next: (res) => {
+        log.debug(`limits of liability (${scheduleType})`, res);
 
-  this.quotationService.getRIskLimitsOfLiability(quotationProductCode,subClassCode).subscribe({
-    next:(res)=>{
-      log.debug('limits of liability',res);
-      this.limitsRiskofLiability=res._embedded;
-    },
-    error:(error)=>{
-      log.error('Error fetching limits of liability:', error);
-        this.error = 'Something went wrong while limits of liability'
-
-    }
-  })
-
+        if (scheduleType === 'L') {
+          this.limitsRiskofLiability = res._embedded;
+        } else {
+          this.excesses = res._embedded;
+          this.comments=res._embedded
+        }
+      },
+      error: (error) => {
+        log.error(`Error fetching limits of liability (${scheduleType}):`, error);
+        this.error = `Something went wrong while fetching limits of liability (${scheduleType})`;
+      }
+    });
 }
+
+
+// getExcessAndComments(subClassCode: number, quotationProductCode: number) {
+//   this.quotationService.getExcessAndComments(subClassCode, quotationProductCode)
+//     .subscribe({
+//       next: (res) => {
+//         log.debug('Excess and Comments', res);
+//         this.excesses = res._embedded;
+//         this.comments = res._embedded;
+//       },
+//       error: (error) => {
+//         log.error('Error fetching excess and comments:', error);
+//         this.error = 'Something went wrong while fetching excess and comments';
+//       }
+//     });
+// }
 authorizeSelectedExceptions(): void {
   const selected = this.exceptionsData?.filter(ex => ex.selected);
 
