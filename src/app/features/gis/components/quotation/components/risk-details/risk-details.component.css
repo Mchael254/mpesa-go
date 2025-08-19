@@ -330,8 +330,18 @@ button:focus {
 }
 
 .p-inputtext {
-    padding: 0.375rem 0.75rem; /* Match Bootstrap form-control */
+    padding: 0.375rem 0.75rem; 
     font-size: 1rem; 
 }
+.modal-header {
+  border-bottom: none !important;
+}
 
+.modal-footer {
+  border-top: none !important;
+}
+
+.modal-body {
+  padding-top: 0 !important;
+}
 
