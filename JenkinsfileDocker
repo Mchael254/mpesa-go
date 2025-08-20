@@ -7,6 +7,12 @@ pipeline {
     }
 
     stages {
+        stage('Clean Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
         stage('Checkout') {
             steps {
                 sshagent(credentials: ['github-ssh-key-id']) {
@@ -19,7 +25,7 @@ pipeline {
             steps {
                 sh '''
                   docker-compose down || true
-                  docker-compose up --build --exit-code-from angular-build
+                  docker-compose up --build --exit-code-from angular-build || exit 1
                 '''
             }
         }
@@ -28,6 +34,15 @@ pipeline {
             steps {
                 archiveArtifacts artifacts: 'dist/**', fingerprint: true
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build completed successfully!'
+        }
+        failure {
+            echo 'Build failed!'
         }
     }
 }
