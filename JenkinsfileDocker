@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    environment {
+        REPO = "git@github.com:turnkeyafrica/turnquest-v6.2.0.git"
+        BRANCH = "origin/develop"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "${BRANCH}", url: "${REPO}"
+            }
+        }
+
+        stage('Build with Docker Compose') {
+            steps {
+                sh '''
+                  docker-compose down || true
+                  docker-compose up --build --exit-code-from angular-build
+                '''
+            }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: 'dist/**', fingerprint: true
+            }
+        }
+    }
+}
+
