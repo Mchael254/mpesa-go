@@ -345,3 +345,18 @@ button:focus {
   padding-top: 0 !important;
 }
 
+th .sort-header {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+th .sort-header p-sortIcon {
+  margin-left: 4px;
+}
+.modal-backdrop {
+  display: none !important;
+}
+.modal {
+  background: transparent !important; 
+}
+
