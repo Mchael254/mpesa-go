@@ -15,11 +15,10 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                sshagent(credentials: ['github-ssh-key-id']) {
                     git branch: "${BRANCH}", url: "${REPO}"
                 }
             }
-        }
+       
 
         stage('Build with Docker Compose') {
             steps {
