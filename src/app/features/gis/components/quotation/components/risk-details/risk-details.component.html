@@ -1155,6 +1155,12 @@
                             (click)="setRiskTab('riskExcesses')"> {{'gis.quotation.excesses' | translate}}
                         </button>
                     </div>
+                    <div>
+                        <button class="btn btn-sm"
+                            [ngClass]="{'no-border-bottom': riskActiveTab === 'riskTaxes', 'text-primary border-0': riskActiveTab !== 'riskTaxes'}"
+                            (click)="setRiskTab('riskTaxes'); loadTaxDetails()"> Taxes
+                        </button>
+                    </div>
 
                 </div>
 
@@ -1208,6 +1214,19 @@
                             'pi-caret-down': !showSections
                             }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
                     </div>
+                     <div *ngIf="riskActiveTab === 'riskTaxes'">
+                        <button class="btn btn-primary btn-sm mb-1"   type="button"  (click)="handleAddTaxClick()">
+                            Add Tax
+                        </button>
+
+                        <i class="pi border border-black p-1 rounded-1 text-black mb-1" [ngClass]="{
+                            'pi-caret-up': showSections,
+                            'pi-caret-down': !showSections
+                            }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
+                    </div>
+
+
+
                 </div>
             </div>
         </div>
@@ -2131,6 +2150,338 @@
 
             <h1>{{'gis.quotation.commissions' | translate}}</h1>
         </div>
+
+  <!-- Add tax modal -->
+
+                <div *ngIf="showTaxModal" class="modal  d-block" tabindex="-1" role="dialog" style="background: transparent !important;">
+                  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                      <!-- Modal Header -->
+                      <div class="modal-header d-flex align-items-center no-border-header">
+                        <h5 class="modal-title text-primary">Add tax</h5>
+                        <button type="button" class="btn-close ms-auto" aria-label="Close"
+                          (click)="closeTaxModal()"></button>
+                      </div>
+
+                      <!-- Modal Body -->
+                      <div class="modal-body">
+                        <form [formGroup]="taxForm">
+                          <div class="row">
+                            <div class="col-md-6 mb-3">
+                              <label>Tax</label>
+                              <div class="position-relative" *ngIf="taxTypes && taxTypes.length">
+                                <input type="text" class="form-control form-control-sm"
+                                  [value]="taxForm.get('rateDescription')?.value" readonly />
+                                <div *ngIf="taxForm.get('tax')?.touched && taxForm.get('tax')?.invalid"
+                                  class="text-danger small">
+                                  Tax is required.
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                              <label>Tax type</label>
+                              <p-dropdown formControlName="taxType" [options]="taxTypes" optionLabel="label"
+                                optionValue="value" placeholder="Select tax type"
+                                class="w-100 p-inputtext-sm slim-dropdown" [showClear]="true" [filter]="true">
+                              </p-dropdown>
+                              <div *ngIf="taxForm.get('taxType')?.touched && taxForm.get('taxType')?.invalid"
+                                class="text-danger small">
+                                Tax type is required.
+                              </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                              <label>Transaction type</label>
+                              <p-dropdown formControlName="transactionType" [options]="transactionTypes"
+                                optionLabel="description" optionValue="code" placeholder=""
+                                class="w-100 p-inputtext-sm slim-dropdown" [showClear]="true" [filter]="true"
+                                filterBy="description">
+                              </p-dropdown>
+                              <div
+                                *ngIf="taxForm.get('transactionType')?.touched && taxForm.get('transactionType')?.invalid"
+                                class="text-danger small">
+                                Transaction type is required.
+                              </div>
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                              <label>Computation level</label><br />
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" formControlName="computationLevel"
+                                  value="Policy" />
+                                <label class="form-check-label">Policy</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" formControlName="computationLevel"
+                                  value="Risk" />
+                                <label class="form-check-label">Risk</label>
+                              </div>
+                              <div
+                                *ngIf="taxForm.get('computationLevel')?.touched && taxForm.get('computationLevel')?.invalid"
+                                class="text-danger small">
+                                Computation level is required.
+                              </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                              <label>Tax</label><br />
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" formControlName="taxMode" value="Rate" />
+                                <label class="form-check-label">Rate</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" formControlName="taxMode" value="Amount" />
+                                <label class="form-check-label">Amount</label>
+                              </div>
+                              <div *ngIf="taxForm.get('taxMode')?.touched && taxForm.get('taxMode')?.invalid"
+                                class="text-danger small">
+                                Tax mode is required.
+                              </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                              <label>Tax value</label>
+                              <input formControlName="taxValue" type="text" class="form-control form-control-sm" />
+                              <div *ngIf="taxForm.get('taxValue')?.touched && taxForm.get('taxValue')?.errors"
+                                class="text-danger small">
+                                <div *ngIf="taxForm.get('taxValue')?.errors['required']">Tax value is required.</div>
+                                <div *ngIf="taxForm.get('taxValue')?.errors['pattern']">Must be a valid number (e.g., 12
+                                  or 12.5).</div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                              <label>Override</label><br />
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" formControlName="override" value="Yes" />
+                                <label class="form-check-label">Yes</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" formControlName="override" value="No" />
+                                <label class="form-check-label">No</label>
+                              </div>
+                              <div *ngIf="taxForm.get('override')?.touched && taxForm.get('override')?.invalid"
+                                class="text-danger small">
+                                Override selection is required.
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+
+                      </div>
+
+                      <!-- Modal Footer -->
+                      <div class="modal-footer gap-3">
+                        <button type="button" class="btn btn-outline-primary" (click)="closeTaxModal()">
+                          Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" (click)="saveTax()">
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <!-- Edit Tax Modal -->
+                <div *ngIf="showEditTaxModal" class="modal  d-block" tabindex="-1" role="dialog" style="background: transparent !important;">
+                  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                      <!-- Modal Header -->
+                      <div class="modal-header">
+                        <h5 class="modal-title text-primary">Select tax</h5>
+                        <button type="button" class="btn-close" aria-label="Close"
+                          (click)="closeEditTaxModal()"></button>
+                      </div>
+
+                      <!-- Modal Body -->
+                      <div class="modal-body">
+                        <p-table [value]="taxes" #selectTaxTable selectionMode="single" [(selection)]="selectedTax"
+                          [tableStyle]="{  'width': '100%' }" [rows]="4" [paginator]="true"
+                          [rowsPerPageOptions]="[2, 4, 6]" [showCurrentPageReport]="true"
+                          currentPageReportTemplate="{first} - {last} of {totalRecords}" class="ui-datatable"
+                          responsiveLayout="scroll" [autoLayout]="true" scrollHeight="200px">
+                          <ng-template pTemplate="header">
+                            <tr>
+                              <th class="flexible-header" pSortableColumn="id">
+                                ID
+                                <p-sortIcon field="id"></p-sortIcon>
+                              </th>
+
+                              <th class="flexible-header" pSortableColumn="tax-description">
+                                Tax description
+                                <p-sortIcon field="tax-description"></p-sortIcon>
+                              </th>
+
+
+                            </tr>
+
+                          </ng-template>
+
+                          <ng-template pTemplate="body" let-data let-columns="columns" let-rowIndex="rowIndex">
+                            <ng-container *ngIf="rowIndex === 0">
+                              <tr>
+
+                                <td>
+                                  <input type="text" pInputText placeholder="" class="form-control w-70"
+                                    (input)="filterTable($event, 'taxCode', selectTaxTable)" />
+                                </td>
+                                <td>
+                                  <input type="text" pInputText placeholder="" class="form-control w-70"
+                                    (input)="filterTable($event, 'description', selectTaxTable)" />
+                                </td>
+
+
+                              </tr>
+                            </ng-container>
+                            <tr [pSelectableRow]="data">
+                              <td>{{ data.taxCode }}</td>
+
+                              <td>{{ data.description | sentenceCase }}</td>
+                            </tr>
+                          </ng-template>
+
+                           <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="3" class="text-center text-muted py-3">
+                          “No taxes found for this quotation.”
+                          </td>
+                          </tr>
+                          </ng-template>
+                        </p-table>
+                      </div> <!-- Modal Footer -->
+                      <div class="modal-footer gap-3">
+                        <button type="button" class="btn btn-outline-primary" (click)="closeEditTaxModal()">
+                          Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" (click)="handleNextClick()">
+                          Next
+                        </button>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TAXES -->
+                <div  *ngIf="riskActiveTab === 'riskTaxes'" role="tabpanel" #taxTable aria-labelledby="nav-taxes" tabindex="0"  [@slideInOut]="isClausesOpen ? 'open' : 'closed'">
+                  <p-table [value]="taxDetails"  class="ui-datatable"
+                    responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th pSortableColumn="taxType">
+                          Tax payer
+                          <p-sortIcon field="taxType"></p-sortIcon>
+                        </th>
+
+                        <th pSortableColumn="rateDescription">
+                          <span class="sort-header">
+    Short description
+    <p-sortIcon field="rateDescription"></p-sortIcon>
+  </span>
+                        </th>
+
+                        <th pSortableColumn="rateDescription">
+                    
+                                              <span class="sort-header">
+    Tax description
+    <p-sortIcon field="rateDescription"></p-sortIcon>
+  </span>
+                        </th>
+
+                        <th pSortableColumn="rate">
+                          Rate
+                          <p-sortIcon field="rate"></p-sortIcon>
+                        </th>
+
+                        <th pSortableColumn="taxAmount">
+                          Tax amount
+                          <p-sortIcon field="taxAmount"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="rateType">
+                          Rate type
+                          <p-sortIcon field="rateType"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="taxType">
+                          Tax type
+                          <p-sortIcon field="taxType"></p-sortIcon>
+                        </th>
+                        <th></th>
+                        <th></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-data let-columns="columns" let-rowIndex="rowIndex">
+                          <ng-container *ngIf="rowIndex === 0">
+                              <tr>
+
+                                <td>
+                                  <input type="text" pInputText placeholder="" class="form-control w-70"
+                                    (input)="filterTable($event, 'taxType', taxTable)" />
+                                </td>
+                                <td>
+                                  <input type="text" pInputText placeholder="" class="form-control w-70"
+                                    (input)="filterTable($event, 'rateDescription', taxTable)" />
+                                </td>
+                                <td>
+                                  <input type="text" pInputText placeholder="" class="form-control w-70"
+                                    (input)="filterTable($event, 'rateDescription', taxTable)" />
+                                </td>
+                                <td>
+                                  <input type="text" pInputText placeholder="" class="form-control w-70"
+                                    (input)="filterTable($event, 'rate', taxTable)" />
+                                </td>
+                                <td>
+                                  <input type="text" pInputText placeholder="" class="form-control w-70"
+                                    (input)="filterTable($event, 'taxAmount', taxTable)" />
+                                </td>
+                                <td>
+                                  <input type="text" pInputText placeholder="" class="form-control w-70"
+                                    (input)="filterTable($event, 'rateType', taxTable)" />
+                                </td>
+                                <td>
+                                  <input type="text" pInputText placeholder="" class="form-control w-70"
+                                    (input)="filterTable($event, 'taxType', taxTable)" />
+                                </td>
+                               
+
+
+                              </tr>
+                            </ng-container>
+                      <tr>
+                        <td>{{ data.taxType }}</td>
+                        <td>{{ data.rateDescription }}</td>
+                        <td>{{ data.rateDescription }}</td>
+                        <td>{{ data.rate }}</td>
+                        <td>{{ data.taxAmount }}</td>
+                        <td>{{data.rateType}}</td>
+                        <td>{{ data.taxType }}</td>
+                        
+                        <td>
+                          <button class="btn btn-sm text-primary me-2" (click)="openTaxModal(data)">
+                            Edit
+                          </button>
+                          <button class="btn btn-sm text-primary" (click)="deleteTaxes(data)">
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="9" class="text-center text-muted py-3">
+                          “No taxes. Click on ‘Add Tax’ to add a new tax.”
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+
+
 
         <!-- excesses table -->
         <div *ngIf="riskActiveTab === 'riskExcesses'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
