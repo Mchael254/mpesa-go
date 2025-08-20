@@ -9,7 +9,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: "${BRANCH}", url: "${REPO}"
+                sshagent(credentials: ['github-ssh-key-id']) {
+                    git branch: "${BRANCH}", url: "${REPO}"
+                }
             }
         }
 
