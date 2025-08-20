@@ -17,7 +17,7 @@ import { VehicleModelService } from '../../../setups/services/vehicle-model/vehi
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, CreateLimitsOfLiability, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab } from '../../data/quotationsDTO';
+import { Clause, CreateLimitsOfLiability, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab, TaxInformation, TaxPayload } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
@@ -70,6 +70,7 @@ export class RiskDetailsComponent {
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
   @ViewChild('perilsModal') perilsModal!: ElementRef;
   @ViewChild('choosePerilsModal') choosePerilsModal!: ElementRef;
+  @ViewChild('taxTable') taxTable!:Table;
 
   private modals: { [key: string]: bootstrap.Modal } = {};
 
@@ -302,6 +303,15 @@ export class RiskDetailsComponent {
   editingPeril: any = null;
   isPerilEditMode: boolean = false;
   perilToDelete: any;
+  taxes: any;
+  showEditTaxModal: any;
+  selectedTax: any = null;
+  transactionTypes: any[] = [];
+  isEditingTax: boolean = false;
+  taxForm: FormGroup;
+  showTaxModal = false;
+   quotationView: QuotationDetails;
+   taxDetails: TaxInformation[]=[];
 
 
 
@@ -372,6 +382,8 @@ export class RiskDetailsComponent {
     }
     this.loadPersistedRiskClauses();
     this.loadLimitsOfLiability();
+    this.createTaxForm();
+    
 
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
@@ -404,6 +416,7 @@ export class RiskDetailsComponent {
 
     // this.clientCode = Number(sessionStorage.getItem('insuredCode'))
     this.loadAllClients();
+    this.getProductTaxes();
 
     // limits of liability persistence from session
     const savedLimits = sessionStorage.getItem('limitsOfLiability');
@@ -516,6 +529,13 @@ export class RiskDetailsComponent {
             this.loadClientDetails();
             this.loadAllClients();
           }
+             
+ ;
+
+
+
+
+
           this.passedCoverFromDate = this.quotationDetails.coverFrom
           this.passedCoverToDate = this.quotationDetails.coverTo
           log.debug("Selected Product code -fetching:", this.selectedProductCode)
@@ -528,8 +548,15 @@ export class RiskDetailsComponent {
           log.debug('risk details', this.riskDetails)
           const curentlySavedRisk = this.riskDetails?.find(risk => risk.code == this.quotationRiskCode) || this.riskDetails[0];
           log.debug('Currently saved Risk:', curentlySavedRisk)
+
+      // ✅ Tax Information
+      this.taxDetails = productDetails?.taxInformation || [];
+      log.debug("tax details", this.taxDetails)
+          
           curentlySavedRisk && this.handleRowClick(curentlySavedRisk)
           log.debug("Risk information specific to the selected product:", this.riskDetails)
+          
+
           log.debug("Schedule information specific to the selected product:", this.scheduleList)
           if (this.scheduleList[0]?.details?.level2) {
             this.showOtherSscheduleDetails = true;
@@ -4679,4 +4706,409 @@ export class RiskDetailsComponent {
 
     return schedulePayloadL2;
   }
+
+ createTaxForm() {
+    this.taxForm = this.fb.group({
+      tax: ['', Validators.required],
+      taxType: ['', Validators.required],
+      transactionType: ['', Validators.required],
+      computationLevel: ['', Validators.required],
+      taxMode: ['', Validators.required],
+      taxValue: ['', [Validators.required, Validators.pattern(/^\d+(\.\d+)?$/)]],
+      override: ['', Validators.required],
+      rateDescription: ['', Validators.required],
+      tracTrntCode: ['', Validators.required],
+      rateType: ['', Validators.required]
+    });
+  }
+
+  openEditTaxModal() {
+    if (!this.selectedProduct) {
+      this.globalMessagingService.displayErrorMessage('Missing Product', 'Please select a product before editing tax.');
+      return;
+    }
+    this.showEditTaxModal = true;
+  }
+
+  closeEditTaxModal() {
+    this.showEditTaxModal = false;
+  }
+  getQuotationDetails(code:any){
+    this.quotationService.getQuotationDetails(code).pipe(
+            untilDestroyed(this)
+          )
+          .subscribe((res: any) => {
+            this.quotationView = res;})
+
+  }
+
+
+ 
+
+
+
+  filterTable(event: Event, field: string, tableRef: any) {
+    const input = (event.target as HTMLInputElement).value;
+    tableRef.filter(input, field, 'contains');
+  }
+
+
+
+  getProductTaxes() {
+    this.taxes = [];
+    log.debug('getProductTaxes has been called ', this.selectedProduct)
+    const productCode = this.selectedProduct.productCode
+    const subClassCode = this.selectedProduct.riskInformation[0].subclassCode
+    if (productCode && subClassCode) {
+      this.quotationService.getTaxes(productCode, subClassCode).subscribe(res => {
+
+        this.taxes = res._embedded;
+        log.debug('Taxes', this.taxes)
+      });
+    } else {
+      console.warn("Missing productCode or subClassCode for a risk:",);
+    }
+
+
+  }
+
+
+
+
+    getTransactionTypes() {
+  
+      this.quotationService.getTransactionTypes().subscribe({
+        next: (response) => {
+          this.transactionTypes = response || [];
+  
+          log.debug('transactionTypes', this.transactionTypes)
+        },
+        error: (error) => {
+          log.error('Error fetching transaction types:', error);
+        }
+      })
+  
+    }
+  
+  
+    addTax() {
+  
+      Object.keys(this.taxForm.controls).forEach(field => {
+        const control = this.taxForm.get(field);
+        control?.markAsTouched({ onlySelf: true });
+      });
+  
+      if (this.taxForm.invalid || !this.selectedProduct) {
+        this.globalMessagingService.displayErrorMessage('Missing Info', 'Please complete the form before submitting');
+        return;
+      }
+  
+      const formValues = this.taxForm.value;
+  
+      const payload: TaxPayload = {
+        code: 0,
+        rateDescription: formValues.rateDescription,
+        rate: parseFloat(formValues.taxValue),
+        rateType: formValues.rateType,
+        taxAmount: 0,
+        productCode: this.selectedProduct.productCode,
+        quotationCode: Number(this.quotationCode),
+        transactionCode: formValues.tracTrntCode,
+        renewalEndorsement: '',
+        taxRateCode: formValues.taxRateCode,
+        levelCode: formValues.computationLevel,
+        taxType: formValues.taxType,
+        riskProductLevel: ''
+      };
+  
+      log.debug('Payload to add:', payload);
+      log.debug('quotationCode', this.quotationCode)
+      const quotationCode = Number(this.quotationCode)
+  
+      this.quotationService.addTaxes(quotationCode, this.selectedProduct.code, [payload]).subscribe({
+        next: (res) => {
+          res && this.fetchQuotationDetails(quotationCode);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Tax added successfully');
+          this.showTaxModal = false;
+          this.taxForm.reset();
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add tax');
+        }
+      });
+  
+    }
+
+
+  openTaxModal(tax?: any, forceAddMode = false) {
+    
+    if (!this.selectedProduct) {
+      this.globalMessagingService.displayErrorMessage('Missing Product', 'Please select a product before adding tax.');
+      return;
+    }
+
+
+
+  
+  if (!this.taxes || this.taxes.length === 0) {
+    console.log('Loading taxes first...');
+    this.getProductTaxes();
+    
+    
+    setTimeout(() => {
+      if (this.taxes && this.taxes.length > 0) {
+        
+        this.openTaxModal(tax, forceAddMode); 
+      } else {
+        console.log('Failed to load taxes');
+        this.globalMessagingService.displayErrorMessage(
+          'Loading Error', 
+          'Failed to load tax list. Please try again.'
+        );
+      }
+    }, 500); 
+    return;
+  }
+
+
+    this.selectedTax = tax || null;
+
+    this.isEditingTax = !forceAddMode && !!(tax && tax.code);
+
+
+
+
+
+    this.taxes.forEach(t => {
+      log.debug(`Checking against tax list item:`, t);
+      log.debug('t.code:', t.code, '| t.taxCode:', t.taxCode, '| t.description:', t.description);
+    });
+
+    let selectedTaxFromList: any = null;
+
+    if (tax?.rateType) {
+      selectedTaxFromList = this.taxes.find(t => t.taxCode === tax.rateType);
+    }
+
+    if (!selectedTaxFromList && tax?.rateDescription) {
+      selectedTaxFromList = this.taxes.find(t => t.description === tax.rateDescription);
+    }
+
+    if (!selectedTaxFromList) {
+      
+      this.globalMessagingService.displayErrorMessage(
+        'Tax Match Failed',
+        'Could not match this tax with master tax list. Please check tax setup.'
+      );
+      return;
+    }
+
+
+    const selectedTransactionType = this.transactionTypes.find(
+      tx => tx.code === selectedTaxFromList?.transactionType
+    );
+    const selectedTaxType = this.taxTypes.find(
+      type => type.value === selectedTaxFromList?.taxRateType
+    );
+
+    log.debug('SelectedTaxCode:', selectedTaxFromList?.code);
+    log.debug('SelectedTaxFromList:', selectedTaxFromList);
+  
+    const taxTypeValue = selectedTaxFromList.taxRateType || '';
+    if (taxTypeValue && !this.taxTypes.find(t => t.value === taxTypeValue)) {
+      this.taxTypes.unshift({
+        label: tax?.taxType || taxTypeValue,
+        value: taxTypeValue,
+      });
+    }
+
+
+    const transactionCode = selectedTaxFromList.transactionType || '';
+    if (transactionCode && !this.transactionTypes.find(t => t.code === transactionCode)) {
+      this.transactionTypes.unshift({
+        code: transactionCode,
+        description: tax?.transactionType || transactionCode,
+      });
+    }
+    const tracTrntCodeValue = selectedTaxFromList?.code || tax?.code;
+
+
+    if (this.isEditingTax && tax) {
+
+
+      // EDIT MODE
+
+      this.taxForm.patchValue({
+        tax: tax?.code || selectedTaxFromList?.code || '',
+        taxType: tax?.taxType || selectedTaxFromList?.taxRateType || '',
+        transactionType: tax?.transactionType || selectedTaxFromList?.transactionType || '',
+        computationLevel: tax?.computationLevel || '',
+        taxMode: tax?.taxMode || '',
+        taxValue: tax?.taxValue || tax?.taxRate || selectedTaxFromList?.taxRate || '',
+        override: tax?.override || '',
+        rateDescription: tax?.rateDescription || selectedTaxFromList?.description || '',
+        taxRateCode: tax?.taxRateCode || '',
+        tracTrntCode: tracTrntCodeValue || '',
+        rateType: tax?.rateType || selectedTaxFromList?.taxCode || ''
+      });
+
+    } else {
+      // ADD MODE
+      this.taxForm.patchValue({
+        tax: selectedTaxFromList?.code || '',
+        taxType: selectedTaxFromList.taxRateType || '',
+        transactionType: selectedTaxFromList.transactionType || '',
+        computationLevel: '',
+        taxMode: '',
+        taxValue: tax?.taxRate || '',
+        override: '',
+        rateDescription: tax?.description || '',
+        taxRateCode: selectedTaxFromList?.taxCode,
+        tracTrntCode: tracTrntCodeValue || 'DEFAULT_CODE',
+        rateType: selectedTaxFromList?.taxCode
+      });
+    }
+
+
+
+    
+
+    this.showTaxModal = true;
+  }
+
+  handleNextClick() {
+    if (!this.selectedTax) {
+      this.globalMessagingService.displayErrorMessage('Selection Required', 'Please select a tax to proceed');
+      return;
+    }
+
+    const selected = this.selectedTax;
+
+    this.closeEditTaxModal();
+    this.openTaxModal({ description: selected.description, taxRate: selected.taxRate, rateType: selected.taxCode });
+  }
+
+
+  closeTaxModal() {
+    this.showTaxModal = false;
+  }
+
+  taxTypes = [
+    { label: 'UW Tax', value: 'UW Tax' },
+    { label: 'U/W Comm WHTX', value: 'U/W Comm WHTX' },
+    { label: 'Premium Tax', value: 'Premium Tax' },
+    { label: 'Service Fee', value: 'Service Fee' },
+    { label: 'Stamp Duty', value: 'Stamp Duty' },
+    { label: 'Extras', value: 'Extras' },
+    { label: 'PolicyHolder Fund', value: 'PolicyHolder Fund' },
+  ];
+
+  
+    updateTax() {
+      const formValue = this.taxForm.value;
+  
+      const payload: TaxPayload = {
+        code: this.selectedTax.code,
+        rateDescription: formValue.rateDescription,
+        rate: parseFloat(formValue.taxValue),
+        rateType: formValue.rateType,
+        taxAmount: 0,
+        productCode: this.selectedProduct.productCode,
+        quotationCode: Number(this.quotationCode),
+        transactionCode: formValue.tracTrntCode,
+        renewalEndorsement: '',
+        taxRateCode: formValue.taxRateCode,
+        levelCode: formValue.computationLevel,
+        taxType: formValue.taxType,
+        riskProductLevel: '',
+      };
+      log.debug('Payload to update:', payload);
+  
+  
+      this.quotationService.updateTaxes(payload).subscribe({
+        next: (res) => {
+          res && this.fetchQuotationDetails(this.quotationCode);
+          console.log('Tax updated successfully:', res);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Tax updated successfully');
+          this.taxForm.reset();
+          this.showTaxModal = false;
+        },
+        error: (err) => {
+          console.error('Error updating tax:', err);
+          this.globalMessagingService.displayErrorMessage('Error', err?.error?.message || 'Failed to update tax');
+        }
+      });
+    }
+  
+    saveTax() {
+      Object.values(this.taxForm.controls).forEach(control => {
+        control.markAsTouched();
+        control.updateValueAndValidity();
+      });
+      if (!this.taxForm.valid) {
+        this.globalMessagingService.displayErrorMessage('Missing Info', 'Please complete the form before submitting');
+        return;
+      }
+  
+      if (this.isEditingTax) {
+        this.updateTax();
+      } else {
+        this.addTax();
+      }
+    }
+  
+  
+
+handleAddTaxClick() {
+  this.openEditTaxModal();
+  this.getTransactionTypes();
+  if (this.selectedProduct?.code) {
+    this.getProductTaxes();
+  }
+}
+loadTaxDetails() {
+  if (!this.selectedProduct) {
+    log.debug('[RiskDetailsComponent] No product selected, cannot load tax details.');
+    return;
+  }
+
+  if (!this.quotationView || !this.quotationView.quotationProducts) {
+    log.debug('[RiskDetailsComponent] Quotation view or products not loaded yet.');
+    return;
+  }
+
+  const quotationProductCode = this.selectedProduct.code;
+  log.debug("[RiskDetailsComponent] Loading Tax Details for product quotation code:", quotationProductCode);
+
+  const matchingProduct = this.quotationView.quotationProducts.find(
+    (product: any) => product.code === quotationProductCode
+  );
+
+  if (matchingProduct) {
+    this.taxDetails = matchingProduct.taxInformation;
+    log.debug("Tax Details:", this.taxDetails);
+  } else {
+    log.debug("No matching product found for code:", quotationProductCode);
+  }
+}
+
+deleteTaxes(tax: any) {
+   
+
+  this.quotationService.deleteProductTaxes(tax.code).subscribe({
+    next: (res) => {
+      this.globalMessagingService.displaySuccessMessage('Success', 'Tax successfully deleted');
+      this.loadTaxDetails() 
+      this.fetchQuotationDetails(this.quotationCode)     
+    },
+    error: (err) => {
+      console.error('Delete failed:', err);           
+    }
+  });
+}
+
+
+
+
+
 }
