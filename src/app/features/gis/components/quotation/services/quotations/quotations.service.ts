@@ -694,6 +694,16 @@ getRiskLimitsOfLiability(
 }
 
 
+deleteProductTaxes(taxCode: number): Observable<any> {
+  return this.api.DELETE<any>(
+    `v2/taxes?qptCode=${taxCode}`,
+    API_CONFIG.GIS_QUOTATION_BASE_URL
+  );
+}
+
+
+
+
 // getExcessAndComments(
 //   subClassCode: number,
 //   quotationProductCode: number
