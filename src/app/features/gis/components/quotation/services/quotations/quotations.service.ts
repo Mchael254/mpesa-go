@@ -673,45 +673,45 @@ export class QuotationsService {
     );
   }
 
-getRiskLimitsOfLiability(
-  subClassCode: number,
-  quotationProductCode: number,
-  scheduleType: 'L' | 'E'
-): Observable<any> {
-  const paramsObj: { [param: string]: string } = {
-    subclassCode: subClassCode.toString(),
-    quotationProductCode: quotationProductCode.toString(),
-    scheduleType: scheduleType
-  };
+  getRiskLimitsOfLiability(
+    subClassCode: number,
+    quotationProductCode: number,
+    scheduleType: 'L' | 'E'
+  ): Observable<any> {
+    const paramsObj: { [param: string]: string } = {
+      subclassCode: subClassCode.toString(),
+      quotationProductCode: quotationProductCode.toString(),
+      scheduleType: scheduleType
+    };
 
-  const params = new HttpParams({ fromObject: paramsObj });
+    const params = new HttpParams({ fromObject: paramsObj });
 
-  return this.api.GET<any>(
-    `v2/limits-of-liability`,
-    API_CONFIG.GIS_QUOTATION_BASE_URL,
-    params
-  );
-}
+    return this.api.GET<any>(
+      `v2/limits-of-liability`,
+      API_CONFIG.GIS_QUOTATION_BASE_URL,
+      params
+    );
+  }
 
 
-// getExcessAndComments(
-//   subClassCode: number,
-//   quotationProductCode: number
-// ): Observable<any> {
-//   const paramsObj: { [param: string]: string } = {
-//     subclassCode: subClassCode.toString(),
-//     quotationProductCode: quotationProductCode.toString(),
-//     scheduleType: 'E'
-//   };
+  // getExcessAndComments(
+  //   subClassCode: number,
+  //   quotationProductCode: number
+  // ): Observable<any> {
+  //   const paramsObj: { [param: string]: string } = {
+  //     subclassCode: subClassCode.toString(),
+  //     quotationProductCode: quotationProductCode.toString(),
+  //     scheduleType: 'E'
+  //   };
 
-//   const params = new HttpParams({ fromObject: paramsObj });
+  //   const params = new HttpParams({ fromObject: paramsObj });
 
-//   return this.api.GET<any>(
-//     `v2/limits-of-liability`,
-//     API_CONFIG.GIS_QUOTATION_BASE_URL,
-//     params
-//   );
-// }
+  //   return this.api.GET<any>(
+  //     `v2/limits-of-liability`,
+  //     API_CONFIG.GIS_QUOTATION_BASE_URL,
+  //     params
+  //   );
+  // }
 
 
 
@@ -730,6 +730,7 @@ getRiskLimitsOfLiability(
 
   }
 
+  //excesses
   getExcesses(
     subclassCode: number,
     scheduleType: string = 'E'
@@ -750,9 +751,26 @@ getRiskLimitsOfLiability(
     return this.api.POST<any>(`v2/limits-of-liability${queryParam}`, JSON.stringify(excessesPayload), API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
+  getAddedExcesses(subclassCode: number, quotationProductCode: number, scheduleType: string = 'E'): Observable<any> {
+    const params = new HttpParams()
+      .set('subclassCode', subclassCode.toString())
+      .set('quotationProductCode', quotationProductCode.toString())
+      .set('scheduleType', scheduleType);
+    return this.api.GET<any>(`v2/limits-of-liability?${params.toString()}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
   addLimitsOfLiability(newQpCode: number, limitPayload: CreateLimitsOfLiability[]): Observable<any> {
     const queryParam = `?newQpCode=${newQpCode}`;
     return this.api.POST<any>(`v2/limits-of-liability${queryParam}`, JSON.stringify(limitPayload), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+  getAddedLimitsOfLiability(subclassCode: number, quotationProductCode: number, scheduleType: 'L'): Observable<any> {
+    const params = new HttpParams()
+      .set('subclassCode', subclassCode.toString())
+      .set('quotationProductCode', quotationProductCode.toString())
+      .set('scheduleType', scheduleType);
+
+    return this.api.GET<any>(`v2/limits-of-liability?${params.toString()}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
   addClauses(
@@ -998,6 +1016,10 @@ getRiskLimitsOfLiability(
       retry(1),
       catchError(this.errorHandl)
     );
+  }
+
+  getAddedRiskClauses(riskCode: string | number): Observable<any> {
+    return this.api.GET<any>(`v2/quotation-risk-clauses?riskCode=${riskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
   editRiskClause(payload: riskClause): Observable<any> {

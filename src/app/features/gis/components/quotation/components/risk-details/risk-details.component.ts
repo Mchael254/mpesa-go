@@ -362,16 +362,23 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
-    this.quotationRiskCode = sessionStorage.getItem('selectedRiskCode')
-    this.initializePerilDetails();
-    this.initializePerils();
+    this.quotationRiskCode = sessionStorage.getItem('selectedRiskCode');
+    this.quotationCode = sessionStorage.getItem('quotationCode');
+    this.fetchQuotationDetails(this.quotationCode);
+    this.quoteProductCode = sessionStorage.getItem('selectedProductCode');
     const savedSubclass = sessionStorage.getItem('selectedSubclassCode');
     if (savedSubclass) {
       this.selectedSubclassCode = savedSubclass;
       this.loadExcesses();
     }
+
+    this.initializePerilDetails();
+    this.initializePerils();
+    this.loadAddedClauses();
+    this.getAddedExcesses();
     this.loadPersistedRiskClauses();
     this.loadLimitsOfLiability();
+    this.getAddedLimitsOfLiability();
 
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
@@ -2861,6 +2868,20 @@ export class RiskDetailsComponent {
   }
 
   //risk clauses
+  addedClauses: any
+  loadAddedClauses(): void {
+    const riskCode = this.quotationRiskCode
+    this.quotationService.getAddedRiskClauses(riskCode).subscribe({
+      next: (res) => {
+        log.debug('addedRiskClauses', res?._embedded || res || []);
+        this.addedClauses = res?._embedded || res || [];
+      },
+      error: (err) => {
+        log.debug('Error fetching risk clauses', err);
+      }
+    });
+  }
+
   loadSubclassClauses(code: any) {
     if (!code) {
       log.debug("Missing subclass code, skipping clause loading.");
@@ -3698,27 +3719,22 @@ export class RiskDetailsComponent {
     const sessionKey = `availableLimitsOfLiability_${subclassCode}`;
     const savedAvailable = sessionStorage.getItem(sessionKey);
 
-    // Restore added limits map (from session) for all subclasses
     const savedLimits = sessionStorage.getItem('limitsOfLiability');
     if (savedLimits) {
       this.allLimitsMap = JSON.parse(savedLimits);
       const allPersisted = Object.values(this.allLimitsMap).flat();
       this.addedLimitsOfLiability = [...allPersisted];
-      // log.debug("Restored added limits from session:", this.addedLimitsOfLiability);
     } else {
       this.allLimitsMap = {};
     }
 
-    // Load available limits from session or fetch
     if (savedAvailable) {
       this.limitsOfLiability = JSON.parse(savedAvailable);
-      // log.debug(`Loaded limits for subclass ${subclassCode} from session:`, this.limitsOfLiability);
     } else {
       this.quotationService.getLimitsOfLiability(subclassCode, 'L').subscribe({
         next: (data) => {
           this.limitsOfLiability = data?._embedded || [];
           sessionStorage.setItem(sessionKey, JSON.stringify(this.limitsOfLiability));
-          // log.debug(`Fetched limits for subclass ${subclassCode} from API:`, this.limitsOfLiability);
         },
         error: (err) => {
           log.error(`Failed to fetch limits for subclass ${subclassCode}:`, err);
@@ -3756,12 +3772,12 @@ export class RiskDetailsComponent {
     log.debug("newQpCode", newQpCode)
     const subclassCode = this.selectedRisk?.subclassCode;
     if (!subclassCode) {
-      console.error('Subclass code is missing');
+      log.debug('Subclass code is missing');
       return;
     }
 
     const limitsPayload: CreateLimitsOfLiability[] = this.selectedRiskLimits.map(limit => ({
-      scheduleValueCode: limit.quotationValueCode,
+      scheduleValueCode: limit.code,
       value: this.cleanCurrencyValue(limit.value),
       narration: limit.narration,
       type: 'L'
@@ -3770,6 +3786,7 @@ export class RiskDetailsComponent {
     this.quotationService.addLimitsOfLiability(newQpCode, limitsPayload).subscribe({
       next: () => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Limits of liability added successfully');
+        this.getAddedLimitsOfLiability();
 
         const updatedLimits = this.selectedRiskLimits.map(limit => ({
           ...limit,
@@ -3800,9 +3817,32 @@ export class RiskDetailsComponent {
         this.selectedRiskLimits = [];
       },
       error: (err) => {
-        console.error('Error adding limits of liability', err);
+        log.debug('Error adding limits of liability', err);
       }
     });
+  }
+
+  getAddedLimitsOfLiability(): void {
+    const productDetails = this.quotationDetails.quotationProducts.find(
+      product => product.productCode === this.selectedProductCode
+    )
+    this.quoteProductCode = productDetails.code;
+    if (!this.selectedSubclassCode || !this.quoteProductCode) {
+      log.debug('Subclass code or quote product code missing');
+      return;
+    }
+
+    this.quotationService
+      .getAddedLimitsOfLiability(this.selectedSubclassCode, this.quoteProductCode, 'L')
+      .subscribe({
+        next: (res) => {
+          log.debug('LimitLiability', res);
+          this.addedLimitsOfLiability = res?._embedded || res || [];
+        },
+        error: (err) => {
+          log.debug('Error fetching limits of liability (L):', err);
+        },
+      });
   }
 
   cleanCurrencyValue(value: string): string {
@@ -3886,9 +3926,8 @@ export class RiskDetailsComponent {
       return;
     }
 
-
     const excessesPayload: CreateLimitsOfLiability[] = this.selectedExcessess.map(limit => ({
-      scheduleValueCode: limit.quotationValueCode,
+      scheduleValueCode: limit.code,
       value: this.cleanCurrencyValue(limit.value),
       narration: limit.narration,
       type: 'E'
@@ -3897,6 +3936,7 @@ export class RiskDetailsComponent {
     this.quotationService.addExcesses(newQpCode, excessesPayload).subscribe({
       next: () => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Excesses added successfully');
+        this.getAddedExcesses();
 
         const updatedExcesses = this.selectedExcessess.map(limit => ({
           ...limit,
@@ -3933,6 +3973,26 @@ export class RiskDetailsComponent {
         this.globalMessagingService.displayErrorMessage("Error", "Error adding Excesses");
       }
     });
+  }
+
+  getAddedExcesses(): void {
+    if (!this.selectedSubclassCode || !this.quoteProductCode) {
+      log.debug('Subclass code or quote product code missing');
+      return;
+    }
+
+    this.quotationService
+      .getAddedExcesses(this.selectedSubclassCode, this.quoteProductCode)
+      .subscribe({
+        next: (res) => {
+          this.excessesData = res?._embedded || [];
+          log.debug('addedExcesses', this.excessesData);
+        },
+        error: (err) => {
+          log.debug('Error fetching limits of liability', err);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liability');
+        },
+      });
   }
 
   //Perils
