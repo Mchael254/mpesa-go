@@ -694,15 +694,25 @@ export class QuotationsService {
   }
 
 
-  // getExcessAndComments(
-  //   subClassCode: number,
-  //   quotationProductCode: number
-  // ): Observable<any> {
-  //   const paramsObj: { [param: string]: string } = {
-  //     subclassCode: subClassCode.toString(),
-  //     quotationProductCode: quotationProductCode.toString(),
-  //     scheduleType: 'E'
-  //   };
+deleteProductTaxes(taxCode: number): Observable<any> {
+  return this.api.DELETE<any>(
+    `v2/taxes?qptCode=${taxCode}`,
+    API_CONFIG.GIS_QUOTATION_BASE_URL
+  );
+}
+
+
+
+
+// getExcessAndComments(
+//   subClassCode: number,
+//   quotationProductCode: number
+// ): Observable<any> {
+//   const paramsObj: { [param: string]: string } = {
+//     subclassCode: subClassCode.toString(),
+//     quotationProductCode: quotationProductCode.toString(),
+//     scheduleType: 'E'
+//   };
 
   //   const params = new HttpParams({ fromObject: paramsObj });
 
