@@ -2384,20 +2384,19 @@
             </div>
         </div>
 
-        <!-- TAXES -->
-        <div *ngIf="riskActiveTab === 'riskTaxes'" role="tabpanel" #taxTable aria-labelledby="nav-taxes" tabindex="0"
-            [@slideInOut]="isClausesOpen ? 'open' : 'closed'">
-            <p-table [value]="taxDetails" class="ui-datatable" responsiveLayout="scroll" [autoLayout]="true"
-                [scrollable]="true" scrollHeight="200px">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th pSortableColumn="taxType">
+                <!-- TAXES -->
+                <div  *ngIf="riskActiveTab === 'riskTaxes'" role="tabpanel"  aria-labelledby="nav-taxes" tabindex="0"  [@slideInOut]="isClausesOpen ? 'open' : 'closed'">
+                  <p-table [value]="taxDetails" #taxTable  class="ui-datatable"
+                    responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
+                    <ng-template pTemplate="header">
+                      <tr>
+                    
                         <th class="flexible-header" pSortableColumn="taxType">
                             Tax payer
                             <p-sortIcon field="taxType"></p-sortIcon>
                         </th>
 
-                        <th pSortableColumn="rateDescription">
+                        
                         <th class="flexible-header" pSortableColumn="rateDescription">
                             <span class="sort-header">
                                 Short description
@@ -2405,7 +2404,7 @@
                             </span>
                         </th>
 
-                        <th pSortableColumn="rateDescription">
+                        
                         <th class="flexible-header" pSortableColumn="rateDescription">
 
                             <span class="sort-header">
@@ -2414,7 +2413,7 @@
                             </span>
                         </th>
 
-                        <th pSortableColumn="rate">
+                        
                         <th class="flexible-header" pSortableColumn="rate">
                             Rate
                             <p-sortIcon field="rate"></p-sortIcon>
@@ -2471,24 +2470,24 @@
                             <td></td>
 
 
-                        </tr>
-                    </ng-container>
-                    <tr>
-                        <td class="flexible-header">{{ data.taxType }}</td>
-                        <td class="flexible-header">{{ data.rateType }}</td>
-                        <td class="flexible-header">{{ data.rateDescription |sentenceCase }}</td>
-                        <td class="flexible-header">{{ data.rate }}</td>
-                        <td class="flexible-header">{{ data.taxAmount }}</td>
-                        <td class="flexible-header">{{data.rateType}}</td>
-                        <td class="flexible-header">{{ data.taxType }}</td>
-
-                        <td class="flexible-header">
-                            <button class="btn btn-sm text-primary me-2" (click)="openTaxModal(data)">
-                                Edit
-                            </button>
-                            <button class="btn btn-sm text-primary" (click)="deleteTaxes(data)">
-                                Delete
-                            </button>
+                              </tr>
+                            </ng-container>
+                      <tr [pSelectableRow]="data">
+                        <td>{{ data.taxType }}</td>
+                        <td>{{ data.rateDescription }}</td>
+                        <td>{{ data.rateDescription }}</td>
+                        <td>{{ data.rate }}</td>
+                        <td>{{ data.taxAmount }}</td>
+                        <td>{{data.rateType}}</td>
+                        <td>{{ data.taxType }}</td>
+                        
+                        <td class="d-flex align-items-center">
+                          <button class="btn btn-sm text-primary me-2" (click)="openTaxModal(data)">
+                            Edit
+                          </button>
+                          <button class="btn btn-sm text-primary" (click)="deleteTaxes(data)">
+                            Delete
+                          </button>
                         </td>
                     </tr>
                 </ng-template>
@@ -2502,26 +2501,7 @@
             </p-table>
         </div>
 
-        <td>
-            <button class="btn btn-sm text-primary me-2" (click)="openTaxModal(data)">
-                Edit
-            </button>
-            <button class="btn btn-sm text-primary" (click)="deleteTaxes(data)">
-                Delete
-            </button>
-        </td>
-        </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-            <tr>
-                <td colspan="9" class="text-center text-muted py-3">
-                    “No taxes. Click on ‘Add Tax’ to add a new tax.”
-                </td>
-            </tr>
-        </ng-template>
-        </p-table>
-    </div>
-
+     
 
     <!-- excesses table -->
     <div *ngIf="riskActiveTab === 'riskExcesses'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'" class="mt-2 w-100">

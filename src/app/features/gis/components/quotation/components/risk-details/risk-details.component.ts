@@ -4948,15 +4948,7 @@ export class RiskDetailsComponent {
   closeEditTaxModal() {
     this.showEditTaxModal = false;
   }
-  getQuotationDetails(code: any) {
-    this.quotationService.getQuotationDetails(code).pipe(
-      untilDestroyed(this)
-    )
-      .subscribe((res: any) => {
-        this.quotationView = res;
-      })
-
-  }
+ 
 
 
 
