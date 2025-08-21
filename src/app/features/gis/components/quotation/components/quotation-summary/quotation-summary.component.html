@@ -1131,8 +1131,8 @@
                     </tr>
 
                     <tr>
-                      <td>{{ data.description }}</td>
-                      <td>{{ data.excess }}</td>
+                      <td>{{ data.narration }}</td>
+                      <td>{{ data.value }}</td>
                       <td></td>
                       <td></td>
                     </tr>
@@ -1454,9 +1454,13 @@
         <!-- Right-side Authorize button with tooltip -->
         <span [attr.title]="exceptionsData?.length > 0 ? 'Please resolve exceptions' : null"
           style="display: inline-block;">
-          <button type="button" class="btn btn-outline-primary" [disabled]="exceptionsData?.length > 0">
+          <!-- <button type="button" class="btn btn-outline-primary" [disabled]="exceptionsData?.length > 0">
+            Authorize quote
+          </button> -->
+          <button type="button" class="btn btn-outline-primary" disabled tooltip="Authorize exceptions first">
             Authorize quote
           </button>
+
         </span>
       </div>
 
