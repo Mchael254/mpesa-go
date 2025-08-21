@@ -63,7 +63,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
   @ViewChild('productClauseTable') productClauseTable: any;
   @ViewChild('riskClausesTable') riskClausesTable: any;
-  
+
   private modals: { [key: string]: bootstrap.Modal } = {};
 
   steps = quoteStepsData;
@@ -183,11 +183,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   exceptionErrorMessage: string | null = null;
   limitsRiskofLiability: any;
   selectAll = false;
-  comments:any;
+  comments: any;
 
 
 
-  
+
 
 
   constructor(
@@ -296,9 +296,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.loadAllSubclass();
     // this.createSmsForm();
     // this.getDocumentTypes();
-    
+
     this.hasUnderwriterRights();
-  
+
 
 
     this.menuItems = [
@@ -392,7 +392,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
         this.user = this.quotationView.preparedBy;
-        log.debug('this user',this.user)
+        log.debug('this user', this.user)
         this.getExceptions(this.quotationView.code, this.user);
         if (!this.moreDetails) {
           this.quotationDetails = this.quotationView;
@@ -420,20 +420,20 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
         // Extract subclassCode and quotationProductCode
-      const firstProduct = this.quotationView.quotationProducts?.[0];
-      const firstRisk = firstProduct?.riskInformation?.[0];
-      const subclassCode = firstRisk?.subclassCode;
-      const quotationProductCode = firstRisk?.quotationProductCode;
+        const firstProduct = this.quotationView.quotationProducts?.[0];
+        const firstRisk = firstProduct?.riskInformation?.[0];
+        const subclassCode = firstRisk?.subclassCode;
+        const quotationProductCode = firstRisk?.quotationProductCode;
 
-      log.debug('Subclass Code:', subclassCode);
-      log.debug('Quotation Product Code:', quotationProductCode);
+        log.debug('Subclass Code:', subclassCode);
+        log.debug('Quotation Product Code:', quotationProductCode);
 
-      
-      if (subclassCode && quotationProductCode) {
-       
-      }
 
-    
+        if (subclassCode && quotationProductCode) {
+
+        }
+
+
 
 
         // Extract product details
@@ -522,30 +522,30 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     )
   }
 
-getSections(data: any) {
-  this.riskDetails.forEach((el: { code: any; sectionsDetails: any; scheduleDetails:ScheduleDetails }) => {
-    if (data === el.code) {
-      this.sections = el.sectionsDetails;
+  getSections(data: any) {
+    this.riskDetails.forEach((el: { code: any; sectionsDetails: any; scheduleDetails: ScheduleDetails }) => {
+      if (data === el.code) {
+        this.sections = el.sectionsDetails;
 
-      const details = el.scheduleDetails?.details || {};
-      this.availableScheduleLevels = Object.keys(details); // e.g., ['level1', 'level2']
+        const details = el.scheduleDetails?.details || {};
+        this.availableScheduleLevels = Object.keys(details); // e.g., ['level1', 'level2']
 
-      this.schedulesData = {};
-      this.availableScheduleLevels.forEach(level => {
-        const levelData = details[level];
-        this.schedulesData[level] = levelData ? [levelData] : [];
-      });
+        this.schedulesData = {};
+        this.availableScheduleLevels.forEach(level => {
+          const levelData = details[level];
+          this.schedulesData[level] = levelData ? [levelData] : [];
+        });
 
-      this.activeScheduleTab = this.availableScheduleLevels[0] || '';
-    }
-  });
+        this.activeScheduleTab = this.availableScheduleLevels[0] || '';
+      }
+    });
 
-  log.debug(this.schedulesData, 'schedulesData by level');
-  log.debug(this.sections, 'section Details');
-}
+    log.debug(this.schedulesData, 'schedulesData by level');
+    log.debug(this.sections, 'section Details');
+  }
   getCurrentSchedule() {
-  return this.schedulesData[this.activeScheduleTab] || [];
-}
+    return this.schedulesData[this.activeScheduleTab] || [];
+  }
 
   /**
    * Navigates to the edit details page.
@@ -801,7 +801,7 @@ getSections(data: any) {
       bcc: ['', Validators.required],
     });
   }
- 
+
 
 
 
@@ -960,9 +960,9 @@ getSections(data: any) {
     this.getSections(data.code);
     this.getExcesses(subclassCode);
     this.getRiskClauses(data.code);
-    this.getLimitsofLiability(quotationProductCode, subclassCode,'L');
-    this.getLimitsofLiability(quotationProductCode,subclassCode,'E')
-    
+    this.getLimitsofLiability(quotationProductCode, subclassCode, 'L');
+    this.getLimitsofLiability(quotationProductCode, subclassCode, 'E')
+
   }
 
   handleProductClick(data: QuotationProduct) {
@@ -1955,136 +1955,187 @@ getSections(data: any) {
     this.exceptionsData.forEach(e => (e.selected = this.selectAll));
   }
   logCheckbox(row: any) {
-  console.log('Selected row:', row);
-}
+    console.log('Selected row:', row);
+  }
 
 
-getExceptions(quotationCode:number,username:string){
+  getExceptions(quotationCode: number, username: string) {
 
-  this.quotationService.getExceptions(quotationCode,username).subscribe({
-    next:(res)=>{
-      log.debug('exceptions', res);
-        this.exceptionsData = res._embedded;
-        log.debug('exceptionData',this.exceptionsData)
-    },
-    error:(error)=>{
-      log.error('Error fetching exceptions:', error);
-        this.error = 'Something went wrong while fetching exceptions.';
-    }
-  })
-
-}
-
-
-
-getLimitsofLiability(subClassCode: number, quotationProductCode: number, scheduleType: 'L' | 'E') {
-  this.quotationService.getRiskLimitsOfLiability(subClassCode, quotationProductCode, scheduleType)
-    .subscribe({
+    this.quotationService.getExceptions(quotationCode, username).subscribe({
       next: (res) => {
-        log.debug(`limits of liability (${scheduleType})`, res);
-
-        if (scheduleType === 'L') {
-          this.limitsRiskofLiability = res._embedded;
-        } else {
-          this.excesses = res._embedded;
-          this.comments=res._embedded
-        }
+        log.debug('exceptions', res);
+        this.exceptionsData = res._embedded;
+        log.debug('exceptionData', this.exceptionsData)
       },
       error: (error) => {
-        log.error(`Error fetching limits of liability (${scheduleType}):`, error);
-        this.error = `Something went wrong while fetching limits of liability (${scheduleType})`;
+        log.error('Error fetching exceptions:', error);
+        this.error = 'Something went wrong while fetching exceptions.';
       }
-    });
-}
+    })
 
-
-// getExcessAndComments(subClassCode: number, quotationProductCode: number) {
-//   this.quotationService.getExcessAndComments(subClassCode, quotationProductCode)
-//     .subscribe({
-//       next: (res) => {
-//         log.debug('Excess and Comments', res);
-//         this.excesses = res._embedded;
-//         this.comments = res._embedded;
-//       },
-//       error: (error) => {
-//         log.error('Error fetching excess and comments:', error);
-//         this.error = 'Something went wrong while fetching excess and comments';
-//       }
-//     });
-// }
-authorizeSelectedExceptions(): void {
-  const selected = this.exceptionsData?.filter(ex => ex.selected);
-
-  if (!selected || selected.length === 0) {
-  
-    this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
-    return;
   }
 
 
-  
-if (this.hasUnderwriterRights()) {
-  
-  log.debug('Quotation status:', this.quotationView.status);
 
-  if (this.quotationView.status === 'AUTHORISED') {
-    this.globalMessagingService.displayInfoMessage(
-      'Info',
-      'This quotation is already authorised'
-    );
-    return; 
-  }
+  getLimitsofLiability(subClassCode: number, quotationProductCode: number, scheduleType: 'L' | 'E') {
+    this.quotationService.getRiskLimitsOfLiability(subClassCode, quotationProductCode, scheduleType)
+      .subscribe({
+        next: (res) => {
+          log.debug(`limits of liability (${scheduleType})`, res);
 
-  log.debug('Authorizing as underwriter:', selected);
-
-  this.quotationService
-    .AuthoriseExceptions(this.quotationView.code, this.quotationView.preparedBy)
-    .subscribe({
-      next: (res) => {
-        if (res.status === 'SUCCESS') {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            res.message ||'Exceptions authorised successfully'
-          );
-        } else {
-          this.globalMessagingService.displayErrorMessage(
-            'Authorization Error',
-            res.message || 'Could not authorise exceptions'
-          );
+          if (scheduleType === 'L') {
+            this.limitsRiskofLiability = res._embedded;
+          } else {
+            this.excesses = res._embedded;
+            this.comments = res._embedded
+          }
+        },
+        error: (error) => {
+          log.error(`Error fetching limits of liability (${scheduleType}):`, error);
+          this.error = `Something went wrong while fetching limits of liability (${scheduleType})`;
         }
-      },
-      error: (err) => {
-        this.globalMessagingService.displayErrorMessage(
-          'Authorization Error',
-          'Could not authorise exceptions'
-        );
-        log.error(err);
-      }
-    });
-}
-else {
-    this.globalMessagingService.displayErrorMessage(
-      'Authorization Error',
-      'You do not have rights to authorize; please reassign.'
-    )
+      });
   }
-   this.openChooseClientReassignModal();
-}
+
+
+  // getExcessAndComments(subClassCode: number, quotationProductCode: number) {
+  //   this.quotationService.getExcessAndComments(subClassCode, quotationProductCode)
+  //     .subscribe({
+  //       next: (res) => {
+  //         log.debug('Excess and Comments', res);
+  //         this.excesses = res._embedded;
+  //         this.comments = res._embedded;
+  //       },
+  //       error: (error) => {
+  //         log.error('Error fetching excess and comments:', error);
+  //         this.error = 'Something went wrong while fetching excess and comments';
+  //       }
+  //     });
+  // }
+  authorizeSelectedExceptions(): void {
+    const selected = this.exceptionsData?.filter(ex => ex.selected);
+
+    if (!selected || selected.length === 0) {
+
+      this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
+      return;
+    }
 
 
 
-hasUnderwriterRights(): boolean {
-  const rolesString = sessionStorage.getItem('account_roles');
-log.debug('Raw roles string from sessionStorage:', rolesString);
+    if (this.hasUnderwriterRights()) {
 
-  const roles = JSON.parse(rolesString || '[]');
-  log.debug('Parsed roles array:', roles);
+      log.debug('Quotation status:', this.quotationView.status);
 
-  const hasRights = roles.includes('underwriter');
-  log.debug('Has underwriter rights:', hasRights);
+      if (this.quotationView.status === 'AUTHORISED') {
+        this.globalMessagingService.displayInfoMessage(
+          'Info',
+          'This quotation is already authorised'
+        );
+        return;
+      }
 
-  return hasRights;
-}
+      log.debug('Authorizing as underwriter:', selected);
+
+      this.quotationService
+        .AuthoriseExceptions(this.quotationView.code, this.quotationView.preparedBy)
+        .subscribe({
+          next: (res) => {
+            if (res.status === 'SUCCESS') {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                res.message || 'Exceptions authorised successfully'
+              );
+            } else {
+              this.globalMessagingService.displayErrorMessage(
+                'Authorization Error',
+                res.message || 'Could not authorise exceptions'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Authorization Error',
+              'Could not authorise exceptions'
+            );
+            log.error(err);
+          }
+        })
+
+    }
+    // authorizeSelectedExceptions(): void {
+    //   const selected = this.exceptionsData?.filter(ex => ex.selected);
+
+    //   if (!selected || selected.length === 0) {
+
+    //     this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
+    //     return;
+    //   }
+
+
+
+    //   if (this.hasUnderwriterRights()) {
+
+    //     log.debug('Quotation status:', this.quotationView.status);
+
+    //     if (this.quotationView.status === 'AUTHORISED') {
+    //       this.globalMessagingService.displayInfoMessage(
+    //         'Info',
+    //         'This quotation is already authorised'
+    //       );
+    //       return;
+    //     }
+
+    //     log.debug('Authorizing as underwriter:', selected);
+
+    //     this.quotationService
+    //       .AuthoriseExceptions(this.quotationView.code, this.quotationView.preparedBy)
+    //       .subscribe({
+    //         next: (res) => {
+    //           if (res.status === 'SUCCESS') {
+    //             this.globalMessagingService.displaySuccessMessage(
+    //               'Success',
+    //               res.message || 'Exceptions authorised successfully'
+    //             );
+    //           } else {
+    //             this.globalMessagingService.displayErrorMessage(
+    //               'Authorization Error',
+    //               res.message || 'Could not authorise exceptions'
+    //             );
+    //           }
+    //         },
+    //         error: (err) => {
+    //           this.globalMessagingService.displayErrorMessage(
+    //             'Authorization Error',
+    //             'Could not authorise exceptions'
+    //           );
+    //           log.error(err);
+    //         }
+    //       });
+    //   }
+    //   else {
+    //     this.globalMessagingService.displayErrorMessage(
+    //       'Authorization Error',
+    //       'You do not have rights to authorize; please reassign.'
+    //     )
+    //   }
+    //   this.openChooseClientReassignModal();
+    // }
+  }
+
+
+  hasUnderwriterRights(): boolean {
+    const rolesString = sessionStorage.getItem('account_roles');
+    log.debug('Raw roles string from sessionStorage:', rolesString);
+
+    const roles = JSON.parse(rolesString || '[]');
+    log.debug('Parsed roles array:', roles);
+
+    const hasRights = roles.includes('underwriter');
+    log.debug('Has underwriter rights:', hasRights);
+
+    return hasRights;
+  }
 
 
 

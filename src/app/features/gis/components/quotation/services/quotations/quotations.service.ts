@@ -276,7 +276,7 @@ export class QuotationsService {
    * @param {scheduleDetails[]} data - The data representing the schedule details to be created.
    * @return {Observable<any>} - An observable of the response containing the created schedule details data.
    */
-  createSchedule(data: scheduleDetails[]) {
+  createSchedule(data: scheduleDetails) {
     return this.api.POST(`v2/schedule-details`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
@@ -302,7 +302,7 @@ export class QuotationsService {
   }
 
   deleteSchedule(level: any, riskCode: any, code: any) {
-    return this.api.DELETE<scheduleDetails>(`v2/schedule-details/?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.DELETE<scheduleDetails>(`v2/schedule-details?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
   makeReady(quotationCode, user) {

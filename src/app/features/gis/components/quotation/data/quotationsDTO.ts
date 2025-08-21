@@ -437,11 +437,12 @@ export interface scheduleDetails {
 
     },
     level2?: {  // Making level2 optional
-      code: number,
+
       geographicalLimits: string,
       deductibleDesc: string,
       limitationUse: string,
-      authorisedDriver: string
+      authorisedDriver: string,
+      garageCapacity: string
     }
 
   },
