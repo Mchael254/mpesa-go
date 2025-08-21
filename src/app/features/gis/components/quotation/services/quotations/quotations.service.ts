@@ -694,25 +694,25 @@ export class QuotationsService {
   }
 
 
-deleteProductTaxes(taxCode: number): Observable<any> {
-  return this.api.DELETE<any>(
-    `v2/taxes?qptCode=${taxCode}`,
-    API_CONFIG.GIS_QUOTATION_BASE_URL
-  );
-}
+  deleteProductTaxes(taxCode: number): Observable<any> {
+    return this.api.DELETE<any>(
+      `v2/taxes?qptCode=${taxCode}`,
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    );
+  }
 
 
 
 
-// getExcessAndComments(
-//   subClassCode: number,
-//   quotationProductCode: number
-// ): Observable<any> {
-//   const paramsObj: { [param: string]: string } = {
-//     subclassCode: subClassCode.toString(),
-//     quotationProductCode: quotationProductCode.toString(),
-//     scheduleType: 'E'
-//   };
+  // getExcessAndComments(
+  //   subClassCode: number,
+  //   quotationProductCode: number
+  // ): Observable<any> {
+  //   const paramsObj: { [param: string]: string } = {
+  //     subclassCode: subClassCode.toString(),
+  //     quotationProductCode: quotationProductCode.toString(),
+  //     scheduleType: 'E'
+  //   };
 
   //   const params = new HttpParams({ fromObject: paramsObj });
 
@@ -745,9 +745,7 @@ deleteProductTaxes(taxCode: number): Observable<any> {
     subclassCode: number,
     scheduleType: string = 'E'
   ): Observable<any> {
-    // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
-    // Add the mandatory parameter
     paramsObj['subclassCode'] = subclassCode?.toString();
     paramsObj['scheduleType'] = scheduleType;
 
@@ -769,6 +767,19 @@ deleteProductTaxes(taxCode: number): Observable<any> {
     return this.api.GET<any>(`v2/limits-of-liability?${params.toString()}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
+  editExcesses(newQpCode: number, excessesPayload: CreateLimitsOfLiability[]): Observable<any> {
+    const queryParam = `?newQpCode=${newQpCode}`;
+    return this.api.POST<any>(`v2/limits-of-liability${queryParam}`, JSON.stringify(excessesPayload), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+  deleteExcesses(scheduleValueCode: number): Observable<any> {
+    return this.api.DELETE<any>(`v2/limits-of-liability?scheduleValueCode=${scheduleValueCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+
+  //limits of liability
   addLimitsOfLiability(newQpCode: number, limitPayload: CreateLimitsOfLiability[]): Observable<any> {
     const queryParam = `?newQpCode=${newQpCode}`;
     return this.api.POST<any>(`v2/limits-of-liability${queryParam}`, JSON.stringify(limitPayload), API_CONFIG.GIS_QUOTATION_BASE_URL);
@@ -783,6 +794,19 @@ deleteProductTaxes(taxCode: number): Observable<any> {
     return this.api.GET<any>(`v2/limits-of-liability?${params.toString()}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
+  editLimitsOfLiability(newQpCode: number, limitPayload: CreateLimitsOfLiability[]): Observable<any> {
+    const queryParam = `?newQpCode=${newQpCode}`;
+    return this.api.POST<any>(`v2/limits-of-liability${queryParam}`, JSON.stringify(limitPayload), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+  deleteLimit(scheduleValueCode: number): Observable<any> {
+    return this.api.DELETE<any>(`v2/limits-of-liability?scheduleValueCode=${scheduleValueCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+
+  //risk clauses
   addClauses(
     clauseCodes: number[], // Accept an array of clause codes
     productCode: number,
