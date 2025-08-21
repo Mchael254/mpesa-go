@@ -1,0 +1,25 @@
+# Use Node 18 LTS
+FROM node:18
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json for caching dependencies
+COPY package*.json ./
+
+# Install project dependencies with legacy peer deps
+RUN npm install --legacy-peer-deps
+
+# Copy rest of the source code
+COPY . .
+
+# Install extra packages needed for your build
+RUN npm install --save html2canvas xlsx @types/html2canvas angular-paystack angular4-paystack --legacy-peer-deps
+
+# Build Angular app using local CLI via npx
+RUN npx ng build --base-href=/TQV6/ \
+    && npm audit fix --force
+
+# The build artifacts are now in /app/dist
+# Map ./dist in docker-compose to make it available on host
+
