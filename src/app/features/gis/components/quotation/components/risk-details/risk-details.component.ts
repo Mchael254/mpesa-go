@@ -20,7 +20,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Clause, CreateLimitsOfLiability, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab, TaxInformation, TaxPayload } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, firstValueFrom, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
 import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from "ngx-currency";
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -55,6 +55,7 @@ const log = new Logger('RiskDetailsComponent');
 })
 
 export class RiskDetailsComponent {
+  selectedLevelNumber: any;
 
   getFreeLimitLabel(arg0: any) {
     throw new Error('Method not implemented.');
@@ -71,6 +72,7 @@ export class RiskDetailsComponent {
   @ViewChild('perilsModal') perilsModal!: ElementRef;
   @ViewChild('choosePerilsModal') choosePerilsModal!: ElementRef;
   @ViewChild('taxTable') taxTable!: Table;
+  @ViewChild('addotherScheduleModal') addotherScheduleModalRef!: ElementRef;
 
   private modals: { [key: string]: bootstrap.Modal } = {};
 
@@ -540,7 +542,6 @@ export class RiskDetailsComponent {
             this.loadAllClients();
           }
 
-          ;
           this.passedCoverFromDate = this.quotationDetails.coverFrom
           this.passedCoverToDate = this.quotationDetails.coverTo
           log.debug("Selected Product code -fetching:", this.selectedProductCode)
@@ -670,67 +671,69 @@ export class RiskDetailsComponent {
   //     }
   //   });
   // }
-  loadSelectedSubclassRiskFields(subclassCode: number): Promise<void> {
+  async loadSelectedSubclassRiskFields(subclassCode: number): Promise<void> {
     const riskFieldDescription = `detailed-risk-subclass-form-${subclassCode}`;
 
-    return new Promise((resolve, reject) => {
-      this.quotationService.getFormFields(riskFieldDescription).subscribe({
-        next: (response) => {
-          const fields = response?.[0]?.fields || [];
-          this.subclassFormContent = response;
-          sessionStorage.setItem('dynamicSubclassFormField', JSON.stringify(fields))
-          this.subclassFormData = fields.filter(field => Number(field.scheduleLevel) === 1);
+    try {
+      const response = await firstValueFrom(this.quotationService.getFormFields(riskFieldDescription));
+      const fields = response?.[0]?.fields || [];
+      this.subclassFormContent = response;
+      sessionStorage.setItem('dynamicSubclassFormField', JSON.stringify(fields));
+      this.subclassFormData = fields.filter(field => Number(field.scheduleLevel) === 1);
 
-          Object.keys(this.riskDetailsForm.controls).forEach(controlName => {
-            const control = this.riskDetailsForm.get(controlName) as any;
-            if (control?.metadata?.dynamicSubclass) {
-              this.riskDetailsForm.removeControl(controlName);
-            }
-          });
-
-          this.subclassFormData.forEach(field => {
-            if (!this.riskDetailsForm.get(field.name)) {
-              const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
-              const control = new FormControl(this.getDefaultValue(field), validators);
-              (control as any).metadata = { dynamicSubclass: true };
-              this.riskDetailsForm.addControl(field.name, control);
-              log.debug(`Added new dynamicSubclass control: ${field.name}`);
-
-            }
-          });
-
-          this.fetchRegexPattern();
-          this.fetchScheduleRelatedData();
-          const riskValue = this.riskDetailsForm.value
-          log.debug("risk value for patching:", riskValue)
-          if (this.isEditMode) {
-            log.debug("selected risk:", this.selectedRisk)
-
-            this.riskDetailsForm.patchValue({ registrationNumber: this.selectedRisk?.propertyId });
-            this.riskDetailsForm.patchValue({ riskDescription: this.selectedRisk?.itemDesc });
-            this.riskDetailsForm.patchValue({ coverType: this.selectedRisk?.coverTypeCode });
-            this.riskDetailsForm.patchValue({ premiumBand: this.selectedRisk?.binderCode });
-            this.riskDetailsForm.patchValue({ value: this.selectedRisk?.value });
-            this.riskDetailsForm.patchValue({ vehicleMake: this.selectedRisk?.scheduleDetails.details.level1.make });
-            this.riskDetailsForm.patchValue({ vehicleModel: this.selectedRisk?.scheduleDetails.details.level1.model });
-            this.riskDetailsForm.patchValue({ yearOfManufacture: this.selectedRisk?.scheduleDetails.details.level1.yearOfManufacture });
-            this.riskDetailsForm.patchValue({ cubicCapacity: this.selectedRisk?.scheduleDetails.details.level1.cubicCapacity });
-            this.riskDetailsForm.patchValue({ seatingCapacity: this.selectedRisk?.scheduleDetails.details.level1.carryCapacity });
-            this.riskDetailsForm.patchValue({ bodyType: this.selectedRisk?.scheduleDetails.details.level1.bodyType });
-            this.riskDetailsForm.patchValue({ color: this.selectedRisk?.scheduleDetails.details.level1.color });
-            this.riskDetailsForm.patchValue({ chasisNumber: this.selectedRisk?.scheduleDetails.details.level1.chasisNumber });
-            this.riskDetailsForm.patchValue({ engineNumber: this.selectedRisk?.scheduleDetails.details.level1.engineNumber });
-          }
-          resolve();
-        },
-        error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', 'Unable to load subclass risks');
-          reject(err);
+      // Remove old dynamic controls
+      Object.keys(this.riskDetailsForm.controls).forEach(controlName => {
+        const control = this.riskDetailsForm.get(controlName) as any;
+        if (control?.metadata?.dynamicSubclass) {
+          this.riskDetailsForm.removeControl(controlName);
         }
       });
-    });
-  }
 
+      // Add new dynamic controls
+      this.subclassFormData.forEach(field => {
+        if (!this.riskDetailsForm.get(field.name)) {
+          const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
+          const control = new FormControl(this.getDefaultValue(field), validators);
+          (control as any).metadata = { dynamicSubclass: true };
+          this.riskDetailsForm.addControl(field.name, control);
+          log.debug(`Added new dynamicSubclass control: ${field.name}`);
+        }
+      });
+
+      this.fetchRegexPattern();
+      this.fetchScheduleRelatedData();
+
+      if (this.isEditMode) {
+        this.patchEditValues();
+      }
+
+    } catch (err) {
+      this.globalMessagingService.displayErrorMessage('Error', err.error?.message || 'Failed to load fields');
+      throw err; // important, so onSubclassSelected catch block runs
+    }
+  }
+  private patchEditValues(): void {
+    if (!this.selectedRisk) return;
+    log.debug("Selected risk", this.selectedRisk)
+    this.riskDetailsForm.patchValue({
+      registrationNumber: this.selectedRisk.propertyId,
+      riskDescription: this.selectedRisk.itemDesc,
+      coverType: this.selectedRisk.coverTypeCode,
+      premiumBand: this.selectedRisk.binderCode,
+      value: this.selectedRisk.value,
+      vehicleMake: this.selectedRisk.scheduleDetails[0].details.level1.make,
+      vehicleModel: this.selectedRisk.scheduleDetails[0].details.level1.model,
+      yearOfManufacture: this.selectedRisk.scheduleDetails[0].details.level1.yearOfManufacture,
+      cubicCapacity: this.selectedRisk.scheduleDetails[0].details.level1.cubicCapacity,
+      seatingCapacity: this.selectedRisk.scheduleDetails[0].details.level1.carryCapacity,
+      bodyType: this.selectedRisk.scheduleDetails[0].details.level1.bodyType,
+      color: this.selectedRisk.scheduleDetails[0].details.level1.color,
+      chasisNumber: this.selectedRisk.scheduleDetails[0].details.level1.chasisNumber,
+      engineNumber: this.selectedRisk.scheduleDetails[0].details.level1.engineNumber
+    });
+
+    log.debug("Patched form with selectedRisk:", this.selectedRisk);
+  }
 
   getDefaultValue(field: any): any {
     if (field.type === 'date') {
@@ -1234,7 +1237,7 @@ export class RiskDetailsComponent {
     if (this.selectedSubclassCode) {
       try {
         await this.loadSelectedSubclassRiskFields(this.selectedSubclassCode);
-        const selectedVehicleMake = Number(this.selectedRisk?.scheduleDetails.details.level1.make)
+        const selectedVehicleMake = Number(this.selectedRisk?.scheduleDetails[0].details.level1.make)
         this.fetchTaxes();
         this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
         this.loadAllBinders();
@@ -1244,8 +1247,8 @@ export class RiskDetailsComponent {
 
         this.fetchYearOfManufacture();
       } catch (err) {
-        log.error("Failed to load subclass risk fields:", err);
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to load subclass data');
+        log.error("Failed to load subclass risk fields asynccc:", err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to load subclass data asyncc');
       }
     }
   }
@@ -1606,7 +1609,7 @@ export class RiskDetailsComponent {
           this.quotationCode = quotationCode
           const quotationNo = data._embedded.quotationNo
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk edited succesfully');
-
+          this.updateSchedule()
 
 
           const subclasscode = this.selectedSubclassCode
@@ -1819,7 +1822,7 @@ export class RiskDetailsComponent {
     this.scheduleDetailsForm.patchValue(this.selectedSchedule)
     let level = this.selectedSchedule.details;
     log.info("Patched level", level)
-    this.deleteScheduleForLevel();
+    // this.deleteScheduleForLevel();
   }
   openEditScheduleModal() {
     if (!this.selectedSchedule) {
@@ -1829,84 +1832,154 @@ export class RiskDetailsComponent {
 
     }
   }
+  // updateSchedule() {
+  //   const schedule = this.scheduleDetailsForm.value;
+  //   const level2Details = this.level2DetailsForm.value;
+  //   log.debug("schedule form details value", schedule);
+  //   log.debug(" level2Details value ", level2Details);
+
+  //   // Check if level2DetailsForm has been touched or filled
+  //   const isLevel2FormTouched = this.level2DetailsForm.touched || Object.values(level2Details).some(value => value !== '' && value !== null);
+
+  //   if (isLevel2FormTouched) {
+  //     // Get the current scheduleList data
+  //     const scheduleItem = Array.isArray(this.scheduleList) ? this.scheduleList[0] : this.scheduleList;
+  //     log.debug("schedule item", scheduleItem);
+
+  //     // Create a properly structured payload with both level1 and level2
+  //     const updatedPayload = {
+  //       code: scheduleItem.code,
+  //       riskCode: scheduleItem.riskCode,
+  //       transactionType: scheduleItem.transactionType,
+  //       organizationCode: scheduleItem.organizationCode,
+  //       version: scheduleItem.version,
+  //       details: {
+  //         level1: scheduleItem.details.level1,  // Keep the existing level1 data
+  //         level2: level2Details                // Add the new level2 data
+  //       }
+  //     };
+
+  //     // Send the updated payload to the backend
+  //     this.quotationService.updateSchedule(updatedPayload).subscribe(data => {
+  //       log.debug('Final Updated Schedule:', data);
+  //       this.updatedScheduleData = data;
+  //       this.updatedSchedule = this.updatedScheduleData._embedded;
+  //       this.scheduleList = this.updatedSchedule;
+
+  //       // Save to session storage
+  //       sessionStorage.setItem('scheduleDetails', JSON.stringify(this.scheduleList));
+
+  //       // Reset the forms
+  //       this.scheduleDetailsForm.reset();
+  //       this.level2DetailsForm.reset();
+  //       this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated with Level 2 Details');
+  //     }, (error) => {
+  //       log.debug("schedule update error", error);
+  //       this.globalMessagingService.displayErrorMessage('Error', 'Error updating schedule with level2 details');
+  //     });
+  //   } else {
+  //     log.debug("updating level1 details");
+
+  //     const scheduleItem = Array.isArray(this.scheduleList) ? this.scheduleList[0] : this.scheduleList;
+  //     log.debug("schedule item", scheduleItem);
+  //     // Handle the case where we're only updating level1 data
+  //     schedule.riskCode = scheduleItem.riskCode;
+  //     schedule.transactionType = scheduleItem.transactionType;
+  //     schedule.version = scheduleItem.version;
+
+  //     if (scheduleItem.details.level2) {
+  //       schedule[0].details.level2 = scheduleItem[0].details.level2;
+  //     } else {
+  //       schedule[0].details.level2 = {};
+  //     }
+
+  //     const removeFields = [
+  //       "terrorismApplicable", "securityDevice1", "motorAccessories",
+  //       "model", "securityDevice", "regularDriverName", "schActive",
+  //       "licenceNo", "driverLicenceDate", "driverSmsNo",
+  //       "driverRelationInsured", "driverEmailAddress"
+  //     ];
+
+  //     // Conditionally remove fields if they exist
+  //     removeFields.forEach(field => {
+  //       if (schedule[0].details.level1[field] !== undefined) {
+  //         delete schedule[0].details.level1[field];
+  //       }
+  //     });
+
+  //     log.debug("level 1 payload", schedule);
+
+  //     this.quotationService.updateSchedule(schedule).subscribe(data => {
+  //       this.updatedScheduleData = data;
+  //       log.debug('Updated Schedule Data:', this.updatedScheduleData);
+  //       this.updatedSchedule = this.updatedScheduleData._embedded;
+  //       log.debug('Updated Schedule:', this.updatedSchedule);
+  //       this.scheduleList = this.updatedSchedule;
+  //       sessionStorage.setItem('scheduleDetails', JSON.stringify(this.scheduleList));
+
+  //       log.debug("UPDATED SCHEDULE LIST:", this.scheduleList);
+
+  //       if (Array.isArray(this.scheduleList)) {
+  //         const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
+  //         if (index !== -1) {
+  //           this.scheduleList[index] = this.updatedSchedule;
+  //           this.cdr.detectChanges();
+  //         }
+  //       }
+
+  //       try {
+  //         this.scheduleDetailsForm.reset();
+  //         this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated with Level 1 Details');
+  //       } catch (error) {
+  //         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+  //         this.scheduleDetailsForm.reset();
+  //       }
+
+  //       // this.loadClientQuotation();
+  //     });
+  //   }
+  //   this.cdr.detectChanges();
+  // }
   updateSchedule() {
     const schedule = this.scheduleDetailsForm.value;
-    const level2Details = this.level2DetailsForm.value;
-    log.debug("schedule form details value", schedule);
-    log.debug(" level2Details value ", level2Details);
+    const riskform = this.riskDetailsForm.value;
 
-    // Check if level2DetailsForm has been touched or filled
-    const isLevel2FormTouched = this.level2DetailsForm.touched || Object.values(level2Details).some(value => value !== '' && value !== null);
+    log.debug('SELECTED RISK:', this.selectedRisk);
+    log.debug("Risk form updated:", riskform);
 
-    if (isLevel2FormTouched) {
-      // Get the current scheduleList data
-      const scheduleItem = Array.isArray(this.scheduleList) ? this.scheduleList[0] : this.scheduleList;
-      log.debug("schedule item", scheduleItem);
+    schedule.details = schedule.details || {};
+    schedule.details.level1 = {
+      bodyType: riskform.bodyType,
+      yearOfManufacture: riskform.yearOfManufacture,
+      color: riskform.color,
+      engineNumber: riskform.engineNumber,
+      cubicCapacity: riskform.cubicCapacity,
+      make: riskform.vehicleMake,
+      model: riskform.vehicleModel,
+      coverType: this.selectedRisk.coverTypeDescription,
+      registrationNumber: riskform.registrationNumber,
+      chasisNumber: riskform.chasisNumber,
+      tonnage: null,
+      carryCapacity: riskform.seatingCapacity,
+      logBook: null,
+      value: riskform.value
+    };
 
-      // Create a properly structured payload with both level1 and level2
-      const updatedPayload = {
-        code: scheduleItem.code,
-        riskCode: scheduleItem.riskCode,
-        transactionType: scheduleItem.transactionType,
-        organizationCode: scheduleItem.organizationCode,
-        version: scheduleItem.version,
-        details: {
-          level1: scheduleItem.details.level1,  // Keep the existing level1 data
-          level2: level2Details                // Add the new level2 data
-        }
-      };
+    schedule.riskCode = this.quotationRiskCode;
+    schedule.transactionType = "Q";
+    schedule.version = this.selectedRisk.scheduleDetails[0].version;
 
-      // Send the updated payload to the backend
-      this.quotationService.updateSchedule(updatedPayload).subscribe(data => {
-        log.debug('Final Updated Schedule:', data);
-        this.updatedScheduleData = data;
-        this.updatedSchedule = this.updatedScheduleData._embedded;
-        this.scheduleList = this.updatedSchedule;
+    // Remove unnecessary fields
+    const removeFields = [
+      "terrorismApplicable", "securityDevice1", "motorAccessories",
+      "securityDevice", "regularDriverName", "schActive",
+      "licenceNo", "driverLicenceDate", "driverSmsNo",
+      "driverRelationInsured", "driverEmailAddress"
+    ];
+    removeFields.forEach(field => delete schedule.details.level1[field]);
 
-        // Save to session storage
-        sessionStorage.setItem('scheduleDetails', JSON.stringify(this.scheduleList));
-
-        // Reset the forms
-        this.scheduleDetailsForm.reset();
-        this.level2DetailsForm.reset();
-        this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated with Level 2 Details');
-      }, (error) => {
-        log.debug("schedule update error", error);
-        this.globalMessagingService.displayErrorMessage('Error', 'Error updating schedule with level2 details');
-      });
-    } else {
-      log.debug("updating level1 details");
-
-      const scheduleItem = Array.isArray(this.scheduleList) ? this.scheduleList[0] : this.scheduleList;
-      log.debug("schedule item", scheduleItem);
-      // Handle the case where we're only updating level1 data
-      schedule.riskCode = scheduleItem.riskCode;
-      schedule.transactionType = scheduleItem.transactionType;
-      schedule.version = scheduleItem.version;
-
-      if (scheduleItem.details.level2) {
-        schedule.details.level2 = scheduleItem.details.level2;
-      } else {
-        schedule.details.level2 = {};
-      }
-
-      const removeFields = [
-        "terrorismApplicable", "securityDevice1", "motorAccessories",
-        "model", "securityDevice", "regularDriverName", "schActive",
-        "licenceNo", "driverLicenceDate", "driverSmsNo",
-        "driverRelationInsured", "driverEmailAddress"
-      ];
-
-      // Conditionally remove fields if they exist
-      removeFields.forEach(field => {
-        if (schedule.details.level1[field] !== undefined) {
-          delete schedule.details.level1[field];
-        }
-      });
-
-      log.debug("level 1 payload", schedule);
-
-      this.quotationService.updateSchedule(schedule).subscribe(data => {
+    this.quotationService.updateSchedule(schedule).subscribe({
+      next: (data) => {
         this.updatedScheduleData = data;
         log.debug('Updated Schedule Data:', this.updatedScheduleData);
         this.updatedSchedule = this.updatedScheduleData._embedded;
@@ -1931,18 +2004,24 @@ export class RiskDetailsComponent {
           this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
           this.scheduleDetailsForm.reset();
         }
-
-        // this.loadClientQuotation();
-      });
-    }
-    this.cdr.detectChanges();
+      },
+      error: (err) => {
+        log.error("Update schedule failed:", err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Schedule update failed');
+      }
+    });
   }
-
+  getLevelName(levelNumber: any) {
+    log.debug("levelName", levelNumber)
+    this.selectedLevelNumber = levelNumber
+  }
   deleteScheduleForLevel() {
-    const levelNumber = this.extractLevelNumber(this.selectedSchedule.details);
+    log.debug('Schedule details:Delete', this.selectedSchedule)
+    const levelNumber = this.selectedLevelNumber
     if (levelNumber !== null) {
       this.passedlevel = levelNumber;
       log.debug("the level passsed", this.passedlevel)
+      this.deleteSchedule()
     } else {
       log.debug("No 'level' property found in the object.");
     }
@@ -1954,18 +2033,19 @@ export class RiskDetailsComponent {
     return levelNumber;
   }
   deleteSchedule() {
-    if (this.selectedSchedule && this.selectedSchedule.code) {
+    if (this.selectedSchedule && this.selectedSchedule[0].code) {
       let level = this.passedlevel;
 
       // Ensure that level is a number
       if (typeof level === 'number') {
-        let scheduleCode = this.selectedSchedule.code;
-        let riskCode = this.selectedSchedule.riskCode;
+        let scheduleCode = this.selectedSchedule[0].code;
+        let riskCode = this.selectedSchedule[0].riskCode;
 
         this.quotationService.deleteSchedule(level, riskCode, scheduleCode).subscribe(() => {
           // Remove the deleted schedule from the scheduleList
-          this.scheduleList = this.scheduleList.filter(schedule => schedule.code !== scheduleCode);
-
+          // this.scheduleList = this.scheduleList.filter(schedule => schedule.code !== scheduleCode);
+          const quotationCode = this.selectedRisk?.quotationCode
+          this.fetchQuotationDetails(quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Deleted Successfully')
 
         }, error => {
@@ -1989,13 +2069,13 @@ export class RiskDetailsComponent {
       return false;
     }
     return this.scheduleList.some(schedule =>
-      schedule.details?.level2 &&
+      schedule[0].details?.level2 &&
       (
-        schedule.details.level2.code ||
-        schedule.details.level2.geographicalLimits ||
-        schedule.details.level2.deductibleDesc ||
-        schedule.details.level2.limitationUse ||
-        schedule.details.level2.authorisedDriver
+        schedule[0].details.level2.code ||
+        schedule[0].details.level2.geographicalLimits ||
+        schedule[0].details.level2.deductibleDesc ||
+        schedule[0].details.level2.limitationUse ||
+        schedule[0].details.level2.authorisedDriver
       )
     );
   }
@@ -2159,7 +2239,7 @@ export class RiskDetailsComponent {
     const riskSelectedData = productDetails.riskInformation.find(risk => risk.code === selectedRiskCode);
     this.scheduleList = riskSelectedData.scheduleDetails ? [riskSelectedData.scheduleDetails] : [];
     log.debug("SCHEDULE DETAILS AFTER ROW CLICK:", this.scheduleList);
-
+    this.selectedSchedule = this.scheduleList
     this.sectionDetails = this.selectedRisk.riskLimits;
     log.debug("section DETAILS AFTER ROW CLICK:", this.sectionDetails);
 
@@ -2260,9 +2340,9 @@ export class RiskDetailsComponent {
 
           // 3. Map level-specific data and attach original schedule
           const levelData = (this.scheduleList || [])
-            .filter(schedule => !!schedule.details?.[levelKey])
+            .filter(schedule => !!schedule[0].details?.[levelKey])
             .map(schedule => ({
-              ...schedule.details[levelKey],
+              ...schedule[0].details[levelKey],
               __originalSchedule: schedule
             }));
 
@@ -3604,9 +3684,9 @@ export class RiskDetailsComponent {
 
                 // 3. Map level-specific data and attach original schedule
                 const levelData = (this.scheduleList || [])
-                  .filter(schedule => !!schedule.details?.[levelKey])
+                  .filter(schedule => !!schedule[0].details?.[levelKey])
                   .map(schedule => ({
-                    ...schedule.details[levelKey],
+                    ...schedule[0].details[levelKey],
                     __originalSchedule: schedule
                   }));
 
@@ -3922,7 +4002,7 @@ export class RiskDetailsComponent {
     if (savedAvailable) {
       this.excessesData = JSON.parse(savedAvailable);
     } else {
-      this.refreshAvailableExcesses(); 
+      this.refreshAvailableExcesses();
     }
 
     this.getAddedExcesses();
@@ -4085,7 +4165,7 @@ export class RiskDetailsComponent {
     });
   }
 
-  
+
   //Perils
   loadQuotationPerils(): void {
     const riskCode = this.quotationRiskCode;
@@ -4789,16 +4869,20 @@ export class RiskDetailsComponent {
   }
   createScheduleL2() {
     // Prepare schedule payload
+
     const schedulePayloadL2 = this.prepareSchedulePayloadL2();
     log.debug("Schedule payload l2:", schedulePayloadL2)
-    this.quotationService.createSchedule(schedulePayloadL2)
+    this.quotationService.updateSchedule(schedulePayloadL2)
       .subscribe({
         next: (createdScheduleL2: any) => {
           const scheduleListL2 = createdScheduleL2._embedded;
           log.debug("Schedule List l2:", scheduleListL2);
-
-
+          const modal = bootstrap.Modal.getInstance(this.addotherScheduleModalRef.nativeElement);
+          modal.hide();
           this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Level 2 created successfully');
+          log.debug("Selected Risk", this.selectedRisk)
+          const quotationCode = this.selectedRisk?.quotationCode
+          this.fetchQuotationDetails(quotationCode)
         },
         error: (error: HttpErrorResponse) => {
           log.debug("Error log", error.error.message);
@@ -4813,20 +4897,27 @@ export class RiskDetailsComponent {
   }
   prepareSchedulePayloadL2() {
     const schedule = this.scheduleOtherDetailsForm.value;
-    const schedulePayloadL2: scheduleDetails[] = [{
+    log.debug("schedule form values", schedule)
+    log.debug("selectedSchedule", this.selectedSchedule)
+    const selectedSchedule = this.selectedSchedule[0]
+    log.debug("selectedSchedule", selectedSchedule)
+
+    const schedulePayloadL2: scheduleDetails = {
       details: {
         level2: {
-          code: null, // set as needed
+
           geographicalLimits: schedule.geographicalLimits,
-          deductibleDesc: schedule.deductibleDesc,
-          limitationUse: schedule.limitationUse,
-          authorisedDriver: schedule.authorisedDriver
+          deductibleDesc: schedule.deductibleDescription,
+          limitationUse: schedule.limitationsUse,
+          authorisedDriver: schedule.authorisedDriver,
+          garageCapacity: schedule.garageCapacity
         }
       },
+      code: selectedSchedule[0].code,
       riskCode: this.quotationRiskCode,
       transactionType: 'Q',
-      version: 0
-    }];
+      version: selectedSchedule[0].version
+    };
 
     return schedulePayloadL2;
   }
@@ -5232,6 +5323,39 @@ export class RiskDetailsComponent {
     });
   }
 
+
+  editOtherDetails(tab: any) {
+    log.debug('Selected schedule other details', tab)
+    log.debug("DYNAMIC SUBCLASS FORM FIELDS", this.dynamicSubclassFormFields)
+    this.activeModalTab = tab;
+    this.activeFormFields = this.dynamicSubclassFormFields.filter(
+      field => Number(field.scheduleLevel) === tab.levelNumber
+    );
+
+    // Build reactive form
+    const group: { [key: string]: any } = {};
+    this.activeFormFields.forEach(field => {
+      group[field.name] = new FormControl('', field.isMandatory === 'Y' ? Validators.required : null);
+    });
+
+    this.scheduleOtherDetailsForm = this.fb.group(group);
+    log.debug("Schedule other details client before", this.scheduleOtherDetailsForm.value)
+
+    if (!this.scheduleOtherDetailsForm.contains('authorisedDriver')) {
+      this.scheduleOtherDetailsForm.addControl('authorisedDriver', new FormControl('', Validators.required));
+    }
+    this.scheduleOtherDetailsForm.patchValue({ authorisedDriver: this.clientName });
+    log.debug("Schedule other details client", this.scheduleOtherDetailsForm.value)
+    // Show Bootstrap modal
+    setTimeout(() => {
+      const modalElement = document.getElementById('addOtherDetailsModal');
+      if (modalElement) {
+        const bsModal = new bootstrap.Modal(modalElement);
+        bsModal.show();
+      }
+    });
+    this.fetchLimitationOfUse();
+  }
 
 
 
