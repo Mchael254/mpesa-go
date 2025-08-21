@@ -486,27 +486,7 @@ export class QuotationsService {
    * @param scheduleType - The schedule type (default is 'L').
    * @returns An observable containing the liability limits data.
    */
-  getLimitsOfLiability(
-    subclassCode: number,
-    scheduleType: string = 'L'
-  ): Observable<any> {
-    // Create an object to hold parameters only if they are provided
-    const paramsObj: { [param: string]: string } = {};
 
-    // Add the mandatory parameter
-    paramsObj['subclassCode'] = subclassCode?.toString();
-    paramsObj['scheduleType'] = scheduleType;
-
-    // Convert the object into URL parameters
-    const params = new HttpParams({ fromObject: paramsObj });
-
-    // Sends a GET request to fetch limits of liability
-    return this.api.GET<Observable<any>>(
-      `v2/limits-of-liability/subclass?`,
-      API_CONFIG.GIS_QUOTATION_BASE_URL,
-      params
-    );
-  }
 
   /**
    * Merges a quotation into an existing policy.
@@ -780,6 +760,17 @@ export class QuotationsService {
   }
 
   //limits of liability
+  getLimitsOfLiability(subclassCode: number, scheduleType: string = 'L'): Observable<any> {
+    const paramsObj: { [param: string]: string } = {};
+
+    paramsObj['subclassCode'] = subclassCode?.toString();
+    paramsObj['scheduleType'] = scheduleType;
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET<Observable<any>>(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+  }
+
   addLimitsOfLiability(newQpCode: number, limitPayload: CreateLimitsOfLiability[]): Observable<any> {
     const queryParam = `?newQpCode=${newQpCode}`;
     return this.api.POST<any>(`v2/limits-of-liability${queryParam}`, JSON.stringify(limitPayload), API_CONFIG.GIS_QUOTATION_BASE_URL);
