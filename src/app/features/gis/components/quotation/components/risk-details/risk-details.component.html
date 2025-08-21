@@ -2180,8 +2180,16 @@
                                 <div class="col-md-6 mb-3">
                                     <label>Tax</label>
                                     <div class="position-relative" *ngIf="taxTypes && taxTypes.length">
-                                        <input type="text" class="form-control form-control-sm"
-                                            [value]="taxForm.get('rateDescription')?.value" readonly />
+                 <div class="input-group input-group-sm">
+  <input type="text" 
+         class="form-control" 
+         [value]="taxForm.get('rateDescription')?.value" 
+         readonly>
+  <button class="btn btn-outline-secondary" type="button" (click)="openEditTaxModalFromAdd()">
+    <i class="pi pi-search"></i>
+  </button>
+</div>
+
                                         <div *ngIf="taxForm.get('tax')?.touched && taxForm.get('tax')?.invalid"
                                             class="text-danger small">
                                             Tax is required.
@@ -2482,7 +2490,7 @@
                         <td>{{ data.taxType }}</td>
                         
                         <td class="d-flex align-items-center">
-                          <button class="btn btn-sm text-primary me-2" (click)="openTaxModal(data)">
+                          <button class="btn btn-sm text-primary me-2" (click)="openEditTaxModalFromDB(data)">
                             Edit
                           </button>
                           <button class="btn btn-sm text-primary" (click)="deleteTaxes(data)">
