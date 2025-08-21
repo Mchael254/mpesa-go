@@ -70,7 +70,7 @@ export class RiskDetailsComponent {
   @ViewChild('editSectionModal') editSectionModal!: ElementRef;
   @ViewChild('perilsModal') perilsModal!: ElementRef;
   @ViewChild('choosePerilsModal') choosePerilsModal!: ElementRef;
-  @ViewChild('taxTable') taxTable!:Table;
+  @ViewChild('taxTable') taxTable!: Table;
 
   private modals: { [key: string]: bootstrap.Modal } = {};
 
@@ -270,12 +270,16 @@ export class RiskDetailsComponent {
   selectedRiskLimits: any[] = [];
   allLimitsMap: { [qpCode: string]: any[] } = {};
   limitsOfLiability: any[] = [];
+  selectedLimit: any = { value: '', narration: '', };
+  originalLimitBeforeEdit: any = { value: '', narration: '' };
 
   addedExcessess: any[] = [];
   allExcessesMap: { [qpCode: string]: any[] } = {};
   selectedExcessess: any[] = [];
   showExcessModal: boolean = false;
   excessesData: any[] = [];
+  selectedExcess: any = { value: '', narration: '', };
+  originalExcessBeforeEdit: any = { value: '', narration: '' };
 
   addedPerils: any[] = [];
   allPerilsMap: { [key: string]: any[] } = {};
@@ -310,8 +314,8 @@ export class RiskDetailsComponent {
   isEditingTax: boolean = false;
   taxForm: FormGroup;
   showTaxModal = false;
-   quotationView: QuotationDetails;
-   taxDetails: TaxInformation[]=[];
+  quotationView: QuotationDetails;
+  taxDetails: TaxInformation[] = [];
 
 
 
@@ -389,7 +393,7 @@ export class RiskDetailsComponent {
     this.loadPersistedRiskClauses();
     this.loadLimitsOfLiability();
     this.createTaxForm();
-    
+
 
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
@@ -535,13 +539,8 @@ export class RiskDetailsComponent {
             this.loadClientDetails();
             this.loadAllClients();
           }
-             
- ;
 
-
-
-
-
+          ;
           this.passedCoverFromDate = this.quotationDetails.coverFrom
           this.passedCoverToDate = this.quotationDetails.coverTo
           log.debug("Selected Product code -fetching:", this.selectedProductCode)
@@ -556,13 +555,13 @@ export class RiskDetailsComponent {
           const curentlySavedRisk = this.riskDetails?.find(risk => risk.code == this.quotationRiskCode) || this.riskDetails[0];
           log.debug('Currently saved Risk:', curentlySavedRisk)
 
-      // ✅ Tax Information
-      this.taxDetails = productDetails?.taxInformation || [];
-      log.debug("tax details", this.taxDetails)
-          
+          // ✅ Tax Information
+          this.taxDetails = productDetails?.taxInformation || [];
+          log.debug("tax details", this.taxDetails)
+
           curentlySavedRisk && this.handleRowClick(curentlySavedRisk)
           log.debug("Risk information specific to the selected product:", this.riskDetails)
-          
+
 
           log.debug("Schedule information specific to the selected product:", this.scheduleList)
           if (this.scheduleList[0]?.details?.level2) {
@@ -3733,19 +3732,9 @@ export class RiskDetailsComponent {
     if (savedAvailable) {
       this.limitsOfLiability = JSON.parse(savedAvailable);
     } else {
-      this.quotationService.getLimitsOfLiability(subclassCode, 'L').subscribe({
-        next: (data) => {
-          this.limitsOfLiability = data?._embedded || [];
-          sessionStorage.setItem(sessionKey, JSON.stringify(this.limitsOfLiability));
-        },
-        error: (err) => {
-          log.error(`Failed to fetch limits for subclass ${subclassCode}:`, err);
-          this.globalMessagingService.displayErrorMessage('Error', 'Could not load limits of liability');
-        }
-      });
+      this.refreshAvailableLimits();
     }
   }
-
 
   openLimitModal(): void {
     if (!this.selectedSubclassCode) {
@@ -3786,12 +3775,8 @@ export class RiskDetailsComponent {
       next: () => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Limits of liability added successfully');
 
+        // Refresh both added limits and available limits
         this.getAddedLimitsOfLiability();
-
-        const addedCodes = new Set(this.selectedRiskLimits.map(l => l.code));
-        this.limitsOfLiability = this.limitsOfLiability.filter(l => !addedCodes.has(l.code));
-        const sessionKey = `availableLimitsOfLiability_${subclassCode}`;
-        sessionStorage.setItem(sessionKey, JSON.stringify(this.limitsOfLiability));
 
         this.selectedRiskLimits = [];
       },
@@ -3800,7 +3785,6 @@ export class RiskDetailsComponent {
       }
     });
   }
-
 
   getAddedLimitsOfLiability(): void {
     if (!this.selectedSubclassCode || !this.quoteProductCode) {
@@ -3814,11 +3798,108 @@ export class RiskDetailsComponent {
         next: (res) => {
           log.debug('LimitLiability', res);
           this.addedLimitsOfLiability = res?._embedded || res || [];
+
+          // After getting added limits, refresh available limits to ensure consistency
+          this.refreshAvailableLimits();
         },
         error: (err) => {
           log.debug('Error fetching limits of liability (L):', err);
         },
       });
+  }
+
+  refreshAvailableLimits(): void {
+    const subclassCode = this.selectedSubclassCode;
+    if (!subclassCode) return;
+
+    this.quotationService.getLimitsOfLiability(subclassCode, 'L').subscribe({
+      next: (data) => {
+        const allLimits = data?._embedded || [];
+
+        const addedCodes = new Set(this.addedLimitsOfLiability.map(l => l.code));
+        this.limitsOfLiability = allLimits.filter(l => !addedCodes.has(l.code));
+
+        const sessionKey = `availableLimitsOfLiability_${subclassCode}`;
+        sessionStorage.setItem(sessionKey, JSON.stringify(this.limitsOfLiability));
+      },
+      error: (err) => {
+        log.error(`Failed to refresh limits for subclass ${subclassCode}:`, err);
+      }
+    });
+  }
+
+  //edit limits of liability
+  populateEditLimitModal(limit: any): void {
+    this.selectedLimit = { ...limit };
+    this.originalLimitBeforeEdit = { ...limit };
+  }
+
+  wasLimitModified(): boolean {
+    if (!this.selectedLimit || !this.originalLimitBeforeEdit) return false;
+
+    const newNarration = this.selectedLimit.narration?.trim() ?? '';
+    const oldNarration = this.originalLimitBeforeEdit.narration?.trim() ?? '';
+
+    const newValue = this.selectedLimit.value;
+    const oldValue = this.originalLimitBeforeEdit.value;
+
+    return (
+      (newNarration !== oldNarration && newNarration.length > 0) ||
+      newValue !== oldValue
+    );
+  }
+
+  editLimit(): void {
+    const newQpCode = this.quoteProductCode;
+    const payload = [
+      {
+        code: this.selectedLimit.code,
+        scheduleValueCode: this.selectedLimit.quotationValueCode,
+        value: this.selectedLimit.value,
+        narration: this.selectedLimit.narration,
+        type: 'L'
+      }
+    ];
+
+    this.quotationService.editLimitsOfLiability(newQpCode, payload).subscribe({
+      next: (res) => {
+        log.debug('Limit updated successfully', res);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Limit updated successfully');
+
+        // Refresh to ensure consistency
+        this.getAddedLimitsOfLiability();
+      },
+      error: (err) => {
+        log.debug('Error updating limit', err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Error updating limit');
+      }
+    });
+  }
+
+  //delete limit
+  prepareDeleteLimit(limit: any): void {
+    this.selectedLimit = limit;
+    log.debug("limitDelete", this.selectedLimit)
+  }
+
+  deleteLimit(): void {
+    if (!this.selectedLimit?.quotationValueCode) {
+      log.debug("No scheduleValueCode found for deletion");
+      return;
+    }
+
+    this.quotationService.deleteLimit(this.selectedLimit.quotationValueCode).subscribe({
+      next: (res) => {
+        log.debug("Limit deleted successfully", res);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Limit deleted successfully');
+
+        this.getAddedLimitsOfLiability();
+      },
+      error: (err) => {
+        log.debug("Error deleting limit", err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Error deleting limit');
+      }
+    });
   }
 
   cleanCurrencyValue(value: string): string {
@@ -3841,21 +3922,11 @@ export class RiskDetailsComponent {
     if (savedAvailable) {
       this.excessesData = JSON.parse(savedAvailable);
     } else {
-      this.quotationService.getExcesses(subclassCode, 'E').subscribe({
-        next: (data) => {
-          this.excessesData = data?._embedded || [];
-          sessionStorage.setItem(sessionKey, JSON.stringify(this.excessesData));
-        },
-        error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', 'Could not load excesses');
-        }
-      });
+      this.refreshAvailableExcesses(); 
     }
 
     this.getAddedExcesses();
   }
-
-
 
   openExcessModal(): void {
     if (!this.selectedSubclassCode) {
@@ -3863,10 +3934,7 @@ export class RiskDetailsComponent {
       return;
     }
 
-    log.debug("Opening excessess modal for subclass:", this.selectedSubclassCode);
-
     this.showExcessModal = true;
-
     const modalElement = document.getElementById('addExcess');
     if (modalElement) {
       const modal = new (window as any).bootstrap.Modal(modalElement);
@@ -3893,13 +3961,8 @@ export class RiskDetailsComponent {
     this.quotationService.addExcesses(newQpCode, payload).subscribe({
       next: () => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Excesses added successfully');
+
         this.getAddedExcesses();
-
-        // Remove added from available
-        const addedCodes = new Set(this.selectedExcessess.map(e => e.code));
-        this.excessesData = this.excessesData.filter(e => !addedCodes.has(e.code));
-        sessionStorage.setItem(`availableExcessess_${subclassCode}`, JSON.stringify(this.excessesData));
-
         this.selectedExcessess = [];
       },
       error: (err) => {
@@ -3907,7 +3970,6 @@ export class RiskDetailsComponent {
       }
     });
   }
-
 
   getAddedExcesses(): void {
     if (!this.selectedSubclassCode || !this.quoteProductCode) {
@@ -3920,15 +3982,110 @@ export class RiskDetailsComponent {
       .subscribe({
         next: (res) => {
           this.addedExcessess = res?._embedded || [];
-          log.debug('addedExcesses', this.excessesData);
+          log.debug('addedExcesses', this.addedExcessess);
+          this.refreshAvailableExcesses();
         },
         error: (err) => {
-          log.debug('Error fetching limits of liability', err);
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch limits of liability');
+          log.debug('Error fetching excesses', err);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses');
         },
       });
   }
 
+  refreshAvailableExcesses(): void {
+    const subclassCode = this.selectedSubclassCode;
+    if (!subclassCode) return;
+
+    this.quotationService.getExcesses(subclassCode, 'E').subscribe({
+      next: (data) => {
+        const allExcesses = data?._embedded || [];
+
+        const addedCodes = new Set(this.addedExcessess.map(e => e.code));
+        this.excessesData = allExcesses.filter(e => !addedCodes.has(e.code));
+
+        const sessionKey = `availableExcessess_${subclassCode}`;
+        sessionStorage.setItem(sessionKey, JSON.stringify(this.excessesData));
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', 'Could not load excesses');
+      }
+    });
+  }
+
+  //edit excesses
+  wasExcessModified(): boolean {
+    if (!this.selectedExcess || !this.originalExcessBeforeEdit) return false;
+
+    const newNarration = this.selectedExcess.narration?.trim() ?? '';
+    const oldNarration = this.originalExcessBeforeEdit.narration?.trim() ?? '';
+
+    const newValue = this.selectedExcess.value;
+    const oldValue = this.originalExcessBeforeEdit.value;
+
+    return (
+      (newNarration !== oldNarration && newNarration.length > 0) ||
+      newValue !== oldValue
+    );
+  }
+
+  populateEditExcessModal(excess: any) {
+    this.selectedExcess = { ...excess };
+    this.originalExcessBeforeEdit = { ...excess };
+  }
+
+  editExcess() {
+    const newQpCode = this.quoteProductCode;
+    const payload = [
+      {
+        code: this.selectedExcess.code,
+        scheduleValueCode: this.selectedExcess.quotationValueCode,
+        value: this.selectedExcess.value,
+        narration: this.selectedExcess.narration,
+        type: 'E'
+      }
+    ];
+
+    this.quotationService.editExcesses(newQpCode, payload).subscribe({
+      next: (res) => {
+        log.debug('Excess updated successfully', res);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Excess updated successfully');
+
+        this.getAddedExcesses();
+      },
+      error: (err) => {
+        log.debug('Error updating excess', err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Error updating excess');
+      }
+    });
+  }
+
+  //delete excesses
+  prepareDeleteExcess(excess: any): void {
+    this.selectedExcess = excess;
+    log.debug("excessDelete", this.selectedExcess)
+  }
+
+  deleteExcess(): void {
+    if (!this.selectedExcess?.quotationValueCode) {
+      log.debug("No scheduleValueCode found for deletion");
+      return;
+    }
+
+    this.quotationService.deleteExcesses(this.selectedExcess.quotationValueCode).subscribe({
+      next: (res) => {
+        log.debug("Excess deleted successfully", res);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Excess deleted successfully');
+
+        this.getAddedExcesses();
+      },
+      error: (err) => {
+        log.debug("Error deleting excess", err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Error deleting excess');
+      }
+    });
+  }
+
+  
   //Perils
   loadQuotationPerils(): void {
     const riskCode = this.quotationRiskCode;
@@ -4674,7 +4831,7 @@ export class RiskDetailsComponent {
     return schedulePayloadL2;
   }
 
- createTaxForm() {
+  createTaxForm() {
     this.taxForm = this.fb.group({
       tax: ['', Validators.required],
       taxType: ['', Validators.required],
@@ -4700,17 +4857,18 @@ export class RiskDetailsComponent {
   closeEditTaxModal() {
     this.showEditTaxModal = false;
   }
-  getQuotationDetails(code:any){
+  getQuotationDetails(code: any) {
     this.quotationService.getQuotationDetails(code).pipe(
-            untilDestroyed(this)
-          )
-          .subscribe((res: any) => {
-            this.quotationView = res;})
+      untilDestroyed(this)
+    )
+      .subscribe((res: any) => {
+        this.quotationView = res;
+      })
 
   }
 
 
- 
+
 
 
 
@@ -4742,73 +4900,73 @@ export class RiskDetailsComponent {
 
 
 
-    getTransactionTypes() {
-  
-      this.quotationService.getTransactionTypes().subscribe({
-        next: (response) => {
-          this.transactionTypes = response || [];
-  
-          log.debug('transactionTypes', this.transactionTypes)
-        },
-        error: (error) => {
-          log.error('Error fetching transaction types:', error);
-        }
-      })
-  
-    }
-  
-  
-    addTax() {
-  
-      Object.keys(this.taxForm.controls).forEach(field => {
-        const control = this.taxForm.get(field);
-        control?.markAsTouched({ onlySelf: true });
-      });
-  
-      if (this.taxForm.invalid || !this.selectedProduct) {
-        this.globalMessagingService.displayErrorMessage('Missing Info', 'Please complete the form before submitting');
-        return;
+  getTransactionTypes() {
+
+    this.quotationService.getTransactionTypes().subscribe({
+      next: (response) => {
+        this.transactionTypes = response || [];
+
+        log.debug('transactionTypes', this.transactionTypes)
+      },
+      error: (error) => {
+        log.error('Error fetching transaction types:', error);
       }
-  
-      const formValues = this.taxForm.value;
-  
-      const payload: TaxPayload = {
-        code: 0,
-        rateDescription: formValues.rateDescription,
-        rate: parseFloat(formValues.taxValue),
-        rateType: formValues.rateType,
-        taxAmount: 0,
-        productCode: this.selectedProduct.productCode,
-        quotationCode: Number(this.quotationCode),
-        transactionCode: formValues.tracTrntCode,
-        renewalEndorsement: '',
-        taxRateCode: formValues.taxRateCode,
-        levelCode: formValues.computationLevel,
-        taxType: formValues.taxType,
-        riskProductLevel: ''
-      };
-  
-      log.debug('Payload to add:', payload);
-      log.debug('quotationCode', this.quotationCode)
-      const quotationCode = Number(this.quotationCode)
-  
-      this.quotationService.addTaxes(quotationCode, this.selectedProduct.code, [payload]).subscribe({
-        next: (res) => {
-          res && this.fetchQuotationDetails(quotationCode);
-          this.globalMessagingService.displaySuccessMessage('Success', 'Tax added successfully');
-          this.showTaxModal = false;
-          this.taxForm.reset();
-        },
-        error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add tax');
-        }
-      });
-  
+    })
+
+  }
+
+
+  addTax() {
+
+    Object.keys(this.taxForm.controls).forEach(field => {
+      const control = this.taxForm.get(field);
+      control?.markAsTouched({ onlySelf: true });
+    });
+
+    if (this.taxForm.invalid || !this.selectedProduct) {
+      this.globalMessagingService.displayErrorMessage('Missing Info', 'Please complete the form before submitting');
+      return;
     }
+
+    const formValues = this.taxForm.value;
+
+    const payload: TaxPayload = {
+      code: 0,
+      rateDescription: formValues.rateDescription,
+      rate: parseFloat(formValues.taxValue),
+      rateType: formValues.rateType,
+      taxAmount: 0,
+      productCode: this.selectedProduct.productCode,
+      quotationCode: Number(this.quotationCode),
+      transactionCode: formValues.tracTrntCode,
+      renewalEndorsement: '',
+      taxRateCode: formValues.taxRateCode,
+      levelCode: formValues.computationLevel,
+      taxType: formValues.taxType,
+      riskProductLevel: ''
+    };
+
+    log.debug('Payload to add:', payload);
+    log.debug('quotationCode', this.quotationCode)
+    const quotationCode = Number(this.quotationCode)
+
+    this.quotationService.addTaxes(quotationCode, this.selectedProduct.code, [payload]).subscribe({
+      next: (res) => {
+        res && this.fetchQuotationDetails(quotationCode);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Tax added successfully');
+        this.showTaxModal = false;
+        this.taxForm.reset();
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add tax');
+      }
+    });
+
+  }
 
 
   openTaxModal(tax?: any, forceAddMode = false) {
-    
+
     if (!this.selectedProduct) {
       this.globalMessagingService.displayErrorMessage('Missing Product', 'Please select a product before adding tax.');
       return;
@@ -4816,26 +4974,26 @@ export class RiskDetailsComponent {
 
 
 
-  
-  if (!this.taxes || this.taxes.length === 0) {
-    console.log('Loading taxes first...');
-    this.getProductTaxes();
-    
-    
-    setTimeout(() => {
-      if (this.taxes && this.taxes.length > 0) {
-        
-        this.openTaxModal(tax, forceAddMode); 
-      } else {
-        console.log('Failed to load taxes');
-        this.globalMessagingService.displayErrorMessage(
-          'Loading Error', 
-          'Failed to load tax list. Please try again.'
-        );
-      }
-    }, 500); 
-    return;
-  }
+
+    if (!this.taxes || this.taxes.length === 0) {
+      console.log('Loading taxes first...');
+      this.getProductTaxes();
+
+
+      setTimeout(() => {
+        if (this.taxes && this.taxes.length > 0) {
+
+          this.openTaxModal(tax, forceAddMode);
+        } else {
+          console.log('Failed to load taxes');
+          this.globalMessagingService.displayErrorMessage(
+            'Loading Error',
+            'Failed to load tax list. Please try again.'
+          );
+        }
+      }, 500);
+      return;
+    }
 
 
     this.selectedTax = tax || null;
@@ -4862,7 +5020,7 @@ export class RiskDetailsComponent {
     }
 
     if (!selectedTaxFromList) {
-      
+
       this.globalMessagingService.displayErrorMessage(
         'Tax Match Failed',
         'Could not match this tax with master tax list. Please check tax setup.'
@@ -4880,7 +5038,7 @@ export class RiskDetailsComponent {
 
     log.debug('SelectedTaxCode:', selectedTaxFromList?.code);
     log.debug('SelectedTaxFromList:', selectedTaxFromList);
-  
+
     const taxTypeValue = selectedTaxFromList.taxRateType || '';
     if (taxTypeValue && !this.taxTypes.find(t => t.value === taxTypeValue)) {
       this.taxTypes.unshift({
@@ -4938,7 +5096,7 @@ export class RiskDetailsComponent {
 
 
 
-    
+
 
     this.showTaxModal = true;
   }
@@ -4970,109 +5128,109 @@ export class RiskDetailsComponent {
     { label: 'PolicyHolder Fund', value: 'PolicyHolder Fund' },
   ];
 
-  
-    updateTax() {
-      const formValue = this.taxForm.value;
-  
-      const payload: TaxPayload = {
-        code: this.selectedTax.code,
-        rateDescription: formValue.rateDescription,
-        rate: parseFloat(formValue.taxValue),
-        rateType: formValue.rateType,
-        taxAmount: 0,
-        productCode: this.selectedProduct.productCode,
-        quotationCode: Number(this.quotationCode),
-        transactionCode: formValue.tracTrntCode,
-        renewalEndorsement: '',
-        taxRateCode: formValue.taxRateCode,
-        levelCode: formValue.computationLevel,
-        taxType: formValue.taxType,
-        riskProductLevel: '',
-      };
-      log.debug('Payload to update:', payload);
-  
-  
-      this.quotationService.updateTaxes(payload).subscribe({
-        next: (res) => {
-          res && this.fetchQuotationDetails(this.quotationCode);
-          console.log('Tax updated successfully:', res);
-          this.globalMessagingService.displaySuccessMessage('Success', 'Tax updated successfully');
-          this.taxForm.reset();
-          this.showTaxModal = false;
-        },
-        error: (err) => {
-          console.error('Error updating tax:', err);
-          this.globalMessagingService.displayErrorMessage('Error', err?.error?.message || 'Failed to update tax');
-        }
-      });
-    }
-  
-    saveTax() {
-      Object.values(this.taxForm.controls).forEach(control => {
-        control.markAsTouched();
-        control.updateValueAndValidity();
-      });
-      if (!this.taxForm.valid) {
-        this.globalMessagingService.displayErrorMessage('Missing Info', 'Please complete the form before submitting');
-        return;
+
+  updateTax() {
+    const formValue = this.taxForm.value;
+
+    const payload: TaxPayload = {
+      code: this.selectedTax.code,
+      rateDescription: formValue.rateDescription,
+      rate: parseFloat(formValue.taxValue),
+      rateType: formValue.rateType,
+      taxAmount: 0,
+      productCode: this.selectedProduct.productCode,
+      quotationCode: Number(this.quotationCode),
+      transactionCode: formValue.tracTrntCode,
+      renewalEndorsement: '',
+      taxRateCode: formValue.taxRateCode,
+      levelCode: formValue.computationLevel,
+      taxType: formValue.taxType,
+      riskProductLevel: '',
+    };
+    log.debug('Payload to update:', payload);
+
+
+    this.quotationService.updateTaxes(payload).subscribe({
+      next: (res) => {
+        res && this.fetchQuotationDetails(this.quotationCode);
+        console.log('Tax updated successfully:', res);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Tax updated successfully');
+        this.taxForm.reset();
+        this.showTaxModal = false;
+      },
+      error: (err) => {
+        console.error('Error updating tax:', err);
+        this.globalMessagingService.displayErrorMessage('Error', err?.error?.message || 'Failed to update tax');
       }
-  
-      if (this.isEditingTax) {
-        this.updateTax();
-      } else {
-        this.addTax();
+    });
+  }
+
+  saveTax() {
+    Object.values(this.taxForm.controls).forEach(control => {
+      control.markAsTouched();
+      control.updateValueAndValidity();
+    });
+    if (!this.taxForm.valid) {
+      this.globalMessagingService.displayErrorMessage('Missing Info', 'Please complete the form before submitting');
+      return;
+    }
+
+    if (this.isEditingTax) {
+      this.updateTax();
+    } else {
+      this.addTax();
+    }
+  }
+
+
+
+  handleAddTaxClick() {
+    this.openEditTaxModal();
+    this.getTransactionTypes();
+    if (this.selectedProduct?.code) {
+      this.getProductTaxes();
+    }
+  }
+  loadTaxDetails() {
+    if (!this.selectedProduct) {
+      log.debug('[RiskDetailsComponent] No product selected, cannot load tax details.');
+      return;
+    }
+
+    if (!this.quotationView || !this.quotationView.quotationProducts) {
+      log.debug('[RiskDetailsComponent] Quotation view or products not loaded yet.');
+      return;
+    }
+
+    const quotationProductCode = this.selectedProduct.code;
+    log.debug("[RiskDetailsComponent] Loading Tax Details for product quotation code:", quotationProductCode);
+
+    const matchingProduct = this.quotationView.quotationProducts.find(
+      (product: any) => product.code === quotationProductCode
+    );
+
+    if (matchingProduct) {
+      this.taxDetails = matchingProduct.taxInformation;
+      log.debug("Tax Details:", this.taxDetails);
+    } else {
+      log.debug("No matching product found for code:", quotationProductCode);
+    }
+  }
+
+  deleteTaxes(tax: any) {
+
+
+    this.quotationService.deleteProductTaxes(tax.code).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Tax successfully deleted');
+        this.loadTaxDetails()
+        this.fetchQuotationDetails(this.quotationCode)
+      },
+      error: (err) => {
+        console.error('Delete failed:', err);
       }
-    }
-  
-  
-
-handleAddTaxClick() {
-  this.openEditTaxModal();
-  this.getTransactionTypes();
-  if (this.selectedProduct?.code) {
-    this.getProductTaxes();
+    });
   }
-}
-loadTaxDetails() {
-  if (!this.selectedProduct) {
-    log.debug('[RiskDetailsComponent] No product selected, cannot load tax details.');
-    return;
-  }
-
-  if (!this.quotationView || !this.quotationView.quotationProducts) {
-    log.debug('[RiskDetailsComponent] Quotation view or products not loaded yet.');
-    return;
-  }
-
-  const quotationProductCode = this.selectedProduct.code;
-  log.debug("[RiskDetailsComponent] Loading Tax Details for product quotation code:", quotationProductCode);
-
-  const matchingProduct = this.quotationView.quotationProducts.find(
-    (product: any) => product.code === quotationProductCode
-  );
-
-  if (matchingProduct) {
-    this.taxDetails = matchingProduct.taxInformation;
-    log.debug("Tax Details:", this.taxDetails);
-  } else {
-    log.debug("No matching product found for code:", quotationProductCode);
-  }
-}
-
-deleteTaxes(tax: any) {
-   
-
-  this.quotationService.deleteProductTaxes(tax.code).subscribe({
-    next: (res) => {
-      this.globalMessagingService.displaySuccessMessage('Success', 'Tax successfully deleted');
-      this.loadTaxDetails() 
-      this.fetchQuotationDetails(this.quotationCode)     
-    },
-    error: (err) => {
-      console.error('Delete failed:', err);           
-    }
-  });
-}
 
 
 
