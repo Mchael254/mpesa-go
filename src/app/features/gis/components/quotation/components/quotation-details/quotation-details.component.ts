@@ -1968,4 +1968,32 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       .replace(/([A-Z])/g, ' $1')
       .replace(/^./, (str) => str.toUpperCase());
   }
+getCellValue(row: any, field: string): any {
+  const value = row[field];
+
+  // Explicitly handle productCode field
+  if (field === 'productCode' && value) {
+    return value.code ?? ''; // Access code from the value itself
+  }
+
+  // Handle dates automatically
+  if (value instanceof Date) {
+    return new Intl.DateTimeFormat('en-GB', { 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric' 
+    }).format(value);
+  }
+
+  // Handle other objects dynamically (but prioritize code if available)
+  if (value && typeof value === 'object') {
+    return value.code ?? JSON.stringify(value);
+  }
+
+  return value ?? '';
+}
+
+
+
+
 }
