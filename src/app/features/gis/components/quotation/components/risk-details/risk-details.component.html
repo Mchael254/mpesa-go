@@ -30,14 +30,15 @@
                     <td class="flexible-header">
                         <!-- Edit Button -->
                         <button pButton pRipple type="button"
-                            class="p-button-text p-button-sm p-button-info custom-button" tooltipPosition="top"
-                            (click)="openEditRiskModal(risk)">
+                            class="p-button-text p-button-sm p-button-info custom-button p-text-bold"
+                            tooltipPosition="top" (click)="openEditRiskModal(risk)">
                             Edit
                         </button>
 
                         <!-- Delete Button -->
-                        <button pButton pRipple type="button" class="p-button-text p-button-sm custom-button"
-                            tooltipPosition="top" data-bs-toggle="modal" data-bs-target="#deleteRisk">
+                        <button pButton pRipple type="button"
+                            class="p-button-text p-button-sm custom-button p-text-bold" tooltipPosition="top"
+                            data-bs-toggle="modal" data-bs-target="#deleteRisk">
                             Delete
                         </button>
                     </td>
@@ -301,13 +302,15 @@
                                 <!-- Actions Column -->
                                 <ng-container *ngIf="col.field === 'actions'; else defaultCell">
                                     <button pButton pRipple type="button"
-                                        class="p-button-text p-button-sm p-button-info custom-button" tooltip="Edit">
+                                        class="p-button-text p-button-sm p-button-info custom-button" tooltip="Edit"
+                                        (click)="editOtherDetails(tab)">
                                         Edit
                                     </button>
 
-                                    <button *ngIf="levelDataMap[tab.levelName]?.length > 1" pButton pRipple
-                                        type="button" class="p-button-text p-button-sm custom-button"
-                                        data-bs-toggle="modal" data-bs-target="#deleteRisk" tooltip="Delete">
+                                    <button pButton pRipple type="button"
+                                        class="p-button-text p-button-sm custom-button" data-bs-toggle="modal"
+                                        data-bs-target="#deleteSchedule" tooltip="Delete"
+                                        (click)="getLevelName(tab.levelNumber)">
                                         Delete
                                     </button>
                                 </ng-container>
@@ -333,8 +336,8 @@
             </div>
         </div>
 
-        <div class="modal fade" id="addOtherDetailsModal" tabindex="-1" aria-labelledby="addOtherDetailsModalLabel"
-            aria-hidden="true">
+        <div class="modal fade" id="addOtherDetailsModal" #addotherScheduleModal tabindex="-1"
+            aria-labelledby="addOtherDetailsModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content mx-4 " style=" max-width:700px;">
                     <form [formGroup]="scheduleOtherDetailsForm">
@@ -413,7 +416,29 @@
                 </div>
             </div>
         </div>
+        <!-- Delete Schedule Modal -->
+        <div class="modal fade" id="deleteSchedule" tabindex="-1" role="dialog" aria-labelledby="deleteSchedule"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content" id="deleteSchedule">
+                    <div class="modal-body ">
+                        <p class="deleteMessage mt-4 mb-4">{{'gis.policy.are_you_sure_you_want_to_delete' |
+                            translate}}</p>
+                        <div class="d-flex justify-content-center mb-3">
+                            <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
+                                (click)="deleteScheduleForLevel()">{{'gis.policy.yes_delete'
+                                | translate}}</button>
+                        </div>
+                        <div class="d-flex justify-content-center mb-2">
+                            <button type="button" class="btn btn-outline-primary px-5"
+                                data-bs-dismiss="modal">{{'gis.policy.no_im_not' | translate}}</button>
+                        </div>
 
+
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>
@@ -1214,6 +1239,7 @@
                             'pi-caret-down': !showSections
                             }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
                     </div>
+                    <!-- taxes action tabs -->
                     <div *ngIf="riskActiveTab === 'riskTaxes'">
                         <button class="btn btn-primary btn-sm mb-1" type="button" (click)="handleAddTaxClick()">
                             Add Tax
@@ -1668,11 +1694,12 @@
                                                 <ng-container *ngIf="limitsOfLiability?.length > 0; else noClauses">
                                                     <i class="pi pi-search"
                                                         style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                                    <p>No matching clauses found.</p>
+                                                    <p>No matching limits of liability found.</p>
                                                 </ng-container>
                                                 <ng-template #noClauses>
-                                                    <p><strong>No clauses available.</strong> There are currently no
-                                                        clauses to add.</p>
+                                                    <p><strong>No limits of liability available.</strong> There are
+                                                        currently no
+                                                        limits of liability to add.</p>
                                                 </ng-template>
                                             </td>
                                         </tr>
@@ -1941,11 +1968,11 @@
                                                 <ng-container *ngIf="perils?.length > 0; else noClauses">
                                                     <i class="pi pi-search"
                                                         style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                                    <p>No matching clauses found.</p>
+                                                    <p>No matching perils found.</p>
                                                 </ng-container>
                                                 <ng-template #noClauses>
                                                     <p><strong>No perils available.</strong> There are currently no
-                                                        clauses to add.</p>
+                                                        perils to add.</p>
                                                 </ng-template>
                                             </td>
                                         </tr>
@@ -2096,7 +2123,7 @@
                     <div class="modal-content ps-4 pt-2 pe-4">
                         <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
                             <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-                                {{ 'gis.quotation.delete_clause' | translate }}</p>
+                                Delete peril</p>
                             <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
                                 style="border: none;">X
                             </button>
@@ -2153,8 +2180,15 @@
                                 <div class="col-md-6 mb-3">
                                     <label>Tax</label>
                                     <div class="position-relative" *ngIf="taxTypes && taxTypes.length">
-                                        <input type="text" class="form-control form-control-sm"
-                                            [value]="taxForm.get('rateDescription')?.value" readonly />
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" class="form-control"
+                                                [value]="taxForm.get('rateDescription')?.value" readonly>
+                                            <button class="btn btn-outline-secondary" type="button"
+                                                (click)="openEditTaxModalFromAdd()">
+                                                <i class="pi pi-search"></i>
+                                            </button>
+                                        </div>
+
                                         <div *ngIf="taxForm.get('tax')?.touched && taxForm.get('tax')?.invalid"
                                             class="text-danger small">
                                             Tax is required.
@@ -2358,25 +2392,28 @@
         </div>
 
         <!-- TAXES -->
-        <div *ngIf="riskActiveTab === 'riskTaxes'" role="tabpanel" #taxTable aria-labelledby="nav-taxes" tabindex="0"
+        <div *ngIf="riskActiveTab === 'riskTaxes'" role="tabpanel" aria-labelledby="nav-taxes" tabindex="0"
             [@slideInOut]="isClausesOpen ? 'open' : 'closed'">
-            <p-table [value]="taxDetails" class="ui-datatable" responsiveLayout="scroll" [autoLayout]="true"
+            <p-table [value]="taxDetails" #taxTable class="ui-datatable" responsiveLayout="scroll" [autoLayout]="true"
                 [scrollable]="true" scrollHeight="200px">
                 <ng-template pTemplate="header">
                     <tr>
-                        <th pSortableColumn="taxType">
+
+                        <th class="flexible-header" pSortableColumn="taxType">
                             Tax payer
                             <p-sortIcon field="taxType"></p-sortIcon>
                         </th>
 
-                        <th pSortableColumn="rateDescription">
+
+                        <th class="flexible-header" pSortableColumn="rateDescription">
                             <span class="sort-header">
                                 Short description
                                 <p-sortIcon field="rateDescription"></p-sortIcon>
                             </span>
                         </th>
 
-                        <th pSortableColumn="rateDescription">
+
+                        <th class="flexible-header" pSortableColumn="rateDescription">
 
                             <span class="sort-header">
                                 Tax description
@@ -2384,65 +2421,66 @@
                             </span>
                         </th>
 
-                        <th pSortableColumn="rate">
+
+                        <th class="flexible-header" pSortableColumn="rate">
                             Rate
                             <p-sortIcon field="rate"></p-sortIcon>
                         </th>
 
-                        <th pSortableColumn="taxAmount">
+                        <th class="flexible-header" pSortableColumn="taxAmount">
                             Tax amount
                             <p-sortIcon field="taxAmount"></p-sortIcon>
                         </th>
-                        <th pSortableColumn="rateType">
+                        <th class="flexible-header" pSortableColumn="rateType">
                             Rate type
                             <p-sortIcon field="rateType"></p-sortIcon>
                         </th>
-                        <th pSortableColumn="taxType">
+                        <th class="flexible-header" pSortableColumn="taxType">
                             Tax type
                             <p-sortIcon field="taxType"></p-sortIcon>
                         </th>
                         <th></th>
-                        <th></th>
+
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-data let-columns="columns" let-rowIndex="rowIndex">
                     <ng-container *ngIf="rowIndex === 0">
                         <tr>
 
-                            <td>
+                            <td class="flexible-header">
                                 <input type="text" pInputText placeholder="" class="form-control w-70"
                                     (input)="filterTable($event, 'taxType', taxTable)" />
                             </td>
-                            <td>
+                            <td class="flexible-header">
                                 <input type="text" pInputText placeholder="" class="form-control w-70"
                                     (input)="filterTable($event, 'rateDescription', taxTable)" />
                             </td>
-                            <td>
+                            <td class="flexible-header">
                                 <input type="text" pInputText placeholder="" class="form-control w-70"
                                     (input)="filterTable($event, 'rateDescription', taxTable)" />
                             </td>
-                            <td>
+                            <td class="flexible-header">
                                 <input type="text" pInputText placeholder="" class="form-control w-70"
                                     (input)="filterTable($event, 'rate', taxTable)" />
                             </td>
-                            <td>
+                            <td class="flexible-header">
                                 <input type="text" pInputText placeholder="" class="form-control w-70"
                                     (input)="filterTable($event, 'taxAmount', taxTable)" />
                             </td>
-                            <td>
+                            <td class="flexible-header">
                                 <input type="text" pInputText placeholder="" class="form-control w-70"
                                     (input)="filterTable($event, 'rateType', taxTable)" />
                             </td>
-                            <td>
+                            <td class="flexible-header">
                                 <input type="text" pInputText placeholder="" class="form-control w-70"
                                     (input)="filterTable($event, 'taxType', taxTable)" />
                             </td>
-
+                            <td></td>
 
 
                         </tr>
                     </ng-container>
-                    <tr>
+                    <tr [pSelectableRow]="data">
                         <td>{{ data.taxType }}</td>
                         <td>{{ data.rateDescription }}</td>
                         <td>{{ data.rateDescription }}</td>
@@ -2451,8 +2489,8 @@
                         <td>{{data.rateType}}</td>
                         <td>{{ data.taxType }}</td>
 
-                        <td>
-                            <button class="btn btn-sm text-primary me-2" (click)="openTaxModal(data)">
+                        <td class="d-flex align-items-center">
+                            <button class="btn btn-sm text-primary me-2" (click)="openEditTaxModalFromDB(data)">
                                 Edit
                             </button>
                             <button class="btn btn-sm text-primary" (click)="deleteTaxes(data)">
@@ -2470,6 +2508,10 @@
                 </ng-template>
             </p-table>
         </div>
+
+
+
+
 
 
         <!-- excesses table -->
@@ -2655,7 +2697,7 @@
                 </div>
             </div>
 
-             <!-- edit excess modal -->
+            <!-- edit excess modal -->
             <div class="modal fade" id="editExcess">
                 <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
                     <div class="modal-content ps-4 pt-2 pe-4">
@@ -2699,7 +2741,7 @@
 
             </div>
 
-              <!-- delete excess modal -->
+            <!-- delete excess modal -->
             <div class="modal fade" id="deleteExcess">
                 <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
                     <div class="modal-content ps-4 pt-2 pe-4">
