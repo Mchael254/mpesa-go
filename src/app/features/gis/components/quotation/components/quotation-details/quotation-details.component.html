@@ -412,7 +412,7 @@
 
             <!-- Default case: display value dynamically -->
             <ng-container *ngSwitchDefault>
-              {{ product[col.field] }}
+{{ getCellValue(product, col.field) }}
             </ng-container>
 
           </ng-container>
