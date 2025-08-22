@@ -232,6 +232,7 @@ export class RiskDetailsComponent {
   activeTab: ScheduleTab | null = null;
   isEditMode: boolean = false;
   isAddMode: boolean = false;
+
   selectedRiskClauses: any;
   clauseModified: boolean = false;
   sessionClauses: any[] = [];
@@ -248,10 +249,13 @@ export class RiskDetailsComponent {
   originalClauseBeforeEdit: any = null;
   clauseToDelete: any = null;
   selectedClauses: any[] = [];
+  showClauses: boolean = true;
+  showClauseColumnModal = false;
 
   showLimitModal: boolean = false
 
   columns: { field: string; header: string; visible: boolean }[] = [];
+  clauseColumns: { field: string; header: string; visible: boolean }[] = [];
 
   showSections: boolean = true;
   showColumnModal = false;
@@ -437,7 +441,7 @@ export class RiskDetailsComponent {
     this.loadAllClients();
     this.getProductTaxes();
 
-  
+
 
   }
 
@@ -2966,7 +2970,45 @@ export class RiskDetailsComponent {
     this.isClausesOpen = !this.isClausesOpen;
   }
 
+
   //risk clauses
+  toggleClauseColumns(iconElement: HTMLElement): void {
+    this.showClauses = !this.showClauses;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showClauseColumnModal = true;
+  }
+
+  setClauseColumns(clause: Clause) {
+    const excludedFields = [];
+
+    this.clauseColumns = Object.keys(clause)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: this.defaultVisibleFields.includes(key),
+      }));
+
+    // manually add actions column
+    this.clauseColumns.push({ field: 'actions', header: 'Actions', visible: true });
+  }
+
+  defaultVisibleClauseFields = [
+    'code', 'shortDescription', 'heading', 'wording', 'type', 'isEditable', 'isCurrent', 'isLien', 'ins',
+    'merge', 'organizationCode', 'version', 'updatedAt', 'updatedBy', 'isMandatory', 'links'
+  ];
+
+
   loadAddedClauses(): void {
     const riskCode = this.quotationRiskCode
     this.quotationService.getAddedRiskClauses(riskCode).subscribe({
@@ -3965,8 +4007,8 @@ export class RiskDetailsComponent {
     ];
 
     this.quotationService.editLimitsOfLiability(newQpCode, payload).subscribe({
-      next: () => {
-
+      next: (res) => {
+        res && this.globalMessagingService.displaySuccessMessage('Success', 'Limit updated successfully');
         this.quotationService.getAddedLimitsOfLiability(this.selectedSubclassCode, newQpCode, 'L')
           .subscribe({
             next: (res) => {
@@ -4199,11 +4241,11 @@ export class RiskDetailsComponent {
     }];
 
     this.quotationService.editExcesses(this.quoteProductCode, payload).subscribe({
-      next: () => {
+      next: (res) => {
+        res && this.globalMessagingService.displaySuccessMessage('Success', 'Excess updated successfully');
         this.quotationService.getAddedExcesses(this.selectedSubclassCode, this.quoteProductCode, 'E')
           .subscribe({
             next: (res) => {
-              this.globalMessagingService.displaySuccessMessage('Success', 'Excess updated successfully');
               this.addedExcessess = res._embedded ? [...res._embedded] : [];
               this.cdr.detectChanges();
 
@@ -5040,7 +5082,7 @@ export class RiskDetailsComponent {
   closeEditTaxModal() {
     this.showEditTaxModal = false;
   }
- 
+
 
 
 
@@ -5140,146 +5182,146 @@ export class RiskDetailsComponent {
     });
 
   }
-  
+
   openTaxModal(tax: any, forceAddMode: boolean = false): void {
-  console.log('--- openTaxModal Triggered ---');
-  console.log('Tax passed in:', tax);
-  console.log('forceAddMode:', forceAddMode);
-
-  
-  const isEditing = !forceAddMode && !!tax && !!tax.code;
-  console.log('Is Editing:', isEditing);
-
-  this.taxForm.reset();
-  
-if (tax?.taxRateType ?? tax?.taxCode) {
-  const value = tax.taxRateType ?? tax.taxCode;
-  if (!this.taxTypes.find(t => t.value === value)) {
-    this.taxTypes.unshift({ label: tax.RateType || value, value: value });
-    this.taxTypes = [...this.taxTypes]; 
-  }
-}
+    console.log('--- openTaxModal Triggered ---');
+    console.log('Tax passed in:', tax);
+    console.log('forceAddMode:', forceAddMode);
 
 
-if (tax?.transactionType) {
-  const code = String(tax.transactionType);
-  if (!this.transactionTypes.find(t => t.code === code)) {
-    this.transactionTypes.unshift({ code: code, description: code });
-    this.transactionTypes = [...this.transactionTypes];
-  }
-}
+    const isEditing = !forceAddMode && !!tax && !!tax.code;
+    console.log('Is Editing:', isEditing);
 
-  if (isEditing) {
-    console.log('Patching form for Add mode with values:', {
-      tax: tax.code,
-      taxType: tax.taxRateType ?? tax.taxCode,
-      transactionType: tax.transactionType,
-      computationLevel: tax.computationLevel,
-      taxMode: tax.taxMode,
-      taxRateCode: tax.taxRateCode,
-      taxValue: tax.taxRate,
-      override: tax.override,
-      rateDescription: tax.description,
-      rateType: tax.taxRateType,
-      tracTrntCode: tax.code
-    });
+    this.taxForm.reset();
 
-    this.taxForm.patchValue({
-      tax: tax.code,
-      taxType: tax.taxRateType ?? tax.taxCode,
-      transactionType: tax.transactionType,
-      computationLevel: tax.computationLevel,
-      taxMode: tax.taxMode,
-      taxRateCode: tax.taxRateCode,
-      taxValue: tax.taxRate,
-      override: tax.override,
-      rateDescription: tax.description,
-      rateType: tax.taxRateType,
-      tracTrntCode: tax.code
-    });
-
-  } else {
-    console.log('Initializing ADD mode with default/empty values');
-    this.taxForm.patchValue({
-      tax: null,
-      taxType: null,
-      transactionType: null,
-      computationLevel: null,
-      taxMode: null,
-      taxRateCode: null,
-      taxValue: null,
-      override: null,
-      rateDescription: null,
-      rateType: null,
-      tracTrntCode: null
-    });
-  }
-
-  // Log the patched form values for verification
-  console.log('Patched Tax Form Values:', this.taxForm.value);
-
-  // Show the modal
-  this.showTaxModal = true;
- }openEditTaxModalFromDB(taxToEdit: any) {
-  console.log('--- openEditTaxModalFromDB Triggered ---', taxToEdit);
-
-  if (!taxToEdit) {
-    console.error('No valid tax object found!');
-    return;
-  }
-
-  // Store the selected tax for update
-  this.selectedTax = taxToEdit;
-  this.isEditingTax = true;
-
-  const patchedValues = {
-    tax: taxToEdit.code ?? '',
-    taxType: taxToEdit.taxType ?? '',
-    tracTrntCode: taxToEdit.transactionCode ?? '',
-    computationLevel: taxToEdit.levelCode ?? '',
-    taxMode: taxToEdit.rateType === 'FXD' ? 'Amount' : 'Rate',
-    taxValue: taxToEdit.rate ?? '', 
-    taxAmount: taxToEdit.taxAmount ?? '',
-    rateDescription: taxToEdit.rateDescription ?? '',
-    rateType: taxToEdit.rateType ?? '',
-    taxRateCode: taxToEdit.taxRateCode ?? '' 
-  };
-
-  console.log('Patched Tax Form Values for Edit:', patchedValues);
-
-  this.taxForm.patchValue(patchedValues);
-  this.showTaxModal = true;
-}
+    if (tax?.taxRateType ?? tax?.taxCode) {
+      const value = tax.taxRateType ?? tax.taxCode;
+      if (!this.taxTypes.find(t => t.value === value)) {
+        this.taxTypes.unshift({ label: tax.RateType || value, value: value });
+        this.taxTypes = [...this.taxTypes];
+      }
+    }
 
 
-handleNextClick() {
-  if (!this.selectedTax) {
-    this.globalMessagingService.displayErrorMessage(
-      'Selection Required', 
-      'Please select a tax to proceed'
-    );
-    return;
+    if (tax?.transactionType) {
+      const code = String(tax.transactionType);
+      if (!this.transactionTypes.find(t => t.code === code)) {
+        this.transactionTypes.unshift({ code: code, description: code });
+        this.transactionTypes = [...this.transactionTypes];
+      }
+    }
+
+    if (isEditing) {
+      console.log('Patching form for Add mode with values:', {
+        tax: tax.code,
+        taxType: tax.taxRateType ?? tax.taxCode,
+        transactionType: tax.transactionType,
+        computationLevel: tax.computationLevel,
+        taxMode: tax.taxMode,
+        taxRateCode: tax.taxRateCode,
+        taxValue: tax.taxRate,
+        override: tax.override,
+        rateDescription: tax.description,
+        rateType: tax.taxRateType,
+        tracTrntCode: tax.code
+      });
+
+      this.taxForm.patchValue({
+        tax: tax.code,
+        taxType: tax.taxRateType ?? tax.taxCode,
+        transactionType: tax.transactionType,
+        computationLevel: tax.computationLevel,
+        taxMode: tax.taxMode,
+        taxRateCode: tax.taxRateCode,
+        taxValue: tax.taxRate,
+        override: tax.override,
+        rateDescription: tax.description,
+        rateType: tax.taxRateType,
+        tracTrntCode: tax.code
+      });
+
+    } else {
+      console.log('Initializing ADD mode with default/empty values');
+      this.taxForm.patchValue({
+        tax: null,
+        taxType: null,
+        transactionType: null,
+        computationLevel: null,
+        taxMode: null,
+        taxRateCode: null,
+        taxValue: null,
+        override: null,
+        rateDescription: null,
+        rateType: null,
+        tracTrntCode: null
+      });
+    }
+
+    // Log the patched form values for verification
+    console.log('Patched Tax Form Values:', this.taxForm.value);
+
+    // Show the modal
+    this.showTaxModal = true;
+  } openEditTaxModalFromDB(taxToEdit: any) {
+    console.log('--- openEditTaxModalFromDB Triggered ---', taxToEdit);
+
+    if (!taxToEdit) {
+      console.error('No valid tax object found!');
+      return;
+    }
+
+    // Store the selected tax for update
+    this.selectedTax = taxToEdit;
+    this.isEditingTax = true;
+
+    const patchedValues = {
+      tax: taxToEdit.code ?? '',
+      taxType: taxToEdit.taxType ?? '',
+      tracTrntCode: taxToEdit.transactionCode ?? '',
+      computationLevel: taxToEdit.levelCode ?? '',
+      taxMode: taxToEdit.rateType === 'FXD' ? 'Amount' : 'Rate',
+      taxValue: taxToEdit.rate ?? '',
+      taxAmount: taxToEdit.taxAmount ?? '',
+      rateDescription: taxToEdit.rateDescription ?? '',
+      rateType: taxToEdit.rateType ?? '',
+      taxRateCode: taxToEdit.taxRateCode ?? ''
+    };
+
+    console.log('Patched Tax Form Values for Edit:', patchedValues);
+
+    this.taxForm.patchValue(patchedValues);
+    this.showTaxModal = true;
   }
 
-  const selected = this.selectedTax;
 
-  this.closeEditTaxModal();
+  handleNextClick() {
+    if (!this.selectedTax) {
+      this.globalMessagingService.displayErrorMessage(
+        'Selection Required',
+        'Please select a tax to proceed'
+      );
+      return;
+    }
 
-  
-  setTimeout(() => {
-    this.openTaxModal({
-      applicationLevel: selected.applicationLevel,
-      code: selected.code,
-      description: selected.description,
-      divisionFactor: selected.divisionFactor,
-      qpCode: selected.qpCode,
-      taxCode: selected.taxCode,
-      taxRate: selected.taxRate,
-      taxRateType: selected.taxRateType,
-      transactionType: selected.transactionType
-    });
-  }, 100);
-}
+    const selected = this.selectedTax;
+
+    this.closeEditTaxModal();
+
+
+    setTimeout(() => {
+      this.openTaxModal({
+        applicationLevel: selected.applicationLevel,
+        code: selected.code,
+        description: selected.description,
+        divisionFactor: selected.divisionFactor,
+        qpCode: selected.qpCode,
+        taxCode: selected.taxCode,
+        taxRate: selected.taxRate,
+        taxRateType: selected.taxRateType,
+        transactionType: selected.transactionType
+      });
+    }, 100);
+  }
 
   closeTaxModal() {
     this.showTaxModal = false;
@@ -5294,77 +5336,77 @@ handleNextClick() {
     { label: 'Extras', value: 'Extras' },
     { label: 'PolicyHolder Fund', value: 'PolicyHolder Fund' },
   ];
-openEditTaxModalFromAdd() {
-  
-  this.showTaxModal = false;
+  openEditTaxModalFromAdd() {
 
-  
-  this.showEditTaxModal = true;
-}
+    this.showTaxModal = false;
 
-updateTax() {
-  if (!this.selectedTax) {
-    console.error('No selected tax to update');
-    return;
+
+    this.showEditTaxModal = true;
   }
 
-  const formValue = this.taxForm.value;
-
-  const payload: TaxPayload = {
-    code: this.selectedTax.code, 
-    rateDescription: formValue.rateDescription,
-    rate: parseFloat(formValue.taxValue),
-    rateType: formValue.rateType,
-    taxAmount: 0,
-    productCode: this.selectedProduct.productCode,
-    quotationCode: Number(this.quotationCode),
-    transactionCode: formValue.tracTrntCode,
-    renewalEndorsement: '',
-    taxRateCode: formValue.taxRateCode,
-    levelCode: formValue.computationLevel,
-    taxType: formValue.taxType,
-    riskProductLevel: ''
-  };
-
-  console.log('Payload to update:', payload);
-
-  this.quotationService.updateTaxes(payload).subscribe({
-    next: (res) => {
-      this.fetchQuotationDetails(this.quotationCode);
-      this.globalMessagingService.displaySuccessMessage('Success', 'Tax updated successfully');
-      this.taxForm.reset();
-      this.isEditingTax = false;
-      this.selectedTax = null;
-      this.showTaxModal = false;
-    },
-    error: (err) => {
-      console.error('Error updating tax:', err);
-      this.globalMessagingService.displayErrorMessage('Error', err?.error?.message || 'Failed to update tax');
+  updateTax() {
+    if (!this.selectedTax) {
+      console.error('No selected tax to update');
+      return;
     }
-  });
-}
+
+    const formValue = this.taxForm.value;
+
+    const payload: TaxPayload = {
+      code: this.selectedTax.code,
+      rateDescription: formValue.rateDescription,
+      rate: parseFloat(formValue.taxValue),
+      rateType: formValue.rateType,
+      taxAmount: 0,
+      productCode: this.selectedProduct.productCode,
+      quotationCode: Number(this.quotationCode),
+      transactionCode: formValue.tracTrntCode,
+      renewalEndorsement: '',
+      taxRateCode: formValue.taxRateCode,
+      levelCode: formValue.computationLevel,
+      taxType: formValue.taxType,
+      riskProductLevel: ''
+    };
+
+    console.log('Payload to update:', payload);
+
+    this.quotationService.updateTaxes(payload).subscribe({
+      next: (res) => {
+        this.fetchQuotationDetails(this.quotationCode);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Tax updated successfully');
+        this.taxForm.reset();
+        this.isEditingTax = false;
+        this.selectedTax = null;
+        this.showTaxModal = false;
+      },
+      error: (err) => {
+        console.error('Error updating tax:', err);
+        this.globalMessagingService.displayErrorMessage('Error', err?.error?.message || 'Failed to update tax');
+      }
+    });
+  }
 
   saveTax() {
-  // Mark controls as touched to show errors
-  Object.values(this.taxForm.controls).forEach(control => {
-    control.markAsTouched();
-    control.updateValueAndValidity();
-  });
+    // Mark controls as touched to show errors
+    Object.values(this.taxForm.controls).forEach(control => {
+      control.markAsTouched();
+      control.updateValueAndValidity();
+    });
 
-  console.log('Form values before save:', this.taxForm.value);
-  console.log('Form valid?', this.taxForm.valid);
+    console.log('Form values before save:', this.taxForm.value);
+    console.log('Form valid?', this.taxForm.valid);
 
-  if (!this.taxForm.valid) {
-    this.globalMessagingService.displayErrorMessage('Missing Info', 'Please complete the form before submitting');
-    return;
+    if (!this.taxForm.valid) {
+      this.globalMessagingService.displayErrorMessage('Missing Info', 'Please complete the form before submitting');
+      return;
+    }
+
+    if (this.isEditingTax) {
+      this.updateTax();
+    } else {
+      this.addTax();
+    }
   }
-
-  if (this.isEditingTax) {
-    this.updateTax();
-  } else {
-    this.addTax();
-  }
-}
 
 
 
