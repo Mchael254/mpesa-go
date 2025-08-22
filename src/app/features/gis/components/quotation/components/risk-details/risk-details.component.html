@@ -470,15 +470,15 @@
                         (click)="openAddSectionModal()"> Add Section
                     </button>
 
-                    <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
+                    <!-- <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
                    'pi-caret-up': showSections,
                    'pi-caret-down': !showSections
-                 }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
-                    <!-- <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                 }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i> -->
+                    <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
                         [ngClass]="{ 'pi-caret-up': showSections, 'pi-caret-down': !showSections }"
                         style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
                         (click)="toggleSections(iconTrigger)">
-                    </i> -->
+                    </i>
 
                 </div>
             </div>
@@ -973,7 +973,7 @@
                     <strong class="text-primary">Select Columns</strong>
                     <button class="btn-close btn-sm" (click)="showColumnModal = false"></button>
                 </div>
-                <div style="max-height: 250px; overflow-y: auto;">
+                <div style="max-height: 200px;max-width:250px; overflow-y: auto;">
                     <div *ngFor="let col of columns">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" style="color: #00529B;"
@@ -986,11 +986,11 @@
                 </div>
             </div>
 
-            <!-- <p-table [value]="sectionDetails" [tableStyle]="{ 'min-width': '300px' }" selectionMode="single"
+            <p-table [value]="sectionDetails" [tableStyle]="{ 'min-width': '300px' }" selectionMode="single"
                 [(selection)]="selectedSection" dataKey="code" editMode="row" [paginator]="true" [rows]="2"
                 [rowsPerPageOptions]="[2, 4, 6]">
 
-               
+
                 <ng-template pTemplate="header">
                     <tr>
                         <th *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header"
@@ -1001,19 +1001,21 @@
                     </tr>
                 </ng-template>
 
-               
+
                 <ng-template pTemplate="body" let-section let-rowIndex="rowIndex">
                     <tr (click)="onSelectSection(section)" [pEditableRow]="section">
                         <td *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header">
                             <ng-container [ngSwitch]="col.field">
                                 <ng-container *ngSwitchCase="'actions'">
-                                    
-                                    <button pButton type="button" class="p-button-text p-button-sm"
+
+                                    <button pButton type="button"
+                                        class="p-button-text p-button-sm p-text-bold text-primary"
                                         (click)="onOpenEditSectionModal(section)">
                                         Edit
                                     </button>
-                                   
-                                    <button pButton type="button" class="p-button-text p-button-sm text-danger"
+
+                                    <button pButton type="button"
+                                        class="p-button-text p-button-sm  p-text-bold text-primary"
                                         (click)="setSectionToDelete(section)" data-bs-toggle="modal"
                                         data-bs-target="#deleteSection">
                                         Delete
@@ -1036,9 +1038,9 @@
                     </tr>
                 </ng-template>
 
-            </p-table> -->
+            </p-table>
 
-            <p-table [value]="sectionDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single"
+            <!-- <p-table [value]="sectionDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single"
                 [(selection)]="selectedSection" dataKey="code" editMode="row" [paginator]="true" [rows]="2"
                 [rowsPerPageOptions]="[2, 4, 6]">
                 <ng-template pTemplate="header">
@@ -1121,7 +1123,7 @@
                     </tr>
                 </ng-template>
 
-            </p-table>
+            </p-table> -->
 
         </div>
     </div>

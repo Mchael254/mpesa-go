@@ -10,28 +10,19 @@
       <div class="row mb-4">
         <div class="col-md-4">
           <label for="" class="quote-label">Subclass</label>
-          <p-dropdown
-            [options]="allMatchingSubclasses"
-            optionLabel="description"
-            optionValue="code"
-            formControlName="subclass"
-            placeholder="Select Subclass"
-            [style]="{'width':'100%', 'height':'32px'}"
-            [panelStyle]="{'width':'400px', 'max-height':'100%'}"
-            appendTo="body"
-            styleClass="form-select-sm mb-1 compact-dropdown"
-            id="quote-input"
-            [filter]="true"
-            [filterBy]="'description'"
-            (onChange)="onSubclassChange($event)"
-            filterPlaceholder="Search subclass">
+          <p-dropdown [options]="allMatchingSubclasses" optionLabel="description" optionValue="code"
+            formControlName="subclass" placeholder="Select Subclass" [style]="{'width':'100%', 'height':'32px'}"
+            [panelStyle]="{'width':'400px', 'max-height':'100%'}" appendTo="body"
+            styleClass="form-select-sm mb-1 compact-dropdown" id="quote-input" [filter]="true"
+            [filterBy]="'description'" (onChange)="onSubclassChange($event)" filterPlaceholder="Search subclass">
           </p-dropdown>
         </div>
 
         <div class="col-md-5 mt-3">
           <label for="inputProfileImg" style="margin-right: 15px;margin-left: 20px;">Upload File</label>
           <input type="file" id="inputProfileImg" (change)="onFileChange($event)" formControlName="uploadFile" hidden />
-          <label  for="inputProfileImg" class="img_upload"  style="margin-right: 15px;margin-top: 5px;">Choose File</label>
+          <label for="inputProfileImg" class="img_upload" style="margin-right: 15px;margin-top: 5px;">Choose
+            File</label>
 
           <button class="btn btn-outline-primary" (click)="exportTemplate()">Export template</button>
 
@@ -40,14 +31,9 @@
         </div>
       </div>
 
-    <p class="title">Imported risks</p>
-    <p-table
-        [value]="data"
-        [resizableColumns]="true"
-        styleClass="p-datatable-sm"
-        class='ui-datatable'
-        [(selection)]="selectedRisks"
-        (selectionChange)="onSelectionChange($event)"
+      <p class="title">Imported risks</p>
+      <p-table [value]="data" [resizableColumns]="true" styleClass="p-datatable-sm" class='ui-datatable'
+        [(selection)]="selectedRisks" (selectionChange)="onSelectionChange($event)"
         [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template pTemplate="header">
           <tr>
@@ -90,7 +76,75 @@
           </div>
         </ng-template>
       </p-table>
+
+
+
+
+
+      <!-- Mapping Modal -->
+      <div *ngIf="showMappingModal" class="modal-overlay">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Map Your Columns</h3>
+            <p>Please match your file columns to the system fields.</p>
+          </div>
+
+          <div class="modal-body">
+            <table class="mapping-table">
+              <thead>
+                <tr>
+                  <th>System Field</th>
+                  <th>Your File Column</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let field of systemFields">
+                  <td>
+                    {{ field.label }}
+                    <span class="required-asterisk" *ngIf="field.required">*</span>
+                  </td>
+                  <td>
+                    <select [value]="mapping[field.key]" #selectEl (change)="updateMapping(field.key, selectEl.value)">
+                      <option [value]="''">-- Don't Map --</option>
+                      <option *ngFor="let header of userFileHeaders" [value]="header">
+                        {{ header }}
+                      </option>
+                    </select>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Data Preview -->
+            <div *ngIf="userFileData.length > 0" class="data-preview">
+              <h4>Data Preview (First 3 rows):</h4>
+              <table>
+                <thead>
+                  <tr>
+                    <th *ngFor="let header of userFileHeaders">{{ header }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of userFileData.slice(0, 3)">
+                    <td *ngFor="let header of userFileHeaders">{{ row[header] }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="onMappingCancelled()">
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary" (click)="onMappingConfirmed()">
+              Confirm Mapping
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
-</div>
   <button class="btn btn-primary float-end mt-4" (click)="finish()">Finish</button>
 </div>
