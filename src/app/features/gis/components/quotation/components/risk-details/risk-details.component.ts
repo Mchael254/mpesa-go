@@ -4646,7 +4646,7 @@ export class RiskDetailsComponent {
           sumInsured: risk.value,
           useOfProperty: risk.subclass.description, // Default value
           taxes: product.taxInformation?.map(tax => ({
-            taxRateType: tax.rateType,
+            taxRateType: tax.taxType,
             applicationLevel: null,
             code: tax.code || 0,
             divisionFactor: 0,
