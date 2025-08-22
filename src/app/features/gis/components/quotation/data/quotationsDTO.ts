@@ -1266,3 +1266,10 @@ export interface ScheduleTab {
 }
 
 
+// Define it at the top of your file or in a separate models file
+export interface ProductDetails {
+   coverFrom: Date;
+   coverTo: Date;
+   productName: string;
+
+}

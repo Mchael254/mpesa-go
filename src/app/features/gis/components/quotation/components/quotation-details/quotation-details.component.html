@@ -303,130 +303,134 @@
             <button type="button" class="btn btn-primary btn-sm no-hover" data-bs-toggle="modal"
               data-bs-target="#addProduct" title="Add Product"> Add Product
             </button>
-            <i class="pi border border-black p-1 rounded-1 text-black"
-              [ngClass]="{'pi-caret-up': showProducts, 'pi-caret-down': !showProducts}"
-              style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleProducts()"></i>
+            <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                        [ngClass]="{ 'pi-caret-up': showProducts, 'pi-caret-down': !showProducts }"
+                        style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                        (click)="toggleProducts(iconTrigger)">
+                    </i>
           </div>
 
         </div>
       </div>
 
-      <!-- product table -->
-      <div class="collapse" [ngClass]="{'show': showProducts}" id="collapseProduct">
-        <p-table [value]="productDetails" dataKey="productCode.code" editMode="row"
-          [tableStyle]="{'min-width': '50rem'}">
-          <ng-template pTemplate="header" style="height: 40px;">
-            <tr>
-              <th class="flexible-header1" pSortableColumn="productCode.description">
-                Product <p-sortIcon field="productCode.description" />
-              </th>
-
-              <th class="flexible-header1" pSortableColumn="coverFrom">
-                Cover from <p-sortIcon field="productCode.coverFrom" />
-              </th>
-
-              <th class="flexible-header1" pSortableColumn="productCode.description">
-                Cover to <p-sortIcon field="productCode.coverTo" />
-              </th>
-
-              <th class="flexible-header1"></th>
-            </tr>
-          </ng-template>
-
-
-          <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
-            <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRowIndex !== ri"
-              [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product)"
-              class="hover:!bg-gray-50 !cursor-pointer transition-colors" title="Click to select row">
-
-              <!-- Product Dropdown Column (now with icon) -->
-              <td class="flexible-header">
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <div class="form-group form-group-sm">
-                      <p-dropdown [options]="ProductDescriptionArray" appendTo="body" [ngModel]="product.productCode"
-                        optionLabel="description" [style]="{'width':'100%'}"
-                        (onChange)="onProductChange($event.value, ri, product)">
-                      </p-dropdown>
-                    </div>
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    <div class="flex items-center gap-2">
-                      <i class="pi pi-hand-pointer text-gray-400"></i>
-                      {{ product.productCode?.description }}
-                    </div>
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-
-              <!-- Cover From Date -->
-              <td class="flexible-header">
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <p-calendar [(ngModel)]="product.coverFrom" appendTo="body" [dateFormat]="dateFormat"
-                      [style]="{'width':'100%'}" (ngModelChange)="updateCoverTo(product)" [showIcon]="true">
-                    </p-calendar>
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.coverFrom | date: dateFormat }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-
-              <!-- Cover To Date -->
-              <td class="flexible-header">
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <p-calendar [(ngModel)]="product.coverTo" appendTo="body" [dateFormat]="dateFormat"
-                      [style]="{'width':'100%'}" [showIcon]="true">
-                    </p-calendar>
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.coverTo | date: dateFormat }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-
-              <!-- Action Buttons -->
-              <td class="flexible-header">
-                <div class="d-flex justify-content-end gap-2">
-                  <button *ngIf="!editing" type="button" pInitEditableRow (click)="  onRowEditInits(product,ri)"
-                    class="p-button-sm p-button-text p-button-info no-border">
-                    Edit
-                  </button>
-                  <button *ngIf="editing" type="button" pSaveEditableRow (click)="onRowEditSaves(product)"
-                    class="p-button-sm p-button-text p-button-success no-border">
-                    Save
-                  </button>
-                  <button *ngIf="editing" type="button" pCancelEditableRow (click)="onRowEditCancels(product, ri)"
-                    class="p-button-sm p-button-text p-button-secondary no-border">
-                    Cancel
-                  </button>
-                  <button type="button" (click)="openProductDeleteModal(product)"
-                    class="p-button-sm p-button-text p-button-danger no-border" data-bs-toggle="modal"
-                    data-bs-target="#deleteProductModal">
-                    Delete
-                  </button>
-                  <button *ngIf="reassignButton" type="button" (click)="openReassignProductModal(product)"
-                    class="p-button-sm p-button-text p-button-danger no-border">
-                    Reassign
-                  </button>
-
+      <!-- Floating Column Selector -->
+            <div *ngIf="showProductColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-primary">Select Columns</strong>
+                    <button class="btn-close btn-sm" (click)="showProductColumnModal = false"></button>
                 </div>
-              </td>
-            </tr>
-          </ng-template>
+                <div style="max-height: 200px;max-width:250px; overflow-y: auto;">
+                    <div *ngFor="let col of columns">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                                [(ngModel)]="col.visible" [id]="col.field">
+                            <label class="form-check-label" [for]="col.field">
+                                {{ col.header }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="4" style="text-align:center; padding: 20px;">
-                {{ 'gis.quotation.no_data_to_display' | translate }}
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </div>
+            <!-- product table  -->
+
+<div class="collapse" [ngClass]="{'show': showProducts}" id="collapseProduct">
+  <p-table [value]="productDetails"
+           dataKey="productCode.code"
+           editMode="row"
+           [tableStyle]="{'min-width': '50rem'}">
+
+    <!-- Table Header -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th *ngFor="let col of columns"
+            [hidden]="!col.visible"
+            class="flexible-header1"
+            [pSortableColumn]="col.field">
+          {{ col.header }}
+          <p-sortIcon [field]="col.field"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+
+    <!-- Table Body -->
+    <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
+      <tr [pEditableRow]="product"
+          [pEditableRowDisabled]="selectedEditRowIndex !== ri"
+          [class.p-highlight]="product === selectedRow"
+          (click)="onRowSelect(product)"
+          class="hover:!bg-gray-50 !cursor-pointer transition-colors"
+          title="Click to select row">
+
+        <td *ngFor="let col of columns"
+            [hidden]="!col.visible"
+            class="flexible-header">
+
+          <ng-container [ngSwitch]="col.field">
+
+            <!-- Only handle actions separately -->
+            <ng-container *ngSwitchCase="'actions'">
+              <div class="d-flex justify-content-end gap-2">
+                <button *ngIf="!editing"
+                        type="button"
+                        pInitEditableRow
+                        (click)="onRowEditInits(product, ri)"
+                        class="p-button-sm p-button-text p-button-info no-border">
+                  Edit
+                </button>
+                <button *ngIf="editing"
+                        type="button"
+                        pSaveEditableRow
+                        (click)="onRowEditSaves(product)"
+                        class="p-button-sm p-button-text p-button-success no-border">
+                  Save
+                </button>
+                <button *ngIf="editing"
+                        type="button"
+                        pCancelEditableRow
+                        (click)="onRowEditCancels(product, ri)"
+                        class="p-button-sm p-button-text p-button-secondary no-border">
+                  Cancel
+                </button>
+                <button type="button"
+                        (click)="openProductDeleteModal(product)"
+                        class="p-button-sm p-button-text p-button-danger no-border"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteProductModal">
+                  Delete
+                </button>
+                <button *ngIf="reassignButton"
+                        type="button"
+                        (click)="openReassignProductModal(product)"
+                        class="p-button-sm p-button-text p-button-danger no-border">
+                  Reassign
+                </button>
+              </div>
+            </ng-container>
+
+            <!-- Default case: display value dynamically -->
+            <ng-container *ngSwitchDefault>
+              {{ product[col.field] }}
+            </ng-container>
+
+          </ng-container>
+        </td>
+      </tr>
+    </ng-template>
+
+    <!-- Empty Message -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="columns.length" style="text-align:center; padding: 20px;">
+          {{ 'gis.quotation.no_data_to_display' | translate }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
 
       <!-- Add Product Modal -->
       <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"

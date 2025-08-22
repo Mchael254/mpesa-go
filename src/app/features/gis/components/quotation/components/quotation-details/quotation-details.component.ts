@@ -22,7 +22,7 @@ import { IntermediaryService } from "../../../../../entities/services/intermedia
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { forkJoin, mergeMap } from 'rxjs';
-import { QuotationDetails, QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
+import { ProductDetails, ProductDTO, QuotationDetails, QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
 import { ProductClauseDTO, Products } from '../../../setups/data/gisDTO';
 import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
 import { ClaimsService } from '../../../claim/services/claims.service';
@@ -183,6 +183,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   departmentSelected: boolean = false;
   showIntroducerSearchModal = false;
   selectedIntroducerName: string;
+  showProductColumnModal: boolean=false;
+  columnModalPosition = { top: '0px', left: '0px' }
+  columns: { field: string; header: string; visible: boolean }[] = [];
+  
 
   constructor(
     public bankService: BankService,
@@ -269,6 +273,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     // this.coverToDate = new Date(this.todaysDate);
     //  this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);
     this.createQuotationProductForm();
+    if(this.productDetails.length>0)
+    {
+    this.setColumnsFromProductDetails(this.productDetails[0]);
+    }
 
 
     this.quotationProductForm.get('productCodes')?.valueChanges.subscribe(product => {
@@ -1229,9 +1237,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       })
   }
 
-  toggleProducts() {
-    this.showProducts = !this.showProducts;
-  }
+  // toggleProducts() {
+  //   this.showProducts = !this.showProducts;
+  // }
 
   toggleClauses() {
     this.showClauses = !this.showClauses;
@@ -1913,5 +1921,51 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("Selected Introducer", introducer)
     this.selectedIntroducerName = introducer?.surName
     this.showIntroducerSearchModal = false
+  }
+
+  toggleProducts(iconElement: HTMLElement): void {
+     this.showProducts = true;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showProductColumnModal = true;
+  }
+
+
+    setColumnsFromProductDetails(sample: ProductDetails) {
+      const defaultVisibleFields = [
+        'coverFrom',
+        'coverTo',
+        'productName'
+        
+      ];
+      const excludedFields = []; 
+  
+      this.columns = Object.keys(sample)
+        .filter((key) => !excludedFields.includes(key))
+        .map((key) => ({
+          field: key,
+          header: this.sentenceCase(key),
+          visible: defaultVisibleFields.includes(key),
+        }));
+  
+      // manually add actions column
+      this.columns.push({ field: 'actions', header: 'Actions', visible: true });
+    }
+
+
+
+  sentenceCase(text: string): string {
+    return text
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (str) => str.toUpperCase());
   }
 }
