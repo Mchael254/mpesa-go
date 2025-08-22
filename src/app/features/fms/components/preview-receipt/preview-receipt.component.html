@@ -1,0 +1,28 @@
+<div class="container">
+  <pdf-viewer
+    [src]="filePath"
+    [render-text]="true"
+    [original-size]="false"
+    style="margin: 20px; margin-top: 10px; width: 80%; height: 450px"
+  ></pdf-viewer>
+  <div class="btn-actions d-flex gap-3 mt-3" style="justify-content: center">
+    <div class="div">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="navigateToReceiptManagement()"
+      >
+        {{ "base.back" | translate }}
+      </button>
+    </div>
+    <div class="div">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="postClientDetails()"
+      >
+        {{ "fms.receipt-management.send" | translate }}
+      </button>
+    </div>
+  </div>
+</div>
