@@ -270,18 +270,21 @@ export class RiskDetailsComponent {
   scheduleOtherDetailsForm: FormGroup;
   addedLimitsOfLiability: any[] = [];
   selectedRiskLimits: any[] = [];
-  allLimitsMap: { [qpCode: string]: any[] } = {};
+
   limitsOfLiability: any[] = [];
   selectedLimit: any = { value: '', narration: '', };
+  selectedDeleteLimit: any;
   originalLimitBeforeEdit: any = { value: '', narration: '' };
+  originalLimitsOfLiability: any
 
   addedExcessess: any[] = [];
-  allExcessesMap: { [qpCode: string]: any[] } = {};
   selectedExcessess: any[] = [];
   showExcessModal: boolean = false;
   excessesData: any[] = [];
   selectedExcess: any = { value: '', narration: '', };
   originalExcessBeforeEdit: any = { value: '', narration: '' };
+  originalExcesses: any;
+  selectedDeleteExcess: any;
 
   addedPerils: any[] = [];
   allPerilsMap: { [key: string]: any[] } = {};
@@ -341,7 +344,7 @@ export class RiskDetailsComponent {
     public fb: FormBuilder,
     public cdr: ChangeDetectorRef,
     private renderer: Renderer2,
-    private router: Router
+    private router: Router,
 
   ) {
     this.quotationCode = sessionStorage.getItem('quotationCode');
@@ -390,10 +393,14 @@ export class RiskDetailsComponent {
     this.initializePerilDetails();
     this.initializePerils();
     this.loadAddedClauses();
-    this.getAddedLimitsOfLiability();
     this.getAddedExcesses();
     this.loadPersistedRiskClauses();
-    this.loadLimitsOfLiability();
+    if (this.selectedSubclassCode) {
+      this.loadLimitsOfLiability();
+    }
+    if (this.selectedSubclassCode && this.quoteProductCode) {
+      this.loadAddedLimitsOfLiability();
+    }
     this.createTaxForm();
 
 
@@ -430,21 +437,7 @@ export class RiskDetailsComponent {
     this.loadAllClients();
     this.getProductTaxes();
 
-    // limits of liability persistence from session
-    const savedLimits = sessionStorage.getItem('limitsOfLiability');
-    if (savedLimits) {
-      this.allLimitsMap = JSON.parse(savedLimits);
-      const allPersistedLimits = Object.values(this.allLimitsMap).flat();
-      this.addedLimitsOfLiability = [...allPersistedLimits];
-      log.debug("Persisted added limits", this.addedLimitsOfLiability);
-    }
-
-    // Load available limits
-    const availableLimits = sessionStorage.getItem('availableLimitsOfLiability');
-    if (availableLimits) {
-      this.limitsOfLiability = JSON.parse(availableLimits);
-      log.debug("Available limits loaded", this.limitsOfLiability);
-    }
+  
 
   }
 
@@ -3801,20 +3794,46 @@ export class RiskDetailsComponent {
     this.riskActiveTab = tab;
   }
 
+
   //limits of liability
   loadLimitsOfLiability(): void {
-    const subclassCode = this.selectedSubclassCode;
-    if (!subclassCode) return;
-
-    const sessionKey = `availableLimitsOfLiability_${subclassCode}`;
-    const savedAvailable = sessionStorage.getItem(sessionKey);
-
-    if (savedAvailable) {
-      this.limitsOfLiability = JSON.parse(savedAvailable);
-    } else {
-      this.refreshAvailableLimits();
+    if (!this.selectedSubclassCode) {
+      log.debug('Subclass code is required to load limits');
+      return;
     }
+
+    const cacheKey = `limits_of_liability_${this.selectedSubclassCode}`;
+    const originalCacheKey = `original_limits_of_liability_${this.selectedSubclassCode}`;
+
+    const cachedData = sessionStorage.getItem(cacheKey);
+    const cachedOriginal = sessionStorage.getItem(originalCacheKey);
+
+    if (cachedData && cachedOriginal) {
+      this.limitsOfLiability = JSON.parse(cachedData);
+      this.originalLimitsOfLiability = JSON.parse(cachedOriginal);
+      log.debug(`Loaded limits of liability for subclass ${this.selectedSubclassCode} from sessionStorage`);
+      return;
+    }
+
+    this.quotationService.getLimitsOfLiability(this.selectedSubclassCode, 'L').subscribe({
+      next: (response) => {
+        const limits = response?._embedded || [];
+
+        this.originalLimitsOfLiability = [...limits];
+        sessionStorage.setItem(originalCacheKey, JSON.stringify(this.originalLimitsOfLiability));
+
+        this.limitsOfLiability = [...limits];
+        sessionStorage.setItem(cacheKey, JSON.stringify(this.limitsOfLiability));
+
+        log.debug(`Fetched and stored limits for subclass ${this.selectedSubclassCode}`);
+      },
+      error: (err) => {
+        log.debug(`Failed to fetch limits for subclass ${this.selectedSubclassCode}:`, err);
+        this.limitsOfLiability = [];
+      }
+    });
   }
+
 
   openLimitModal(): void {
     if (!this.selectedSubclassCode) {
@@ -3822,27 +3841,54 @@ export class RiskDetailsComponent {
       return;
     }
 
-    log.debug("Opening limits modal for subclass:", this.selectedSubclassCode);
-
     this.showLimitModal = true;
+    this.loadLimitsOfLiability();
 
     const modalElement = document.getElementById('addLimit');
     if (modalElement) {
       const modal = new (window as any).bootstrap.Modal(modalElement);
       modal.show();
     }
-
-    this.loadLimitsOfLiability();
   }
 
 
-  // add limits of liability
+  loadAddedLimitsOfLiability(): void {
+    if (!this.selectedSubclassCode || !this.quoteProductCode) {
+      return;
+    }
+
+    const addedCacheKey = `added_limits_of_liability_${this.selectedSubclassCode}_${this.quoteProductCode}`;
+
+    const cachedAddedData = sessionStorage.getItem(addedCacheKey);
+
+    if (cachedAddedData) {
+      try {
+        this.addedLimitsOfLiability = JSON.parse(cachedAddedData);
+        log.debug(`Added limits loaded from cache for subclass ${this.selectedSubclassCode}`);
+        return;
+      } catch (error) {
+        log.debug('Error parsing cached added limits, fetching fresh data:', error);
+        sessionStorage.removeItem(addedCacheKey);
+      }
+    }
+
+    this.fetchAddedLimitsOfLiability();
+  }
+
+
   addRiskLimit(): void {
-    if (!this.selectedRiskLimits?.length) return;
+    if (!this.selectedRiskLimits?.length) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one limit to add');
+      return;
+    }
 
     const newQpCode = this.quoteProductCode;
-    const subclassCode = this.selectedRisk?.subclassCode;
-    if (!subclassCode) return;
+    const subclassCode = this.selectedRisk?.subclassCode || this.selectedSubclassCode;
+
+    if (!subclassCode || !newQpCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Missing required information');
+      return;
+    }
 
     const limitsPayload: CreateLimitsOfLiability[] = this.selectedRiskLimits.map(limit => ({
       scheduleValueCode: limit.code,
@@ -3852,63 +3898,28 @@ export class RiskDetailsComponent {
     }));
 
     this.quotationService.addLimitsOfLiability(newQpCode, limitsPayload).subscribe({
-      next: () => {
+      next: (response) => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Limits of liability added successfully');
 
-        // Refresh both added limits and available limits
-        this.getAddedLimitsOfLiability();
+        this.limitsOfLiability = this.limitsOfLiability.filter(
+          limit => !this.selectedRiskLimits.some(selected => selected.code === limit.code)
+        );
+
+        const cacheKey = `limits_of_liability_${subclassCode}`;
+        sessionStorage.setItem(cacheKey, JSON.stringify(this.limitsOfLiability));
 
         this.selectedRiskLimits = [];
+        this.fetchAddedLimitsOfLiability();
       },
       error: (err) => {
         log.debug('Error adding limits of liability', err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add limits of liability');
       }
     });
   }
 
-  getAddedLimitsOfLiability(): void {
-    if (!this.selectedSubclassCode || !this.quoteProductCode) {
-      log.debug('Subclass code or quote product code missing');
-      return;
-    }
 
-    this.quotationService
-      .getAddedLimitsOfLiability(this.selectedSubclassCode, this.quoteProductCode, 'L')
-      .subscribe({
-        next: (res) => {
-          log.debug('LimitLiability', res);
-          this.addedLimitsOfLiability = res?._embedded || res || [];
-
-          // After getting added limits, refresh available limits to ensure consistency
-          this.refreshAvailableLimits();
-        },
-        error: (err) => {
-          log.debug('Error fetching limits of liability (L):', err);
-        },
-      });
-  }
-
-  refreshAvailableLimits(): void {
-    const subclassCode = this.selectedSubclassCode;
-    if (!subclassCode) return;
-
-    this.quotationService.getLimitsOfLiability(subclassCode, 'L').subscribe({
-      next: (data) => {
-        const allLimits = data?._embedded || [];
-
-        const addedCodes = new Set(this.addedLimitsOfLiability.map(l => l.code));
-        this.limitsOfLiability = allLimits.filter(l => !addedCodes.has(l.code));
-
-        const sessionKey = `availableLimitsOfLiability_${subclassCode}`;
-        sessionStorage.setItem(sessionKey, JSON.stringify(this.limitsOfLiability));
-      },
-      error: (err) => {
-        log.error(`Failed to refresh limits for subclass ${subclassCode}:`, err);
-      }
-    });
-  }
-
-  //edit limits of liability
+  //edit
   populateEditLimitModal(limit: any): void {
     this.selectedLimit = { ...limit };
     this.originalLimitBeforeEdit = { ...limit };
@@ -3919,35 +3930,57 @@ export class RiskDetailsComponent {
 
     const newNarration = this.selectedLimit.narration?.trim() ?? '';
     const oldNarration = this.originalLimitBeforeEdit.narration?.trim() ?? '';
-
     const newValue = this.selectedLimit.value;
     const oldValue = this.originalLimitBeforeEdit.value;
 
-    return (
-      (newNarration !== oldNarration && newNarration.length > 0) ||
-      newValue !== oldValue
-    );
+    return (newNarration !== oldNarration && newNarration.length > 0) || newValue !== oldValue;
   }
 
   editLimit(): void {
     const newQpCode = this.quoteProductCode;
+
+    if (!newQpCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Quote product code is missing');
+      return;
+    }
+
+    if (!this.selectedLimit) {
+      this.globalMessagingService.displayErrorMessage('Error', 'No limit selected for editing');
+      return;
+    }
+
+    if (!this.wasLimitModified()) {
+      this.globalMessagingService.displayInfoMessage('Info', 'No changes detected in the limit');
+      return;
+    }
+
     const payload = [
       {
         code: this.selectedLimit.code,
         scheduleValueCode: this.selectedLimit.quotationValueCode,
-        value: this.selectedLimit.value,
-        narration: this.selectedLimit.narration,
+        value: this.cleanCurrencyValue(this.selectedLimit.value),
+        narration: this.selectedLimit.narration?.trim(),
         type: 'L'
       }
     ];
 
     this.quotationService.editLimitsOfLiability(newQpCode, payload).subscribe({
-      next: (res) => {
-        log.debug('Limit updated successfully', res);
-        this.globalMessagingService.displaySuccessMessage('Success', 'Limit updated successfully');
+      next: () => {
 
-        // Refresh to ensure consistency
-        this.getAddedLimitsOfLiability();
+        this.quotationService.getAddedLimitsOfLiability(this.selectedSubclassCode, newQpCode, 'L')
+          .subscribe({
+            next: (res) => {
+              this.addedLimitsOfLiability = res._embedded ? [...res._embedded] : [];
+              this.cdr.detectChanges();
+              this.globalMessagingService.displaySuccessMessage('Success', 'Limit updated successfully');
+              this.selectedLimit = null;
+              this.originalLimitBeforeEdit = null;
+            },
+            error: (err) => {
+              log.debug('Error refreshing added limits after edit', err);
+              this.globalMessagingService.displayErrorMessage('Error', 'Failed to refresh limits after edit');
+            }
+          });
       },
       error: (err) => {
         log.debug('Error updating limit', err);
@@ -3956,28 +3989,78 @@ export class RiskDetailsComponent {
     });
   }
 
+
+  fetchAddedLimitsOfLiability(): void {
+    if (!this.selectedSubclassCode || !this.quoteProductCode) {
+      log.debug('Subclass code or quote product code missing');
+      return;
+    }
+
+    this.quotationService
+      .getAddedLimitsOfLiability(this.selectedSubclassCode, this.quoteProductCode, 'L')
+      .subscribe({
+        next: (response) => {
+
+          this.addedLimitsOfLiability = response._embedded;
+          log.debug("Added limits fetched and cached successfully");
+
+        },
+        error: (err) => {
+          log.debug('Error fetching limits of liability (L):', err);
+        },
+      });
+  }
+
   //delete limit
   prepareDeleteLimit(limit: any): void {
-    this.selectedLimit = limit;
-    log.debug("limitDelete", this.selectedLimit)
+    this.selectedDeleteLimit = limit;
+    log.debug("limitDelete", this.selectedDeleteLimit)
   }
 
   deleteLimit(): void {
-    if (!this.selectedLimit?.quotationValueCode) {
+    if (!this.selectedDeleteLimit?.code) {
       log.debug("No scheduleValueCode found for deletion");
       return;
     }
 
-    this.quotationService.deleteLimit(this.selectedLimit.quotationValueCode).subscribe({
-      next: (res) => {
-        log.debug("Limit deleted successfully", res);
+    const subclassCode = this.selectedSubclassCode;
+    if (!subclassCode) return;
+
+    this.quotationService.deleteLimit(this.selectedDeleteLimit.code).subscribe({
+      next: () => {
+        this.addedLimitsOfLiability = this.addedLimitsOfLiability.filter(
+          limit => limit.code !== this.selectedDeleteLimit.code
+        );
+
+        // Retrieve original limits from sessionStorage
+        const originalCacheKey = `original_limits_of_liability_${subclassCode}`;
+        const originalData = sessionStorage.getItem(originalCacheKey);
+        let originalLimits: any[] = originalData ? JSON.parse(originalData) : [];
+
+        // Find original limit (match quotationValueCode to original's code)
+        const originalLimit = originalLimits.find(
+          l => l.code === this.selectedDeleteLimit.quotationValueCode
+        );
+
+        log.debug("originalLimit to restore", originalLimit);
+
+        if (originalLimit) {
+          this.limitsOfLiability = [...this.limitsOfLiability, originalLimit];
+
+          const cacheKey = `limits_of_liability_${subclassCode}`;
+          sessionStorage.setItem(cacheKey, JSON.stringify(this.limitsOfLiability));
+        }
+
+        this.selectedDeleteLimit = null;
+        this.cdr.detectChanges();
         this.globalMessagingService.displaySuccessMessage('Success', 'Limit deleted successfully');
 
-        this.getAddedLimitsOfLiability();
       },
       error: (err) => {
         log.debug("Error deleting limit", err);
+
         this.globalMessagingService.displayErrorMessage('Error', 'Error deleting limit');
+
       }
     });
   }
@@ -3989,23 +4072,37 @@ export class RiskDetailsComponent {
 
   //excesses
   loadExcesses(): void {
-    const subclassCode = this.selectedSubclassCode;
-    if (!subclassCode) {
-      this.addedExcessess = [];
-      this.excessesData = [];
+    if (!this.selectedSubclassCode) {
+      log.debug('Subclass code is required to load excesses');
       return;
     }
 
-    const sessionKey = `availableExcessess_${subclassCode}`;
-    const savedAvailable = sessionStorage.getItem(sessionKey);
+    const cacheKey = `excesses_${this.selectedSubclassCode}`;
+    const originalCacheKey = `original_excesses_${this.selectedSubclassCode}`;
 
-    if (savedAvailable) {
-      this.excessesData = JSON.parse(savedAvailable);
-    } else {
-      this.refreshAvailableExcesses();
+    // check session storage
+    const cachedData = sessionStorage.getItem(cacheKey);
+    const cachedOriginal = sessionStorage.getItem(originalCacheKey);
+
+    if (cachedData && cachedOriginal) {
+      this.excessesData = JSON.parse(cachedData);
+      this.originalExcesses = JSON.parse(cachedOriginal);
+      return;
     }
 
-    this.getAddedExcesses();
+    this.quotationService.getExcesses(this.selectedSubclassCode, 'E').subscribe({
+      next: (res) => {
+        this.excessesData = res._embedded || [];
+        this.originalExcesses = JSON.parse(JSON.stringify(this.excessesData));
+
+        sessionStorage.setItem(cacheKey, JSON.stringify(this.excessesData));
+        sessionStorage.setItem(originalCacheKey, JSON.stringify(this.originalExcesses));
+      },
+      error: (err) => {
+        log.debug('Error fetching excesses', err);
+        this.excessesData = [];
+      }
+    });
   }
 
   openExcessModal(): void {
@@ -4024,144 +4121,139 @@ export class RiskDetailsComponent {
     this.loadExcesses();
   }
 
-  // add excesses
   addExcesses(): void {
-    if (!this.selectedExcessess?.length) return;
-    const newQpCode = this.quoteProductCode;
-    const subclassCode = this.selectedRisk?.subclassCode;
-    if (!subclassCode) return;
+    if (!this.selectedExcessess?.length) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Select at least one excess to add');
+      return;
+    }
 
-    const payload = this.selectedExcessess.map(e => ({
-      scheduleValueCode: e.code,
-      value: this.cleanCurrencyValue(e.value),
-      narration: e.narration,
+    const newQpCode = this.quoteProductCode;
+    const subclassCode = this.selectedRisk?.subclassCode || this.selectedSubclassCode;
+
+    if (!subclassCode || !newQpCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Missing required information');
+      return;
+    }
+
+    const payload = this.selectedExcessess.map(excess => ({
+      scheduleValueCode: excess.code,
+      value: this.cleanCurrencyValue(excess.value),
+      narration: excess.narration,
       type: 'E'
     }));
 
-    this.quotationService.addExcesses(newQpCode, payload).subscribe({
+    this.quotationService.addLimitsOfLiability(newQpCode, payload).subscribe({
       next: () => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Excesses added successfully');
-
+        this.globalMessagingService.displaySuccessMessage('Success', 'Excess added successfully');
         this.getAddedExcesses();
+
+        this.excessesData = this.excessesData.filter(ex => !this.selectedExcessess.includes(ex));
+        sessionStorage.setItem(`excesses_${subclassCode}`, JSON.stringify(this.excessesData));
+
         this.selectedExcessess = [];
       },
       error: (err) => {
-        this.globalMessagingService.displayErrorMessage('Error', 'Error adding excesses');
+        log.debug('Error adding excesses', err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add excesses');
       }
     });
   }
 
   getAddedExcesses(): void {
-    if (!this.selectedSubclassCode || !this.quoteProductCode) {
-      log.debug('Subclass code or quote product code missing');
-      return;
-    }
+    if (!this.selectedSubclassCode || !this.quoteProductCode) return;
 
-    this.quotationService
-      .getAddedExcesses(this.selectedSubclassCode, this.quoteProductCode)
+    this.quotationService.getAddedExcesses(this.selectedSubclassCode, this.quoteProductCode, 'E')
       .subscribe({
         next: (res) => {
-          this.addedExcessess = res?._embedded || [];
-          log.debug('addedExcesses', this.addedExcessess);
-          this.refreshAvailableExcesses();
+          this.addedExcessess = res._embedded ? [...res._embedded] : [];
+          this.cdr.detectChanges();
         },
-        error: (err) => {
-          log.debug('Error fetching excesses', err);
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch excesses');
-        },
+        error: (err) => log.debug('Error fetching added excesses', err)
       });
   }
 
-  refreshAvailableExcesses(): void {
-    const subclassCode = this.selectedSubclassCode;
-    if (!subclassCode) return;
-
-    this.quotationService.getExcesses(subclassCode, 'E').subscribe({
-      next: (data) => {
-        const allExcesses = data?._embedded || [];
-
-        const addedCodes = new Set(this.addedExcessess.map(e => e.code));
-        this.excessesData = allExcesses.filter(e => !addedCodes.has(e.code));
-
-        const sessionKey = `availableExcessess_${subclassCode}`;
-        sessionStorage.setItem(sessionKey, JSON.stringify(this.excessesData));
-      },
-      error: (err) => {
-        this.globalMessagingService.displayErrorMessage('Error', 'Could not load excesses');
-      }
-    });
-  }
-
-  //edit excesses
-  wasExcessModified(): boolean {
-    if (!this.selectedExcess || !this.originalExcessBeforeEdit) return false;
-
-    const newNarration = this.selectedExcess.narration?.trim() ?? '';
-    const oldNarration = this.originalExcessBeforeEdit.narration?.trim() ?? '';
-
-    const newValue = this.selectedExcess.value;
-    const oldValue = this.originalExcessBeforeEdit.value;
-
-    return (
-      (newNarration !== oldNarration && newNarration.length > 0) ||
-      newValue !== oldValue
-    );
-  }
-
-  populateEditExcessModal(excess: any) {
+  populateEditExcessModal(excess: any): void {
     this.selectedExcess = { ...excess };
     this.originalExcessBeforeEdit = { ...excess };
   }
 
-  editExcess() {
-    const newQpCode = this.quoteProductCode;
-    const payload = [
-      {
-        code: this.selectedExcess.code,
-        scheduleValueCode: this.selectedExcess.quotationValueCode,
-        value: this.selectedExcess.value,
-        narration: this.selectedExcess.narration,
-        type: 'E'
-      }
-    ];
+  wasExcessModified(): boolean {
+    if (!this.selectedExcess || !this.originalExcessBeforeEdit) return false;
+    const newNarration = this.selectedExcess.narration?.trim() ?? '';
+    const oldNarration = this.originalExcessBeforeEdit.narration?.trim() ?? '';
+    const newValue = this.selectedExcess.value;
+    const oldValue = this.originalExcessBeforeEdit.value;
 
-    this.quotationService.editExcesses(newQpCode, payload).subscribe({
-      next: (res) => {
-        log.debug('Excess updated successfully', res);
-        this.globalMessagingService.displaySuccessMessage('Success', 'Excess updated successfully');
-
-        this.getAddedExcesses();
-      },
-      error: (err) => {
-        log.debug('Error updating excess', err);
-        this.globalMessagingService.displayErrorMessage('Error', 'Error updating excess');
-      }
-    });
+    return (newNarration !== oldNarration && newNarration.length > 0) || newValue !== oldValue;
   }
 
-  //delete excesses
+  editExcess(): void {
+    if (!this.selectedExcess) return;
+
+    const payload = [{
+      code: this.selectedExcess.code,
+      scheduleValueCode: this.selectedExcess.quotationValueCode,
+      value: this.cleanCurrencyValue(this.selectedExcess.value),
+      narration: this.selectedExcess.narration?.trim(),
+      type: 'E'
+    }];
+
+    this.quotationService.editExcesses(this.quoteProductCode, payload).subscribe({
+      next: () => {
+        this.quotationService.getAddedExcesses(this.selectedSubclassCode, this.quoteProductCode, 'E')
+          .subscribe({
+            next: (res) => {
+              this.globalMessagingService.displaySuccessMessage('Success', 'Excess updated successfully');
+              this.addedExcessess = res._embedded ? [...res._embedded] : [];
+              this.cdr.detectChanges();
+
+              this.selectedExcess = null;
+              this.originalExcessBeforeEdit = null;
+            },
+            error: (err) => log.debug('Error refreshing added excesses', err)
+          });
+      },
+      error: (err) => this.globalMessagingService.displayErrorMessage('Error', 'Error updating excess')
+    });
+
+  }
+
   prepareDeleteExcess(excess: any): void {
-    this.selectedExcess = excess;
-    log.debug("excessDelete", this.selectedExcess)
+    this.selectedDeleteExcess = excess;
   }
 
   deleteExcess(): void {
-    if (!this.selectedExcess?.quotationValueCode) {
-      log.debug("No scheduleValueCode found for deletion");
-      return;
-    }
+    if (!this.selectedDeleteExcess?.code) return;
 
-    this.quotationService.deleteExcesses(this.selectedExcess.quotationValueCode).subscribe({
-      next: (res) => {
-        log.debug("Excess deleted successfully", res);
+    const subclassCode = this.selectedSubclassCode;
+    if (!subclassCode) return;
+
+    this.quotationService.deleteExcesses(this.selectedDeleteExcess.code).subscribe({
+      next: () => {
+        // Remove from addedExcessess
+        this.addedExcessess = this.addedExcessess.filter(e => e.code !== this.selectedDeleteExcess.code);
+
+        // Restore original from session storage
+        const originalCacheKey = `original_excesses_${subclassCode}`;
+        const originalData = sessionStorage.getItem(originalCacheKey);
+        const originalExcesses: any[] = originalData ? JSON.parse(originalData) : [];
+
+        const originalExcess = originalExcesses.find(
+          ex => ex.code === this.selectedDeleteExcess.quotationValueCode
+        );
+
+        if (originalExcess) {
+          this.excessesData = [...this.excessesData, originalExcess];
+          sessionStorage.setItem(`excesses_${subclassCode}`, JSON.stringify(this.excessesData));
+        }
+
+        this.selectedDeleteExcess = null;
+        this.cdr.detectChanges();
+
         this.globalMessagingService.displaySuccessMessage('Success', 'Excess deleted successfully');
 
-        this.getAddedExcesses();
       },
-      error: (err) => {
-        log.debug("Error deleting excess", err);
-        this.globalMessagingService.displayErrorMessage('Error', 'Error deleting excess');
-      }
+      error: (err) => this.globalMessagingService.displayErrorMessage('Error', 'Error deleting excess')
     });
   }
 
