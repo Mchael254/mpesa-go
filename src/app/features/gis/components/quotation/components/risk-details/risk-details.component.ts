@@ -2239,7 +2239,9 @@ export class RiskDetailsComponent {
     this.selectedSchedule = this.scheduleList
     this.sectionDetails = this.selectedRisk.riskLimits;
     log.debug("section DETAILS AFTER ROW CLICK:", this.sectionDetails);
-
+    if (this.sectionDetails.length > 0) {
+      this.setColumnsFromRiskLimit(this.sectionDetails[0]);
+    }
     const subclassCode = riskSelectedData.subclassCode;
     const binderCode = riskSelectedData.binderCode;
     const covertypeCode = riskSelectedData.coverTypeCode;
@@ -2375,6 +2377,15 @@ export class RiskDetailsComponent {
   }
 
   setColumnsFromRiskLimit(sample: RiskLimit) {
+    const defaultVisibleFields = [
+      'rowNumber',
+      'calcGroup',
+      'sectionCode',
+      'sectionShortDescription',
+      'limitAmount',
+      'premiumRate',
+      'rateType'
+    ];
     const excludedFields = ['code', 'quotationCode', 'quotationProCode', 'productCode']; // adjust as needed
 
     this.columns = Object.keys(sample)
@@ -2382,22 +2393,14 @@ export class RiskDetailsComponent {
       .map((key) => ({
         field: key,
         header: this.sentenceCase(key),
-        visible: this.defaultVisibleFields.includes(key),
+        visible: defaultVisibleFields.includes(key),
       }));
 
     // manually add actions column
     this.columns.push({ field: 'actions', header: 'Actions', visible: true });
   }
 
-  defaultVisibleFields = [
-    'rowNumber',
-    'calcGroup',
-    'sectionCode',
-    'sectionShortDescription',
-    'limitAmount',
-    'premiumRate',
-    'rateType'
-  ];
+
 
   sentenceCase(text: string): string {
     return text
@@ -4013,8 +4016,8 @@ export class RiskDetailsComponent {
           .subscribe({
             next: (res) => {
               this.addedLimitsOfLiability = res._embedded ? [...res._embedded] : [];
+
               this.cdr.detectChanges();
-              this.globalMessagingService.displaySuccessMessage('Success', 'Limit updated successfully');
               this.selectedLimit = null;
               this.originalLimitBeforeEdit = null;
             },
