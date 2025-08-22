@@ -194,3 +194,9 @@ export interface glAccountDTO {
     empty: boolean;
   };
 }
+export interface shareReceiptDTO{
+  shareType:string;
+  recipient:string;
+  receiptNumber:string;
+  orgCode:string;
+}
