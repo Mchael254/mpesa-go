@@ -5,12 +5,20 @@ import { Router } from '@angular/router';
 import { Logger } from '../../../../../../shared/services';
 import * as XLSX from 'xlsx';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import {QuotationsService} from '../../services/quotations/quotations.service';
-import {untilDestroyed} from '../../../../../../shared/services/until-destroyed';
+import { QuotationsService } from '../../services/quotations/quotations.service';
+import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 
 const log = new Logger('ImportRiskComponent');
+interface ColumnMapping {
+  [systemField: string]: string;
+}
 
+interface SystemField {
+  key: string;
+  label: string;
+  required: boolean;
+}
 @Component({
   selector: 'app-import-risks',
   templateUrl: './import-risks.component.html',
@@ -25,7 +33,7 @@ export class ImportRisksComponent {
   data: any = [];
   selectedRisks: any[] = [];
   importForm: FormGroup;
-  quoteAction : string = "A";
+  quoteAction: string = "A";
   quotationCode: number;
   quotationRiskData: any;
   riskCode: number;
@@ -39,6 +47,33 @@ export class ImportRisksComponent {
   dynamicRegexPattern: any;
   regexPattern: any;
 
+
+  // New properties for mapping functionality
+  showMappingModal: boolean = false;
+  userFileHeaders: string[] = []; // This should be string[], not {}
+  userFileData: any[] = [];
+  mapping: ColumnMapping = {};
+  mappedData: any[] = [];
+  // Define your system's expected fields
+  systemFields = [
+    { key: 'BinderCode', label: 'Binder Code', required: false },
+    { key: 'PremiumBind', label: 'Premium Bind', required: false },
+    { key: 'CoverTypeCode', label: 'Cover Type Code', required: false },
+    { key: 'CoverTypeShortDesc', label: 'Cover Type Description', required: false },
+    { key: 'WEF', label: 'WEF', required: false },
+    { key: 'WET', label: 'WET', required: false },
+    { key: 'ClientCode', label: 'Client Code', required: true },
+    { key: 'ClientName', label: 'Client Name', required: false },
+    { key: 'IsNCDapplicable', label: 'NCD Applicable', required: false },
+    { key: 'ItemDesc', label: 'Item Description', required: false },
+    { key: 'Location', label: 'Location', required: false },
+    { key: 'NCDlevel', label: 'NCD Level', required: false },
+    { key: 'ProductCode', label: 'Product Code', required: false },
+    { key: 'PropertyId', label: 'Property ID', required: false },
+    { key: 'RiskPremAmount', label: 'Risk Premium Amount', required: false },
+    { key: 'SubclassCode', label: 'Subclass Code', required: true },
+    { key: 'Town', label: 'Town', required: false }
+  ];
   constructor(
     public subclassService: SubclassesService,
     public router: Router,
@@ -71,7 +106,10 @@ export class ImportRisksComponent {
     log.debug("selectedProductCode", this.selectedProductCode);
 
     this.getProductSubclass(this.selectedProductCode);
-
+    // Initialize mapping with empty selections
+    this.systemFields.forEach(field => {
+      this.mapping[field.key] = '';
+    });
   }
 
   // getSubclass() {
@@ -86,13 +124,10 @@ export class ImportRisksComponent {
       return;
     }
 
-    // Store selected risks in session storage to use in other components
     sessionStorage.setItem('selectedRisks', JSON.stringify(this.selectedRisks));
     log.debug('Selected risks stored:', this.selectedRisks);
 
     this.addRisk();
-
-    // this.router.navigate(['/home/gis/quotation/risk-section-details']);
   }
 
   exportTemplate(): void {
@@ -129,30 +164,96 @@ export class ImportRisksComponent {
         const workbook = XLSX.read(fileData, { type: 'binary' });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
+
+        // Get all data including headers
         const parsedData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        this.data = this.parseData(parsedData);
 
-        // Reset selections when new data is loaded
-        this.selectedRisks = [];
+        if (parsedData && parsedData.length > 0) {
+          // Ensure we have an array of strings for headers
+          this.userFileHeaders = (parsedData[0] as any[]).map(header =>
+            header !== null && header !== undefined ? header.toString() : ''
+          ).filter(header => header !== '');
 
-        log.debug('Imported data:', this.data);
+          this.userFileData = this.parseData(parsedData);
+
+          // Show mapping modal instead of automatically parsing
+          this.showMappingModal = true;
+
+          log.debug('File headers:', this.userFileHeaders);
+          log.debug('File data sample:', this.userFileData.slice(0, 3));
+        }
       };
       reader.readAsBinaryString(file);
     }
   }
 
-  private parseData(parsedData: any): any[] {
-    const columns = parsedData[0];
+  private parseData(parsedData: any[]): any[] {
+    if (!parsedData || parsedData.length === 0) {
+      return [];
+    }
+
+    const columns = parsedData[0] as any[];
     const rows = parsedData.slice(1);
-    return rows.map(row => {
-      const rowData: any = {};
-      columns.forEach((column, index) => {
-        rowData[column] = row[index];
-      });
-      return rowData;
-    });
+
+    return rows
+      .filter((row: any) => row && Array.isArray(row))
+      .map((row: any[]) => {
+        const rowData: any = {};
+        columns.forEach((column: any, index: number) => {
+          if (column !== null && column !== undefined) {
+            const columnName = column.toString();
+            rowData[columnName] = row[index] !== undefined ? row[index] : '';
+          }
+        });
+        return rowData;
+      })
+      .filter(row => Object.values(row).some(value =>
+        value !== null && value !== undefined && value !== ''
+      ));
   }
 
+  // Handle mapping confirmation
+  onMappingConfirmed(): void {
+    // Validate required fields
+    const missingRequiredFields = this.systemFields
+      .filter(field => field.required && !this.mapping[field.key]);
+
+    if (missingRequiredFields.length > 0) {
+      alert(`Please map the following required fields: ${missingRequiredFields.map(f => f.label).join(', ')}`);
+      return;
+    }
+
+    // Transform the data based on mapping
+    this.mappedData = this.userFileData.map(userRow => {
+      const mappedRow: any = {};
+      for (const [systemKey, userKey] of Object.entries(this.mapping)) {
+        if (userKey && userRow[userKey] !== undefined) {
+          mappedRow[systemKey] = userRow[userKey];
+        } else {
+          mappedRow[systemKey] = ''; // Set empty for unmapped fields
+        }
+      }
+      return mappedRow;
+    });
+
+    this.data = this.mappedData;
+    this.showMappingModal = false;
+
+    // Reset selections when new data is loaded
+    this.selectedRisks = [];
+
+    log.debug('Mapped data:', this.mappedData);
+  }
+
+  onMappingCancelled(): void {
+    this.showMappingModal = false;
+    this.userFileHeaders = [];
+    this.userFileData = [];
+  }
+
+  updateMapping(systemField: string, userColumn: string): void {
+    this.mapping[systemField] = userColumn;
+  }
   // Handle selection changes
   onSelectionChange(event: any): void {
     this.selectedRisks = event;
@@ -163,6 +264,7 @@ export class ImportRisksComponent {
   get selectedCount(): number {
     return this.selectedRisks.length;
   }
+
 
   getQuotationRiskPayload(): any[] {
     // Validate that the selectedRisks array is not empty
@@ -277,7 +379,7 @@ export class ImportRisksComponent {
             );
           },
         }
-      );
+        );
     } else {
       this.globalMessagingService.displayErrorMessage('Error', 'No subclass selected.');
     }
@@ -350,13 +452,13 @@ export class ImportRisksComponent {
    */
   getProductSubclass(code: number) {
     this.subclassService.getProductSubclasses(code)
-    .subscribe((subclasses) => {
-      this.allMatchingSubclasses = subclasses.map((value) => {
-        return {
-          ...value,
-          description: value.description,
-        }
+      .subscribe((subclasses) => {
+        this.allMatchingSubclasses = subclasses.map((value) => {
+          return {
+            ...value,
+            description: value.description,
+          }
+        })
       })
-    })
   }
 }
