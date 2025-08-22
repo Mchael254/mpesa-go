@@ -300,7 +300,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.hasUnderwriterRights();
 
 
-
     this.menuItems = [
       {
         label: 'Claims Experience',
@@ -489,6 +488,52 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           limitAmount: this.sumInsured
         });
         this.handleProductClick(this.quotationView.quotationProducts[0])
+
+      const Product1 = this.quotationDetails.quotationProducts[0];
+      log.debug('Product1', Product1);
+
+if (Product1) {
+  this.taxDetails = Product1.taxInformation;
+  this.productClauses = Product1.productClauses;
+
+  log.debug('taxDetais', this.taxDetails);
+  log.debug('productClauses', this.productClauses);
+
+  const risk1 = Product1.riskInformation[0];
+  log.debug('risk1', risk1);
+
+  
+  this.sections = risk1.sectionsDetails || [];
+  log.debug('sections', this.sections);
+
+  
+  const scheduleArray = risk1.scheduleDetails || [];
+  const firstSchedule = scheduleArray[0] || {};
+  const details = firstSchedule.details || {};
+
+  this.availableScheduleLevels = Object.keys(details);  
+  this.schedulesData = {};
+  this.availableScheduleLevels.forEach(level => {
+    const levelData = details[level];
+    this.schedulesData[level] = levelData ? [levelData] : [];
+  });
+
+  this.activeScheduleTab = this.availableScheduleLevels[0] || '';
+
+  log.debug('default schedule', this.schedulesData);
+
+ 
+if (risk1.code) {
+  this.getRiskClauses(risk1.code); 
+} else {
+  log.debug('No code found in risk1');
+}
+
+}
+
+ this.getLimitsofLiability(quotationProductCode, subclassCode,'L');
+ this.getLimitsofLiability(quotationProductCode,subclassCode,'E')
+
       });
 
 
@@ -522,13 +567,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     )
   }
 
-  getSections(data: any) {
-    this.riskDetails.forEach((el: { code: any; sectionsDetails: any; scheduleDetails: ScheduleDetails }) => {
-      if (data === el.code) {
-        this.sections = el.sectionsDetails;
+getSections(data: any) {
+  this.riskDetails.forEach((el: { code: any; sectionsDetails: any; scheduleDetails:ScheduleDetails }) => {
+    if (data === el.code) {
+      this.sections = el.sectionsDetails;
+      const scheduleArray = el.scheduleDetails || [];
+      const firstSchedule = scheduleArray[0] || {};
+      const details = firstSchedule.details || {};
 
-        const details = el.scheduleDetails?.details || {};
-        this.availableScheduleLevels = Object.keys(details); // e.g., ['level1', 'level2']
+      this.availableScheduleLevels = Object.keys(details); // e.g., ['level1', 'level2']
 
         this.schedulesData = {};
         this.availableScheduleLevels.forEach(level => {
