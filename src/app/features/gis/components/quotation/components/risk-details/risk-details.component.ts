@@ -407,7 +407,6 @@ export class RiskDetailsComponent {
     }
     this.createTaxForm();
 
-
     this.riskDetailsForm = new FormGroup({
       subclass: new FormControl(null)
     });
@@ -440,8 +439,6 @@ export class RiskDetailsComponent {
     // this.clientCode = Number(sessionStorage.getItem('insuredCode'))
     this.loadAllClients();
     this.getProductTaxes();
-
-
 
   }
 
@@ -2992,6 +2989,7 @@ export class RiskDetailsComponent {
   }
 
   setClauseColumns(clause: Clause) {
+
     const excludedFields = [];
 
     this.clauseColumns = Object.keys(clause)
@@ -2999,24 +2997,23 @@ export class RiskDetailsComponent {
       .map((key) => ({
         field: key,
         header: this.sentenceCase(key),
-        visible: this.defaultVisibleFields.includes(key),
+        visible: this.defaultVisibleClauseFields.includes(key),
       }));
 
     // manually add actions column
     this.clauseColumns.push({ field: 'actions', header: 'Actions', visible: true });
+    log.debug("clauseColumns", this.clauseColumns)
   }
 
-  defaultVisibleClauseFields = [
-    'code', 'shortDescription', 'heading', 'wording', 'type', 'isEditable', 'isCurrent', 'isLien', 'ins',
-    'merge', 'organizationCode', 'version', 'updatedAt', 'updatedBy', 'isMandatory', 'links'
-  ];
+  defaultVisibleClauseFields = ['clauseCode', 'clauseExpires', 'clauseType', 'heading', 'isEditable', 'isLienClause',
+    'isMandatory', 'isRescueClause', 'shortDescription', 'subClassCode', 'version', 'wording'
 
+  ];
 
   loadAddedClauses(): void {
     const riskCode = this.quotationRiskCode
     this.quotationService.getAddedRiskClauses(riskCode).subscribe({
       next: (res) => {
-        log.debug('addedRiskClauses', res?._embedded || res || []);
         this.sessionClauses = res?._embedded || res || [];
       },
       error: (err) => {
@@ -3027,7 +3024,7 @@ export class RiskDetailsComponent {
 
   loadSubclassClauses(code: any) {
     if (!code) {
-      log.debug("Missing subclass code, skipping clause loading.");
+      log.debug("Missing subclass code");
       return;
     }
 
@@ -3035,12 +3032,11 @@ export class RiskDetailsComponent {
       next: (data) => {
         this.SubclauseList = data || [];
 
-        log.debug('subclass ClauseList#####', this.SubclauseList);
-
+        // log.debug('subclass ClauseList#####', this.SubclauseList);
         this.mandatoryClause = this.SubclauseList.filter(clause => clause.isMandatory === 'Y');
         this.nonMandatoryClauses = this.SubclauseList.filter(clause => clause.isMandatory === 'N');
-        log.debug('selected subclass ClauseList#####', this.mandatoryClause);
-        log.debug('Non mandatory  subclass ClauseList#####', this.nonMandatoryClauses);
+        // log.debug('selected subclass ClauseList#####', this.mandatoryClause);
+        // log.debug('Non mandatory  subclass ClauseList#####', this.nonMandatoryClauses);
 
         this.SubclauseList.forEach(clause => {
           clause.checked = clause.isMandatory === 'Y';
@@ -3066,6 +3062,7 @@ export class RiskDetailsComponent {
         this.riskClause = [...this.mandatoryClause];
         this.sessionClauses = [...this.riskClause];
 
+
         const quotationCode = Number(sessionStorage.getItem("quotationCode"));
         const riskCode = Number(this.selectedRiskCode);
         this.mandatoryClause.forEach(clause => {
@@ -3083,6 +3080,7 @@ export class RiskDetailsComponent {
           this.quotationService.addRiskClause(payload).subscribe({
             next: () => {
               log.debug("Mandatory clause persisted:", clause.shortDescription);
+
             },
             error: (err) => {
               log.debug("Clause may already exist or failed to add:", err);
@@ -3097,7 +3095,11 @@ export class RiskDetailsComponent {
           clauseModified: false
         };
         sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
-        log.debug("risk clause map >>", riskClauseMap);
+        // log.debug("risk clause map >>", riskClauseMap);
+
+        if (this.sessionClauses.length > 0) {
+          this.setClauseColumns(this.sessionClauses[0]);
+        }
       },
       error: (err) => {
         log.debug("Error fetching subclass clauses:", err);
@@ -3109,7 +3111,6 @@ export class RiskDetailsComponent {
 
   toggleRiskClauses() {
     this.showRiskClauses = !this.showRiskClauses;
-
   }
 
   openClauseModal() {
@@ -3119,7 +3120,6 @@ export class RiskDetailsComponent {
       if ((!this.clauses || this.clauses.length === 0) && !this.clausesModified) {
         this.selectedRiskCode = storedRiskCode;
         this.loadPersistedRiskClauses();
-
       }
 
       this.showClauseModal = true;
@@ -3147,10 +3147,10 @@ export class RiskDetailsComponent {
       this.clauseModified = sessionData.clauseModified || false;
       this.sessionClauses = [...this.riskClause];
 
-      log.debug("Loaded persisted clauses from session:", {
-        riskCode: this.selectedRiskCode,
-        sessionClauses: this.sessionClauses
-      });
+      if (this.sessionClauses.length > 0) {
+        this.setClauseColumns(this.sessionClauses[0]);
+      }
+
     } else {
       log.debug("No persisted data found. Fetching from API...");
       this.fetchAndCacheSubclassClauses(this.selectedSubclassCode);
@@ -3180,13 +3180,13 @@ export class RiskDetailsComponent {
         clauseModified: this.clauseModified
       };
       sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
-      log.debug("risk clause map after add >>", riskClauseMap);
+      // log.debug("risk clause map after add >>", riskClauseMap);
 
       const quotationCode = Number(sessionStorage.getItem("quotationCode"));
       const riskCode = Number(this.selectedRiskCode);
 
       const combinedClauses = [...this.selectedRiskClauses];
-      log.debug("combined clauses >> ", combinedClauses)
+      // log.debug("combined clauses >> ", combinedClauses);
 
       let successCount = 0;
       let failureCount = 0;
@@ -3202,8 +3202,7 @@ export class RiskDetailsComponent {
           clauseType: clause.clauseType,
           clauseHeading: clause.heading
         };
-
-        log.debug("Sending single clause payload:", singlePayload);
+        // log.debug("Sending single clause payload:", singlePayload);
 
         this.quotationService.addRiskClause(singlePayload).subscribe({
           next: () => {
