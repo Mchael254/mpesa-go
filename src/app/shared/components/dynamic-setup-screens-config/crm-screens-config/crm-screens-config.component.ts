@@ -100,15 +100,15 @@ export class CrmScreensConfigComponent implements OnInit {
   protected readonly CountryISO = CountryISO;
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
 
-  wealthAmlFormFields: any[] = [];
-  corporateContactDetailsFormField: any[] = [];
-  corporateAddressDetailsFormField: any[] = [];
-  corporateFinancialDetailsFormField: any[] = [];
-  corporateWealthAmlFormFieldsDetailsFormField: any[] = [];
-  corporateWealthCR12DetailsFormField: any[] = [];
-  corporateWealthOwnershipDetailsFormField: any[] = [];
-  branchDetailsFormFields: any[] = [];
-  privacyFormFields: any[] = [];
+  wealthAmlFormFields: ConfigFormFieldsDto[] = [];
+  corporateContactDetailsFormField: ConfigFormFieldsDto[] = [];
+  corporateAddressDetailsFormField: ConfigFormFieldsDto[] = [];
+  corporateFinancialDetailsFormField: ConfigFormFieldsDto[] = [];
+  corporateWealthAmlFormFieldsDetailsFormField: ConfigFormFieldsDto[] = [];
+  corporateWealthCR12DetailsFormField: ConfigFormFieldsDto[] = [];
+  corporateWealthOwnershipDetailsFormField: ConfigFormFieldsDto[] = [];
+  branchDetailsFormFields: ConfigFormFieldsDto[] = [];
+  privacyFormFields: ConfigFormFieldsDto[] = [];
 
   selectedTab: string = 'otp_phone_number';
   shouldShowFields: boolean = false;

@@ -288,90 +288,90 @@ describe('CrmScreensConfigComponent', () => {
     expect(displayInfoMessageSpy).toHaveBeenCalledWith('Info', 'Publish to save sub module changes.');
   });
 
-    it('should update selectedScreen data in screens array', () => {
-        component.screens = [
-            {
-              code: 1,
-              label: {en: 'en', ke: 'ke', fr: 'fr'},
-              screenId: 'Screen1',
-              subModuleCode: 1,
-              order: 1,
-              visible: true,
-              originalLabel: 'OriginalLabel',
-              hasFields: true
-            }
-        ];
-        component.selectedScreen = component.screens[0];
-        component.screensForm.patchValue({visible: 'N', screenLevel: 2});
-        component.saveScreens();
+  it('should update selectedScreen data in screens array', () => {
+    component.screens = [
+      {
+        code: 1,
+        label: {en: 'en', ke: 'ke', fr: 'fr'},
+        screenId: 'Screen1',
+        subModuleCode: 1,
+        order: 1,
+        visible: true,
+        originalLabel: 'OriginalLabel',
+        hasFields: true
+      }
+    ];
+    component.selectedScreen = component.screens[0];
+    component.screensForm.patchValue({visible: 'N', screenLevel: 2});
+    component.saveScreens();
 
-        expect(component.screens[0].visible).toBe(false);
-        expect(component.screens[0].order).toBe(2);
-    });
+    expect(component.screens[0].visible).toBe(false);
+    expect(component.screens[0].order).toBe(2);
+  });
 
-    it('should call updateMultilingualLabel with correct parameters for screens', () => {
-        const updateMultilingualLabelSpy = jest.spyOn(component, 'updateMultilingualLabel');
-        component.screens = [
-            {
-              code: 1,
-              label: {en: 'English', ke: 'Swahili', fr: 'French'},
-              screenId: 'Screen1',
-              subModuleCode: 1,
-              order: 1,
-              visible: true,
-              originalLabel: 'OriginalLabel',
-              hasFields: true
-            }
-        ];
-        component.selectedScreen = component.screens[0];
-        component.screensForm.patchValue({currentScreenLabel: 'Updated Label'});
-        component.saveScreens();
+  it('should call updateMultilingualLabel with correct parameters for screens', () => {
+    const updateMultilingualLabelSpy = jest.spyOn(component, 'updateMultilingualLabel');
+    component.screens = [
+      {
+        code: 1,
+        label: {en: 'English', ke: 'Swahili', fr: 'French'},
+        screenId: 'Screen1',
+        subModuleCode: 1,
+        order: 1,
+        visible: true,
+        originalLabel: 'OriginalLabel',
+        hasFields: true
+      }
+    ];
+    component.selectedScreen = component.screens[0];
+    component.screensForm.patchValue({currentScreenLabel: 'Updated Label'});
+    component.saveScreens();
 
-        expect(updateMultilingualLabelSpy).toHaveBeenCalledWith(
-            component.selectedScreen,
-            component.screensForm,
-            'currentScreenLabel'
-        );
-        expect(component.selectedScreen.label.en).toBe('Updated Label');
-    });
+    expect(updateMultilingualLabelSpy).toHaveBeenCalledWith(
+      component.selectedScreen,
+      component.screensForm,
+      'currentScreenLabel'
+    );
+    expect(component.selectedScreen.label.en).toBe('Updated Label');
+  });
 
-    it('should invoke globalMessagingService.displayInfoMessage on successful save', () => {
-        const displayInfoMessageSpy = jest.spyOn(component['globalMessagingService'], 'displayInfoMessage');
-        component.selectedScreen = {
-          code: 1,
-          label: {en: 'English', ke: 'Swahili', fr: 'French'},
-          screenId: 'Screen1',
-          subModuleCode: 1,
-          order: 1,
-          visible: true,
-          originalLabel: 'OriginalLabel',
-          hasFields: true
-        };
-        component.screensForm.patchValue({visible: 'Y', screenLevel: 1});
-        component.saveScreens();
+  it('should invoke globalMessagingService.displayInfoMessage on successful save', () => {
+    const displayInfoMessageSpy = jest.spyOn(component['globalMessagingService'], 'displayInfoMessage');
+    component.selectedScreen = {
+      code: 1,
+      label: {en: 'English', ke: 'Swahili', fr: 'French'},
+      screenId: 'Screen1',
+      subModuleCode: 1,
+      order: 1,
+      visible: true,
+      originalLabel: 'OriginalLabel',
+      hasFields: true
+    };
+    component.screensForm.patchValue({visible: 'Y', screenLevel: 1});
+    component.saveScreens();
 
-        expect(displayInfoMessageSpy).toHaveBeenCalledWith('Info', 'Publish to save screen changes.');
-    });
+    expect(displayInfoMessageSpy).toHaveBeenCalledWith('Info', 'Publish to save screen changes.');
+  });
 
-    it('should open multilingual modal after saving screens', () => {
-        const openMultilingualModalSpy = jest.spyOn(component, 'openMultilingualModal');
-        component.selectedScreen = {
-          code: 1,
-          label: {en: 'English', ke: 'Swahili', fr: 'French'},
-          screenId: 'Screen1',
-          subModuleCode: 1,
-          order: 1,
-          visible: true,
-          originalLabel: 'OriginalLabel',
-          hasFields: true
-        };
-        component.screensForm.patchValue({visible: 'Y', screenLevel: 1});
+  it('should open multilingual modal after saving screens', () => {
+    const openMultilingualModalSpy = jest.spyOn(component, 'openMultilingualModal');
+    component.selectedScreen = {
+      code: 1,
+      label: {en: 'English', ke: 'Swahili', fr: 'French'},
+      screenId: 'Screen1',
+      subModuleCode: 1,
+      order: 1,
+      visible: true,
+      originalLabel: 'OriginalLabel',
+      hasFields: true
+    };
+    component.screensForm.patchValue({visible: 'Y', screenLevel: 1});
 
-        component.saveScreens();
+    component.saveScreens();
 
-        expect(component.modalId).toBe('screensModal');
-        expect(openMultilingualModalSpy).toHaveBeenCalled();
-    });
+    expect(component.modalId).toBe('screensModal');
+    expect(openMultilingualModalSpy).toHaveBeenCalled();
+  });
 
   it('should update the selected section with correct multilingual label', () => {
     const updateMultilingualLabelSpy = jest.spyOn(component, 'updateMultilingualLabel');

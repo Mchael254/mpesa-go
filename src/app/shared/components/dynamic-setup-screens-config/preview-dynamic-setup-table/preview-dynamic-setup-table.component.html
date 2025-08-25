@@ -70,7 +70,9 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td>{{emptyTableMessage | titlecase }}</td>
+          <td [attr.colspan]="columns?.length + 1" class="text-center">
+            {{ emptyTableMessage | titlecase }}
+          </td>
         </tr>
       </ng-template>
     </p-table>
