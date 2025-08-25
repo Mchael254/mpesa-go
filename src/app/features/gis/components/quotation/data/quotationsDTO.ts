@@ -1266,3 +1266,10 @@ export interface ScheduleTab {
 }
 
 
+
+export interface ProductDetails {
+   coverFrom: Date;
+   coverTo: Date;
+   productName: string;
+
+}
