@@ -1260,7 +1260,7 @@
         </div>
 
         <!-- risk clauses -->
-         
+
         <!-- Floating Column Selector -->
         <div *ngIf="showClauseColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
             [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
@@ -1286,7 +1286,7 @@
             <!-- risk clause table -->
             <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="true" [rows]="3"
                 [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['shortDescription', 'wording', 'heading']"
-                [scrollable]="true" scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3">
+                [scrollable]="true"  responsiveLayout="scroll" class="mt-3">
 
                 <!-- Table Header -->
                 <ng-template pTemplate="header">
@@ -1299,49 +1299,69 @@
                     </tr>
                 </ng-template>
 
-
-                <!-- Table Body -->
                 <ng-template pTemplate="body" let-clause>
                     <tr>
-                        <td>{{clause.shortDescription}}</td>
-                        <td>{{clause.heading | truncate:3 | sentenceCase}}</td>
-                        <td class="position-relative ">
-                            <div class="clause-wrapper">
-                                {{ clause.wording | truncate:5 | sentenceCase}}
+                        <td *ngFor="let col of clauseColumns" [hidden]="!col.visible">
+                            <ng-container [ngSwitch]="col.field">
 
-                                <div class="hover-card">
-                                    {{ clause.wording |sentenceCase }}
-                                </div>
-                            </div>
-                        </td>
-                        <td class="flexible-header1" style="text-align: left">
-                            <div class="flex justify-start  gap-2">
-                                <!-- Edit -->
-                                <span class="p-button-label p-text-bold " [ngStyle]="{
-                    color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280', 
-                   
+                                <!-- Short Description -->
+                                <ng-container *ngSwitchCase="'shortDescription'">
+                                    {{ clause.shortDescription }}
+                                </ng-container>
+
+                                <!-- Heading (with pipes) -->
+                                <ng-container *ngSwitchCase="'heading'">
+                                    {{ clause.heading | truncate:3 | sentenceCase }}
+                                </ng-container>
+
+                                <!-- Wording (with hover card) -->
+                                <ng-container *ngSwitchCase="'wording'">
+                                    <div class="clause-wrapper">
+                                        {{ clause.wording | truncate:5 | sentenceCase }}
+                                        <div class="hover-card">
+                                            {{ clause.wording | sentenceCase }}
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                                <!-- Actions -->
+                                <ng-container *ngSwitchCase="'actions'">
+                                    <div class="flex justify-start gap-2">
+                                        <!-- Edit -->
+                                        <span class="p-button-label p-text-bold" [ngStyle]="{
+                    color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280',
                     cursor: clause.isEditable === 'Y' ? 'pointer' : 'default',
                     display: 'inline-block',
-                    width: '60px'  
-                    }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
-                                    [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
-                                    (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
-                                    {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
-                                </span>
+                    width: '60px'
+                  }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
+                                            [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
+                                            (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
+                                            {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
+                                        </span>
 
-                                <!-- Delete -->
-                                <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold " [ngStyle]="{
-                                                        color: '#00529B',
-                                                        cursor: 'pointer'
-                                                      }" data-bs-toggle="modal" data-bs-target="#deleteClause"
-                                    (click)="prepareDeleteClause(clause)">
-                                    {{ 'gis.quotation.delete' | translate }}
-                                </span>
-                            </div>
+                                        <!-- Delete -->
+                                        <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold"
+                                            [ngStyle]="{ color: '#00529B', cursor: 'pointer' }" data-bs-toggle="modal"
+                                            data-bs-target="#deleteClause" (click)="prepareDeleteClause(clause)">
+                                            {{ 'gis.quotation.delete' | translate }}
+                                        </span>
+                                    </div>
+                                </ng-container>
 
+                                <!-- Default (for future columns added dynamically) -->
+                                <ng-container *ngSwitchDefault>
+                                    {{ clause[col.field] }}
+                                </ng-container>
+
+                            </ng-container>
                         </td>
                     </tr>
                 </ng-template>
+
+
+
+                <!-- Table Body -->
+               
 
                 <ng-template pTemplate="emptymessage">
                     <tr>
