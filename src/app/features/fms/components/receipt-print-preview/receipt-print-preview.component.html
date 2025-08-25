@@ -17,7 +17,7 @@
     </ngx-doc-viewer>
   </div>
   <!-- Container for action buttons, centered using Flexbox -->
-  <div class="btn-actions d-flex justify-content-center gap-3 mt-3">
+  <div class="btn-actions d-flex justify-content-center gap-3 mt-1">
     <!-- Button to mark the receipt as 'Printed' -->
 
     <button
@@ -33,7 +33,7 @@
       type="button"
       class="btn btn-success"
       *ngIf="reprintedReceipt !== 'yes'"
-      (click)="navigateToReceiptCapture()"
+      (click)="navigateToReceiptManagment()"
     >
       {{ "fms.receipting.unPrinted" | translate }}
     </button>
@@ -43,7 +43,7 @@
     <button
       type="button"
       class="btn btn-secondary"
-      (click)="navigateToReceiptCapture()"
+      (click)="navigateToReceiptManagment()"
       *ngIf="reprintedReceipt == 'yes'"
     >
       {{ "base.back" | translate }}

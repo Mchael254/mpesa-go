@@ -2902,6 +2902,7 @@
     "correction": "Enviar para corrección",
     "reject": "Rechazar",
     "errorMessage": "¡Ocurrió un error!",
+     "printUpdateError":"Error al actualizar el estado de impresión de Rct",
     "rctPrintError": "Recibo guardado correctamente, pero no se pudo imprimir el comprobante",
     "pdPrintError": "Recibo guardado correctamente, pero no se pudo imprimir el comprobante",
 
