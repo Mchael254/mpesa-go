@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DynamicColumns} from "../../../data/dynamic-columns";
 import {CountryDto} from "../../../data/common/countryDto";
@@ -7,6 +7,7 @@ import {GlobalMessagingService} from "../../../services/messaging/global-messagi
 import {Logger} from "../../../services";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
 import * as bootstrap from 'bootstrap';
+import {ConfigFormFieldsDto} from "../../../data/common/dynamic-screens-dto";
 
 const log = new Logger("PreviewDynamicSetupTableComponent");
 @Component({
@@ -30,10 +31,9 @@ export class PreviewDynamicSetupTableComponent implements OnInit {
   @Input() tableTitle: string;
   @Input() addButtonText: string;
   @Input() emptyTableMessage: string;
-  @Input() formFields: any[] = [];
+  @Input() formFields: ConfigFormFieldsDto[] = [];
   @Input() subGroupId: any;
   @Input() selectedAddressCountry: CountryDto;
-  @Output() saveDetailsData: EventEmitter<any> = new EventEmitter<any>();
 
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
   protected readonly CountryISO = CountryISO;

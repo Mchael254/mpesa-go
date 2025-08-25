@@ -1180,10 +1180,10 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="card mb-3" *ngIf="dynamicSetupData">
+        <div class="card mb-3" *ngIf="newEntityFieldsData.length > 0">
           <form [formGroup]="uploadForm">
             <div class="row m-3">
-              <h5 class="mb-4 ms-md-5 text-primary">New entity</h5>
+              <h5 class="mb-4 ms-md-5 text-primary">{{'entities.new_entity' | translate}}</h5>
               <div class="col-sm-4" *ngFor="let field of newEntityFieldsData">
                 <div class="mb-3 pe-md-4 ms-md-5 me-md-5">
                   <label class="form-label" [for]="field.fieldId">
@@ -1230,11 +1230,9 @@
                 <div [id]="group.groupId" class="collapse-container" [class.expanded]="isCollapsed(group.groupId)">
 
                   <ng-container *ngIf="
-              group?.subGroup[0]?.subGroupId === 'cnt_corporate_banking_information' ||
-              group?.subGroup[0]?.subGroupId === 'cnt_corporate_company_contacts' ||
-              group?.subGroup[1]?.subGroupId === 'cnt_corporate_head_office_address'
-              "
-                  >
+                    group?.subGroup[0]?.subGroupId === 'cnt_corporate_banking_information' ||
+                    group?.subGroup[0]?.subGroupId === 'cnt_corporate_company_contacts' ||
+                    group?.subGroup[1]?.subGroupId === 'cnt_corporate_head_office_address'">
                     <h5 class="text-dark mb-3 pe-md-4 me-md-4 ms-md-5">
                       {{ group?.subGroup[0]?.label?.[language] | titlecase }}
                     </h5>
@@ -1548,7 +1546,7 @@
       </div>
       <div class="modal-footer border-top-0">
         <button type="button" class="btn btn-secondary" (click)="closePreviewModal()">Close</button>
-        <button type="button" class="btn btn-primary" (click)="publishPreviewChanges()">Publish</button>
+        <button type="button" class="btn btn-primary" (click)="publishPreviewChanges()">{{'crm.publish' | translate}}</button>
       </div>
     </div>
   </div>
