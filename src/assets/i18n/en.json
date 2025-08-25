@@ -3048,6 +3048,7 @@
     "correction": "Send for correction",
     "reject": "Reject",
     "errorMessage": "An Error Occurred!",
+    "printUpdateError":"Failed to update Rct print status",
     "rctPrintError": "Receipt saved successfully but unable to print",
     "pdPrintError": "Receipt saved successfully but unable to print slip",
     "receipting": {
