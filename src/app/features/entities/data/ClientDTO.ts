@@ -63,6 +63,8 @@ export interface ClientDTO {
   address?: AddressModel,
   contactDetails?: any,
   paymentDetails?: any,
+  wealthAmlDetails?: any,
+  clientCode?: number,
 }
 export interface ClientTypeDTO {
   category: string,
