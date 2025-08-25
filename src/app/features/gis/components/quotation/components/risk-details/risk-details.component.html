@@ -2184,7 +2184,7 @@
 
         <div *ngIf="showTaxModal" class="modal  d-block" tabindex="-1" role="dialog"
             style="background: transparent !important;">
-            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width:700px" role="document">
                 <div class="modal-content">
                     <!-- Modal Header -->
                     <div class="modal-header d-flex align-items-center no-border-header">
@@ -2201,12 +2201,12 @@
                                     <label>Tax</label>
                                     <div class="position-relative" *ngIf="taxTypes && taxTypes.length">
                                         <div class="input-group input-group-sm">
-                                            <input type="text" class="form-control"
-                                                [value]="taxForm.get('rateDescription')?.value" readonly>
-                                            <button class="btn btn-outline-secondary" type="button"
-                                                (click)="openEditTaxModalFromAdd()">
-                                                <i class="pi pi-search"></i>
-                                            </button>
+
+                                            <input type="text" class="form-control form-control-sm pe-5"
+                                                id="quote-input" [value]="taxForm.get('rateDescription')?.value"
+                                                readonly (click)="openEditTaxModalFromAdd()" style="cursor: pointer;" />
+                                            <i class="pi pi-search position-absolute"
+                                                style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
                                         </div>
 
                                         <div *ngIf="taxForm.get('tax')?.touched && taxForm.get('tax')?.invalid"
@@ -2510,10 +2510,10 @@
                         <td>{{ data.taxType }}</td>
 
                         <td class="d-flex align-items-center">
-                            <button class="btn btn-sm text-primary me-2" (click)="openEditTaxModalFromDB(data)">
+                            <button class="btn btn-sm text-primary me-2 fw-bold" (click)="openEditTaxModalFromDB(data)">
                                 Edit
                             </button>
-                            <button class="btn btn-sm text-primary" (click)="deleteTaxes(data)">
+                            <button class="btn btn-sm text-primary fw-bold" (click)="deleteTaxes(data)">
                                 Delete
                             </button>
                         </td>
