@@ -1199,11 +1199,11 @@
                         <button class="btn btn-primary btn-sm mb-1" (click)="openClauseModal()">
                             Add risk Clause
                         </button>
-
-                        <i class="pi border border-black p-1 rounded-1 text-black mb-1" [ngClass]="{
-                            'pi-caret-up': showSections,
-                            'pi-caret-down': !showSections
-                            }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
+                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                            [ngClass]="{ 'pi-caret-up': showClauses, 'pi-caret-down': !showClauses }"
+                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                            (click)="toggleClauseColumns(iconTrigger)">
+                        </i>
                     </div>
 
                     <!-- limits action tabs -->
@@ -1260,94 +1260,112 @@
         </div>
 
         <!-- risk clauses -->
+
+        <!-- Floating Column Selector -->
+        <div *ngIf="showClauseColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong class="text-primary">Select Columns</strong>
+                <button class="btn-close btn-sm" (click)="showClauseColumnModal = false"></button>
+            </div>
+            <div style="max-height: 250px; overflow-y: auto;">
+                <div *ngFor="let col of clauseColumns">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                            [(ngModel)]="col.visible" [id]="col.field">
+                        <label class="form-check-label" [for]="col.field">
+                            {{ col.header }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div *ngIf="riskActiveTab === 'riskClauses'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-0 w-100">
+
             <!-- risk clause table -->
             <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="true" [rows]="3"
                 [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['shortDescription', 'wording', 'heading']"
-                [scrollable]="true" scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3"
-                [(selection)]="selectedClause" selectionMode="multiple">
+                [scrollable]="true"  responsiveLayout="scroll" class="mt-3">
+
                 <!-- Table Header -->
                 <ng-template pTemplate="header">
                     <tr>
-                        <th pSortableColumn="narration" class="flexible-header" style="width: 13%">
-                            ID <p-sortIcon field="narration" />
+                        <th *ngFor="let col of clauseColumns" [hidden]="!col.visible" class="flexible-header"
+                            [pSortableColumn]="col.field">
+                            {{ col.header }}
+                            <p-sortIcon [field]="col.field"></p-sortIcon>
                         </th>
-                        <th pSortableColumn="value" class="flexible-header" style="width: 20%">
-                            Heading <p-sortIcon field="value" />
-                        </th>
-                        <th pSortableColumn="value" class="flexible-header" style="width: 35%">
-                            Wording <p-sortIcon field="value" />
-                        </th>
-                        <th style="width: 15%">Actions</th>
-                    </tr>
-                    <tr class="py-2">
-                        <td class="px-3"> <!-- Horizontal padding for cells -->
-                            <input class="form-control form-control-sm my-1" pInputText #idFilter type="text"
-                                (input)="riskClauseTable.filterGlobal(idFilter.value, 'contains')"
-                                style="width: 70%;" />
-                        </td>
-                        <td class="px-3"> <!-- Horizontal padding for cells -->
-                            <input class="form-control form-control-sm my-1" pInputText #headingFilter type="text"
-                                (input)="riskClauseTable.filterGlobal(headingFilter.value, 'contains')"
-                                style="width: 50%;" />
-                        </td>
-                        <td class="px-3"> <!-- Horizontal padding for cells -->
-                            <input class="form-control form-control-sm my-1" pInputText #valueFilter type="text"
-                                (input)="riskClauseTable.filterGlobal(valueFilter.value, 'contains')"
-                                style="width: 50%;" />
-                        </td>
-                        <td></td>
                     </tr>
                 </ng-template>
 
-                <!-- Table Body -->
                 <ng-template pTemplate="body" let-clause>
                     <tr>
-                        <td>{{clause.shortDescription}}</td>
-                        <td>{{clause.heading | truncate:3 | sentenceCase}}</td>
-                        <td class="position-relative ">
-                            <div class="clause-wrapper">
-                                {{ clause.wording | truncate:5 | sentenceCase}}
+                        <td *ngFor="let col of clauseColumns" [hidden]="!col.visible">
+                            <ng-container [ngSwitch]="col.field">
 
-                                <div class="hover-card">
-                                    {{ clause.wording |sentenceCase }}
-                                </div>
-                            </div>
-                        </td>
-                        <td class="flexible-header1" style="text-align: left">
-                            <div class="flex justify-start  gap-2">
-                                <!-- Edit -->
-                                <span class="p-button-label p-text-bold " [ngStyle]="{
-                    color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280', 
-                   
+                                <!-- Short Description -->
+                                <ng-container *ngSwitchCase="'shortDescription'">
+                                    {{ clause.shortDescription }}
+                                </ng-container>
+
+                                <!-- Heading (with pipes) -->
+                                <ng-container *ngSwitchCase="'heading'">
+                                    {{ clause.heading | truncate:3 | sentenceCase }}
+                                </ng-container>
+
+                                <!-- Wording (with hover card) -->
+                                <ng-container *ngSwitchCase="'wording'">
+                                    <div class="clause-wrapper">
+                                        {{ clause.wording | truncate:5 | sentenceCase }}
+                                        <div class="hover-card">
+                                            {{ clause.wording | sentenceCase }}
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                                <!-- Actions -->
+                                <ng-container *ngSwitchCase="'actions'">
+                                    <div class="flex justify-start gap-2">
+                                        <!-- Edit -->
+                                        <span class="p-button-label p-text-bold" [ngStyle]="{
+                    color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280',
                     cursor: clause.isEditable === 'Y' ? 'pointer' : 'default',
                     display: 'inline-block',
-                    width: '60px'  
-                    }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
-                                    [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
-                                    (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
-                                    {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
-                                </span>
+                    width: '60px'
+                  }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
+                                            [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
+                                            (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
+                                            {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
+                                        </span>
 
-                                <!-- Delete -->
+                                        <!-- Delete -->
+                                        <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold"
+                                            [ngStyle]="{ color: '#00529B', cursor: 'pointer' }" data-bs-toggle="modal"
+                                            data-bs-target="#deleteClause" (click)="prepareDeleteClause(clause)">
+                                            {{ 'gis.quotation.delete' | translate }}
+                                        </span>
+                                    </div>
+                                </ng-container>
 
-                                <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold " [ngStyle]="{
-                                                        color: '#00529B',
-                                                        cursor: 'pointer'
-                                                      }" data-bs-toggle="modal" data-bs-target="#deleteClause"
-                                    (click)="prepareDeleteClause(clause)">
-                                    {{ 'gis.quotation.delete' | translate }}
-                                </span>
-                            </div>
+                                <!-- Default (for future columns added dynamically) -->
+                                <ng-container *ngSwitchDefault>
+                                    {{ clause[col.field] }}
+                                </ng-container>
 
+                            </ng-container>
                         </td>
                     </tr>
                 </ng-template>
+
+
+
+                <!-- Table Body -->
+               
 
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td colspan="3" class="text-center p-4 text-muted">
+                        <td colspan="4" class="text-center p-4 text-muted">
                             <ng-container *ngIf="sessionClauses?.length > 0; else noClauses">
                                 <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
                                 <p>No matching clauses found.</p>
@@ -2510,10 +2528,6 @@
                 </ng-template>
             </p-table>
         </div>
-
-
-
-
 
 
         <!-- excesses table -->
