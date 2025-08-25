@@ -58,6 +58,11 @@ export class ReceiptPrintPreviewComponent {
    
   // A local flag to prevent revoking URL too early
   private isNavigating = false;
+  /**this flag checks if the receipt is set for printing or reprinting
+   * if it is set for reprinting which its value is yes,then we hide the printed and unprinted buttons
+   * and just show a back btn to navigate back to receipt management screen
+   */
+  reprintedReceipt:string;
   /**
    * @constructor
    * @param {SessionStorageService} sessionStorage - Service to interact with browser session storage. Used to retrieve receipt number and organization details.
@@ -84,7 +89,13 @@ export class ReceiptPrintPreviewComponent {
    */
   ngOnInit() {
     const receiptNumber = this.sessionStorage.getItem('receiptNumber');
+    
     this.receiptNumber = JSON.parse(receiptNumber);
+   
+    const status =  this.sessionStorage.getItem('reprinted');
+   
+    this.reprintedReceipt = status; // This will be true or false
+    console.log("print status:",this.reprintedReceipt);
     let defaultOrg = this.sessionStorage.getItem('defaultOrg');
     let selectedOrg = this.sessionStorage.getItem('selectedOrg');
     this.defaultOrg = defaultOrg ? JSON.parse(defaultOrg) : null;
@@ -151,6 +162,7 @@ export class ReceiptPrintPreviewComponent {
       this.isNavigating = true;
       this.sessionStorage.setItem('printTabStatus', JSON.stringify(true));
       this.router.navigate(['/home/fms/receipt-management']);
+      this.sessionStorage.clear;
   }
   // Handles API error navigation
   private handleNavigationError(customError?: string) {

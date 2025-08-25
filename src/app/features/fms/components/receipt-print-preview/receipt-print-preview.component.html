@@ -12,23 +12,41 @@
     <ngx-doc-viewer
       [fileName]="documentData?.fileName ?? ''"
       [srcUrl]="filePath ?? ''"
-      style="margin: 20px; margin-top: 10px; width: 70%"
+      style="margin: 20px; margin-top: 10px; width: 70%; height: 450px"
     >
     </ngx-doc-viewer>
   </div>
   <!-- Container for action buttons, centered using Flexbox -->
   <div class="btn-actions d-flex justify-content-center gap-3 mt-3">
     <!-- Button to mark the receipt as 'Printed' -->
-    <button type="button" class="btn btn-primary" (click)="updatePrintStatus()">
-      Printed
+
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="updatePrintStatus()"
+      *ngIf="reprintedReceipt !== 'yes'"
+    >
+      {{ "fms.receipting.printed" | translate }}
     </button>
     <!-- Button to navigate back without changing status -->
     <button
       type="button"
       class="btn btn-success"
+      *ngIf="reprintedReceipt !== 'yes'"
       (click)="navigateToReceiptCapture()"
     >
-      Unprinted
+      {{ "fms.receipting.unPrinted" | translate }}
+    </button>
+
+    <!-- This button will ONLY show if it IS a reprint -->
+
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="navigateToReceiptCapture()"
+      *ngIf="reprintedReceipt == 'yes'"
+    >
+      {{ "base.back" | translate }}
     </button>
   </div>
 </div>

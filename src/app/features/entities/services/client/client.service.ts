@@ -74,13 +74,7 @@ export class ClientService {
     );
   }
 
-  getAgentById(agent_code: any): Observable<Pagination<any>> {
-    return this.api.GET<Pagination<ClientDTO>>(
-      `agents/${agent_code}`,
-      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
-    );
-  }
-
+ 
   searchClients(
     page: number,
     size: number = 5,

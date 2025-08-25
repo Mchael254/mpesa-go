@@ -1,4 +1,7 @@
-import { Component,OnInit } from '@angular/core';
+
+import {ClientService} from '../../../../features/entities/services/client/client.service';
+import { IntermediaryService } from './../../../entities/services/intermediary/intermediary.service';
+import { Component, OnInit } from '@angular/core';
 import {
   glAccountDTO,
   glContentDTO,
@@ -25,15 +28,18 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { TimeScale } from 'chart.js';
-import {AuthService} from '../../../../shared/services/auth.service';
+import { AuthService } from '../../../../shared/services/auth.service';
 import { Pagination } from 'src/app/shared/data/common/pagination';
+import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
+import { ReceiptService } from '../../services/receipt.service';
 
 @Component({
   selector: 'app-receipt-management',
   templateUrl: './receipt-management.component.html',
   styleUrls: ['./receipt-management.component.css'],
 })
-export class ReceiptManagementComponent implements OnInit{
+export class ReceiptManagementComponent implements OnInit {
   cancelForm: FormGroup;
   users: any;
   /**
@@ -83,9 +89,12 @@ export class ReceiptManagementComponent implements OnInit{
   /** @property {boolean} isCancellation - Flag used for styling the 'Cancellation' button as active/inactive. */
   isCancellation: boolean = true; // Default view is Cancellation
   printed: boolean = false;
+  printStatus:'Y' | 'N';
   unprinted: boolean = false;
   /** @property {number | null} receiptNumber - Stores the specific receipt number selected for printing before navigation. */
   receiptNumber: number | null = null; // Initialize as null
+  accountCode: number | null = null;
+  agentCode: number | null = null;
   receiptData: unPrintedReceiptContentDTO[] = [];
   //cancellation section
   // receiptsToCancel: ReceiptToCancelDTO;
@@ -98,8 +107,20 @@ export class ReceiptManagementComponent implements OnInit{
     {} as Pagination<glContentDTO>; // This holds full pagination data
   filteredReceipts: ReceiptsToCancelContentDTO[] = [];
   glAccountContent: glContentDTO[] = []; // This will hold just the content array
-checkActiveTab:any;
+  checkActiveTab: any;
   loggedInUser: any;
+
+  client: ClientDTO;
+  agent: AgentDTO;
+  receipt_no: string;
+  whatsappSelected: boolean = true;
+  shareMethod: string;
+  
+  selectedOrg: OrganizationDTO;
+  /**
+   * @property {OrganizationDTO} defaultOrg - The default organization.
+   */
+  defaultOrg: OrganizationDTO;
   //raiseBankCharge: string = 'no';
   constructor(
     private receiptManagementService: ReceiptManagementService,
@@ -108,7 +129,10 @@ checkActiveTab:any;
     public translate: TranslateService,
     private router: Router,
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private intermediaryService: IntermediaryService,
+    private clientService: ClientService,
+    private receiptService:ReceiptService
   ) {}
   /**
    * @ngOnInit Lifecycle hook.
@@ -119,8 +143,7 @@ checkActiveTab:any;
     this.initializeForm();
     // Retrieve branch from localStorage or receiptDataService
 
-   this.handleInitialTabState(); // <-- NEW: Logic to set the tab
-
+    this.handleInitialTabState(); // <-- NEW: Logic to set the tab
 
     let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
     let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
@@ -131,6 +154,17 @@ checkActiveTab:any;
     this.defaultBranch = storedDefaultBranch
       ? JSON.parse(storedDefaultBranch)
       : null;
+    let storedDefaultOrg = this.sessionStorage.getItem('selectedOrg');
+    let storedSelectedOrg = this.sessionStorage.getItem('defaultOrg');
+    this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
+    this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
+
+    // Ensure only one organization is active at a time
+    if (this.selectedOrg) {
+      this.defaultOrg = null;
+    } else if (this.selectedOrg) {
+      this.selectedOrg = null;
+    }
     this.loggedInUser = this.authService.getCurrentUser();
 
     // Ensure only one branch is active at a time
@@ -147,10 +181,8 @@ checkActiveTab:any;
     );
 
     this.fetchGlAccounts(this.defaultBranch?.id || this.selectedBranch?.id);
-
-
   }
-   // NEW METHOD: Handles setting the initial tab based on session storage
+  // NEW METHOD: Handles setting the initial tab based on session storage
   handleInitialTabState(): void {
     try {
       const activeTabFlag = this.sessionStorage.getItem('printTabStatus');
@@ -166,7 +198,7 @@ checkActiveTab:any;
       }
     } catch (e) {
       // This catch block will handle any unexpected errors during session storage access.
-     // console.error('Error reading tab status from session storage:', e);
+      // console.error('Error reading tab status from session storage:', e);
       // Default to the cancellation tab in case of an error
       this.cancelClicked();
     }
@@ -181,6 +213,10 @@ checkActiveTab:any;
       raiseBankCharge: ['N', Validators.required], // 'no' is the default value
       bankCharges: [''],
       clientCharges: [''],
+      email: [''], // Not required initially
+      phone: ['', Validators.required], // Initially required
+      name: ['', Validators.required],
+      shareMethod: ['whatsapp', Validators.required], // Default to 'whatsapp'
     });
     //Add conditional validation
     this.cancelForm.get('raiseBankCharge')?.valueChanges.subscribe((value) => {
@@ -197,6 +233,38 @@ checkActiveTab:any;
       accountChargedControl?.updateValueAndValidity();
       glAccountControl?.updateValueAndValidity();
     });
+
+    // 2. (Optional but HIGHLY Recommended) Listen for changes to be truly reactive
+    this.listenForShareMethodChanges();
+  }
+
+  listenForShareMethodChanges(): void {
+    // Get a reference to the shareMethod control
+    const shareMethodControl = this.cancelForm.get('shareMethod');
+
+    if (shareMethodControl) {
+      // Subscribe to its valueChanges observable
+      shareMethodControl.valueChanges.subscribe((method) => {
+        const phoneControl = this.cancelForm.get('phone');
+        const emailControl = this.cancelForm.get('email');
+
+        if (method === 'email') {
+          // If email is selected:
+          this.whatsappSelected = false;
+          emailControl.setValidators([Validators.required, Validators.email]);
+          phoneControl.clearValidators(); // Remove validators from phone
+        } else {
+          // If whatsapp is selected:
+          this.whatsappSelected = true;
+          phoneControl.setValidators(Validators.required);
+          emailControl.clearValidators(); // Remove validators from email
+        }
+
+        // Important: Update the validity state of the controls
+        emailControl.updateValueAndValidity();
+        phoneControl.updateValueAndValidity();
+      });
+    }
   }
   // Helper getter for easy access in template
   get raiseBankCharge() {
@@ -334,7 +402,7 @@ checkActiveTab:any;
         item.paymentMode?.toLowerCase().includes(searchTerm)
       );
     }
-    // console.log('Filtered results:', this.filteredReceipts);
+
     this.filteredReceipts = filteredData;
     this.totalRecords = this.filteredReceipts.length;
   }
@@ -451,14 +519,25 @@ checkActiveTab:any;
    */
   printReceipt(index: number, value: number) {
     this.receiptNumber = value;
+
     this.sessionStorage.setItem(
       'receiptNumber',
       JSON.stringify(this.receiptNumber)
     );
-
+    this.sessionStorage.setItem('reprinted', 'no');
     this.router.navigate(['/home/fms/receipt-print-preview']);
-   
   }
+  rePrintReceipt(index: number, value: number) {
+    this.receiptNumber = value;
+
+    this.sessionStorage.setItem(
+      'receiptNumber',
+      JSON.stringify(this.receiptNumber)
+    );
+    this.sessionStorage.setItem('reprinted', 'yes');
+    this.router.navigate(['/home/fms/receipt-print-preview']);
+  }
+
   //cancellation section
   fetchReceiptsToCancel(branchCode: number) {
     this.receiptManagementService.getReceiptsToCancel(branchCode).subscribe({
@@ -559,35 +638,27 @@ checkActiveTab:any;
 
     this.receiptManagementService.cancelReceipt(body).subscribe({
       next: (response) => {
-      
-const backendResponse= response?.msg ||
-            response?.error ||
-            response?.status ;
-          
-        this.globalMessagingService.displaySuccessMessage(
-         '',
-          backendResponse
-            
-        );
-        // this.globalMessagingService.displaySuccessMessage(
-        //   'receipt successfully cancelled',
-        //   response.msg || 'success'
-        // );
+        const backendResponse =
+          response?.msg || response?.error || response?.status;
+
+        this.globalMessagingService.displaySuccessMessage('', backendResponse);
+
         this.closeModal();
         this.fetchReceiptsToCancel(
           this.defaultBranch?.id || this.selectedBranch?.id
         ); // Refresh list
       },
       error: (err) => {
-       const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
       },
     });
   }
@@ -597,19 +668,18 @@ const backendError= err.error?.msg ||
       next: (response: GenericResponse<Pagination<glContentDTO>>) => {
         this.glAccountPagination = response.data;
         this.glAccountContent = response.data.content;
-        // console.log('gl accounts>',this.glAccountContent);
-        // this.globalMessagingService.displaySuccessMessage('success','successfully retrieve gl accounts');
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
       },
     });
   }
@@ -630,12 +700,215 @@ const backendError= err.error?.msg ||
    * @description Opens the Bootstrap modal for sharing a receipt using direct Bootstrap JS API.
    * Consider using an Angular-friendly modal solution.
    */
-  openReceiptShareModal(): void {
+  openReceiptShareModal(
+    index: number,
+    receipt_no: string,
+    agent_code: number,
+    account_code: number,
+    printed: 'Y' | 'N'
+  ): void {
+    this.agentCode = agent_code;
+    this.accountCode = account_code;
+    this.receipt_no = receipt_no;
+    this.printStatus=printed;
+    this.sessionStorage.setItem('agentCode', this.agentCode);
+    this.sessionStorage.setItem('accountCode', this.accountCode);
+    this.sessionStorage.setItem('receiptNo', this.receipt_no);
+    this.sessionStorage.setItem('printed',this.printStatus);
+    let code = null;
+    if (agent_code !== null) {
+      code = agent_code;
+
+      this.getAgentById(code);
+    } else {
+      code = account_code;
+      this.getAgentById(code);
+    }
+
+    // this.getClientByCode(code);
     const modal = new bootstrap.Modal(
       document.getElementById('shareReceiptModal')
     );
     if (modal) {
       modal.show();
     }
+  }
+  getAgentById(agent_Code: number): void {
+    this.intermediaryService.getAgentById(agent_Code).subscribe({
+      next: (response) => {
+        this.agent = response;
+
+        this.cancelForm.patchValue({
+          name: this.agent.name,
+          email: this.agent.emailAddress,
+          phone: this.agent.phoneNumber,
+        });
+      },
+      error: (err) => {
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
+      },
+    });
+  }
+  /**
+   * BEST PRACTICE: i have a single helper function to build the share data.
+   * This avoids repeating logic and is the single source of truth.
+   */
+  private prepareShareData(): { shareType: string; recipient: string } | null {
+    const shareMethod = this.cancelForm.get('shareMethod')?.value;
+
+    if (!shareMethod) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Please select a share method.'
+      );
+      return null;
+    }
+
+    if (shareMethod === 'email') {
+      return {
+        shareType: 'EMAIL',
+        recipient: this.cancelForm.get('email')?.value || '',
+      };
+    } else {
+      // 'whatsapp'
+      return {
+        shareType: 'WHATSAPP',
+        recipient: this.cancelForm.get('phone')?.value || '',
+      };
+    }
+  }
+
+  postClientDetails() {
+    const shareData = this.prepareShareData();
+    if (!shareData) {
+      return; // Stop if data is invalid (e.g., no method selected)
+    }
+
+    const body = {
+      shareType: shareData.shareType,
+      recipient: shareData.recipient,
+      receiptNumber: this.receipt_no,
+      orgCode: String(this.defaultOrg?.id || this.selectedOrg?.id),
+    };
+
+    this.receiptManagementService.shareReceipt(body).subscribe({
+      next: (response) => {
+        const modalEl = document.getElementById('shareReceiptModal');
+        if (modalEl) {
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) {
+            modal.hide();
+          }
+        }
+        if(this.printStatus === 'N'){
+ this.updatePrintStatus();
+        }
+
+        this.globalMessagingService.displaySuccessMessage(
+          'success',
+          response.msg
+        );
+        
+      },
+
+      error: (err) => {
+        const modalEl = document.getElementById('shareReceiptModal');
+        if (modalEl) {
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) {
+            modal.hide();
+          }
+        }
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
+      },
+    });
+  }
+  getClientByCode(client_Code: number): void {
+    this.clientService.getClientById(client_Code).subscribe({
+      next: (response) => {
+        this.client = response;
+      },
+      error: (err) => {
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
+      },
+    });
+  }
+  onClickPreview(): void {
+    const shareData = this.prepareShareData();
+    if (!shareData) {
+      return; // Stop if data is invalid
+    }
+
+    // Store only the relevant data, not everything from the form.
+    this.sessionStorage.setItem('shareType', shareData.shareType);
+    this.sessionStorage.setItem('recipient', shareData.recipient);
+
+    this.router.navigate(['/home/fms/preview-receipt']);
+  }
+  /**
+   * @method updatePrintStatus
+   * @description Sends a request to the ReceiptService to mark the current receipt as printed.
+   * The payload is an array containing the receipt number.
+   * On success, displays a success message and navigates back to the receipt management view.
+   * On error, displays an error message.
+   */
+  updatePrintStatus() {
+    // Construct the payload as an array of numbers
+    const receiptNumber= Number(this.receipt_no);
+    const payload: number[] = [receiptNumber];
+    this.receiptService.updateReceiptStatus(payload).subscribe({
+      next: (response) => {
+        // this.globalMessagingService.displaySuccessMessage(
+        //   '',
+        //   response?.msg || response?.error || response?.status
+        // );
+         
+
+
+
+
+      },
+
+      error: (err) => {
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
+       
+      },
+    });
   }
 }
