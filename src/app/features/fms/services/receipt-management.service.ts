@@ -7,6 +7,7 @@ import {
   glContentDTO,
   ReceiptsToCancelContentDTO,
   ReceiptToCancelDTO,
+  shareReceiptDTO,
   unPrintedReceiptContentDTO,
   unPrintedReceiptsDTO,
 } from '../data/receipt-management-dto';
@@ -55,4 +56,13 @@ export class ReceiptManagementService {
       API_CONFIG.FMS_GENERAL_LEDGER_SERVICE_BASE_URL
     );
   }
+  shareReceipt(body:shareReceiptDTO):Observable<any>{
+
+  
+  return this.api.POST<any>(
+    `receipts/share`,
+    body,
+    API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+  )
 }
+  }

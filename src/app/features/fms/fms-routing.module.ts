@@ -11,6 +11,7 @@ import { ReceiptPreviewComponent } from './components/receipt-preview/receipt-pr
 import { PdSlipPreviewComponent } from './components/pd-slip-preview/pd-slip-preview.component';
 import { ReceiptManagementComponent } from './components/receipt-management/receipt-management.component';
 import { ReceiptPrintPreviewComponent } from './components/receipt-print-preview/receipt-print-preview.component';
+import { PreviewReceiptComponent } from './components/preview-receipt/preview-receipt.component';
 
 
 const routes: Routes = [
@@ -54,6 +55,10 @@ const routes: Routes = [
  {
   path:'receipt-print-preview',
   component:ReceiptPrintPreviewComponent
+ },
+ {
+  path:'preview-receipt',
+  component:PreviewReceiptComponent
  }
 ];
 
