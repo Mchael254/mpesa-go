@@ -63,7 +63,7 @@
           "fr": "french details",
           "ke": "swahili details"
         },
-        "order": 1
+        "order": 3
       }
     ],
     "order": 1
@@ -85,7 +85,7 @@
         },
         "primary_details": {
           "party_type": {
-            "en": "client type",
+            "en": "party type",
             "fr": "type de client",
             "ke": "aina ya mteja"
           },

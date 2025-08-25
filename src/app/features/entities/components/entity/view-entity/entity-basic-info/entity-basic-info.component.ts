@@ -75,7 +75,7 @@ export class EntityBasicInfoComponent {
   }
 
   setCurrentStatus(statuses: StatusDTO[]): void {
-    const activeStatus = (this.partyAccountDetails.status).toUpperCase();
+    const activeStatus = (this.partyAccountDetails?.status)?.toUpperCase();
     // const activeStatus = 'D'.toUpperCase();
     // this.partyAccountDetails.status = 'D'
 
@@ -108,7 +108,7 @@ export class EntityBasicInfoComponent {
   filterApplicableStatuses(): void {
     const filteredStatuses = [];
     this.actionableStatuses = [];
-    const currentStatus: string = (this.selectedClientStatus.value).toLowerCase();
+    const currentStatus: string = (this.selectedClientStatus?.value)?.toLowerCase();
     const applicableStatuses: string[] = this.overviewConfig.applicable_status[currentStatus];
 
     this.clientStatuses.forEach((status: StatusDTO) => {
