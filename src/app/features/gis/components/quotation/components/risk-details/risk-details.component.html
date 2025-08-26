@@ -1211,11 +1211,11 @@
                         <button class="btn btn-primary btn-sm mb-1" (click)="openLimitModal()">
                             Add risk limit
                         </button>
-
-                        <i class="pi border border-black p-1 rounded-1 text-black mb-1" [ngClass]="{
-                            'pi-caret-up': showSections,
-                            'pi-caret-down': !showSections
-                            }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
+                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                            [ngClass]="{ 'pi-caret-up': showLimitsOfLiability, 'pi-caret-down': !showLimitsOfLiability }"
+                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                            (click)="toggleLimitsOfLiabilityColumns(iconTrigger)">
+                        </i>
                     </div>
 
                     <!-- perils action tabs -->
@@ -1236,10 +1236,11 @@
                             Add risk excess
                         </button>
 
-                        <i class="pi border border-black p-1 rounded-1 text-black mb-1" [ngClass]="{
-                            'pi-caret-up': showSections,
-                            'pi-caret-down': !showSections
-                            }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
+                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                            [ngClass]="{ 'pi-caret-up': showExcesses, 'pi-caret-down': !showExcesses }"
+                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                            (click)="toggleExcessesColumns(iconTrigger)">
+                        </i>
                     </div>
                     <!-- taxes action tabs -->
                     <div *ngIf="riskActiveTab === 'riskTaxes'">
@@ -1272,7 +1273,7 @@
                 <div *ngFor="let col of clauseColumns">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" style="color: #00529B;"
-                            [(ngModel)]="col.visible" [id]="col.field">
+                            [(ngModel)]="col.visible"  (change)="toggleClauseColumnVisibility(col.field)" [id]="col.field">
                         <label class="form-check-label" [for]="col.field">
                             {{ col.header }}
                         </label>
@@ -1286,15 +1287,26 @@
             <!-- risk clause table -->
             <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="true" [rows]="3"
                 [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['shortDescription', 'wording', 'heading']"
-                [scrollable]="true"  responsiveLayout="scroll" class="mt-3">
+                [scrollable]="true" responsiveLayout="scroll" class="mt-3">
 
                 <!-- Table Header -->
                 <ng-template pTemplate="header">
                     <tr>
-                        <th *ngFor="let col of clauseColumns" [hidden]="!col.visible" class="flexible-header"
+                        <th *ngFor="let col of clauseColumns" [hidden]="!col.visible" class="px-3"
                             [pSortableColumn]="col.field">
-                            {{ col.header }}
-                            <p-sortIcon [field]="col.field"></p-sortIcon>
+
+                            <div class="flex items-center justify-between">
+                                <span>{{ col.header }}</span>
+                                <p-sortIcon [field]="col.field"></p-sortIcon>
+                            </div>
+
+                        </th>
+                    </tr>
+                    <tr>
+                        <th *ngFor="let col of clauseColumns" [hidden]="!col.visible" class="px-3">
+                            <input *ngIf="col.filterable !== false" class="form-control form-control-sm" pInputText
+                                type="text"
+                                (input)="riskClauseTable.filter($event.target['value'], col.field, 'contains')" />
                         </th>
                     </tr>
                 </ng-template>
@@ -1360,9 +1372,7 @@
 
 
 
-                <!-- Table Body -->
-               
-
+                <!--Empty Table Body -->
                 <ng-template pTemplate="emptymessage">
                     <tr>
                         <td colspan="4" class="text-center p-4 text-muted">
@@ -1560,6 +1570,25 @@
         </div>
 
         <!-- limits of liablity -->
+        <!-- Floating Column Selector -->
+        <div *ngIf="showLimitsOfLiabilityColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong class="text-primary">Select Columns</strong>
+                <button class="btn-close btn-sm" (click)="showLimitsOfLiabilityColumnModal = false"></button>
+            </div>
+            <div style="max-height: 250px; overflow-y: auto;">
+                <div *ngFor="let col of limitsOfLiabilityColumns">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                            [(ngModel)]="col.visible" (change)="toggleLimitsColumnVisibility(col.field)" [id]="col.field">
+                        <label class="form-check-label" [for]="col.field">
+                            {{ col.header }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div *ngIf="riskActiveTab === 'riskLimits'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-0 w-100">
 
@@ -1569,67 +1598,77 @@
                 scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3">
                 <!-- Table Header -->
                 <ng-template pTemplate="header">
-                    <tr class="mt-2">
-                        <th pSortableColumn="narration" class="flexible-header" style="width: 40%">
-                            Narration <p-sortIcon field="narration" />
+                    <tr>
+                        <th *ngFor="let col of limitsOfLiabilityColumns" [hidden]="!col.visible" class="px-3"
+                            [pSortableColumn]="col.field">
+
+                            <div class="flex items-center justify-between">
+                                <span>{{ col.header }}</span>
+                                <p-sortIcon [field]="col.field"></p-sortIcon>
+                            </div>
+
                         </th>
-                        <th pSortableColumn="value" class="flexible-header" style="width: 40%">
-                            Value <p-sortIcon field="value" />
-                        </th>
-                        <th style="width: 20%">Actions</th>
                     </tr>
-                    <tr class="py-2"> <!-- Vertical padding for row -->
-                        <td class="px-3"> <!-- Horizontal padding for cells -->
-                            <input class="form-control form-control-sm my-1" pInputText #narrationFilter type="text"
-                                (input)="addedlimitTable.filterGlobal(narrationFilter.value, 'contains')"
-                                style="width: 70%;" />
-                        </td>
-                        <td class="px-3"> <!-- Horizontal padding for cells -->
-                            <input class="form-control form-control-sm my-1" pInputText #valueFilter type="text"
-                                (input)="addedlimitTable.filterGlobal(valueFilter.value, 'contains')"
-                                style="width: 50%;" />
-                        </td>
-                        <td></td>
+                    <tr>
+                        <th *ngFor="let col of limitsOfLiabilityColumns" [hidden]="!col.visible" class="px-3">
+                            <input *ngIf="col.filterable !== false" class="form-control form-control-sm" pInputText
+                                type="text"
+                                (input)="addedlimitTable.filter($event.target['value'], col.field, 'contains')" />
+                        </th>
                     </tr>
                 </ng-template>
+
 
                 <!-- Table Body -->
                 <ng-template pTemplate="body" let-limit>
                     <tr>
-                        <td class="position-relative ">
-                            <div class="clause-wrapper">
-                                {{ limit.narration | truncate:5 | sentenceCase}}
+                        <td *ngFor="let col of limitsOfLiabilityColumns" [hidden]="!col.visible">
+                            <ng-container [ngSwitch]="col.field">
 
-                                <div class="hover-card">
-                                    {{ limit.narration |sentenceCase }}
-                                </div>
-                            </div>
-                        </td>
-                        <td>{{ limit.value }}</td>
-                        <td style="width: 15%; text-align: left">
-                            <div class="flex justify-start gap-2">
-                                <!-- Edit -->
-                                <span class="p-button-label p-text-bold"
-                                    style="color: #00529B; cursor: pointer; display: inline-block; width: 60px"
-                                    data-bs-toggle="modal" data-bs-target="#editLimit"
-                                    (click)="populateEditLimitModal(limit)">
-                                    {{ 'gis.quotation.edit' | translate }}
-                                </span>
+                                <!-- Narration (with hover card) -->
+                                <ng-container *ngSwitchCase="'narration'">
+                                    <div class="clause-wrapper">
+                                        {{ limit.narration | truncate:5 | sentenceCase }}
+                                        <div class="hover-card">
+                                            {{ limit.narration | sentenceCase }}
+                                        </div>
+                                    </div>
+                                </ng-container>
 
-                                <!-- Delete -->
-                                <span class="p-button-label p-text-bold" style="color: #00529B; cursor: pointer"
-                                    data-bs-toggle="modal" data-bs-target="#deleteLimit"
-                                    (click)="prepareDeleteLimit(limit)">
-                                    {{ 'gis.quotation.delete' | translate }}
-                                </span>
-                            </div>
+                                <!-- Actions -->
+                                <ng-container *ngSwitchCase="'actions'">
+                                    <div class="flex justify-start gap-2">
+                                        <!-- Edit -->
+                                        <span class="p-button-label p-text-bold"
+                                            style="color: #00529B; cursor: pointer; display: inline-block; width: 60px"
+                                            data-bs-toggle="modal" data-bs-target="#editLimit"
+                                            (click)="populateEditLimitModal(limit)">
+                                            {{ 'gis.quotation.edit' | translate }}
+                                        </span>
+
+                                        <!-- Delete -->
+                                        <span class="p-button-label p-text-bold" style="color: #00529B; cursor: pointer"
+                                            data-bs-toggle="modal" data-bs-target="#deleteLimit"
+                                            (click)="prepareDeleteLimit(limit)">
+                                            {{ 'gis.quotation.delete' | translate }}
+                                        </span>
+
+                                    </div>
+                                </ng-container>
+
+                                <!-- Default columns added dynamically) -->
+                                <ng-container *ngSwitchDefault>
+                                    {{ limit[col.field] }}
+                                </ng-container>
+
+                            </ng-container>
                         </td>
                     </tr>
                 </ng-template>
 
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td colspan="3" class="text-center p-4 text-muted">
+                        <td [attr.colspan]="limitsOfLiabilityColumns.length" class="text-center p-4 text-muted">
                             <ng-container *ngIf="addedLimitsOfLiability?.length > 0; else noClauses">
                                 <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
                                 <p>No matching limits of liability found.</p>
@@ -2530,7 +2569,27 @@
         </div>
 
 
-        <!-- excesses table -->
+        <!-- excesses -->
+
+        <!-- Floating Column Selector -->
+        <div *ngIf="showExcessesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong class="text-primary">Select Columns</strong>
+                <button class="btn-close btn-sm" (click)="showExcessesColumnModal = false"></button>
+            </div>
+            <div style="max-height: 250px; overflow-y: auto;">
+                <div *ngFor="let col of excessesColumns">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                            [(ngModel)]="col.visible" (change)="toggleExcessColumnVisibility(col.field)" [id]="col.field">
+                        <label class="form-check-label" [for]="col.field">
+                            {{ col.header }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div *ngIf="riskActiveTab === 'riskExcesses'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-2 w-100">
 
@@ -2541,75 +2600,84 @@
                 <!-- Table Header -->
                 <ng-template pTemplate="header">
                     <tr>
-                        <th pSortableColumn="narration" class="flexible-header">
-                            Narration <p-sortIcon field="narration" />
-                        </th>
-                        <th pSortableColumn="value" class="flexible-header">
-                            Value <p-sortIcon field="value" />
-                        </th>
-                        <th>Actions</th>
-                    </tr>
-                    <tr class="py-2">
-                        <td class="px-3">
-                            <input class="form-control form-control-sm my-1" pInputText #narrationFilter type="text"
-                                (input)="excessTable.filterGlobal(narrationFilter.value, 'contains')"
-                                style="width: 40%;" />
-                        </td>
-                        <td class="px-3">
-                            <input class="form-control form-control-sm my-1" pInputText #valueFilter type="text"
-                                (input)="excessTable.filterGlobal(valueFilter.value, 'contains')" style="width: 70%;" />
-                        </td>
-                        <td style="width: 30%"></td>
-                    </tr>
+                        <th *ngFor="let col of excessesColumns" [hidden]="!col.visible" class="px-3"
+                            [pSortableColumn]="col.field">
 
+                            <div class="flex items-center justify-between">
+                                <span>{{ col.header }}</span>
+                                <p-sortIcon [field]="col.field"></p-sortIcon>
+                            </div>
+
+                        </th>
+                    </tr>
+                    <tr>
+                        <th *ngFor="let col of excessesColumns" [hidden]="!col.visible" class="px-3">
+                            <input *ngIf="col.filterable !== false" class="form-control form-control-sm" pInputText
+                                type="text"
+                                (input)="excessTable.filter($event.target['value'], col.field, 'contains')" />
+                        </th>
+                    </tr>
                 </ng-template>
 
                 <!-- Table Body -->
                 <ng-template pTemplate="body" let-excess>
                     <tr>
-                        <td class="position-relative">
-                            <div class="clause-wrapper">
-                                {{ excess.narration | truncate:10 | sentenceCase }}
+                        <td *ngFor="let col of excessesColumns" [hidden]="!col.visible">
+                            <ng-container [ngSwitch]="col.field">
 
-                                <div class="hover-card">
-                                    {{ excess.narration | sentenceCase }}
-                                </div>
-                            </div>
-                        </td>
-                        <td>{{ excess.value }}</td>
-                        <td style="width: 15%; text-align: left">
-                            <div class="flex justify-start gap-2">
-                                <!-- Edit -->
-                                <span class="p-button-label p-text-bold"
-                                    style="color: #00529B; cursor: pointer; display: inline-block; width: 60px"
-                                    data-bs-toggle="modal" data-bs-target="#editExcess"
-                                    (click)="populateEditExcessModal(excess)">
-                                    {{ 'gis.quotation.edit' | translate }}
-                                </span>
+                                <!-- Narration (with hover card) -->
+                                <ng-container *ngSwitchCase="'narration'">
+                                    <div class="clause-wrapper">
+                                        {{ excess.narration | truncate:5 | sentenceCase }}
+                                        <div class="hover-card">
+                                            {{ excess.narration | sentenceCase }}
+                                        </div>
+                                    </div>
+                                </ng-container>
 
-                                <!-- Delete -->
-                                <span class="p-button-label p-text-bold" style="color: #00529B; cursor: pointer"
-                                    data-bs-toggle="modal" data-bs-target="#deleteExcess"
-                                    (click)="prepareDeleteExcess(excess)">
-                                    {{ 'gis.quotation.delete' | translate }}
-                                </span>
-                            </div>
+                                <!-- Actions -->
+                                <ng-container *ngSwitchCase="'actions'">
+                                    <div class="flex justify-start gap-2">
+                                        <!-- Edit -->
+                                        <span class="p-button-label p-text-bold"
+                                            style="color: #00529B; cursor: pointer; display: inline-block; width: 60px"
+                                            data-bs-toggle="modal" data-bs-target="#editExcess"
+                                            (click)="populateEditExcessModal(excess)">
+                                            {{ 'gis.quotation.edit' | translate }}
+                                        </span>
+
+                                        <!-- Delete -->
+                                        <span class="p-button-label p-text-bold" style="color: #00529B; cursor: pointer"
+                                            data-bs-toggle="modal" data-bs-target="#deleteExcess"
+                                            (click)="prepareDeleteExcess(excess)">
+                                            {{ 'gis.quotation.delete' | translate }}
+                                        </span>
+
+                                    </div>
+                                </ng-container>
+
+                                <!-- Default columns added dynamically) -->
+                                <ng-container *ngSwitchDefault>
+                                    {{ excess[col.field] }}
+                                </ng-container>
+
+                            </ng-container>
                         </td>
                     </tr>
-
                 </ng-template>
+
 
                 <!-- empty table and no search -->
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td colspan="3" class="text-center p-4 text-muted">
+                        <td [attr.colspan]="excessesColumns.length" class="text-center p-4 text-muted">
                             <ng-container *ngIf="addedExcessess?.length > 0; else noClauses">
                                 <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
                                 <p>No matching excesses found.</p>
                             </ng-container>
                             <ng-template #noClauses>
                                 <p><strong>No excesses available.</strong> There are currently no
-                                    excesses to add.</p>
+                                    limits of liability to add.</p>
                             </ng-template>
                         </td>
                     </tr>

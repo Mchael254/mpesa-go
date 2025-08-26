@@ -17,7 +17,7 @@ import { VehicleModelService } from '../../../setups/services/vehicle-model/vehi
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, CreateLimitsOfLiability, DynamicRiskField, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab, TaxInformation, TaxPayload } from '../../data/quotationsDTO';
+import { Clause, CreateLimitsOfLiability, DynamicRiskField, Excesses, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab, TaxInformation, TaxPayload } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, firstValueFrom, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
@@ -252,10 +252,8 @@ export class RiskDetailsComponent {
   showClauses: boolean = true;
   showClauseColumnModal = false;
 
-  showLimitModal: boolean = false
-
   columns: { field: string; header: string; visible: boolean }[] = [];
-  clauseColumns: { field: string; header: string; visible: boolean }[] = [];
+  clauseColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
 
   showSections: boolean = true;
   showColumnModal = false;
@@ -275,11 +273,15 @@ export class RiskDetailsComponent {
   addedLimitsOfLiability: any[] = [];
   selectedRiskLimits: any[] = [];
 
+  showLimitModal: boolean = false;
+  showLimitsOfLiability: boolean = true;
+  showLimitsOfLiabilityColumnModal = false;
   limitsOfLiability: any[] = [];
   selectedLimit: any = { value: '', narration: '', };
   selectedDeleteLimit: any;
   originalLimitBeforeEdit: any = { value: '', narration: '' };
-  originalLimitsOfLiability: any
+  originalLimitsOfLiability: any;
+  limitsOfLiabilityColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
 
   addedExcessess: any[] = [];
   selectedExcessess: any[] = [];
@@ -289,6 +291,9 @@ export class RiskDetailsComponent {
   originalExcessBeforeEdit: any = { value: '', narration: '' };
   originalExcesses: any;
   selectedDeleteExcess: any;
+  showExcesses: boolean = true;
+  showExcessesColumnModal = false;
+  excessesColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
 
   addedPerils: any[] = [];
   allPerilsMap: { [key: string]: any[] } = {};
@@ -587,19 +592,6 @@ export class RiskDetailsComponent {
     this.sectionPremium.forEach((section: any) => {
       section.isChecked = checked;
     });
-  }
-  filterHeading(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.riskClauseTable.filter(input.value, 'heading', 'contains');
-  }
-
-  filterShortDesc(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.riskClauseTable.filter(input.value, 'shortDescription', 'contains');
-  }
-  filterWording(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.riskClauseTable.filter(input.value, 'wording', 'contains');
   }
 
 
@@ -2510,6 +2502,12 @@ export class RiskDetailsComponent {
     if (this.riskClauseTable) {
       this.riskClauseTable.filterGlobal(filterValue, 'contains');
     }
+    if (this.excessTable) {
+      this.excessTable.filterGlobal(filterValue, 'contains');
+    }
+    if (this.riskClauseTable) {
+      this.riskClauseTable.filterGlobal(filterValue, 'contains');
+    }
   }
 
   /**
@@ -2972,6 +2970,20 @@ export class RiskDetailsComponent {
 
 
   //risk clauses
+  saveClauseColumnsToSession(): void {
+    if (this.clauseColumns) {
+      const visibility = this.clauseColumns.map(col => ({
+        field: col.field,
+        visible: col.visible
+      }));
+      sessionStorage.setItem('clauseColumns', JSON.stringify(visibility));
+    }
+  }
+
+  toggleClauseColumnVisibility(field: string) {
+    this.saveClauseColumnsToSession();
+  }
+
   toggleClauseColumns(iconElement: HTMLElement): void {
     this.showClauses = !this.showClauses;
 
@@ -2989,7 +3001,6 @@ export class RiskDetailsComponent {
   }
 
   setClauseColumns(clause: Clause) {
-
     const excludedFields = [];
 
     this.clauseColumns = Object.keys(clause)
@@ -2998,11 +3009,21 @@ export class RiskDetailsComponent {
         field: key,
         header: this.sentenceCase(key),
         visible: this.defaultVisibleClauseFields.includes(key),
+        filterable: true
       }));
 
-    // manually add actions column
-    this.clauseColumns.push({ field: 'actions', header: 'Actions', visible: true });
-    log.debug("clauseColumns", this.clauseColumns)
+    this.clauseColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
+
+    const saved = sessionStorage.getItem('clauseColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.clauseColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
+
+    // log.debug("clauseColumns", this.clauseColumns);
   }
 
   defaultVisibleClauseFields = ['clauseCode', 'clauseExpires', 'clauseType', 'heading', 'isEditable', 'isLienClause',
@@ -3096,7 +3117,6 @@ export class RiskDetailsComponent {
         };
         sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
         // log.debug("risk clause map >>", riskClauseMap);
-
         if (this.sessionClauses.length > 0) {
           this.setClauseColumns(this.sessionClauses[0]);
         }
@@ -3840,6 +3860,63 @@ export class RiskDetailsComponent {
 
 
   //limits of liability
+  saveLimitsOfLiabilityColumnsToSession(): void {
+    if (this.limitsOfLiabilityColumns) {
+      const visibility = this.limitsOfLiabilityColumns.map(col => ({
+        field: col.field,
+        visible: col.visible
+      }));
+      sessionStorage.setItem('limitsOfLiabilityColumns', JSON.stringify(visibility));
+    }
+  }
+
+  toggleLimitsColumnVisibility(field: string) {
+    this.saveLimitsOfLiabilityColumnsToSession();
+  }
+
+  toggleLimitsOfLiabilityColumns(iconElement: HTMLElement): void {
+    this.showLimitsOfLiability = !this.showLimitsOfLiability;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showLimitsOfLiabilityColumnModal = true;
+  }
+
+  setLimitsOfLiabilityColumns(clause: Clause) {
+    const excludedFields = [];
+    this.limitsOfLiabilityColumns = Object.keys(clause)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: this.defaultVisibleLimitsOfLiabilityFields.includes(key),
+        filterable: true
+      }));
+
+    this.limitsOfLiabilityColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
+    // Restore from sessionStorage if exists
+    const saved = sessionStorage.getItem('limitsOfLiabilityColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.limitsOfLiabilityColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
+    // log.debug("limitsOfLiabilityColumns", this.limitsOfLiabilityColumns);
+  }
+
+
+  defaultVisibleLimitsOfLiabilityFields = ['narration', 'value', 'subclassCode', 'quotationValueCode', 'code'];
+
   loadLimitsOfLiability(): void {
     if (!this.selectedSubclassCode) {
       log.debug('Subclass code is required to load limits');
@@ -3855,6 +3932,11 @@ export class RiskDetailsComponent {
     if (cachedData && cachedOriginal) {
       this.limitsOfLiability = JSON.parse(cachedData);
       this.originalLimitsOfLiability = JSON.parse(cachedOriginal);
+
+      if (this.originalLimitsOfLiability.length > 0) {
+        this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
+      }
+
       log.debug(`Loaded limits of liability for subclass ${this.selectedSubclassCode} from sessionStorage`);
       return;
     }
@@ -3868,6 +3950,10 @@ export class RiskDetailsComponent {
 
         this.limitsOfLiability = [...limits];
         sessionStorage.setItem(cacheKey, JSON.stringify(this.limitsOfLiability));
+
+        if (this.originalLimitsOfLiability.length > 0) {
+          this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
+        }
 
         log.debug(`Fetched and stored limits for subclass ${this.selectedSubclassCode}`);
       },
@@ -4062,52 +4148,40 @@ export class RiskDetailsComponent {
   }
 
   deleteLimit(): void {
-    if (!this.selectedDeleteLimit?.code) {
-      log.debug("No scheduleValueCode found for deletion");
-      return;
-    }
-
-    const subclassCode = this.selectedSubclassCode;
-    if (!subclassCode) return;
+    if (!this.selectedDeleteLimit?.code) return;
 
     this.quotationService.deleteLimit(this.selectedDeleteLimit.code).subscribe({
       next: () => {
         this.addedLimitsOfLiability = this.addedLimitsOfLiability.filter(
-          limit => limit.code !== this.selectedDeleteLimit.code
+          l => l.code !== this.selectedDeleteLimit.code
         );
 
-        // Retrieve original limits from sessionStorage
-        const originalCacheKey = `original_limits_of_liability_${subclassCode}`;
+        const originalCacheKey = `original_limits_of_liability_${this.selectedSubclassCode}`;
         const originalData = sessionStorage.getItem(originalCacheKey);
-        let originalLimits: any[] = originalData ? JSON.parse(originalData) : [];
+        const originalLimits = originalData ? JSON.parse(originalData) : [];
 
-        // Find original limit (match quotationValueCode to original's code)
         const originalLimit = originalLimits.find(
           l => l.code === this.selectedDeleteLimit.quotationValueCode
         );
 
-        log.debug("originalLimit to restore", originalLimit);
-
         if (originalLimit) {
           this.limitsOfLiability = [...this.limitsOfLiability, originalLimit];
-
-          const cacheKey = `limits_of_liability_${subclassCode}`;
+          const cacheKey = `limits_of_liability_${this.selectedSubclassCode}`;
           sessionStorage.setItem(cacheKey, JSON.stringify(this.limitsOfLiability));
         }
 
         this.selectedDeleteLimit = null;
+
         this.cdr.detectChanges();
         this.globalMessagingService.displaySuccessMessage('Success', 'Limit deleted successfully');
-
       },
       error: (err) => {
         log.debug("Error deleting limit", err);
-
         this.globalMessagingService.displayErrorMessage('Error', 'Error deleting limit');
-
       }
     });
   }
+
 
   cleanCurrencyValue(value: string): string {
     return value?.replace(/[^\d.]/g, '');
@@ -4115,6 +4189,65 @@ export class RiskDetailsComponent {
 
 
   //excesses
+  saveExcessesColumnsToSession(): void {
+    if (this.excessesColumns) {
+      const visibility = this.excessesColumns.map(col => ({
+        field: col.field,
+        visible: col.visible
+      }));
+      sessionStorage.setItem('excessesColumns', JSON.stringify(visibility));
+    }
+  }
+
+  toggleExcessColumnVisibility(field: string) {
+    this.saveExcessesColumnsToSession();
+  }
+
+  toggleExcessesColumns(iconElement: HTMLElement): void {
+    this.showExcesses = !this.showExcesses;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showExcessesColumnModal = true;
+  }
+
+  setExcessesColumns(excess: Excesses) {
+    const excludedFields = [];
+
+    this.excessesColumns = Object.keys(excess)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: this.defaultVisibleExcessesFields.includes(key),
+        filterable: true
+      }));
+
+    this.excessesColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
+
+    // Restore from sessionStorage if exists - ADD THIS
+    const saved = sessionStorage.getItem('excessesColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.excessesColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
+
+    log.debug("excessesColumns", this.excessesColumns);
+  }
+
+  defaultVisibleExcessesFields = ['narration', 'value', 'subclassCode', 'quotationValueCode', 'code'];
+
   loadExcesses(): void {
     if (!this.selectedSubclassCode) {
       log.debug('Subclass code is required to load excesses');
@@ -4131,6 +4264,9 @@ export class RiskDetailsComponent {
     if (cachedData && cachedOriginal) {
       this.excessesData = JSON.parse(cachedData);
       this.originalExcesses = JSON.parse(cachedOriginal);
+      if (this.originalExcesses.length > 0) {
+        this.setExcessesColumns(this.originalExcesses[0]);
+      }
       return;
     }
 
@@ -4141,6 +4277,10 @@ export class RiskDetailsComponent {
 
         sessionStorage.setItem(cacheKey, JSON.stringify(this.excessesData));
         sessionStorage.setItem(originalCacheKey, JSON.stringify(this.originalExcesses));
+
+        if (this.originalExcesses.length > 0) {
+          this.setExcessesColumns(this.originalExcesses[0]);
+        }
       },
       error: (err) => {
         log.debug('Error fetching excesses', err);
