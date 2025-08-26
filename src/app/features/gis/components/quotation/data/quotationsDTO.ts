@@ -602,6 +602,7 @@ export interface CreateLimitsOfLiability {
   value: string;
   narration: string | null;
   type: string;
+  displayValue?: number | null;
 }
 
 export interface Excesses {
