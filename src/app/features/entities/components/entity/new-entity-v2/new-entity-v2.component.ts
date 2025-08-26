@@ -254,13 +254,8 @@ export class NewEntityV2Component implements OnInit {
   addUploadFormFields(): void {
     const group: { [key: string]: FormControl } = {};
 
-    this.uploadFormFields.forEach((field: FieldModel) => {
-
-      const validators: ValidatorFn[] = [];
-
-      if (field.isMandatory) {
-        validators.push(Validators.required);
-      }
+    this.uploadFormFields.forEach(field => {
+      const validators = this.buildValidators(field);
       group[field.fieldId] = new FormControl('', validators);
     });
 
@@ -378,6 +373,63 @@ export class NewEntityV2Component implements OnInit {
     log.info(`branchDetailsFormFields >>> `, this.branchDetailsFormFields);
   }
 
+  private buildValidators(field: FieldModel): ValidatorFn[] {
+    const validators: ValidatorFn[] = [];
+
+    // Required
+    if (field.isMandatory) {
+      validators.push(Validators.required);
+    }
+
+    // Type-specific
+    if (field.type === 'email') {
+      validators.push(Validators.email);
+    }
+
+    // Custom validations from config
+    if (Array.isArray(field.validations)) {
+      field.validations.forEach(v => {
+        if (!v?.type || v.value == null) return;
+        const t = v.type.toLowerCase();
+        switch (t) {
+          case 'pattern':
+            try {
+              validators.push(Validators.pattern(v.value));
+            } catch (e) {
+              log.warn(`Invalid regex for field ${field.fieldId}:`, v.value, e);
+            }
+            break;
+          case 'min':
+            if (!isNaN(Number(v.value))) validators.push(Validators.min(Number(v.value)));
+            break;
+          case 'max':
+            if (!isNaN(Number(v.value))) validators.push(Validators.max(Number(v.value)));
+            break;
+          case 'minlength':
+          case 'minlength_char':
+          case 'minlength_characters':
+          case 'minlengthchars':
+          case 'minlengthchar':
+          case 'min_length':
+          case 'min_length_chars':
+            if (!isNaN(Number(v.value))) validators.push(Validators.minLength(Number(v.value)));
+            break;
+          case 'maxlength':
+          case 'maxlengthchars':
+          case 'maxlength_char':
+          case 'maxlength_characters':
+          case 'max_length':
+          case 'max_length_chars':
+            if (!isNaN(Number(v.value))) validators.push(Validators.maxLength(Number(v.value)));
+            break;
+          default:
+            log.debug(`Unknown validator type "${v.type}" for field ${field.fieldId}`);
+        }
+      });
+    }
+
+    return validators;
+  }
 
   /**
    * save details from form
