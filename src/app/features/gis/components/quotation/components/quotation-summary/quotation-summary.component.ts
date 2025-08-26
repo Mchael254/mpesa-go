@@ -23,11 +23,13 @@ import { ClientService } from 'src/app/features/entities/services/client/client.
 import {
   LimitsOfLiability,
   ProductClauses,
+  ProductDetails,
   QuotationDetails,
   QuotationProduct,
   ScheduleDetails,
   scheduleDetails,
   SubclassSectionPeril,
+  TaxDetails,
   TaxInformation,
   TaxPayload
 } from '../../data/quotationsDTO';
@@ -184,6 +186,16 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   limitsRiskofLiability: any;
   selectAll = false;
   comments: any;
+  showProducts: boolean = true;
+  showProductColumnModal: boolean=false;
+  columnModalPosition = { top: '0px', left: '0px' }
+  columns: { field: string; header: string; visible: boolean }[] = [];
+  showClauses: boolean = true;
+  showClausesColumnModal: boolean=false;
+  showTaxesColumnModal: boolean=false;
+  clausesColumns: { field: string; header: string; visible: boolean }[] = [];
+  taxesColumns: { field: string; header: string; visible: boolean }[] = [];
+  
 
 
 
@@ -452,6 +464,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
         this.productDetails = this.quotationView.quotationProducts
         log.debug('product details', this.productDetails)
+         if(this.productDetails.length>0)
+    {
+    this.setColumnsFromProductDetails(this.productDetails[0]);
+    }
+    if(this.productClauses.length>0){
+     this.setColumnsFromClausesDetails(this.productClauses[0])
+     }
+   
 
         // this.getbranch();
         // this.getPremiumComputationDetails();
@@ -495,6 +515,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 if (Product1) {
   this.taxDetails = Product1.taxInformation;
   this.productClauses = Product1.productClauses;
+    if(this.taxDetails.length>0){
+  this.setColumnsFromTaxesDetails(this.taxDetails[0])
+    
+     }
 
   log.debug('taxDetais', this.taxDetails);
   log.debug('productClauses', this.productClauses);
@@ -2184,8 +2208,204 @@ getSections(data: any) {
     return hasRights;
   }
 
+  toggleProducts(iconElement: HTMLElement): void {
+     this.showProducts = true;
+     
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showProductColumnModal = true;
+  }
+    toggleClauses(iconElement: HTMLElement): void {
+     this.showClauses = true;
+     
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showClausesColumnModal = true;
+  }
+   toggleTaxes(iconElement: HTMLElement): void {
+    
+     
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showTaxesColumnModal = true;
+  }
 
 
+  setColumnsFromProductDetails(sample: ProductDetails) {
+  const defaultVisibleFields = [
+    'productName',
+    'wet',
+    'wef',
+    'premium',
+    'commission'
+  ];
+  
+  const excludedFields = [
+    'productClauses',
+    'taxInformation',
+    'riskInformation',
+    'agentShortDescription',
+    'limitsOfLiability',
+    'productDescription',
+    'binder',
+    'converted',
+    'productShortDescription',
+    'policyNumber',
+    'quotationCode',
+    'revisionNo',
+    'code',
+    'totalSumInsured'
+  ]; 
+
+  
+  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+  
+  keys = keys.sort((a, b) => {
+    if (a === 'productName') return -1;
+    if (b === 'productName') return 1;
+    return 0;
+  });
+
+
+  this.columns = keys.map(key => ({
+    field: key,
+    header: this.sentenceCase(key),
+    visible: defaultVisibleFields.includes(key),
+  }));
+}
+  
+
+
+  setColumnsFromClausesDetails(sample: ProductClauses) {
+  const defaultVisibleFields = [
+    'clauseShortDescription',
+    'clauseHeading',
+    'clause',
+    
+  ];
+  
+  const excludedFields = [
+    
+  ]; 
+
+  
+  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+  
+  keys = keys.sort((a, b) => {
+    if (a === 'productName') return -1;
+    if (b === 'productName') return 1;
+    return 0;
+  });
+
+
+  this.clausesColumns = keys.map(key => ({
+    field: key,
+    header: this.sentenceCase(key),
+    visible: defaultVisibleFields.includes(key),
+  }));
+}
+
+
+
+  sentenceCase(text: string): string {
+    return text
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (str) => str.toUpperCase());
+  }
+
+
+
+  setColumnsFromTaxesDetails(sample:TaxDetails) {
+  const defaultVisibleFields = [
+    'rateDescription',
+    'rate',
+    'rateType',
+    'taxType',
+    'taxAmount'
+    
+  ];
+  
+  const excludedFields = [
+    
+  ]; 
+
+  
+  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+  
+  keys = keys.sort((a, b) => {
+    if (a === 'productName') return -1;
+    if (b === 'productName') return 1;
+    return 0;
+  });
+
+
+  this.taxesColumns = keys.map(key => ({
+    field: key,
+    header: this.sentenceCase(key),
+    visible: defaultVisibleFields.includes(key),
+  }));
+}
+
+
+
+ 
+
+
+
+
+getCellValue(row: any, field: string): any {
+  const value = row[field];
+
+  
+
+  
+  if (value instanceof Date) {
+    return new Intl.DateTimeFormat('en-GB', { 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric' 
+    }).format(value);
+  }
+
+ 
+  if (value && typeof value === 'object') {
+    return value.code ?? JSON.stringify(value);
+  }
+  if (value === 0) return 0;
+  if (value === null || value === undefined) return 'N/A';
+
+  return value;
+}
 
 
 }
