@@ -41,3 +41,19 @@
   cursor: pointer;
   border: #00529b 2px solid;
 }
+
+.collapse-container {
+  overflow: hidden;
+  height: 0;
+  transition: height 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+}
+
+.collapse-container.expanded {
+  height: auto; /* overridden via JavaScript or max-height technique */
+  opacity: 1;
+}
+
+.send-verify-button {
+  margin-top: 1.9rem;
+}

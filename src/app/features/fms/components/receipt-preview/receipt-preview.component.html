@@ -40,14 +40,14 @@
       #docViewerIframe
       [fileName]="documentData?.fileName ?? ''"
       [srcUrl]="filePath ?? ''"
-      style="margin: 20px; margin-top: 10px; width: 80%"
+      style="margin: 20px; margin-top: 10px; width: 70%; height: 450px"
     >
     </ngx-doc-viewer>
   </div>
 
-  <div class="btn-actions d-flex justify-content-center gap-3 mt-3">
+  <div class="btn-actions d-flex justify-content-center gap-3 mt-1">
     <button type="button" class="btn btn-primary" (click)="updatePrintStatus()">
-      Printed
+      {{ "fms.receipting.printed" | translate }}
     </button>
 
     <button
@@ -55,7 +55,7 @@
       class="btn btn-success"
       (click)="navigateToReceiptCapture()"
     >
-      Unprinted
+      {{ "fms.receipting.unPrinted" | translate }}
     </button>
   </div>
 </div>

@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { CrmScreensConfigComponent } from './crm-screens-config.component';
+import {CrmScreensConfigComponent} from './crm-screens-config.component';
 import {UtilService} from "../../../services";
 import {of} from "rxjs";
 import {RouterTestingModule} from "@angular/router/testing";
@@ -219,6 +219,25 @@ describe('CrmScreensConfigComponent', () => {
     expect(modal.style.display).toBe('none');
   });
 
+  it('should open preview Modal', () => {
+    component.openPreviewModal();
+
+    const modal = document.getElementById('previewModal');
+    expect(modal.classList.contains('show')).toBe(true);
+    expect(modal.style.display).toBe('block');
+  });
+
+  it('should close preview Modal', () => {
+    const modal = document.getElementById('previewModal');
+    modal.classList.add('show');
+    modal.style.display = 'block';
+
+    component.closePreviewModal();
+
+    expect(modal.classList.contains('show')).toBe(false);
+    expect(modal.style.display).toBe('none');
+  });
+
   it('should not close associated modals if yesClicked is true', () => {
     const closeSubModulesModalSpy = jest.spyOn(component, 'closeSubModulesModal');
     const closeScreensModalSpy = jest.spyOn(component, 'closeScreensModal');
@@ -269,13 +288,315 @@ describe('CrmScreensConfigComponent', () => {
     expect(displayInfoMessageSpy).toHaveBeenCalledWith('Info', 'Publish to save sub module changes.');
   });
 
-  it('should update selectedSubModule data in subModules array', () => {
-    component.subModules = [{ code: 1, label: {en: 'en', ke: 'ke', fr: 'fr'}, subModuleId: 'Entity', moduleCode: 1, moduleName: 'ModuleName', order: 1, visible: true, originalLabel: 'OriginalLabel' }];
-    component.selectedSubModule = component.subModules[0];
-    component.subModulesForm.patchValue({ visible: 'N', subModuleLevel: 3 });
-    component.saveSubModules();
-    expect(component.subModules[0].visible).toBe(false);
-    expect(component.subModules[0].order).toBe(3);
+  it('should update selectedScreen data in screens array', () => {
+    component.screens = [
+      {
+        code: 1,
+        label: {en: 'en', ke: 'ke', fr: 'fr'},
+        screenId: 'Screen1',
+        subModuleCode: 1,
+        order: 1,
+        visible: true,
+        originalLabel: 'OriginalLabel',
+        hasFields: true
+      }
+    ];
+    component.selectedScreen = component.screens[0];
+    component.screensForm.patchValue({visible: 'N', screenLevel: 2});
+    component.saveScreens();
+
+    expect(component.screens[0].visible).toBe(false);
+    expect(component.screens[0].order).toBe(2);
   });
 
+  it('should call updateMultilingualLabel with correct parameters for screens', () => {
+    const updateMultilingualLabelSpy = jest.spyOn(component, 'updateMultilingualLabel');
+    component.screens = [
+      {
+        code: 1,
+        label: {en: 'English', ke: 'Swahili', fr: 'French'},
+        screenId: 'Screen1',
+        subModuleCode: 1,
+        order: 1,
+        visible: true,
+        originalLabel: 'OriginalLabel',
+        hasFields: true
+      }
+    ];
+    component.selectedScreen = component.screens[0];
+    component.screensForm.patchValue({currentScreenLabel: 'Updated Label'});
+    component.saveScreens();
+
+    expect(updateMultilingualLabelSpy).toHaveBeenCalledWith(
+      component.selectedScreen,
+      component.screensForm,
+      'currentScreenLabel'
+    );
+    expect(component.selectedScreen.label.en).toBe('Updated Label');
+  });
+
+  it('should invoke globalMessagingService.displayInfoMessage on successful save', () => {
+    const displayInfoMessageSpy = jest.spyOn(component['globalMessagingService'], 'displayInfoMessage');
+    component.selectedScreen = {
+      code: 1,
+      label: {en: 'English', ke: 'Swahili', fr: 'French'},
+      screenId: 'Screen1',
+      subModuleCode: 1,
+      order: 1,
+      visible: true,
+      originalLabel: 'OriginalLabel',
+      hasFields: true
+    };
+    component.screensForm.patchValue({visible: 'Y', screenLevel: 1});
+    component.saveScreens();
+
+    expect(displayInfoMessageSpy).toHaveBeenCalledWith('Info', 'Publish to save screen changes.');
+  });
+
+  it('should open multilingual modal after saving screens', () => {
+    const openMultilingualModalSpy = jest.spyOn(component, 'openMultilingualModal');
+    component.selectedScreen = {
+      code: 1,
+      label: {en: 'English', ke: 'Swahili', fr: 'French'},
+      screenId: 'Screen1',
+      subModuleCode: 1,
+      order: 1,
+      visible: true,
+      originalLabel: 'OriginalLabel',
+      hasFields: true
+    };
+    component.screensForm.patchValue({visible: 'Y', screenLevel: 1});
+
+    component.saveScreens();
+
+    expect(component.modalId).toBe('screensModal');
+    expect(openMultilingualModalSpy).toHaveBeenCalled();
+  });
+
+  it('should update the selected section with correct multilingual label', () => {
+    const updateMultilingualLabelSpy = jest.spyOn(component, 'updateMultilingualLabel');
+    component.selectedSection = {
+      code: 1,
+      formId: 'form1',
+      label: { en: 'English', ke: 'Swahili', fr: 'French' },
+      screenCode: 1,
+      order: 1,
+      visible: true,
+      originalLabel: 'OriginalLabel',
+      hasFields: true
+    };
+    component.sectionsForm.patchValue({ currentSectionLabel: 'Updated Label' });
+
+    component.saveSections();
+
+    expect(updateMultilingualLabelSpy).toHaveBeenCalledWith(
+      component.selectedSection,
+      component.sectionsForm,
+      'currentSectionLabel'
+    );
+    expect(component.selectedSection.label.en).toBe('Updated Label');
+  });
+
+  it('should update sections array with modified selectedSection', () => {
+    component.sections = [
+      {
+        code: 1,
+        formId: 'form1',
+        label: { en: 'English', ke: 'Swahili', fr: 'French' },
+        screenCode: 1,
+        order: 1,
+        visible: true,
+        originalLabel: 'OriginalLabel',
+        hasFields: true,
+      },
+    ];
+    component.selectedSection = component.sections[0];
+    component.sectionsForm.patchValue({ sectionLevel: 2, visible: 'N' });
+
+    component.saveSections();
+
+    expect(component.sections[0].visible).toBe(false);
+    expect(component.sections[0].order).toBe(2);
+  });
+
+  it('should call globalMessagingService.displayInfoMessage with correct parameters', () => {
+    const displayInfoMessageSpy = jest.spyOn(component['globalMessagingService'], 'displayInfoMessage');
+    component.selectedSection = {
+      code: 1,
+      formId: 'form1',
+      label: { en: 'English', ke: 'Swahili', fr: 'French' },
+      screenCode: 1,
+      order: 1,
+      visible: true,
+      originalLabel: 'OriginalLabel',
+      hasFields: true,
+    };
+    component.sectionsForm.patchValue({ visible: 'Y', sectionLevel: 1 });
+
+    component.saveSections();
+
+    expect(displayInfoMessageSpy).toHaveBeenCalledWith('Info', 'Publish to save section changes.');
+  });
+
+  it('should set modalId to "sectionsModal" and call openMultilingualModal', () => {
+    const openMultilingualModalSpy = jest.spyOn(component, 'openMultilingualModal');
+    component.selectedSection = {
+      code: 1,
+      formId: 'form1',
+      label: { en: 'English', ke: 'Swahili', fr: 'French' },
+      screenCode: 1,
+      order: 1,
+      visible: true,
+      originalLabel: 'OriginalLabel',
+      hasFields: true,
+    };
+    component.sectionsForm.patchValue({ visible: 'Y', sectionLevel: 1 });
+
+    component.saveSections();
+
+    expect(component.modalId).toBe('sectionsModal');
+    expect(openMultilingualModalSpy).toHaveBeenCalled();
+  });
+
+  it('should call updateMultilingualLabel with the correct parameters', () => {
+    const updateMultilingualLabelSpy = jest.spyOn(component, 'updateMultilingualLabel');
+    component.selectedSubSection = {
+      code: 1,
+      formCode: 1,
+      groupId: 'group1',
+      originalLabel: 'OriginalLabel',
+      label: { en: 'English', ke: 'Swahili', fr: 'French' },
+      screenCode: 1,
+      subModuleCode: 1,
+      order: 1,
+      visible: true,
+      hasFields: true,
+      subGroup: []
+    };
+    component.subSectionsForm.patchValue({ currentSubSectionLabel: 'Updated Label' });
+
+    component.saveSubSections();
+
+    expect(updateMultilingualLabelSpy).toHaveBeenCalledWith(
+      component.selectedSubSection,
+      component.subSectionsForm,
+      'currentSubSectionLabel'
+    );
+    expect(component.selectedSubSection.label.en).toBe('Updated Label');
+  });
+
+  it('should update the subSections array with modified selectedSubSection', () => {
+    component.subSections = [
+      {
+        code: 1,
+        formCode: 1,
+        groupId: 'group1',
+        originalLabel: 'OriginalLabel',
+        label: { en: 'English', ke: 'Swahili', fr: 'French' },
+        screenCode: 1,
+        subModuleCode: 1,
+        order: 1,
+        visible: true,
+        hasFields: true,
+        subGroup: []
+      }
+    ];
+    component.selectedSubSection = component.subSections[0];
+    component.subSectionsForm.patchValue({ subSectionLevel: 2, visible: 'N' });
+
+    component.saveSubSections();
+
+    expect(component.subSections[0].visible).toBe(false);
+    expect(component.subSections[0].order).toBe(2);
+  });
+
+  it('should call globalMessagingService.displayInfoMessage with correct parameters', () => {
+    const displayInfoMessageSpy = jest.spyOn(component['globalMessagingService'], 'displayInfoMessage');
+    component.selectedSubSection = {
+      code: 1,
+      formCode: 1,
+      groupId: 'group1',
+      originalLabel: 'OriginalLabel',
+      label: { en: 'English', ke: 'Swahili', fr: 'French' },
+      screenCode: 1,
+      subModuleCode: 1,
+      order: 1,
+      visible: true,
+      hasFields: true,
+      subGroup: []
+    };
+    component.subSectionsForm.patchValue({ visible: 'Y', subSectionLevel: 1 });
+
+    component.saveSubSections();
+
+    expect(displayInfoMessageSpy).toHaveBeenCalledWith('Info', 'Publish to save sub section changes.');
+  });
+
+  it('should set modalId to "subSectionsModal" and call openMultilingualModal', () => {
+    const openMultilingualModalSpy = jest.spyOn(component, 'openMultilingualModal');
+    component.selectedSubSection = {
+      code: 1,
+      formCode: 1,
+      groupId: 'group1',
+      originalLabel: 'OriginalLabel',
+      label: { en: 'English', ke: 'Swahili', fr: 'French' },
+      screenCode: 1,
+      subModuleCode: 1,
+      order: 1,
+      visible: true,
+      hasFields: true,
+      subGroup: []
+    };
+    component.subSectionsForm.patchValue({ visible: 'Y', subSectionLevel: 1 });
+
+    component.saveSubSections();
+
+    expect(component.modalId).toBe('subSectionsModal');
+    expect(openMultilingualModalSpy).toHaveBeenCalled();
+  });
+
+  it('should call updateMultilingualLabel with the correct parameters', () => {
+    const updateMultilingualLabelSpy = jest.spyOn(component, 'updateMultilingualLabel');
+    component.selectedSubSectionTwo = {
+      code: 1,
+      formGroupingCode: 1,
+      originalLabel: 'Original Label',
+      subGroupId: 'subGroup1',
+      label: { en: 'English', ke: 'Swahili', fr: 'French' },
+      addButtonTextLabel: null,
+      visible: true,
+      order: 1,
+      hasFields: true
+    };
+
+    component.subSectionTwoForm.patchValue({ currentSubSectionTwoLabel: 'Updated Label' });
+    component.saveSubSectionTwo();
+
+    expect(updateMultilingualLabelSpy).toHaveBeenCalledWith(
+      component.selectedSubSectionTwo,
+      component.subSectionTwoForm,
+      'currentSubSectionTwoLabel'
+    );
+    expect(component.selectedSubSectionTwo.label.en).toBe('Updated Label');
+  });
+
+  it('should call closeSubSectionTwoModal after saving', () => {
+    const closeSubSectionTwoModalSpy = jest.spyOn(component, 'closeSubSectionTwoModal');
+    component.selectedSubSectionTwo = {
+      code: 1,
+      formGroupingCode: 1,
+      originalLabel: 'Original Label',
+      subGroupId: 'subGroup1',
+      label: { en: 'English', ke: 'Swahili', fr: 'French' },
+      addButtonTextLabel: null,
+      visible: true,
+      order: 1,
+      hasFields: true
+    };
+
+    component.subSectionTwoForm.patchValue({ visible: 'Y', subSectionTwoLevel: 1 });
+    component.saveSubSectionTwo();
+
+    expect(closeSubSectionTwoModalSpy).toHaveBeenCalled();
+  });
 });

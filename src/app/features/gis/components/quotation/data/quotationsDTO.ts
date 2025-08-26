@@ -212,6 +212,8 @@ export interface TaxInformation {
   code: number;
   rateDescription: string;
   rate: number;
+   productCode?: number;
+  quotationCode: number;
   rateType: string;
   taxAmount: number;
   transactionCode: string;
@@ -1273,4 +1275,32 @@ export interface ProductDetails {
    coverTo: Date;
    productName: string;
 
+}
+
+
+export interface ProductDetails {
+   coverFrom: Date;
+   coverTo: Date;
+   productName: string;
+   premium:number;
+   commission:number;
+
+}
+
+
+
+export interface TaxDetails {
+  code: number;               
+  levelCode: string;          
+  productCode?: number;         
+  quotationCode: number;      
+  rate: number;                
+  rateDescription: string;     
+  rateType: string;            
+  renewalEndorsement: string | null;
+  riskProductLevel: string;   
+  taxAmount: number;           
+  taxRateCode: number | null;  
+  taxType: string;             
+  transactionCode: string;     
 }

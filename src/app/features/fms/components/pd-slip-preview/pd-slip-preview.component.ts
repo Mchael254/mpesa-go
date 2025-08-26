@@ -199,7 +199,12 @@ const backendError= err.error?.msg ||
   navigateToReceiptCapture(): void {
     this.receiptDataService.clearReceiptData();
     this.receiptDataService.clearFormState();
-    // this.sessionStorage.clear();
+      // remove only the items you set for this specific workflow.
+      this.sessionStorage.removeItem('receiptCode');
+      this.sessionStorage.removeItem('branchReceiptNumber');
+      this.sessionStorage.removeItem('receiptingPoint');
+      this.sessionStorage.removeItem('globalBankAccount');
+      this.sessionStorage.removeItem('globalBankType');
     this.router.navigate(['/home/fms/receipt-capture']);
   }
   updatePrintStatus() {

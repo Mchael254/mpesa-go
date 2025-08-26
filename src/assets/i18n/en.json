@@ -3048,6 +3048,7 @@
     "correction": "Send for correction",
     "reject": "Reject",
     "errorMessage": "An Error Occurred!",
+    "printUpdateError":"Failed to update Rct print status",
     "rctPrintError": "Receipt saved successfully but unable to print",
     "pdPrintError": "Receipt saved successfully but unable to print slip",
     "receipting": {
@@ -3099,6 +3100,7 @@
       "print_confirmation": "Print Confirmation",
       "print_status": "Print Status",
       "printed": "Printed",
+    
       "spoilt_receipt_paper": "Spoilt Receipt Paper",
       "not_printed": "Not Printed",
       "uploadFiles": "Upload file",
@@ -3147,7 +3149,7 @@
       "amount": "Amount",
       "unallocatedAmount": "Unallocated Amount",
       "client_name": "Client Name",
-      "unPrinted": "Not Printed",
+      "unPrinted": "UnPrinted",
       "allocated_amount": "Allocated Amount",
       "slipPreview": "Slip preview",
       "acknowledgementSlip": "Acknowledgement Slip Summary"
@@ -3205,11 +3207,12 @@
       "accountCharged": "Account charged",
       "glAccount": "Gl account",
       "shareReceipt": "Share Receipt",
-      "email": "Email",
+      "email": "Email Address",
       "whatsapp": "WhatsApp",
       "clientName": "Client name",
       "phoneNumber": "Phone number",
       "send": "Send",
+      "preview":"Preview",
       "filter": "Filter",
       "receiptManagement": "Receipt management",
       "pageReport": "Showing {first} to {last} of {totalRecords} entries"

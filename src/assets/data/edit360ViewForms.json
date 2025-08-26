@@ -1110,7 +1110,233 @@
       "fr": "richesse & lbc",
       "ke": "utajiri & aml"
     },
-    "fields": []
+    "fields": [
+      {
+        "sectionId": "wealth_aml",
+        "fieldId": "fundsSource",
+        "type": "select",
+        "label": {
+          "en": "fund source",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "wealth_aml",
+        "fieldId": "employmentStatus",
+        "type": "select",
+        "label": {
+          "en": "type of employment",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "wealth_aml",
+        "fieldId": "sector",
+        "type": "select",
+        "label": {
+          "en": "sector",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "wealth_aml",
+        "fieldId": "occupation",
+        "type": "select",
+        "label": {
+          "en": "occupation",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "wealth_aml",
+        "fieldId": "insurancePurpose",
+        "type": "select",
+        "label": {
+          "en": "purpose of insurance",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "wealth_aml",
+        "fieldId": "premiumFrequency",
+        "type": "select",
+        "label": {
+          "en": "premium frequency",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      },
+      {
+        "sectionId": "wealth_aml",
+        "fieldId": "distributeChannel",
+        "type": "select",
+        "label": {
+          "en": "distribution channel",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        },
+        "dynamicLabel": null,
+        "defaultValue": null,
+        "visible": true,
+        "disabled": false,
+        "validations": [],
+        "conditions": [],
+        "order": 4,
+        "tooltip": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "placeholder": {
+          "en": "",
+          "fr": "",
+          "ke": ""
+        },
+        "isMandatory": true,
+        "options": []
+      }
+    ],
+    "buttons": {
+      "cancel": {
+        "sectionId": "prime_identity",
+        "fieldId": "cancel_button",
+        "type": "button",
+        "label": {
+          "en": "cancel",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        }
+      },
+      "save": {
+        "sectionId": "prime_identity",
+        "fieldId": "cancel_button",
+        "type": "button",
+        "label": {
+          "en": "save details",
+          "ke": "Aina ya Mteja",
+          "fr": "Type de Client"
+        }
+      }
+    }
   },
   "documents": {
     "label": {

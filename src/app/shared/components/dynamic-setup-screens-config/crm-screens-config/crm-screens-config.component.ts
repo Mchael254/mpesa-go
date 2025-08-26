@@ -1,10 +1,9 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {BreadCrumbItem} from "../../../data/common/BreadCrumbItem";
-import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
 import {Logger, UtilService} from "../../../services";
 import {GlobalMessagingService} from "../../../services/messaging/global-messaging.service";
 import {LANGUAGES, LanguagesDto} from "../../../data/common/languages-dto";
-import {TranslateService} from "@ngx-translate/core";
 import {DynamicScreensSetupService} from "../../../services/setups/dynamic-screen-config/dynamic-screens-setup.service";
 import {
   ConfigFormFieldsDto,
@@ -15,6 +14,9 @@ import {
   SubModulesDto, Validation
 } from "../../../data/common/dynamic-screens-dto";
 import {Table} from "primeng/table";
+import {SessionStorageService} from "../../../services/session-storage/session-storage.service";
+import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
+import {FieldModel, Group} from "../../../../features/entities/data/form-config.model";
 
 const log = new Logger('CrmScreensConfigComponent');
 @Component({
@@ -81,6 +83,36 @@ export class CrmScreensConfigComponent implements OnInit {
   selectedExportSubSection: FormGroupsDto;
   selectedExportSubSectionTwo: FormSubGroupsDto;
   exportData: DynamicSetupImportDto;
+
+  private fieldsCacheByKey: Record<string, ConfigFormFieldsDto[]> = {};
+  private currentFieldsKey: string | null = null;
+
+  uploadForm!: FormGroup;
+  entityForm!: FormGroup;
+  updatedFormFields: any;
+  dynamicSetupData: any = [];
+  newEntityFieldsData: any = [];
+  formGroupSections: any[];
+  idType: string = 'NATIONAL_ID'
+  collapsedGroups: Set<string> = new Set();
+
+  protected readonly SearchCountryField = SearchCountryField;
+  protected readonly CountryISO = CountryISO;
+  protected readonly PhoneNumberFormat = PhoneNumberFormat;
+
+  wealthAmlFormFields: ConfigFormFieldsDto[] = [];
+  corporateContactDetailsFormField: ConfigFormFieldsDto[] = [];
+  corporateAddressDetailsFormField: ConfigFormFieldsDto[] = [];
+  corporateFinancialDetailsFormField: ConfigFormFieldsDto[] = [];
+  corporateWealthAmlFormFieldsDetailsFormField: ConfigFormFieldsDto[] = [];
+  corporateWealthCR12DetailsFormField: ConfigFormFieldsDto[] = [];
+  corporateWealthOwnershipDetailsFormField: ConfigFormFieldsDto[] = [];
+  branchDetailsFormFields: ConfigFormFieldsDto[] = [];
+  privacyFormFields: ConfigFormFieldsDto[] = [];
+
+  selectedTab: string = 'otp_phone_number';
+  shouldShowFields: boolean = false;
+
   @ViewChild('dt2') dt2: Table | undefined;
   dynamicConfigBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -108,11 +140,13 @@ export class CrmScreensConfigComponent implements OnInit {
   constructor(
     private globalMessagingService: GlobalMessagingService,
     private fb: FormBuilder,
-    private translate: TranslateService,
     private utilService: UtilService,
     private dynamicScreensSetupService: DynamicScreensSetupService,
     private cdr: ChangeDetectorRef,
-  ) {}
+    private sessionStorageService: SessionStorageService,
+  ) {
+    this.uploadForm = this.fb.group({});
+  }
 
   ngOnInit(): void {
     this.createSubModuleForm();
@@ -125,6 +159,14 @@ export class CrmScreensConfigComponent implements OnInit {
       this.language = lang;
     });
     this.fetchSubModules();
+    this.createEntityForm();
+  }
+
+  createEntityForm():void {
+    this.entityForm = this.fb.group({
+      fields: this.fb.array([])
+    });
+    this.collapsedGroups.add('prime_identity');
   }
 
   /**
@@ -428,6 +470,30 @@ export class CrmScreensConfigComponent implements OnInit {
   }
 
   /**
+   * Opens the preview modal.
+   */
+  openPreviewModal() {
+    const modal = document.getElementById('previewModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+  /**
+   * Closes the preview modal.
+   * This function removes the 'show' class from the modal and sets its display style to 'none'.
+   */
+  closePreviewModal(){
+    this.editMode = false;
+    const modal = document.getElementById('previewModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
+  /**
    * Saves the changes made to the sub modules.
    */
   saveSubModules() {
@@ -600,7 +666,6 @@ export class CrmScreensConfigComponent implements OnInit {
     this.closeSubSectionTwoModal();
   }
 
-
   /**
    * Saves the changes made to the fields.
    */
@@ -637,19 +702,80 @@ export class CrmScreensConfigComponent implements OnInit {
       type: field.type,
       validations: field.validations,
       visible: data.visible === 'Y'
+    };
 
+    // Update currently displayed table
+    if (Array.isArray(this.tableData)) {
+      const idx = this.tableData.findIndex(item => item.code === payload.code);
+      if (idx !== -1) this.tableData[idx] = { ...this.tableData[idx], ...payload };
     }
 
-    const index = this.tableData.findIndex(item => item.code === payload.code);
-    if (index !== -1) {
-      this.tableData[index] = { ...this.tableData[index], ...payload };
-    }
+    // Keep all keyed caches in sync (replace by code)
+    this.updateFieldInAllCaches(payload);
 
     log.info('Saving fields:', payload);
     this.globalMessagingService.displayInfoMessage('Info', 'Publish to save fields changes.');
-    // this.closeFieldsModal();
     this.modalId = 'fieldsModal';
     this.openMultilingualModal();
+  }
+
+  /**
+   * Updates the cache of fields with the provided updated field.
+   *
+   * @param updated - The updated field to be merged into the cache.
+   */
+  private updateFieldInAllCaches(updated: ConfigFormFieldsDto) {
+    Object.keys(this.fieldsCacheByKey).forEach(k => {
+      const arr = this.fieldsCacheByKey[k];
+      if (!Array.isArray(arr)) return;
+      const i = arr.findIndex(f => f.code === updated.code);
+      if (i !== -1) {
+        arr[i] = { ...arr[i], ...updated };
+      }
+    });
+  }
+
+  /**
+   * Retrieves all fields from the keyed caches.
+   *
+   * @returns An array of all fields from the caches.
+   */
+  private getAllFieldsFromKeyedCaches(): ConfigFormFieldsDto[] {
+    const all: ConfigFormFieldsDto[] = [];
+    Object.values(this.fieldsCacheByKey).forEach(list => {
+      if (Array.isArray(list)) all.push(...list);
+    });
+    const byCode = new Map<number | string, ConfigFormFieldsDto>();
+    all.forEach(f => {
+      if (f?.code != null) byCode.set(f.code, f); // last write wins
+    });
+    return Array.from(byCode.values());
+  }
+
+  /**
+   * Generates a unique key for a set of field parameters.
+   *
+   * @param subModuleCode - The sub module code.
+   * @param screenCode - The screen code.
+   * @param formCode - The form code.
+   * @param formGroupingsCode - The form groupings code.
+   * @param formSubGroupCode - The form sub group code.
+   * @returns A unique key for the field parameters.
+   */
+  private getFieldsKey(
+    subModuleCode?: number,
+    screenCode?: number,
+    formCode?: number,
+    formGroupingsCode?: number,
+    formSubGroupCode?: number
+  ): string {
+    const parts: string[] = [];
+    if (subModuleCode != null) parts.push(`sm:${subModuleCode}`);
+    if (screenCode != null) parts.push(`sc:${screenCode}`);
+    if (formCode != null) parts.push(`fc:${formCode}`);
+    if (formGroupingsCode != null) parts.push(`gc:${formGroupingsCode}`);
+    if (formSubGroupCode != null) parts.push(`sgc:${formSubGroupCode}`);
+    return parts.join('|');
   }
 
   /**
@@ -1007,7 +1133,7 @@ export class CrmScreensConfigComponent implements OnInit {
    */
   publishChanges() {
     const payload: DynamicScreenSetupDto = {
-      fields: this.tableData,
+      fields: this.getAllFieldsFromKeyedCaches(),// use merged caches
       groups: this.subSections,
       forms: this.sections,
       screens: this.screens,
@@ -1084,8 +1210,10 @@ export class CrmScreensConfigComponent implements OnInit {
   onClickSubModule(subModule: SubModulesDto) {
     this.selectedSubModule = subModule;
     this.selectedScreen = null;
+    this.selectedSection = null;
     this.fetchScreens(subModule.code);
-    this.fetchFormFields(subModule.code);
+    // Use cache if available, otherwise fetch
+    this.showFieldsFromCacheOrFetch({ subModuleCode: subModule.code });
     this.tableTitle = subModule.label[this.language];
     this.showFields = true;
     this.showScreens = true;
@@ -1101,7 +1229,11 @@ export class CrmScreensConfigComponent implements OnInit {
     this.selectedSection = null;
     this.fetchSections(screen.code);
     if (screen?.hasFields === true) {
-      this.fetchFormFields(this.selectedSubModule?.code, screen.code);
+      // Use cache if available, otherwise fetch
+      this.showFieldsFromCacheOrFetch({
+        subModuleCode: this.selectedSubModule?.code,
+        screenCode: screen.code
+      });
       this.tableTitle = screen.label[this.language];
     }
     this.showFields = screen?.hasFields;
@@ -1117,7 +1249,12 @@ export class CrmScreensConfigComponent implements OnInit {
     this.selectedSection = section;
     this.fetchSubSections(this.selectedSubModule.code, null, section.code);
     if (section?.hasFields === true) {
-      this.fetchFormFields(this.selectedSubModule?.code, this.selectedScreen?.code, section.code);
+      // Use cache if available, otherwise fetch
+      this.showFieldsFromCacheOrFetch({
+        subModuleCode: this.selectedSubModule?.code,
+        screenCode: this.selectedScreen?.code,
+        formCode: section.code
+      });
       this.tableTitle = section.label[this.language];
     }
     this.showFields = section?.hasFields;
@@ -1135,7 +1272,13 @@ export class CrmScreensConfigComponent implements OnInit {
   onClickSubSection(subSection: FormGroupsDto) {
     this.selectedSubSection = subSection;
     if (subSection?.hasFields === true) {
-      this.fetchFormFields(this.selectedSubModule?.code, this.selectedScreen?.code, this.selectedSection?.code, subSection.code);
+      // Use cache if available, otherwise fetch
+      this.showFieldsFromCacheOrFetch({
+        subModuleCode: this.selectedSubModule?.code,
+        screenCode: this.selectedScreen?.code,
+        formCode: this.selectedSection?.code,
+        formGroupingsCode: subSection.code
+      });
       this.tableTitle = subSection.label[this.language];
     }
     this.fetchSubSectionsTwo(subSection.code);
@@ -1151,10 +1294,42 @@ export class CrmScreensConfigComponent implements OnInit {
   onClickSubSectionTwo(subSectionTwo: FormSubGroupsDto) {
     this.selectedSubSectionTwo = subSectionTwo;
     if (subSectionTwo?.hasFields === true) {
-      this.fetchFormFields(this.selectedSubModule?.code, this.selectedScreen?.code, this.selectedSection?.code, this.selectedSubSection?.code, subSectionTwo.code);
+      // Use cache if available, otherwise fetch
+      this.showFieldsFromCacheOrFetch({
+        subModuleCode: this.selectedSubModule?.code,
+        screenCode: this.selectedScreen?.code,
+        formCode: this.selectedSection?.code,
+        formGroupingsCode: this.selectedSubSection?.code,
+        formSubGroupCode: subSectionTwo.code
+      });
       this.tableTitle = subSectionTwo.label[this.language];
     }
     this.showFields = subSectionTwo?.hasFields;
+  }
+
+  /**
+   * Show fields from cache for the detected scope; if not cached (or forceRefresh), fetch from API.
+   */
+  private showFieldsFromCacheOrFetch(params: {
+    subModuleCode?: number;
+    screenCode?: number;
+    formCode?: number;
+    formGroupingsCode?: number;
+    formSubGroupCode?: number;
+    forceRefresh?: boolean;
+  }) {
+    const { subModuleCode, screenCode, formCode, formGroupingsCode, formSubGroupCode, forceRefresh = false } = params;
+    const key = this.getFieldsKey(subModuleCode, screenCode, formCode, formGroupingsCode, formSubGroupCode);
+    this.currentFieldsKey = key;
+
+    const cached = this.fieldsCacheByKey[key];
+    if (!forceRefresh && Array.isArray(cached) && cached.length > 0) {
+      this.tableData = cached;
+      this.disableProtectedFields();
+      this.cdr.detectChanges();
+      return;
+    }
+    this.fetchFormFields(subModuleCode, screenCode, formCode, formGroupingsCode, formSubGroupCode);
   }
 
   /**
@@ -1378,15 +1553,20 @@ export class CrmScreensConfigComponent implements OnInit {
    * assigns the result to the tableData property.
    */
   fetchFormFields(subModuleCode?: number, screenCode?: number, formCode?: number, formGroupingsCode?: number, formSubGroupCode?: number) {
+    const key = this.getFieldsKey(subModuleCode, screenCode, formCode, formGroupingsCode, formSubGroupCode);
+    this.currentFieldsKey = key;
+
     this.dynamicScreensSetupService.fetchFormFields(subModuleCode, screenCode, formCode, formGroupingsCode, formSubGroupCode)
       .subscribe({
         next: (data) => {
-          this.tableData = data;
+          // Save to keyed cache
+          this.fieldsCacheByKey[key] = data || [];
+          this.tableData = this.fieldsCacheByKey[key];
           log.info("fields>>", data);
           this.disableProtectedFields();
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.globalMessagingService.displayErrorMessage('Error', err?.error?.message);
         }
       });
   }
@@ -1449,7 +1629,8 @@ export class CrmScreensConfigComponent implements OnInit {
       .subscribe({
         next: (data) => {
           log.info("import>>", data);
-          window.location.reload();
+          this.globalMessagingService.displaySuccessMessage('Success', 'Setup imported successfully.');
+          // window.location.reload();
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);
@@ -1472,5 +1653,276 @@ export class CrmScreensConfigComponent implements OnInit {
         this.fieldsForm.get('tooltipWords')?.disable();
       }
     });
+  }
+
+  /**
+   * Previews the screen setup by creating a payload object with the necessary data
+   * and storing it in session storage. It then fetches the dynamic setup for the
+   * selected screen and updates the form fields. Lastly, it opens the preview modal.
+   *
+   * @returns {void}
+   */
+  previewSetup() {
+    const payload: any = {
+      fields: this.getAllFieldsFromKeyedCaches(),
+      groups: this.subSections,
+      forms: this.selectedSection,
+      screens: this.selectedScreen,
+      subModules: this.subModules,
+    };
+
+    log.info('Preview payload:', payload);
+    this.sessionStorageService.setItem("PREVIEW_SCREEN_SETUP", payload);
+    this.fetchDynamicSetup(this.selectedScreen.code);
+    this.updatedFormFields = payload;
+    this.openPreviewModal();
+  }
+
+  /**
+   * Toggles the collapsed state of a group based on its ID. If the group is already
+   * collapsed, it is expanded. If the group is already expanded, it is collapsed.
+   *
+   * @param {any} id - The ID of the group to toggle.
+   * @return {void}
+   */
+  toggleCollapse(id: any): void {
+    if (this.collapsedGroups.has(id)) {
+      this.collapsedGroups.delete(id);
+    } else {
+      this.collapsedGroups.add(id);
+    }
+  }
+
+  /**
+   * Checks if a group with the given ID is currently collapsed.
+   *
+   * @param {any} id - The ID of the group to check.
+   * @return {boolean} True if the group is collapsed, false otherwise.
+   */
+  isCollapsed(id: any): boolean {
+    return this.collapsedGroups.has(id);
+  }
+
+  /**
+   * Shows the selected tab by updating the selectedTab property and setting
+   * shouldShowFields to true.
+   *
+   * @param {string} selectedTab - The ID of the tab to show.
+   * @return {void}
+   */
+  showSelectedTab(selectedTab: string): void {
+    this.selectedTab = selectedTab;
+    this.shouldShowFields = true;
+  }
+
+  /**
+   * Adds the new entity fields data to the upload form.
+   *
+   * @remarks
+   * This function filters the dynamic setup data fields to only include fields
+   * with a screen code of null and creates a form group for the upload form.
+   *
+   * @returns {void}
+   */
+  addUploadFormFields(): void {
+    this.newEntityFieldsData = this.dynamicSetupData.fields.filter(field => field.screenCode === null);
+
+    const group: { [key: string]: FormControl } = {};
+
+    this.newEntityFieldsData.forEach((field: any) => {
+
+      const validators: ValidatorFn[] = [];
+
+      if (field.mandatory) {
+        validators.push(Validators.required);
+      }
+      group[field.fieldId] = new FormControl('', validators);
+    });
+
+    this.uploadForm = this.fb.group(group);
+  }
+
+  /**
+   * Publishes the changes made to the preview screen setup.
+   *
+   * @remarks
+   * This function creates a payload object with the necessary data and makes a
+   * request to the update screen setup endpoint. If the request is successful,
+   * it displays a success message using the global messaging service. If the
+   * request fails, it displays an error message.
+   *
+   * @returns {void}
+   */
+  publishPreviewChanges() {
+    const payload: DynamicScreenSetupDto = {
+      fields: this.dynamicSetupData.fields,
+      groups: this.dynamicSetupData.groups,
+      forms: this.dynamicSetupData.forms,
+      screens: [this.dynamicSetupData.screen],
+      subModules: [this.dynamicSetupData.subModule],
+    };
+
+    log.info('Publishing preview payload:', payload);
+
+    this.dynamicScreensSetupService.updateScreenSetup(payload)
+      .subscribe({
+        next: (data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success', 'Changes published successfully!'
+          );
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error', 'Failed to publish changes.'
+          );
+        }
+      });
+  }
+
+  /**
+   * Fetches the dynamic setup data for the given screen code.
+   * If the request is successful, it updates the form fields.
+   * If the request fails, it displays an error message.
+   *
+   * @param screenCode - The code of the screen to fetch the setup data for.
+   * @return {void}
+   */
+  fetchDynamicSetup(screenCode?: number) {
+    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(screenCode, null)
+      .subscribe({
+        next: (data) => {
+          this.dynamicSetupData = data;
+          log.info("dynamic setup>>", data);
+          if (this.dynamicSetupData) {
+            this.updateFormFields();
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        }
+      });
+  }
+
+  /**
+   * Fetches the form fields setup for the current dynamic setup data.
+   * Sorts the form groups and fields by their order and assigns fields to groups.
+   */
+  fetchFormFieldsSetup(): void {
+    const groups: Group[] = this.dynamicSetupData?.groups.filter(
+      group => group.formCode === this.updatedFormFields.forms.code
+    );
+
+    const fields: FieldModel[] = this.dynamicSetupData?.fields;
+    this.orderFormGroup(groups, fields);
+  }
+
+  /**
+   * Sorts the form groups and fields by their order and assigns fields to groups.
+   * @param groups - The form groups to be sorted and assigned fields.
+   * @param fields - The form fields to be sorted and assigned to groups.
+   */
+  orderFormGroup(groups: any[], fields: FieldModel[]) : void {
+    const formGroupSections: any[] = groups?.sort(
+      (a: { order: number; }, b: { order: number; }) => a.order - b.order
+    );
+
+    const fieldOrder: any[] = fields?.sort(
+      (a: { order: number; }, b: { order: number; }) => a.order - b.order
+    );
+
+    this.assignFieldsToGroupByGroupId(fieldOrder, formGroupSections);
+  }
+
+  /**
+   * Assigns the fields to the groups based on their order and form codes.
+   * Sorts the form groups and fields by their order and assigns fields to groups.
+   * @param fields - The form fields to be sorted and assigned to groups.
+   * @param formGroupSections - The form groups to be sorted and assigned fields.
+   */
+  assignFieldsToGroupByGroupId(fields: any[], formGroupSections: any[]): void {
+    let visibleFormFields: any[];
+
+    if (this.updatedFormFields.forms.formId === 'cnt_individual') {
+      visibleFormFields = fields.filter((field: any) => field.visible && field.formCode === 35
+        && field.formGroupingCode !== 113 && field.formSubGroupingCode !== 126 );
+
+    } else if(this.updatedFormFields.forms.formId === 'cnt_corporate') {
+      visibleFormFields = fields.filter((field: any) => field.visible &&  field.formCode === 34 &&
+        field.formSubGroupingCode !== 112  &&
+        field.formSubGroupingCode !== 115 && field.formSubGroupingCode !== 117 &&
+        field.formGroupingCode !== 107 && field.formSubGroupingCode !== 113);
+    }
+
+    formGroupSections.forEach(section => {
+      section.fields = [];
+    })
+
+    visibleFormFields.forEach(field => {
+      formGroupSections.forEach(section => {
+        if (field.formGroupingCode === section.code) {
+          section.fields.push(field);
+        }
+      })
+    });
+
+    this.formGroupSections = formGroupSections;
+    log.info('Form group sections', this.formGroupSections);
+    this.addFieldsToSections(formGroupSections);
+
+    this.wealthAmlFormFields = fields.filter(field => field.formSubGroupingCode === 125);
+    this.corporateContactDetailsFormField = fields.filter(field => field.formSubGroupingCode === 112);
+    this.corporateAddressDetailsFormField = fields.filter(field => field.formSubGroupingCode === 117);
+    this.corporateFinancialDetailsFormField = fields.filter(field => field.formSubGroupingCode === 115);
+    this.corporateWealthAmlFormFieldsDetailsFormField = fields.filter(field => field.formSubGroupingCode === 118);
+    this.corporateWealthCR12DetailsFormField = fields.filter(field => field.formSubGroupingCode === 119);
+    this.corporateWealthOwnershipDetailsFormField = fields.filter(field => field.formSubGroupingCode === 120);
+    this.privacyFormFields = fields.filter(field => field.formSubGroupingCode === 113 );
+    this.branchDetailsFormFields = fields.filter(field => field.formSubGroupingCode === 'branch_details');
+
+    log.info(`wealthAmlFormFields >>> `, this.wealthAmlFormFields);
+    log.info(`formGroupSections >>> `, this.formGroupSections);
+    log.info(`branchDetailsFormFields >>> `, this.branchDetailsFormFields);
+    log.info(`privacyFormFields >>> `, this.privacyFormFields);
+  }
+
+  /**
+   * Adds the fields to the form groups based on their order.
+   * @param formGroupSection - The form groups to be assigned fields.
+   */
+  addFieldsToSections(formGroupSection: any[]): void {
+    formGroupSection.forEach(section => {
+      const group = this.fb.group({});
+
+      section.fields.forEach(field => {
+        const control = field.mandatory
+          ? this.fb.control('', Validators.required)
+          : this.fb.control('');
+
+        group.addControl(field.fieldId, control);
+      });
+
+      this.entityForm.addControl(section.groupId, group);
+    });
+    log.info('Adding fields to sections', this.entityForm);
+  }
+
+  /**
+   * Updates the form fields with the updated form fields data.
+   * Replaces the fields in the dynamic setup data with the matched fields from the updated form fields.
+   * Adds the fields to the form groups based on their order.
+   * Detects changes in the component.
+   */
+  updateFormFields() {
+    this.dynamicSetupData.fields = this.dynamicSetupData.fields.map(field => {
+      const matchedField = this.updatedFormFields.fields.find(formField => formField.code === field.code);
+      if (matchedField) {
+        return matchedField;
+      }
+      return field;
+    });
+    log.info('Updated form fields', this.dynamicSetupData.fields);
+    this.addUploadFormFields();
+    this.fetchFormFieldsSetup();
+    this.cdr.detectChanges();
   }
 }

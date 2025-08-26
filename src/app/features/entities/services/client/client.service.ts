@@ -74,13 +74,7 @@ export class ClientService {
     );
   }
 
-  getAgentById(agent_code: any): Observable<Pagination<any>> {
-    return this.api.GET<Pagination<ClientDTO>>(
-      `agents/${agent_code}`,
-      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
-    );
-  }
-
+ 
   searchClients(
     page: number,
     size: number = 5,
@@ -182,6 +176,20 @@ export class ClientService {
     return this.api.POST<ClientDTO>(
       `v2/api/clients/${client_id}`,
       JSON.stringify(client),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  getClientDetailsByClientCode(client_id): Observable<ClientDTO> {
+    return this.api.GET<ClientDTO>(
+      `v2/api/clients/${client_id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  deleteAmlRecord(id: number): Observable<{message: string}> {
+    return this.api.DELETE<{message: string}>(
+      `aml-details/${id}`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }

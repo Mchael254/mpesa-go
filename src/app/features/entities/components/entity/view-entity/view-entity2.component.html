@@ -42,7 +42,7 @@
             *ngIf="
             entityPartyIdDetails &&
             entityAccountIdDetails &&
-            partyAccountDetails &&
+            clientDetails &&
             unAssignedPartyTypes &&
             tab.title === 'overview'
           "
@@ -59,7 +59,7 @@
           </ng-container>
 
           <ng-container *ngIf="
-            partyAccountDetails &&
+            clientDetails &&
             tab.title==='prime_identity';"
           >
             <app-prime-identity
@@ -71,55 +71,55 @@
             </app-prime-identity>
           </ng-container>
           <ng-container *ngIf="
-            partyAccountDetails &&
+            clientDetails &&
             editContactFormConfig?.fields.length > 0 &&
             tab.title==='contact'"
           >
             <app-contact
               #contactRef
-              [contactDetails]="partyAccountDetails?.contactDetails"
-              [accountCode]="partyAccountDetails?.accountCode"
+              [contactDetails]="clientDetails?.contactDetails"
+              [accountCode]="clientDetails.clientCode"
               [contactDetailsConfig]="tab"
               [formFieldsConfig]="editContactFormConfig"
             ></app-contact>
           </ng-container>
 
           <ng-container *ngIf="
-            partyAccountDetails &&
+            clientDetails &&
             tab.title==='address';"
           >
             <app-address
               #addressRef
-              [addressDetails]="partyAccountDetails.address"
-              [accountCode]="partyAccountDetails.accountCode"
+              [addressDetails]="clientDetails.address"
+              [accountCode]="clientDetails.clientCode"
               [addressDetailsConfig]="tab"
               [formFieldsConfig]="editAddressFormConfig"
             ></app-address>
           </ng-container>
 
           <ng-container *ngIf="
-            partyAccountDetails &&
+            clientDetails &&
             tab.title==='financial'"
           >
             <app-financial
               #financialRef
-              [financialDetails]="partyAccountDetails.paymentDetails"
-              [accountCode]="partyAccountDetails.accountCode"
+              [financialDetails]="clientDetails.paymentDetails"
+              [accountCode]="clientDetails.clientCode"
               [financialDetailsConfig]="tab"
               [formFieldsConfig]="editFinancialFormConfig"
-              [countryId]="partyAccountDetails?.address?.countryId"
+              [countryId]="clientDetails?.address?.countryId"
             >
             </app-financial>
           </ng-container>
 
           <ng-container *ngIf="
-            partyAccountDetails &&
+            clientDetails &&
             tab.title==='wealth_aml'"
           >
             <app-wealth-aml
               #wealthAmlRef
-              [wealthAmlDetails]="partyAccountDetails.wealthAmlDetails"
-              [accountCode]="partyAccountDetails.accountCode"
+              [wealthAmlDetails]="clientDetails.wealthAmlDetails"
+              [accountCode]="clientDetails.clientCode"
               [wealthAmlDetailsConfig]="tab"
               [formFieldsConfig]="editWealthAmlFormConfig"
             ></app-wealth-aml>

@@ -2,6 +2,13 @@
 
 <div class="row">
   <div class="col-sm-2 offset-sm-10 text-end mb-3">
+    <button
+      class="btn btn-primary btn-primary"
+      style="font-size: 0.8em"
+      (click)="openEditWealthAmlDialog(true, null)"
+    >
+      + AML Details
+    </button>
       <span class="p-1 me-5 caret" (click)="columnDialogVisible = true">
         <i class="fa fa-caret-down text-primary"></i>
       </span>
@@ -23,69 +30,184 @@
   </div>
 </p-dialog>
 
-<p-table
-  (onLazyLoad)="lazyLoadEntity($event)"
-  [autoLayout]="true"
-  [lazy]="true"
-  [paginator]="true"
-  [rowHover]="true"
-  [resizableColumns]="true"
-  [showCurrentPageReport]="true"
-  [rows]="pageSize || 5"
-  [totalRecords]="totalRecords"
-  [value]="wealthAmlDetails"
-  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-  responsiveLayout="stack"
-  [scrollable]="true"
-  scrollHeight="400px"
-  currentPageReportTemplate="{first} - {last} of {totalRecords}"
-  [globalFilterFields]=globalFilterFields
->
+<ng-container *ngIf="wealthAmlDetails?.length >= 0">
+  <p-table
+    [autoLayout]="true"
+    [lazy]="true"
+    [paginator]="true"
+    [rowHover]="true"
+    [resizableColumns]="true"
+    [showCurrentPageReport]="true"
+    [rows]="pageSize || 5"
+    [totalRecords]="totalRecords"
+    [value]="wealthAmlDetails"
+    [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+    responsiveLayout="stack"
+    [scrollable]="true"
+    scrollHeight="400px"
+    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    [globalFilterFields]=globalFilterFields
+  >
 
-  <ng-template pTemplate="header">
-    <tr>
-      <ng-container *ngFor="let col of columns">
-        <th *ngIf="col.visible">
-          {{ col.header | titlecase }}
-          <!--<p-sortIcon [field]="col.field"></p-sortIcon>-->
+    <ng-template pTemplate="header">
+      <tr>
+        <ng-container *ngFor="let col of columns">
+          <th *ngIf="col.visible">
+            {{ col.header | titlecase }}
+            <p-sortIcon [field]="col.field"></p-sortIcon>
+          </th>
+        </ng-container>
+        <th>
+          <!--{{ actionLabel[language] }}-->
         </th>
-      </ng-container>
-      <th>
-        <!--{{ actionLabel[language] }}-->
-      </th>
-    </tr>
-    <!--<tr>
-      <ng-container *ngFor="let col of columns">
-        <th *ngIf="col.visible">
-          <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, col.field)" (input)="processInput($event, col.field)">
-        </th>
-      </ng-container>
-      <th></th>
-    </tr>-->
-  </ng-template>
-  <ng-template pTemplate="body" let-rowData>
-    <tr [pSelectableRow]="rowData">
-      <ng-container *ngFor="let col of columns">
-        <td *ngIf="col.visible">
-          {{ rowData[col.field] }}
+      </tr>
+      <!--<tr>
+        <ng-container *ngFor="let col of columns">
+          <th *ngIf="col.visible">
+            <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, col.field)" (input)="processInput($event, col.field)">
+          </th>
+        </ng-container>
+        <th></th>
+      </tr>-->
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData>
+      <tr [pSelectableRow]="rowData">
+        <ng-container *ngFor="let col of columns">
+          <td *ngIf="col.visible">
+            <span *ngIf="!rowData[col.field]?.id">
+              {{ (rowData[col.field] | titlecase) || (rowData[col.field]) }}
+            </span>
+            <span *ngIf="rowData[col.field]?.id">
+              {{ (rowData[col.field]?.name | titlecase) || (rowData[col.field]?.name)  }}
+            </span>
+          </td>
+        </ng-container>
+
+        <td *ngIf="columns?.length > 0">
+          <div class="actions">
+            <button type="button" class="btn btn-link text-primary" (click)="openEditWealthAmlDialog(true, rowData)">
+              Edit
+            </button>
+            <button
+              type="button"
+              class="btn btn-link text-danger"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteWealthAmlModal"
+              (click)="selectItemToDelete(rowData)"
+            >
+              Delete
+            </button>
+          </div>
         </td>
-      </ng-container>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8">No Wealth/AML details Found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-container>
 
-      <td *ngIf="columns?.length > 0">
-        <div class="actions">
-          <button type="button" class="btn btn-link text-primary">
-            Edit
+
+
+
+<!--edit prime details modal-->
+<button #editButton type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editWealthAmlModal" hidden>
+  Open Edit Wealth AML Modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="editWealthAmlModal" tabindex="-1" aria-labelledby="editWealthAmlModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-4 text-primary" id="editWealthAmlModalLabel">
+          {{ formFieldsConfig?.label[language] || '---' | titlecase }}
+        </h1>
+        <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <ng-container *ngIf="shouldShowEditForm; else showMessage">
+        <div class="modal-body">
+          <ng-container *ngIf=" editForm; else loadingForm">
+            <form [formGroup]="editForm">
+              <div class="row g-3">
+                <ng-container *ngFor="let field of formFieldsConfig.fields">
+                  <div class="col-md-6">
+                    <label [for]="field.fieldId" class="form-label">
+                      {{ field?.label[language] || '---' | titlecase }}
+                    </label>
+                    <!-- Text input -->
+                    <input
+                      *ngIf="field.type === 'text' || field.type === 'email'"
+                      [formControlName]="field.fieldId"
+                      [placeholder]="field?.placeholder[language] || ''"
+                      [id]="field.fieldId"
+                      type="text"
+                      class="form-control"
+                    />
+
+                    <!--select input-->
+                    <select
+                      *ngIf="field.type === 'select'"
+                      [formControlName]="field.fieldId"
+                      [id]="field.fieldId"
+                      class="form-select"
+                    >
+                      <option *ngFor="let opt of field.options" [value]="(opt.id ? opt.id : opt.value) || opt.code">
+                        {{ opt.name || opt.description || opt.label | titlecase }}
+                      </option>
+                    </select>
+                  </div>
+                </ng-container>
+              </div>
+            </form>
+          </ng-container>
+          <ng-template #loadingForm>
+            <div class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+            {{ formFieldsConfig?.buttons?.cancel?.label[language] || '---' | titlecase }}
           </button>
-          <button type="button" class="btn btn-link text-primary">
-            Delete
+          <button type="button" class="btn btn-primary" (click)="editWealthAmlDetails()">
+            {{ formFieldsConfig?.buttons?.save?.label[language] || '---' | titlecase }}
           </button>
         </div>
-      </td>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="8">No Wealth/AML details Found.</td>
-    </tr>
-  </ng-template>
-</p-table>
+      </ng-container>
+      <ng-template #showMessage>
+        <p class="lead text-center text-danger my-5">Select a record to edit.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+
+<!-- Delete wealth/aml modal-->
+<button style="display: none" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteWealthAmlModal">
+  Launch delete modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteWealthAmlModal" tabindex="-1" aria-labelledby="deleteWealthAmlModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h1 class="modal-title fs-5" id="deleteWealthAmlModalLabel">Delete Wealth/AML</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-danger text-center lead fw-bold">Are you sure you want to delete?</p>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" #closeDeleteDialogButton>Close</button>
+        <button type="button" class="btn btn-danger" (click)="deleteAmlRecord()">Confirm delete</button>
+      </div>
+    </div>
+  </div>
+</div>
