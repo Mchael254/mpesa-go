@@ -149,4 +149,20 @@ export class DynamicScreensSetupService {
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
+
+  fetchDynamicSetupByScreen(
+    screenCode?: number,
+    screenId?: string
+  ): Observable<any[]> {
+    const params = new HttpParams()
+      .set('screenCode', `${screenCode}`)
+      .set('screenId', `${screenId}`);
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+
+    return this.api.GET<any[]>(
+      `dynamic-screens-setup/screen-setup`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      paramObject
+    );
+  }
 }

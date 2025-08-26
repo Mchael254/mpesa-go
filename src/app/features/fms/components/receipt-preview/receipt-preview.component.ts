@@ -7,6 +7,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  HostListener,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -26,7 +27,7 @@ import { ReceiptService } from '../../services/receipt.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { TranslateService } from '@ngx-translate/core';
 import fmsStepsData from '../../data/fms-step.json';
-
+import { CanComponentDeactivate } from '../../services/receipt-preview-guard.service';
 const log = new Logger('ReceiptPreviewComponent');
 
 /**
@@ -68,6 +69,8 @@ export class ReceiptPreviewComponent implements OnInit {
   /** @property {any} documentData - Currently unused, but could contain more complex data associated with the receipt document. */
   documentData: any;
   downloadCompleted: boolean = false;
+   // SET THE FLAG: The user is initiating an action that will lead to navigation.
+  private hasMadeChoice = false;
   /**
    * Constructs a new `ReceiptPreviewComponent`.
    * @param {ReportsService} reportService - The service used to generate reports (e.g., the receipt PDF).
@@ -85,6 +88,34 @@ export class ReceiptPreviewComponent implements OnInit {
 
     public translate: TranslateService
   ) {}
+  
+  /**
+   * This is a browser event that triggers when the user tries to close the tab or refresh.
+   * It provides a final warning, complementing the CanDeactivate guard.
+   * @param event The BeforeUnloadEvent object.
+   */
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any): void {
+    if (!this.hasMadeChoice) {
+      // This will trigger the browser's native "Are you sure you want to leave?" prompt.
+      $event.returnValue = true; 
+    }
+  }
+
+  /**
+   * This method is REQUIRED by the CanComponentDeactivate interface.
+   * Our guard will call this method to decide whether to allow navigation away from this component.
+   */
+  canDeactivate(): boolean {
+    // If the user has not clicked "Printed" or "Unprinted", block navigation.
+    if (!this.hasMadeChoice) {
+    
+      alert('You must select "Printed" or "Unprinted" before leaving this page.');
+      return false; // Block navigation
+    }
+    return true; // Allow navigation
+  }
+  
 
   /**
    * Lifecycle hook called once the component is initialized.
@@ -159,32 +190,32 @@ export class ReceiptPreviewComponent implements OnInit {
         // Clean up any session data to prevent inconsistent state
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
-        //this.sessionStorage.clear();
+        this.sessionStorage.clear();
         // Navigate the user to a safe and stable screen
         this.router.navigate(['/home/fms/receipt-capture']);
       },
     });
   }
-  download() {
-    if (this.filePath) {
-      // 1. Create a temporary <a> element
-      const link = document.createElement('a');
-      // 2. Set the file URL (could be local Blob URL or remote URL)
-      link.href = this.filePath;
-      // 3. Set the suggested filename for the download
-      link.download = 'receipt';
+  // download() {
+  //   if (this.filePath) {
+  //     // 1. Create a temporary <a> element
+  //     const link = document.createElement('a');
+  //     // 2. Set the file URL (could be local Blob URL or remote URL)
+  //     link.href = this.filePath;
+  //     // 3. Set the suggested filename for the download
+  //     link.download = 'receipt';
 
-      // 4. Simulate a click on the link to trigger the browser's download
-      link.click();
+  //     // 4. Simulate a click on the link to trigger the browser's download
+  //     link.click();
 
-      this.updatePrintStatus();
-    } else {
-      this.globalMessagingService.displayErrorMessage(
-        'failed!',
-        'Download failed: Invalid file URL'
-      );
-    }
-  }
+  //     this.updatePrintStatus();
+  //   } else {
+  //     this.globalMessagingService.displayErrorMessage(
+  //       'failed!',
+  //       'Download failed: Invalid file URL'
+  //     );
+  //   }
+  // }
 
   /**
    * Triggers a download of the file at the given URL.
@@ -195,6 +226,7 @@ export class ReceiptPreviewComponent implements OnInit {
    */
 
   updatePrintStatus() {
+    this.hasMadeChoice = true;
     const receiptId = Number(this.receiptResponse);
 
     // Construct the payload as an array of numbers
@@ -205,14 +237,23 @@ export class ReceiptPreviewComponent implements OnInit {
           '',
           response?.msg || response?.error || response?.status
         );
+        // remove only the items you set for this specific workflow.
+      this.sessionStorage.removeItem('receiptCode');
+      this.sessionStorage.removeItem('branchReceiptNumber');
+      this.sessionStorage.removeItem('receiptingPoint');
+      this.sessionStorage.removeItem('globalBankAccount');
+      this.sessionStorage.removeItem('globalBankType');
+     
+
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
-        //this.sessionStorage.clear();
+       
         this.router.navigate(['/home/fms/receipt-capture']);
       },
 
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
+        
+        const customMessage = this.translate.instant('fms.printUpdateError');
         const backendError =
           err.error?.msg ||
           err.error?.error ||
@@ -224,15 +265,26 @@ export class ReceiptPreviewComponent implements OnInit {
         );
         this.receiptDataService.clearReceiptData();
         this.receiptDataService.clearFormState();
-        // this.sessionStorage.clear();
+       
+          this.router.navigate(['/home/fms/receipt-capture']);
+        
       },
     });
   }
 
   navigateToReceiptCapture(): void {
+    this.hasMadeChoice = true;
+    // remove only the items you set for this specific workflow.
+      this.sessionStorage.removeItem('receiptCode');
+      this.sessionStorage.removeItem('branchReceiptNumber');
+      this.sessionStorage.removeItem('receiptingPoint');
+      this.sessionStorage.removeItem('globalBankAccount');
+      this.sessionStorage.removeItem('globalBankType');
+      
+
     this.receiptDataService.clearReceiptData();
     this.receiptDataService.clearFormState();
-    // this.sessionStorage.clear();
+   
     this.router.navigate(['/home/fms/receipt-capture']);
   }
 
@@ -242,7 +294,7 @@ export class ReceiptPreviewComponent implements OnInit {
    */
   onBack() {
     this.receiptDataService.clearFormState();
-    // this.sessionStorage.clear();
+     this.sessionStorage.clear();
     this.receiptDataService.clearReceiptData(); // Clear but keep currency
     this.router.navigate(['/home/fms/receipt-capture']); // Navigate to the next screen
   }

@@ -11,13 +11,14 @@ import { ProductService } from "../../../../../service/product/product.service";
 import { ToastService } from "../../../../../../../shared/services/toast/toast.service";
 import { PayFrequencyService } from "../../../../../grp/components/quotation/service/pay-frequency/pay-frequency.service";
 import { QuotationService } from "../../../../../service/quotation/quotation.service";
-import { ClientService } from "../../../../../../entities/services/client/client.service";
+
 import { Utils} from "../../../../../util/util";
 import { StringManipulation } from "../../../../../util/string_manipulation";
 import { SESSION_KEY } from "../../../../../util/session_storage_enum";
 import { EscalationRateDTO } from '../../models/escalation-rate';
 import { LeaderOptionDTO } from '../../models/leader-option';
 import { CoinsurerOptionDTO } from '../../models/coinsurer-option';
+import { IntermediaryService } from 'src/app/features/entities/services/intermediary/intermediary.service';
 
 /**
  * Component for displaying and editing product details in the quotation module.
@@ -76,7 +77,7 @@ export class ProductComponent implements OnInit {
     private toast: ToastService,
     private Payment_freq_service: PayFrequencyService,
     private quotation_service: QuotationService,
-    private crm_client_service: ClientService,
+    private crm_intermediary_service: IntermediaryService,
     private cdr: ChangeDetectorRef
   ) {
     this.util = new Utils(this.session_storage);
@@ -291,7 +292,7 @@ export class ProductComponent implements OnInit {
    * The processed agent list is stored in the `agentList` property.
    */
   getAgentList() {
-    this.crm_client_service.getAgents().subscribe((data) => {
+    this.crm_intermediary_service.getAgents().subscribe((data) => {
       this.agentList = data['content']?.map((d) => {
         d['details'] = `${d?.name} - ${d?.emailAddress ? d?.emailAddress : ''}`; // Format agent details
         return d;
@@ -305,7 +306,7 @@ export class ProductComponent implements OnInit {
    * @returns {Observable<any>} An observable emitting the agent's details.
    */
   getAgentByCode(code: any) {
-    return this.crm_client_service.getAgentById(code);
+    return this.crm_intermediary_service.getAgentById(code);
   }
 
   /**

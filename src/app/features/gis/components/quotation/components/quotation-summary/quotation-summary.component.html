@@ -228,69 +228,96 @@
             </div>
           </div>
           <div *ngIf="isCollapsibleOpen" class="mt-4" id="productDetails">
-            <div class="row">
-              <div class="col-3">
-                <!-- <p class="card-title mt-2" data-bs-toggle="collapse" data-bs-target="#productDetails" (click)="toggleProductDetails()">Product Details</p> -->
-                <!-- <p class="fw-semibold	card-title-collapsed mt-2"></p>
-              </div> -->
-                <!-- <div class="col-9 d-flex justify-content-end" id="navigationIcons">
-                <div class="row"> -->
-                <!-- <div class="col-sm-3"></div>
-                  <div class="col-sm-3">
-                    <button type="button" id="icon" class="btn btn-primary" title="Add" [disabled]="viewQuoteFlag">
-                      <i class="fa-solid fa-plus"></i>
-                    </button>
-                  </div>
-                  <div class="col-sm-3">
-                    <button type="button" id="icon" class="btn btn-primary" title="Edit" [disabled]="viewQuoteFlag">
-                      <i class="fa-solid fa-pencil"></i>
-                    </button>
-                  </div> -->
 
-                <!-- </div>  -->
-              </div>
+
+      <div class="row mb-1">
+        <div class="col-12 d-flex justify-content-end" style="margin-bottom: 0;">
+
+          <div class="d-flex justify-content-center align-items-center">
+            
+            <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                        [ngClass]="{ 'pi-caret-up': showProducts, 'pi-caret-down': !showProducts }"
+                        style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                        (click)="toggleProducts(iconTrigger)">
+                    </i>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Floating Column Selector -->
+            <div *ngIf="showProductColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-primary">Select Columns</strong>
+                    <button class="btn-close btn-sm" (click)="showProductColumnModal = false"></button>
+                </div>
+                <div style="max-height: 200px;max-width:250px; overflow-y: auto;">
+                    <div *ngFor="let col of columns">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                                [(ngModel)]="col.visible" [id]="col.field">
+                            <label class="form-check-label" [for]="col.field">
+                                {{ col.header }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
+             <!-- Product table -->
             <div class="mt-3" id="">
-              <p-table [value]="productDetails" [tableStyle]="{ 'min-width': '50rem' }">
-                <ng-template pTemplate="header">
-                  <tr>
-                    <th pSortableColumn="productName">
-                      Product
-                      <p-sortIcon field="productName"></p-sortIcon>
-                    </th>
+             <p-table [value]="productDetails"
+         dataKey="productCode?.code"
+         editMode="row"
+         [tableStyle]="{'min-width': '50rem'}">
 
-                    <th pSortableColumn="wef">
-                      Cover From
-                      <p-sortIcon field="wef"></p-sortIcon>
-                    </th>
+  <!-- Table Header -->
+  <ng-template pTemplate="header">
+    <tr>
+      <th *ngFor="let col of columns"
+          [hidden]="!col.visible"
+          class="flexible-header1"
+          [pSortableColumn]="col.field">
+        {{ col.header }}
+        <p-sortIcon [field]="col.field"></p-sortIcon>
+      </th>
+    </tr>
+  </ng-template>
 
-                    <th pSortableColumn="wet">
-                      Cover To
-                      <p-sortIcon field="wet"></p-sortIcon>
-                    </th>
+  <!-- Table Body -->
+  <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
+    <tr (click)="handleProductClick(product)"
+        [ngClass]="{ 'selected-row': selectedProduct === product }"
+        [pEditableRow]="product"
+        
+        class="hover:!bg-gray-50 !cursor-pointer transition-colors">
 
-                    <th pSortableColumn="premium">
-                      Premium
-                      <p-sortIcon field="premium"></p-sortIcon>
-                    </th>
+      <td *ngFor="let col of columns"
+          [hidden]="!col.visible"
+          class="flexible-header">
 
-                    <th pSortableColumn="commission">
-                      Commission
-                      <p-sortIcon field="commission"></p-sortIcon>
-                    </th>
-                  </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-data>
-                  <tr (click)="handleProductClick(data)" class="point"
-                    [ngClass]="{ 'selected-row': selectedProduct === data }">
-                    <td>{{ data.productName | sentenceCase }}</td>
-                    <td>{{ data.wef }}</td>
-                    <td>{{ data.wet }}</td>
-                    <td>{{ data.premium || 0.0 | number }}</td>
-                    <td>{{ data.commission || 0.0 | number }}</td>
-                  </tr>
-                </ng-template>
-              </p-table>
+        <ng-container [ngSwitch]="col.field">
+
+          <!-- Default: display dynamic value -->
+          <ng-container *ngSwitchDefault>
+            {{ getCellValue(product, col.field) }}
+          </ng-container>
+
+        </ng-container>
+      </td>
+    </tr>
+  </ng-template>
+
+  <!-- Empty Message -->
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td [attr.colspan]="columns.length" style="text-align:center; padding: 20px;">
+        No data to display
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
               <!-- Delete Product Modal -->
               <div class="modal fade" id="deleteProduct" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
                 aria-hidden="true">
@@ -373,160 +400,174 @@
                         " (click)="openEditTaxModal();getTransactionTypes();getProductTaxes()">
                         Add Tax
                       </button> -->
-                      <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
-                          'pi-caret-up': isCollapsibleOpen,
-                          'pi-caret-down': !isCollapsibleOpen
-                        }" style="
-                          font-size: 16px;
-                          cursor: pointer;
-                          margin-left: 8px;
-                          padding: 2px 8px;
-                          height: 30px;
-                        " (click)="toggleProductDetails()"></i>
+                     <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                        [ngClass]="{ 'pi-caret-up': showClauses, 'pi-caret-down': !showClauses }"
+                        style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                        (click)="toggleClauses(iconTrigger)">
+                    </i>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="tab-content mb-4" id="nav-tabContent">
-                <!-- CLAUSES -->
-                <div class="tab-pane fade show active" id="nav-clauses" role="tabpanel" aria-labelledby="nav-clauses"
-                  tabindex="0">
-                  <p-table [value]="productClauses" #productClauseTable [tableStyle]="{ 'min-width': '50rem' }"
-                    [rows]="3" [paginator]="true" [rowsPerPageOptions]="[3, 6, 9]" [showCurrentPageReport]="true"
-                    currentPageReportTemplate="{first} - {last} of {totalRecords}" class="ui-datatable"
-                    responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
-                    <ng-template pTemplate="header">
-                      <tr>
-                        <th class="flexible-header" pSortableColumn="clauseCode">
-                          ID
-                          <p-sortIcon field="clauseCode"></p-sortIcon>
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="clauseHeading">
-                          {{ "gis.quotation.heading" | translate }}
-                          <p-sortIcon field="clauseHeading"></p-sortIcon>
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="clause">
-                          {{ "gis.quotation.wording" | translate }}
-                          <p-sortIcon field="clause"></p-sortIcon>
-                        </th>
-
-
-                      </tr>
-
-
-                    </ng-template>
-
-                    <ng-template pTemplate="body" let-data let-columns="columns" let-rowIndex="rowIndex">
-                      <ng-container *ngIf="rowIndex === 0">
-                        <tr>
-
-                          <td>
-                            <input type="text" pInputText class="form-control w-70"
-                              (input)="filterTable($event, 'clauseShortDescription', productClauseTable)" />
-                          </td>
-                          <td>
-                            <input type="text" pInputText class="form-control w-70"
-                              (input)="filterTable($event, 'clauseHeading', productClauseTable)" />
-                          </td>
-
-                          <td>
-                            <input type="text" pInputText class="form-control w-70"
-                              (input)="filterTable($event, 'clause', productClauseTable)" />
-                          </td>
-                        </tr>
-                      </ng-container>
-                      <tr>
-
-                        <td>{{ data.clauseShortDescription}}</td>
-                        <td>{{ data.clauseHeading | sentenceCase }}</td>
-                        <td style="
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                            max-width: 300px;
-                            overflow-y: auto;
-                          ">
-                          {{ data.clause | sentenceCase }}
-                        </td>
-                      </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage">
-
-                      <tr>
-                        <td colspan="5" class="text-center text-muted py-3">
-                          “No product clauses available.”
-                        </td>
-                      </tr>
-                    </ng-template>
-                  </p-table>
+                 <!-- Floating Column Selector -->
+            <div *ngIf="showClausesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-primary">Select Columns</strong>
+                    <button class="btn-close btn-sm" (click)="showClausesColumnModal = false"></button>
                 </div>
+                <div style="max-height: 200px;max-width:250px; overflow-y: auto;">
+                    <div *ngFor="let col of clausesColumns">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                                [(ngModel)]="col.visible" [id]="col.field">
+                            <label class="form-check-label" [for]="col.field">
+                                {{ col.header }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+              <div class="tab-content mb-4" id="nav-tabContent">
+              
+               <!-- CLAUSES -->
+<div class="tab-pane fade show active" id="nav-clauses" role="tabpanel" aria-labelledby="nav-clauses" tabindex="0">
+  <p-table
+    [value]="productClauses"
+    #productClauseTable
+    [rows]="3"
+    [paginator]="true"
+    [rowsPerPageOptions]="[3, 6, 9]"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    class="ui-datatable"
+    responsiveLayout="scroll"
+    [autoLayout]="true"
+    [scrollable]="true"
+    scrollHeight="200px"
+  >
+
+    <!-- Table Header -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th *ngFor="let col of clausesColumns"
+            [hidden]="!col.visible"
+            class="flexible-header"
+            [pSortableColumn]="col.field">
+          {{ col.header }}
+          <p-sortIcon [field]="col.field"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+
+    <!-- Table Body -->
+    <ng-template pTemplate="body" let-clause let-rowIndex="rowIndex">
+      <!-- Filters Row -->
+      <ng-container *ngIf="rowIndex === 0">
+        <tr>
+          <td *ngFor="let col of clausesColumns" [hidden]="!col.visible">
+            <input type="text" pInputText class="form-control w-70"
+              (input)="filterTable($event, col.field, productClauseTable)" />
+          </td>
+        </tr>
+      </ng-container>
+
+      <!-- Data Row -->
+      <tr>
+        <td *ngFor="let col of clausesColumns" [hidden]="!col.visible">
+          {{ getCellValue(clause, col.field) }}
+        </td>
+      </tr>
+    </ng-template>
+
+    <!-- Empty Message -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="clausesColumns.length" class="text-center text-muted py-3">
+          “No product clauses available.”
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+</div>
+  <div class="d-flex justify-content-end align-items-center">
+                <i *ngIf="activeTab === 'taxes'" #iconTaxes class="pi border border-black p-1 rounded-1 text-black"
+   [ngClass]="{ 'pi-caret-up': showTaxesColumnModal, 'pi-caret-down': !showTaxesColumnModal }"
+   style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+   (click)="toggleTaxes(iconTaxes)">
+</i>
+</div>
+
+
+            <!-- Floating Column Selector for Taxes -->
+<div *ngIf="showTaxesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <strong class="text-primary">Select Tax Columns</strong>
+    <button class="btn-close btn-sm" (click)="showTaxesColumnModal = false"></button>
+  </div>
+  <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+    <div *ngFor="let col of taxesColumns">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
+        <label class="form-check-label" [for]="col.field">
+          {{ col.header }}
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
 
 
                 <!-- TAXES -->
                 <div class="tab-pane fade" id="nav-taxes" role="tabpanel" aria-labelledby="nav-taxes" tabindex="0">
-                  <p-table [value]="taxDetails" [tableStyle]="{ 'min-width': '50rem' }" class="ui-datatable"
-                    responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
-                    <ng-template pTemplate="header">
-                      <tr>
-                        <th pSortableColumn="taxType">
-                          Tax payer
-                          <p-sortIcon field="taxType"></p-sortIcon>
-                        </th>
+<p-table [value]="taxDetails" #taxTable [tableStyle]="{ 'min-width': '50rem' }">
 
-                        <th pSortableColumn="rateDescription">
-                          Short description
-                          <p-sortIcon field="rateDescription"></p-sortIcon>
-                        </th>
+  <!-- Table Header -->
+  <ng-template pTemplate="header">
+    <tr>
+      <th *ngFor="let col of taxesColumns"
+          [hidden]="!col.visible"
+          class="flexible-header"
+          [pSortableColumn]="col.field">
+        {{ col.header }}
+        <p-sortIcon [field]="col.field"></p-sortIcon>
+      </th>
+    </tr>
+  </ng-template>
 
-                        <th pSortableColumn="rateDescription">
-                          Tax description
-                          <p-sortIcon field="rateDescription"></p-sortIcon>
-                        </th>
+  <!-- Table Body -->
+  <ng-template pTemplate="body" let-tax let-rowIndex="rowIndex">
+    <ng-container *ngIf="rowIndex === 0">
+      <tr>
+        <td *ngFor="let col of taxesColumns" [hidden]="!col.visible">
+          <input type="text" pInputText class="form-control w-70"
+            (input)="filterTable($event, col.field, taxTable)" />
+        </td>
+      </tr>
+    </ng-container>
 
-                        <th pSortableColumn="rate">
-                          Rate
-                          <p-sortIcon field="rate"></p-sortIcon>
-                        </th>
+    <tr>
+      <td *ngFor="let col of taxesColumns" [hidden]="!col.visible">
+        {{ getCellValue(tax, col.field) }}
+      </td>
+    </tr>
+  </ng-template>
 
-                        <th pSortableColumn="taxAmount">
-                          Tax amount
-                          <p-sortIcon field="taxAmount"></p-sortIcon>
-                        </th>
-                        <th pSortableColumn="rateType">
-                          Rate type
-                          <p-sortIcon field="rateType"></p-sortIcon>
-                        </th>
-                        <th pSortableColumn="taxType">
-                          Tax type
-                          <p-sortIcon field="taxType"></p-sortIcon>
-                        </th>
-                        <th></th>
-                      </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-data>
-                      <tr>
-                        <td>{{ data.taxType }}</td>
-                        <td>{{ data.rateDescription }}</td>
-                        <td>{{ data.rateDescription }}</td>
-                        <td>{{ data.rate }}</td>
-                        <td>{{ data.taxAmount }}</td>
-                        <td>{{data.rateType}}</td>
-                        <td>{{ data.taxType }}</td>
-                       
-                      </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage">
-                      <tr>
-                        <td colspan="7" class="text-center text-muted py-3">
-                          “No taxes attached to the product. ”
-                        </td>
-                      </tr>
-                    </ng-template>
-                  </p-table>
+  <!-- Empty Message -->
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td [attr.colspan]="taxesColumns.length" class="text-center text-muted py-3">
+        No taxes available.
+      </td>
+    </tr>
+  </ng-template>
+
+</p-table>
+
                 </div>
                 <!-- LIMITS -->
                 <div class="tab-pane fade" id="nav-limits" role="tabpanel" aria-labelledby="nav-limits" tabindex="0">

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { ReportsDto } from 'src/app/shared/data/common/reports-dto';
@@ -58,6 +58,13 @@ export class ReceiptPrintPreviewComponent {
    
   // A local flag to prevent revoking URL too early
   private isNavigating = false;
+  /**this flag checks if the receipt is set for printing or reprinting
+   * if it is set for reprinting which its value is yes,then we hide the printed and unprinted buttons
+   * and just show a back btn to navigate back to receipt management screen
+   */
+  reprintedReceipt:string;
+     // SET THE FLAG: The user is initiating an action that will lead to navigation.
+  private hasMadeChoice = false;
   /**
    * @constructor
    * @param {SessionStorageService} sessionStorage - Service to interact with browser session storage. Used to retrieve receipt number and organization details.
@@ -76,6 +83,34 @@ export class ReceiptPrintPreviewComponent {
     private translate: TranslateService,
     private encryptionService:EncryptionService
   ) {}
+
+  /**
+     * This is a browser event that triggers when the user tries to close the tab or refresh.
+     * It provides a final warning, complementing the CanDeactivate guard.
+     * @param event The BeforeUnloadEvent object.
+     */
+    @HostListener('window:beforeunload', ['$event'])
+    unloadNotification($event: any): void {
+      if (!this.hasMadeChoice) {
+        // This will trigger the browser's native "Are you sure you want to leave?" prompt.
+        $event.returnValue = true; 
+      }
+    }
+  
+    /**
+     * This method is REQUIRED by the CanComponentDeactivate interface.
+     * Our guard will call this method to decide whether to allow navigation away from this component.
+     */
+    canDeactivate(): boolean {
+      // If the user has not clicked "Printed" or "Unprinted", block navigation.
+      if (!this.hasMadeChoice) {
+      
+        alert('You must select "Printed" or "Unprinted" before leaving this page.');
+        return false; // Block navigation
+      }
+      return true; // Allow navigation
+    }
+    
   /**
    * @method ngOnInit
    * @description Lifecycle hook called after component initialization.
@@ -84,12 +119,19 @@ export class ReceiptPrintPreviewComponent {
    */
   ngOnInit() {
     const receiptNumber = this.sessionStorage.getItem('receiptNumber');
+    
     this.receiptNumber = JSON.parse(receiptNumber);
+   
+    const status =  this.sessionStorage.getItem('reprinted');
+   
+    this.reprintedReceipt = status; // This will be true or false
+    
     let defaultOrg = this.sessionStorage.getItem('defaultOrg');
     let selectedOrg = this.sessionStorage.getItem('selectedOrg');
     this.defaultOrg = defaultOrg ? JSON.parse(defaultOrg) : null;
     this.selectedOrg = selectedOrg ? JSON.parse(selectedOrg) : null;
     this.getReceiptToPrint();
+   this.checkReprintedRct();
   }
   /**
    * @method getReceiptToPrint
@@ -150,7 +192,13 @@ export class ReceiptPrintPreviewComponent {
   private navigateBackToPrintTab() {
       this.isNavigating = true;
       this.sessionStorage.setItem('printTabStatus', JSON.stringify(true));
+       this.sessionStorage.removeItem('receiptNumber');
+      this.sessionStorage.removeItem('reprinted');
+      this.sessionStorage.removeItem('shareType');
+      this.sessionStorage.removeItem('recipient');
+      this.sessionStorage.removeItem('printStatus');
       this.router.navigate(['/home/fms/receipt-management']);
+
   }
   // Handles API error navigation
   private handleNavigationError(customError?: string) {
@@ -160,13 +208,23 @@ export class ReceiptPrintPreviewComponent {
       }
       this.navigateBackToPrintTab();
   }
-
+  /**this method is initialized to at ngOnInit,if we are reprinting a receipt,then we allow users
+   * to navigate back using browser' navigation btns or the compoenent's button
+   */
+ checkReprintedRct():void{
+     if(this.reprintedReceipt == 'yes'){
+ this.hasMadeChoice = true;
+    }
+   
+  }
   /**
    * @method navigateToReceiptCapture
    * @description Navigates the user back to the main receipt management view.
    * Typically used when the user clicks the 'Unprinted' button or cancels the operation.
    */
-  navigateToReceiptCapture(): void {
+ 
+  navigateToReceiptManagment(): void {
+    this.hasMadeChoice = true;
     this.navigateBackToPrintTab();
   }
   /**
@@ -177,6 +235,7 @@ export class ReceiptPrintPreviewComponent {
    * On error, displays an error message.
    */
   updatePrintStatus() {
+    this.hasMadeChoice = true;
     // Construct the payload as an array of numbers
     const payload: number[] = [this.receiptNumber];
     this.receiptService.updateReceiptStatus(payload).subscribe({
@@ -194,7 +253,7 @@ export class ReceiptPrintPreviewComponent {
       },
 
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
+        const customMessage = this.translate.instant('fms.printUpdateError');
         const backendError =
           err.error?.msg ||
           err.error?.error ||

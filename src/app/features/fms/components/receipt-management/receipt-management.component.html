@@ -489,14 +489,23 @@
                       type="button"
                       class="btn btn-link printbtn"
                       *ngIf="receipt.printed == 'Y'"
-                      (click)="printReceipt(i, receipt.no)"
+                      (click)="rePrintReceipt(i, receipt.no)"
                     >
                       {{ "fms.receipt-management.reprint" | translate }}
                     </button>
                     <button
                       type="button"
                       class="btn btn-link sharebtn"
-                      (click)="openReceiptShareModal()"
+                      (click)="
+                        openReceiptShareModal(
+                          i,
+                          receipt.no,
+
+                          receipt.agentCode,
+                          receipt.accountCode,
+                          receipt.printed
+                        )
+                      "
                     >
                       {{ "fms.receipt-management.share" | translate }}
                     </button>
@@ -538,12 +547,15 @@
                   <input
                     class="form-check-input"
                     type="radio"
-                    name="flexRadioDefault"
-                    id="flexRadioDefault1"
+                    name="shareMethod"
+                    id="emailbtn"
+                    formControlName="shareMethod"
+                    value="email"
                   />
+
                   <label
                     class="form-check-label"
-                    for="flexRadioDefault1"
+                    for="emailbtn"
                     style="color: #000"
                   >
                     {{ "fms.receipt-management.email" | translate }}
@@ -554,13 +566,14 @@
                   <input
                     class="form-check-input"
                     type="radio"
-                    name="flexRadioDefault"
-                    id="flexRadioDefault2"
-                    checked
+                    name="shareMethod"
+                    id="whatsappbtn"
+                    formControlName="shareMethod"
+                    value="whatsapp"
                   />
                   <label
                     class="form-check-label"
-                    for="flexRadioDefault2"
+                    for="whatsappbtn"
                     style="color: #000"
                   >
                     {{ "fms.receipt-management.whatsapp" | translate }}
@@ -572,20 +585,59 @@
                   <label for="clientName" style="color: #000">{{
                     "fms.receipt-management.clientName" | translate
                   }}</label>
-                  <input type="text" class="form-control" id="clientName" />
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="clientName"
+                    formControlName="name"
+                  />
                 </div>
               </div>
-              <div class="row">
+              <div
+                class="row"
+                *ngIf="cancelForm.get('shareMethod')?.value === 'whatsapp'"
+              >
                 <div class="col">
                   <label for="phone" style="color: #000">{{
                     "fms.receipt-management.phoneNumber" | translate
                   }}</label>
-                  <input type="number" class="form-control" id="phone" />
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="phone"
+                    formControlName="phone"
+                  />
+                </div>
+              </div>
+              <div
+                class="row"
+                *ngIf="cancelForm.get('shareMethod')?.value === 'email'"
+              >
+                <div class="col">
+                  <label for="email" style="color: #000">{{
+                    "fms.receipt-management.email" | translate
+                  }}</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    formControlName="email"
+                  />
                 </div>
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary">
+              <button
+                class="btn btn-outline-primary"
+                (click)="onClickPreview()"
+              >
+                {{ "fms.receipt-management.preview" | translate }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="postClientDetails()"
+              >
                 {{ "fms.receipt-management.send" | translate }}
               </button>
             </div>

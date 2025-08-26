@@ -1838,13 +1838,20 @@ export class ClientAllocationComponent {
           '',
           this.receiptResponse.message
         );
-        //this.sessionStorage.clear();
-        this.router.navigate(['/home/fms/receipt-capture']);
+    // remove only the items you set for this specific workflow.
+      this.sessionStorage.removeItem('receiptCode');
+      this.sessionStorage.removeItem('branchReceiptNumber');
+      this.sessionStorage.removeItem('receiptingPoint');
+      this.sessionStorage.removeItem('globalBankAccount');
+      this.sessionStorage.removeItem('globalBankType');
+     
+
+        
         this.receiptDataService.clearFormState();
         this.receiptDataService.clearReceiptData();
-        //this.sessionStorage.clear();
+        this.router.navigate(['/home/fms/receipt-capture']);
 
-        //prepare receipt upload payload
+        
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
@@ -2017,7 +2024,7 @@ export class ClientAllocationComponent {
   handleSaveAndPrint() {
     this.saveAndGenerateSlip();
 
-    this.generateSlip();
+    //this.generateSlip();
   }
   saveAndGenerateSlip() {
     // ✅ 1. Check if any selected file is not posted
@@ -2146,6 +2153,9 @@ export class ClientAllocationComponent {
     this.receiptService.saveReceipt(receiptData).subscribe({
       next: (response) => {
         this.receiptResponse = response.data;
+        // 2. Now that this.receiptResponse is guaranteed to be defined,
+      //    we can safely call the next function in the chain.
+      //this.generateSlip();
         this.sessionStorage.setItem(
           'receiptNo',
           this.receiptResponse.receiptNumber
@@ -2154,6 +2164,7 @@ export class ClientAllocationComponent {
           '',
           this.receiptResponse.message
         );
+         
         setTimeout(() => {
           this.router.navigate(['/home/fms/slip-preview']);
         }, 100);
@@ -2174,6 +2185,7 @@ export class ClientAllocationComponent {
   }
   generateSlip() {
     const payload: acknowledgementSlipDTO = {
+
       receiptNumbers: [this.receiptResponse.receiptNumber],
       userCode: this.loggedInUser.code,
     };

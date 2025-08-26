@@ -43,17 +43,17 @@
     </ngx-doc-viewer>
   </div>
 
-  <div class="btn-actions d-flex justify-content-center gap-3 mt-3">
-    <button type="button" class="btn btn-primary" (click)="updatePrintStatus()">
+  <div class="btn-actions d-flex justify-content-center gap-3 mt-1">
+    <!-- <button type="button" class="btn btn-primary" (click)="updatePrintStatus()">
       Printed
-    </button>
+    </button> -->
 
     <button
       type="button"
       class="btn btn-success"
       (click)="navigateToReceiptCapture()"
     >
-      Unprinted
+      {{ "base.back" | translate }}
     </button>
   </div>
 </div>

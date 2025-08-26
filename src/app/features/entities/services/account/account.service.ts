@@ -522,29 +522,36 @@ export class AccountService {
 
   getPremiumFrequencies(): Observable<AccountsEnum[]> {
     return this.api.GET<AccountsEnum[]>(
-      `/reference-enum/premium-frequencies`,
-      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+      `/system-definitions/premium-frequencies`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getEmploymentTypes(): Observable<AccountsEnum[]> {
     return this.api.GET<AccountsEnum[]>(
-      `/reference-enum/employment-types`,
-      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+      `/system-definitions/employment-types`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getPreferredCommunicationChannels(): Observable<AccountsEnum[]> {
     return this.api.GET<AccountsEnum[]>(
-      `/reference-enum/preferred-communication-channels`,
+      `reference-enum/preferred-communication-channels`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
 
+  getCommunicationChannels(): Observable<AccountsEnum[]>{
+    return this.api.GET<AccountsEnum[]>(
+      `/system-definitions/preferred-communication-channels`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    )
+  }
+
   getInsurancePurpose(): Observable<any> {
     return this.api.GET<any>(
-      `/insurance-purposes`,
-      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+      `insurance-purposes`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 }
