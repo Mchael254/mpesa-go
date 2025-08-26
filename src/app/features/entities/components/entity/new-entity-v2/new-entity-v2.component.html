@@ -202,8 +202,12 @@
                           [placeholder]="field?.placeholder[language]"
                           [id]="field.fieldId"
                           class="form-control"
+                          [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
                           (keyup)="validateRegex(field, group.groupId)"
                         />
+                        <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}45
+                        </span>
                       </ng-container>
                       <ng-container *ngIf="field.fieldId==='idNumber'">
                         <label class="form-label" [for]="field.fieldId">
@@ -216,8 +220,12 @@
                           [placeholder]="field.dynamicLabel.mapping[idType][language]"
                           [id]="field.fieldId"
                           class="form-control"
+                          [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
                           (keyup)="validateRegex(field, group.groupId)"
                         />
+                        <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}kl
+                        </span>
                       </ng-container>
                       <ng-container *ngIf="['smsNumber', 'telNumber'].includes(field.fieldId)">
                         <label class="form-label" [for]="field.fieldId">
@@ -238,11 +246,11 @@
                           [separateDialCode]="true"
                           [numberFormat]="PhoneNumberFormat.National"
                           [formControlName]="field.fieldId"
+                          [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
                           [style]="{ width: '100%' }">
                         </ngx-intl-tel-input>
-                      </ng-container>
-                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                          * {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                        <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}fg
                         </span>
                     </ng-container>
 
@@ -257,7 +265,11 @@
                         [placeholder]="field.placeholder"
                         [id]="field.fieldId"
                         class="form-control"
+                        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
                       ></textarea>
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}gf
+                      </span>
                     </ng-container>
 
                     <!--Date-->
@@ -272,7 +284,11 @@
                         [placeholder]="field.placeholder"
                         [id]="field.fieldId"
                         class="form-control"
+                        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
                       />
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}bd
+                      </span>
                     </ng-container>
 
 
@@ -288,7 +304,11 @@
                         [placeholder]="field?.placeholder[language]"
                         [id]="field.fieldId"
                         class="form-control"
+                        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
                       />
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}45
+                      </span>
                     </ng-container>
 
 
@@ -305,49 +325,68 @@
                         aria-label="Default select example"
                         (change)="processSelectOption($event, field.fieldId)"
                         (click)="fetchSelectOptions(field.groupId, field.fieldId)"
+                        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
                       >
                         <option value="">---select {{ field.label?.[language] }}---</option>
                         <option *ngFor="let option of field.options" [value]="option">
                           {{ option }}
                         </option>
                       </select>
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}87
+                      </span>
                     </ng-container>
 
 
                     <!-- radio -->
-                    <ng-container>
-                      <div class="form-check" *ngIf="field.type === 'radio'" [id]="field.fieldId">
-                        <label  class="form-check-label" *ngFor="let option of field.options">
-                          <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                    <ng-container *ngIf="field.type === 'radio'">
+                      <label class="form-label" [for]="field.fieldId">
+                        {{ field.label?.[language] | titlecase }}
+                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                      </label>
+                      <div class="form-check" [id]="field.fieldId">
+                        <div *ngFor="let option of field.options">
                           <input
                             class="form-check-input"
                             type="radio"
                             [value]="option"
                             [formControlName]="field.fieldId"
-                          >
-                          {{ option }}
-                        </label>
+                            [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched">
+                          <label class="form-check-label" for="field.fieldId">
+                            {{ option }}
+                          </label>
+                        </div>
+                        <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}32
+                        </span>
                       </div>
                     </ng-container>
 
 
                     <!-- checkbox -->
-                    <ng-container>
-                      <div class="form-check" *ngIf="field.type === 'checkbox'">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          id="checkDefault"
-                          [formControlName]="field.fieldId"
-                          [id]="field.fieldId"
-                        >
-                        <label class="form-label" [for]="field.fieldId" *ngIf="field.type !== 'checkbox'">
-                          {{ field.label?.[language] | titlecase }}
-                          <span *ngIf="field.isMandatory" class="text-danger">*</span>
-                        </label>
-                        <!--<label class="form-check-label" for="checkDefault">
-                        </label>-->
+                    <ng-container *ngIf="field.type === 'checkbox'">
+                      <label class="form-label" [for]="field.fieldId">
+                        {{ field.label?.[language] | titlecase }}
+                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                      </label>
+                      <div class="form-check">
+                        <div *ngFor="let option of field.options">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="checkDefault"
+                            [formControlName]="field.fieldId"
+                            [id]="field.fieldId"
+                            [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched">
+                          <label class="form-check-label" for="checkDefault">
+                            {{ option }}
+                          </label>
+                        </div>
+                        <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}32
+                        </span>
                       </div>
+                    </ng-container>
                     </ng-container>
 
                     <!--show validation errors-->
