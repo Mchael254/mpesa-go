@@ -534,3 +534,13 @@ textarea {
 .clause-wrapper:hover .hover-card {
   display: block;
 }
+
+.actions-column {
+  width: 200px;           
+  text-align: center;     
+}
+
+.actions-column .d-flex {
+  justify-content: center; 
+  align-items: center;    
+} 
