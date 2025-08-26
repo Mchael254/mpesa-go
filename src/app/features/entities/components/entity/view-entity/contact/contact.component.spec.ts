@@ -34,6 +34,7 @@ describe('ContactComponent', () => {
 
   const mockAccountService = {
     getPreferredCommunicationChannels: jest.fn().mockReturnValue(of([])),
+    getCommunicationChannels: jest.fn().mockReturnValue(of([])),
   }
 
   const mockGlobalMessagingService = {
@@ -258,12 +259,12 @@ describe('ContactComponent', () => {
     const titles: ClientTitlesDto[] = [{description: "", gender: "", id: 0, organizationId: 0, shortDescription: ""}];
     mockClientService.getClientTitles.mockReturnValue(of(titles));
     mockBranchService.getAllBranches.mockReturnValue(of([]));
-    mockAccountService.getPreferredCommunicationChannels.mockReturnValue(of([]));
+    mockAccountService.getCommunicationChannels.mockReturnValue(of([]));
 
     fixture.detectChanges();
 
     expect(mockBranchService.getAllBranches).toHaveBeenCalled();
-    expect(mockAccountService.getPreferredCommunicationChannels).toHaveBeenCalled();
+    expect(mockAccountService.getCommunicationChannels).toHaveBeenCalled();
   });
 
   test('should update contact details', () => {
