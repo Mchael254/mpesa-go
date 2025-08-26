@@ -142,8 +142,13 @@ export class PreviewReceiptComponent {
   private navigateBackToPrintTab() {
     this.isNavigating = true;
     this.sessionStorage.setItem('printTabStatus', JSON.stringify(true));
+     this.sessionStorage.removeItem('receiptNumber');
+      this.sessionStorage.removeItem('reprinted');
+      this.sessionStorage.removeItem('shareType');
+      this.sessionStorage.removeItem('recipient');
+      this.sessionStorage.removeItem('printStatus');
     this.router.navigate(['/home/fms/receipt-management']);
-    this.sessionStorage.clear;
+   
   }
   // Handles API error navigation
   private handleNavigationError(customError?: string) {

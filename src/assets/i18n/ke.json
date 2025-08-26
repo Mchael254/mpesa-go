@@ -2374,6 +2374,7 @@
     "correction": "Tuma kwa marekebisho",
     "reject": "Kataa",
     "errorMessage": "Hitilafu imetokea!",
+     "printUpdateError":"Imeshindwa kusasisha hali ya uchapishaji ya Rct",
 
     "receipting": {
       "receipting": "Utoaji wa risiti",

@@ -138,20 +138,18 @@ select.form-control {
   position: relative;
 }
 
-.date-input input {
-  padding-right: 36px;
-}
+
 
 .date-input::after {
-  content: "";
-  position: absolute;
+
+  
   right: 12px;
   top: 50%;
-  /* transform: translateY(-50%); */
+  transform: translateY(-50%);
   width: 16px;
-  height: 16px;
+   height: 16px;
 
-  pointer-events: none;
+ 
 }
 
 .radio-group {

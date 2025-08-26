@@ -2903,8 +2903,9 @@
     "correction": "Envoyer pour correction",
     "reject": "Rejeter",
     "errorMessage": "Une erreur s'est produite !",
-    "rctPrintError": "Risiti imehifadhiwa kwa mafanikio lakini imeshindikana kuchapisha",
-    "pdPrintError": "Risiti imehifadhiwa kwa mafanikio lakini slip imeshindikana kuchapishwa",
+    "printUpdateError":"Échec de la mise à jour du statut d’impression Rct",
+    "rctPrintError": "Reçu enregistré avec succès mais impossible de l’imprimer",
+  "pdPrintError": "Reçu enregistré avec succès mais impossible d’imprimer le ticket",
 
     "receipting": {
       "receipting": "Emission de reçus",
