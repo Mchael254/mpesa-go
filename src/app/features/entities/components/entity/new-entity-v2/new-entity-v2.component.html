@@ -206,7 +206,7 @@
                           (keyup)="validateRegex(field, group.groupId)"
                         />
                         <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}45
+                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}
                         </span>
                       </ng-container>
                       <ng-container *ngIf="field.fieldId==='idNumber'">
@@ -224,7 +224,7 @@
                           (keyup)="validateRegex(field, group.groupId)"
                         />
                         <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}kl
+                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}
                         </span>
                       </ng-container>
                       <ng-container *ngIf="['smsNumber', 'telNumber'].includes(field.fieldId)">
@@ -250,8 +250,9 @@
                           [style]="{ width: '100%' }">
                         </ngx-intl-tel-input>
                         <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}fg
+                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}
                         </span>
+                      </ng-container>
                     </ng-container>
 
                     <!-- Textarea -->
@@ -268,7 +269,7 @@
                         [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
                       ></textarea>
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}gf
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
                       </span>
                     </ng-container>
 
@@ -287,7 +288,7 @@
                         [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
                       />
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}bd
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
                       </span>
                     </ng-container>
 
@@ -307,7 +308,7 @@
                         [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
                       />
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}45
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
                       </span>
                     </ng-container>
 
@@ -333,7 +334,7 @@
                         </option>
                       </select>
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}87
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
                       </span>
                     </ng-container>
 
@@ -357,7 +358,7 @@
                           </label>
                         </div>
                         <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}32
+                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}
                         </span>
                       </div>
                     </ng-container>
@@ -383,10 +384,9 @@
                           </label>
                         </div>
                         <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}32
+                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}
                         </span>
                       </div>
-                    </ng-container>
                     </ng-container>
 
                     <!--show validation errors-->
