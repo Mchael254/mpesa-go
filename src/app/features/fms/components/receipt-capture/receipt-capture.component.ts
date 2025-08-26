@@ -584,15 +584,16 @@ export class ReceiptCaptureComponent {
         }
       },
       error: (err) => {
-      const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
       },
     });
   }
@@ -692,11 +693,12 @@ const backendError= err.error?.msg ||
           }
         },
         error: (err) => {
-         const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
+          const customMessage = this.translate.instant('fms.errorMessage');
+          const backendError =
+            err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText;
           this.globalMessagingService.displayErrorMessage(
             customMessage,
             backendError
@@ -832,14 +834,15 @@ const backendError= err.error?.msg ||
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
       },
     });
   }
@@ -923,47 +926,6 @@ const backendError= err.error?.msg ||
     this.updatePaymentModeFields(paymentMode);
     this.updateDateRestrictions();
   }
-
-  /**
-   * Updates the form fields based on the selected payment mode, enabling or disabling specific controls.
-   * @param {string} paymentMode - The selected payment mode.
-   * @returns {void}
-   */
-  // updatePaymentModeFields(paymentMode: string): void {
-  //   const drawersBankControl = this.receiptingDetailsForm.get('drawersBank')?.value;
-  //   const paymentRefControl = this.receiptingDetailsForm.get('paymentRef')?.value;
-  //   const chequeType = this.receiptingDetailsForm.get('chequeType')?.value;
-  //   const documentDateControl = this.receiptingDetailsForm.get('documentDate')?.value;
-
-  //   if (paymentMode === 'CASH') {
-  //     this.receiptingDetailsForm.patchValue({ drawersBank: 'N/A' });
-  //     this.receiptingDetailsForm.get('chequeType')?.setValue(null);
-
-  //     drawersBankControl?.disable();
-  //     paymentRefControl?.disable();
-  //     drawersBankControl?.setValue(null);
-  //     paymentRefControl?.setValue(null);
-  //     this.makeFieldRequired = false;
-  //     this.showfields = false;
-  //   } else if (paymentMode === 'CHEQUE') {
-  //     this.showfields = true;
-  //     this.showChequeOptions = true;
-  //     this.makeFieldRequired = true;
-
-  //     drawersBankControl?.enable();
-  //     paymentRefControl?.enable();
-  //   } else if (paymentMode === 'CHEQUE' && chequeType === 'post_dated_cheque') {
-  //     this.makeFieldRequired = true;
-  //   } else {
-  //     this.showfields = true;
-  //     this.makeFieldRequired = true;
-  //     drawersBankControl?.enable();
-  //     paymentRefControl?.enable();
-  //     //  this.resetChequeFields(chequeTypeModal);
-  //     this.receiptingDetailsForm.get('chequeType')?.setValue(null);
-  //     //this.updateDateRestrictions();
-  //   }
-  // }
 
   updatePaymentModeFields(paymentMode: string): void {
     if (!paymentMode) {
@@ -1111,11 +1073,12 @@ const backendError= err.error?.msg ||
           //this.filteredBankAccounts = this.bankAccounts; // Initialize filtered list
         },
         error: (err) => {
-         const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
+          const customMessage = this.translate.instant('fms.errorMessage');
+          const backendError =
+            err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText;
           this.globalMessagingService.displayErrorMessage(
             customMessage,
             backendError
@@ -1197,15 +1160,16 @@ const backendError= err.error?.msg ||
             }
           },
           error: (err) => {
-           const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
+            const customMessage = this.translate.instant('fms.errorMessage');
+            const backendError =
+              err.error?.msg ||
               err.error?.error ||
               err.error?.status ||
               err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+            this.globalMessagingService.displayErrorMessage(
+              customMessage,
+              backendError
+            );
           },
         });
 
@@ -1244,14 +1208,15 @@ const backendError= err.error?.msg ||
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
       },
     });
   }
@@ -1268,17 +1233,16 @@ const backendError= err.error?.msg ||
         this.drawersBanks = data;
       },
       error: (err) => {
-       const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
-
-        
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
       },
     });
   }
@@ -1295,14 +1259,15 @@ const backendError= err.error?.msg ||
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
       },
     });
   }
@@ -1364,10 +1329,11 @@ const backendError= err.error?.msg ||
         },
         error: (err) => {
           const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
+          const backendError =
+            err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText;
           this.globalMessagingService.displayErrorMessage(
             customMessage,
             backendError
@@ -1386,15 +1352,16 @@ const backendError= err.error?.msg ||
         this.chargeList = response.data;
       },
       error: (err) => {
-       const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
       },
     });
   }
@@ -1484,14 +1451,15 @@ const backendError= err.error?.msg ||
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
       },
     });
   }
@@ -1522,15 +1490,16 @@ const backendError= err.error?.msg ||
         this.chargeList.splice(index, 1); // Remove from list
       },
       error: (err) => {
-       const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
       },
     });
   }
@@ -1625,14 +1594,15 @@ const backendError= err.error?.msg ||
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-const backendError= err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
       },
     });
     this.receiptingDetailsForm.patchValue(chargeAmount);

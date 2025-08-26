@@ -12,6 +12,7 @@ import { PdSlipPreviewComponent } from './components/pd-slip-preview/pd-slip-pre
 import { ReceiptManagementComponent } from './components/receipt-management/receipt-management.component';
 import { ReceiptPrintPreviewComponent } from './components/receipt-print-preview/receipt-print-preview.component';
 import { PreviewReceiptComponent } from './components/preview-receipt/preview-receipt.component';
+import { ReceiptPreviewGuard } from './services/receipt-preview-guard.service';
 
 
 const routes: Routes = [
@@ -42,7 +43,8 @@ const routes: Routes = [
   },
  {
   path:'receipt-preview',
-  component:ReceiptPreviewComponent
+  component:ReceiptPreviewComponent,
+   canDeactivate: [ReceiptPreviewGuard] 
  },
  {
   path:'slip-preview',
@@ -54,7 +56,9 @@ const routes: Routes = [
  },
  {
   path:'receipt-print-preview',
-  component:ReceiptPrintPreviewComponent
+  component:ReceiptPrintPreviewComponent,
+  canDeactivate: [ReceiptPreviewGuard] 
+  
  },
  {
   path:'preview-receipt',
@@ -64,6 +68,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+   providers: [ReceiptPreviewGuard]
 })
 export class FmsRoutingModule { }
