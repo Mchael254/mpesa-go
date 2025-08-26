@@ -180,6 +180,20 @@ export class ClientService {
     );
   }
 
+  getClientDetailsByClientCode(client_id): Observable<ClientDTO> {
+    return this.api.GET<ClientDTO>(
+      `v2/api/clients/${client_id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  deleteAmlRecord(id: number): Observable<{message: string}> {
+    return this.api.DELETE<{message: string}>(
+      `aml-details/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
   requestOtp(optRequestPayload: OtpRequestPayload): Observable<any> {
     return this.api.POST<any>(
       `otp/request/`,

@@ -2879,6 +2879,36 @@
         {
           "groupId": "contact_details",
           "subGroupId": "",
+          "fieldId": "branchId",
+          "type": "select",
+          "label": {
+            "en": "branch",
+            "ke": "Cheo cha Mteja",
+            "fr": "Titre du Client"
+          },
+          "dynamicLabel": null,
+          "defaultValue": null,
+          "visible": true,
+          "disabled": false,
+          "validations": [],
+          "conditions": [],
+          "order": 1,
+          "tooltip": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "placeholder": {
+            "en": "",
+            "fr": "",
+            "ke": ""
+          },
+          "isMandatory": true,
+          "options": []
+        },
+        {
+          "groupId": "contact_details",
+          "subGroupId": "",
           "fieldId": "titleId",
           "type": "select",
           "label": {

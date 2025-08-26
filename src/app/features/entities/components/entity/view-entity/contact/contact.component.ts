@@ -56,7 +56,7 @@ export class ContactComponent implements OnInit {
     this.utilService?.currentLanguage.subscribe(lang => {
       this.language = lang;
     });
-    log.info('form fields config >>> ', this.formFieldsConfig);
+    // log.info('form fields config >>> ', this.formFieldsConfig);
   }
 
   ngOnInit(): void {
@@ -83,15 +83,16 @@ export class ContactComponent implements OnInit {
   fetchSelectOptions(): void {
     forkJoin({
       branches: this.branchService.getAllBranches(),
-      contactChannels: this.accountService.getPreferredCommunicationChannels(),
+      contactChannels: this.accountService.getCommunicationChannels(),
     }).subscribe({
       next: data => {
-        this.branches = data.branches
-        this.contactChannels = data.contactChannels
+        this.branches = data.branches;
+        this.contactChannels = data.contactChannels;
         if (this.contactDetailsConfig) this.setSelectOptions(
           data.branches,
           data.contactChannels,
         );
+        log.info('branches | contact channels >>> ', data);
       },
       error: err => {
         const errorMessage = err?.error?.message ?? err.message;
@@ -105,6 +106,11 @@ export class ContactComponent implements OnInit {
     branches: OrganizationBranchDto[],
     contactChannels: AccountsEnum[],
   ): void {
+
+    log.info('client titles >>> ', this.clientTitles);
+    log.info('branches >>> ', branches);
+    log.info('contactChannels >>> ', contactChannels);
+
     this.formFieldsConfig.fields.forEach(field => {
       switch (field.fieldId) {
         case 'title':
@@ -146,7 +152,7 @@ export class ContactComponent implements OnInit {
       smsNumber: this.contactDetails?.smsNumber,
       telNumber: this.contactDetails?.phoneNumber,
       email: this.contactDetails?.emailAddress,
-      contactChannel: this.contactDetails?.contactChannel
+      contactChannel: (this.contactDetails?.contactChannel).toUpperCase()
     }
     this.editForm?.patchValue(patchData);
     log.info(`patched form >>> `, this.editForm, patchData);

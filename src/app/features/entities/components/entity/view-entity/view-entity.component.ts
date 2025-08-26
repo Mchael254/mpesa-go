@@ -30,17 +30,17 @@ import {
   CountryDto,
   StateDto,
 } from '../../../../../shared/data/common/countryDto';
-import { Bank } from '../../../data/BankDto';
 import { BankService } from '../../../../../shared/services/setups/bank/bank.service';
 import { BankBranchDTO } from '../../../../../shared/data/common/bank-dto';
 import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
 import {HttpClient} from "@angular/common/http";
 import {PrimeIdentityComponent} from "./prime-identity/prime-identity.component";
-import {MaritalStatusService} from "../../../../../shared/services/setups/marital-status/marital-status.service";
 import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
 import {ContactComponent} from "./contact/contact.component";
 import {AddressComponent} from "./address/address.component";
 import {FinancialComponent} from "./financial/financial.component";
+import {ClientService} from "../../../services/client/client.service";
+import {WealthAmlComponent} from "./wealth-aml/wealth-aml.component";
 
 const log = new Logger('ViewEntityComponent');
 
@@ -57,6 +57,7 @@ export class ViewEntityComponent implements OnInit {
   @ViewChild('contactRef') contactComponent!: ContactComponent;
   @ViewChild('addressRef') addressComponent!: AddressComponent;
   @ViewChild('financialRef') financialComponent!: FinancialComponent;
+  @ViewChild('wealthAmlRef') wealthAmlComponent!: WealthAmlComponent;
 
   entityTransactions: EntityTransactionsComponent;
 
@@ -132,6 +133,8 @@ export class ViewEntityComponent implements OnInit {
     maritalStatuses: MaritalStatus[]
   } = undefined
 
+  clientDetails: ClientDTO;
+
   constructor(
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
@@ -142,10 +145,10 @@ export class ViewEntityComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private countryService: CountryService,
     private bankService: BankService,
-    private maritalStatusService: MaritalStatusService,
     private globalMessagingService: GlobalMessagingService,
     private utilService: UtilService,
     private http: HttpClient,
+    private clientService: ClientService,
   ) {
     this.spinner.show();
     this.selectedRole = {};
@@ -186,7 +189,7 @@ export class ViewEntityComponent implements OnInit {
           item.tabs = item.tabs.sort((a, b) => a.order - b.order);
         })
 
-        log.info(`primary tabs >>> `, this.primaryTabs, this.secondaryTabs);
+        // log.info(`primary tabs >>> `, this.primaryTabs, this.secondaryTabs);
       },
       error: err => {
         log.error(err);
@@ -284,6 +287,20 @@ export class ViewEntityComponent implements OnInit {
       });
 
     this.getPartyAccountDetailByAccountId(this.accountCode);
+    this.getClientDetails(this.accountCode);
+  }
+
+  getClientDetails(clientCode: number) {
+    this.clientService.getClientDetailsByClientCode(clientCode).subscribe({
+      next: (res) => {
+        // log.info('clientDetails >>> ', res);
+        // this.populateDetailsForDisplay(res);
+        this.clientDetails = res;
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', 'Could not fetch client details');
+      },
+    })
   }
 
   /***
@@ -291,12 +308,13 @@ export class ViewEntityComponent implements OnInit {
    * @param id representing account code
    */
   getPartyAccountDetailByAccountId(id: number) {
-    /*let accountType =  this.entityAccountIdDetails.find(account =>  account.id == id);
-        this.accountService.getAccountDetailsByAccountCode(accountType?.accountCode)*/
+    let accountType =  this.entityAccountIdDetails.find(account =>  account.id == id);
+        this.accountService.getAccountDetailsByAccountCode(accountType?.accountCode)
     this.accountService
       .getAccountDetailsByAccountCode(this.accountCode)
       .pipe(takeUntil(this.destroyed$))
       .subscribe((data: PartyAccountsDetails) => {
+        this.partyAccountDetails = data;
         // this.accountService.setCurrentAccounts(accountType);
         this.populateDetailsForDisplay(data);
       });
@@ -309,7 +327,7 @@ export class ViewEntityComponent implements OnInit {
       partyAccountDetails
     );
     this.getMainCityStateBy(partyAccountDetails?.address.country_id);
-    this.partyAccountDetails = partyAccountDetails;
+    // this.partyAccountDetails = partyAccountDetails;
     this.accountService.setCurrentAccounts(partyAccountDetails);
     // this.getPaymentDetails(partyAccountDetails);
     this.wealthAmlDetails = partyAccountDetails?.wealthAmlDetails;
@@ -618,8 +636,8 @@ export class ViewEntityComponent implements OnInit {
       case 'financial':
         this.financialComponent.openEditFinancialDialog();
         break;
-      case 'wealthAml':
-        this.addressComponent.openEditAddressDialog();
+      case 'wealth_aml':
+        this.wealthAmlComponent.openEditWealthAmlDialog(false);
         break;
       default:
           // do something
