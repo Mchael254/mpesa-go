@@ -1224,10 +1224,11 @@
                             Add Perils
                         </button>
 
-                        <i class="pi border border-black p-1 rounded-1 text-black mb-1" [ngClass]="{
-                            'pi-caret-up': showSections,
-                            'pi-caret-down': !showSections
-                            }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
+                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                            [ngClass]="{ 'pi-caret-up': showExcesses, 'pi-caret-down': !showExcesses }"
+                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                            (click)="togglePerilColumns(iconTrigger)">
+                        </i>
                     </div>
 
                     <!-- excess action tabs -->
@@ -1248,10 +1249,11 @@
                             Add Tax
                         </button>
 
-                        <i class="pi border border-black p-1 rounded-1 text-black mb-1" [ngClass]="{
-                            'pi-caret-up': showSections,
-                            'pi-caret-down': !showSections
-                            }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i>
+                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                            [ngClass]="{ 'pi-caret-up': showExcesses, 'pi-caret-down': !showExcesses }"
+                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                            (click)="toggleTaxesColumns(iconTrigger)">
+                        </i>
                     </div>
 
 
@@ -1273,7 +1275,8 @@
                 <div *ngFor="let col of clauseColumns">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" style="color: #00529B;"
-                            [(ngModel)]="col.visible"  (change)="toggleClauseColumnVisibility(col.field)" [id]="col.field">
+                            [(ngModel)]="col.visible" (change)="toggleClauseColumnVisibility(col.field)"
+                            [id]="col.field">
                         <label class="form-check-label" [for]="col.field">
                             {{ col.header }}
                         </label>
@@ -1369,8 +1372,6 @@
                         </td>
                     </tr>
                 </ng-template>
-
-
 
                 <!--Empty Table Body -->
                 <ng-template pTemplate="emptymessage">
@@ -1581,7 +1582,8 @@
                 <div *ngFor="let col of limitsOfLiabilityColumns">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" style="color: #00529B;"
-                            [(ngModel)]="col.visible" (change)="toggleLimitsColumnVisibility(col.field)" [id]="col.field">
+                            [(ngModel)]="col.visible" (change)="toggleLimitsColumnVisibility(col.field)"
+                            [id]="col.field">
                         <label class="form-check-label" [for]="col.field">
                             {{ col.header }}
                         </label>
@@ -1864,89 +1866,113 @@
 
 
         <!-- perils -->
+        <!-- Floating Column Selector -->
+        <div *ngIf="showPerilColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong class="text-primary">Select Columns</strong>
+                <button class="btn-close btn-sm" (click)="showPerilColumnModal = false"></button>
+            </div>
+            <div style="max-height: 250px; overflow-y: auto;">
+                <div *ngFor="let col of perilColumns">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                            [(ngModel)]="col.visible" (change)="togglePerilColumnVisibility(col.field)"
+                            [id]="col.field">
+                        <label class="form-check-label" [for]="col.field">
+                            {{ col.header }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div *ngIf="riskActiveTab === 'riskPerils'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-2 w-100">
 
             <!-- perils table -->
             <p-table #perilTable [value]="addedPerils" dataKey="code" [paginator]="true" [rows]="3"
-                [rowsPerPageOptions]="[3, 5, 10]" [globalFilterFields]="['narration', 'value']" [scrollable]="true"
-                scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3">
+                [rowsPerPageOptions]="[3, 5, 10]" [scrollable]="true" scrollDirection="horizontal"
+                responsiveLayout="scroll" class="mt-3">
                 <!-- Table Header -->
                 <ng-template pTemplate="header">
                     <tr>
-                        <th pSortableColumn="narration" style="width: 15%">
-                            ID <p-sortIcon field="narration" />
+                        <th *ngFor="let col of perilColumns" [hidden]="!col.visible" class="px-3"
+                            [pSortableColumn]="col.field">
+
+                            <div class="flex items-center justify-between">
+                                <span>{{ col.header }}</span>
+                                <p-sortIcon [field]="col.field"></p-sortIcon>
+                            </div>
+
                         </th>
-                        <th pSortableColumn="value" style="width: 35%">
-                            Description <p-sortIcon field="value" />
-                        </th>
-                        <th pSortableColumn="value" style="width: 35%">
-                            Section <p-sortIcon field="value" />
-                        </th>
-                        <th style="width: 15%">Actions</th>
                     </tr>
-                    <tr class="py-2">
-                        <td class="px-3">
-                            <input class="form-control form-control-sm my-1" pInputText #narrationFilter type="text"
-                                (input)="perilTable.filterGlobal(narrationFilter.value, 'contains')"
-                                style="width: 100%;" />
-                        </td>
-                        <td class="px-3">
-                            <input class="form-control form-control-sm my-1" pInputText #valueFilter type="text"
-                                (input)="perilTable.filterGlobal(valueFilter.value, 'contains')" style="width: 80%;" />
-                        </td>
-                        <td class="px-3">
-                            <input class="form-control form-control-sm my-1" pInputText #valueFilter type="text"
-                                (input)="perilTable.filterGlobal(valueFilter.value, 'contains')" style="width: 80%;" />
-                        </td>
-                        <td></td>
+                    <tr>
+                        <th *ngFor="let col of perilColumns" [hidden]="!col.visible" class="px-3">
+                            <input *ngIf="col.filterable !== false" class="form-control form-control-sm" pInputText
+                                type="text"
+                                (input)="perilTable.filter($event.target['value'], col.field, 'contains')" />
+                        </th>
                     </tr>
                 </ng-template>
+
 
                 <!-- Table Body -->
                 <ng-template pTemplate="body" let-peril>
                     <tr>
-                        <td style="width: 15%"> {{peril.perilShortDescription}} </td>
-                        <td style="width: 35%" class="position-relative">
-                            <div class="clause-wrapper">
-                                {{ peril.description | truncate:10 | sentenceCase }}
-                                <div class="hover-card">
-                                    {{ peril.description | sentenceCase }}
-                                </div>
-                            </div>
-                        </td>
-                        <td style="width: 35%">{{ peril.sumInsuredOrLimitDesc }}</td>
-                        <td style="width: 15%; text-align: left">
-                            <div class="flex justify-start gap-2">
-                                <!-- Edit -->
-                                <span class="p-button-label p-text-bold"
-                                    style="color: #00529B; cursor: pointer; display: inline-block; width: 60px"
-                                    (click)="populatePerilEditModal(peril)">
-                                    {{ 'gis.quotation.edit' | translate }}
-                                </span>
+                        <td *ngFor="let col of perilColumns" [hidden]="!col.visible">
+                            <ng-container [ngSwitch]="col.field">
 
-                                <!-- Delete -->
-                                <span class="p-button-label p-text-bold" style="color: #00529B; cursor: pointer"
-                                    data-bs-toggle="modal" data-bs-target="#deletePeril"
-                                    (click)="prepareDeletePeril(peril)">
-                                    {{ 'gis.quotation.delete' | translate }}
-                                </span>
-                            </div>
-                        </td>
+                                <!-- Description (with hover card) -->
+                                <ng-container *ngSwitchCase="'description'">
+                                    <div class="clause-wrapper">
+                                        {{ peril.description | truncate:5 | sentenceCase }}
+                                        <div class="hover-card">
+                                            {{ peril.description | sentenceCase }}
+                                        </div>
+                                    </div>
+                                </ng-container>
 
+                                <!-- Actions -->
+                                <ng-container *ngSwitchCase="'actions'">
+                                    <div class="flex justify-start gap-2">
+                                        <!-- Edit -->
+                                        <span class="p-button-label p-text-bold"
+                                            style="color: #00529B; cursor: pointer; display: inline-block; width: 60px"
+                                            (click)="populatePerilEditModal(peril)">
+                                            {{ 'gis.quotation.edit' | translate }}
+                                        </span>
+
+                                        <!-- Delete -->
+                                        <span class="p-button-label p-text-bold" style="color: #00529B; cursor: pointer"
+                                            data-bs-toggle="modal" data-bs-target="#deletePeril"
+                                            (click)="prepareDeletePeril(peril)">
+                                            {{ 'gis.quotation.delete' | translate }}
+                                        </span>
+
+                                    </div>
+                                </ng-container>
+
+                                <!-- Default columns added dynamically) -->
+                                <ng-container *ngSwitchDefault>
+                                    {{ peril[col.field] }}
+                                </ng-container>
+
+                            </ng-container>
+                        </td>
                     </tr>
                 </ng-template>
 
                 <!-- empty table and no search -->
-                <ng-template pTemplate="emptymessage">
+               <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td colspan="4" class="text-center p-4 text-muted">
+                        <td [attr.colspan]="perilColumns.length" class="text-center p-4 text-muted">
                             <ng-container *ngIf="addedPerils?.length > 0; else noClauses">
                                 <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                <p>No matching clauses found.</p>
+                                <p>No matching limits of liability found.</p>
                             </ng-container>
                             <ng-template #noClauses>
-                                <p><strong>No perils available.</strong> Click on Add Perils to add</p>
+                                <p><strong>No limits of liability available.</strong> There are currently no
+                                    limits of liability to add.</p>
                             </ng-template>
                         </td>
                     </tr>
@@ -2220,7 +2246,6 @@
         </div>
 
         <!-- Add tax modal -->
-
         <div *ngIf="showTaxModal" class="modal  d-block" tabindex="-1" role="dialog"
             style="background: transparent !important;">
             <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width:700px" role="document">
@@ -2368,7 +2393,6 @@
             </div>
         </div>
 
-
         <!-- Edit Tax Modal -->
         <div *ngIf="showEditTaxModal" class="modal  d-block" tabindex="-1" role="dialog"
             style="background: transparent !important;">
@@ -2451,126 +2475,111 @@
         </div>
 
         <!-- TAXES -->
+        <!-- Floating Column Selector -->
+        <div *ngIf="showTaxesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong class="text-primary">Select Columns</strong>
+                <button class="btn-close btn-sm" (click)="showTaxesColumnModal = false"></button>
+            </div>
+
+            <div style="max-height: 250px; overflow-y: auto;">
+                <div *ngFor="let col of taxesColumns">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                            [(ngModel)]="col.visible" (change)="toggleTaxesColumnVisibility(col.field)"
+                            [id]="col.field">
+                        <label class="form-check-label" [for]="col.field">{{ col.header }}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div *ngIf="riskActiveTab === 'riskTaxes'" role="tabpanel" aria-labelledby="nav-taxes" tabindex="0"
             [@slideInOut]="isClausesOpen ? 'open' : 'closed'">
-            <p-table [value]="taxDetails" #taxTable class="ui-datatable" responsiveLayout="scroll" [autoLayout]="true"
-                [scrollable]="true" scrollHeight="200px">
+
+            <p-table #taxTable [value]="taxDetails" dataKey="code" [paginator]="true" [rows]="3"
+                [rowsPerPageOptions]="[3, 5, 10]" [scrollable]="true" scrollDirection="horizontal"
+                responsiveLayout="scroll" class="mt-3">
+                <!-- Table Header -->
                 <ng-template pTemplate="header">
                     <tr>
+                        <th *ngFor="let col of taxesColumns" [hidden]="!col.visible" class="px-3"
+                            [pSortableColumn]="col.field">
 
-                        <th class="flexible-header" pSortableColumn="taxType">
-                            Tax payer
-                            <p-sortIcon field="taxType"></p-sortIcon>
+                            <div class="flex items-center justify-between">
+                                <span>{{ col.header }}</span>
+                                <p-sortIcon [field]="col.field"></p-sortIcon>
+                            </div>
+
                         </th>
-
-
-                        <th class="flexible-header" pSortableColumn="rateDescription">
-                            <span class="sort-header">
-                                Short description
-                                <p-sortIcon field="rateDescription"></p-sortIcon>
-                            </span>
+                    </tr>
+                    <tr>
+                        <th *ngFor="let col of taxesColumns" [hidden]="!col.visible" class="px-3">
+                            <input *ngIf="col.filterable !== false" class="form-control form-control-sm" pInputText
+                                type="text" (input)="taxTable.filter($event.target['value'], col.field, 'contains')" />
                         </th>
-
-
-                        <th class="flexible-header" pSortableColumn="rateDescription">
-
-                            <span class="sort-header">
-                                Tax description
-                                <p-sortIcon field="rateDescription"></p-sortIcon>
-                            </span>
-                        </th>
-
-
-                        <th class="flexible-header" pSortableColumn="rate">
-                            Rate
-                            <p-sortIcon field="rate"></p-sortIcon>
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="taxAmount">
-                            Tax amount
-                            <p-sortIcon field="taxAmount"></p-sortIcon>
-                        </th>
-                        <th class="flexible-header" pSortableColumn="rateType">
-                            Rate type
-                            <p-sortIcon field="rateType"></p-sortIcon>
-                        </th>
-                        <th class="flexible-header" pSortableColumn="taxType">
-                            Tax type
-                            <p-sortIcon field="taxType"></p-sortIcon>
-                        </th>
-                        <th></th>
-
                     </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-data let-columns="columns" let-rowIndex="rowIndex">
-                    <ng-container *ngIf="rowIndex === 0">
-                        <tr>
-
-                            <td class="flexible-header">
-                                <input type="text" pInputText placeholder="" class="form-control w-70"
-                                    (input)="filterTable($event, 'taxType', taxTable)" />
-                            </td>
-                            <td class="flexible-header">
-                                <input type="text" pInputText placeholder="" class="form-control w-70"
-                                    (input)="filterTable($event, 'rateDescription', taxTable)" />
-                            </td>
-                            <td class="flexible-header">
-                                <input type="text" pInputText placeholder="" class="form-control w-70"
-                                    (input)="filterTable($event, 'rateDescription', taxTable)" />
-                            </td>
-                            <td class="flexible-header">
-                                <input type="text" pInputText placeholder="" class="form-control w-70"
-                                    (input)="filterTable($event, 'rate', taxTable)" />
-                            </td>
-                            <td class="flexible-header">
-                                <input type="text" pInputText placeholder="" class="form-control w-70"
-                                    (input)="filterTable($event, 'taxAmount', taxTable)" />
-                            </td>
-                            <td class="flexible-header">
-                                <input type="text" pInputText placeholder="" class="form-control w-70"
-                                    (input)="filterTable($event, 'rateType', taxTable)" />
-                            </td>
-                            <td class="flexible-header">
-                                <input type="text" pInputText placeholder="" class="form-control w-70"
-                                    (input)="filterTable($event, 'taxType', taxTable)" />
-                            </td>
-                            <td></td>
 
 
-                        </tr>
-                    </ng-container>
-                    <tr [pSelectableRow]="data">
-                        <td>{{ data.taxType }}</td>
-                        <td>{{ data.rateDescription }}</td>
-                        <td>{{ data.rateDescription }}</td>
-                        <td>{{ data.rate }}</td>
-                        <td>{{ data.taxAmount }}</td>
-                        <td>{{data.rateType}}</td>
-                        <td>{{ data.taxType }}</td>
+                <!-- Table Body -->
+                <ng-template pTemplate="body" let-tax>
+                    <tr>
+                        <td *ngFor="let col of taxesColumns" [hidden]="!col.visible">
+                            <ng-container [ngSwitch]="col.field">
 
-                        <td class="d-flex align-items-center">
-                            <button class="btn btn-sm text-primary me-2 fw-bold" (click)="openEditTaxModalFromDB(data)">
-                                Edit
-                            </button>
-                            <button class="btn btn-sm text-primary fw-bold" (click)="deleteTaxes(data)">
-                                Delete
-                            </button>
+                                <!-- Default columns added dynamically) -->
+                                <ng-container *ngSwitchDefault>
+                                    {{ tax[col.field] }}
+                                </ng-container>
+
+                                <!-- Actions -->
+                                <ng-container *ngSwitchCase="'actions'">
+                                    <div class="flex justify-start gap-2">
+                                        <!-- Edit -->
+                                        <span class="p-button-label p-text-bold"
+                                            style="color: #00529B; cursor: pointer; display: inline-block; width: 60px"
+                                            (click)="openEditTaxModalFromDB(tax)">
+                                            {{ 'gis.quotation.edit' | translate }}
+                                        </span>
+
+                                        <!-- Delete -->
+                                        <span class="p-button-label p-text-bold" style="color: #00529B; cursor: pointer"
+                                            (click)="deleteTaxes(tax)">
+                                            {{ 'gis.quotation.delete' | translate }}
+                                        </span>
+
+                                    </div>
+                                </ng-container>
+
+                            </ng-container>
                         </td>
                     </tr>
                 </ng-template>
+
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td colspan="9" class="text-center text-muted py-3">
-                            “No taxes. Click on ‘Add Tax’ to add a new tax.”
+                        <td [attr.colspan]="taxesColumns.length" class="text-center p-4 text-muted">
+                            <ng-container *ngIf="taxesColumns?.length > 0; else noTaxes">
+                                <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                <p>No taxes found.</p>
+                            </ng-container>
+                            <ng-template #noTaxes>
+                                “No taxes. Click on ‘Add Tax’ to add a new tax.”
+                            </ng-template>
                         </td>
                     </tr>
                 </ng-template>
+
             </p-table>
+
+
         </div>
 
 
         <!-- excesses -->
-
         <!-- Floating Column Selector -->
         <div *ngIf="showExcessesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
             [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
@@ -2582,7 +2591,8 @@
                 <div *ngFor="let col of excessesColumns">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" style="color: #00529B;"
-                            [(ngModel)]="col.visible" (change)="toggleExcessColumnVisibility(col.field)" [id]="col.field">
+                            [(ngModel)]="col.visible" (change)="toggleExcessColumnVisibility(col.field)"
+                            [id]="col.field">
                         <label class="form-check-label" [for]="col.field">
                             {{ col.header }}
                         </label>
