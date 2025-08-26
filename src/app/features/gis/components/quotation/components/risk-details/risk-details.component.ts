@@ -295,6 +295,9 @@ export class RiskDetailsComponent {
   showExcessesColumnModal = false;
   excessesColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
 
+  showPerils: boolean = true;
+  showPerilColumnModal = false;
+  perilColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
   addedPerils: any[] = [];
   allPerilsMap: { [key: string]: any[] } = {};
   selectedPeril: any = null;
@@ -330,6 +333,9 @@ export class RiskDetailsComponent {
   showTaxModal = false;
   quotationView: QuotationDetails;
   taxDetails: TaxInformation[] = [];
+  showTaxes: boolean = true;
+  showTaxesColumnModal = false;
+  taxesColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
 
 
 
@@ -557,7 +563,11 @@ export class RiskDetailsComponent {
 
           // ✅ Tax Information
           this.taxDetails = productDetails?.taxInformation || [];
-          log.debug("tax details", this.taxDetails)
+          log.debug("taxDetailsr", this.taxDetails);
+          if (this.taxDetails.length > 0) {
+            this.setTaxesColumns(this.taxDetails[0]);
+            log.debug("taxcolumns", this.taxDetails)
+          }
 
           curentlySavedRisk && this.handleRowClick(curentlySavedRisk)
           log.debug("Risk information specific to the selected product:", this.riskDetails)
@@ -4443,6 +4453,67 @@ export class RiskDetailsComponent {
 
 
   //Perils
+  savePerilColumnsToSession(): void {
+    if (this.perilColumns) {
+      const visibility = this.perilColumns.map(col => ({
+        field: col.field,
+        visible: col.visible
+      }));
+      sessionStorage.setItem('perilColumns', JSON.stringify(visibility));
+    }
+  }
+
+  togglePerilColumnVisibility(field: string) {
+    this.savePerilColumnsToSession();
+  }
+
+  togglePerilColumns(iconElement: HTMLElement): void {
+    this.showPerils = !this.showPerils;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showPerilColumnModal = true;
+  }
+
+  setPerilColumns(excess: Excesses) {
+    const excludedFields = [];
+
+    this.perilColumns = Object.keys(excess)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: this.defaultVisiblePerilFields.includes(key),
+        filterable: true
+      }));
+
+    this.perilColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
+
+    const saved = sessionStorage.getItem('perilColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.perilColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
+
+    log.debug("perilColumns", this.perilColumns);
+  }
+
+  defaultVisiblePerilFields = ['code', 'subclassCode', 'sectionCode', 'sectionShortDescription', 'perCode', 'shortDescription', 'description', 'sectionDescription', 'excess', 'excessMin', 'excessMax', 'personLimit', 'perilLimit', 'claimLimit',
+    'tlExcessType', 'plExcessType', 'expireOnClaim', 'multiplier', 'claimExcessType', 'tlExcess', 'tlExcessMin', 'tlExcessMax',
+    'plExcess', 'plExcessMin', 'plExcessMax', 'claimExcessMin', 'claimExcessMax', 'dependLossType', 'benefitPerPeriod']
+
+
   loadQuotationPerils(): void {
     const riskCode = this.quotationRiskCode;
 
@@ -4508,6 +4579,10 @@ export class RiskDetailsComponent {
     if (savedAvailable) {
       this.perils = JSON.parse(savedAvailable);
       console.log(`Loaded available perils for subclass ${subclassCode} from session:`, this.perils);
+      if (this.perils.length > 0) {
+        this.setPerilColumns(this.perils[0]);
+      }
+
     } else {
       this.quotationService.getSubclassSectionPeril(subclassCode, 0, 10)
         .subscribe({
@@ -4520,6 +4595,9 @@ export class RiskDetailsComponent {
             }
 
             sessionStorage.setItem(sessionKey, JSON.stringify(this.perils));
+            if (this.perils.length > 0) {
+              this.setPerilColumns(this.perils[0]);
+            }
             console.log(`Fetched available perils for subclass ${subclassCode} from API:`, this.perils);
           },
           error: (err) => {
@@ -5198,6 +5276,8 @@ export class RiskDetailsComponent {
     return schedulePayloadL2;
   }
 
+
+  //taxes
   createTaxForm() {
     this.taxForm = this.fb.group({
       tax: ['', Validators.required],
@@ -5213,6 +5293,66 @@ export class RiskDetailsComponent {
     });
   }
 
+  saveTaxesColumnsToSession(): void {
+    if (this.taxesColumns) {
+      const visibility = this.taxesColumns.map(col => ({
+        field: col.field,
+        visible: col.visible
+      }));
+      sessionStorage.setItem('taxesColumns', JSON.stringify(visibility));
+    }
+  }
+
+  toggleTaxesColumnVisibility(field: string) {
+    this.saveTaxesColumnsToSession();
+  }
+
+  toggleTaxesColumns(iconElement: HTMLElement): void {
+    this.showTaxes = !this.showTaxes;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showTaxesColumnModal = true;
+  }
+
+  setTaxesColumns(tax: any) {
+    const excludedFields = [];
+    this.taxesColumns = Object.keys(tax)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: this.defaultVisibleTaxesFields.includes(key),
+        filterable: true
+      }));
+
+    this.taxesColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
+
+    // Restore visibility from sessionStorage
+    const saved = sessionStorage.getItem('taxesColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.taxesColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
+
+    log.debug("taxesColumns", this.taxesColumns);
+  }
+
+  defaultVisibleTaxesFields = ['code', 'levelCode', 'productCode', 'quotationCode', 'rate', 'rateDescription', 'rateType',
+    'renewalEndorsement', 'riskProductLevel', 'taxAmount', 'taxRateCode', 'transactionCode'
+  ];
+
   openEditTaxModal() {
     if (!this.selectedProduct) {
       this.globalMessagingService.displayErrorMessage('Missing Product', 'Please select a product before editing tax.');
@@ -5226,17 +5366,10 @@ export class RiskDetailsComponent {
   }
 
 
-
-
-
-
-
   filterTable(event: Event, field: string, tableRef: any) {
     const input = (event.target as HTMLInputElement).value;
     tableRef.filter(input, field, 'contains');
   }
-
-
 
   getProductTaxes() {
     this.taxes = [];
@@ -5248,6 +5381,10 @@ export class RiskDetailsComponent {
 
         this.taxes = res._embedded;
         log.debug('Taxes', this.taxes)
+        if (this.taxes.length > 0) {
+          this.setExcessesColumns(this.taxes[0]);
+        }
+        return;
       });
     } else {
       console.warn("Missing productCode or subClassCode for a risk:",);
@@ -5255,9 +5392,6 @@ export class RiskDetailsComponent {
 
 
   }
-
-
-
 
   getTransactionTypes() {
 
@@ -5317,6 +5451,8 @@ export class RiskDetailsComponent {
         this.taxForm.reset();
         this.selectedTax = null;
         this.isEditingTax = false;
+
+
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage('Error', 'Failed to add tax');
@@ -5559,6 +5695,7 @@ export class RiskDetailsComponent {
       this.getProductTaxes();
     }
   }
+
   loadTaxDetails() {
     if (!this.selectedProduct) {
       log.debug('[RiskDetailsComponent] No product selected, cannot load tax details.');
@@ -5576,18 +5713,18 @@ export class RiskDetailsComponent {
     const matchingProduct = this.quotationView.quotationProducts.find(
       (product: any) => product.code === quotationProductCode
     );
-
+    log.debug("Tax Details:", this.taxDetails);
     if (matchingProduct) {
       this.taxDetails = matchingProduct.taxInformation;
-      log.debug("Tax Details:", this.taxDetails);
+
+
+
     } else {
       log.debug("No matching product found for code:", quotationProductCode);
     }
   }
 
   deleteTaxes(tax: any) {
-
-
     this.quotationService.deleteProductTaxes(tax.code).subscribe({
       next: (res) => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Tax successfully deleted');
