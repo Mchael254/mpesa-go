@@ -78,7 +78,7 @@ export class PrimeIdentityComponent implements OnInit {
         pinNumber: this.partyAccountDetails.pinNumber,
         dateOfBirth: this.partyAccountDetails.dateOfBirth,
         address: this.partyAccountDetails.address,
-        gender: this.clientDetails?.gender == 'M' ? 'Male' : 'Female',
+        gender: this.clientDetails?.gender == 'M' ? 'male' : 'female',
         maritalStatus: this.partyAccountDetails.status,
         country: this.partyAccountDetails.country,
         wealthAmlDetails: this.partyAccountDetails.wealthAmlDetails,
@@ -156,13 +156,15 @@ export class PrimeIdentityComponent implements OnInit {
   patchFormValues(): void {
     // patch form values
     const dob = this.partyAccountDetails?.dateOfBirth; // from api >>> "2007-04-10T00:00:00.000+00:00"
+    const gender = (this.primeDetails?.gender[0]).toUpperCase() === 'M' ? 'male' : 'female';
+
     const patchData = {
       id_type: this.primeDetails?.modeOfIdentity.name,
       id_number: this.primeDetails?.modeOfIdentityNumber,
       pin_number: this.primeDetails?.pinNumber,
       dob: new Date(dob).toISOString().split('T')[0],
       citizenship: this.primeDetails?.citizenshipCountryId, // todo: not available from backend
-      gender: this.primeDetails?.gender, // todo: not available from backend
+      gender: gender,
       marital_status: this.primeDetails.maritalStatus // todo: not available from backend
     }
     this.editForm.patchValue(patchData)
