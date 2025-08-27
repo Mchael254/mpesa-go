@@ -44,6 +44,7 @@
             entityAccountIdDetails &&
             clientDetails &&
             unAssignedPartyTypes &&
+            clientDetails &&
             tab.title === 'overview'
           "
           >
@@ -52,6 +53,7 @@
               [partyAccountDetails]="partyAccountDetails"
               [entityAccountIdDetails]="entityAccountIdDetails"
               [entityPartyIdDetails]="entityPartyIdDetails"
+              [clientDetails]="clientDetails"
               (assignRole)="onAssignRole($event)"
               (partyTypeRole)="selectPartyTypeRole($event)"
               [overviewConfig]="tab"
