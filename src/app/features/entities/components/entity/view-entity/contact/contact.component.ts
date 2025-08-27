@@ -31,7 +31,8 @@ export class ContactComponent implements OnInit {
   @Input() contactDetails: any;
   @Input() accountCode: number;
 
-  clientTitle$: Observable<ClientTitleDTO[]>;
+  clientTitles$: Observable<ClientTitleDTO[]>;
+  branches$: Observable<OrganizationBranchDto[]>;
 
   // contactDetailsConfig: any;
   language: string = 'en';
@@ -39,6 +40,7 @@ export class ContactComponent implements OnInit {
   clientTitle: ClientTitleDTO;
   clientTitles: ClientTitleDTO[];
   branches: OrganizationBranchDto[];
+  selectedBranch: OrganizationBranchDto;
   contactChannels: AccountsEnum[];
 
   protected readonly CountryISO = CountryISO;
@@ -61,14 +63,17 @@ export class ContactComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchSelectOptions();
-    this.clientTitle$ = this.clientService.getClientTitles();
+
+    this.clientTitles$ = this.clientService.getClientTitles();
+    this.branches$ = this.branchService.getAllBranches();
     this.initData();
+
     if (this.formFieldsConfig.fields.length > 0) this.createEditForm(this.formFieldsConfig.fields);
   }
 
 
   initData(): void {
-    this.clientTitle$.subscribe({
+    this.clientTitles$.subscribe({
       next: (res: ClientTitleDTO[]) => {
         this.clientTitles = res;
         const index =  res.findIndex(title =>  title.id === this.contactDetails?.titleId)
@@ -92,7 +97,6 @@ export class ContactComponent implements OnInit {
           data.branches,
           data.contactChannels,
         );
-        log.info('branches | contact channels >>> ', data);
       },
       error: err => {
         const errorMessage = err?.error?.message ?? err.message;
@@ -106,11 +110,6 @@ export class ContactComponent implements OnInit {
     branches: OrganizationBranchDto[],
     contactChannels: AccountsEnum[],
   ): void {
-
-    log.info('client titles >>> ', this.clientTitles);
-    log.info('branches >>> ', branches);
-    log.info('contactChannels >>> ', contactChannels);
-
     this.formFieldsConfig.fields.forEach(field => {
       switch (field.fieldId) {
         case 'title':
@@ -147,7 +146,7 @@ export class ContactComponent implements OnInit {
 
   patchFormValues(): void {
     const patchData = {
-      branch: this.contactDetails?.branch ,
+      branch: this.contactDetails?.branchId,
       title: this.clientTitle?.id,
       smsNumber: this.contactDetails?.smsNumber,
       telNumber: this.contactDetails?.phoneNumber,
@@ -155,7 +154,6 @@ export class ContactComponent implements OnInit {
       contactChannel: (this.contactDetails?.contactChannel).toUpperCase()
     }
     this.editForm?.patchValue(patchData);
-    log.info(`patched form >>> `, this.editForm, patchData);
   }
 
   editContactDetails(): void {
@@ -167,6 +165,7 @@ export class ContactComponent implements OnInit {
       phoneNumber: formValues.telNumber?.internationalNumber,
       emailAddress: formValues.email,
       contactChannel: formValues.contactChannel,
+      branchId: formValues.branch,
 
     }
 
@@ -174,6 +173,9 @@ export class ContactComponent implements OnInit {
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
         this.contactDetails = data.contactDetails;
+        this.contactDetails.branchName = data.organizationBranchName
+        this.contactDetails.branchId = data.organizationBranchId
+        log.info('updated contact details >>> ', this.contactDetails)
         this.initData();
       },
       error: err => {

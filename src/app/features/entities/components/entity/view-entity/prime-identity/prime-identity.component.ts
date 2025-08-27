@@ -30,6 +30,7 @@ export class PrimeIdentityComponent implements OnInit {
   @Input() entityPartyIdDetails: ReqPartyById;
   @Input() primeDetailsConfig: any
   @Input() formFieldsConfig: any;
+  @Input() clientDetails: any;
   @Input() selectOptions: {
     idTypes: IdentityModeDTO[],
     countries: CountryDto[],
@@ -77,7 +78,7 @@ export class PrimeIdentityComponent implements OnInit {
         pinNumber: this.partyAccountDetails.pinNumber,
         dateOfBirth: this.partyAccountDetails.dateOfBirth,
         address: this.partyAccountDetails.address,
-        gender: this.partyAccountDetails.gender,
+        gender: this.clientDetails?.gender == 'M' ? 'male' : 'female',
         maritalStatus: this.partyAccountDetails.status,
         country: this.partyAccountDetails.country,
         wealthAmlDetails: this.partyAccountDetails.wealthAmlDetails,
@@ -155,13 +156,15 @@ export class PrimeIdentityComponent implements OnInit {
   patchFormValues(): void {
     // patch form values
     const dob = this.partyAccountDetails?.dateOfBirth; // from api >>> "2007-04-10T00:00:00.000+00:00"
+    const gender = (this.primeDetails?.gender[0]).toUpperCase() === 'M' ? 'male' : 'female';
+
     const patchData = {
       id_type: this.primeDetails?.modeOfIdentity.name,
       id_number: this.primeDetails?.modeOfIdentityNumber,
       pin_number: this.primeDetails?.pinNumber,
       dob: new Date(dob).toISOString().split('T')[0],
       citizenship: this.primeDetails?.citizenshipCountryId, // todo: not available from backend
-      gender: this.primeDetails?.gender, // todo: not available from backend
+      gender: gender,
       marital_status: this.primeDetails.maritalStatus // todo: not available from backend
     }
     this.editForm.patchValue(patchData)
@@ -178,19 +181,20 @@ export class PrimeIdentityComponent implements OnInit {
 
   editPrimeDetails(): void {
     const formValues = this.editForm.value;
+    log.info('formValues >>> ', formValues);
     const partyAccountDetails = {
-      ...this.partyAccountDetails,
+      // ...this.partyAccountDetails,
       idNumber: formValues.id_number,
       modeOfIdentity: formValues.id_type,
       pinNumber: formValues.pin_number,
       dateOfBirth: formValues.dob,
-      country: formValues.country, // todo: change to country ID
-      gender: (formValues.gender).toUpperCase(),
-      maritalStatus: formValues.marital_status,
+      country: formValues.citizenship, // todo: change to country ID
+      gender: (formValues.gender).toUpperCase() === 'MALE' ? 'M' : 'F',
+      maritalStatus: formValues.marital_status.charAt(0).toUpperCase(),
     }
 
 
-    log.info(`client details to post >>> `, partyAccountDetails)
+    log.info(`client details to post >>> `, partyAccountDetails, formValues);
     this.clientService.updateClientSection(this.partyAccountDetails.accountCode, {...partyAccountDetails}).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');

@@ -296,6 +296,8 @@ export class ViewEntityComponent implements OnInit {
         // log.info('clientDetails >>> ', res);
         // this.populateDetailsForDisplay(res);
         this.clientDetails = res;
+        this.clientDetails.contactDetails.branchName = res.organizationBranchName
+        this.clientDetails.contactDetails.branchId = res.organizationBranchId
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage('Error', 'Could not fetch client details');
