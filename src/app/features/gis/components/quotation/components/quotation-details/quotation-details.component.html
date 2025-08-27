@@ -337,10 +337,11 @@
             <!-- product table  -->
 
 <div class="collapse" [ngClass]="{'show': showProducts}" id="collapseProduct">
-  <p-table [value]="productDetails"
+  <p-table 
+   [value]="productDetails"
            dataKey="productCode.code"
            editMode="row"
-           [tableStyle]="{'min-width': '50rem'}">
+           [tableStyle]="{'min-width': '50rem','table-layout': 'fixed'}">
 
     <!-- Table Header -->
     <ng-template pTemplate="header">
@@ -348,6 +349,7 @@
         <th *ngFor="let col of columns"
             [hidden]="!col.visible"
             class="flexible-header1"
+            [ngClass]="{'actions-column': col.field === 'actions'}"
             [pSortableColumn]="col.field">
           {{ col.header }}
           <p-sortIcon [field]="col.field"></p-sortIcon>
@@ -366,13 +368,14 @@
 
         <td *ngFor="let col of columns"
             [hidden]="!col.visible"
-            class="flexible-header">
+            class="flexible-header"
+            [ngClass]="{'actions-column': col.field === 'actions'}">
 
           <ng-container [ngSwitch]="col.field">
 
             <!-- Only handle actions separately -->
             <ng-container *ngSwitchCase="'actions'">
-              <div class="d-flex justify-content-end gap-2">
+              <div class="d-flex justify-content-center gap-2">
                 <button *ngIf="!editing"
                         type="button"
                         pInitEditableRow
@@ -411,7 +414,7 @@
             </ng-container>
 
             <!-- Default case: display value dynamically -->
-            <ng-container *ngSwitchDefault>
+            <ng-container *ngSwitchDefault >
 {{ getCellValue(product, col.field) }}
             </ng-container>
 
