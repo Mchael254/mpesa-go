@@ -81,6 +81,13 @@ export class RiskDetailsComponent {
 
   riskDetails: RiskInformation[] = [];
   riskDetailsForm: FormGroup;
+  showRiskDetails: boolean = true;
+  showRiskDetailsColumnModal = false;
+  riskDetailsColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
+
+
+
+
   minDate: Date | undefined;
   motorClassAllowed: string;
   showMotorSubclassFields: boolean = false;
@@ -496,7 +503,6 @@ export class RiskDetailsComponent {
   }
 
 
-
   openModals(modalName: string) {
     this.modals[modalName]?.show();
   }
@@ -504,8 +510,6 @@ export class RiskDetailsComponent {
   closeModals(modalName: string) {
     this.modals[modalName]?.hide();
   }
-
-
 
 
   setDeclaration1(value: boolean) {
@@ -517,9 +521,6 @@ export class RiskDetailsComponent {
     this.declaration2 = value;
     this.riskDetailsForm.get('computeField')?.setValue(value ? 'Yes' : 'No'); // Optional
   }
-
-
-
 
   setSectionToDelete(section: any) {
     this.sectionToDelete = section;
@@ -556,8 +557,14 @@ export class RiskDetailsComponent {
           this.quoteProductCode = productDetails.code;
           sessionStorage.setItem('newQuotationProductCode', this.quoteProductCode);
           log.debug("limit qpcode", this.quoteProductCode);
+
+          //risk details
           this.riskDetails = productDetails?.riskInformation || [];
+          if (this.riskDetails && this.riskDetails.length > 0) {
+            this.setRiskDetailsColumns(this.riskDetails[0]);
+          }
           log.debug('risk details', this.riskDetails)
+
           const curentlySavedRisk = this.riskDetails?.find(risk => risk.code == this.quotationRiskCode) || this.riskDetails[0];
           log.debug('Currently saved Risk:', curentlySavedRisk)
 
@@ -594,9 +601,7 @@ export class RiskDetailsComponent {
   }
 
 
-
   selectAll: boolean = false;
-
   toggleSelectAll(event: any) {
     const checked = event.target.checked;
     this.sectionPremium.forEach((section: any) => {
@@ -604,7 +609,63 @@ export class RiskDetailsComponent {
     });
   }
 
+  //risk details
+  saveRiskDetailsColumnsToSession(): void {
+    if (this.riskDetailsColumns) {
+      const visibility = this.riskDetailsColumns.map(col => ({
+        field: col.field,
+        visible: col.visible
+      }));
+      sessionStorage.setItem('riskDetailsColumns', JSON.stringify(visibility));
+    }
+  }
 
+  toggleRiskColumnVisibility(field: string) {
+    this.saveRiskDetailsColumnsToSession();
+  }
+
+  toggleRiskDetailsColumns(iconElement: HTMLElement): void {
+    this.showRiskDetails = !this.showRiskDetails;
+
+    const rect = iconElement.getBoundingClientRect();
+
+    const top = rect.top + rect.height + window.scrollY + 4;
+    const left = rect.left + window.scrollX;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showRiskDetailsColumnModal = true;
+  }
+
+  setRiskDetailsColumns(risk: any) {
+    const excludedFields = ['code', 'subclassCode', 'coverTypeCode', 'propertyId', 'itemDesc', 'subclass.description',
+      'coverTypeDescription', 'binderCode',];
+    this.riskDetailsColumns = Object.keys(risk)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: this.defaultVisibleRiskDetailsFields.includes(key),
+        filterable: true
+      }));
+
+    this.riskDetailsColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false });
+
+    // Restore from sessionStorage if exists
+    const saved = sessionStorage.getItem('riskDetailsColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.riskDetailsColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
+  }
+
+  defaultVisibleRiskDetailsFields = ['wef', 'wet', 'actions'];
 
   openAddRiskModal() {
     this.modalInstance?.show();
@@ -625,48 +686,7 @@ export class RiskDetailsComponent {
     this.riskDetailsForm.patchValue({ subclass: risk.subclass.code });
     this.onSubclassSelected(risk.subclass)
   }
-  // loadSelectedSubclassRiskFields(subclassCode: number): void {
-  //   const riskFieldDescription = `detailed-risk-subclass-form-${subclassCode}`;
 
-  //   this.quotationService.getFormFields(riskFieldDescription).subscribe({
-  //     next: (response) => {
-  //       const fields = response?.[0]?.fields || [];
-  //       this.subclassFormContent = response;
-  //       this.subclassFormData = fields.filter(field => field.scheduleLevel === "L1");
-
-  //       log.debug('Loaded subclass form content:', this.subclassFormContent);
-  //       log.debug('Filtered subclass form fields:', this.subclassFormData);
-
-  //       // Remove only the old subclass controls, keep product-level controls intact
-  //       Object.keys(this.riskDetailsForm.controls).forEach(controlName => {
-  //         const control = this.riskDetailsForm.get(controlName) as any;
-  //         if (control?.metadata?.dynamicSubclass) {
-  //           this.riskDetailsForm.removeControl(controlName);
-  //           log.debug(`Removed previous dynamicSubclass control: ${controlName}`);
-  //         }
-  //       });
-
-  //       // Add new subclass controls
-  //       this.subclassFormData.forEach(field => {
-  //         if (!this.riskDetailsForm.get(field.name)) {
-  //           const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
-  //           const control = new FormControl(this.getDefaultValue(field), validators);
-  //           (control as any).metadata = { dynamicSubclass: true }; // tag it
-  //           this.riskDetailsForm.addControl(field.name, control);
-  //           log.debug(`Added new dynamicSubclass control: ${field.name}`);
-  //         }
-  //       });
-  //       this.fetchRegexPattern();
-  //       this.fetchScheduleRelatedData();
-
-  //       log.debug('Final riskDetailsForm controls after adding subclass fields:', this.riskDetailsForm.controls);
-  //     },
-  //     error: (err) => {
-  //       this.globalMessagingService.displayErrorMessage('Error', 'Unable to load subclass risks');
-  //       log.error('Failed to load subclass form fields', err);
-  //     }
-  //   });
-  // }
   async loadSelectedSubclassRiskFields(subclassCode: number): Promise<void> {
     const riskFieldDescription = `detailed-risk-subclass-form-${subclassCode}`;
 
@@ -708,6 +728,7 @@ export class RiskDetailsComponent {
       throw err; // important, so onSubclassSelected catch block runs
     }
   }
+
   private patchEditValues(): void {
     if (!this.selectedRisk) return;
     log.debug("Selected risk", this.selectedRisk)
@@ -794,43 +815,7 @@ export class RiskDetailsComponent {
     });
   }
 
-  // loadAllClients() {
-  //   this.clientService.getClients()
-  //     .subscribe({
-  //       next: (data: any) => {
-  //         data.content.forEach(client => {
-  //           client.clientTypeName = client.clientType.clientTypeName;
-  //           client.clientFullName = client.firstName + ' ' + (client.lastName || '');
-  //         });
-  //         this.clientsData = data.content;
-  //         log.debug("CLIENT data", this.clientsData)
-
-  //         // Populate selectOptions for insureds field
-  //         this.safePopulateSelectOptions(this.formData, 'insureds', this.clientsData, 'clientFullName', 'id');
-
-  //         // Ensure FormControl exists
-  //         if (!this.riskDetailsForm.contains('insureds')) {
-  //           this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
-  //           log.debug('Added insureds control to the form');
-  //         }
-
-  //         // Now preselect if clientCode matches
-  //         log.debug("CLIENT CODE", this.clientCode)
-  //         // if (this.clientCode) {
-  //         //   const selectedClient = this.clientsData.find(client => client.id === this.clientCode);
-  //         //   if (selectedClient) {
-  //         //     this.riskDetailsForm.patchValue({ insureds: selectedClient.id });
-  //         //     log.debug('Preselected insured client in form:', selectedClient);
-  //         //   }
-  //         // }
-
-  //         log.debug('Clients loaded and insureds options populated:', this.formData);
-  //       },
-  //       error: (err) => {
-  //         log.error('Failed to fetch clients', err);
-  //       }
-  //     });
-  // }
+  
   loadAllClients() {
     const pageSize = 100
     const pageIndex = 0;
@@ -3011,7 +2996,9 @@ export class RiskDetailsComponent {
   }
 
   setClauseColumns(clause: Clause) {
-    const excludedFields = [];
+    const excludedFields = ['version', 'clauseCode', 'clauseExpires', 'clauseType', 'isEditable', 'isLienClause', 'isMandatory',
+      'isRescueClause', 'subClassCode',
+    ];
 
     this.clauseColumns = Object.keys(clause)
       .filter((key) => !excludedFields.includes(key))
@@ -3036,10 +3023,7 @@ export class RiskDetailsComponent {
     // log.debug("clauseColumns", this.clauseColumns);
   }
 
-  defaultVisibleClauseFields = ['clauseCode', 'clauseExpires', 'clauseType', 'heading', 'isEditable', 'isLienClause',
-    'isMandatory', 'isRescueClause', 'shortDescription', 'subClassCode', 'version', 'wording'
-
-  ];
+  defaultVisibleClauseFields = ['heading', 'shortDescription', , 'wording'];
 
   loadAddedClauses(): void {
     const riskCode = this.quotationRiskCode
@@ -3901,7 +3885,7 @@ export class RiskDetailsComponent {
   }
 
   setLimitsOfLiabilityColumns(clause: Clause) {
-    const excludedFields = [];
+    const excludedFields = ['subclassCode', 'quotationValueCode', 'code'];
     this.limitsOfLiabilityColumns = Object.keys(clause)
       .filter((key) => !excludedFields.includes(key))
       .map((key) => ({
@@ -3924,8 +3908,7 @@ export class RiskDetailsComponent {
     // log.debug("limitsOfLiabilityColumns", this.limitsOfLiabilityColumns);
   }
 
-
-  defaultVisibleLimitsOfLiabilityFields = ['narration', 'value', 'subclassCode', 'quotationValueCode', 'code'];
+  defaultVisibleLimitsOfLiabilityFields = ['narration', 'value'];
 
   loadLimitsOfLiability(): void {
     if (!this.selectedSubclassCode) {
@@ -4230,7 +4213,7 @@ export class RiskDetailsComponent {
   }
 
   setExcessesColumns(excess: Excesses) {
-    const excludedFields = [];
+    const excludedFields = ['subclassCode', 'quotationValueCode', 'code'];
 
     this.excessesColumns = Object.keys(excess)
       .filter((key) => !excludedFields.includes(key))
@@ -4256,7 +4239,7 @@ export class RiskDetailsComponent {
     log.debug("excessesColumns", this.excessesColumns);
   }
 
-  defaultVisibleExcessesFields = ['narration', 'value', 'subclassCode', 'quotationValueCode', 'code'];
+  defaultVisibleExcessesFields = ['narration', 'value'];
 
   loadExcesses(): void {
     if (!this.selectedSubclassCode) {
@@ -4484,7 +4467,11 @@ export class RiskDetailsComponent {
   }
 
   setPerilColumns(excess: Excesses) {
-    const excludedFields = [];
+    const excludedFields = ['sectionShortDescription', 'shortDescription', 'subclassCode', 'sectionCode', 'perCode', 'perilLimit',
+      'sectionDescription', 'multiplier', 'tlExcessType', 'plExcessType', 'expireOnClaim', 'dependLossType', 'benefitPerPeriod',
+      'claimExcessType', 'tlExcess', 'tlExcessMin', 'tlExcessMax', 'claimExcessMin', 'claimExcessMax', 'plExcess', 'plExcessMin',
+      'plExcessMax'
+    ];
 
     this.perilColumns = Object.keys(excess)
       .filter((key) => !excludedFields.includes(key))
@@ -4509,9 +4496,7 @@ export class RiskDetailsComponent {
     log.debug("perilColumns", this.perilColumns);
   }
 
-  defaultVisiblePerilFields = ['code', 'subclassCode', 'sectionCode', 'sectionShortDescription', 'perCode', 'shortDescription', 'description', 'sectionDescription', 'excess', 'excessMin', 'excessMax', 'personLimit', 'perilLimit', 'claimLimit',
-    'tlExcessType', 'plExcessType', 'expireOnClaim', 'multiplier', 'claimExcessType', 'tlExcess', 'tlExcessMin', 'tlExcessMax',
-    'plExcess', 'plExcessMin', 'plExcessMax', 'claimExcessMin', 'claimExcessMax', 'dependLossType', 'benefitPerPeriod']
+  defaultVisiblePerilFields = ['code', 'description', 'excess', 'excessMin', 'excessMax', 'personLimit', 'claimLimit']
 
 
   loadQuotationPerils(): void {
