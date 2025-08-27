@@ -335,16 +335,15 @@
 
 
       <!-- product table  -->
-
       <div class="collapse" [ngClass]="{'show': showProducts}" id="collapseProduct">
         <p-table [value]="productDetails" dataKey="productCode.code" editMode="row"
-          [tableStyle]="{'min-width': '50rem'}">
+          [tableStyle]="{'min-width': '50rem','table-layout': 'fixed'}">
 
           <!-- Table Header -->
           <ng-template pTemplate="header">
             <tr>
               <th *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header1"
-                [pSortableColumn]="col.field">
+                [ngClass]="{'actions-column': col.field === 'actions'}" [pSortableColumn]="col.field">
                 {{ col.header }}
                 <p-sortIcon [field]="col.field"></p-sortIcon>
               </th>
@@ -357,13 +356,14 @@
               [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product)"
               class="hover:!bg-gray-50 !cursor-pointer transition-colors" title="Click to select row">
 
-              <td *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header">
+              <td *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header"
+                [ngClass]="{'actions-column': col.field === 'actions'}">
 
                 <ng-container [ngSwitch]="col.field">
 
                   <!-- Only handle actions separately -->
                   <ng-container *ngSwitchCase="'actions'">
-                    <div class="d-flex justify-content-end gap-2">
+                    <div class="d-flex justify-content-center gap-2">
                       <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product, ri)"
                         class="p-button-sm p-button-text p-button-info no-border">
                         Edit
@@ -390,8 +390,16 @@
 
                   <!-- Default case: display value dynamically -->
                   <ng-container *ngSwitchDefault>
-                    {{ getCellValue(product, col.field) }}
+                    <p-cellEditor>
+                      <ng-template pTemplate="input">
+                        <input type="text" pInputText [(ngModel)]="product[col.field]" />
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                        {{ getCellValue(product, col.field) }}
+                      </ng-template>
+                    </p-cellEditor>
                   </ng-container>
+
 
                 </ng-container>
               </td>
@@ -408,6 +416,7 @@
           </ng-template>
         </p-table>
       </div>
+
 
 
       <!-- Add Product Modal -->

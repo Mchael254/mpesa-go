@@ -11,7 +11,7 @@
           {{ financialDetailsConfig?.financial_details?.bank_name[language] | titlecase }}
         </div>
         <div class="col-sm-7 fw-bold" *ngIf="true">
-          {{ financialDetails.bankId }}
+          {{ financialDetails?.bankName }}
         </div>
       </div>
     </td>
@@ -21,7 +21,7 @@
           {{ financialDetailsConfig?.financial_details?.branch_name[language] | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
-          {{ financialDetails?.bankBranchId  }}
+          {{ financialDetails?.bankBranchName }}
         </div>
       </div>
     </td>

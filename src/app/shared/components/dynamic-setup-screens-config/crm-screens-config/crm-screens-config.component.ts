@@ -1630,7 +1630,10 @@ export class CrmScreensConfigComponent implements OnInit {
         next: (data) => {
           log.info("import>>", data);
           this.globalMessagingService.displaySuccessMessage('Success', 'Setup imported successfully.');
-          // window.location.reload();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1800);
+
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);
