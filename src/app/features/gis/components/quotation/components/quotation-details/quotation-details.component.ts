@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
@@ -204,7 +204,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     public productSubclass: ProductSubclassService,
     private globalMessagingService: GlobalMessagingService,
     public claimsService: ClaimsService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private cd: ChangeDetectorRef
   ) {
     this.quotationAction = sessionStorage.getItem('quotationAction')
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
@@ -378,7 +379,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             // If sessionStorage has value, use it; otherwise, use today's date
             initialValue = savedValue ? new Date(savedValue) : new Date();
             this.updateQuotationExpiryDate(initialValue)
-          } else {
+          }
+          else if (field.name === 'multiUserEntry') {
+    initialValue = savedValue || 'N'; 
+  }
+          
+          else {
             initialValue = savedValue || '';
           }
 
@@ -398,10 +404,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             }
           });
 
-          if (field.name === 'multiUserEntry' && savedValue) {
+          if (field.name === 'multiUserEntry' ) {
             if (savedValue === 'Y') {
               this.handleMultiUserYes();
-            } else if (savedValue === 'N') {
+            } else  {
               this.handleMultiUserNo();
             }
           }
@@ -1543,69 +1549,82 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   // }
 
 
-
-
-  submitAddProductForm() {
-    if (this.quotationProductForm.invalid) {
-      this.quotationProductForm.markAllAsTouched();
-      return;
-    }
-
-    const coverFromDate = new Date(this.quotationProductForm.get('wef')?.value);
-    const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
-
-    const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
-    const selectedProductCode = selectedProduct.code;
-    log.debug('Selected product CODE', selectedProductCode);
-
-    if (!this.productDetails) {
-      this.productDetails = [];
-    }
-
-    // ✅ Check if product code already exists
-    const alreadyExists = this.productDetails.some(
-      p => p.productCode.code === selectedProductCode
-    );
-
-    if (alreadyExists) {
-      this.globalMessagingService.displayErrorMessage('warning', 'This product has already been added');
-      return;
-    }
-
-    // If new, add it
-    if (selectedProduct && selectedProduct.description) {
-      this.productDetails.push({
-        productCode: selectedProduct,
-        productName: selectedProduct.description,
-        coverFrom: coverFromDate,
-        coverTo: coverToDate
-      });
-    }
-
-    this.productDetails = this.productDetails.filter(p => p?.productCode?.description);
-    this.productDetails.forEach(product => {
-      product.coverFrom = new Date(product.coverFrom);
-      product.coverTo = new Date(product.coverTo);
-      if (!product.productName && product.productCode?.description) {
-        product.productName = product.productCode.description;
-      }
-    });
-
-    sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
-    log.debug("Saved Product Details to sessionStorage:", this.productDetails);
-
-    this.quotationProductForm.reset({
-      productCodes: [],
-      wef: this.todaysDate,
-      wet: this.coverToDate
-    });
-
-    this.getProductClause({ code: selectedProductCode });
-
-    // Close modal
-    const closeBtn = document.querySelector('.btn-close') as HTMLElement;
-    closeBtn?.click();
+submitAddProductForm() {
+  // Validate form
+  if (this.quotationProductForm.invalid) {
+    this.quotationProductForm.markAllAsTouched();
+    return;
   }
+
+  // Get dates from form
+  const coverFromDate = new Date(this.quotationProductForm.get('wef')?.value);
+  const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
+
+  // Get selected product
+  const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
+  if (!selectedProduct) return;
+  const selectedProductCode = selectedProduct.code;
+  log.debug('Selected product CODE', selectedProductCode);
+
+  // Initialize productDetails array if null
+  if (!this.productDetails) {
+    this.productDetails = [];
+  }
+
+  // Check if product already exists
+  const alreadyExists = this.productDetails.some(
+    p => p.productCode.code === selectedProductCode
+  );
+  if (alreadyExists) {
+    this.globalMessagingService.displayErrorMessage('warning', 'This product has already been added');
+    return;
+  }
+
+  // Add new product with a NEW array reference (triggers table update)
+  this.productDetails = [
+    ...this.productDetails,
+    {
+      productCode: selectedProduct,
+      productName: selectedProduct.description,
+      coverFrom: coverFromDate,
+      coverTo: coverToDate
+    }
+  ];
+
+  // Ensure productName exists and dates are correct
+  this.productDetails = this.productDetails.filter(p => p?.productCode?.description);
+  this.productDetails.forEach(product => {
+    product.coverFrom = new Date(product.coverFrom);
+    product.coverTo = new Date(product.coverTo);
+    if (!product.productName && product.productCode?.description) {
+      product.productName = product.productCode.description;
+    }
+  });
+
+  // Save to sessionStorage
+  sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+  log.debug("Saved Product Details to sessionStorage:", this.productDetails);
+
+  // Reset form
+  this.quotationProductForm.reset({
+    productCodes: [],
+    wef: '',
+    wet: ''
+  });
+
+  // Optionally fetch product clauses
+  this.getProductClause({ code: selectedProductCode });
+  this.setColumnsFromProductDetails(this.productDetails[0]);
+
+  // Close modal automatically
+  const closeBtn = document.querySelector('.btn-close') as HTMLElement;
+  closeBtn?.click();
+  // ⚡ Force change detection so p-table updates immediately
+  this.cd.detectChanges();
+
+  // Optionally show the table if it’s collapsed
+  this.showProducts = true;
+}
 
 
 
@@ -1674,6 +1693,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.clausesModified = false;
       }
     }
+    if (!this.productDetails.length) {
+    this.columns = [];
+  }
 
     this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
 
@@ -1924,7 +1946,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   toggleProducts(iconElement: HTMLElement): void {
-     this.showProducts = true;
+    this.showProducts=true;
+    
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
@@ -1958,7 +1981,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         }));
   
       // manually add actions column
-      this.columns.push({ field: 'actions', header: 'Actions', visible: true });
+      this.columns.push({ field: 'actions', header: 'Actions', visible: true,  });
     }
 
 

@@ -26,6 +26,7 @@ import {
   ProductDetails,
   QuotationDetails,
   QuotationProduct,
+  RiskInformation,
   ScheduleDetails,
   scheduleDetails,
   SubclassSectionPeril,
@@ -37,6 +38,7 @@ import { EmailDto } from "../../../../../../shared/data/common/email-dto";
 import { Table } from 'primeng/table';
 import { ClaimsService } from '../../../claim/services/claims.service';
 import * as bootstrap from 'bootstrap';
+import { riskClauses } from '../../../setups/data/gisDTO';
 
 const log = new Logger('QuotationSummaryComponent');
 
@@ -173,7 +175,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   noComment: boolean = false;
   afterRejectQuote: boolean = false;
   productClauses: ProductClauses[] = [];
-  activeRiskTab: string = '';
+  activeRiskTab: string = 'sections';
   products: any[] = [];
   activeScheduleTab: string = '';
   scheduleLevels: string[] = [];
@@ -193,8 +195,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showClauses: boolean = true;
   showClausesColumnModal: boolean=false;
   showTaxesColumnModal: boolean=false;
+  showRiskColumnModal: boolean=false;
+  showSectionColumnModal: boolean=false;
+  showRiskClauseColumnModal:boolean=false;
+
   clausesColumns: { field: string; header: string; visible: boolean }[] = [];
   taxesColumns: { field: string; header: string; visible: boolean }[] = [];
+  riskColumns: { field: string; header: string; visible: boolean }[] = [];
+  sectionColumns: { field: string; header: string; visible: boolean }[] = [];
+  riskClausesColumns:{ field: string; header: string; visible: boolean }[] = [];
   
 
 
@@ -252,6 +261,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.conversionFlagString = sessionStorage.getItem("conversionFlag");
     this.conversionFlag = JSON.parse(this.conversionFlagString);
     log.debug("conversion flag:", this.conversionFlag);
+    
 
     if (this.conversionFlag) {
       this.globalMessagingService.displaySuccessMessage('Success', 'Conversion completed succesfully');
@@ -295,6 +305,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.quotationCode && this.getQuotationDetails(this.quotationCode);
     this.getuser();
+    this.getRiskDetails();
+    
 
     // this.createInsurersForm();
     // this.fetchInsurers();
@@ -453,6 +465,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         log.debug("Risk Details quotation-summary", this.riskDetails);
         log.debug('quoationProducts', this.quotationProducts)
 
+        if (this.riskDetails.length>0){
+          this.setColumnsFromRiskDetails(this.riskDetails[0])
+        }
+
 
         this.products = this.quotationView.quotationProducts;
 
@@ -468,9 +484,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     {
     this.setColumnsFromProductDetails(this.productDetails[0]);
     }
-    if(this.productClauses.length>0){
-     this.setColumnsFromClausesDetails(this.productClauses[0])
-     }
+    
    
 
         // this.getbranch();
@@ -522,6 +536,9 @@ if (Product1) {
 
   log.debug('taxDetais', this.taxDetails);
   log.debug('productClauses', this.productClauses);
+  if(this.productClauses.length){
+     this.setColumnsFromClausesDetails(this.productClauses[0])
+     }
 
   const risk1 = Product1.riskInformation[0];
   log.debug('risk1', risk1);
@@ -529,6 +546,10 @@ if (Product1) {
   
   this.sections = risk1.sectionsDetails || [];
   log.debug('sections', this.sections);
+
+  if (this.sections.length>0){
+    this.setColumnsFromSectionDetails(this.sections[0])
+  }
 
   
   const scheduleArray = risk1.scheduleDetails || [];
@@ -562,10 +583,20 @@ if (risk1.code) {
 
 
   }
-  get filteredRiskDetails() {
-    const currentProduct = this.products.find(p => p.code === this.activeRiskTab);
-    return currentProduct?.riskInformation || [];
+  getRiskDetails() {
+  const currentProduct = this.products.find(p => p.code === this.activeRiskTab);
+  const riskDetails = currentProduct?.riskInformation || [];
+  
+  this.riskDetails = riskDetails; 
+
+  if (riskDetails.length > 0) {
+    this.setColumnsFromRiskDetails(riskDetails[0]);
+  } else {
+    this.columns = []; 
   }
+}
+
+
 
 
 
@@ -1145,6 +1176,10 @@ getSections(data: any) {
         next: (res) => {
           this.riskClauses = res;
           log.debug("RISK CLAUSES", this.riskClauses);
+
+          if(this.riskClauses.length){
+            this.setColumnsFromRiskClausesDetails(this.riskClauses[0])
+          }
         },
         error: (error) => {
           log.debug('Error fetching risk clauses:', error);
@@ -2256,7 +2291,55 @@ getSections(data: any) {
 
     this.showTaxesColumnModal = true;
   }
+toggleRisk(iconElement: HTMLElement): void {
+    
+     
 
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showRiskColumnModal = true;
+  }
+  toggleSection(iconElement: HTMLElement): void {
+    
+     
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showSectionColumnModal = true;
+  }
+
+  toggleRiskClauses(iconElement: HTMLElement): void {
+    
+     
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showRiskClauseColumnModal = true;
+  }
 
   setColumnsFromProductDetails(sample: ProductDetails) {
   const defaultVisibleFields = [
@@ -2377,9 +2460,127 @@ getSections(data: any) {
 }
 
 
+ setColumnsFromRiskDetails(sample:RiskInformation) {
+  const defaultVisibleFields = [
+    'propertyId',
+    'wet',
+    'wef',
+    'itemDesc',
+    'coverTypeDescription'
+    
+  ];
+  
+  const excludedFields = ['prospectCode',
+    'ncdLevel',
+    'location',
+    'riskLimits',
+    'scheduleDetails',
+    'schedules',
+    'sectionsDetails',
+    'taxComputation',
+    'town',
+    'prospectCode',
+    'clientType',
+    'clientShortDescription',
+    'addEdit',
+    'action'
+    
+  ]; 
+
+  
+  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+  
+  keys = keys.sort((a, b) => {
+    if (a === 'productName') return -1;
+    if (b === 'productName') return 1;
+    return 0;
+  });
+
+
+  this.riskColumns = keys.map(key => ({
+    field: key,
+    header: this.sentenceCase(key),
+    visible: defaultVisibleFields.includes(key),
+  }));
+}
+
+
+
+ setColumnsFromSectionDetails(sample:RiskInformation) {
+  const defaultVisibleFields = ['sectionShortDescription',
+    'rateType',
+    'limitAmount',
+    'premiumRate',
+    'rowNumber',
+    'rateDivisionFactor',
+    'sectionCode',
+    'calcGroup',
+
+
+
+
+   
+    
+  ];
+  
+  const excludedFields = [
+    
+  ]; 
+
+  
+  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+  
+  keys = keys.sort((a, b) => {
+    if (a === 'productName') return -1;
+    if (b === 'productName') return 1;
+    return 0;
+  });
+
+
+  this.sectionColumns = keys.map(key => ({
+    field: key,
+    header: this.sentenceCase(key),
+    visible: defaultVisibleFields.includes(key),
+  }));
+}
 
  
+setColumnsFromRiskClausesDetails(sample:riskClauses) {
+  const defaultVisibleFields = ['sectionShortDescription',
+    'clauseCode',
+    'clause',
+    'shortDescription'
 
+
+
+
+   
+    
+  ];
+  
+  const excludedFields = [
+    
+  ]; 
+
+  
+  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+  
+  keys = keys.sort((a, b) => {
+    if (a === 'productName') return -1;
+    if (b === 'productName') return 1;
+    return 0;
+  });
+
+
+  this.riskClausesColumns = keys.map(key => ({
+    field: key,
+    header: this.sentenceCase(key),
+    visible: defaultVisibleFields.includes(key),
+  }));
+}
 
 
 
