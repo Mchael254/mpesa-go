@@ -125,8 +125,8 @@
                       </ng-container>
 
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                          * {{ regexErrorMessages[field.fieldId]?.errorMessage }}
-                        </span>
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!-- Tel -->
@@ -155,7 +155,7 @@
                       >
                       </ngx-intl-tel-input>
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                        * {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
                       </span>
                     </ng-container>
 
@@ -172,6 +172,9 @@
                         class="form-control"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
                       ></textarea>
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!--Date-->
@@ -188,6 +191,9 @@
                         class="form-control"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
                       />
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!-- Number -->
@@ -204,6 +210,9 @@
                         class="form-control"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
                       />
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!-- Select -->
@@ -229,6 +238,9 @@
                           {{ option | titlecase }}
                         </option>
                       </select>
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!-- radio -->
@@ -246,6 +258,9 @@
                           {{ option }}
                         </label>
                       </div>
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!-- checkbox -->
@@ -264,6 +279,9 @@
                           <span *ngIf="field.mandatory" class="text-danger">*</span>
                         </label>
                       </div>
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!--show validation errors-->

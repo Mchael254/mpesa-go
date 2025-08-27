@@ -1833,7 +1833,17 @@
           "defaultValue": null,
           "visible": true,
           "disabled": false,
-          "validations": [],
+          "validations": [
+            {
+              "type": "pattern",
+              "value": "^[0-9]{6,10}$",
+              "message": {
+                "en": "Reg No must be 6 to 10 digits, e.g. 34776252",
+                "ke": "",
+                "fr": ""
+              }
+            }
+          ],
           "conditions": [],
           "order": 1,
           "tooltip": {
@@ -1863,7 +1873,17 @@
           "defaultValue": null,
           "visible": true,
           "disabled": false,
-          "validations": [],
+          "validations": [
+            {
+              "type": "pattern",
+              "value": "^[0-9]{4}$",
+              "message": {
+                "en": "Year must be 4 digits",
+                "ke": "Mwaka lazima uwe na tarakimu 4",
+                "fr": "L'ann'e doit contenir 4 chiffres"
+              }
+            }
+          ],
           "conditions": [],
           "order": 1,
           "tooltip": {
@@ -2043,7 +2063,17 @@
           "defaultValue": null,
           "visible": true,
           "disabled": false,
-          "validations": [],
+          "validations": [
+            {
+              "type": "pattern",
+              "value": "^[A-Z]{3}\\d{8}$",
+              "message": {
+                "en": "Must be 3 letters followed by 8 digits, e.g. KCC12345678",
+                "ke": "Lazima ni 3 herufi kuu followed by 8 nambari, mfano KCC12345678",
+                "fr": "Doit comporter 3 lettres suivies de 8 chiffres, ex. KCC12345678"
+              }
+            }
+          ],
           "conditions": [],
           "order": 1,
           "tooltip": {
@@ -2133,7 +2163,17 @@
           "defaultValue": null,
           "visible": true,
           "disabled": false,
-          "validations": [],
+          "validations": [
+            {
+              "type": "pattern",
+              "value": "^[0-9]{11}$",
+              "message": {
+                "en": "Reference number must be 11 digits",
+                "ke": "Namba ya Wasiliana lazima kiwe na tarakimu 11",
+                "fr": "Le num'ro de reference doit comporter 11 chiffres"
+              }
+            }
+          ],
           "conditions": [],
           "order": 1,
           "tooltip": {
@@ -2163,7 +2203,17 @@
           "defaultValue": null,
           "visible": true,
           "disabled": false,
-          "validations": [],
+          "validations": [
+            {
+              "type": "pattern",
+              "value": "^[0-9]{4}$",
+              "message": {
+                "en": "Year must be 4 digits",
+                "ke": "Mwaka lazima uwe na tarakimu 4",
+                "fr": "L'ann'e doit contenir 4 chiffres"
+              }
+            }
+          ],
           "conditions": [],
           "order": 1,
           "tooltip": {
@@ -2223,7 +2273,17 @@
           "defaultValue": null,
           "visible": true,
           "disabled": false,
-          "validations": [],
+          "validations": [
+            {
+              "type": "pattern",
+              "value": "^[0-9]{8}$",
+              "message": {
+                "en": "Document ID must be 8 digits",
+                "ke": "Namba ya Cheti cha Mteja lazima uwe na tarakimu 8",
+                "fr": "Le num'ro de la pièce d'identit' doit contenir 8 chiffres"
+              }
+            }
+          ],
           "conditions": [],
           "order": 1,
           "tooltip": {
@@ -2283,7 +2343,17 @@
           "defaultValue": null,
           "visible": true,
           "disabled": false,
-          "validations": [],
+          "validations": [
+            {
+              "type": "pattern",
+              "value": "^([0-9]|[1-9][0-9]|100)$",
+              "message": {
+                "en": "Percent ownership must be a value between 0 and 100",
+                "ke": "",
+                "fr": ""
+              }
+            }
+          ],
           "conditions": [],
           "order": 1,
           "tooltip": {
@@ -2574,7 +2644,17 @@
           "defaultValue": null,
           "visible": true,
           "disabled": false,
-          "validations": [],
+          "validations": [
+            {
+              "type": "pattern",
+              "value": "^[0-9]{6,10}$",
+              "message": {
+                "en": "National ID must be 6 to 10 digits, e.g. 34776252",
+                "ke": "Kitambulisho lazima kiwe na tarakimu 6 hadi 10, mfano 34776252",
+                "fr": "La carte d'identité doit comporter de 6 à 10 chiffres, ex. 34776252"
+              }
+            }
+          ],
           "conditions": [
             {
               "field": "modeOfIdentityId",
