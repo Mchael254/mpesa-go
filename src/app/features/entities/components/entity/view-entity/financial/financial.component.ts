@@ -3,12 +3,9 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Logger, UtilService} from "../../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import {BankService} from "../../../../../../shared/services/setups/bank/bank.service";
-import {Country} from "ngx-intl-tel-input/lib/model/country.model";
 import {Observable} from "rxjs";
-import {Bank} from "../../../../data/BankDto";
 import {BankDTO} from "../../../../../../shared/data/common/bank-dto";
 import {CurrencyService} from "../../../../../../shared/services/setups/currency/currency.service";
-import {PaymentService} from "../../../../../gis/components/quotation/services/paymentService/payment.service";
 import {PaymentModesService} from "../../../../../../shared/services/setups/payment-modes/payment-modes.service";
 import {ClientService} from "../../../../services/client/client.service";
 import {CurrencyDTO} from "../../../../../../shared/data/common/currency-dto";
@@ -86,11 +83,12 @@ export class FinancialComponent implements OnInit {
 
   editFinancialDetails(): void {
     const formValues = this.editForm.getRawValue();
-    log.info(formValues);
+    log.info('bank details >>> ', formValues);
     const paymentDetails = {
       ...this.financialDetails,
       accountNumber: formValues.accountNumber,
       bankBranchId: formValues.branchName,
+      bankId: formValues.bankName,
       currencyId: formValues.currency,
       effectiveFromDate: formValues.wef,
       effectiveToDate: formValues.wet,
@@ -155,7 +153,7 @@ export class FinancialComponent implements OnInit {
 
         case 'branchName':
           const bankId = this.financialDetails.bankBranchId; // todo: get and use bankID
-          this.bankService.getBankBranchesByBankId(111).subscribe({
+          this.bankService.getBankBranchesByBankId(bankId).subscribe({
             next: res => {
               field.options = res;
               this.bankBranches = res;
@@ -192,6 +190,7 @@ export class FinancialComponent implements OnInit {
   patchFormValues(): void {
     const patchData = {
       accountNumber: this.financialDetails.accountNumber,
+      bankName: this.financialDetails.bankId,
       branchName: this.financialDetails.bankBranchId,
       currency: this.financialDetails.currencyId,
       wef: new Date(this.financialDetails.effectiveFromDate).toISOString().split('T')[0],

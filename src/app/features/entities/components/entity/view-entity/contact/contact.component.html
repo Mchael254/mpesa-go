@@ -1,14 +1,16 @@
+<!--{{ contactDetails | json }}-->
+
 <ng-container *ngIf="contactDetails">
   <table class="table table-borderless">
     <tbody>
     <tr>
       <td>
         <div class="row">
-          <div class="col-sm-4">
+          <div class="col-sm-5">
             {{ contactDetailsConfig?.contact_details?.branch[language] || '---' | titlecase }}
           </div>
-          <div class="col-sm-8 fw-bold">
-            {{ contactDetails?.branch }}
+          <div class="col-sm-7 fw-bold">
+            {{ contactDetails?.branchName }}
           </div>
         </div>
       </td>
