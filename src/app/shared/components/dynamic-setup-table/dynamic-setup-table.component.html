@@ -124,8 +124,8 @@
                       </ng-container>
 
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                          * {{ regexErrorMessages[field.fieldId]?.errorMessage }}
-                        </span>
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!-- Tel -->
@@ -154,7 +154,7 @@
                       >
                       </ngx-intl-tel-input>
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
-                        * {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
                       </span>
                     </ng-container>
 
@@ -171,6 +171,9 @@
                         class="form-control"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
                       ></textarea>
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!--Date-->
@@ -187,6 +190,9 @@
                         class="form-control"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
                       />
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!-- Number -->
@@ -203,6 +209,9 @@
                         class="form-control"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
                       />
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!-- Select -->
@@ -225,40 +234,57 @@
                           {{ option | titlecase }}
                         </option>
                       </select>
+                      <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                        {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                      </span>
                     </ng-container>
 
                     <!-- radio -->
-                    <ng-container>
-                      <div class="form-check" *ngIf="field.type === 'radio'" [id]="field.fieldId">
-                        <label  class="form-check-label" *ngFor="let option of field.options">
-                          <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                    <ng-container *ngIf="field.type === 'radio'">
+                      <label class="form-label" [for]="field.fieldId">
+                        {{ field.label?.[language] | titlecase }}
+                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                      </label>
+                      <div class="form-check" [id]="field.fieldId">
+                        <div *ngFor="let option of field.options">
                           <input
                             class="form-check-input"
                             type="radio"
                             [value]="option"
                             [formControlName]="field.fieldId"
-                            [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
-                          >
-                          {{ option }}
-                        </label>
+                            [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched">
+                          <label class="form-check-label" for="field.fieldId">
+                            {{ option }}
+                          </label>
+                        </div>
+                        <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                        </span>
                       </div>
                     </ng-container>
 
                     <!-- checkbox -->
-                    <ng-container>
-                      <div class="form-check" *ngIf="field.type === 'checkbox'">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          id="checkDefault"
-                          [formControlName]="field.fieldId"
-                          [id]="field.fieldId"
-                          [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
-                        >
-                        <label class="form-label" [for]="field.fieldId" *ngIf="field.type !== 'checkbox'">
-                          {{ field.label?.[language] | titlecase }}
-                          <span *ngIf="field.isMandatory" class="text-danger">*</span>
-                        </label>
+                    <ng-container *ngIf="field.type === 'checkbox'">
+                      <label class="form-label" [for]="field.fieldId">
+                        {{ field.label?.[language] | titlecase }}
+                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                      </label>
+                      <div class="form-check">
+                        <div *ngFor="let option of field.options">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="checkDefault"
+                            [formControlName]="field.fieldId"
+                            [id]="field.fieldId"
+                            [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched">
+                          <label class="form-check-label" for="checkDefault">
+                            {{ option }}
+                          </label>
+                        </div>
+                        <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
+                          {{ regexErrorMessages[field.fieldId]?.errorMessage }}
+                        </span>
                       </div>
                     </ng-container>
 

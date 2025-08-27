@@ -1,3 +1,4 @@
+<!--{{ primeDetails | json }}-->
 
 <table class="table table-borderless">
   <tbody>
@@ -72,7 +73,7 @@
           {{ primaryDetailsConfig?.gender[language] | titlecase }}
         </div>
         <div class="col-sm-8 fw-bold">
-          {{ primeDetails?.gender }}
+          {{ primeDetails?.gender | titlecase }}
         </div>
       </div>
     </td>
