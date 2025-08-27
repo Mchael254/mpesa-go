@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Logger, UtilService} from "../../services";
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
 import {GlobalMessagingService} from "../../services/messaging/global-messaging.service";
 import {SessionStorageService} from "../../services/session-storage/session-storage.service";
 import {ReusableInputComponent} from "../reusable-input/reusable-input.component";
@@ -145,12 +145,7 @@ export class DynamicSetupTableComponent implements OnInit {
     log.info('formFields:', this.formFields);
 
     this.formFields.forEach(field => {
-      let validators = [];
-
-      if (field.isMandatory) {
-        validators.push(Validators.required);
-      }
-
+      const validators = this.buildValidators(field);
       formControls[field.fieldId] = new FormControl('', validators);
     });
 
@@ -411,7 +406,6 @@ export class DynamicSetupTableComponent implements OnInit {
     let input: string;
     let errorMessage: string;
 
-    log.info(`regex to use1`, groupId, fieldId);
     switch (fieldId) {
       default:
         pattern = new RegExp(field.validations[0]?.value);
@@ -421,7 +415,6 @@ export class DynamicSetupTableComponent implements OnInit {
     }
 
     log.info(`regex to use`, this.regexErrorMessages, groupId, fieldId);
-
   }
 
   /**
@@ -445,6 +438,65 @@ export class DynamicSetupTableComponent implements OnInit {
         errorMessage: errorMessage
       }
     }
+  }
+
+  private buildValidators(field: FieldModel): ValidatorFn[] {
+    const validators: ValidatorFn[] = [];
+
+    // Required
+    if (field.isMandatory) {
+      validators.push(Validators.required);
+    }
+
+    // Type-specific
+    if (field.type === 'email') {
+      validators.push(Validators.email);
+    }
+
+    // Custom validations from config
+    if (Array.isArray(field.validations)) {
+      field.validations.forEach(v => {
+        if (!v?.type || v.value == null) return;
+        const t = v.type.toLowerCase();
+        switch (t) {
+          case 'pattern':
+            try {
+              validators.push(Validators.pattern(v.value));
+            } catch (e) {
+              log.warn(`Invalid regex for field ${field.fieldId}:`, v.value, e);
+            }
+            break;
+          case 'min':
+            if (!isNaN(Number(v.value))) validators.push(Validators.min(Number(v.value)));
+            break;
+          case 'max':
+            if (!isNaN(Number(v.value))) validators.push(Validators.max(Number(v.value)));
+            break;
+          case 'minlength':
+          case 'minlength_char':
+          case 'minlength_characters':
+          case 'minlengthchars':
+          case 'minlengthchar':
+          case 'min_length':
+          case 'min_length_chars':
+            if (!isNaN(Number(v.value))) validators.push(Validators.minLength(Number(v.value)));
+            break;
+          case 'maxlength':
+          case 'maxlengthchars':
+          case 'maxlength_char':
+          case 'maxlength_characters':
+          case 'max_length':
+          case 'max_length_chars':
+            if (!isNaN(Number(v.value))) validators.push(Validators.maxLength(Number(v.value)));
+            break;
+          default:
+            // Unknown validator type; ignore but log for visibility
+            log.debug(`Unknown validator type "${v.type}" for field ${field.fieldId}`);
+        }
+      });
+    }
+
+    return validators;
   }
 
   /**
