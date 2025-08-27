@@ -17,6 +17,7 @@ import {StatusService} from "../../../../../../shared/services/system-definition
 import {StatusDTO} from "../../../../../../shared/data/common/systemsDto";
 import {ClientService} from "../../../../services/client/client.service";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
+import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 
 const log = new Logger('EntityBasicInfoComponent');
 
@@ -39,6 +40,8 @@ export class EntityBasicInfoComponent {
   @Input() partyAccountDetails: PartyAccountsDetails;
   @Input() unAssignedPartyTypes: PartyTypeDto[];
   @Input() overviewConfig: any;
+  @Input() clientDetails: any;
+
   basicInfo: any;
   language: string = 'en'
   selectedRole: PartyTypeDto;
@@ -47,20 +50,32 @@ export class EntityBasicInfoComponent {
   applicableStatuses: StatusDTO[] = [];
   actionableStatuses: StatusDTO[] = [];
 
+  isEditingWefWet: boolean = false;
+
+  wetDateForm:FormGroup;
+
   constructor(
     private utilService: UtilService,
     private statusService: StatusService,
     private clientService: ClientService,
     private globalMessagingService: GlobalMessagingService,
+    private fb: FormBuilder,
   ) {
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
     });
 
+    this.wetDateForm = this.fb.group({
+      wetDate: []
+    })
+
     setTimeout(() => {
       this.basicInfo = this.overviewConfig?.basic_info;
       this.fetchClientStatuses();
+      log.info('client details for basic info >>> ', this.clientDetails);
     }, 1000);
+
+
   }
 
 
@@ -176,6 +191,30 @@ export class EntityBasicInfoComponent {
   selectPartyTypeRole(role: PartyTypeDto) {
     // this.entityAccountIdDetails = [];
     this.partyTypeRole.emit(role);
+  }
+
+  toggleWefWetEdit() {
+    this.isEditingWefWet = !this.isEditingWefWet;
+    if (this.isEditingWefWet) {
+      // patch current wet date
+      this.wetDateForm.patchValue({
+        wetDate: (this.clientDetails.withEffectToDate)?.split('T')[0]
+      })
+    } else {
+      // update client details
+      const withEffectToDate = this.wetDateForm.getRawValue().wetDate;
+      const clientCode = this.clientDetails.clientCode;
+
+      this.clientService.updateClientSection(clientCode, { withEffectToDate }).subscribe({
+        next: data => {
+          this.clientDetails = data;
+          this.globalMessagingService.displaySuccessMessage('Success', 'WET date updated successfully');
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', 'could not update WET date');
+        }
+      })
+    }
   }
 
 
