@@ -1084,20 +1084,20 @@
 
                                                       <div class="d-flex justify-content-end align-items-center">
                 <i  #iconRisk class="pi border border-black p-1 rounded-1 text-black"
-   [ngClass]="{ 'pi-caret-down': !showScheduleColumnModal, 'pi-caret-up': showScheduleColumnModal }"
+   [ngClass]="{ 'pi-caret-down': !showPerilColumnModal, 'pi-caret-up': showPerilColumnModal }"
    style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-   (click)="toggleSchedule(iconRisk)">
+   (click)="togglePeril(iconRisk)">
 </i>
 </div>
-           <!-- Floating Column Selector for Risk -->
-<div *ngIf="showScheduleColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+           <!-- Floating Column Selector for peril -->
+<div *ngIf="showPerilColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
   [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
   <div class="d-flex justify-content-between align-items-center mb-2">
-    <strong class="text-primary">Select Schedules Columns</strong>
-    <button class="btn-close btn-sm" (click)="showScheduleColumnModal = false"></button>
+    <strong class="text-primary">Select Perils Columns</strong>
+    <button class="btn-close btn-sm" (click)="showPerilColumnModal = false"></button>
   </div>
   <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
-    <div *ngFor="let col of scheduleColumns">
+    <div *ngFor="let col of perilColumns">
       <div class="form-check">
         <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
         <label class="form-check-label" [for]="col.field">
@@ -1109,42 +1109,39 @@
 </div>
 
 
-                <p-table [value]="getCurrentSchedule()" [tableStyle]="{ 'width': '100%' }">
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th class="flexible-header" pSortableColumn="id">ID<p-sortIcon field="id"></p-sortIcon></th>
-                      <th class="flexible-header" pSortableColumn="cubicCapacity">Peril<p-sortIcon
-                          field="cubicCapacity"></p-sortIcon></th>
-                      <th class="flexible-header" pSortableColumn="yearOfManufacture">Type<p-sortIcon
-                          field="yearOfManufacture"></p-sortIcon></th>
-                      <th class="flexible-header" pSortableColumn="carryingCapacity">SI/Limits<p-sortIcon
-                          field="carryingCapacity"></p-sortIcon></th>
-                      <th class="flexible-header" pSortableColumn="value">Limit description<p-sortIcon
-                          field="value"></p-sortIcon></th>
-                      <th class="flexible-header" pSortableColumn="bodyType">Person limit<p-sortIcon
-                          field="bodyType"></p-sortIcon></th>
-                      <th class="flexible-header" pSortableColumn="bodyType">Limit amount<p-sortIcon
-                          field="bodyType"></p-sortIcon></th>
-                      <th class="flexible-header" pSortableColumn="bodyType">Claim amount<p-sortIcon
-                          field="bodyType"></p-sortIcon></th>
+ <!-- Dynamic peril table -->
+  <p-table [value]="summaryPerils" [tableStyle]="{ 'width': '100%' }">
+    <!-- Header -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th *ngFor="let col of perilColumns" 
+            class="flexible-header" 
+            pSortableColumn="{{ col.field }}" 
+            [hidden]="!col.visible">
+          {{ col.header }}
+          <p-sortIcon [field]="col.field"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
 
-                    </tr>
-                  </ng-template>
-                  <ng-template pTemplate="body" let-data>
-                    <tr>
-                      <td class="flexible-header">
-                        {{ data.make }}
-                      </td>
-                      <td class="flexible-header">{{ data.cubicCapacity }}</td>
-                      <td class="flexible-header">
-                        {{ data.yearOfManufacture }}
-                      </td>
-                      <td class="flexible-header">{{ data.carryCapacity }}</td>
-                      <td class="flexible-header">{{ data.value }}</td>
-                      <td class="flexible-header">{{ data.bodyType }}</td>
-                    </tr>
-                  </ng-template>
-                </p-table>
+    <!-- Body -->
+    <ng-template pTemplate="body" let-rowData>
+      <tr>
+        <td *ngFor="let col of perilColumns" [hidden]="!col.visible">
+          {{ getCellValue(rowData,col.field) }}
+        </td>
+      </tr>
+    </ng-template>
+
+    <!-- Empty message -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="perilColumns.length" class="text-center text-muted py-3">
+          “No perils for this risk.”
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
               </div>
 
 

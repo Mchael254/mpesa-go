@@ -210,6 +210,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   scheduleColumns: { field: string; header: string; visible: boolean }[] = [];
   perilColumns: { field: string; header: string; visible: boolean }[] = [];
   excessColumns: { field: string; header: string; visible: boolean }[] = [];
+  summaryPerils: any[] = [];
   
 
 
@@ -313,6 +314,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.getuser();
     this.getRiskDetails();
     
+    this.loadSummaryPerils()
 
 
     // this.createInsurersForm();
@@ -2715,12 +2717,11 @@ setColumnsFromScheduleDetails(sample:any) {
 }
 setColumnsFromPerilDetails(sample:any) {
   const defaultVisibleFields = ['sectionShortDescription',
-    'make',
-    'cubicCapacity',
-    'yearOfManufacture',
-    'carryCapacity',
-    'value',
-    'bodyType'
+    'description',
+    'shortDescription',
+    'code',
+    'claimExcessType'
+    
 
 
 
@@ -2809,6 +2810,43 @@ getCellValue(row: any, field: string): any {
 
   return value;
 }
+
+
+
+loadSummaryPerils(): void {
+    const savedPerilsData = sessionStorage.getItem('perilsData');
+    console.log("Raw perilsData from sessionStorage:", savedPerilsData);
+
+    if (!savedPerilsData) {
+      console.warn("No perilsData found in sessionStorage.");
+      this.summaryPerils = [];
+      return;
+    }
+
+    try {
+      const allPerilsMap = JSON.parse(savedPerilsData);
+      const subclassCode = this.selectedRisk?.subclassCode; 
+      log.debug("SubclassCode in summary:", subclassCode);
+      log.debug("Available subclassCodes in perilsData:", Object.keys(allPerilsMap));
+
+      if (subclassCode && allPerilsMap[subclassCode]) {
+        this.summaryPerils = allPerilsMap[subclassCode];
+      } else {
+        
+        this.summaryPerils = Object.values(allPerilsMap).flat();
+      }
+
+      log.debug("Loaded summary perils:", this.summaryPerils);
+
+
+    if(this.summaryPerils){
+      this.setColumnsFromPerilDetails(this.summaryPerils[0])
+    }
+    } catch (error) {
+      log.debug("Failed to parse perilsData from sessionStorage:", error);
+      this.summaryPerils = [];
+    }
+  }
 
 
 
