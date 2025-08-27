@@ -293,7 +293,7 @@ export class ViewEntityComponent implements OnInit {
   getClientDetails(clientCode: number) {
     this.clientService.getClientDetailsByClientCode(clientCode).subscribe({
       next: (res) => {
-        // log.info('clientDetails >>> ', res);
+        log.info('clientDetails >>> ', res);
         // this.populateDetailsForDisplay(res);
         this.clientDetails = res;
         this.clientDetails.contactDetails.branchName = res.organizationBranchName
