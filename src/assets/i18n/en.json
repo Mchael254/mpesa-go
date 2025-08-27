@@ -1285,6 +1285,7 @@
       "premium_rate": "Premium Rate",
       "premium_type": "Premium Type",
       "product": "Product",
+      "product_clauses":"Product Clauses",
       "product_details": "Products",
       "product_is_required": "Product is required",
       "provide_reason_for_cancellation": "Please provide a reason for your cancellation",

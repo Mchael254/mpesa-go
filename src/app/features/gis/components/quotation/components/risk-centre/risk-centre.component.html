@@ -33,13 +33,12 @@
                     <button type="button" class="btn btn-primary btn-sm" (click)="showAddRiskModal()">
                         Add risk
                     </button>
-                    <!-- <button type="button" class="btn btn-sm btn-outline-secondary" (click)="toggleSection()">
-                        <i [ngClass]="isCollapsed ? 'pi-caret-up' : 'pi-caret-down'"></i>
-                       
-                    </button> -->
-                    <i class="pi border border-black p-1 rounded-1 text-black"
-                        [ngClass]="{'pi-caret-up': isCollapsed, 'pi-caret-down': !isCollapsed}"
-                        style="font-size: 13px;cursor: pointer; margin-left:18px;" (click)="toggleSection()"></i>
+
+                    <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                        [ngClass]="{ 'pi-caret-up': riskDetailscolumns, 'pi-caret-down': !riskDetailscolumns }"
+                        style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                        (click)="togglePerilColumns(iconTrigger)">
+                    </i>
                 </div>
             </div>
 

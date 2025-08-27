@@ -1,6 +1,27 @@
 <!-- RISK DETAILS CARD -->
 <div class="card  mb-3 border-0 ">
     <div class="card-body border-0 mx-4" style="padding-top: 0px;">
+        <div *ngIf="showRiskDetailsColumnModal" class="card shadow rounded p-2 bg-white border" [ngStyle]="{
+            position: 'fixed', top: columnModalPosition.top, left: columnModalPosition.left,
+            zIndex: 1050}">
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong class="text-primary">Select Columns</strong>
+                <button class="btn-close btn-sm" (click)="showRiskDetailsColumnModal = false"></button>
+            </div>
+
+            <div style="max-height: 250px; overflow-y: auto;">
+                <div *ngFor="let col of riskDetailsColumns">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                            [(ngModel)]="col.visible" (change)="toggleRiskColumnVisibility(col.field)" [id]="col.field">
+                        <label class="form-check-label" [for]="col.field">
+                            {{ col.header }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <p-table [value]="riskDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single" dataKey="code"
             [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 20, 50]">
@@ -1620,7 +1641,6 @@
                     </tr>
                 </ng-template>
 
-
                 <!-- Table Body -->
                 <ng-template pTemplate="body" let-limit>
                     <tr>
@@ -1963,7 +1983,7 @@
                 </ng-template>
 
                 <!-- empty table and no search -->
-               <ng-template pTemplate="emptymessage">
+                <ng-template pTemplate="emptymessage">
                     <tr>
                         <td [attr.colspan]="perilColumns.length" class="text-center p-4 text-muted">
                             <ng-container *ngIf="addedPerils?.length > 0; else noClauses">
