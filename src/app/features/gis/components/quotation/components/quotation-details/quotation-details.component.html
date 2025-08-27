@@ -414,9 +414,17 @@
             </ng-container>
 
             <!-- Default case: display value dynamically -->
-            <ng-container *ngSwitchDefault >
-{{ getCellValue(product, col.field) }}
-            </ng-container>
+      <ng-container *ngSwitchDefault>
+  <p-cellEditor>
+    <ng-template pTemplate="input">
+      <input type="text" pInputText [(ngModel)]="product[col.field]" />
+    </ng-template>
+    <ng-template pTemplate="output">
+      {{ getCellValue(product, col.field) }}
+    </ng-template>
+  </p-cellEditor>
+</ng-container>
+
 
           </ng-container>
         </td>
@@ -452,7 +460,7 @@
                     <label for="" class="quote-label">Product</label>
                     <p-dropdown [options]="ProductDescriptionArray" formControlName="productCodes"
                       optionLabel="filterText" filterBy="filterText" [filter]="true" [showClear]="true" placeholder=""
-                      class="custom-multiselect">
+                      class="custom-multiselect"(onChange)="onProductSelected($event.value)">
 
 
                       <ng-template let-product pTemplate="item">

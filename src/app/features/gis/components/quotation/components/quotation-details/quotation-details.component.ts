@@ -295,11 +295,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.updateCoverToDate(today);
       }
     });
+ 
+
 
 
     this.loadPersistedClauses();
     this.getUsers();
     this.getAgents();
+    
   }
 
   ngAfterViewInit() {
@@ -916,6 +919,11 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         log.debug("AGENTS", data)
         this.marketerList = data.content.filter(agent => agent.accountTypeId == 10)
         log.debug("Marketer list", this.marketerList)
+
+if (this.marketerList && this.marketerList.length > 0) {
+  this.quotationForm.get('marketer')?.setValue(this.marketerList[0].id);
+}
+
       })
   }
 
@@ -1388,16 +1396,28 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           }
         }
 
-        // PRODUCTS
-        this.products = products;
-        this.ProductDescriptionArray = this.products?.map(product => {
-          const description = this.capitalizeWord(product.description);
-          return {
-            code: product.code.toString(), // convert to string
-            description,
-            filterText: `${product.code} ${description}`.toLowerCase()
-          };
-        });
+       // PRODUCTS
+this.products = products;
+
+const storedProducts = sessionStorage.getItem('availableProducts');
+if (storedProducts) {
+  // Use saved products if they exist
+  this.ProductDescriptionArray = JSON.parse(storedProducts);
+} else {
+  // Fallback to API products
+  this.ProductDescriptionArray = this.products?.map(product => {
+    const description = this.capitalizeWord(product.description);
+    return {
+      code: product.code.toString(),
+      description,
+      filterText: `${product.code} ${description}`.toLowerCase()
+    };
+  });
+
+  // Save initial list to sessionStorage
+  sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+}
+
 
         console.log("✅ ProductDescriptionArray with filterText:", this.ProductDescriptionArray);
 
@@ -1601,9 +1621,15 @@ submitAddProductForm() {
     }
   });
 
+  // Remove the selected product from dropdown options
+  this.ProductDescriptionArray = this.ProductDescriptionArray.filter(
+    (p: any) => p.code !== selectedProductCode
+  );
+
   // Save to sessionStorage
   sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
   log.debug("Saved Product Details to sessionStorage:", this.productDetails);
+  sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
 
   // Reset form
   this.quotationProductForm.reset({
@@ -1642,9 +1668,25 @@ submitAddProductForm() {
   }
 
   onRowSelect(product: any) {
-    this.selectedRow = product.productCode;
-    this.getProductClause(this.selectedRow);
+    this.selectedRow = product;
+    this.getProductClause(product.productCode);
   }
+  onProductSelected(selectedProduct: any) {
+  if (!selectedProduct) return;
+
+
+  const today = new Date();
+  const nextYear = new Date(today);
+  nextYear.setFullYear(today.getFullYear() + 1);
+
+  this.quotationProductForm.patchValue({
+    wef: today,   
+    wet: nextYear 
+  });
+
+  
+}
+
 
 
   openProductDeleteModal(product: any) {
@@ -1667,18 +1709,33 @@ submitAddProductForm() {
   }
 
   productToDelete: any = null;
+
+
   deleteProduct() {
     if (!this.productToDelete) return;
+  
 
     this.productDetails = this.productDetails.filter(
       p => p.productCode.code !== this.productToDelete.productCode.code
     );
+    
     sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
 
     //remove related clauses from allClausesMap
     const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
     delete allClausesMap[this.productToDelete.productCode.code];
     sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+
+
+    // Restore deleted product to dropdown
+  this.ProductDescriptionArray.push({
+    code: this.productToDelete.productCode.code,
+    description: this.productToDelete.productCode.description
+  });
+
+  // Persist the updated dropdown list again
+sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+
 
     if (this.productCode === this.productToDelete.productCode.code) {
       const nextProduct = this.productDetails[0];
