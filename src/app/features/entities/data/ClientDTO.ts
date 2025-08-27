@@ -65,6 +65,8 @@ export interface ClientDTO {
   paymentDetails?: any,
   wealthAmlDetails?: any,
   clientCode?: number,
+  organizationBranchId?: number,
+  organizationBranchName?: string,
 }
 export interface ClientTypeDTO {
   category: string,
