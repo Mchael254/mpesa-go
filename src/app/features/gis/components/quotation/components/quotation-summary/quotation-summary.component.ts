@@ -201,6 +201,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showScheduleColumnModal:boolean=false;
   showPerilColumnModal:boolean=false;
   showExcessColumnModal:boolean=false;
+  showLimitsOfLiabilityColumnModal:boolean=false;
 
   clausesColumns: { field: string; header: string; visible: boolean }[] = [];
   taxesColumns: { field: string; header: string; visible: boolean }[] = [];
@@ -210,6 +211,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   scheduleColumns: { field: string; header: string; visible: boolean }[] = [];
   perilColumns: { field: string; header: string; visible: boolean }[] = [];
   excessColumns: { field: string; header: string; visible: boolean }[] = [];
+  limitsColumns: { field: string; header: string; visible: boolean }[] = [];
   summaryPerils: any[] = [];
   
 
@@ -2132,6 +2134,8 @@ getSections(data: any) {
 
           if (scheduleType === 'L') {
             this.limitsRiskofLiability = res._embedded;
+
+            this.setColumnsFromLimitsOfLiabilityDetails(this.limitsRiskofLiability[0])
           } else {
             this.excesses = res._embedded;
             this.comments = res._embedded
@@ -2435,6 +2439,23 @@ toggleRisk(iconElement: HTMLElement): void {
     };
 
     this.showExcessColumnModal = true;
+  }
+
+   toggleLimitsOfLiability(iconElement: HTMLElement): void {
+    
+     
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showLimitsOfLiabilityColumnModal = true;
   }
 
   setColumnsFromProductDetails(sample: ProductDetails) {
@@ -2780,6 +2801,42 @@ setColumnsFromExcessDetails(sample:any) {
 
 
   this.excessColumns = keys.map(key => ({
+    field: key,
+    header: this.sentenceCase(key),
+    visible: defaultVisibleFields.includes(key),
+  }));
+}
+
+
+setColumnsFromLimitsOfLiabilityDetails(sample:any) {
+  const defaultVisibleFields = [
+    'narration',
+    'value'
+    
+
+
+
+
+   
+    
+  ];
+  
+  const excludedFields = [
+    
+  ]; 
+
+  
+  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+  
+  keys = keys.sort((a, b) => {
+    if (a === 'productName') return -1;
+    if (b === 'productName') return 1;
+    return 0;
+  });
+
+
+  this.limitsColumns = keys.map(key => ({
     field: key,
     header: this.sentenceCase(key),
     visible: defaultVisibleFields.includes(key),
