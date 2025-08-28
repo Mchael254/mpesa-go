@@ -1313,7 +1313,6 @@ export class NewEntityV2Component implements OnInit {
       },
       error: (err) => {}
     })
-    sessionStorage.removeItem('aiToken')
   }
 
 
@@ -1611,9 +1610,7 @@ export class NewEntityV2Component implements OnInit {
         this.isPatchingFormValues = false;
         this.entityForm.enable();
       }
-    })
-    sessionStorage.removeItem('aiToken')
-
+    });
   }
 
 

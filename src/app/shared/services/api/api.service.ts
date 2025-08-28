@@ -201,6 +201,16 @@ export class ApiService {
     return this.http.post<T>(url, data, {headers});
   }
 
+  AI_DOC_UPLOAD<T>(
+    endpoint: string,
+    data: FormData,
+    BASE_SERVICE: API_CONFIG = API_CONFIG.AI_DOCUMENT_SERVICE
+  ): Observable<T> {
+    this.baseURL = environment.API_URLS.get(BASE_SERVICE);
+    const url = `${this.baseURL}/${endpoint}`;
+    return this.http.post<T>(url, data)
+  }
+
   PUT<T>(
     endpoint: string,
     data: any,
