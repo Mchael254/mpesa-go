@@ -1,19 +1,14 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
-import {
-  ClientBranchesDto,
-  ClientDTO,
-  ClientTitlesDto,
-  ClientTypeDTO,
-} from '../../data/ClientDTO';
+import {ClientBranchesDto, ClientDTO, ClientTitlesDto, ClientTypeDTO,} from '../../data/ClientDTO';
 import {Pagination} from '../../../../shared/data/common/pagination';
 import {ApiService} from '../../../../shared/services/api/api.service';
 import {API_CONFIG} from '../../../../../environments/api_service_config';
 import {UtilService} from '../../../../shared/services';
 import {AppConfigService} from "../../../../core/config/app-config-service";
-import {AiDocumentHubRequest, AiFileUploadMetadata} from "../../data/ai-file-upload-metadata.model";
+import {AiFileUploadMetadata} from "../../data/ai-file-upload-metadata.model";
 import {OtpRequestPayload} from "../../data/otp-request.model";
 
 @Injectable({
@@ -74,7 +69,7 @@ export class ClientService {
     );
   }
 
- 
+
   searchClients(
     page: number,
     size: number = 5,
@@ -260,23 +255,23 @@ export class ClientService {
   }
 
   uploadDocForScanning(files: File[]): Observable<AiFileUploadMetadata> {
-    const url = 'https://turnquest-ai.turnkeyafrica.com/akili/storage/files';
-    const token = 'sk-akv1_MgByM76PW_JUja6lruC8rv5zIZmvU7J1qKoVCNqCwlk';
-
     const formData = new FormData();
     files.forEach(file => {
       formData.append('files', file);
     })
-
-    sessionStorage.setItem('aiToken', token);
-    return this.http.post<AiFileUploadMetadata>(url, formData)
+    return this.api.AI_DOC_UPLOAD(
+      'ai-helper/document-storage',
+      formData,
+      API_CONFIG.AI_DOCUMENT_SERVICE
+    );
   }
 
   readScannedDocuments(payload: any /*AiDocumentHubRequest*/): Observable<any> {
-    const url = 'https://turnquest-ai.turnkeyafrica.com/akili/v2/runs/wait';
-    const token = 'sk-akv1_MgByM76PW_JUja6lruC8rv5zIZmvU7J1qKoVCNqCwlk';
-    sessionStorage.setItem('aiToken', token);
-    return this.http.post<any>(url, payload)
+    return this.api.AI_DOC_UPLOAD(
+      'ai-helper/document-extract',
+      payload,
+      API_CONFIG.AI_DOCUMENT_SERVICE
+    );
   }
 
 }
