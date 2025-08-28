@@ -198,12 +198,19 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showRiskColumnModal: boolean=false;
   showSectionColumnModal: boolean=false;
   showRiskClauseColumnModal:boolean=false;
+  showScheduleColumnModal:boolean=false;
+  showPerilColumnModal:boolean=false;
+  showExcessColumnModal:boolean=false;
 
   clausesColumns: { field: string; header: string; visible: boolean }[] = [];
   taxesColumns: { field: string; header: string; visible: boolean }[] = [];
   riskColumns: { field: string; header: string; visible: boolean }[] = [];
   sectionColumns: { field: string; header: string; visible: boolean }[] = [];
   riskClausesColumns:{ field: string; header: string; visible: boolean }[] = [];
+  scheduleColumns: { field: string; header: string; visible: boolean }[] = [];
+  perilColumns: { field: string; header: string; visible: boolean }[] = [];
+  excessColumns: { field: string; header: string; visible: boolean }[] = [];
+  summaryPerils: any[] = [];
   
 
 
@@ -307,6 +314,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.getuser();
     this.getRiskDetails();
     
+    this.loadSummaryPerils()
+
 
     // this.createInsurersForm();
     // this.fetchInsurers();
@@ -360,6 +369,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     log.debug('QuotationView', this.quotationView)
     log.debug('quotationDetails', this.quotationDetails)
     // log.debug('quotationDetailsm', this.getQuotationDetails(this.productSubclass))
+
+    
 
 
   }
@@ -576,8 +587,14 @@ if (risk1.code) {
 
 }
 
+
  this.getLimitsofLiability(quotationProductCode, subclassCode,'L');
  this.getLimitsofLiability(quotationProductCode,subclassCode,'E')
+ const defaultRiskCode = this.riskDetails.length > 0 ? this.riskDetails[0].code : null;
+
+  if (defaultRiskCode) {
+    this.getSections(defaultRiskCode);
+  }
 
       });
 
@@ -642,12 +659,34 @@ getSections(data: any) {
       }
     });
 
+     if (this.availableScheduleLevels.length > 0) {
+    this.activeScheduleTab = this.availableScheduleLevels[0];
+
+    if (this.getCurrentSchedule().length > 0) {
+      this.setColumnsFromScheduleDetails(this.getCurrentSchedule()[0]);
+    }
+  }
+
     log.debug(this.schedulesData, 'schedulesData by level');
     log.debug(this.sections, 'section Details');
   }
+
   getCurrentSchedule() {
     return this.schedulesData[this.activeScheduleTab] || [];
   }
+
+  selectScheduleTab(tab: string) {
+  this.activeScheduleTab = tab;
+  console.log('Active tab:', tab);
+  console.log('Schedules for this tab:', this.getCurrentSchedule());
+
+  if (this.getCurrentSchedule().length > 0) {
+  const sampleSchedule = this.getCurrentSchedule()[0];
+  this.setColumnsFromScheduleDetails(sampleSchedule);
+}
+
+}
+
 
   /**
    * Navigates to the edit details page.
@@ -1030,6 +1069,8 @@ getSections(data: any) {
         next: (res) => {
           this.excesses = res;
           this.excessesList = this.excesses._embedded ?? [];
+
+        
 
           log.debug("EXCESS LIST", this.excessesList);
           if (this.limits?.message) {
@@ -2094,7 +2135,13 @@ getSections(data: any) {
           } else {
             this.excesses = res._embedded;
             this.comments = res._embedded
+
+
+             if (this.excesses.length){
+            this.setColumnsFromExcessDetails(this.excesses[0])
           }
+          }
+
         },
         error: (error) => {
           log.error(`Error fetching limits of liability (${scheduleType}):`, error);
@@ -2341,6 +2388,55 @@ toggleRisk(iconElement: HTMLElement): void {
     this.showRiskClauseColumnModal = true;
   }
 
+   toggleSchedule(iconElement: HTMLElement): void {
+    
+     
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showScheduleColumnModal = true;
+  }
+  togglePeril(iconElement: HTMLElement): void {
+    
+     
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showPerilColumnModal = true;
+  }
+  toggleExcess(iconElement: HTMLElement): void {
+    
+     
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showExcessColumnModal = true;
+  }
+
   setColumnsFromProductDetails(sample: ProductDetails) {
   const defaultVisibleFields = [
     'productName',
@@ -2582,6 +2678,113 @@ setColumnsFromRiskClausesDetails(sample:riskClauses) {
   }));
 }
 
+setColumnsFromScheduleDetails(sample:any) {
+  const defaultVisibleFields = ['sectionShortDescription',
+    'make',
+    'cubicCapacity',
+    'yearOfManufacture',
+    'carryCapacity',
+    'value',
+    'bodyType'
+
+
+
+
+   
+    
+  ];
+  
+  const excludedFields = [
+    
+  ]; 
+
+  
+  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+  
+  keys = keys.sort((a, b) => {
+    if (a === 'productName') return -1;
+    if (b === 'productName') return 1;
+    return 0;
+  });
+
+
+  this.scheduleColumns = keys.map(key => ({
+    field: key,
+    header: this.sentenceCase(key),
+    visible: defaultVisibleFields.includes(key),
+  }));
+}
+setColumnsFromPerilDetails(sample:any) {
+  const defaultVisibleFields = ['sectionShortDescription',
+    'description',
+    'shortDescription',
+    'code',
+    'claimExcessType'
+    
+
+
+
+
+   
+    
+  ];
+  
+  const excludedFields = [
+    
+  ]; 
+
+  
+  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+  
+  keys = keys.sort((a, b) => {
+    if (a === 'productName') return -1;
+    if (b === 'productName') return 1;
+    return 0;
+  });
+
+
+  this.perilColumns = keys.map(key => ({
+    field: key,
+    header: this.sentenceCase(key),
+    visible: defaultVisibleFields.includes(key),
+  }));
+}
+setColumnsFromExcessDetails(sample:any) {
+  const defaultVisibleFields = [
+    'narration',
+    'value'
+    
+
+
+
+
+   
+    
+  ];
+  
+  const excludedFields = [
+    
+  ]; 
+
+  
+  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+  
+  keys = keys.sort((a, b) => {
+    if (a === 'productName') return -1;
+    if (b === 'productName') return 1;
+    return 0;
+  });
+
+
+  this.excessColumns = keys.map(key => ({
+    field: key,
+    header: this.sentenceCase(key),
+    visible: defaultVisibleFields.includes(key),
+  }));
+}
 
 
 getCellValue(row: any, field: string): any {
@@ -2607,6 +2810,44 @@ getCellValue(row: any, field: string): any {
 
   return value;
 }
+
+
+
+loadSummaryPerils(): void {
+    const savedPerilsData = sessionStorage.getItem('perilsData');
+    console.log("Raw perilsData from sessionStorage:", savedPerilsData);
+
+    if (!savedPerilsData) {
+      console.warn("No perilsData found in sessionStorage.");
+      this.summaryPerils = [];
+      return;
+    }
+
+    try {
+      const allPerilsMap = JSON.parse(savedPerilsData);
+      const subclassCode = this.selectedRisk?.subclassCode; 
+      log.debug("SubclassCode in summary:", subclassCode);
+      log.debug("Available subclassCodes in perilsData:", Object.keys(allPerilsMap));
+
+      if (subclassCode && allPerilsMap[subclassCode]) {
+        this.summaryPerils = allPerilsMap[subclassCode];
+      } else {
+        
+        this.summaryPerils = Object.values(allPerilsMap).flat();
+      }
+
+      log.debug("Loaded summary perils:", this.summaryPerils);
+
+
+    if(this.summaryPerils){
+      this.setColumnsFromPerilDetails(this.summaryPerils[0])
+    }
+    } catch (error) {
+      log.debug("Failed to parse perilsData from sessionStorage:", error);
+      this.summaryPerils = [];
+    }
+  }
+
 
 
 }
