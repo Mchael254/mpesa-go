@@ -41,6 +41,7 @@ export const environment = {
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/report'],
     [API_CONFIG.PAYMENT_SERVICE_BASE_URL, '/gis/payment/api'],
     [API_CONFIG.NONE_BASE_URL, 'assets'],
+    [API_CONFIG.AI_DOCUMENT_SERVICE, '/aireader'],
 
   ]),
   // PAYSTACK_BASE_URL: process.env['PAYSTACK_BASE_URL'],

@@ -35,7 +35,7 @@ export class TokenInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    const token = sessionStorage.getItem('aiToken') || this.jwt.getToken();
+    const token = this.jwt.getToken();
     const deviceInfo = this.deviceDetectorService.getDeviceInfo();
     let device = 'unknown';
     let browser: string;
