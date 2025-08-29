@@ -90,7 +90,7 @@
             </button>
             <button
               type="button"
-              class="btn btn-link text-danger"
+              class="btn btn-link text-primary"
               data-bs-toggle="modal"
               data-bs-target="#deleteWealthAmlModal"
               (click)="selectItemToDelete(rowData)"
@@ -198,15 +198,15 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-0">
-        <h1 class="modal-title fs-5" id="deleteWealthAmlModalLabel">Delete Wealth/AML</h1>
+        <h1 class="modal-title fs-5" id="deleteWealthAmlModalLabel">Delete Wealth/AML Record</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p class="text-danger text-center lead fw-bold">Are you sure you want to delete?</p>
+        <p class="text-center lead">Are you sure you want to delete?</p>
       </div>
       <div class="modal-footer border-0">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" #closeDeleteDialogButton>Close</button>
-        <button type="button" class="btn btn-danger" (click)="deleteAmlRecord()">Confirm delete</button>
+        <button type="button" class="btn btn-danger" (click)="deleteAmlRecord()">Confirm</button>
       </div>
     </div>
   </div>
