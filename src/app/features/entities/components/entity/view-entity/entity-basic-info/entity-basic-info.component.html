@@ -7,14 +7,14 @@
   <div class="col-sm-5">
     <div class="row profile g-2">
       <div class="col-sm-3">
-        <img
-          class="profile-image"
-          src="{{
-            entityPartyIdDetails?.profileImage ||
-              '../../../../../../../assets/images/profile_picture_placeholder.png'
-          }}"
-          alt="{{ entityPartyIdDetails?.name | titlecase }}"
-        />
+        <label class="">
+          <img
+            class="profile-image"
+            [src]="photoPreviewUrl"
+            alt="{{ entityPartyIdDetails?.name | titlecase }}"
+          />
+          <input type="file" hidden (change)="uploadProfileImage($event)">
+        </label>
       </div>
       <div class="col-sm-9">
         <h5>{{ entityPartyIdDetails?.name | titlecase }}</h5>

@@ -31,7 +31,7 @@
             </span>
             <span
               id="edit-tab-btn"
-              *ngIf="tab.title === selectedTab || tab.title === selectedSubTab"
+              *ngIf="(tab.title === selectedTab || tab.title === selectedSubTab) && tab.title !== 'wealth_aml'"
               class="m-2"
               (click)="openEditModal(tab.title)"
             >

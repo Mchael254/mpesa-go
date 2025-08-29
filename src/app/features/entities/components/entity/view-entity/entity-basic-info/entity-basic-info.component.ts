@@ -18,6 +18,7 @@ import {StatusDTO} from "../../../../../../shared/data/common/systemsDto";
 import {ClientService} from "../../../../services/client/client.service";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {EntityService} from "../../../../services/entity/entity.service";
 
 const log = new Logger('EntityBasicInfoComponent');
 
@@ -51,8 +52,8 @@ export class EntityBasicInfoComponent {
   actionableStatuses: StatusDTO[] = [];
 
   isEditingWefWet: boolean = false;
-
   wetDateForm:FormGroup;
+  photoPreviewUrl: string = '../../../../../../../assets/images/profile_picture_placeholder.png';
 
   constructor(
     private utilService: UtilService,
@@ -60,6 +61,7 @@ export class EntityBasicInfoComponent {
     private clientService: ClientService,
     private globalMessagingService: GlobalMessagingService,
     private fb: FormBuilder,
+    private entityService: EntityService,
   ) {
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
@@ -73,6 +75,7 @@ export class EntityBasicInfoComponent {
       this.basicInfo = this.overviewConfig?.basic_info;
       this.fetchClientStatuses();
       log.info('client details for basic info >>> ', this.clientDetails);
+      // this.photoPreviewUrl =
     }, 1000);
 
 
@@ -217,5 +220,28 @@ export class EntityBasicInfoComponent {
     }
   }
 
+  uploadProfileImage(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      const file: File = input.files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event: any) => {
+        this.photoPreviewUrl = event.target.result;
+      }
+
+      this.entityService.uploadProfileImage(this.partyAccountDetails.partyId, file).subscribe({
+        next: data => {
+          this.globalMessagingService.displaySuccessMessage('success', 'successfully uploaded profile picture');
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('error', 'image upload failed!');
+          this.photoPreviewUrl = '../../../../../../../assets/images/profile_picture_placeholder.png';
+        }
+      })
+    }
+
+  }
 
 }
