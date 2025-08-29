@@ -265,7 +265,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
       phone: ['', this.newClient ? [Validators.required] : []],
-      client: ['', [Validators.minLength(2)]]
+      client: ['', [Validators.minLength(2)]],
+      paymentFrequency: [this.paymentFrequencies[0].value, Validators.required]
     });
     this.loadDetailedQuotationFields();
 
@@ -920,9 +921,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.marketerList = data.content.filter(agent => agent.accountTypeId == 10)
         log.debug("Marketer list", this.marketerList)
 
-if (this.marketerList && this.marketerList.length > 0) {
-  this.quotationForm.get('marketer')?.setValue(this.marketerList[0].id);
-}
+
 
       })
   }

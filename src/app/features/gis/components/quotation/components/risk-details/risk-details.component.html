@@ -1022,7 +1022,15 @@
                                     </button>
                                 </ng-container>
                                 <ng-container *ngSwitchDefault>
-                                    {{ section[col.field] }}
+  <ng-container *ngSwitchDefault>
+  <ng-container *ngIf="col.field === 'limitAmount'; else defaultField">
+    {{ section[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.0-0' }}
+  </ng-container>
+  <ng-template #defaultField>
+    {{ section[col.field] }}
+  </ng-template>
+</ng-container>
+
                                 </ng-container>
                             </ng-container>
                         </td>
