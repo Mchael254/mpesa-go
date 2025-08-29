@@ -5,7 +5,15 @@
 //  ****************************************************************************/
 
 import { Injectable } from '@angular/core';
-import { AbstractControl, AsyncValidatorFn, FormArray, ValidationErrors } from '@angular/forms';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormArray,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import { ClientAccountContact } from "../../data/client-account-contact";
 import { AccountContact } from "../../data/account-contact";
 import { WebAdmin } from "../../data/web-admin";
@@ -14,6 +22,8 @@ import { DatePipe } from "@angular/common";
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { BehaviorSubject } from "rxjs";
 import { saveAs } from "file-saver";
+import {FieldModel} from "../../../features/entities/data/form-config.model";
+import {Logger} from "../logger/logger.service";
 
 // import { format, subYears } from 'date-fns';
 
@@ -22,6 +32,8 @@ export interface FullName {
   clntSurname: string;
   clntOtherNames: string;
 }
+
+const log = new Logger('UtilService');
 
 /**
  * Utility service class to provide common utility methods
@@ -768,5 +780,63 @@ export class UtilService {
       view[i] = str.charCodeAt(i);
     }
     return buffer;
+  }
+
+  buildValidators(field: FieldModel): ValidatorFn[] {
+    const validators: ValidatorFn[] = [];
+
+    // Required
+    if (field.isMandatory) {
+      validators.push(Validators.required);
+    }
+
+    // Type-specific
+    if (field.type === 'email') {
+      validators.push(Validators.email);
+    }
+
+    // Custom validations from config
+    if (Array.isArray(field.validations)) {
+      field.validations.forEach(v => {
+        if (!v?.type || v.value == null) return;
+        const t = v.type.toLowerCase();
+        switch (t) {
+          case 'pattern':
+            try {
+              validators.push(Validators.pattern(v.value));
+            } catch (e) {
+              log.warn(`Invalid regex for field ${field.fieldId}:`, v.value, e);
+            }
+            break;
+          case 'min':
+            if (!isNaN(Number(v.value))) validators.push(Validators.min(Number(v.value)));
+            break;
+          case 'max':
+            if (!isNaN(Number(v.value))) validators.push(Validators.max(Number(v.value)));
+            break;
+          case 'minlength':
+          case 'minlength_char':
+          case 'minlength_characters':
+          case 'minlengthchars':
+          case 'minlengthchar':
+          case 'min_length':
+          case 'min_length_chars':
+            if (!isNaN(Number(v.value))) validators.push(Validators.minLength(Number(v.value)));
+            break;
+          case 'maxlength':
+          case 'maxlengthchars':
+          case 'maxlength_char':
+          case 'maxlength_characters':
+          case 'max_length':
+          case 'max_length_chars':
+            if (!isNaN(Number(v.value))) validators.push(Validators.maxLength(Number(v.value)));
+            break;
+          default:
+            log.debug(`Unknown validator type "${v.type}" for field ${field.fieldId}`);
+        }
+      });
+    }
+
+    return validators;
   }
 }
