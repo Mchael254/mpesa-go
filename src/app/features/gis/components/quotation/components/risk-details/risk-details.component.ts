@@ -260,7 +260,7 @@ export class RiskDetailsComponent {
   showClauseColumnModal = false;
 
   columns: { field: string; header: string; visible: boolean }[] = [];
-  clauseColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
+  clauseColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
 
   showSections: boolean = true;
   showColumnModal = false;
@@ -288,7 +288,7 @@ export class RiskDetailsComponent {
   selectedDeleteLimit: any;
   originalLimitBeforeEdit: any = { value: '', narration: '' };
   originalLimitsOfLiability: any;
-  limitsOfLiabilityColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
+  limitsOfLiabilityColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
 
   addedExcessess: any[] = [];
   selectedExcessess: any[] = [];
@@ -300,11 +300,11 @@ export class RiskDetailsComponent {
   selectedDeleteExcess: any;
   showExcesses: boolean = true;
   showExcessesColumnModal = false;
-  excessesColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
+  excessesColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
 
   showPerils: boolean = true;
   showPerilColumnModal = false;
-  perilColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
+  perilColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
   addedPerils: any[] = [];
   allPerilsMap: { [key: string]: any[] } = {};
   selectedPeril: any = null;
@@ -342,7 +342,7 @@ export class RiskDetailsComponent {
   taxDetails: TaxInformation[] = [];
   showTaxes: boolean = true;
   showTaxesColumnModal = false;
-  taxesColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
+  taxesColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
 
 
 
@@ -408,6 +408,7 @@ export class RiskDetailsComponent {
     this.fetchQuotationDetails(this.quotationCode);
     this.quoteProductCode = sessionStorage.getItem('newQuotationProductCode');
     const savedSubclass = sessionStorage.getItem('selectedSubclassCode');
+
     if (savedSubclass) {
       this.selectedSubclassCode = savedSubclass;
       this.loadExcesses();
@@ -423,6 +424,7 @@ export class RiskDetailsComponent {
     if (this.selectedSubclassCode && this.quoteProductCode) {
       this.loadAddedLimitsOfLiability();
     }
+
     this.createTaxForm();
 
     this.riskDetailsForm = new FormGroup({
@@ -476,7 +478,6 @@ export class RiskDetailsComponent {
       this.riskDetailsForm.patchValue({ insureds: +savedClientId });
     }
     this.getProductTaxes();
-
 
   }
 
@@ -609,6 +610,16 @@ export class RiskDetailsComponent {
             this.showOtherSscheduleDetails = false;
 
           }
+
+          // this.loadExcesses();
+          // this.initializePerilDetails();
+          // this.initializePerils();
+          // this.loadAddedClauses();
+          // this.getAddedExcesses();
+          // this.loadPersistedRiskClauses();
+          // this.loadLimitsOfLiability();
+          // this.loadAddedLimitsOfLiability();
+
         },
         error: (error: HttpErrorResponse) => {
           log.debug("Error log", error.error.message);
@@ -663,8 +674,10 @@ export class RiskDetailsComponent {
   }
 
   setRiskDetailsColumns(risk: any) {
-    const excludedFields = ['code', 'subclassCode', 'coverTypeCode', 'propertyId', 'itemDesc', 'subclass.description',
-      'coverTypeDescription', 'binderCode',];
+    const excludedFields = ['riskLimits', 'clauseCodes', 'sectionsDetails', 'sectionsDetails', 'location', 'ncdLevel', 'fp',
+      'subclass', 'quotationProductCode', 'quotationRiskNo', 'quotationCode', 'value', 'code', 'subclassCode', 'coverTypeCode',
+      'code', 'itemDesc', 'subclass.description', 'binderCode',
+    ];
     this.riskDetailsColumns = Object.keys(risk)
       .filter((key) => !excludedFields.includes(key))
       .map((key) => ({
@@ -687,7 +700,7 @@ export class RiskDetailsComponent {
     }
   }
 
-  defaultVisibleRiskDetailsFields = ['wef', 'wet', 'actions'];
+  defaultVisibleRiskDetailsFields = ['wef', 'wet', 'actions', 'propertyId', 'coverTypeDescription'];
 
   openAddRiskModal() {
     this.modalInstance?.show();
@@ -3038,10 +3051,11 @@ export class RiskDetailsComponent {
         field: key,
         header: this.sentenceCase(key),
         visible: this.defaultVisibleClauseFields.includes(key),
-        filterable: true
+        filterable: true,
+        sortable: true
       }));
 
-    this.clauseColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
+    this.clauseColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false });
 
     const saved = sessionStorage.getItem('clauseColumns');
     if (saved) {
@@ -3925,10 +3939,11 @@ export class RiskDetailsComponent {
         field: key,
         header: this.sentenceCase(key),
         visible: this.defaultVisibleLimitsOfLiabilityFields.includes(key),
-        filterable: true
+        filterable: true,
+        sortable: true
       }));
 
-    this.limitsOfLiabilityColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
+    this.limitsOfLiabilityColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false });
 
     // Restore per-risk columns
     if (this.selectedRiskCode) {
@@ -4035,6 +4050,7 @@ export class RiskDetailsComponent {
 
 
   addRiskLimit(): void {
+    log.debug("selectedRisk", this.selectedRiskLimits)
     if (!this.selectedRiskLimits?.length) {
       this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one limit to add');
       return;
@@ -4049,6 +4065,7 @@ export class RiskDetailsComponent {
     }
 
     const limitsPayload: CreateLimitsOfLiability[] = this.selectedRiskLimits.map(limit => ({
+      // code:limit.code,
       scheduleValueCode: limit.code,
       value: this.cleanCurrencyValue(limit.value),
       narration: limit.narration,
@@ -4249,7 +4266,7 @@ export class RiskDetailsComponent {
   }
 
   setExcessesColumns(excess: Excesses) {
-    const excludedFields = ['subclassCode', 'quotationValueCode', 'code'];
+    const excludedFields = ['subclassCode', 'quotationValueCode', 'code', 'actions'];
 
     this.excessesColumns = Object.keys(excess)
       .filter((key) => !excludedFields.includes(key))
@@ -4257,12 +4274,13 @@ export class RiskDetailsComponent {
         field: key,
         header: this.sentenceCase(key),
         visible: this.defaultVisibleExcessesFields.includes(key),
-        filterable: true
+        filterable: true,
+        sortable: true
       }));
 
-    this.excessesColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
+    this.excessesColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false });
 
-    // Restore from sessionStorage if exists - ADD THIS
+    // Restore from sessionStorage 
     const saved = sessionStorage.getItem('excessesColumns');
     if (saved) {
       const savedVisibility = JSON.parse(saved);
@@ -4275,7 +4293,7 @@ export class RiskDetailsComponent {
     log.debug("excessesColumns", this.excessesColumns);
   }
 
-  defaultVisibleExcessesFields = ['narration', 'value'];
+  defaultVisibleExcessesFields = ['narration', 'value',];
 
   loadExcesses(): void {
     if (!this.selectedSubclassCode) {
@@ -4506,7 +4524,7 @@ export class RiskDetailsComponent {
     const excludedFields = ['sectionShortDescription', 'shortDescription', 'subclassCode', 'sectionCode', 'perCode', 'perilLimit',
       'sectionDescription', 'multiplier', 'tlExcessType', 'plExcessType', 'expireOnClaim', 'dependLossType', 'benefitPerPeriod',
       'claimExcessType', 'tlExcess', 'tlExcessMin', 'tlExcessMax', 'claimExcessMin', 'claimExcessMax', 'plExcess', 'plExcessMin',
-      'plExcessMax'
+      'plExcessMax', 'code',
     ];
 
     this.perilColumns = Object.keys(excess)
@@ -4515,10 +4533,11 @@ export class RiskDetailsComponent {
         field: key,
         header: this.sentenceCase(key),
         visible: this.defaultVisiblePerilFields.includes(key),
-        filterable: true
+        filterable: true,
+        sortable: true
       }));
 
-    this.perilColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
+    this.perilColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false });
 
     const saved = sessionStorage.getItem('perilColumns');
     if (saved) {
@@ -4532,7 +4551,7 @@ export class RiskDetailsComponent {
     log.debug("perilColumns", this.perilColumns);
   }
 
-  defaultVisiblePerilFields = ['code', 'description', 'excess', 'excessMin', 'excessMax', 'personLimit', 'claimLimit']
+  defaultVisiblePerilFields = ['description', 'excess', 'excessMin', 'excessMax', 'personLimit', 'claimLimit']
 
 
   loadQuotationPerils(): void {
@@ -5345,17 +5364,18 @@ export class RiskDetailsComponent {
   }
 
   setTaxesColumns(tax: any) {
-    const excludedFields = [];
+    const excludedFields = ['code', 'productCode', 'quotationCode', 'transactionCode', 'taxRateCode', 'levelCode',];
     this.taxesColumns = Object.keys(tax)
       .filter((key) => !excludedFields.includes(key))
       .map((key) => ({
         field: key,
         header: this.sentenceCase(key),
         visible: this.defaultVisibleTaxesFields.includes(key),
-        filterable: true
+        filterable: true,
+        sortable: true
       }));
 
-    this.taxesColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
+    this.taxesColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false });
 
     // Restore visibility from sessionStorage
     const saved = sessionStorage.getItem('taxesColumns');
@@ -5370,8 +5390,7 @@ export class RiskDetailsComponent {
     log.debug("taxesColumns", this.taxesColumns);
   }
 
-  defaultVisibleTaxesFields = ['code', 'levelCode', 'productCode', 'quotationCode', 'rate', 'rateDescription', 'rateType',
-    'renewalEndorsement', 'riskProductLevel', 'taxAmount', 'taxRateCode', 'transactionCode'
+  defaultVisibleTaxesFields = ['rate', 'rateDescription', 'rateType', 'renewalEndorsement', 'riskProductLevel', 'taxAmount',
   ];
 
   openEditTaxModal() {
