@@ -749,9 +749,9 @@
                 <th *ngFor="let col of productClauseColumns" [hidden]="!col.visible" class="px-3"
                   [pSortableColumn]="col.field">
 
-                  <div class="flex items-center justify-between">
-                    <span>{{ col.header }}</span>
-                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                  <div class="d-flex align-items-center gap-1 flex-nowrap">
+                    <span class="text-truncate">{{ col.header }}</span>
+                    <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
                   </div>
 
                 </th>
