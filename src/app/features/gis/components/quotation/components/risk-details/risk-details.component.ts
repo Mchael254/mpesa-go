@@ -455,6 +455,7 @@ export class RiskDetailsComponent {
     this.clientCode = Number(sessionStorage.getItem('insuredCode'))
 
     this.loadAllClients();
+<<<<<<< HEAD
     if (!this.riskDetailsForm.contains('insureds')) {
       this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
     }
@@ -476,6 +477,9 @@ export class RiskDetailsComponent {
       this.riskDetailsForm.patchValue({ insureds: +savedClientId });
     }
     this.getProductTaxes();
+=======
+   
+>>>>>>> origin/develop
 
   }
 
@@ -586,6 +590,8 @@ export class RiskDetailsComponent {
 
           const curentlySavedRisk = this.riskDetails?.find(risk => risk.code == this.quotationRiskCode) || this.riskDetails[0];
           log.debug('Currently saved Risk:', curentlySavedRisk)
+
+          this.getProductTaxes();
 
           // ✅ Tax Information
           this.taxDetails = productDetails?.taxInformation || [];
