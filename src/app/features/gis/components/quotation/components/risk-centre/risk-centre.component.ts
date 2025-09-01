@@ -29,6 +29,7 @@ const log = new Logger('RiskCentreComponent');
 export class RiskCentreComponent {
   @ViewChild('scrollContainer', { static: false }) scrollContainer!: ElementRef;
   @ViewChild(RiskDetailsComponent) RiskDetailsComponent!: RiskDetailsComponent;
+  @ViewChild(RiskDetailsComponent) riskDetails!: RiskDetailsComponent;
 
 
   steps = quoteStepsData;
@@ -39,6 +40,7 @@ export class RiskCentreComponent {
   passedProductList: QuotationProduct[] = [];
   selectedProduct: any;
   isCollapsed = false;
+  riskDetailscolumns = false
 
   constructor(
     public subclassService: SubclassesService,
@@ -72,6 +74,10 @@ export class RiskCentreComponent {
 
   toggleSection() {
     this.isCollapsed = !this.isCollapsed;
+  }
+
+  togglePerilColumns(iconTrigger: HTMLElement): void {
+    this.riskDetails.toggleRiskDetailsColumns(iconTrigger);
   }
 
   fetchQuotationDetails(quoatationCode: number) {

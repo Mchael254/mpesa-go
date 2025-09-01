@@ -77,9 +77,18 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   quotationNo: any;
   quotationCode: number;
   isChecked: boolean = false;
+
   show: boolean = false;
   showProducts: boolean = true;
   showClauses: boolean = true;
+  isProductClauseOpen: boolean = false
+  showProductClauses: boolean = true;
+  showProductClauseColumnModal = false;
+  productClauseColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
+
+
+
+
   quotationNum: string;
   introducers: Introducer[] = [];
   selectedIntroducer: Introducer | null = null;
@@ -183,10 +192,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   departmentSelected: boolean = false;
   showIntroducerSearchModal = false;
   selectedIntroducerName: string;
-  showProductColumnModal: boolean=false;
+  showProductColumnModal: boolean = false;
   columnModalPosition = { top: '0px', left: '0px' }
   columns: { field: string; header: string; visible: boolean }[] = [];
-  
+
 
   constructor(
     public bankService: BankService,
@@ -275,9 +284,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     // this.coverToDate = new Date(this.todaysDate);
     //  this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);
     this.createQuotationProductForm();
-    if(this.productDetails.length>0)
-    {
-    this.setColumnsFromProductDetails(this.productDetails[0]);
+    if (this.productDetails.length > 0) {
+      this.setColumnsFromProductDetails(this.productDetails[0]);
     }
 
 
@@ -494,6 +502,70 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       })
   }
 
+  //product clauses
+  toggleProductClausesopen() {
+    this.isProductClauseOpen = !this.isProductClauseOpen;
+  }
+
+  saveProductClauseColumnsToSession(): void {
+    if (this.productClauseColumns) {
+      const visibility = this.productClauseColumns.map(col => ({
+        field: col.field,
+        visible: col.visible
+      }));
+      sessionStorage.setItem('productClauseColumns', JSON.stringify(visibility));
+    }
+  }
+
+  toggleProductClauseColumnVisibility(field: string) {
+    this.saveProductClauseColumnsToSession();
+  }
+
+  toggleProductClauseColumns(iconElement: HTMLElement): void {
+    this.showProductClauses = !this.showProductClauses;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
+    const left = iconElement.offsetLeft;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showProductClauseColumnModal = true;
+  }
+
+  setProductClauseColumns(productClause: any) {
+    const excludedFields = [
+    ];
+
+    this.productClauseColumns = Object.keys(productClause)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: this.defaultVisibleProductClauseFields.includes(key),
+        filterable: true
+      }));
+
+    this.productClauseColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
+
+    const saved = sessionStorage.getItem('productClauseColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.productClauseColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
+
+    // log.debug("productClauseColumns", this.productClauseColumns);
+  }
+
+  defaultVisibleProductClauseFields = ['shortDescription', 'heading', 'wording'];
+
   getProductClause(product: any) {
     const productCode = product.code || this.productCode;
     this.productCode = productCode;
@@ -508,6 +580,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       this.nonMandatoryProductClause = productSessionData.nonMandatoryProductClause;
       this.clausesModified = productSessionData.clausesModified;
       this.sessionClauses = [...this.productClause];
+
+      if (this.sessionClauses.length > 0) {
+        this.setProductClauseColumns(this.sessionClauses[0]);
+      }
       return;
     }
 
@@ -518,6 +594,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       this.productClause = this.mandatoryProductClause;
       log.debug("mandatory clauses", this.productClause)
       this.sessionClauses = [...this.productClause];
+
+      if (this.sessionClauses.length > 0) {
+        this.setProductClauseColumns(this.sessionClauses[0]);
+      }
 
       allClausesMap[productCode] = {
         productClause: this.productClause,
@@ -543,12 +623,17 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       this.clausesModified = productSessionData.clausesModified;
       this.sessionClauses = [...this.productClause];
 
+      if (this.sessionClauses.length > 0) {
+        this.setProductClauseColumns(this.sessionClauses[0]);
+      }
+
       log.debug("Loaded persisted data from allClausesMap:", {
         productCode: this.productCode,
         sessionClauses: this.sessionClauses,
         nonMandatoryProductClause: this.nonMandatoryProductClause,
         clausesModified: this.clausesModified
       });
+
     } else {
       log.debug("No persisted data found for product:", storedProductCode);
     }
@@ -653,21 +738,48 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.clauseToDelete = clause;
   }
 
-  deleteProductClause() {
-    if (!this.clauseToDelete) return;
-    this.sessionClauses = this.sessionClauses.filter(c => c.shortDescription !== this.clauseToDelete.shortDescription);
-    this.productClause = this.productClause.filter(c => c.shortDescription !== this.clauseToDelete.shortDescription);
+  // deleteProductClause() {
+  //   if (!this.clauseToDelete) return;
+  //   this.sessionClauses = this.sessionClauses.filter(c => c.shortDescription !== this.clauseToDelete.shortDescription);
+  //   this.productClause = this.productClause.filter(c => c.shortDescription !== this.clauseToDelete.shortDescription);
 
+  //   const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+  //   if (allClausesMap[this.productCode]) {
+  //     allClausesMap[this.productCode].productClause = this.productClause;
+  //     allClausesMap[this.productCode].clausesModified = true;
+  //     sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+  //     this.clauseToDelete = null;
+  //   }
+  //   this.globalMessagingService.displaySuccessMessage('success', 'Clause deleted successfully');
+
+
+  // }
+
+  deleteProductClause(): void {
+    if (!this.clauseToDelete) return;
+
+    // Remove from local arrays
+    this.sessionClauses = this.sessionClauses.filter(
+      c => c.shortDescription !== this.clauseToDelete.shortDescription
+    );
+    this.productClause = this.productClause.filter(
+      c => c.shortDescription !== this.clauseToDelete.shortDescription
+    );
+
+    // Push back into nonMandatoryProductClauses 
+    this.nonMandatoryProductClause = [...this.nonMandatoryProductClause, this.clauseToDelete];
+
+    // Update session storage 
     const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
     if (allClausesMap[this.productCode]) {
       allClausesMap[this.productCode].productClause = this.productClause;
+      allClausesMap[this.productCode].nonMandatoryProductClause = this.nonMandatoryProductClause;
       allClausesMap[this.productCode].clausesModified = true;
       sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
-      this.clauseToDelete = null;
     }
-    this.globalMessagingService.displaySuccessMessage('success', 'Clause deleted successfully');
 
-
+    this.globalMessagingService.displaySuccessMessage('Success', 'Clause deleted successfully');
+    this.clauseToDelete = null;
   }
 
 
@@ -2047,30 +2159,30 @@ sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescripti
       .replace(/([A-Z])/g, ' $1')
       .replace(/^./, (str) => str.toUpperCase());
   }
-getCellValue(row: any, field: string): any {
-  const value = row[field];
+  getCellValue(row: any, field: string): any {
+    const value = row[field];
 
-  // Explicitly handle productCode field
-  if (field === 'productCode' && value) {
-    return value.code ?? ''; // Access code from the value itself
+    // Explicitly handle productCode field
+    if (field === 'productCode' && value) {
+      return value.code ?? ''; // Access code from the value itself
+    }
+
+    // Handle dates automatically
+    if (value instanceof Date) {
+      return new Intl.DateTimeFormat('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }).format(value);
+    }
+
+    // Handle other objects dynamically (but prioritize code if available)
+    if (value && typeof value === 'object') {
+      return value.code ?? JSON.stringify(value);
+    }
+
+    return value ?? '';
   }
-
-  // Handle dates automatically
-  if (value instanceof Date) {
-    return new Intl.DateTimeFormat('en-GB', { 
-      day: '2-digit', 
-      month: 'short', 
-      year: 'numeric' 
-    }).format(value);
-  }
-
-  // Handle other objects dynamically (but prioritize code if available)
-  if (value && typeof value === 'object') {
-    return value.code ?? JSON.stringify(value);
-  }
-
-  return value ?? '';
-}
 
 
 
