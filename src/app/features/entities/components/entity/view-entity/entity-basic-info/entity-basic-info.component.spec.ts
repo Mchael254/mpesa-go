@@ -93,7 +93,7 @@ describe('EntityBasicInfoComponent', () => {
   }
 
   const mockStatusService = {
-    getClientStatus: jest.fn().mockReturnValue(of({}))
+    getClientStatus: jest.fn().mockReturnValue(of(mockStatuses))
   }
 
   const mockUtilService = {
@@ -126,6 +126,9 @@ describe('EntityBasicInfoComponent', () => {
     component.entityAccountIdDetails = [entityAccountIdDetails];
     component.partyAccountDetails = partyAccountDetails;
     component.overviewConfig = mockOverviewConfig;
+    component.clientDetails = {
+      withEffectToDate: '2025-10-10'
+    }
 
     component.statusModalButton = {
       nativeElement: {
@@ -152,6 +155,7 @@ describe('EntityBasicInfoComponent', () => {
 
   test('should filter applicable statuses for Draft', () => {
     component.clientStatuses = mockStatuses;
+    mockStatusService.getClientStatus.mockReturnValue(of(mockStatuses));
     component.selectedClientStatus = mockStatuses[0]; // DRAFT
     component.filterApplicableStatuses();
     expect(component.actionableStatuses.length).toBe(1);
@@ -255,5 +259,14 @@ describe('EntityBasicInfoComponent', () => {
     fixture.detectChanges();
     // mock assertions
   });
+
+  test('should toggle wetDate edit mode', () => {
+    component.toggleWefWetEdit();
+    expect(component.isEditingWefWet).toBe(true);
+
+    component.toggleWefWetEdit();
+    expect(component.isEditingWefWet).toBe(false);
+    expect(mockClientService.updateClientSection).toHaveBeenCalled();
+  })
 
 });

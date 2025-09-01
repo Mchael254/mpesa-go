@@ -401,6 +401,7 @@
                   </ng-container>
 
 
+
                 </ng-container>
               </td>
             </tr>
@@ -436,7 +437,7 @@
                     <label for="" class="quote-label">Product</label>
                     <p-dropdown [options]="ProductDescriptionArray" formControlName="productCodes"
                       optionLabel="filterText" filterBy="filterText" [filter]="true" [showClear]="true" placeholder=""
-                      class="custom-multiselect">
+                      class="custom-multiselect" (onChange)="onProductSelected($event.value)">
 
 
                       <ng-template let-product pTemplate="item">

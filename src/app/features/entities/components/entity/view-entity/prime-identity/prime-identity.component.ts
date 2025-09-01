@@ -79,8 +79,9 @@ export class PrimeIdentityComponent implements OnInit {
         dateOfBirth: this.partyAccountDetails.dateOfBirth,
         address: this.partyAccountDetails.address,
         gender: this.clientDetails?.gender == 'M' ? 'male' : 'female',
-        maritalStatus: this.partyAccountDetails.status,
-        country: this.partyAccountDetails.country,
+        maritalStatus: this.clientDetails.maritalStatus,
+        citizenshipCountryName: this.clientDetails.citizenshipCountryName,
+        citizenshipCountryId: this.clientDetails.citizenshipCountryId,
         wealthAmlDetails: this.partyAccountDetails.wealthAmlDetails,
       }
       /*if (this.selectOptions) {

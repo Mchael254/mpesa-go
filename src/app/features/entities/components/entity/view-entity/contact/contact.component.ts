@@ -158,18 +158,20 @@ export class ContactComponent implements OnInit {
 
   editContactDetails(): void {
     const formValues = this.editForm.getRawValue();
-    const contactDetails = {
-      ...this.contactDetails,
-      titleId: formValues.title,
-      smsNumber: formValues.smsNumber?.internationalNumber,
-      phoneNumber: formValues.telNumber?.internationalNumber,
-      emailAddress: formValues.email,
-      contactChannel: formValues.contactChannel,
-      branchId: formValues.branch,
-
+    const updatePayload = {
+      contactDetails: {
+        ...this.contactDetails,
+        titleId: formValues.title,
+        smsNumber: formValues.smsNumber?.internationalNumber,
+        phoneNumber: formValues.telNumber?.internationalNumber,
+        emailAddress: formValues.email,
+        contactChannel: formValues.contactChannel,
+      },
+      organizationBranchId: formValues.branch,
+      organizationBranchName: ''
     }
 
-    this.clientService.updateClientSection(this.accountCode, { contactDetails }).subscribe({
+    this.clientService.updateClientSection(this.accountCode, { ...updatePayload }).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
         this.contactDetails = data.contactDetails;
