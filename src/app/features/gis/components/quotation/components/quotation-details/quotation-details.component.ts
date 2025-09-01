@@ -84,7 +84,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   isProductClauseOpen: boolean = false
   showProductClauses: boolean = true;
   showProductClauseColumnModal = false;
-  productClauseColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
+  productClauseColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
 
 
 
@@ -547,10 +547,11 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         field: key,
         header: this.sentenceCase(key),
         visible: this.defaultVisibleProductClauseFields.includes(key),
-        filterable: true
+        filterable: true,
+        sortable: true
       }));
 
-    this.productClauseColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
+    this.productClauseColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false});
 
     const saved = sessionStorage.getItem('productClauseColumns');
     if (saved) {
