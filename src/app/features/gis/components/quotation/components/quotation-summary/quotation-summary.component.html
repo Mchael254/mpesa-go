@@ -1284,39 +1284,82 @@
               <!-- Limits of liablility -->
               <div class="tab-pane fade" id="nav-limits-liability" role="tabpanel"  [class.show]="activeRiskTab === 'limits-liability'"
                    [class.active]="activeRiskTab === 'limits-liability'" aria-labelledby="nav-limits" tabindex="0">
-                <p-table [value]="limitsRiskofLiability" #limitsRiskofLiabilityTable >
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th pSortableColumn="narration">Narration<p-sortIcon field="narration"></p-sortIcon></th>
-                      <th pSortableColumn="value">Value<p-sortIcon field="value"></p-sortIcon></th>
-                      <th></th>
-                      <th></th>
-                    </tr>
-                  </ng-template>
-                  <ng-template pTemplate="body" let-data let-columns="columns" let-rowIndex="rowIndex">
-                    <tr *ngIf="rowIndex === 0">
-                      <td colspan="4">
-                        <input type="text" pInputText placeholder=""
-                          (input)="filterTable($event,'description',limitsRiskofLiabilityTable)"
-                          style="width: 150px;height: 40px; margin-left:0" />
-                      </td>
-                    </tr>
 
-                    <tr>
-                      <td>{{ data.narration }}</td>
-                      <td>{{ data.value }}</td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                  </ng-template>
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td colspan="4" class="text-center text-muted py-3">
-                        “No limit of liability available for this risk.”
-                      </td>
-                    </tr>
-                  </ng-template>
-                </p-table>
+                   <div class="d-flex justify-content-end align-items-center">
+                <i  #iconRisk class="pi border border-black p-1 rounded-1 text-black"
+   [ngClass]="{ 'pi-caret-down': !showLimitsOfLiabilityColumnModal, 'pi-caret-up': showLimitsOfLiabilityColumnModal }"
+   style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+   (click)="toggleLimitsOfLiability(iconRisk)">
+</i>
+</div>
+           <!-- Floating Column Selector for limits -->
+<div *ngIf="showLimitsOfLiabilityColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <strong class="text-primary">Select liability Columns</strong>
+    <button class="btn-close btn-sm" (click)="showLimitsOfLiabilityColumnModal = false"></button>
+  </div>
+  <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+    <div *ngFor="let col of limitsColumns">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
+        <label class="form-check-label" [for]="col.field">
+          {{ col.header }}
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Dynamic Limits of Liability Table -->
+<p-table [value]="limitsRiskofLiability" #limitsRiskofLiabilityTable [tableStyle]="{ 'width': '100%' }">
+
+  <!-- Header -->
+  <ng-template pTemplate="header">
+    <tr>
+      <th *ngFor="let col of limitsColumns"
+          class="flexible-header"
+          pSortableColumn="{{ col.field }}"
+          [hidden]="!col.visible">
+        {{ col.header }}
+        <p-sortIcon [field]="col.field"></p-sortIcon>
+      </th>
+    </tr>
+  </ng-template>
+
+  <!-- Body -->
+  <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+    <!-- Filter Row -->
+    <tr *ngIf="rowIndex === 0">
+      <td *ngFor="let col of limitsColumns" [hidden]="!col.visible">
+        <input *ngIf="col.field === 'narration'" 
+               type="text"
+               pInputText
+               placeholder="Filter {{ col.header }}"
+               (input)="filterTable($event, col.field, limitsRiskofLiabilityTable)"
+               style="width: 150px; height: 40px;" />
+      </td>
+    </tr>
+
+    <!-- Data Rows -->
+    <tr>
+      <td *ngFor="let col of limitsColumns" [hidden]="!col.visible">
+        {{ getCellValue(rowData, col.field) }}
+      </td>
+    </tr>
+  </ng-template>
+
+  <!-- Empty Message -->
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td [attr.colspan]="limitsColumns.length"
+          class="text-center text-muted py-3">
+        “No limit of liability available for this risk.”
+      </td>
+    </tr>
+  </ng-template>
+
+</p-table>
+
               </div>
             </div>
           </div>

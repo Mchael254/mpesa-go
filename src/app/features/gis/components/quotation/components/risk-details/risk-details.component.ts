@@ -449,7 +449,7 @@ export class RiskDetailsComponent {
 
     // this.clientCode = Number(sessionStorage.getItem('insuredCode'))
     this.loadAllClients();
-    this.getProductTaxes();
+   
 
   }
 
@@ -560,6 +560,8 @@ export class RiskDetailsComponent {
           log.debug('risk details', this.riskDetails)
           const curentlySavedRisk = this.riskDetails?.find(risk => risk.code == this.quotationRiskCode) || this.riskDetails[0];
           log.debug('Currently saved Risk:', curentlySavedRisk)
+
+          this.getProductTaxes();
 
           // ✅ Tax Information
           this.taxDetails = productDetails?.taxInformation || [];
