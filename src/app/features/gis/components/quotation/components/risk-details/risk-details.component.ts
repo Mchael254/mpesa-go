@@ -4991,7 +4991,7 @@ export class RiskDetailsComponent {
                 limitAmount: risk.value,
                 isMandatory: null
               },
-              multiplierRate: limit.multiplierRate,
+              multiplierRate: 1,
               multiplierDivisionFactor: limit.multiplierDivisionFactor,
               dualBasis: limit.dualBasis,
               shortDescription: limit.sectionShortDescription
@@ -5011,7 +5011,7 @@ export class RiskDetailsComponent {
               premiumRate: limit.premiumRate,
               freeLimit: limit.freeLimit,
               sectionType: limit.sectionType,
-              multiplierRate: limit.multiplierRate,
+              multiplierRate: 1,
               shortDescription: limit.sectionShortDescription
             })) || []
           }],
