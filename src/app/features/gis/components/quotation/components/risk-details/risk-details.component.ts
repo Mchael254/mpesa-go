@@ -455,7 +455,6 @@ export class RiskDetailsComponent {
     this.clientCode = Number(sessionStorage.getItem('insuredCode'))
 
     this.loadAllClients();
-<<<<<<< HEAD
     if (!this.riskDetailsForm.contains('insureds')) {
       this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
     }
@@ -477,9 +476,6 @@ export class RiskDetailsComponent {
       this.riskDetailsForm.patchValue({ insureds: +savedClientId });
     }
     this.getProductTaxes();
-=======
-   
->>>>>>> origin/develop
 
   }
 
