@@ -2471,17 +2471,13 @@ toggleRisk(iconElement: HTMLElement): void {
     'productClauses',
     'taxInformation',
     'riskInformation',
-    'agentShortDescription',
-    'limitsOfLiability',
-    'productDescription',
-    'binder',
-    'converted',
-    'productShortDescription',
-    'policyNumber',
-    'quotationCode',
-    'revisionNo',
-    'code',
-    'totalSumInsured'
+    
+    'limitsOfLiability'
+    
+  
+    
+    
+   
   ]; 
 
   
