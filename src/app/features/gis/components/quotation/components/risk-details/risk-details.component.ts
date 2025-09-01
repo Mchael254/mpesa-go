@@ -454,8 +454,27 @@ export class RiskDetailsComponent {
 
     this.clientCode = Number(sessionStorage.getItem('insuredCode'))
 
-    // this.clientCode = Number(sessionStorage.getItem('insuredCode'))
     this.loadAllClients();
+    if (!this.riskDetailsForm.contains('insureds')) {
+      this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
+    }
+
+    //dropdown changes
+    this.riskDetailsForm.get('insureds')?.valueChanges.subscribe((clientId: number) => {
+      const selectedClient = this.clientsData.find(c => c.id === clientId);
+      if (selectedClient) {
+        log.debug('Current client details:', selectedClient);
+
+        // persist if needed
+        sessionStorage.setItem('selectedClientId', clientId.toString());
+        sessionStorage.setItem('selectedClient', JSON.stringify(selectedClient));
+      }
+    });
+
+    const savedClientId = sessionStorage.getItem('selectedClientId');
+    if (savedClientId) {
+      this.riskDetailsForm.patchValue({ insureds: +savedClientId });
+    }
     this.getProductTaxes();
 
   }
@@ -815,7 +834,7 @@ export class RiskDetailsComponent {
     });
   }
 
-  
+
   loadAllClients() {
     const pageSize = 100
     const pageIndex = 0;
@@ -2210,6 +2229,7 @@ export class RiskDetailsComponent {
     log.debug('Row clicked with data:', data);
     this.selectedRisk = data;
     this.sumInsured = this.selectedRisk.value;
+    this.selectedRiskCode = this.selectedRisk.code;
     const selectedRiskCode = this.selectedRisk?.code;
     this.quotationRiskCode = selectedRiskCode;
     log.debug("Quotation risk code:", this.quotationRiskCode);
@@ -2232,6 +2252,15 @@ export class RiskDetailsComponent {
 
     this.selectedSubclassObject = this.allMatchingSubclasses?.find(subclass => subclass.code == subclassCode)
     const screenCode = this.selectedSubclassObject.underwritingScreenCode
+
+    if (this.selectedRiskCode) {
+      this.loadLimitsOfLiability();
+      this.loadAddedLimitsOfLiability();
+    } else {
+      log.debug('No risk code selected, skipping limit loading');
+    }
+
+
     // Parallel calls
     forkJoin({
       premiumRates: this.premiumRateService.getCoverTypePremiums(subclassCode, binderCode, covertypeCode),
@@ -3855,12 +3884,13 @@ export class RiskDetailsComponent {
 
   //limits of liability
   saveLimitsOfLiabilityColumnsToSession(): void {
-    if (this.limitsOfLiabilityColumns) {
+    if (this.limitsOfLiabilityColumns && this.selectedRiskCode) {
       const visibility = this.limitsOfLiabilityColumns.map(col => ({
         field: col.field,
         visible: col.visible
       }));
-      sessionStorage.setItem('limitsOfLiabilityColumns', JSON.stringify(visibility));
+      const key = `limitsOfLiabilityColumns_${this.selectedRiskCode}`;
+      sessionStorage.setItem(key, JSON.stringify(visibility));
     }
   }
 
@@ -3896,17 +3926,20 @@ export class RiskDetailsComponent {
       }));
 
     this.limitsOfLiabilityColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: true });
-    // Restore from sessionStorage if exists
-    const saved = sessionStorage.getItem('limitsOfLiabilityColumns');
-    if (saved) {
-      const savedVisibility = JSON.parse(saved);
-      this.limitsOfLiabilityColumns.forEach(col => {
-        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
-        if (savedCol) col.visible = savedCol.visible;
-      });
+
+    // Restore per-risk columns
+    if (this.selectedRiskCode) {
+      const saved = sessionStorage.getItem(`limitsOfLiabilityColumns_${this.selectedRiskCode}`);
+      if (saved) {
+        const savedVisibility = JSON.parse(saved);
+        this.limitsOfLiabilityColumns.forEach(col => {
+          const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+          if (savedCol) col.visible = savedCol.visible;
+        });
+      }
     }
-    // log.debug("limitsOfLiabilityColumns", this.limitsOfLiabilityColumns);
   }
+
 
   defaultVisibleLimitsOfLiabilityFields = ['narration', 'value'];
 
@@ -3916,8 +3949,8 @@ export class RiskDetailsComponent {
       return;
     }
 
-    const cacheKey = `limits_of_liability_${this.selectedSubclassCode}`;
-    const originalCacheKey = `original_limits_of_liability_${this.selectedSubclassCode}`;
+    const cacheKey = `limits_of_liability_${this.selectedRiskCode}`;
+    const originalCacheKey = `original_limits_of_liability_${this.selectedRiskCode}`;
 
     const cachedData = sessionStorage.getItem(cacheKey);
     const cachedOriginal = sessionStorage.getItem(originalCacheKey);
@@ -3930,7 +3963,7 @@ export class RiskDetailsComponent {
         this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
       }
 
-      log.debug(`Loaded limits of liability for subclass ${this.selectedSubclassCode} from sessionStorage`);
+      log.debug(`Loaded limits of liability for subclass ${this.selectedRiskCode} from sessionStorage`);
       return;
     }
 
@@ -3980,14 +4013,13 @@ export class RiskDetailsComponent {
       return;
     }
 
-    const addedCacheKey = `added_limits_of_liability_${this.selectedSubclassCode}_${this.quoteProductCode}`;
-
+    const addedCacheKey = `added_limits_of_liability_${this.selectedRiskCode}`;
     const cachedAddedData = sessionStorage.getItem(addedCacheKey);
 
     if (cachedAddedData) {
       try {
         this.addedLimitsOfLiability = JSON.parse(cachedAddedData);
-        log.debug(`Added limits loaded from cache for subclass ${this.selectedSubclassCode}`);
+        log.debug(`Added limits loaded from cache for subclass ${this.selectedRiskCode}`);
         return;
       } catch (error) {
         log.debug('Error parsing cached added limits, fetching fresh data:', error);
@@ -4028,7 +4060,7 @@ export class RiskDetailsComponent {
           limit => !this.selectedRiskLimits.some(selected => selected.code === limit.code)
         );
 
-        const cacheKey = `limits_of_liability_${subclassCode}`;
+        const cacheKey = `limits_of_liability_${this.selectedRiskCode}`;
         sessionStorage.setItem(cacheKey, JSON.stringify(this.limitsOfLiability));
 
         this.selectedRiskLimits = [];
@@ -4112,7 +4144,6 @@ export class RiskDetailsComponent {
     });
   }
 
-
   fetchAddedLimitsOfLiability(): void {
     if (!this.selectedSubclassCode || !this.quoteProductCode) {
       log.debug('Subclass code or quote product code missing');
@@ -4123,10 +4154,12 @@ export class RiskDetailsComponent {
       .getAddedLimitsOfLiability(this.selectedSubclassCode, this.quoteProductCode, 'L')
       .subscribe({
         next: (response) => {
-
           this.addedLimitsOfLiability = response._embedded;
-          log.debug("Added limits fetched and cached successfully");
 
+          const addedCacheKey = `added_limits_of_liability_${this.selectedRiskCode}`;
+          sessionStorage.setItem(addedCacheKey, JSON.stringify(response._embedded));
+
+          log.debug("Added limits fetched and cached successfully");
         },
         error: (err) => {
           log.debug('Error fetching limits of liability (L):', err);
@@ -4149,7 +4182,7 @@ export class RiskDetailsComponent {
           l => l.code !== this.selectedDeleteLimit.code
         );
 
-        const originalCacheKey = `original_limits_of_liability_${this.selectedSubclassCode}`;
+        const originalCacheKey = `original_limits_of_liability_${this.selectedRiskCode}`;
         const originalData = sessionStorage.getItem(originalCacheKey);
         const originalLimits = originalData ? JSON.parse(originalData) : [];
 
@@ -4159,7 +4192,7 @@ export class RiskDetailsComponent {
 
         if (originalLimit) {
           this.limitsOfLiability = [...this.limitsOfLiability, originalLimit];
-          const cacheKey = `limits_of_liability_${this.selectedSubclassCode}`;
+          const cacheKey = `limits_of_liability_${this.selectedRiskCode}`;
           sessionStorage.setItem(cacheKey, JSON.stringify(this.limitsOfLiability));
         }
 
