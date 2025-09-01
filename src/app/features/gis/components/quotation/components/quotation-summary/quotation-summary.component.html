@@ -269,7 +269,11 @@
              <p-table [value]="productDetails"
          dataKey="productCode?.code"
          editMode="row"
-         [tableStyle]="{'min-width': '50rem'}">
+         [tableStyle]="{'min-width': '50rem'}"
+         [scrollable]="true"
+         scrollDirection="horizontal"
+          [resizableColumns]="true"
+           scrollHeight="400px">
 
   <!-- Table Header -->
   <ng-template pTemplate="header">
