@@ -67,6 +67,9 @@ export interface ClientDTO {
   clientCode?: number,
   organizationBranchId?: number,
   organizationBranchName?: string,
+  citizenshipCountryName?: string,
+  citizenshipCountryId?: string,
+  maritalStatus?: string,
 }
 export interface ClientTypeDTO {
   category: string,
