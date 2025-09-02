@@ -270,7 +270,12 @@
                     [id]="field.fieldId"
                     class="form-select"
                   >
-                    <option *ngFor="let opt of field.options" [value]="opt.name">{{ opt.name | uppercase }}</option>
+                    <option
+                      *ngFor="let opt of field.options"
+                      [value]="opt.id || opt.name"
+                    >
+                      {{ opt.name | uppercase }}
+                    </option>
                   </select>
 
                   <!--Date-->
