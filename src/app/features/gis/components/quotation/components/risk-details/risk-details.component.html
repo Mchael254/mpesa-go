@@ -2527,14 +2527,14 @@
         <div *ngIf="riskActiveTab === 'riskTaxes'" role="tabpanel" aria-labelledby="nav-taxes" tabindex="0"
             [@slideInOut]="isClausesOpen ? 'open' : 'closed'">
 
-            <p-table #taxTable [value]="taxDetails" dataKey="code" [paginator]="true" [rows]="3"
-                [rowsPerPageOptions]="[3, 5, 10]" [scrollable]="true" scrollDirection="horizontal"
-                responsiveLayout="scroll" class="mt-3">
+            <p-table #taxTable [value]="taxDetails" dataKey="code" [paginator]="true" [rows]="3" [tableStyle]="taxDetails?.length ? { 'min-width': '180rem' } : {}"
+
+                [rowsPerPageOptions]="[3, 5, 10]"  class="mt-3">
                 <!-- Table Header -->
                 <ng-template pTemplate="header">
                     <tr>
                         <th *ngFor="let col of taxesColumns" [hidden]="!col.visible" class="px-3"
-                            [pSortableColumn]="col.field">
+                            [pSortableColumn]="col.field" [style.width]="'50px'">
 
                             <div class="flex items-center justify-between">
                                 <span>{{ col.header }}</span>
@@ -2544,7 +2544,7 @@
                         </th>
                     </tr>
                     <tr>
-                        <th *ngFor="let col of taxesColumns" [hidden]="!col.visible" class="px-3">
+                        <th *ngFor="let col of taxesColumns" [hidden]="!col.visible" class="px-3" [style.width]="'50px'">
                             <input *ngIf="col.filterable !== false" class="form-control form-control-sm" pInputText
                                 type="text" (input)="taxTable.filter($event.target['value'], col.field, 'contains')" />
                         </th>
@@ -2555,7 +2555,7 @@
                 <!-- Table Body -->
                 <ng-template pTemplate="body" let-tax>
                     <tr>
-                        <td *ngFor="let col of taxesColumns" [hidden]="!col.visible">
+                        <td *ngFor="let col of taxesColumns" [hidden]="!col.visible" [style.width]="'50px'">
                             <ng-container [ngSwitch]="col.field">
 
                                 <!-- Default columns added dynamically) -->
@@ -2589,7 +2589,7 @@
 
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td [attr.colspan]="taxesColumns.length" class="text-center p-4 text-muted">
+                        <td [attr.colspan]="taxesColumns?.length>0 ?taxesColumns.length : 1" class="text-center p-4 text-muted">
                             <ng-container *ngIf="taxesColumns?.length > 0; else noTaxes">
                                 <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
                                 <p>No taxes found.</p>

@@ -5749,8 +5749,14 @@ export class RiskDetailsComponent {
     this.quotationService.deleteProductTaxes(tax.code).subscribe({
       next: (res) => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Tax successfully deleted');
-        this.loadTaxDetails()
-        this.fetchQuotationDetails(this.quotationCode)
+        this.taxDetails = this.taxDetails.filter(t => t.code !== tax.code);
+
+      // Rebuild dynamic columns based on updated taxDetails
+      if (this.taxDetails.length > 0) {
+        this.setTaxesColumns(this.taxDetails[0]);
+      } else {
+        this.taxesColumns = []; // No taxes left
+      }
       },
       error: (err) => {
         console.error('Delete failed:', err);
