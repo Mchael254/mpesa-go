@@ -385,13 +385,14 @@ export class RiskDetailsComponent {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedProduct'] && this.selectedProduct) {
       console.log("Selected Product-risk details:", this.selectedProduct);
-      const selectedProductCode = this.selectedProduct.productCode
+      const selectedProductCode = this.selectedProduct?.productCode
       this.selectedProductCode = selectedProductCode
       this.loadSelectedProductRiskFields(selectedProductCode)
       this.getProductSubclass(selectedProductCode)
       this.checkMotorClass(selectedProductCode)
-      const quoatationNo = this.selectedProduct.quotationNo
-      const quoatationCode = this.selectedProduct.quotationCode
+      const quoatationNo = this.selectedProduct?.quotationNo
+      const quoatationCode = this.selectedProduct?.quotationCode
+      log.debug('QUOTATION CODE- NGONCHANGES', quoatationCode)
       this.fetchQuotationDetails(quoatationCode)
       // this.fetchRisksLimits(quoatationCode)
       this.scheduleList = []
@@ -477,7 +478,7 @@ export class RiskDetailsComponent {
     if (savedClientId) {
       this.riskDetailsForm.patchValue({ insureds: +savedClientId });
     }
-    this.getProductTaxes();
+
 
   }
 
@@ -589,7 +590,7 @@ export class RiskDetailsComponent {
           const curentlySavedRisk = this.riskDetails?.find(risk => risk.code == this.quotationRiskCode) || this.riskDetails[0];
           log.debug('Currently saved Risk:', curentlySavedRisk)
 
-          this.getProductTaxes();
+
 
           // ✅ Tax Information
           this.taxDetails = productDetails?.taxInformation || [];
@@ -2244,8 +2245,8 @@ export class RiskDetailsComponent {
 
     log.debug('Row clicked with data:', data);
     this.selectedRisk = data;
-    this.sumInsured = this.selectedRisk.value;
-    this.selectedRiskCode = this.selectedRisk.code;
+    this.sumInsured = this.selectedRisk?.value;
+    this.selectedRiskCode = this.selectedRisk?.code;
     const selectedRiskCode = this.selectedRisk?.code;
     this.quotationRiskCode = selectedRiskCode;
     log.debug("Quotation risk code:", this.quotationRiskCode);
@@ -2268,7 +2269,7 @@ export class RiskDetailsComponent {
 
     this.selectedSubclassObject = this.allMatchingSubclasses?.find(subclass => subclass.code == subclassCode)
     const screenCode = this.selectedSubclassObject.underwritingScreenCode
-
+    this.getProductTaxes();
     if (this.selectedRiskCode) {
       this.loadLimitsOfLiability();
       this.loadAddedLimitsOfLiability();
@@ -3556,12 +3557,17 @@ export class RiskDetailsComponent {
             this.globalMessagingService.displaySuccessMessage('Success', 'Risk deleted successfully');
 
             // Remove the deleted risk from the riskDetails array
-            const index = this.riskDetails.findIndex(risk => risk.code === this.selectedRisk.code);
-            if (index !== -1) {
-              this.riskDetails.splice(index, 1);
-            }
-            this.fetchQuotationDetails(this.selectedRisk.quotationCode)
+            // const index = this.riskDetails.findIndex(risk => risk.code === this.selectedRisk.code);
+            // if (index !== -1) {
+            //   this.riskDetails.splice(index, 1);
+            // }
+            this.scheduleList = []
+            this.sectionPremium = []
+            this.sessionClauses = []
+            this.addedLimitsOfLiability = []
 
+            this.fetchQuotationDetails(this.selectedRisk.quotationCode)
+            this.cdr.detectChanges()
             // Clear the selected risk
             this.selectedRisk = null;
 
@@ -3932,7 +3938,7 @@ export class RiskDetailsComponent {
   }
 
   setLimitsOfLiabilityColumns(clause: Clause) {
-    const excludedFields = ['subclassCode', 'quotationValueCode', 'code'];
+    const excludedFields = [];
     this.limitsOfLiabilityColumns = Object.keys(clause)
       .filter((key) => !excludedFields.includes(key))
       .map((key) => ({
@@ -4266,7 +4272,7 @@ export class RiskDetailsComponent {
   }
 
   setExcessesColumns(excess: Excesses) {
-    const excludedFields = ['subclassCode', 'quotationValueCode', 'code', 'actions'];
+    const excludedFields = ['actions'];
 
     this.excessesColumns = Object.keys(excess)
       .filter((key) => !excludedFields.includes(key))
@@ -4946,18 +4952,42 @@ export class RiskDetailsComponent {
     this.fetchLimitationOfUse();
 
   }
+  // computePremium() {
+  //   const premiumComputationPayload = this.generatePremiumComputationPayload(this.quotationDetails)
+  //   log.debug("Premium comp payload:", premiumComputationPayload)
+  //   this.quotationService.computePremium(premiumComputationPayload).subscribe({
+  //     next: (response) => {
+  //       log.debug("Respone after saving payload:", response)
+  //     },
+  //     error: (error) => {
+  //       this.globalMessagingService.displayErrorMessage("Error", error.error.message);
+  //     }
+  //   })
+  // }
   computePremium() {
-    const premiumComputationPayload = this.generatePremiumComputationPayload(this.quotationDetails)
-    log.debug("Premium comp payload:", premiumComputationPayload)
-    this.quotationService.computePremium(premiumComputationPayload).subscribe({
-      next: (response) => {
-        log.debug("Respone after saving payload:", response)
+    const payload = this.generatePremiumComputationPayload(this.quotationDetails);
+
+    this.quotationService.computePremium(payload).pipe(
+      switchMap((response) => {
+        log.debug("Response after computing premium:", response);
+
+        // Prepare update data from compute response
+        const updatePayload = this.prepareUpdatePremiumPayload(response);
+
+        return this.quotationService.updatePremium(this.quotationCode, updatePayload);
+      })
+    ).subscribe({
+      next: (updateResponse) => {
+        log.debug("Premium updated successfully:", updateResponse);
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+
       },
-      error: (error) => {
-        this.globalMessagingService.displayErrorMessage("Error", error.error.message);
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage("Error", err.error?.message || 'Premium update failed');
       }
-    })
+    });
   }
+
   generatePremiumComputationPayload(quotationData: QuotationDetails): any {
     return {
       entityUniqueCode: 0,
@@ -5066,6 +5096,52 @@ export class RiskDetailsComponent {
       coinsurancePercentage: 0
     };
   }
+  prepareUpdatePremiumPayload(computeResponse: any): any {
+    const product = computeResponse.productLevelPremiums?.[0];
+
+    return {
+      premiumAmount: product?.riskLevelPremiums?.reduce(
+        (sum, risk) => sum + (risk.coverTypeDetails?.[0]?.computedPremium || 0),
+        0
+      ) || 0,
+      productCode: product?.code,
+      quotProductCode: 0, // set this if you have it from quotation details
+      productPremium: product?.riskLevelPremiums?.[0]?.coverTypeDetails?.[0]?.computedPremium || 0,
+      riskLevelPremiums: product?.riskLevelPremiums?.map(risk => ({
+        code: risk.code,
+        premium: risk.coverTypeDetails?.[0]?.computedPremium || 0,
+        limitPremiumDtos: risk.coverTypeDetails?.[0]?.limitPremium?.map(limit => ({
+          sectCode: limit.sectCode,
+          premium: limit.premium
+        })) || []
+      })) || [],
+      taxes: [] // if compute response gives taxComputation, map it here
+    };
+
+  }
+  private buildUpdatePremiumPayload(computeResponse: any): any {
+    const product = computeResponse.productLevelPremiums?.[0];
+
+    return {
+      premiumAmount: product?.riskLevelPremiums?.reduce(
+        (sum, risk) => sum + (risk.coverTypeDetails?.[0]?.computedPremium || 0),
+        0
+      ) || 0,
+      productCode: product?.code || 0,
+      quotProductCode: 0, // set this if you have it from quotation details
+      productPremium: product?.riskLevelPremiums?.[0]?.coverTypeDetails?.[0]?.computedPremium || 0,
+      riskLevelPremiums: product?.riskLevelPremiums?.map(risk => ({
+        code: risk.code,
+        premium: risk.coverTypeDetails?.[0]?.computedPremium || 0,
+        limitPremiumDtos: risk.coverTypeDetails?.[0]?.limitPremium?.map(limit => ({
+          sectCode: limit.sectCode,
+          premium: limit.premium
+        })) || []
+      })) || [],
+      taxes: [] // if compute response gives taxComputation, map it here
+    };
+  }
+
   // generatePremiumPayload(quotationData: any): any {
   //   const currentDate = new Date().toISOString();
   //   const product = quotationData.quotationProducts[0];
@@ -5414,8 +5490,8 @@ export class RiskDetailsComponent {
   getProductTaxes() {
     this.taxes = [];
     log.debug('getProductTaxes has been called ', this.selectedProduct)
-    const productCode = this.selectedProduct.productCode
-    const subClassCode = this.selectedProduct.riskInformation[0].subclassCode
+    const productCode = this.selectedProduct?.productCode
+    const subClassCode = this.selectedProduct?.riskInformation[0]?.subclassCode
     if (productCode && subClassCode) {
       this.quotationService.getTaxes(productCode, subClassCode).subscribe(res => {
 

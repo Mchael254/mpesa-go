@@ -96,7 +96,7 @@ export class RiskCentreComponent {
             log.debug("Selected Product:", this.selectedProduct)
           }
           const insuredCode = this.quotationDetails.clientCode
-          sessionStorage.setItem('insuredCode', insuredCode.toString())
+          sessionStorage.setItem('insuredCode', insuredCode?.toString())
         },
         error: (error: HttpErrorResponse) => {
           log.debug("Error log", error.error.message);
