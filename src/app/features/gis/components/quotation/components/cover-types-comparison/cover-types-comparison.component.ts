@@ -604,8 +604,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
     this.selectedSubclassCode = selectedCover.subclassCode;
     this.selectedBinderCode = this.riskLevelPremium.binderCode;
 
-    sessionStorage.setItem( `selectedCover-${this.riskLevelPremium.code}`, JSON.stringify(selectedCover));
-
     selectedCover.additionalBenefits = []
     if (this.selectedCoverTypeCode && this.selectedSubclassCode) {
       this.fetchCoverTypeRelatedData(selectedCover);
