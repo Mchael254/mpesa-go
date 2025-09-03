@@ -360,3 +360,6 @@ th .sort-header p-sortIcon {
   background: transparent !important; 
 }
 
+:host ::ng-deep .p-table thead th {
+  white-space: nowrap;
+}
