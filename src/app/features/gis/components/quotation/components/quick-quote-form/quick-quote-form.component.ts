@@ -356,6 +356,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   ngOnInit(): void {
+    const savedFlag = sessionStorage.getItem("canMoveToNextScreen");
+    if (savedFlag !== null) {
+      this.canMoveToNextScreen = JSON.parse(savedFlag);
+    }
     this.LoadAllFormFields();
     this.loadAllproducts();
     this.quickQuoteForm = this.fb.group({
@@ -2074,6 +2078,12 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     const allRisksHaveSelectedCover = premiums
       .flatMap(premium => premium.riskLevelPremiums).every(risk => risk.selectCoverType);
     this.canMoveToNextScreen = hasSelectedAllProductCovers && allRisksHaveSelectedCover;
+
+    sessionStorage.setItem("canMoveToNextScreen", JSON.stringify(this.canMoveToNextScreen));
+  }
+
+  isCoverSelected() {
+
   }
 
 
