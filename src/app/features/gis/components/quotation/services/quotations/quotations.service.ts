@@ -848,7 +848,10 @@ export class QuotationsService {
 
   updatePremium(quotationCode: any, data: premiumPayloadData) {
 
-    return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,);
+    return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
   }
 
   createQuotationRisk(quotationCode, data: quotationRisk[]): Observable<any> {

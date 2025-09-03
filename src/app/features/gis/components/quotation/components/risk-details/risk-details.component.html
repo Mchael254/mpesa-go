@@ -266,22 +266,32 @@
         <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content" id="deleteProduct">
-                    <div class="modal-body ">
-                        <p class="deleteMessage mt-4 mb-4">{{'gis.policy.are_you_sure_you_want_to_delete' |
-                            translate}}</p>
-                        <div class="d-flex justify-content-center mb-3">
-                            <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
-                                (click)="deleteRisk()">{{'gis.policy.yes_delete'
-                                | translate}}</button>
-                        </div>
-                        <div class="d-flex justify-content-center mb-2">
-                            <button type="button" class="btn btn-outline-primary px-5"
-                                data-bs-dismiss="modal">{{'gis.policy.no_im_not' | translate}}</button>
-                        </div>
 
-
+                <div class="modal-content ps-4 pt-2 pe-4">
+                    <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+                        <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                            Delete risk </p>
+                        <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                            style="border: none;">X
+                        </button>
                     </div>
+
+                    <div class="d-flex justify-content-between text-black">
+                        <p>Are you sure you want to delete this risk?</p>
+                    </div>
+
+                    <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+                        <button type="button" class="btn" data-bs-dismiss="modal"
+                            style="background-color: #00529B;color:white;text-decoration: none;" (click)="deleteRisk()">
+                            {{ 'gis.quotation.delete' | translate }}
+                        </button>
+                        <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                            style="text-decoration: none;">{{
+                            'gis.quotation.cancel' | translate
+                            }}
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -1581,7 +1591,7 @@
                     <div class="modal-content ps-4 pt-2 pe-4">
                         <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
                             <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-                                {{ 'gis.quotation.delete_clause' | translate }}</p>
+                                Delete risk clause</p>
                             <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
                                 style="border: none;">X
                             </button>
@@ -2009,11 +2019,11 @@
                         <td [attr.colspan]="perilColumns.length" class="text-center p-4 text-muted">
                             <ng-container *ngIf="addedPerils?.length > 0; else noClauses">
                                 <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                <p>No matching limits of liability found.</p>
+                                <p>No matching perils found.</p>
                             </ng-container>
                             <ng-template #noClauses>
-                                <p><strong>No limits of liability available.</strong> There are currently no
-                                    limits of liability to add.</p>
+                                <p><strong>No perils available.</strong> There are currently no
+                                    perils to add.</p>
                             </ng-template>
                         </td>
                     </tr>
@@ -2540,14 +2550,14 @@
         <div *ngIf="riskActiveTab === 'riskTaxes'" role="tabpanel" aria-labelledby="nav-taxes" tabindex="0"
             [@slideInOut]="isClausesOpen ? 'open' : 'closed'">
 
-            <p-table #taxTable [value]="taxDetails" dataKey="code" [paginator]="true" [rows]="3"
-                [rowsPerPageOptions]="[3, 5, 10]" [scrollable]="true" scrollDirection="horizontal"
-                responsiveLayout="scroll" class="mt-3">
+            <p-table #taxTable [value]="taxDetails" dataKey="code" [paginator]="true" [rows]="3" [tableStyle]="taxDetails?.length ? { 'min-width': '180rem' } : {}"
+
+                [rowsPerPageOptions]="[3, 5, 10]"  class="mt-3">
                 <!-- Table Header -->
                 <ng-template pTemplate="header">
                     <tr>
                         <th *ngFor="let col of taxesColumns" [hidden]="!col.visible" class="px-3"
-                            [pSortableColumn]="col.field">
+                            [pSortableColumn]="col.field" [style.width]="'50px'">
 
                             <div class="d-flex align-items-center gap-1 flex-nowrap">
                                 <span class="text-truncate">{{ col.header }}</span>
@@ -2558,7 +2568,7 @@
                     </tr>
 
                     <tr>
-                        <th *ngFor="let col of taxesColumns" [hidden]="!col.visible" class="px-3">
+                        <th *ngFor="let col of taxesColumns" [hidden]="!col.visible" class="px-3" [style.width]="'50px'">
                             <input *ngIf="col.filterable !== false" class="form-control form-control-sm" pInputText
                                 type="text" (input)="taxTable.filter($event.target['value'], col.field, 'contains')" />
                         </th>
@@ -2570,7 +2580,7 @@
                 <!-- Table Body -->
                 <ng-template pTemplate="body" let-tax>
                     <tr>
-                        <td *ngFor="let col of taxesColumns" [hidden]="!col.visible">
+                        <td *ngFor="let col of taxesColumns" [hidden]="!col.visible" [style.width]="'50px'">
                             <ng-container [ngSwitch]="col.field">
 
                                 <!-- Default columns added dynamically) -->
@@ -2604,7 +2614,7 @@
 
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td [attr.colspan]="taxesColumns.length" class="text-center p-4 text-muted">
+                        <td [attr.colspan]="taxesColumns?.length>0 ?taxesColumns.length : 1" class="text-center p-4 text-muted">
                             <ng-container *ngIf="taxesColumns?.length > 0; else noTaxes">
                                 <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
                                 <p>No taxes found.</p>
