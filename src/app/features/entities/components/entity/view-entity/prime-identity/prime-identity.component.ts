@@ -72,25 +72,16 @@ export class PrimeIdentityComponent implements OnInit {
       this.primaryDetailsConfig = this.primeDetailsConfig.primary_details;
       this.createEditForm(this.formFieldsConfig.fields)
       this.primeDetails = {
-        modeOfIdentityNumber: this.partyAccountDetails.modeOfIdentityNumber,
+        modeOfIdentityNumber: this.clientDetails.idNumber,
         partyType: this.partyAccountDetails.partyType,
-        modeOfIdentity: this.partyAccountDetails.modeOfIdentity,
-        pinNumber: this.partyAccountDetails.pinNumber,
-        dateOfBirth: this.partyAccountDetails.dateOfBirth,
-        address: this.partyAccountDetails.address,
+        modeOfIdentity: this.clientDetails.modeOfIdentity,
+        pinNumber: this.clientDetails.pinNumber,
+        dateOfBirth: this.clientDetails.dateOfBirth,
         gender: this.clientDetails?.gender == 'M' ? 'male' : 'female',
         maritalStatus: this.clientDetails.maritalStatus,
         citizenshipCountryName: this.clientDetails.citizenshipCountryName,
         citizenshipCountryId: this.clientDetails.citizenshipCountryId,
-        wealthAmlDetails: this.partyAccountDetails.wealthAmlDetails,
       }
-      /*if (this.selectOptions) {
-        const idTypes = this.selectOptions.idTypes;
-        const countries = this.selectOptions.countries;
-        const maritalStatuses = this.selectOptions.maritalStatuses;
-        this.setSelectOptions(idTypes, countries, maritalStatuses);
-        this.cdr.detectChanges();
-      }*/
     }, 1000);
   }
 
@@ -155,17 +146,18 @@ export class PrimeIdentityComponent implements OnInit {
   }
 
   patchFormValues(): void {
-    // patch form values
-    const dob = this.partyAccountDetails?.dateOfBirth; // from api >>> "2007-04-10T00:00:00.000+00:00"
-    const gender = (this.primeDetails?.gender[0]).toUpperCase() === 'M' ? 'male' : 'female';
+    const dob = this.clientDetails?.dateOfBirth; // from api >>> "2007-04-10T00:00:00.000+00:00"
+    // const gender = (this.primeDetails?.gender[0]).toUpperCase() === 'M' ? 'male' : 'female';
+    const genderIndex =
+      this.genders.findIndex(gender => gender.shtDesc === this.primeDetails.gender[0].toLowerCase());
 
     const patchData = {
-      id_type: this.primeDetails?.modeOfIdentity.name,
+      id_type: this.primeDetails?.modeOfIdentity,
       id_number: this.primeDetails?.modeOfIdentityNumber,
       pin_number: this.primeDetails?.pinNumber,
       dob: new Date(dob).toISOString().split('T')[0],
-      citizenship: this.primeDetails?.citizenshipCountryId, // todo: not available from backend
-      gender: gender,
+      citizenship: this.primeDetails.citizenshipCountryId,
+      gender: this.genders[genderIndex].id,
       marital_status: this.primeDetails.maritalStatus // todo: not available from backend
     }
     this.editForm.patchValue(patchData)
@@ -182,16 +174,22 @@ export class PrimeIdentityComponent implements OnInit {
 
   editPrimeDetails(): void {
     const formValues = this.editForm.value;
-    log.info('formValues >>> ', formValues);
+
+    const modeOfIdentityIndex =
+      this.idTypes.findIndex((item) => item.name === formValues.id_type);
+
+    const genderIndex =this.genders.findIndex((item) => item.id == formValues.gender);
+
+
     const partyAccountDetails = {
       // ...this.partyAccountDetails,
       idNumber: formValues.id_number,
-      modeOfIdentity: formValues.id_type,
+      modeOfIdentity: this.idTypes[modeOfIdentityIndex],
       pinNumber: formValues.pin_number,
       dateOfBirth: formValues.dob,
-      country: formValues.citizenship, // todo: change to country ID
-      gender: (formValues.gender).toUpperCase() === 'MALE' ? 'M' : 'F',
-      maritalStatus: formValues.marital_status.charAt(0).toUpperCase(),
+      citizenshipCountryId: formValues.citizenship,
+      gender: this.genders[genderIndex].shtDesc,
+      maritalStatus: formValues.marital_status,
     }
 
 
@@ -201,17 +199,18 @@ export class PrimeIdentityComponent implements OnInit {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
         this.primeDetails = {
           ...this.primeDetails,
-          // modeOfIdentityNumber: this.partyAccountDetails.modeOfIdentityNumber,
-          // partyType: this.partyAccountDetails.partyType,
-          // modeOfIdentity: this.partyAccountDetails.modeOfIdentity,
-          // pinNumber: this.partyAccountDetails.pinNumber,
-          // dateOfBirth: this.partyAccountDetails.dateOfBirth,
-          // address: this.partyAccountDetails.address,
-          // gender: this.partyAccountDetails.gender,
-          // maritalStatus: this.partyAccountDetails.status,
-          // country: this.partyAccountDetails.country,
-          // wealthAmlDetails: this.partyAccountDetails.wealthAmlDetails,
+          modeOfIdentityNumber: data.idNumber,
+          modeOfIdentity: data.modeOfIdentity,
+          pinNumber: data.pinNumber,
+          dateOfBirth: data.dateOfBirth,
+          gender: data.gender.toUpperCase() === 'M' ? 'male' : 'female',
+          maritalStatus: data.maritalStatus,
+          citizenshipCountryName: data.citizenshipCountryName,
         }
+
+        this.clientDetails = data;
+
+        log.info('edited prime details', data);
 
       },
       error: err => {
