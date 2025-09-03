@@ -1372,12 +1372,10 @@
                         <td *ngFor="let col of clauseColumns" [hidden]="!col.visible">
                             <ng-container [ngSwitch]="col.field">
 
-                                <!-- Short Description -->
                                 <ng-container *ngSwitchCase="'shortDescription'">
                                     {{ clause.shortDescription }}
                                 </ng-container>
 
-                                <!-- Heading (with pipes) -->
                                 <ng-container *ngSwitchCase="'heading'">
                                     {{ clause.heading | truncate:3 | sentenceCase }}
                                 </ng-container>
@@ -1397,11 +1395,11 @@
                                     <div class="flex justify-start gap-2">
                                         <!-- Edit -->
                                         <span class="p-button-label p-text-bold" [ngStyle]="{
-                    color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280',
-                    cursor: clause.isEditable === 'Y' ? 'pointer' : 'default',
-                    display: 'inline-block',
-                    width: '60px'
-                  }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
+                                            color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280',
+                                            cursor: clause.isEditable === 'Y' ? 'pointer' : 'default',
+                                            display: 'inline-block',
+                                            width: '60px'
+                                            }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
                                             [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
                                             (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
                                             {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
@@ -1691,19 +1689,19 @@
 
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
-                                    <div class="flex justify-start gap-2">
+                                    <div class="d-flex gap-1 flex-nowrap">
                                         <!-- Edit -->
-                                        <span class="p-button-label p-text-bold"
-                                            style="color: #00529B; cursor: pointer; display: inline-block; width: 60px"
+                                        <span class="p-button-label fw-bold text-primary"
+                                            style="cursor: pointer; display: inline-block; width: 60px; white-space: nowrap;"
                                             data-bs-toggle="modal" data-bs-target="#editLimit"
                                             (click)="populateEditLimitModal(limit)">
                                             {{ 'gis.quotation.edit' | translate }}
                                         </span>
 
                                         <!-- Delete -->
-                                        <span class="p-button-label p-text-bold" style="color: #00529B; cursor: pointer"
-                                            data-bs-toggle="modal" data-bs-target="#deleteLimit"
-                                            (click)="prepareDeleteLimit(limit)">
+                                        <span class="p-button-label fw-bold text-primary"
+                                            style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
+                                            data-bs-target="#deleteLimit" (click)="prepareDeleteLimit(limit)">
                                             {{ 'gis.quotation.delete' | translate }}
                                         </span>
 
@@ -1987,23 +1985,23 @@
 
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
-                                    <div class="flex justify-start gap-2">
+                                    <div class="d-flex gap-1 flex-nowrap">
                                         <!-- Edit -->
-                                        <span class="p-button-label p-text-bold"
-                                            style="color: #00529B; cursor: pointer; display: inline-block; width: 60px"
+                                        <span class="p-button-label fw-bold text-primary"
+                                            style="cursor: pointer; display: inline-block; width: 30px; white-space: nowrap;"
                                             (click)="populatePerilEditModal(peril)">
                                             {{ 'gis.quotation.edit' | translate }}
                                         </span>
 
                                         <!-- Delete -->
-                                        <span class="p-button-label p-text-bold" style="color: #00529B; cursor: pointer"
-                                            data-bs-toggle="modal" data-bs-target="#deletePeril"
-                                            (click)="prepareDeletePeril(peril)">
+                                        <span class="p-button-label fw-bold text-primary"
+                                            style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
+                                            data-bs-target="#deletePeril" (click)="prepareDeletePeril(peril)">
                                             {{ 'gis.quotation.delete' | translate }}
                                         </span>
-
                                     </div>
                                 </ng-container>
+
 
                                 <!-- Default columns added dynamically) -->
                                 <ng-container *ngSwitchDefault>
@@ -2592,17 +2590,17 @@
 
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
-                                    <div class="flex justify-start gap-2">
+                                    <div class="d-flex gap-1 flex-nowrap">
                                         <!-- Edit -->
-                                        <span class="p-button-label p-text-bold"
-                                            style="color: #00529B; cursor: pointer; display: inline-block; width: 60px"
+                                        <span class="p-button-label fw-bold text-primary"
+                                            style="cursor: pointer; display: inline-block; width: 30px; white-space: nowrap;"
                                             (click)="openEditTaxModalFromDB(tax)">
                                             {{ 'gis.quotation.edit' | translate }}
                                         </span>
 
                                         <!-- Delete -->
-                                        <span class="p-button-label p-text-bold" style="color: #00529B; cursor: pointer"
-                                            (click)="deleteTaxes(tax)">
+                                        <span class="p-button-label fw-bold text-primary"
+                                            style="cursor: pointer; white-space: nowrap;" (click)="deleteTaxes(tax)">
                                             {{ 'gis.quotation.delete' | translate }}
                                         </span>
 
@@ -2702,19 +2700,19 @@
 
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
-                                    <div class="flex justify-start gap-2">
+                                    <div class="d-flex gap-2 flex-nowrap">
                                         <!-- Edit -->
-                                        <span class="p-button-label p-text-bold"
-                                            style="color: #00529B; cursor: pointer; display: inline-block; width: 60px"
+                                        <span class="p-button-label fw-bold text-primary"
+                                            style="cursor: pointer; display: inline-block; width: 30px; white-space: nowrap;"
                                             data-bs-toggle="modal" data-bs-target="#editExcess"
                                             (click)="populateEditExcessModal(excess)">
                                             {{ 'gis.quotation.edit' | translate }}
                                         </span>
 
                                         <!-- Delete -->
-                                        <span class="p-button-label p-text-bold" style="color: #00529B; cursor: pointer"
-                                            data-bs-toggle="modal" data-bs-target="#deleteExcess"
-                                            (click)="prepareDeleteExcess(excess)">
+                                        <span class="p-button-label fw-bold text-primary"
+                                            style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
+                                            data-bs-target="#deleteExcess" (click)="prepareDeleteExcess(excess)">
                                             {{ 'gis.quotation.delete' | translate }}
                                         </span>
 

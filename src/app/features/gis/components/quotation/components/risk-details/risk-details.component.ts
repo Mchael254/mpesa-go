@@ -507,20 +507,20 @@ export class RiskDetailsComponent {
 
   private initializePerilDetails() {
     this.perilDetailsForm = this.fb.group({
-      description: [''],
-      shortDescription: [''],
+      description: ['', Validators.required],
+      shortDescription: ['', Validators.required],
       claimLimit: [null, Validators.required],
-      personLimit: [null],
-      excess: [null],
-      excessMax: [null],
-      excessMin: [null],
-      tlExcessType: [null],
-      plExcessType: [null],
-      perilLimit: [null],
-      subclassSectionPerilCode: [null],
-      perilType: [null],
-      sumInsuredOrLimit: [null],
-      expireOnClaim: [null]
+      personLimit: [null, Validators.required],
+      excess: [null, Validators.required],
+      excessMax: [null, Validators.required],
+      excessMin: [null, Validators.required],
+      tlExcessType: [null, Validators.required],
+      plExcessType: [null, Validators.required],
+      perilLimit: [null, Validators.required],
+      subclassSectionPerilCode: [null, Validators.required],
+      perilType: [null, Validators.required],
+      sumInsuredOrLimit: [null, Validators.required],
+      expireOnClaim: [null, Validators.required]
     });
   }
 
@@ -612,14 +612,6 @@ export class RiskDetailsComponent {
 
           }
 
-          // this.loadExcesses();
-          // this.initializePerilDetails();
-          // this.initializePerils();
-          // this.loadAddedClauses();
-          // this.getAddedExcesses();
-          // this.loadPersistedRiskClauses();
-          // this.loadLimitsOfLiability();
-          // this.loadAddedLimitsOfLiability();
 
         },
         error: (error: HttpErrorResponse) => {
@@ -1468,7 +1460,7 @@ export class RiskDetailsComponent {
           this.quotationCode = quotationCode
           const quotationNo = data._embedded.quotationNo
           this.addProductClauses();
-          this.loadPersistedRiskClauses();
+
 
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
@@ -1530,7 +1522,10 @@ export class RiskDetailsComponent {
           this.quotationRiskCode && this.createScheduleL1(this.quotationRiskCode)
           this.riskDetails = selectedProduct?.riskInformation || []
 
-          this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
+          this.selectedRiskCode = currentQuotationRiskCode;
+          sessionStorage.setItem("selectedRiskCode", String(currentQuotationRiskCode));
+          this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
+          this.loadPersistedRiskClauses();
 
         },
         // error: () => this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
@@ -1555,6 +1550,7 @@ export class RiskDetailsComponent {
     }
 
   }
+
   UpdateRiskDetail() {
     log.debug('UPDATE RISK-FORM', this.riskDetailsForm.value)
     this.riskDetailsForm.get('insureds').setValue(this.insuredCode);
@@ -2237,7 +2233,6 @@ export class RiskDetailsComponent {
   // }
 
   handleRowClick(data: any) {
-    this.loadPersistedRiskClauses();
     if (!data?.code) {
       log.debug('Invalid data for row click:', data);
       return;
@@ -2273,6 +2268,7 @@ export class RiskDetailsComponent {
     if (this.selectedRiskCode) {
       this.loadLimitsOfLiability();
       this.loadAddedLimitsOfLiability();
+      this.loadPersistedRiskClauses();
     } else {
       log.debug('No risk code selected, skipping limit loading');
     }
@@ -2388,6 +2384,7 @@ export class RiskDetailsComponent {
     this.selectedRiskCode = riskSelectedData.code;
     log.debug("firstRiskCode", this.selectedRiskCode);
     sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
+    this.loadPersistedRiskClauses();
   }
 
   toggleSections(iconElement: HTMLElement): void {
@@ -3073,7 +3070,9 @@ export class RiskDetailsComponent {
   defaultVisibleClauseFields = ['heading', 'shortDescription', , 'wording'];
 
   loadAddedClauses(): void {
-    const riskCode = this.quotationRiskCode
+    const riskCode = this.selectedRiskCode;
+    if (!riskCode) return;
+
     this.quotationService.getAddedRiskClauses(riskCode).subscribe({
       next: (res) => {
         this.sessionClauses = res?._embedded || res || [];
@@ -3118,21 +3117,20 @@ export class RiskDetailsComponent {
     this.subclassService.getSubclassClauses(code).subscribe({
       next: (data) => {
         this.SubclauseList = data || [];
-
         this.mandatoryClause = this.SubclauseList.filter(c => c.isMandatory === 'Y');
         this.nonMandatoryClauses = this.SubclauseList.filter(c => c.isMandatory === 'N');
         this.riskClause = [...this.mandatoryClause];
         this.sessionClauses = [...this.riskClause];
 
-
         const quotationCode = Number(sessionStorage.getItem("quotationCode"));
         const riskCode = Number(this.selectedRiskCode);
+
         this.mandatoryClause.forEach(clause => {
           const payload: riskClause = {
             clauseCode: clause.clauseCode,
             clauseShortDescription: clause.shortDescription ?? '',
-            quotationCode: quotationCode,
-            riskCode: riskCode,
+            quotationCode,
+            riskCode,
             clause: clause.wording?.trim() ?? '',
             clauseEditable: clause.isEditable ?? 'N',
             clauseType: clause.clauseType ?? 'CL',
@@ -3140,24 +3138,13 @@ export class RiskDetailsComponent {
           };
 
           this.quotationService.addRiskClause(payload).subscribe({
-            next: () => {
-              log.debug("Mandatory clause persisted:", clause.shortDescription);
-
-            },
-            error: (err) => {
-              log.debug("Clause may already exist or failed to add:", err);
-            }
+            next: () => log.debug("Mandatory clause persisted:", clause.shortDescription),
+            error: (err) => log.debug("Clause may already exist or failed to add:", err)
           });
         });
 
-        const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
-        riskClauseMap[code] = {
-          riskClause: this.riskClause,
-          nonMandatoryClauses: this.nonMandatoryClauses,
-          clauseModified: false
-        };
-        sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
-        // log.debug("risk clause map >>", riskClauseMap);
+        this.saveRiskClausesToSession();
+
         if (this.sessionClauses.length > 0) {
           this.setClauseColumns(this.sessionClauses[0]);
         }
@@ -3165,9 +3152,23 @@ export class RiskDetailsComponent {
       error: (err) => {
         log.debug("Error fetching subclass clauses:", err);
         this.SubclauseList = [];
-      },
-      complete: () => log.debug("Fetched and cached subclass clauses.")
+      }
     });
+  }
+
+  private saveRiskClausesToSession(): void {
+    const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
+
+    if (this.selectedRiskCode) {
+      riskClauseMap[this.selectedRiskCode] = {
+        riskClause: this.riskClause,
+        nonMandatoryClauses: this.nonMandatoryClauses,
+        clauseModified: this.clauseModified
+      };
+
+      sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+      sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
+    }
   }
 
   toggleRiskClauses() {
@@ -3192,7 +3193,6 @@ export class RiskDetailsComponent {
     } else {
       this.globalMessagingService.displayErrorMessage('warning', 'You need to select a risk first');
     }
-
   }
 
   private loadPersistedRiskClauses(): void {
@@ -3211,7 +3211,6 @@ export class RiskDetailsComponent {
       if (this.sessionClauses.length > 0) {
         this.setClauseColumns(this.sessionClauses[0]);
       }
-
     } else {
       log.debug("No persisted data found. Fetching from API...");
       this.fetchAndCacheSubclassClauses(this.selectedSubclassCode);
@@ -3220,58 +3219,40 @@ export class RiskDetailsComponent {
 
   addRiskClauses(): void {
     if (this.selectedRiskClauses?.length) {
-      // Combine selected and already mandatory clauses
       this.riskClause = [...this.selectedRiskClauses, ...this.riskClause];
       this.sessionClauses = [...this.riskClause];
 
-      log.debug("Selected Risk Clauses:", this.selectedRiskClauses);
-
-      // Filter out selected from non-mandatory list
-      this.nonMandatoryClauses = this.nonMandatoryClauses.filter(clause =>
-        !this.selectedRiskClauses.some(sel => sel.shortDescription === clause.shortDescription)
+      this.nonMandatoryClauses = this.nonMandatoryClauses.filter(
+        clause => !this.selectedRiskClauses.some(sel => sel.shortDescription === clause.shortDescription)
       );
 
       this.clauseModified = true;
-
-      // Store in sessionStorage
-      const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
-      riskClauseMap[this.selectedRiskCode] = {
-        riskClause: this.riskClause,
-        nonMandatoryClauses: this.nonMandatoryClauses,
-        clauseModified: this.clauseModified
-      };
-      sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
-      // log.debug("risk clause map after add >>", riskClauseMap);
+      this.saveRiskClausesToSession();
 
       const quotationCode = Number(sessionStorage.getItem("quotationCode"));
       const riskCode = Number(this.selectedRiskCode);
-
       const combinedClauses = [...this.selectedRiskClauses];
-      // log.debug("combined clauses >> ", combinedClauses);
 
-      let successCount = 0;
-      let failureCount = 0;
+      let successCount = 0, failureCount = 0;
 
       combinedClauses.forEach(clause => {
-        const singlePayload: riskClause = {
+        const payload: riskClause = {
           clauseCode: clause.clauseCode,
           clauseShortDescription: clause.shortDescription,
-          quotationCode: quotationCode,
-          riskCode: riskCode,
+          quotationCode,
+          riskCode,
           clause: clause.wording,
           clauseEditable: clause.isEditable,
           clauseType: clause.clauseType,
           clauseHeading: clause.heading
         };
-        // log.debug("Sending single clause payload:", singlePayload);
 
-        this.quotationService.addRiskClause(singlePayload).subscribe({
+        this.quotationService.addRiskClause(payload).subscribe({
           next: () => {
             successCount++;
             if (successCount + failureCount === combinedClauses.length) {
               this.globalMessagingService.displaySuccessMessage("Success", 'risk clause(s) added successfully');
             }
-
           },
           error: (err) => {
             failureCount++;
@@ -3286,6 +3267,7 @@ export class RiskDetailsComponent {
       this.selectedRiskClauses = [];
     }
   }
+
 
   //edit clause
   wasModified(): boolean {
@@ -3311,19 +3293,16 @@ export class RiskDetailsComponent {
     const payload: riskClause = {
       clauseCode: this.selectedRiskClause.clauseCode,
       clauseShortDescription: this.selectedRiskClause.shortDescription ?? '',
-      quotationCode: quotationCode,
-      riskCode: riskCode,
+      quotationCode,
+      riskCode,
       clause: this.selectedRiskClause.wording?.trim() ?? '',
       clauseEditable: this.selectedRiskClause.isEditable ?? 'N',
       clauseType: this.selectedRiskClause.clauseType ?? 'CL',
       clauseHeading: this.selectedRiskClause.heading ?? ''
     };
 
-    log.debug("Sending update for clause:", payload);
-
     this.quotationService.editRiskClause(payload).subscribe({
       next: () => {
-        // Replace in all relevant arrays
         const replaceClause = (list: any[]) =>
           list.map(c => c.shortDescription === this.selectedRiskClause.shortDescription
             ? { ...this.selectedRiskClause }
@@ -3333,17 +3312,9 @@ export class RiskDetailsComponent {
         this.sessionClauses = replaceClause(this.sessionClauses);
         this.riskClause = replaceClause(this.riskClause);
 
-        // Update sessionStorage
         this.clauseModified = true;
-        const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
-        riskClauseMap[this.selectedRiskCode] = {
-          riskClause: this.riskClause,
-          nonMandatoryClauses: this.nonMandatoryClauses,
-          clauseModified: true
-        };
-        sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
+        this.saveRiskClausesToSession();
 
-        // Reset state
         this.selectedRiskClause = { id: '', heading: '', wording: '' };
         this.originalClauseBeforeEdit = null;
 
@@ -3370,24 +3341,16 @@ export class RiskDetailsComponent {
 
     this.quotationService.deleteRiskClause(clauseCode, riskCode).subscribe({
       next: () => {
-        // Remove from local arrays
         this.sessionClauses = this.sessionClauses.filter(
           c => c.shortDescription !== this.clauseToDelete.shortDescription
         );
         this.riskClause = this.riskClause.filter(
           c => c.shortDescription !== this.clauseToDelete.shortDescription
         );
-
-        //Push back into nonMandatoryClauses 
         this.nonMandatoryClauses = [...this.nonMandatoryClauses, this.clauseToDelete];
 
-        const riskClauseMap = JSON.parse(sessionStorage.getItem("riskClauseMap") || "{}");
-        if (riskClauseMap[this.selectedRiskCode]) {
-          riskClauseMap[this.selectedRiskCode].riskClause = this.riskClause;
-          riskClauseMap[this.selectedRiskCode].nonMandatoryClauses = this.nonMandatoryClauses;
-          riskClauseMap[this.selectedRiskCode].clauseModified = true;
-          sessionStorage.setItem("riskClauseMap", JSON.stringify(riskClauseMap));
-        }
+        this.clauseModified = true;
+        this.saveRiskClausesToSession();
 
         this.globalMessagingService.displaySuccessMessage('Success', 'Clause deleted successfully');
         this.clauseToDelete = null;
@@ -3398,7 +3361,6 @@ export class RiskDetailsComponent {
       }
     });
   }
-
 
 
   onClauseSelectionChange(selectedClauseList: any) {
@@ -3968,7 +3930,7 @@ export class RiskDetailsComponent {
   defaultVisibleLimitsOfLiabilityFields = ['narration', 'value'];
 
   loadLimitsOfLiability(): void {
-    if (!this.selectedSubclassCode) {
+    if (!this.selectedSubclassCode || !this.selectedRiskCode) {
       log.debug('Subclass code is required to load limits');
       return;
     }
@@ -4016,8 +3978,9 @@ export class RiskDetailsComponent {
 
 
   openLimitModal(): void {
-    if (!this.selectedSubclassCode) {
+    if (!this.selectedSubclassCode || !this.selectedRiskCode) {
       this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+      log.debug("selectedSubclassCode does not exist", this.selectedSubclassCode)
       return;
     }
 
@@ -4343,7 +4306,7 @@ export class RiskDetailsComponent {
   }
 
   openExcessModal(): void {
-    if (!this.selectedSubclassCode) {
+    if (!this.selectedSubclassCode || !this.selectedRiskCode) {
       this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
       return;
     }
@@ -4655,7 +4618,7 @@ export class RiskDetailsComponent {
   }
 
   openPerilsModal(): void {
-    if (!this.selectedSubclassCode) {
+    if (!this.selectedSubclassCode || !this.selectedRiskCode) {
       this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
       return;
     }
@@ -4672,12 +4635,13 @@ export class RiskDetailsComponent {
   }
 
   openChoosePerilsModal(): void {
-    this.loadQuotationPerils();
-
-    if (!this.selectedSubclassCode) {
+    if (!this.selectedSubclassCode || !this.selectedRiskCode) {
       this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
       return;
     }
+
+    this.loadQuotationPerils();
+
 
     if (!this.isPerilEditMode) {
       this.perilDetailsForm.reset();
@@ -5498,7 +5462,7 @@ export class RiskDetailsComponent {
         this.taxes = res._embedded;
         log.debug('Taxes', this.taxes)
         if (this.taxes.length > 0) {
-          this.setExcessesColumns(this.taxes[0]);
+          this.setTaxesColumns(this.taxes[0]);
         }
         return;
       });
