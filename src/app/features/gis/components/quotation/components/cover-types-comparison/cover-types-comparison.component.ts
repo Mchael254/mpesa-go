@@ -12,18 +12,18 @@ import {
   ViewChild
 } from '@angular/core';
 import stepData from '../../data/steps.json'
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../../../../../../shared/services/auth.service';
-import {CurrencyService} from '../../../../../../shared/services/setups/currency/currency.service';
-import {BinderService} from '../../../setups/services/binder/binder.service';
-import {ProductsService} from '../../../setups/services/products/products.service';
-import {SubclassesService} from '../../../setups/services/subclasses/subclasses.service';
-import {QuotationsService} from '../../services/quotations/quotations.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 
-import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 
 
-import {forkJoin, mergeMap} from 'rxjs';
+import { forkJoin, mergeMap } from 'rxjs';
 
 import {
   Clause,
@@ -34,17 +34,17 @@ import {
   QuotationDetails,
   UserDetail
 } from '../../data/quotationsDTO'
-import {Premiums} from '../../../setups/data/gisDTO';
-import {ClientDTO} from '../../../../../entities/data/ClientDTO';
-import {NgxSpinnerService} from 'ngx-spinner';
+import { Premiums } from '../../../setups/data/gisDTO';
+import { ClientDTO } from '../../../../../entities/data/ClientDTO';
+import { NgxSpinnerService } from 'ngx-spinner';
 import {
   SubClassCoverTypesSectionsService
 } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import {GlobalMessagingService} from '../../../../../../shared/services/messaging/global-messaging.service'
-import {PremiumRateService} from '../../../setups/services/premium-rate/premium-rate.service';
-import {Router} from '@angular/router';
-import {NgxCurrencyConfig} from "ngx-currency";
-import {CoverTypeDetail, RiskLevelPremium} from '../../data/premium-computation';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { Router } from '@angular/router';
+import { NgxCurrencyConfig } from "ngx-currency";
+import { CoverTypeDetail, RiskLevelPremium } from '../../data/premium-computation';
 
 const log = new Logger('CoverTypesComparisonComponent');
 declare var bootstrap: any; // Ensure Bootstrap is available
@@ -102,15 +102,15 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   defaultCurrencySymbol: any;
   selectedCurrencySymbol: any;
 
- /**
-   * Loads all currencies and selects based on the currency code.
-   * - Subscribes to 'getAllCurrencies' from CurrencyService.
-   * - Populates 'currencyList' and filters for the selected currency.
-   * - Assigns name and code from the filtered currency.
-   * - Logs the selected currency details and triggers change detection.
-   * @method loadAllCurrencies
-   * @return {void}
-   */
+  /**
+    * Loads all currencies and selects based on the currency code.
+    * - Subscribes to 'getAllCurrencies' from CurrencyService.
+    * - Populates 'currencyList' and filters for the selected currency.
+    * - Assigns name and code from the filtered currency.
+    * - Logs the selected currency details and triggers change detection.
+    * @method loadAllCurrencies
+    * @return {void}
+    */
 
 
   setCurrencySymbol(currencySymbol: string) {
@@ -233,8 +233,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   isTempPremiumListUpdated: boolean = false;
   lastUpdatedCoverTypeCode = null;
   selectedCoverTypeCode: number;
-  @ViewChild('openModalButton', {static: false}) openModalButton!: ElementRef;
-  @ViewChild('addMoreBenefits', {static: true}) addMoreBenefitsModal!: ElementRef;
+  @ViewChild('openModalButton', { static: false }) openModalButton!: ElementRef;
+  @ViewChild('addMoreBenefits', { static: true }) addMoreBenefitsModal!: ElementRef;
   isModalOpen: boolean = false;
 
   clauseList: Clause[] = []
@@ -602,7 +602,10 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
     this.selectedCover = selectedCover;
     this.selectedCoverTypeCode = selectedCover.coverTypeCode;
     this.selectedSubclassCode = selectedCover.subclassCode;
-    this.selectedBinderCode = this.riskLevelPremium.binderCode
+    this.selectedBinderCode = this.riskLevelPremium.binderCode;
+
+    sessionStorage.setItem( `selectedCover-${this.riskLevelPremium.code}`, JSON.stringify(selectedCover));
+
     selectedCover.additionalBenefits = []
     if (this.selectedCoverTypeCode && this.selectedSubclassCode) {
       this.fetchCoverTypeRelatedData(selectedCover);
@@ -782,7 +785,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   }
 
   openRiskDeleteModal(limitToDelete: any) {
-    this.additionalBenefitsRemovedEvent.emit({risk: this.riskLevelPremium, premiumItems: limitToDelete})
+    this.additionalBenefitsRemovedEvent.emit({ risk: this.riskLevelPremium, premiumItems: limitToDelete })
   }
 }
 
