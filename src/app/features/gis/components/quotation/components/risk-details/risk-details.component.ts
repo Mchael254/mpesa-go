@@ -343,8 +343,7 @@ export class RiskDetailsComponent {
   showTaxes: boolean = true;
   showTaxesColumnModal = false;
   taxesColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
-
-
+  isEditScheduleMode = false
 
   constructor(
     public subclassService: SubclassesService,
@@ -2371,7 +2370,7 @@ export class RiskDetailsComponent {
               __originalSchedule: schedule
             }));
 
-          this.levelDataMap[levelName] = levelData;
+          this.levelDataMap[levelName] = this.normalizeOtherDetailsData(levelData);
           log.debug('LEVEL COLUMN DATA:', this.levelDataMap);
         });
       },
@@ -3755,7 +3754,7 @@ export class RiskDetailsComponent {
                     __originalSchedule: schedule
                   }));
 
-                this.levelDataMap[levelName] = levelData;
+                this.levelDataMap[levelName] = this.normalizeOtherDetailsData(levelData);
                 log.debug('LEVEL COLUMN DATA:', this.levelDataMap);
               });
 
@@ -5347,10 +5346,10 @@ export class RiskDetailsComponent {
           garageCapacity: schedule.garageCapacity
         }
       },
-      code: selectedSchedule[0].code,
+      code: selectedSchedule?.code,
       riskCode: this.quotationRiskCode,
       transactionType: 'Q',
-      version: selectedSchedule[0].version
+      version: selectedSchedule?.version
     };
 
     return schedulePayloadL2;
@@ -5810,12 +5809,12 @@ export class RiskDetailsComponent {
         this.globalMessagingService.displaySuccessMessage('Success', 'Tax successfully deleted');
         this.taxDetails = this.taxDetails.filter(t => t.code !== tax.code);
 
-      // Rebuild dynamic columns based on updated taxDetails
-      if (this.taxDetails.length > 0) {
-        this.setTaxesColumns(this.taxDetails[0]);
-      } else {
-        this.taxesColumns = []; // No taxes left
-      }
+        // Rebuild dynamic columns based on updated taxDetails
+        if (this.taxDetails.length > 0) {
+          this.setTaxesColumns(this.taxDetails[0]);
+        } else {
+          this.taxesColumns = []; // No taxes left
+        }
       },
       error: (err) => {
         console.error('Delete failed:', err);
@@ -5824,9 +5823,43 @@ export class RiskDetailsComponent {
   }
 
 
+  // editOtherDetails(tab: any) {
+  //   this.isEditScheduleMode = true
+  //   log.debug('Selected schedule other details', tab)
+  //   log.debug("DYNAMIC SUBCLASS FORM FIELDS", this.dynamicSubclassFormFields)
+  //   this.activeModalTab = tab;
+  //   this.activeFormFields = this.dynamicSubclassFormFields.filter(
+  //     field => Number(field.scheduleLevel) === tab.levelNumber
+  //   );
+
+  //   // Build reactive form
+  //   const group: { [key: string]: any } = {};
+  //   this.activeFormFields.forEach(field => {
+  //     group[field.name] = new FormControl('', field.isMandatory === 'Y' ? Validators.required : null);
+  //   });
+
+  //   this.scheduleOtherDetailsForm = this.fb.group(group);
+  //   log.debug("Schedule other details client before", this.scheduleOtherDetailsForm.value)
+
+  //   if (!this.scheduleOtherDetailsForm.contains('authorisedDriver')) {
+  //     this.scheduleOtherDetailsForm.addControl('authorisedDriver', new FormControl('', Validators.required));
+  //   }
+  //   this.scheduleOtherDetailsForm.patchValue({ authorisedDriver: this.clientName });
+  //   log.debug("Schedule other details client", this.scheduleOtherDetailsForm.value)
+  //   // Show Bootstrap modal
+  //   setTimeout(() => {
+  //     const modalElement = document.getElementById('addOtherDetailsModal');
+  //     if (modalElement) {
+  //       const bsModal = new bootstrap.Modal(modalElement);
+  //       bsModal.show();
+  //     }
+  //   });
+  //   this.fetchLimitationOfUse();
+  // }
   editOtherDetails(tab: any) {
-    log.debug('Selected schedule other details', tab)
-    log.debug("DYNAMIC SUBCLASS FORM FIELDS", this.dynamicSubclassFormFields)
+    this.isEditScheduleMode = true;
+    log.debug('Selected schedule other details', this.selectedSchedule);
+    log.debug('current state of schduler other details:', this.scheduleOtherDetailsForm)
     this.activeModalTab = tab;
     this.activeFormFields = this.dynamicSubclassFormFields.filter(
       field => Number(field.scheduleLevel) === tab.levelNumber
@@ -5835,17 +5868,38 @@ export class RiskDetailsComponent {
     // Build reactive form
     const group: { [key: string]: any } = {};
     this.activeFormFields.forEach(field => {
-      group[field.name] = new FormControl('', field.isMandatory === 'Y' ? Validators.required : null);
+      group[field.name] = new FormControl(
+        '',
+        field.isMandatory === 'Y' ? Validators.required : null
+      );
     });
 
     this.scheduleOtherDetailsForm = this.fb.group(group);
-    log.debug("Schedule other details client before", this.scheduleOtherDetailsForm.value)
 
+    // Add driver if missing
     if (!this.scheduleOtherDetailsForm.contains('authorisedDriver')) {
-      this.scheduleOtherDetailsForm.addControl('authorisedDriver', new FormControl('', Validators.required));
+      this.scheduleOtherDetailsForm.addControl(
+        'authorisedDriver',
+        new FormControl('', Validators.required)
+      );
     }
+
+    // ✅ Pick the correct level's details
+    const levelKey = `level${tab.levelNumber}`;
+    const rawLevelData = this.selectedSchedule[0]?.[0]?.details?.[levelKey] || {};
+    log.debug("Level key:", levelKey);
+    log.debug("Raw Level data:", rawLevelData);
+
+    // Normalize before patch
+    const levelData = this.normalizeLevelData(rawLevelData);
+    log.debug("Normalized Level data:", levelData);
+    this.scheduleOtherDetailsForm.patchValue(levelData);
+
+    // If you still want to force clientName into authorisedDriver:
     this.scheduleOtherDetailsForm.patchValue({ authorisedDriver: this.clientName });
-    log.debug("Schedule other details client", this.scheduleOtherDetailsForm.value)
+
+    log.debug("Schedule other details after patch", this.scheduleOtherDetailsForm.value);
+
     // Show Bootstrap modal
     setTimeout(() => {
       const modalElement = document.getElementById('addOtherDetailsModal');
@@ -5854,10 +5908,30 @@ export class RiskDetailsComponent {
         bsModal.show();
       }
     });
-    this.fetchLimitationOfUse();
+
   }
 
+  normalizeLevelData = (data: any) => ({
+    geographicalLimits: data.geographicalLimits,
+    deductibleDescription: data.deductibleDesc,
+    limitationsUse: data.limitationUse,
+    authorisedDriver: data.authorisedDriver,
+    garageCapacity: data.garageCapacity,
+  });
 
+  onOtherDetailUpdate() {
+    log.debug("Editing schedules form values:", this.scheduleOtherDetailsForm.value)
+    if (this.scheduleOtherDetailsForm.value) {
+      this.createScheduleL2()
+    }
+  }
+  normalizeOtherDetailsData(levelData: any[]): any[] {
+    return levelData.map(row => ({
+      ...row,
+      limitationsUse: row.limitationUse,
+      deductibleDescription: row.deductibleDesc
+    }));
+  }
 
 
 }

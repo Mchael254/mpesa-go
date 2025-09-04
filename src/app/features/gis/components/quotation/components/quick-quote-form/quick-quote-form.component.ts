@@ -1039,10 +1039,59 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     return coverTypes;
   }
 
+  // getLimitsPayload(applicableLimits: any, risk: any): Limit[] {
+  //   log.debug("Processing risk >>.", risk, applicableLimits)
+  //   let limitsPayload: Limit[] = []
+  //   for (let limit of applicableLimits) {
+  //     limitsPayload.push({
+  //       calculationGroup: 1,
+  //       declarationSection: "N",
+  //       rowNumber: 1,
+  //       limitPeriod: limit?.limitPeriod || 0,
+  //       rateDivisionFactor: limit?.divisionFactor,
+  //       premiumRate: limit?.rate,
+  //       rateType: limit?.rateType,
+  //       minimumPremium: limit.premiumMinimumAmount,
+  //       annualPremium: 0,
+  //       multiplierRate: limit?.multiplierRate || 1,
+  //       section: {
+  //         limitAmount: risk?.selfDeclaredValue || risk?.value,
+  //         description: limit?.sectionDescription,
+  //         code: limit?.sectionCode,
+  //         isMandatory: "Y"
+  //       },
+  //       sectionType: limit?.sectionType,
+  //       multiplierDivisionFactor: limit?.multiplierDivisionFactor,
+  //       riskCode: null,
+  //       limitAmount: risk?.selfDeclaredValue || risk?.value,
+  //       description: limit?.sectionDescription,
+  //       shortDescription: limit?.sectionShortDescription,
+  //       sumInsuredRate: limit?.sumInsuredRate,
+  //       freeLimit: limit?.freeLimit || 0,
+  //       compute: "Y",
+  //       dualBasis: "N",
+  //     })
+  //   }
+  //   return limitsPayload
+  // }
+
   getLimitsPayload(applicableLimits: any, risk: any): Limit[] {
-    log.debug("Processing risk >>.", risk, applicableLimits)
-    let limitsPayload: Limit[] = []
+    log.debug("Processing risk >>.", risk, applicableLimits);
+    let limitsPayload: Limit[] = [];
+
     for (let limit of applicableLimits) {
+      // Normalize the description to lowercase for case-insensitive comparison
+      const description = limit?.sectionDescription?.toString().toLowerCase() || '';
+
+      // Determine the limitAmount based on the conditions
+      let limitAmount;
+
+      if (description === "sum insured" && (limit?.freeLimit || 0) === 0) {
+        limitAmount = risk?.selfDeclaredValue || risk?.value;
+      } else {
+        limitAmount = limit?.freeLimit || 0;
+      }
+
       limitsPayload.push({
         calculationGroup: 1,
         declarationSection: "N",
@@ -1055,7 +1104,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         annualPremium: 0,
         multiplierRate: limit?.multiplierRate || 1,
         section: {
-          limitAmount: risk?.selfDeclaredValue || risk?.value,
+          limitAmount: limitAmount,
           description: limit?.sectionDescription,
           code: limit?.sectionCode,
           isMandatory: "Y"
@@ -1063,19 +1112,18 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         sectionType: limit?.sectionType,
         multiplierDivisionFactor: limit?.multiplierDivisionFactor,
         riskCode: null,
-        limitAmount: risk?.selfDeclaredValue || risk?.value,
+        limitAmount: limitAmount,
         description: limit?.sectionDescription,
         shortDescription: limit?.sectionShortDescription,
         sumInsuredRate: limit?.sumInsuredRate,
         freeLimit: limit?.freeLimit || 0,
         compute: "Y",
         dualBasis: "N",
-      })
+      });
     }
-    return limitsPayload
+
+    return limitsPayload;
   }
-
-
   /**
    * Loads all currencies and selects based on the currency code.
    * - Subscribes to 'getAllCurrencies' from CurrencyService.
