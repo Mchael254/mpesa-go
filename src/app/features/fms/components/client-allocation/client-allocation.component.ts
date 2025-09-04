@@ -36,6 +36,10 @@ import { DmsService } from '../../../../shared/services/dms/dms.service';
 import { FmsSetupService } from '../../services/fms-setup.service';
 import { TranslateService } from '@ngx-translate/core';
 import fmsStepsData from '../../data/fms-step.json';
+
+import {IntermediaryService} from '../../../../features/entities/services/intermediary/intermediary.service'
+import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
+import { ReceiptManagementService } from '../../services/receipt-management.service';
 /**
  * `ClientAllocationComponent` is an Angular component responsible for managing client allocations
  * for receipts. It handles form inputs, allocation calculations, file uploads, and interactions
@@ -432,6 +436,8 @@ export class ClientAllocationComponent {
    * @memberof ClientAllocationComponent
    */
   flattenedAllocationDetails: any[] = [];
+  agent: AgentDTO;
+  rctShareForm: FormGroup;
 
   /**
    * Constructor for `ClientAllocationComponent`.
@@ -461,7 +467,10 @@ export class ClientAllocationComponent {
     private reportService: ReportsService,
     private sessionStorage: SessionStorageService,
     private fmsSetupService: FmsSetupService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private intermediaryService:IntermediaryService,
+    private receiptManagementService:ReceiptManagementService
+
   ) {}
   /**
    * Angular lifecycle hook that initializes the component.
@@ -469,6 +478,7 @@ export class ClientAllocationComponent {
    */
   ngOnInit(): void {
     this.captureReceiptForm();
+    this.initializeRctSharingForm();
     this.setReceiptPreviewPath();
     this.loggedInUser = this.authService.getCurrentUser();
     const storedData = this.receiptDataService.getReceiptData();
@@ -591,7 +601,11 @@ export class ClientAllocationComponent {
     // this.exchangeRate = Number(exchangeRate);
     this.fetchParamStatus();
     this.getAllocations(); // Always fetch latest allocations
+  
     this.confirmPaymentModeSelected();
+    if(this.selectedClient.code!==null){
+      this.getAgentById(this.selectedClient.code);
+    }
   }
   /**
    * Initializes the receipt capture form with default values and validators.
@@ -605,9 +619,26 @@ export class ClientAllocationComponent {
     //const today = this.formatDate(new Date()); // Get current date in 'yyyy-MM-dd' format
     this.receiptingDetailsForm = this.fb.group({
       allocatedAmount: this.fb.array([]), // FormArray for allocated amounts
-      description: ['', Validators.required],
+      description: ['', Validators.required]
+      
     });
+ 
   }
+  initializeRctSharingForm(){
+      this.rctShareForm = this.fb.group({
+         email: ['',[Validators.email]], // Not required initially
+      phone: ['', [Validators.required,Validators.pattern(/^254\d{9}$/)]], // Initially required
+      name: ['', Validators.required],
+      shareMethod: ['whatsapp', Validators.required], // Default to 'whatsapp'
+      
+      })
+    }
+   /**
+   * Adds the necessary form controls for the receipt sharing functionality
+   * to an existing FormGroup.
+   */
+  
+    
   get currentPageReportTemplate(): string {
     return this.translate.instant('fms.receipt-management.pageReport');
   }
@@ -1838,6 +1869,7 @@ export class ClientAllocationComponent {
           '',
           this.receiptResponse.message
         );
+        this.openReceiptShareModal();
     // remove only the items you set for this specific workflow.
       this.sessionStorage.removeItem('receiptCode');
       this.sessionStorage.removeItem('branchReceiptNumber');
@@ -1849,7 +1881,8 @@ export class ClientAllocationComponent {
         
         this.receiptDataService.clearFormState();
         this.receiptDataService.clearReceiptData();
-        this.router.navigate(['/home/fms/receipt-capture']);
+        
+       // this.router.navigate(['/home/fms/receipt-capture']);
 
         
       },
@@ -1866,6 +1899,249 @@ export class ClientAllocationComponent {
         );
       },
     });
+  }
+  navigateToReceiptCapture():void{
+this.router.navigate(['/home/fms/receipt-capture']);
+  }
+getAgentById(agent_Code: number): void {
+    this.intermediaryService.getAgentById(agent_Code).subscribe({
+      next: (response) => {
+        this.agent = response;
+
+        this.rctShareForm.patchValue({
+          name: this.agent.name,
+          email: this.agent.emailAddress,
+          phone: this.agent.phoneNumber,
+        });
+        const email = this.receiptingDetailsForm.get('email')?.value;
+   
+      },
+      error: (err) => {
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
+      },
+    });
+  }
+openReceiptShareModal():void{
+   const modal = new bootstrap.Modal(
+        document.getElementById('shareReceiptModal')
+      );
+      if (modal) {
+        modal.show();
+      }
+}
+/**
+   * BEST PRACTICE: i have a single helper function to build the share data.
+   * This avoids repeating logic and is the single source of truth.
+   */
+  private prepareShareData(): { shareType: string; recipientEmail: string | null;recipientPhone:string | null} | null {
+    const nameControl = this.rctShareForm.get('name');
+    const shareMethod = this.rctShareForm.get('shareMethod')?.value;
+  const phoneControl = this.rctShareForm.get('phone');
+  const emailControl = this.rctShareForm.get('email');
+// --- START: 
+    if (nameControl?.invalid) {
+      this.globalMessagingService.displayErrorMessage(
+        'Validation Error',
+        'Client Name is required. It may not have loaded correctly.'
+      );
+      return null;
+    }
+    // --- END: 
+    if (!shareMethod) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Please select a share method.'
+      );
+      return null;
+    }
+
+    if (shareMethod === 'email') {
+    if (emailControl?.invalid) {
+      this.globalMessagingService.displayErrorMessage('Validation Error', 'Please enter a valid email address.');
+      return null;
+    }
+      return {
+  shareType: 'EMAIL',
+  recipientEmail: this.rctShareForm.get('email')?.value || '',
+recipientPhone: null
+};
+    } else if(shareMethod === 'whatsapp'){
+      // 'whatsapp'
+      // --- START: ADDED VALIDATION BLOCK ---
+    const phoneRegex = /^254\d{9}$/;
+    if (phoneControl?.invalid || !phoneRegex.test(phoneControl?.value) ) {
+      this.globalMessagingService.displayErrorMessage(
+        'Validation Error',
+        'Invalid phone number format. It must be 254 followed by 9 digits.'
+      );
+      return null; // Stop the process
+    }
+    // --- END: ADDED VALIDATION BLOCK ---
+      return {
+        shareType: 'WHATSAPP',
+        recipientPhone: this.rctShareForm.get('phone')?.value || '',
+       
+        recipientEmail:''
+      };
+    }
+    return null; // Should not happen if a share method is selected
+  }
+
+  
+
+  postClientDetails() {
+    //  Mark all fields as touched to show any validation errors in the UI
+    this.rctShareForm.markAllAsTouched();
+      const shareData = this.prepareShareData();
+      if (!shareData) {
+        return; // Stop if data is invalid (e.g., no method selected)
+      }
+  
+      const body = {
+        shareType: shareData.shareType,
+      clientName: this.agent.name,
+      recipientEmail: shareData?.recipientEmail,
+      recipientPhone:shareData?.recipientPhone,
+      receiptNumber: this.receiptResponse.receiptNumber,
+      orgCode: String(this.defaultOrg?.id || this.selectedOrg?.id),
+      };
+  
+      this.receiptManagementService.shareReceipt(body).subscribe({
+        next: (response) => {
+          const modalEl = document.getElementById('shareReceiptModal');
+          if (modalEl) {
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) {
+              modal.hide();
+            }
+          }
+          
+   this.updatePrintStatus();
+          
+  
+          this.globalMessagingService.displaySuccessMessage(
+            'success',
+            response.msg
+          );
+          this.router.navigate(['/home/fms/receipt-capture']);
+          
+        },
+  
+        error: (err) => {
+          const modalEl = document.getElementById('shareReceiptModal');
+          if (modalEl) {
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) {
+              modal.hide();
+            }
+          }
+          const customMessage = this.translate.instant('fms.errorMessage');
+          const backendError =
+            err.error?.msg ||
+            err.error?.error ||
+            err.error?.status ||
+            err.statusText;
+          this.globalMessagingService.displayErrorMessage(
+            customMessage,
+            backendError
+          );
+        },
+      });
+    }
+    
+
+      /**
+   * @method updatePrintStatus
+   * @description Sends a request to the ReceiptService to mark the current receipt as printed.
+   * The payload is an array containing the receipt number.
+   * On success, displays a success message and navigates back to the receipt management view.
+   * On error, displays an error message.
+   */
+  updatePrintStatus() {
+    // Construct the payload as an array of numbers
+    const receiptNumber= Number(this.receiptResponse.receiptNumber);
+    const payload: number[] = [receiptNumber];
+    this.receiptService.updateReceiptStatus(payload).subscribe({
+      next: (response) => {
+        this.globalMessagingService.displaySuccessMessage(
+          '',
+          response?.msg || response?.error || response?.status
+        );
+         
+
+
+
+
+      },
+
+      error: (err) => {
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
+       
+      },
+    });
+  }
+closeModal():void{
+  const modalEl = document.getElementById('shareReceiptModal');
+          if (modalEl) {
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) {
+              modal.hide();
+            }}
+             this.sessionStorage.removeItem('receiptCode');
+      this.sessionStorage.removeItem('branchReceiptNumber');
+      this.sessionStorage.removeItem('receiptingPoint');
+      this.sessionStorage.removeItem('globalBankAccount');
+      this.sessionStorage.removeItem('globalBankType');
+     
+
+        
+        this.receiptDataService.clearFormState();
+        this.receiptDataService.clearReceiptData();
+        
+        this.router.navigate(['/home/fms/receipt-capture']);
+}
+  onClickPreview(): void {
+    //  Mark all fields as touched to show any validation errors in the UI
+    this.rctShareForm.markAllAsTouched();
+    this.sessionStorage.setItem('receipting','Y');
+  
+    const shareData = this.prepareShareData();
+    if (!shareData) {
+      return; // Stop if data is invalid
+    }
+// Create a single, comprehensive object to store
+    const previewData = {
+        shareType: shareData.shareType,
+        recipientEmail: shareData.recipientEmail,
+        recipientPhone: shareData.recipientPhone,
+        clientName: this.rctShareForm.get('name')?.value || 'N/A' // Get the client name from the form
+    };
+
+    // Store the single object as a JSON string
+    this.sessionStorage.setItem('sharePreviewData', JSON.stringify(previewData));
+    // Store only the relevant data, not everything from the form.
+    //this.sessionStorage.setItem('shareType', shareData.shareType);
+   // this.sessionStorage.setItem('recipient', shareData.recipient);
+
+    this.router.navigate(['/home/fms/preview-receipt']);
   }
   /**
    * Saves the receipt and navigates to the receipt preview page.

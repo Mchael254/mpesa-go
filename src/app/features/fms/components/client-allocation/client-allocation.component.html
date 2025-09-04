@@ -597,7 +597,157 @@
       </div>
       <!-- end -->
     </div>
+    <!-- receipt sharing  Modal -->
+    <div
+      class="modal fade"
+      id="shareReceiptModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+      aria-labelledby="staticBackdropLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form [formGroup]="rctShareForm">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">
+                {{ "fms.receipt-management.shareReceipt" | translate }}
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                (click)="navigateToReceiptCapture()"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="d-flex">
+                <div class="form-check customcss me-4">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="shareMethod"
+                    id="emailbtn"
+                    formControlName="shareMethod"
+                    value="email"
+                  />
+
+                  <label
+                    class="form-check-label"
+                    for="emailbtn"
+                    style="color: #000"
+                  >
+                    {{ "fms.receipt-management.email" | translate }}
+                  </label>
+                </div>
+
+                <div class="form-check customcss">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="shareMethod"
+                    id="whatsappbtn"
+                    formControlName="shareMethod"
+                    value="whatsapp"
+                  />
+                  <label
+                    class="form-check-label"
+                    for="whatsappbtn"
+                    style="color: #000"
+                  >
+                    {{ "fms.receipt-management.whatsapp" | translate }}
+                  </label>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col clientcss">
+                  <label for="clientName" style="color: #000">{{
+                    "fms.receipt-management.clientName" | translate
+                  }}</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="clientName"
+                    formControlName="name"
+                  />
+                </div>
+              </div>
+              <div
+                class="row mb-3"
+                *ngIf="rctShareForm.get('shareMethod')?.value === 'whatsapp'"
+              >
+                <div class="col">
+                  <label for="phone" style="color: #000">{{
+                    "fms.receipt-management.phoneNumber" | translate
+                  }}</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="phone"
+                    formControlName="phone"
+                    placeholder="e.g., 254712345678"
+                  />
+                  <!-- START: Add this error message block -->
+                  <div
+                    *ngIf="
+                      rctShareForm.get('phone')?.invalid &&
+                      (rctShareForm.get('phone')?.dirty ||
+                        rctShareForm.get('phone')?.touched)
+                    "
+                    class="text-danger mt-1"
+                    style="font-size: 0.8rem"
+                  >
+                    <div
+                      *ngIf="rctShareForm.get('phone')?.errors?.['required']"
+                    >
+                      Phone number is required.
+                    </div>
+                    <div *ngIf="rctShareForm.get('phone')?.errors?.['pattern']">
+                      Invalid format. Must be 254 followed by 9 digits (e.g.,
+                      254712345678).
+                    </div>
+                  </div>
+                  <!-- END: Add this error message block -->
+                </div>
+              </div>
+              <div
+                class="row mb-3"
+                *ngIf="rctShareForm.get('shareMethod')?.value === 'email'"
+              >
+                <div class="col">
+                  <label for="email" style="color: #000">{{
+                    "fms.receipt-management.email" | translate
+                  }}</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    formControlName="email"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                class="btn btn-outline-primary"
+                (click)="onClickPreview()"
+              >
+                {{ "fms.receipt-management.preview" | translate }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="postClientDetails()"
+              >
+                {{ "fms.receipt-management.send" | translate }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- </div> -->
   </div>
 </div>
-
-<!-- </div> -->
