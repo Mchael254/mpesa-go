@@ -15,6 +15,7 @@ import {ReportsService} from '../../../../shared/services/reports/reports.servic
 
 import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
 import { ReceiptManagementService } from '../../services/receipt-management.service';
+import { ReceiptDataService } from '../../services/receipt-data.service';
 
 @Component({
   selector: 'app-preview-receipt',
@@ -33,6 +34,7 @@ export class PreviewReceiptComponent {
   recipient: string;
   selectedOrg: OrganizationDTO;
   printStatus: 'Y' | 'N';
+  receiptingScreen: 'Y' | 'N';
   /**
    * @property {OrganizationDTO} defaultOrg - The default organization.
    */
@@ -43,6 +45,8 @@ export class PreviewReceiptComponent {
    */
   filePath: string = '';
   // A local flag to prevent revoking URL too early
+   //  a property to hold the structured share data
+  shareData: SharePreviewData | null = null;
   private isNavigating = false;
   constructor(
     private sessionStorage: SessionStorageService,
@@ -51,7 +55,8 @@ export class PreviewReceiptComponent {
     private router: Router,
     private translate: TranslateService,
     private receiptService: ReceiptService,
-    private receiptManagementService: ReceiptManagementService
+    private receiptManagementService: ReceiptManagementService,
+      private receiptDataService: ReceiptDataService
   ) {}
   ngOnInit() {
     let storedDefaultOrg = this.sessionStorage.getItem('selectedOrg');
@@ -79,11 +84,17 @@ export class PreviewReceiptComponent {
       this.code = this.accountCode;
       this.agentCode = null;
     }
-    this.recipient = this.sessionStorage.getItem('recipient');
-
-    this.shareMethod = this.sessionStorage.getItem('shareType');
+    // this.recipient = this.sessionStorage.getItem('recipient');
+// --- START: NEW WAY TO GET SHARE DATA ---
+    const storedShareData = this.sessionStorage.getItem('sharePreviewData');
+    if (storedShareData) {
+      this.shareData = JSON.parse(storedShareData);
+    }
+    // --- END: NEW WAY TO GET SHARE DATA ---
+    // this.shareMethod = this.sessionStorage.getItem('shareType');
     this.printStatus = this.sessionStorage.getItem('printed') as 'Y' | 'N';
-    
+    this.receiptingScreen = this.sessionStorage.getItem('receipting') as 'Y' | 'N';
+    //console.log('from receipting screen:',this.receiptingScreen);
     this.getReceiptToPrint();
   }
   /**
@@ -144,8 +155,7 @@ export class PreviewReceiptComponent {
     this.sessionStorage.setItem('printTabStatus', JSON.stringify(true));
      this.sessionStorage.removeItem('receiptNumber');
       this.sessionStorage.removeItem('reprinted');
-      this.sessionStorage.removeItem('shareType');
-      this.sessionStorage.removeItem('recipient');
+     this.sessionStorage.removeItem('sharePreviewData');
       this.sessionStorage.removeItem('printStatus');
     this.router.navigate(['/home/fms/receipt-management']);
    
@@ -172,10 +182,16 @@ export class PreviewReceiptComponent {
   }
   postClientDetails() {
     const body = {
-      shareType: this.shareMethod,
-      recipient: this.recipient,
+      shareType:this.shareData.shareType,
+      recipientEmail: this.shareData.recipientEmail,
+      recipientPhone: this.shareData.recipientPhone,
       receiptNumber: String(this.receiptNo),
       orgCode: String(this.defaultOrg?.id || this.selectedOrg?.id),
+      
+      clientName: this.shareData.clientName,
+      
+      
+
     };
 
     this.receiptManagementService.shareReceipt(body).subscribe({
@@ -184,11 +200,15 @@ export class PreviewReceiptComponent {
           'success',
           response.msg
         );
-        if (this.printStatus === 'N') {
+        if (this.printStatus === 'N' || this.receiptingScreen==='Y') {
          
  this.updatePrintStatus();
         }
+        if(this.receiptingScreen==='N'){
         this.navigateToReceiptManagement();
+        }else if(this.receiptingScreen==='Y'){
+          this.navigateToReceiptCapture();
+        }
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
@@ -216,10 +236,10 @@ export class PreviewReceiptComponent {
     const payload: number[] = [this.receiptNo];
     this.receiptService.updateReceiptStatus(payload).subscribe({
       next: (response) => {
-        // this.globalMessagingService.displaySuccessMessage(
-        //   '',
-        //   response?.msg || response?.error || response?.status
-        // );
+        this.globalMessagingService.displaySuccessMessage(
+          '',
+          response?.msg || response?.error || response?.status
+        );
          // On success, set the flag and navigate
         //this.navigateBackToPrintTab();
 
@@ -244,4 +264,36 @@ export class PreviewReceiptComponent {
       },
     });
   }
+  checkActiveScreen():void{
+if(this.receiptingScreen==='N'){
+        this.navigateToReceiptManagement();
+        }else if(this.receiptingScreen==='Y'){
+          this.navigateToReceiptCapture();
+        }
+  }
+  navigateToReceiptCapture(){
+     this.sessionStorage.removeItem('receiptNumber');
+      
+      this.sessionStorage.removeItem('shareType');
+      this.sessionStorage.removeItem('recipient');
+        this.sessionStorage.removeItem('receiptCode');
+      this.sessionStorage.removeItem('branchReceiptNumber');
+      this.sessionStorage.removeItem('receiptingPoint');
+      this.sessionStorage.removeItem('globalBankAccount');
+      this.sessionStorage.removeItem('globalBankType');
+      
+
+    this.receiptDataService.clearReceiptData();
+    this.receiptDataService.clearFormState();
+   
+      
+    this.router.navigate(['/home/fms/receipt-capture']);
+  }
+}
+// Define a type for your share data for better type safety
+interface SharePreviewData {
+  shareType: string;
+  recipientEmail: string | null;
+  recipientPhone: string | null;
+  clientName: string;
 }
