@@ -336,7 +336,7 @@
                                 <ng-container *ngIf="col.field === 'actions'; else defaultCell">
                                     <button pButton pRipple type="button"
                                         class="p-button-text p-button-sm p-button-info custom-button" tooltip="Edit"
-                                        (click)="editOtherDetails(tab)">
+                                        (click)="editOtherDetails(tab);fetchLimitationOfUse();">
                                         Edit
                                     </button>
 
@@ -377,12 +377,26 @@
 
 
                         <div class="modal-body">
-                            <h5 class="modal-title mt-2 mb-4 ">Add {{ activeModalTab?.levelName |
-                                sentenceCase }}
+                            <div *ngIf="!isEditScheduleMode">
+                                <h5 class="modal-title mt-2 mb-4 ">Add {{
+                                    activeModalTab?.levelName |
+                                    sentenceCase }}
 
-                                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </h5>
+                                    <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </h5>
+                            </div>
+                            <div *ngIf="isEditScheduleMode">
+                                <h5 class="modal-title mt-2 mb-4 ">Edit {{
+                                    activeModalTab?.levelName |
+                                    sentenceCase }}
+
+                                    <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </h5>
+                            </div>
+
+
                             <div class="row">
                                 <ng-container *ngFor="let field of activeFormFields; let i = index">
                                     <div class="col-sm-6 mb-4">
@@ -442,9 +456,23 @@
                         <button type="button" class="btn btn-outline-primary mx-2" id="saveDetails"
                             data-bs-dismiss="modal">{{'gis.policy.cancel' |
                             translate}}</button>
+                        <div *ngIf="!isEditScheduleMode">
+                            <button type="button" class="btn btn-primary " id="saveDetails"
+                                (click)=onOtherDetailSave()>Save
+                            </button>
+                        </div>
+                        <div *ngIf="isEditScheduleMode">
+                            <span>
+                                <button type="button" class="btn btn-primary" id="saveDetails"
+                                    [disabled]="!scheduleOtherDetailsForm.dirty || scheduleOtherDetailsForm.invalid"
+                                    (click)="onOtherDetailUpdate()">
+                                    Update
+                                </button>
+                            </span>
+                        </div>
 
-                        <button type="button" class="btn btn-primary " id="saveDetails" (click)=onOtherDetailSave()>Save
-                        </button>
+
+
                     </div>
                 </div>
             </div>
