@@ -25,7 +25,7 @@
             </div> -->
           <div class="card mb-3" *ngFor="let coverType of riskLevelPremium.coverTypeDetails; let i = index"
             [class.selected]="selectedCoverTypeCode === coverType.coverTypeCode"
-            (click)="onCoverTypeSelected(coverType)" style="cursor: pointer;">
+            (click)="onCoverTypeSelected(coverType);" style="cursor: pointer;">
             <div class="card-body cover-types-body">
               <input type="radio" name="{{ riskLevelPremium.code + coverType.coverTypeCode }}"
                 [value]="coverType.coverTypeCode" [(ngModel)]="selectedCoverTypeCode" class="radio-btn"
@@ -109,8 +109,8 @@
                         </tr>
 
                         <!-- Modal for each row -->
-                        <p-dialog [(visible)]="clauseList.showHelperModal" [modal]="false"
-                          [style]="{ 'width': '700px'}">
+                        <p-dialog [(visible)]="clauseList.showHelperModal" [modal]="false" [style]="{ 'width': '700px'}"
+                          (onHide)="togglePolicy('clauses')">
                           <ng-container *ngIf="clauseList">
                             <div pResizable [ngStyle]="{'min-width.px': 200, 'min-height.px': 150}"
                               (onResize)="onResize($event)">

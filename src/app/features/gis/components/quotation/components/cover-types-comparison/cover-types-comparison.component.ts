@@ -85,6 +85,8 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
       this.selectedCover = selectedCoverType
       log.debug("Selected coverType >>>>", selectedCoverType)
       this.onCoverTypeSelected(selectedCoverType)
+      this.openPolicy = 'additionalBenefits';
+
     }
   }
 
@@ -149,7 +151,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
         const curr = this.currencyList.find(currency => currency.id == this.currencyCode);
         this.selectedCurrency = curr?.name
         log.debug("Selected Currency:", this.selectedCurrency);
-        this.selectedCurrencyCode = curr.id;
+        this.selectedCurrencyCode = curr?.id;
         log.debug("Selected Currency code:", this.selectedCurrencyCode);
       })
   }
@@ -302,6 +304,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   openPolicy: string | null = null;
 
   togglePolicy(panelName: string) {
+    log.debug("TogglePolicy called")
     this.openPolicy = this.openPolicy === panelName ? null : panelName;
   }
 
@@ -588,7 +591,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   }
 
   openHelperModal(selectedClause: any) {
-    // Set the showHelperModal property of the selectedClause to true
+    this.togglePolicy('clauses')
     selectedClause.showHelperModal = true;
   }
 
@@ -598,11 +601,14 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
 
   onCoverTypeSelected(selectedCover: CoverTypeDetail): void {
     log.debug('CoverType selected:', selectedCover, this.riskLevelPremium);
+    this.openPolicy = 'additionalBenefits';
     this.riskLevelPremium.selectCoverType = selectedCover
     this.selectedCover = selectedCover;
     this.selectedCoverTypeCode = selectedCover.coverTypeCode;
     this.selectedSubclassCode = selectedCover.subclassCode;
     this.selectedBinderCode = this.riskLevelPremium.binderCode;
+
+    sessionStorage.setItem(`selectedCover-${this.riskLevelPremium.code}`, JSON.stringify(selectedCover));
 
     selectedCover.additionalBenefits = []
     if (this.selectedCoverTypeCode && this.selectedSubclassCode) {
