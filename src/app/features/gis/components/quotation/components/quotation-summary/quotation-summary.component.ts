@@ -1107,7 +1107,7 @@ getSections(data: any) {
 
     // Call all methods sequentially
     this.getSections(data.code);
-    // this.getExcesses(subclassCode);
+    this.getExcesses(subclassCode);
     this.getRiskClauses(data.code);
 
 //       log.debug('subclassCode: passed for excess', subclassCode);
