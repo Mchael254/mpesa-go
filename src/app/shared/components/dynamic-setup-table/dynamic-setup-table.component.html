@@ -19,7 +19,7 @@
         <div class="form-check form-check-inline float-start">
           <input class="form-check-input" type="checkbox" value="" id="checkChecked" [checked]="col.visible" [(ngModel)]="col.visible">
           <label class="form-check-label" for="checkChecked">
-            {{ col.header | titlecase }}
+            {{ col.header[language] | titlecase }}
           </label>
         </div>
       </div>
@@ -44,7 +44,7 @@
           <ng-container *ngFor="let col of columns">
             <th *ngIf="col.visible"
                 [pSortableColumn]="col.field">
-              {{ col.header | titlecase }}
+              {{ col.header[language] | titlecase }}
               <p-sortIcon [field]="col.field"></p-sortIcon>
             </th>
           </ng-container>
@@ -109,15 +109,15 @@
                       <ng-container *ngIf="!['idNumber', 'smsNumber'].includes(field.fieldId)">
                         <label class="form-label" [for]="field.fieldId">
                           {{ field.label?.[language] | titlecase }}
-                          <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                          <span *ngIf="field.mandatory" class="text-danger">*</span>
                         </label>
                         <input
                           [type]="field.type"
                           [formControlName]="field.fieldId"
-                          [placeholder]="field?.placeholder[language]"
+                          [placeholder]="field?.placeholder[language] || ''"
                           [id]="field.fieldId"
                           class="form-control"
-                          (keyup)="validateRegex(field, field.groupId)"
+                          (keyup)="validateRegex(field, field.formGroupingId)"
                           [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
 
                         />
@@ -132,7 +132,7 @@
                     <ng-container *ngIf="field.type === 'tel'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
 
                       <ngx-intl-tel-input
@@ -141,7 +141,7 @@
                         [preferredCountries]="preferredCountries"
                         [enableAutoCountrySelect]="true"
                         [enablePlaceholder]="true"
-                        [customPlaceholder]="field.placeholder[language]"
+                        [customPlaceholder]="field.placeholder[language] || ''"
                         [searchCountryFlag]="true"
                         [selectFirstCountry]="true"
                         [selectedCountryISO]="countryISO"
@@ -162,11 +162,11 @@
                     <ng-container *ngIf="field.type === 'textarea'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <textarea
                         [formControlName]="field.fieldId"
-                        [placeholder]="field.placeholder"
+                        [placeholder]="field.placeholder[language] || ''"
                         [id]="field.fieldId"
                         class="form-control"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
@@ -180,12 +180,12 @@
                     <ng-container *ngIf="field.type === 'date'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <input
                         type="date"
                         [formControlName]="field.fieldId"
-                        [placeholder]="field.placeholder"
+                        [placeholder]="field.placeholder[language] || ''"
                         [id]="field.fieldId"
                         class="form-control"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
@@ -199,12 +199,12 @@
                     <ng-container *ngIf="field.type === 'number'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <input
                         type="number"
                         [formControlName]="field.fieldId"
-                        [placeholder]="field?.placeholder[language]"
+                        [placeholder]="field?.placeholder[language] || ''"
                         [id]="field.fieldId"
                         class="form-control"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
@@ -218,7 +218,7 @@
                     <ng-container *ngIf="field.type === 'select'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <select
                         [formControlName]="field.fieldId"
@@ -243,7 +243,7 @@
                     <ng-container *ngIf="field.type === 'radio'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <div class="form-check" [id]="field.fieldId">
                         <div *ngFor="let option of field.options">
@@ -267,7 +267,7 @@
                     <ng-container *ngIf="field.type === 'checkbox'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <div class="form-check">
                         <div *ngFor="let option of field.options">
@@ -289,10 +289,10 @@
                     </ng-container>
 
                     <!--show validation errors-->
-                    <ng-container *ngIf="field.isMandatory">
+                    <ng-container *ngIf="field.mandatory">
                       <div *ngIf="
                           dynamicModalForm.get(field.fieldId)?.touched &&
-                          dynamicModalForm.get(field.fieldId)?.hasError(field.isMandatory ? 'required' : '')"
+                          dynamicModalForm.get(field.fieldId)?.hasError(field.mandatory ? 'required' : '')"
                       >
                         <span class="text-danger">
                           {{ field.label?.[language] | sentenceCase }} {{ 'base.isRequired' | translate }}.

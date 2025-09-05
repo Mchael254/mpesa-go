@@ -1,26 +1,23 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
-import {BreadCrumbItem} from "../../../data/common/BreadCrumbItem";
 import {FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {Logger, UtilService} from "../../../services";
-import {GlobalMessagingService} from "../../../services/messaging/global-messaging.service";
-import {LANGUAGES, LanguagesDto} from "../../../data/common/languages-dto";
-import {DynamicScreensSetupService} from "../../../services/setups/dynamic-screen-config/dynamic-screens-setup.service";
 import {
-  ConfigFormFieldsDto,
-  DynamicScreenSetupUpdateDto,
-  DynamicSetupImportDto,
-  FormGroupsDto,
-  FormSubGroupsDto,
-  MultilingualText,
+  ConfigFormFieldsDto, DynamicScreenSetupUpdateDto, DynamicSetupImportDto,
+  FormGroupsDto, FormSubGroupsDto, MultilingualText,
   ScreenFormsDto,
   ScreensDto,
-  SubModulesDto,
-  Validation
-} from "../../../data/common/dynamic-screens-dto";
+  SubModulesDto, Validation
+} from "../../../../shared/data/common/dynamic-screens-dto";
+import {LANGUAGES, LanguagesDto} from "../../../../shared/data/common/languages-dto";
 import {Table} from "primeng/table";
-import {SessionStorageService} from "../../../services/session-storage/session-storage.service";
+import {BreadCrumbItem} from "../../../../shared/data/common/BreadCrumbItem";
+import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
+import {Logger, UtilService} from "../../../../shared/services";
+import {
+  DynamicScreensSetupService
+} from "../../../../shared/services/setups/dynamic-screen-config/dynamic-screens-setup.service";
+import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
+import {FieldModel, Group} from "../../../entities/data/form-config.model";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
-import {FieldModel, Group} from "../../../../features/entities/data/form-config.model";
 
 const log = new Logger('CrmScreensConfigComponent');
 @Component({
@@ -123,21 +120,22 @@ export class CrmScreensConfigComponent implements OnInit {
       label: 'Home',
       url: '/home/dashboard',
     },
+
     {
       label: 'Administration',
-      url: '/home/screen-setup',
+      url: '/home/screens-config',
     },
     {
       label: 'Dynamic Setup',
-      url: '/home/screen-setup',
+      url: '/home/screens-config',
     },
     {
       label: 'CRM',
-      url: '/home/screen-setup',
+      url: '/home/screens-config',
     },
     {
       label: 'Entities',
-      url: '/home/crm-screen-setup',
+      url: '/home/screens-config/crm-screen-setup',
     },
   ];
 

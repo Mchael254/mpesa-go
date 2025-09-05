@@ -10,7 +10,7 @@
         <h4 class="column-title">{{ 'crm.subModules' | translate }}</h4>
         <div class="edit-row" *ngFor="let subModule of subModules">
           <label class="form-label" (click)="onClickSubModule(subModule)"
-            [class.highlight]="selectedSubModule?.code === subModule.code"
+                 [class.highlight]="selectedSubModule?.code === subModule.code"
           >
             {{ subModule.label?.[language] | titlecase }}
           </label>
@@ -212,7 +212,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.subModulesLabel' | translate }}
+                {{ 'crm.subModulesLabel' | translate }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.original' | translate }})</span>
               </label>
               <input
@@ -225,7 +225,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.module' | translate }}
+                {{ 'crm.module' | translate }}
               </label>
               <input
                 type="text"
@@ -237,7 +237,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.subModulesLabel' | translate }}
+                {{ 'crm.subModulesLabel' | translate }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
               </label>
               <input
@@ -250,7 +250,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                  {{ 'crm.visible' | translate }}
+                {{ 'crm.visible' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="Y" formControlName="visible">
@@ -263,7 +263,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.subModulesLevel' | translate }}
+                {{ 'crm.subModulesLevel' | translate }}
               </label>
               <select
                 formControlName="subModuleLevel"
@@ -472,7 +472,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.sectionLabel' | translate }}
+                {{ 'crm.sectionLabel' | translate }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
               </label>
               <input
@@ -485,7 +485,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                  {{ 'crm.visible' | translate }}
+                {{ 'crm.visible' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="Y" formControlName="visible">
@@ -677,7 +677,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.subSectionTwoLabel' | translate }}
+                {{ 'crm.subSectionTwoLabel' | translate }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.original' | translate }})</span>
               </label>
               <input
@@ -690,7 +690,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.section' | translate }}
+                {{ 'crm.section' | translate }}
               </label>
               <select
                 formControlName="section"
@@ -706,7 +706,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.subSectionTwoLabel' | translate }}
+                {{ 'crm.subSectionTwoLabel' | translate }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
               </label>
               <input
@@ -795,7 +795,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.fieldLabel' | translate }}
+                {{ 'crm.fieldLabel' | translate }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.original' | translate }})</span>
               </label>
               <input
@@ -849,7 +849,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                  {{ 'crm.visible' | translate }}
+                {{ 'crm.visible' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="Y" formControlName="visible">
@@ -937,8 +937,8 @@
                 class="form-select"
               >
                 <option value="">{{ 'crm.selectOrder' | translate }}</option>
-                  <option *ngFor="let i of [].constructor(tableData?.length); let j = index" [value]="j+1">{{ j + 1 }}
-                  </option>
+                <option *ngFor="let i of [].constructor(tableData?.length); let j = index" [value]="j+1">{{ j + 1 }}
+                </option>
               </select>
             </div>
 
@@ -1016,44 +1016,44 @@
 
 <!--Multilingual confirmation modal-->
 <div class="modal fade" id="multilingualModal" aria-labelledby="multilingualModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content position-relative p-4">
-        <div class="d-flex align-items-center">
-          <div
-            class="d-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-25 me-4"
-            style="width: 60px; height: 60px;"
-          >
-            <i class="fas fa-info text-primary" style="font-size: 1.5rem;"></i>
-          </div>
-          <div>
-            <h5 class="fw-bold mb-2">Info</h5>
-            <p class="text-muted mb-3">
-              {{ 'crm.updateInAnotherLanguage' | translate }}
-            </p>
-            <div class="d-flex justify-content-center gap-2">
-              <button
-                type="button"
-                class="btn btn-outline-primary btn-md"
-                (click)="closeMultilingualModal()"
-              >
-                {{ 'entities.no' | translate }}
-              </button>
-              <button type="button" class="btn btn-primary btn-md" (click)="closeMultilingualModal(true)">
-                {{ 'entities.yes' | translate }}
-              </button>
-            </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content position-relative p-4">
+      <div class="d-flex align-items-center">
+        <div
+          class="d-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-25 me-4"
+          style="width: 60px; height: 60px;"
+        >
+          <i class="fas fa-info text-primary" style="font-size: 1.5rem;"></i>
+        </div>
+        <div>
+          <h5 class="fw-bold mb-2">Info</h5>
+          <p class="text-muted mb-3">
+            {{ 'crm.updateInAnotherLanguage' | translate }}
+          </p>
+          <div class="d-flex justify-content-center gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-primary btn-md"
+              (click)="closeMultilingualModal()"
+            >
+              {{ 'entities.no' | translate }}
+            </button>
+            <button type="button" class="btn btn-primary btn-md" (click)="closeMultilingualModal(true)">
+              {{ 'entities.yes' | translate }}
+            </button>
           </div>
         </div>
-
-        <!-- Close button -->
-        <button
-          type="button"
-          class="btn-close position-absolute top-0 end-0 m-3"
-          (click)="closeMultilingualModal()"
-          aria-label="Close"
-        ></button>
       </div>
+
+      <!-- Close button -->
+      <button
+        type="button"
+        class="btn-close position-absolute top-0 end-0 m-3"
+        (click)="closeMultilingualModal()"
+        aria-label="Close"
+      ></button>
     </div>
+  </div>
 </div>
 
 <!--Export setup modal-->
@@ -1164,7 +1164,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="card mb-3" *ngIf="newEntityFieldsData.length > 0">
+       <!-- <div class="card mb-3" *ngIf="newEntityFieldsData.length > 0">
           <form [formGroup]="uploadForm">
             <div class="row m-3">
               <h5 class="mb-4 ms-md-5 text-primary">{{'entities.new_entity' | translate}}</h5>
@@ -1223,12 +1223,12 @@
                   </ng-container>
 
                   <div class="row">
-                    <!--form-inputs-->
+                    &lt;!&ndash;form-inputs&ndash;&gt;
                     <ng-container *ngFor="let field of group.fields; let i = index">
                       <div class="col-sm-4 col-12 mb-3">
                         <div class="mb-3 pe-md-4 me-md-4 ms-md-5">
 
-                          <!-- Text / Email / Tel / etc -->
+                          &lt;!&ndash; Text / Email / Tel / etc &ndash;&gt;
                           <ng-container *ngIf="field.type === 'text' || field.type === 'email' || field.type==='tel'">
                             <ng-container *ngIf="!['idNumber', 'smsNumber', 'telNumber'].includes(field.fieldId)">
                               <label class="form-label" [for]="field.fieldId">
@@ -1280,7 +1280,7 @@
                             </ng-container>
                           </ng-container>
 
-                          <!-- Textarea -->
+                          &lt;!&ndash; Textarea &ndash;&gt;
                           <ng-container *ngIf="field.type === 'textarea'">
                             <label class="form-label" [for]="field.fieldId">
                               {{ field.label?.[language] | titlecase }}
@@ -1294,7 +1294,7 @@
                             ></textarea>
                           </ng-container>
 
-                          <!--Date-->
+                          &lt;!&ndash;Date&ndash;&gt;
                           <ng-container *ngIf="field.type === 'date'">
                             <label class="form-label" [for]="field.fieldId">
                               {{ field.label?.[language] | titlecase }}
@@ -1309,7 +1309,7 @@
                             />
                           </ng-container>
 
-                          <!-- Number -->
+                          &lt;!&ndash; Number &ndash;&gt;
                           <ng-container *ngIf="field.type === 'number'">
                             <label class="form-label" [for]="field.fieldId">
                               {{ field.label?.[language] | titlecase }}
@@ -1324,7 +1324,7 @@
                             />
                           </ng-container>
 
-                          <!-- Select -->
+                          &lt;!&ndash; Select &ndash;&gt;
                           <ng-container *ngIf="field.type === 'select'">
                             <label class="form-label" [for]="field.fieldId">
                               {{ field.label?.[language] | titlecase }}
@@ -1336,14 +1336,14 @@
                               class="form-select"
                               aria-label="Default select example"
                             >
-                              <option value="">---select {{ field.label?.[language] }}---</option>
+                              <option value="">-&#45;&#45;select {{ field.label?.[language] }}-&#45;&#45;</option>
                               <option *ngFor="let option of field.options" [value]="option">
                                 {{ option }}
                               </option>
                             </select>
                           </ng-container>
 
-                          <!-- radio -->
+                          &lt;!&ndash; radio &ndash;&gt;
                           <ng-container>
                             <div class="form-check" *ngIf="field.type === 'radio'" [id]="field.fieldId">
                               <label  class="form-check-label" *ngFor="let option of field.options">
@@ -1359,7 +1359,7 @@
                             </div>
                           </ng-container>
 
-                          <!-- checkbox -->
+                          &lt;!&ndash; checkbox &ndash;&gt;
                           <ng-container>
                             <div class="form-check" *ngIf="field.type === 'checkbox'">
                               <input
@@ -1376,7 +1376,7 @@
                             </div>
                           </ng-container>
 
-                          <!--show validation errors-->
+                          &lt;!&ndash;show validation errors&ndash;&gt;
                           <ng-container *ngIf="field.mandatory">
                             <div *ngIf="
                           entityForm.get(field.fieldId)?.touched &&
@@ -1526,7 +1526,14 @@
               </div>
             </div>
           </ng-container>
-        </form>
+        </form>-->
+        <ng-container *ngIf="formGroupSections">
+          <app-new-entity-v2
+            [previewFormFields] = formGroupSections
+          ></app-new-entity-v2>
+        </ng-container>
+
+
       </div>
       <div class="modal-footer border-top-0">
         <button type="button" class="btn btn-secondary" (click)="closePreviewModal()">Close</button>

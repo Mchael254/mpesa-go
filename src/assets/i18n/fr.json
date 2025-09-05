@@ -1026,7 +1026,9 @@
     "cr12DetailsDeletedSuccessfully": "Détails CR12 supprimés avec succès!",
     "ownershipDetailsDeletedSuccessfully": "Détails de propriété supprimés avec succès!",
     "branchDetailsDeletedSuccessfully": "Détails de la succursale supprimés avec succès!",
-    "wealthAmlDetailsDeletedSuccessfully": "Détails AML de richesse supprimés avec succès!"
+    "wealthAmlDetailsDeletedSuccessfully": "Détails AML de richesse supprimés avec succès!",
+    "populatedByDocument": "Veuillez patienter pendant que le formulaire est rempli par le document.",
+    "uploadImage": "Télécharger l'image"
   },
   "gis": {
     "quotation": {

@@ -11,6 +11,7 @@ import {
 import {
   CrmScreensConfigComponent
 } from "../../shared/components/dynamic-setup-screens-config/crm-screens-config/crm-screens-config.component";
+import {DynamicScreensConfigModule} from "../dynamic-screens-config/dynamic-screens-config.module";
 
 const routes: Routes = [
   {
@@ -70,6 +71,10 @@ const routes: Routes = [
       path: 'crm-screen-setup',
       component: CrmScreensConfigComponent,
     },
+    {
+      path: 'screens-config',
+      loadChildren: () => import('../dynamic-screens-config/dynamic-screens-config.module').then(m => m.DynamicScreensConfigModule),
+    }
   ],
 }];
 

@@ -20,6 +20,7 @@ import {ClientTitleDTO} from "../../data/common/client-title-dto";
 import {CountryDto, PostalCodesDTO, StateDto, TownDto} from "../../data/common/countryDto";
 import {BankBranchDTO, BankDTO, FundSourceDTO} from "../../data/common/bank-dto";
 import {AccountsEnum} from "../../../features/entities/data/enums/accounts-enum";
+import {ConfigFormFieldsDto} from "../../data/common/dynamic-screens-dto";
 
 const log = new Logger("DynamicSetupTableComponent");
 @Component({
@@ -49,7 +50,7 @@ export class DynamicSetupTableComponent implements OnInit {
   @Input() tableTitle: string;
   @Input() addButtonText: string;
   @Input() emptyTableMessage: string;
-  @Input() formFields: FieldModel[] = [];
+  @Input() formFields: ConfigFormFieldsDto[] = [];
   @Input() subGroupId: string;
   @Input() selectedAddressCountry: CountryDto;
   @Output() saveDetailsData: EventEmitter<any> = new EventEmitter<any>();
@@ -123,10 +124,10 @@ export class DynamicSetupTableComponent implements OnInit {
     log.info('field:', this.formFields);
     if (this.formFields) {
       const subGroupId = this.subGroupId === 'aml_details_i' || this.subGroupId === 'aml_details_c' ? 'aml_details' : this.subGroupId;
-      this.columns = this.formFields.filter(field => field.subGroupId === subGroupId)
+      this.columns = this.formFields.filter(field => field.formSubGroupingId === subGroupId)
         .map(field => ({
           field: field.fieldId,
-          header: field.label['en'] || field.fieldId,
+          header: field.label,
           visible: field.visible !== false,
         }));
       log.info('columns:', this.columns);
@@ -399,7 +400,7 @@ export class DynamicSetupTableComponent implements OnInit {
    * @param {string} groupId - The group id.
    * @returns {void}
    */
-  validateRegex(field: FieldModel, groupId: string): void {
+  validateRegex(field: ConfigFormFieldsDto, groupId: string): void {
 
     const fieldId = field.fieldId;
     let pattern: RegExp;
@@ -458,7 +459,7 @@ export class DynamicSetupTableComponent implements OnInit {
   fetchSelectOptions(fieldId: string) {
     log.info('selectid', fieldId);
     const fieldIndex: number = this.formFields
-      .findIndex((field: FieldModel) => field.fieldId === fieldId);
+      .findIndex((field: ConfigFormFieldsDto) => field.fieldId === fieldId);
 
     switch (fieldId) {
       case 'source_of_fund':

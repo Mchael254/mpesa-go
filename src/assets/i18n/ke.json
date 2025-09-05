@@ -1005,7 +1005,9 @@
     "cr12DetailsDeletedSuccessfully": "Maelezo ya CR12 yamefutwa kwa mafanikio!",
     "ownershipDetailsDeletedSuccessfully": "Maelezo ya umiliki yamefutwa kwa mafanikio!",
     "branchDetailsDeletedSuccessfully": "Maelezo ya tawi yamefutwa kwa mafanikio!",
-    "wealthAmlDetailsDeletedSuccessfully": "Maelezo ya AML ya mali yamefutwa kwa mafanikio!"
+    "wealthAmlDetailsDeletedSuccessfully": "Maelezo ya AML ya mali yamefutwa kwa mafanikio!",
+    "populatedByDocument": "Tafadhali subiri wakati fomu inawekwa na hati.",
+    "uploadImage": "Pakia picha"
   },
   "gis": {
     "quotation": {

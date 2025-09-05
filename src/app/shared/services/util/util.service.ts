@@ -7,23 +7,19 @@
 import { Injectable } from '@angular/core';
 import {
   AbstractControl,
-  AsyncValidatorFn,
   FormArray,
-  FormGroup,
-  ValidationErrors,
   ValidatorFn,
   Validators
 } from '@angular/forms';
 import { ClientAccountContact } from "../../data/client-account-contact";
 import { AccountContact } from "../../data/account-contact";
 import { WebAdmin } from "../../data/web-admin";
-import { HttpParams, HttpResponse } from "@angular/common/http";
+import { HttpParams } from "@angular/common/http";
 import { DatePipe } from "@angular/common";
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { BehaviorSubject } from "rxjs";
-import { saveAs } from "file-saver";
-import {FieldModel} from "../../../features/entities/data/form-config.model";
 import {Logger} from "../logger/logger.service";
+import {ConfigFormFieldsDto} from "../../data/common/dynamic-screens-dto";
 
 // import { format, subYears } from 'date-fns';
 
@@ -782,11 +778,11 @@ export class UtilService {
     return buffer;
   }
 
-  buildValidators(field: FieldModel): ValidatorFn[] {
+  buildValidators(field: ConfigFormFieldsDto): ValidatorFn[] {
     const validators: ValidatorFn[] = [];
 
     // Required
-    if (field.isMandatory) {
+    if (field.mandatory) {
       validators.push(Validators.required);
     }
 
