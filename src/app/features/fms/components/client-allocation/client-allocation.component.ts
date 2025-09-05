@@ -20,15 +20,12 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { ReceiptService } from '../../services/receipt.service';
-
 import { AuthService } from '../../../../shared/services/auth.service';
 import { filter } from 'rxjs';
 import * as bootstrap from 'bootstrap';
 import { Router } from '@angular/router';
-
 import { ReportsService } from '../../../../shared/services/reports/reports.service';
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
@@ -36,8 +33,7 @@ import { DmsService } from '../../../../shared/services/dms/dms.service';
 import { FmsSetupService } from '../../services/fms-setup.service';
 import { TranslateService } from '@ngx-translate/core';
 import fmsStepsData from '../../data/fms-step.json';
-
-import {IntermediaryService} from '../../../../features/entities/services/intermediary/intermediary.service'
+import { IntermediaryService } from '../../../../features/entities/services/intermediary/intermediary.service';
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
 import { ReceiptManagementService } from '../../services/receipt-management.service';
 /**
@@ -461,16 +457,14 @@ export class ClientAllocationComponent {
     private receiptService: ReceiptService,
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
-
     private router: Router,
     private dmsService: DmsService,
     private reportService: ReportsService,
     private sessionStorage: SessionStorageService,
     private fmsSetupService: FmsSetupService,
     public translate: TranslateService,
-    private intermediaryService:IntermediaryService,
-    private receiptManagementService:ReceiptManagementService
-
+    private intermediaryService: IntermediaryService,
+    private receiptManagementService: ReceiptManagementService
   ) {}
   /**
    * Angular lifecycle hook that initializes the component.
@@ -483,39 +477,32 @@ export class ClientAllocationComponent {
     this.loggedInUser = this.authService.getCurrentUser();
     const storedData = this.receiptDataService.getReceiptData();
     this.storedData = storedData;
-
     // Retrieve organization from localStorage or receiptDataService
     let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
     let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
-
     this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
     this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
-
     // Ensure only one organization is active at a time
     if (this.selectedOrg) {
       this.defaultOrg = null;
     } else if (this.defaultOrg) {
       this.selectedOrg = null;
     }
-
     // Retrieve branch from localStorage or receiptDataService
     let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
     let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
-
     this.selectedBranch = storedSelectedBranch
       ? JSON.parse(storedSelectedBranch)
       : null;
     this.defaultBranch = storedDefaultBranch
       ? JSON.parse(storedDefaultBranch)
       : null;
-
     // Ensure only one branch is active at a time
     if (this.selectedBranch) {
       this.defaultBranch = null;
     } else if (this.defaultBranch) {
       this.selectedBranch = null;
     }
-
     let receiptingPoint = this.sessionStorage.getItem('receiptingPoint');
     this.receiptingPointObject = receiptingPoint
       ? JSON.parse(receiptingPoint)
@@ -525,15 +512,12 @@ export class ClientAllocationComponent {
     if (this.transactions) {
       this.allocation = true;
     }
-
     let receiptCode = this.sessionStorage.getItem('receiptCode');
     this.receiptCode = receiptCode;
-
     let branchReceiptNumber = this.sessionStorage.getItem(
       'branchReceiptNumber'
     );
     this.branchReceiptNumber = Number(branchReceiptNumber);
-
     if (storedData) {
       this.amountIssued = storedData.amountIssued || 0;
       // this.amountIssued = this.amountIssued ?? (storedData.amountIssued || 0);
@@ -563,7 +547,6 @@ export class ClientAllocationComponent {
     }
     //let selectedBank = this.sessionStorage.getItem('selectedBank');
     //this.selectedBank = JSON.parse(selectedBank);
-
     let globalBankAccountVariable =
       this.sessionStorage.getItem('globalBankAccount');
     this.globalBankAccountVariable = Number(this.globalBankAccountVariable);
@@ -574,9 +557,7 @@ export class ClientAllocationComponent {
     setTimeout(() => {
       this.initializeAllocatedAmountControls();
     }, 1000);
-
     //this.calculateTotalAllocatedAmount();
-
     // Force immediate update after initialization
     setTimeout(() => {
       this.calculateTotalAllocatedAmount();
@@ -596,14 +577,12 @@ export class ClientAllocationComponent {
     if (this.selectedClient && this.selectedClient.code) {
     }
     this.totalRecords = this.transactions.length; // Set total records count
-
     // let exchangeRate = this.sessionStorage.getItem('exchangeRate');
     // this.exchangeRate = Number(exchangeRate);
     this.fetchParamStatus();
     this.getAllocations(); // Always fetch latest allocations
-  
     this.confirmPaymentModeSelected();
-    if(this.selectedClient.code!==null){
+    if (this.selectedClient.code !== null) {
       this.getAgentById(this.selectedClient.code);
     }
   }
@@ -619,26 +598,18 @@ export class ClientAllocationComponent {
     //const today = this.formatDate(new Date()); // Get current date in 'yyyy-MM-dd' format
     this.receiptingDetailsForm = this.fb.group({
       allocatedAmount: this.fb.array([]), // FormArray for allocated amounts
-      description: ['', Validators.required]
-      
+      description: ['', Validators.required],
     });
- 
   }
-  initializeRctSharingForm(){
-      this.rctShareForm = this.fb.group({
-         email: ['',[Validators.email]], // Not required initially
-      phone: ['', [Validators.required,Validators.pattern(/^254\d{9}$/)]], // Initially required
+  initializeRctSharingForm() {
+    this.rctShareForm = this.fb.group({
+      email: ['', [Validators.email]], // Not required initially
+      phone: ['', [Validators.required, Validators.pattern(/^\d{12}$/)]], // Initially required with 12 digits
       name: ['', Validators.required],
       shareMethod: ['whatsapp', Validators.required], // Default to 'whatsapp'
-      
-      })
-    }
-   /**
-   * Adds the necessary form controls for the receipt sharing functionality
-   * to an existing FormGroup.
-   */
-  
-    
+    });
+  }
+
   get currentPageReportTemplate(): string {
     return this.translate.instant('fms.receipt-management.pageReport');
   }
@@ -660,7 +631,6 @@ export class ClientAllocationComponent {
       this.steps[3].link = '/home/fms/receipt-preview'; // Normal receipt preview
     }
   }
-
   /**
    * Applies a filter to the transactions based on the specified field and value.
    * @param event The event triggered by the filter input
@@ -669,7 +639,6 @@ export class ClientAllocationComponent {
   applyFilter(event: Event, field: string): void {
     const inputElement = event.target as HTMLInputElement;
     const filterValue = inputElement.value;
-
     switch (field) {
       case 'clientName':
         this.clientNameFilter = filterValue;
@@ -689,7 +658,6 @@ export class ClientAllocationComponent {
       case 'commission':
         this.commissionFilter = filterValue ? Number(filterValue) : null;
     }
-
     this.filterTransactions(); // Ensure this is called
   }
   /**
@@ -707,7 +675,6 @@ export class ClientAllocationComponent {
       this.filteredTransactions = [...this.transactions]; // Reset to original transactions if no filters are applied
       return;
     }
-
     this.filteredTransactions = this.transactions
       .map((transaction) => {
         let score = 0;
@@ -719,7 +686,6 @@ export class ClientAllocationComponent {
             .includes(this.clientNameFilter.toLowerCase());
           if (clientNameMatch) score += 1;
         }
-
         // Policy Number Match
         if (this.policyNumberFilter?.trim()) {
           const policyNumberMatch = String(transaction.clientPolicyNumber)
@@ -739,21 +705,18 @@ export class ClientAllocationComponent {
           const amountMatch = Number(transaction.amount) === this.amountFilter;
           if (amountMatch) score += 1;
         }
-
         // Balance Match
         if (this.balanceFilter !== null) {
           const balanceMatch =
             Number(transaction.balance) === this.balanceFilter;
           if (balanceMatch) score += 1;
         }
-
         // Commission Match
         if (this.commissionFilter !== null) {
           const commissionMatch =
             Number(transaction.commission) === this.commissionFilter;
           if (commissionMatch) score += 1;
         }
-
         return { ...transaction, score }; // Add score to transaction
       })
       .filter((transaction) => transaction.score > 0) // Only keep transactions that match at least one filter
@@ -920,7 +883,7 @@ export class ClientAllocationComponent {
   confirmtotalAllocatedAmount() {
     if (this.totalAllocatedAmount > 0) {
       this.allocateAndPostAllocations();
-    } else if(this.totalAllocatedAmount <= 0) {
+    } else if (this.totalAllocatedAmount <= 0) {
       this.saveEmptyAllocations();
     }
   }
@@ -989,7 +952,7 @@ export class ClientAllocationComponent {
     }
     const receiptParticulars = {
       receiptNumber: this.branchReceiptNumber,
-      amount:this.storedData?.amountIssued,
+      amount: this.storedData?.amountIssued,
       capturedBy: this.loggedInUser.code,
       systemCode: this.selectedClient.systemCode,
       branchCode: this.defaultBranch?.id || this.selectedBranch?.id,
@@ -1082,7 +1045,7 @@ export class ClientAllocationComponent {
     const receiptParticulars: ReceiptParticularsDTO[] = [
       {
         receiptNumber: this.branchReceiptNumber,
-        amount:this.storedData?.amountIssued,
+        amount: this.storedData?.amountIssued,
         capturedBy: this.loggedInUser.code,
         systemCode: this.selectedClient.systemCode,
         branchCode: this.defaultBranch?.id || this.selectedBranch?.id,
@@ -1852,7 +1815,6 @@ export class ClientAllocationComponent {
       insurerAcc: null,
       grossOrNetWhtax: null,
       grossOrNetVat: null,
-
       sysCode: Number(this.selectedClient.systemCode),
       bankAccountType: this.bankAccountType,
     };
@@ -1870,21 +1832,14 @@ export class ClientAllocationComponent {
           this.receiptResponse.message
         );
         this.openReceiptShareModal();
-    // remove only the items you set for this specific workflow.
-      this.sessionStorage.removeItem('receiptCode');
-      this.sessionStorage.removeItem('branchReceiptNumber');
-      this.sessionStorage.removeItem('receiptingPoint');
-      this.sessionStorage.removeItem('globalBankAccount');
-      this.sessionStorage.removeItem('globalBankType');
-     
-
-        
+        // remove only the items you set for this specific workflow.
+        this.sessionStorage.removeItem('receiptCode');
+        this.sessionStorage.removeItem('branchReceiptNumber');
+        this.sessionStorage.removeItem('receiptingPoint');
+        this.sessionStorage.removeItem('globalBankAccount');
+        this.sessionStorage.removeItem('globalBankType');
         this.receiptDataService.clearFormState();
         this.receiptDataService.clearReceiptData();
-        
-       // this.router.navigate(['/home/fms/receipt-capture']);
-
-        
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
@@ -1900,21 +1855,25 @@ export class ClientAllocationComponent {
       },
     });
   }
-  navigateToReceiptCapture():void{
-this.router.navigate(['/home/fms/receipt-capture']);
+  navigateToReceiptCapture(): void {
+    this.router.navigate(['/home/fms/receipt-capture']);
   }
-getAgentById(agent_Code: number): void {
+  /**
+   *
+   * @description this method updates form control  with values retrived from agent/client object i.e name ,email,etc
+   */
+  patchFormControl(): void {
+    this.rctShareForm.patchValue({
+      name: this.agent.name,
+      email: this.agent.emailAddress,
+      phone: this.agent.phoneNumber,
+    });
+  }
+  getAgentById(agent_Code: number): void {
     this.intermediaryService.getAgentById(agent_Code).subscribe({
       next: (response) => {
         this.agent = response;
-
-        this.rctShareForm.patchValue({
-          name: this.agent.name,
-          email: this.agent.emailAddress,
-          phone: this.agent.phoneNumber,
-        });
-        const email = this.receiptingDetailsForm.get('email')?.value;
-   
+        this.patchFormControl();
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
@@ -1930,24 +1889,30 @@ getAgentById(agent_Code: number): void {
       },
     });
   }
-openReceiptShareModal():void{
-   const modal = new bootstrap.Modal(
-        document.getElementById('shareReceiptModal')
-      );
-      if (modal) {
-        modal.show();
-      }
-}
-/**
+  openReceiptShareModal(): void {
+    const modal = new bootstrap.Modal(
+      document.getElementById('shareReceiptModal')
+    );
+    if (modal) {
+      modal.show();
+    }
+  }
+  /**
    * BEST PRACTICE: i have a single helper function to build the share data.
    * This avoids repeating logic and is the single source of truth.
    */
-  private prepareShareData(): { shareType: string; recipientEmail: string | null;recipientPhone:string | null} | null {
+  private prepareShareData(): {
+    shareType: string;
+    recipientEmail: string | null;
+    recipientPhone: string | null;
+  } | null {
+    //I have used form.get() so as to get the form control instance-with (.value, .valid, .invalid, .errors etc)
+    //form.getRawValue() gives us just the plain data snapshot (no validation state).
     const nameControl = this.rctShareForm.get('name');
     const shareMethod = this.rctShareForm.get('shareMethod')?.value;
-  const phoneControl = this.rctShareForm.get('phone');
-  const emailControl = this.rctShareForm.get('email');
-// --- START: 
+    const phoneControl = this.rctShareForm.get('phone');
+    const emailControl = this.rctShareForm.get('email');
+    // --- START:
     if (nameControl?.invalid) {
       this.globalMessagingService.displayErrorMessage(
         'Validation Error',
@@ -1955,7 +1920,7 @@ openReceiptShareModal():void{
       );
       return null;
     }
-    // --- END: 
+    // --- END:
     if (!shareMethod) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -1963,103 +1928,100 @@ openReceiptShareModal():void{
       );
       return null;
     }
-
     if (shareMethod === 'email') {
-    if (emailControl?.invalid) {
-      this.globalMessagingService.displayErrorMessage('Validation Error', 'Please enter a valid email address.');
-      return null;
-    }
+      if (emailControl?.invalid) {
+        this.globalMessagingService.displayErrorMessage(
+          'Validation Error',
+          'Please enter a valid email address.'
+        );
+        return null;
+      }
       return {
-  shareType: 'EMAIL',
-  recipientEmail: this.rctShareForm.get('email')?.value || '',
-recipientPhone: null
-};
-    } else if(shareMethod === 'whatsapp'){
+        shareType: 'EMAIL',
+        recipientEmail: this.rctShareForm.get('email')?.value || '',
+        recipientPhone: null,
+      };
+    } else if (shareMethod === 'whatsapp') {
       // 'whatsapp'
       // --- START: ADDED VALIDATION BLOCK ---
-    const phoneRegex = /^254\d{9}$/;
-    if (phoneControl?.invalid || !phoneRegex.test(phoneControl?.value) ) {
-      this.globalMessagingService.displayErrorMessage(
-        'Validation Error',
-        'Invalid phone number format. It must be 254 followed by 9 digits.'
-      );
-      return null; // Stop the process
-    }
-    // --- END: ADDED VALIDATION BLOCK ---
+      const phoneRegex = /^\d{12}$/;
+      if (phoneControl?.invalid || !phoneRegex.test(phoneControl?.value)) {
+        this.globalMessagingService.displayErrorMessage(
+          'Validation Error',
+          'Invalid phone number format. It must be xxx followed by 9 digits.'
+        );
+        return null; // Stop the process
+      }
+      // --- END: ADDED VALIDATION BLOCK ---
       return {
         shareType: 'WHATSAPP',
         recipientPhone: this.rctShareForm.get('phone')?.value || '',
-       
-        recipientEmail:''
+
+        recipientEmail: '',
       };
     }
     return null; // Should not happen if a share method is selected
   }
-
-  
-
+  /**
+   *
+   * @description this method performs validation check of the form inputs before it posts
+   * here,I first mark all form controls as touched so as to perform validation on the auto
+   * populated values that may be invalid
+   */
   postClientDetails() {
     //  Mark all fields as touched to show any validation errors in the UI
     this.rctShareForm.markAllAsTouched();
-      const shareData = this.prepareShareData();
-      if (!shareData) {
-        return; // Stop if data is invalid (e.g., no method selected)
-      }
-  
-      const body = {
-        shareType: shareData.shareType,
+    const shareData = this.prepareShareData();
+    if (!shareData) {
+      return; // Stop if data is invalid (e.g., no method selected)
+    }
+    const body = {
+      shareType: shareData.shareType,
       clientName: this.agent.name,
       recipientEmail: shareData?.recipientEmail,
-      recipientPhone:shareData?.recipientPhone,
+      recipientPhone: shareData?.recipientPhone,
       receiptNumber: this.receiptResponse.receiptNumber,
       orgCode: String(this.defaultOrg?.id || this.selectedOrg?.id),
-      };
-  
-      this.receiptManagementService.shareReceipt(body).subscribe({
-        next: (response) => {
-          const modalEl = document.getElementById('shareReceiptModal');
-          if (modalEl) {
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            if (modal) {
-              modal.hide();
-            }
+    };
+    this.receiptManagementService.shareReceipt(body).subscribe({
+      next: (response) => {
+        const modalEl = document.getElementById('shareReceiptModal');
+        if (modalEl) {
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) {
+            modal.hide();
           }
-          
-   this.updatePrintStatus();
-          
-  
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            response.msg
-          );
-          this.router.navigate(['/home/fms/receipt-capture']);
-          
-        },
-  
-        error: (err) => {
-          const modalEl = document.getElementById('shareReceiptModal');
-          if (modalEl) {
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            if (modal) {
-              modal.hide();
-            }
+        }
+        this.updatePrintStatus();
+        this.globalMessagingService.displaySuccessMessage(
+          'success',
+          response.msg
+        );
+        this.router.navigate(['/home/fms/receipt-capture']);
+      },
+      error: (err) => {
+        const modalEl = document.getElementById('shareReceiptModal');
+        if (modalEl) {
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) {
+            modal.hide();
           }
-          const customMessage = this.translate.instant('fms.errorMessage');
-          const backendError =
-            err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
-        },
-      });
-    }
-    
+        }
+        const customMessage = this.translate.instant('fms.errorMessage');
+        const backendError =
+          err.error?.msg ||
+          err.error?.error ||
+          err.error?.status ||
+          err.statusText;
+        this.globalMessagingService.displayErrorMessage(
+          customMessage,
+          backendError
+        );
+      },
+    });
+  }
 
-      /**
+  /**
    * @method updatePrintStatus
    * @description Sends a request to the ReceiptService to mark the current receipt as printed.
    * The payload is an array containing the receipt number.
@@ -2068,7 +2030,7 @@ recipientPhone: null
    */
   updatePrintStatus() {
     // Construct the payload as an array of numbers
-    const receiptNumber= Number(this.receiptResponse.receiptNumber);
+    const receiptNumber = Number(this.receiptResponse.receiptNumber);
     const payload: number[] = [receiptNumber];
     this.receiptService.updateReceiptStatus(payload).subscribe({
       next: (response) => {
@@ -2076,13 +2038,7 @@ recipientPhone: null
           '',
           response?.msg || response?.error || response?.status
         );
-         
-
-
-
-
       },
-
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
         const backendError =
@@ -2094,53 +2050,46 @@ recipientPhone: null
           customMessage,
           backendError
         );
-       
       },
     });
   }
-closeModal():void{
-  const modalEl = document.getElementById('shareReceiptModal');
-          if (modalEl) {
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            if (modal) {
-              modal.hide();
-            }}
-             this.sessionStorage.removeItem('receiptCode');
-      this.sessionStorage.removeItem('branchReceiptNumber');
-      this.sessionStorage.removeItem('receiptingPoint');
-      this.sessionStorage.removeItem('globalBankAccount');
-      this.sessionStorage.removeItem('globalBankType');
-     
-
-        
-        this.receiptDataService.clearFormState();
-        this.receiptDataService.clearReceiptData();
-        
-        this.router.navigate(['/home/fms/receipt-capture']);
-}
+  closeModal(): void {
+    const modalEl = document.getElementById('shareReceiptModal');
+    if (modalEl) {
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) {
+        modal.hide();
+      }
+    }
+    this.sessionStorage.removeItem('receiptCode');
+    this.sessionStorage.removeItem('branchReceiptNumber');
+    this.sessionStorage.removeItem('receiptingPoint');
+    this.sessionStorage.removeItem('globalBankAccount');
+    this.sessionStorage.removeItem('globalBankType');
+    this.receiptDataService.clearFormState();
+    this.receiptDataService.clearReceiptData();
+    this.router.navigate(['/home/fms/receipt-capture']);
+  }
   onClickPreview(): void {
     //  Mark all fields as touched to show any validation errors in the UI
     this.rctShareForm.markAllAsTouched();
-    this.sessionStorage.setItem('receipting','Y');
-  
+    this.sessionStorage.setItem('receipting', 'Y');
     const shareData = this.prepareShareData();
     if (!shareData) {
       return; // Stop if data is invalid
     }
-// Create a single, comprehensive object to store
+    // Create a single, comprehensive object to store
     const previewData = {
-        shareType: shareData.shareType,
-        recipientEmail: shareData.recipientEmail,
-        recipientPhone: shareData.recipientPhone,
-        clientName: this.rctShareForm.get('name')?.value || 'N/A' // Get the client name from the form
+      shareType: shareData.shareType,
+      recipientEmail: shareData.recipientEmail,
+      recipientPhone: shareData.recipientPhone,
+      clientName: this.rctShareForm.get('name')?.value || 'N/A', // Get the client name from the form
     };
-
     // Store the single object as a JSON string
-    this.sessionStorage.setItem('sharePreviewData', JSON.stringify(previewData));
-    // Store only the relevant data, not everything from the form.
-    //this.sessionStorage.setItem('shareType', shareData.shareType);
-   // this.sessionStorage.setItem('recipient', shareData.recipient);
-
+    this.sessionStorage.setItem(
+      'sharePreviewData',
+      JSON.stringify(previewData)
+    );
     this.router.navigate(['/home/fms/preview-receipt']);
   }
   /**
@@ -2159,7 +2108,6 @@ closeModal():void{
       );
       return; // Stop execution
     }
-
     // ✅ 2. Ensure no unposted selected file
     if (this.selectedFile !== null) {
       this.globalMessagingService.displayErrorMessage(
@@ -2299,7 +2247,6 @@ closeModal():void{
   }
   handleSaveAndPrint() {
     this.saveAndGenerateSlip();
-
     //this.generateSlip();
   }
   saveAndGenerateSlip() {
@@ -2430,8 +2377,8 @@ closeModal():void{
       next: (response) => {
         this.receiptResponse = response.data;
         // 2. Now that this.receiptResponse is guaranteed to be defined,
-      //    we can safely call the next function in the chain.
-      //this.generateSlip();
+        //    we can safely call the next function in the chain.
+        //this.generateSlip();
         this.sessionStorage.setItem(
           'receiptNo',
           this.receiptResponse.receiptNumber
@@ -2440,7 +2387,7 @@ closeModal():void{
           '',
           this.receiptResponse.message
         );
-         
+
         setTimeout(() => {
           this.router.navigate(['/home/fms/slip-preview']);
         }, 100);
@@ -2461,7 +2408,6 @@ closeModal():void{
   }
   generateSlip() {
     const payload: acknowledgementSlipDTO = {
-
       receiptNumbers: [this.receiptResponse.receiptNumber],
       userCode: this.loggedInUser.code,
     };

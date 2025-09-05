@@ -1,5 +1,4 @@
-
-import {ClientService} from '../../../../features/entities/services/client/client.service';
+import { ClientService } from '../../../../features/entities/services/client/client.service';
 import { IntermediaryService } from './../../../entities/services/intermediary/intermediary.service';
 import { Component, OnInit } from '@angular/core';
 import {
@@ -41,7 +40,7 @@ import { ReceiptService } from '../../services/receipt.service';
 })
 export class ReceiptManagementComponent implements OnInit {
   cancelForm: FormGroup;
-  rctShareForm:FormGroup;
+  rctShareForm: FormGroup;
   users: any;
   /**
    * @property {BranchDTO} defaultBranch - The default branch context derived from session, used if no specific branch is selected.
@@ -68,7 +67,6 @@ export class ReceiptManagementComponent implements OnInit {
   unPrintedReceiptsdata: unPrintedReceiptContentDTO[] = [];
   printedReceiptsdata: unPrintedReceiptContentDTO[] = [];
   // --- Filtering Properties ---
-
   /** @property {string} paymentMethodFilter - Filter value for the 'Payment Method' column. */
   paymentMethodFilter: string = '';
   /** @property {string} receivedFromFilter - Filter value for the 'Received From' column. */
@@ -90,7 +88,7 @@ export class ReceiptManagementComponent implements OnInit {
   /** @property {boolean} isCancellation - Flag used for styling the 'Cancellation' button as active/inactive. */
   isCancellation: boolean = true; // Default view is Cancellation
   printed: boolean = false;
-  printStatus:'Y' | 'N';
+  printStatus: 'Y' | 'N';
   unprinted: boolean = false;
   /** @property {number | null} receiptNumber - Stores the specific receipt number selected for printing before navigation. */
   receiptNumber: number | null = null; // Initialize as null
@@ -116,7 +114,7 @@ export class ReceiptManagementComponent implements OnInit {
   receipt_no: string;
   whatsappSelected: boolean = true;
   shareMethod: string;
-  
+
   selectedOrg: OrganizationDTO;
   /**
    * @property {OrganizationDTO} defaultOrg - The default organization.
@@ -133,7 +131,7 @@ export class ReceiptManagementComponent implements OnInit {
     private authService: AuthService,
     private intermediaryService: IntermediaryService,
     private clientService: ClientService,
-    private receiptService:ReceiptService
+    private receiptService: ReceiptService
   ) {}
   /**
    * @ngOnInit Lifecycle hook.
@@ -144,9 +142,7 @@ export class ReceiptManagementComponent implements OnInit {
     this.initializeForm();
     this.initializeRctSharingForm();
     // Retrieve branch from localStorage or receiptDataService
-
     this.handleInitialTabState(); // <-- NEW: Logic to set the tab
-
     let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
     let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
 
@@ -160,7 +156,6 @@ export class ReceiptManagementComponent implements OnInit {
     let storedSelectedOrg = this.sessionStorage.getItem('defaultOrg');
     this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
     this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
-
     // Ensure only one organization is active at a time
     if (this.selectedOrg) {
       this.defaultOrg = null;
@@ -168,7 +163,6 @@ export class ReceiptManagementComponent implements OnInit {
       this.selectedOrg = null;
     }
     this.loggedInUser = this.authService.getCurrentUser();
-
     // Ensure only one branch is active at a time
     if (this.selectedBranch) {
       this.defaultBranch = null;
@@ -181,7 +175,6 @@ export class ReceiptManagementComponent implements OnInit {
     this.fetchReceiptsToCancel(
       this.defaultBranch?.id || this.selectedBranch?.id
     );
-
     this.fetchGlAccounts(this.defaultBranch?.id || this.selectedBranch?.id);
   }
   // NEW METHOD: Handles setting the initial tab based on session storage
@@ -200,7 +193,6 @@ export class ReceiptManagementComponent implements OnInit {
       }
     } catch (e) {
       // This catch block will handle any unexpected errors during session storage access.
-      // console.error('Error reading tab status from session storage:', e);
       // Default to the cancellation tab in case of an error
       this.cancelClicked();
     }
@@ -215,17 +207,12 @@ export class ReceiptManagementComponent implements OnInit {
       raiseBankCharge: ['N', Validators.required], // 'no' is the default value
       bankCharges: [''],
       clientCharges: [''],
-      // email: [''], // Not required initially
-      // phone: ['', Validators.required], // Initially required
-      // name: ['', Validators.required],
-      // shareMethod: ['whatsapp', Validators.required], // Default to 'whatsapp'
     });
-    
+
     //Add conditional validation
     this.cancelForm.get('raiseBankCharge')?.valueChanges.subscribe((value) => {
       const accountChargedControl = this.cancelForm.get('accountCharged');
       const glAccountControl = this.cancelForm.get('glAccount');
-
       if (value === 'Y') {
         accountChargedControl?.setValidators([Validators.required]);
         glAccountControl?.setValidators([Validators.required]);
@@ -240,15 +227,14 @@ export class ReceiptManagementComponent implements OnInit {
     // Listen for changes to be truly reactive
     this.listenForShareMethodChanges();
   }
-initializeRctSharingForm(){
-      this.rctShareForm = this.fb.group({
-         email: ['',[Validators.email]], // Not required initially
-      phone: ['',[Validators.required, Validators.pattern(/^254\d{9}$/)]], // Initially required
+  initializeRctSharingForm() {
+    this.rctShareForm = this.fb.group({
+      email: ['', [Validators.email]], // Not required initially
+      phone: ['', [Validators.required, Validators.pattern(/^\d{12}$/)]], // Initially required with 12 digits for a phone
       name: ['', Validators.required],
       shareMethod: ['whatsapp', Validators.required], // Default to 'whatsapp'
-      
-      })
-    }
+    });
+  }
   listenForShareMethodChanges(): void {
     // Get a reference to the shareMethod control
     const shareMethodControl = this.cancelForm.get('shareMethod');
@@ -258,7 +244,6 @@ initializeRctSharingForm(){
       shareMethodControl.valueChanges.subscribe((method) => {
         const phoneControl = this.cancelForm.get('phone');
         const emailControl = this.cancelForm.get('email');
-
         if (method === 'email') {
           // If email is selected:
           this.whatsappSelected = false;
@@ -270,7 +255,6 @@ initializeRctSharingForm(){
           phoneControl.setValidators(Validators.required);
           emailControl.clearValidators(); // Remove validators from email
         }
-
         // Important: Update the validity state of the controls
         emailControl.updateValueAndValidity();
         phoneControl.updateValueAndValidity();
@@ -375,10 +359,8 @@ initializeRctSharingForm(){
   }
   filterAllReceipts(): void {
     if (!this.receiptsToCancelList) return;
-
     // Always start with the full dataset
     let filteredData = [...this.unCancelledReceipts];
-
     // Apply filters only if they have values
     if (this.receiptNumberFilter.trim()) {
       const searchTerm = this.receiptNumberFilter.toLowerCase();
@@ -386,27 +368,23 @@ initializeRctSharingForm(){
         item.branchReceiptCode?.toLowerCase().includes(searchTerm)
       );
     }
-
     if (this.receiptDateFilter?.trim()) {
       const searchTerm = this.receiptDateFilter.toLowerCase();
       filteredData = filteredData.filter((item) =>
         item.receiptDate?.toLowerCase().includes(searchTerm)
       );
     }
-
     if (this.receivedFromFilter?.trim()) {
       const searchTerm = this.receivedFromFilter.toLowerCase();
       filteredData = filteredData.filter((item) =>
         item.receivedFrom?.toLowerCase().includes(searchTerm)
       );
     }
-
     if (this.amountFilter) {
       filteredData = filteredData.filter(
         (item) => Number(item.amount) === this.amountFilter
       );
     }
-
     if (this.paymentMethodFilter?.trim()) {
       const searchTerm = this.paymentMethodFilter.toLowerCase();
       filteredData = filteredData.filter((item) =>
@@ -462,7 +440,6 @@ initializeRctSharingForm(){
   filterReceipts(): void {
     // Always start with the full dataset
     let filteredData = [...this.unPrintedReceiptContent];
-
     // Apply filters only if they have values
     if (this.receiptNumberFilter?.trim()) {
       const searchTerm = this.receiptNumberFilter.toLowerCase();
@@ -470,34 +447,29 @@ initializeRctSharingForm(){
         item.branchReceiptCode.toLowerCase().includes(searchTerm)
       );
     }
-
     if (this.receiptDateFilter?.trim()) {
       const searchTerm = this.receiptDateFilter.toLowerCase();
       filteredData = filteredData.filter((item) =>
         item.receiptDate.toLowerCase().includes(searchTerm)
       );
     }
-
     if (this.receivedFromFilter?.trim()) {
       const searchTerm = this.receivedFromFilter.toLowerCase();
       filteredData = filteredData.filter((item) =>
         item.receivedFrom.toLowerCase().includes(searchTerm)
       );
     }
-
     if (this.amountFilter) {
       filteredData = filteredData.filter(
         (item) => item.amount === this.amountFilter
       );
     }
-
     if (this.paymentMethodFilter?.trim()) {
       const searchTerm = this.paymentMethodFilter.toLowerCase();
       filteredData = filteredData.filter((item) =>
         item.paymentMode.toLowerCase().includes(searchTerm)
       );
     }
-
     this.filteredtabledata = filteredData;
     this.totalRecords = this.filteredtabledata.length;
   }
@@ -530,7 +502,6 @@ initializeRctSharingForm(){
    */
   printReceipt(index: number, value: number) {
     this.receiptNumber = value;
-
     this.sessionStorage.setItem(
       'receiptNumber',
       JSON.stringify(this.receiptNumber)
@@ -540,7 +511,6 @@ initializeRctSharingForm(){
   }
   rePrintReceipt(index: number, value: number) {
     this.receiptNumber = value;
-
     this.sessionStorage.setItem(
       'receiptNumber',
       JSON.stringify(this.receiptNumber)
@@ -558,13 +528,11 @@ initializeRctSharingForm(){
         this.receiptsToCancelPagination = response.data;
 
         this.receiptsToCancelList = response.data.content;
-
         //this.globalMessagingService.displaySuccessMessage('success','successfully retrieved reeipts to cancel');
         this.unCancelledReceipts = this.receiptsToCancelList.filter((list) => {
           return list.cancelled == 'N';
         });
         // this.filteredReceipts = [...this.receiptsToCancelList]; // Make a copy
-
         this.filteredReceipts = [...this.unCancelledReceipts]; // Make a copy
         this.totalRecords = this.filteredReceipts.length;
       },
@@ -606,14 +574,6 @@ initializeRctSharingForm(){
     });
   }
   validateFields() {
-    const remarks = this.cancelForm.get('remarks')?.value;
-    const cancellationDate = this.cancelForm.get('cancellationDate')?.value;
-    const formValues = this.cancelForm.value;
-    // if(this.raiseBankCharge==='N' && !remarks && !cancellationDate){
-    //   this.globalMessagingService.displayErrorMessage('Warning!','please fill all fields marked with asterisk');
-    //     return;
-
-    // }
     if (this.cancelForm.invalid) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -621,7 +581,6 @@ initializeRctSharingForm(){
       );
       return;
     }
-
     this.cancelReceipt();
   }
   cancelReceipt() {
@@ -633,7 +592,6 @@ initializeRctSharingForm(){
       return;
     }
     const formValues = this.cancelForm.value;
-
     const body = {
       no: this.selectedReceipt.no,
       remarks: formValues.remarks,
@@ -646,18 +604,15 @@ initializeRctSharingForm(){
       bankChargesGlAcc: formValues?.accountCharged || null,
       otherChargesGlAcc: formValues?.glAccount || null,
     };
-
     this.receiptManagementService.cancelReceipt(body).subscribe({
       next: (response) => {
         const backendResponse =
           response?.msg || response?.error || response?.status;
-
         this.globalMessagingService.displaySuccessMessage('', backendResponse);
-
         this.closeModal();
         this.fetchReceiptsToCancel(
           this.defaultBranch?.id || this.selectedBranch?.id
-        ); // Refresh list
+        );
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
@@ -673,7 +628,6 @@ initializeRctSharingForm(){
       },
     });
   }
-
   fetchGlAccounts(branchCode: number) {
     this.receiptManagementService.getGlAccount(branchCode).subscribe({
       next: (response: GenericResponse<Pagination<glContentDTO>>) => {
@@ -721,11 +675,11 @@ initializeRctSharingForm(){
     this.agentCode = agent_code;
     this.accountCode = account_code;
     this.receipt_no = receipt_no;
-    this.printStatus=printed;
+    this.printStatus = printed;
     this.sessionStorage.setItem('agentCode', this.agentCode);
     this.sessionStorage.setItem('accountCode', this.accountCode);
     this.sessionStorage.setItem('receiptNo', this.receipt_no);
-    this.sessionStorage.setItem('printed',this.printStatus);
+    this.sessionStorage.setItem('printed', this.printStatus);
     let code = null;
     if (agent_code !== null) {
       code = agent_code;
@@ -744,16 +698,23 @@ initializeRctSharingForm(){
       modal.show();
     }
   }
+  /**
+   *
+   * @description this method updates form control  with values retrived from agent/client object i.e name ,email,etc
+   */
+  patchFormControl(): void {
+    this.rctShareForm.patchValue({
+      name: this.agent.name,
+      email: this.agent.emailAddress,
+      phone: this.agent.phoneNumber,
+    });
+  }
   getAgentById(agent_Code: number): void {
     this.intermediaryService.getAgentById(agent_Code).subscribe({
       next: (response) => {
         this.agent = response;
 
-        this.rctShareForm.patchValue({
-          name: this.agent.name,
-          email: this.agent.emailAddress,
-          phone: this.agent.phoneNumber,
-        });
+        this.patchFormControl();
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
@@ -773,12 +734,18 @@ initializeRctSharingForm(){
    * BEST PRACTICE: I have a single helper function to build the share data.
    * This avoids repeating logic and is the single source of truth.
    */
-  private prepareShareData(): { shareType: string; recipientEmail: string | null;recipientPhone:string | null} | null {
+  private prepareShareData(): {
+    shareType: string;
+    recipientEmail: string | null;
+    recipientPhone: string | null;
+  } | null {
+    //I have used form.get() so as to get the form control instance-with (.value, .valid, .invalid, .errors etc)
+    //getRawValue() gives us just the plain data snapshot (no validation state).
     const nameControl = this.rctShareForm.get('name');
     const shareMethod = this.rctShareForm.get('shareMethod')?.value;
-  const phoneControl = this.rctShareForm.get('phone');
-  const emailControl = this.rctShareForm.get('email');
-// --- START: 
+    const phoneControl = this.rctShareForm.get('phone');
+    const emailControl = this.rctShareForm.get('email');
+    // --- START:
     if (nameControl?.invalid) {
       this.globalMessagingService.displayErrorMessage(
         'Validation Error',
@@ -786,7 +753,7 @@ initializeRctSharingForm(){
       );
       return null;
     }
-    // --- END: 
+    // --- END:
     if (!shareMethod) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -794,39 +761,44 @@ initializeRctSharingForm(){
       );
       return null;
     }
-
     if (shareMethod === 'email') {
-    if (emailControl?.invalid) {
-      this.globalMessagingService.displayErrorMessage('Validation Error', 'Please enter a valid email address.');
-      return null;
-    }
+      if (emailControl?.invalid) {
+        this.globalMessagingService.displayErrorMessage(
+          'Validation Error',
+          'Please enter a valid email address.'
+        );
+        return null;
+      }
       return {
-  shareType: 'EMAIL',
-  recipientEmail: this.rctShareForm.get('email')?.value || '',
-recipientPhone: null
-};
-    } else if(shareMethod === 'whatsapp'){
-      // 'whatsapp'
+        shareType: 'EMAIL',
+        recipientEmail: this.rctShareForm.get('email')?.value || '',
+        recipientPhone: null,
+      };
+    } else if (shareMethod === 'whatsapp') {
       // --- START: ADDED VALIDATION BLOCK ---
-    const phoneRegex = /^254\d{9}$/;
-    if (phoneControl?.invalid || !phoneRegex.test(phoneControl?.value) ) {
-      this.globalMessagingService.displayErrorMessage(
-        'Validation Error',
-        'Invalid phone number format. It must be 254 followed by 9 digits.'
-      );
-      return null; // Stop the process
-    }
-    // --- END: ADDED VALIDATION BLOCK ---
+      const phoneRegex = /^\d{12}$/;
+      if (phoneControl?.invalid || !phoneRegex.test(phoneControl?.value)) {
+        this.globalMessagingService.displayErrorMessage(
+          'Validation Error',
+          'Invalid phone number format. It must be xxx followed by 9 digits.'
+        );
+        return null; // Stop the process
+      }
+      // --- END:
       return {
         shareType: 'WHATSAPP',
         recipientPhone: this.rctShareForm.get('phone')?.value || '',
-       
-        recipientEmail:''
+        recipientEmail: '',
       };
     }
     return null; // Should not happen if a share method is selected
   }
-
+  /**
+   *
+   * @description this method performs validation check of the form inputs before it posts
+   * here,I first mark all form controls as touched so as to perform validation on the auto
+   * populated values that may be invalid
+   */
   postClientDetails() {
     //  Mark all fields as touched to show any validation errors in the UI
     this.rctShareForm.markAllAsTouched();
@@ -834,18 +806,14 @@ recipientPhone: null
     if (!shareData) {
       return; // Stop if data is invalid (e.g., no method selected)
     }
-
-
     const body = {
       shareType: shareData.shareType,
       clientName: this.agent.name,
       recipientEmail: shareData?.recipientEmail,
-      recipientPhone:shareData?.recipientPhone,
+      recipientPhone: shareData?.recipientPhone,
       receiptNumber: String(this.receipt_no),
       orgCode: String(this.defaultOrg?.id || this.selectedOrg?.id),
     };
-    
-
     this.receiptManagementService.shareReceipt(body).subscribe({
       next: (response) => {
         const modalEl = document.getElementById('shareReceiptModal');
@@ -855,15 +823,14 @@ recipientPhone: null
             modal.hide();
           }
         }
-        if(this.printStatus === 'N'){
- this.updatePrintStatus();
+        if (this.printStatus === 'N') {
+          this.updatePrintStatus();
         }
 
         this.globalMessagingService.displaySuccessMessage(
           'success',
           response.msg
         );
-        
       },
 
       error: (err) => {
@@ -907,33 +874,26 @@ recipientPhone: null
     });
   }
   onClickPreview(): void {
-//  Mark all fields as touched to show any validation errors in the UI
+    //  Mark all fields as touched to show any validation errors in the UI
     this.rctShareForm.markAllAsTouched();
-    this.sessionStorage.setItem('receipting','N');
-    // Stop if the form is invalid
-    // if (this.rctShareForm.invalid) {
-    //   this.globalMessagingService.displayErrorMessage('Validation Error', 'Please correct the errors before previewing.');
-    //   return;
-    // }
+    this.sessionStorage.setItem('receipting', 'N');
     const shareData = this.prepareShareData();
     if (!shareData) {
       return; // Stop if data is invalid
     }
     // Create a single, comprehensive object to store
     const previewData = {
-        shareType: shareData.shareType,
-        recipientEmail: shareData.recipientEmail,
-        recipientPhone: shareData.recipientPhone,
-        clientName: this.rctShareForm.get('name')?.value || 'N/A' // Get the client name from the form
+      shareType: shareData.shareType,
+      recipientEmail: shareData.recipientEmail,
+      recipientPhone: shareData.recipientPhone,
+      clientName: this.rctShareForm.get('name')?.value || 'N/A', // Get the client name from the form
     };
 
     // Store the single object as a JSON string
-    this.sessionStorage.setItem('sharePreviewData', JSON.stringify(previewData));
-
-    // Store only the relevant data, not everything from the form.
-    // this.sessionStorage.setItem('shareType', shareData.shareType);
-    //this.sessionStorage.setItem('recipient', shareData.recipient);
-
+    this.sessionStorage.setItem(
+      'sharePreviewData',
+      JSON.stringify(previewData)
+    );
     this.router.navigate(['/home/fms/preview-receipt']);
   }
   /**
@@ -945,21 +905,10 @@ recipientPhone: null
    */
   updatePrintStatus() {
     // Construct the payload as an array of numbers
-    const receiptNumber= Number(this.receipt_no);
+    const receiptNumber = Number(this.receipt_no);
     const payload: number[] = [receiptNumber];
     this.receiptService.updateReceiptStatus(payload).subscribe({
-      next: (response) => {
-        // this.globalMessagingService.displaySuccessMessage(
-        //   '',
-        //   response?.msg || response?.error || response?.status
-        // );
-         
-
-
-
-
-      },
-
+      next: (response) => {},
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
         const backendError =
@@ -971,7 +920,6 @@ recipientPhone: null
           customMessage,
           backendError
         );
-       
       },
     });
   }
