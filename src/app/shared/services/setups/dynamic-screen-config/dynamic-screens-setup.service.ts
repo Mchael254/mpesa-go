@@ -3,7 +3,7 @@ import {ApiService} from "../../api/api.service";
 import {Observable} from "rxjs/internal/Observable";
 import {API_CONFIG} from "../../../../../environments/api_service_config";
 import {
-  ConfigFormFieldsDto, DynamicScreenSetupDto, DynamicSetupImportDto,
+  ConfigFormFieldsDto, DynamicScreenSetupDto, DynamicScreenSetupUpdateDto, DynamicSetupImportDto,
   FormGroupsDto, FormSubGroupsDto,
   ScreenFormsDto,
   ScreensDto,
@@ -112,8 +112,8 @@ export class DynamicScreensSetupService {
     );
   }
 
-  updateScreenSetup(data: DynamicScreenSetupDto): Observable<DynamicScreenSetupDto> {
-    return this.api.PUT<DynamicScreenSetupDto>(
+  updateScreenSetup(data: DynamicScreenSetupUpdateDto): Observable<DynamicScreenSetupUpdateDto> {
+    return this.api.PUT<DynamicScreenSetupUpdateDto>(
       `dynamic-screens-setup/screen-setup`,
       data,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
@@ -153,13 +153,13 @@ export class DynamicScreensSetupService {
   fetchDynamicSetupByScreen(
     screenCode?: number,
     screenId?: string
-  ): Observable<any[]> {
+  ): Observable<DynamicScreenSetupDto> {
     const params = new HttpParams()
       .set('screenCode', `${screenCode}`)
       .set('screenId', `${screenId}`);
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
 
-    return this.api.GET<any[]>(
+    return this.api.GET<DynamicScreenSetupDto>(
       `dynamic-screens-setup/screen-setup`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
       paramObject

@@ -1,21 +1,21 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {DynamicColumns} from "../../../data/dynamic-columns";
-import {CountryDto} from "../../../data/common/countryDto";
-import {RegexErrorMessages} from "../../../../features/entities/data/field-error.model";
-import {GlobalMessagingService} from "../../../services/messaging/global-messaging.service";
-import {Logger} from "../../../services";
+import {DynamicColumns} from "../../../../shared/data/dynamic-columns";
+import {ConfigFormFieldsDto} from "../../../../shared/data/common/dynamic-screens-dto";
+import {CountryDto} from "../../../../shared/data/common/countryDto";
+import {RegexErrorMessages} from "../../../entities/data/field-error.model";
+import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
+import {Logger} from "../../../../shared/services";
 import * as bootstrap from 'bootstrap';
-import {ConfigFormFieldsDto} from "../../../data/common/dynamic-screens-dto";
 
-const log = new Logger("PreviewDynamicSetupTableComponent");
+const log = new Logger('PreviewDynamicSetupTableComponent');
 @Component({
   selector: 'app-preview-dynamic-setup-table',
   templateUrl: './preview-dynamic-setup-table.component.html',
   styleUrls: ['./preview-dynamic-setup-table.component.css']
 })
-export class PreviewDynamicSetupTableComponent implements OnInit {
+export class PreviewDynamicSetupTableComponent implements OnInit{
   tableData: any;
   editMode: boolean = false;
   pageSize: number;

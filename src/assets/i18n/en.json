@@ -1116,7 +1116,9 @@
     "cr12DetailsDeletedSuccessfully": "CR12 details deleted successfully!",
     "ownershipDetailsDeletedSuccessfully": "Ownership details deleted successfully!",
     "branchDetailsDeletedSuccessfully": "Branch details deleted successfully!",
-    "wealthAmlDetailsDeletedSuccessfully": "Wealth Aml details deleted successfully!"
+    "wealthAmlDetailsDeletedSuccessfully": "Wealth Aml details deleted successfully!",
+    "populatedByDocument": "Please hold on while the form is being populated by the document.",
+    "uploadImage": "upload image"
   },
   "gis": {
     "quotation": {
@@ -3102,7 +3104,7 @@
       "print_confirmation": "Print Confirmation",
       "print_status": "Print Status",
       "printed": "Printed",
-    
+
       "spoilt_receipt_paper": "Spoilt Receipt Paper",
       "not_printed": "Not Printed",
       "uploadFiles": "Upload file",
