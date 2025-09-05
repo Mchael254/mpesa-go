@@ -4,7 +4,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 import { Pipe, PipeTransform } from '@angular/core';
-
 import { PreviewReceiptComponent } from './preview-receipt.component';
 import { ReceiptDataService } from '../../services/receipt-data.service';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
@@ -12,7 +11,7 @@ import { ReportsService } from '../../../../shared/services/reports/reports.serv
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { ReceiptManagementService } from '../../services/receipt-management.service';
 import { ReceiptService } from '../../services/receipt.service';
-
+import { YesNo } from '../shared/yes-no.component';
 // --- Mock Pipe for the template ---
 @Pipe({ name: 'translate' })
 class MockTranslatePipe implements PipeTransform {
@@ -99,13 +98,13 @@ describe('PreviewReceiptComponent', () => {
   });
 
   // Helper to centralize mock setup for `ngOnInit`
-  const setupMocksForInit = (shareData: any = mockShareData, receiptingScreen: 'Y' | 'N' = 'N') => {
+  const setupMocksForInit = (shareData: any = mockShareData, receiptingScreen: YesNo = YesNo.No) => {
     mockSessionStorageService.getItem.mockImplementation((key: string) => {
       switch (key) {
         case 'defaultOrg': return JSON.stringify({ id: 1 });
         case 'selectedOrg': return null;
         case 'receiptNo': return '12345';
-        case 'printed': return 'N';
+        case 'printed': return YesNo.No;
         case 'receipting': return receiptingScreen;
         case 'sharePreviewData': return shareData ? JSON.stringify(shareData) : null;
         default: return null;
@@ -127,8 +126,8 @@ describe('PreviewReceiptComponent', () => {
       fixture.detectChanges();
 
       expect(component.receiptNo).toBe(12345);
-      expect(component.printStatus).toBe('N');
-      expect(component.receiptingScreen).toBe('N');
+      expect(component.printStatus).toBe(YesNo.No);
+      expect(component.receiptingScreen).toBe(YesNo.No);
       expect(component.shareData).toEqual(mockShareData);
       expect(mockReportsService.generateReport).toHaveBeenCalled();
     });
@@ -243,7 +242,7 @@ describe('PreviewReceiptComponent', () => {
 
     it('should update status and navigate to Management if receiptingScreen is "N"', () => {
       const navSpy = jest.spyOn(component, 'navigateToReceiptManagement');
-      component.receiptingScreen = 'N';
+      component.receiptingScreen = YesNo.No;
       mockReceiptManagementService.shareReceipt.mockReturnValue(of({ msg: 'Success' }));
       mockReceiptService.updateReceiptStatus.mockReturnValue(of({ msg: 'Updated' }));
 
@@ -255,7 +254,7 @@ describe('PreviewReceiptComponent', () => {
 
     it('should update status and navigate to Capture if receiptingScreen is "Y"', () => {
       const navSpy = jest.spyOn(component, 'navigateToReceiptCapture');
-      component.receiptingScreen = 'Y';
+      component.receiptingScreen = YesNo.Yes;
       mockReceiptManagementService.shareReceipt.mockReturnValue(of({ msg: 'Success' }));
       mockReceiptService.updateReceiptStatus.mockReturnValue(of({ msg: 'Updated' }));
 
@@ -266,7 +265,7 @@ describe('PreviewReceiptComponent', () => {
     });
 
     it('should NOT update status if printStatus is "Y"', () => {
-      component.printStatus = 'Y';
+      component.printStatus = YesNo.Yes;
       mockReceiptManagementService.shareReceipt.mockReturnValue(of({ msg: 'Success' }));
 
       component.postClientDetails();
@@ -322,7 +321,7 @@ describe('PreviewReceiptComponent', () => {
   describe('checkActiveScreen', () => {
     it('should navigate to Management if receiptingScreen is "N"', () => {
       const navSpy = jest.spyOn(component, 'navigateToReceiptManagement');
-      component.receiptingScreen = 'N';
+      component.receiptingScreen = YesNo.No;
 
       component.checkActiveScreen();
 
@@ -331,7 +330,7 @@ describe('PreviewReceiptComponent', () => {
 
     it('should navigate to Capture if receiptingScreen is "Y"', () => {
       const navSpy = jest.spyOn(component, 'navigateToReceiptCapture');
-      component.receiptingScreen = 'Y';
+      component.receiptingScreen = YesNo.Yes;
 
       component.checkActiveScreen();
 
