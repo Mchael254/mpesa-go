@@ -184,6 +184,7 @@ export interface QuotationDetails {
   agentName: string;
   clientName: string;
   sumInsured: number;
+  taxInformation?: TaxInformation[];
 }
 
 export interface QuotationProduct {
