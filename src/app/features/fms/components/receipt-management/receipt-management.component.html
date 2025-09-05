@@ -529,7 +529,7 @@
       aria-labelledby="staticBackdropLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-sm">
         <div class="modal-content">
           <form [formGroup]="rctShareForm">
             <div class="modal-header">
@@ -610,7 +610,7 @@
                     formControlName="phone"
                     placeholder="e.g., 254712345678"
                   />
-                  <!-- START: Add this error message block -->
+                  <!-- START: error message block -->
                   <div
                     *ngIf="
                       rctShareForm.get('phone')?.invalid &&
@@ -626,11 +626,11 @@
                       Phone number is required.
                     </div>
                     <div *ngIf="rctShareForm.get('phone')?.errors?.['pattern']">
-                      Invalid format. Must be 254 followed by 9 digits (e.g.,
+                      Invalid format. Must be xxx followed by 9 digits (e.g.,
                       254712345678).
                     </div>
                   </div>
-                  <!-- END: Add this error message block -->
+                  <!-- END:  error message block -->
                 </div>
               </div>
               <div
