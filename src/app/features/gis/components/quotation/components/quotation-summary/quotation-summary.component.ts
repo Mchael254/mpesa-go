@@ -215,11 +215,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   summaryPerils: any[] = [];
   
 
-
-
-
-
-
   constructor(
     public quotationService: QuotationsService,
     private router: Router,
