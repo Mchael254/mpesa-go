@@ -413,6 +413,7 @@ export class RiskDetailsComponent {
       this.selectedSubclassCode = savedSubclass;
       this.loadExcesses();
     }
+    this.fetchAddedLimitsOfLiability();
     this.initializePerilDetails();
     this.initializePerils();
     this.loadAddedClauses();
@@ -562,6 +563,10 @@ export class RiskDetailsComponent {
         next: (res: any) => {
           this.quotationDetails = res;
           log.debug("Quotation details-risk details", this.quotationDetails);
+          this.quoteProductCode = this.quotationDetails.quotationProducts?.[0].riskInformation?.[0].quotationProductCode;
+          sessionStorage.setItem('newQuotationProductCode', this.quoteProductCode);
+          this.selectedSubclassCode = this.quotationDetails.quotationProducts?.[0].riskInformation?.[0].subclassCode;
+          sessionStorage.setItem('selectedSubclasscode', this.selectedSubclassCode);
           this.insuredCode = this.quotationDetails.clientCode
           this.clientCode = this.quotationDetails.clientCode
           if (this.insuredCode) {
@@ -575,8 +580,8 @@ export class RiskDetailsComponent {
           const productDetails = this.quotationDetails.quotationProducts.find(
             product => product.productCode === this.selectedProductCode
           )
-          this.quoteProductCode = productDetails.code;
-          sessionStorage.setItem('newQuotationProductCode', this.quoteProductCode);
+          // this.quoteProductCode = productDetails.code;
+      
           log.debug("limit qpcode", this.quoteProductCode);
 
           //risk details
@@ -3986,6 +3991,7 @@ export class RiskDetailsComponent {
     this.showLimitModal = true;
     this.loadLimitsOfLiability();
 
+
     const modalElement = document.getElementById('addLimit');
     if (modalElement) {
       const modal = new (window as any).bootstrap.Modal(modalElement);
@@ -4316,7 +4322,7 @@ export class RiskDetailsComponent {
       const modal = new (window as any).bootstrap.Modal(modalElement);
       modal.show();
     }
-
+    this.getAddedExcesses();
     this.loadExcesses();
   }
 
@@ -5619,7 +5625,9 @@ export class RiskDetailsComponent {
 
     // Show the modal
     this.showTaxModal = true;
-  } openEditTaxModalFromDB(taxToEdit: any) {
+  }
+
+  openEditTaxModalFromDB(taxToEdit: any) {
     console.log('--- openEditTaxModalFromDB Triggered ---', taxToEdit);
 
     if (!taxToEdit) {
@@ -5795,9 +5803,6 @@ export class RiskDetailsComponent {
     log.debug("Tax Details:", this.taxDetails);
     if (matchingProduct) {
       this.taxDetails = matchingProduct.taxInformation;
-
-
-
     } else {
       log.debug("No matching product found for code:", quotationProductCode);
     }

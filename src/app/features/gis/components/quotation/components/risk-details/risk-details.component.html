@@ -2051,11 +2051,11 @@
                         <td [attr.colspan]="perilColumns.length" class="text-center p-4 text-muted">
                             <ng-container *ngIf="addedPerils?.length > 0; else noClauses">
                                 <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                <p>No matching limits of liability found.</p>
+                                <p>No matching perils found.</p>
                             </ng-container>
                             <ng-template #noClauses>
-                                <p><strong>No limits of liability available.</strong> There are currently no
-                                    limits of liability to add.</p>
+                                <p><strong>No perils available.</strong> There are currently no
+                                    perils to add.</p>
                             </ng-template>
                         </td>
                     </tr>
