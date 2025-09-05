@@ -10,12 +10,9 @@ import {
   unPrintedReceiptsDTO,
 } from '../../data/receipt-management-dto';
 import * as bootstrap from 'bootstrap';
-
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { ReceiptManagementService } from '../../services/receipt-management.service';
-
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
-
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { Router } from '@angular/router';
 import { BranchDTO, GenericResponse } from '../../data/receipting-dto';
@@ -33,6 +30,7 @@ import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
 import { ReceiptService } from '../../services/receipt.service';
 
+import { YesNo } from '../shared/yes-no.component';
 @Component({
   selector: 'app-receipt-management',
   templateUrl: './receipt-management.component.html',
@@ -88,7 +86,7 @@ export class ReceiptManagementComponent implements OnInit {
   /** @property {boolean} isCancellation - Flag used for styling the 'Cancellation' button as active/inactive. */
   isCancellation: boolean = true; // Default view is Cancellation
   printed: boolean = false;
-  printStatus: 'Y' | 'N';
+  printStatus: YesNo;
   unprinted: boolean = false;
   /** @property {number | null} receiptNumber - Stores the specific receipt number selected for printing before navigation. */
   receiptNumber: number | null = null; // Initialize as null
@@ -675,7 +673,7 @@ export class ReceiptManagementComponent implements OnInit {
     this.agentCode = agent_code;
     this.accountCode = account_code;
     this.receipt_no = receipt_no;
-    this.printStatus = printed;
+    this.printStatus = printed as YesNo;
     this.sessionStorage.setItem('agentCode', this.agentCode);
     this.sessionStorage.setItem('accountCode', this.accountCode);
     this.sessionStorage.setItem('receiptNo', this.receipt_no);
@@ -823,7 +821,7 @@ export class ReceiptManagementComponent implements OnInit {
             modal.hide();
           }
         }
-        if (this.printStatus === 'N') {
+        if (this.printStatus === YesNo.No) {
           this.updatePrintStatus();
         }
 

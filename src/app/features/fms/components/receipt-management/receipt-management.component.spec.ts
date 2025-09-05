@@ -4,7 +4,6 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-
 import { ReceiptManagementComponent } from './receipt-management.component';
 import { ReceiptManagementService } from '../../services/receipt-management.service';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
@@ -13,11 +12,10 @@ import { AuthService } from '../../../../shared/services/auth.service';
 import { IntermediaryService } from '../../../entities/services/intermediary/intermediary.service';
 import { ClientService } from '../../../entities/services/client/client.service';
 import { ReceiptService } from '../../services/receipt.service';
-
 import { GenericResponse } from '../../data/receipting-dto';
 import { ReceiptsToCancelContentDTO, unPrintedReceiptContentDTO } from '../../data/receipt-management-dto';
 import { Pagination } from 'src/app/shared/data/common/pagination';
-
+import { YesNo } from '../shared/yes-no.component';
 // --- Mock Pipe for the template ---
 @Pipe({ name: 'translate' })
 class MockTranslatePipe implements PipeTransform {
@@ -251,7 +249,7 @@ describe('ReceiptManagementComponent', () => {
 
     describe('postClientDetails button action', () => {
         it('should share receipt and update print status when printStatus is "N"', () => {
-            component.printStatus = 'N';
+            component.printStatus = YesNo.No;
             component.receipt_no = "123";
             component.agent = mockAgent;
             component.rctShareForm.patchValue({ name: 'Client X', shareMethod: 'whatsapp', phone: '254712345678' });
@@ -266,7 +264,7 @@ describe('ReceiptManagementComponent', () => {
         });
 
         it('should share receipt but NOT update status when printStatus is "Y"', () => {
-            component.printStatus = 'Y';
+            component.printStatus = YesNo.Yes;
             component.rctShareForm.patchValue({ name: 'Client X' });
             mockReceiptManagementService['shareReceipt'].mockReturnValue(of({ msg: 'Shared' }));
 
@@ -371,7 +369,7 @@ describe('ReceiptManagementComponent', () => {
     });
 
     it('should share receipt and update print status when printStatus is "N"', () => {
-        component.printStatus = 'N';
+        component.printStatus = YesNo.No;
         mockReceiptManagementService['shareReceipt'].mockReturnValue(of({ msg: 'Success' }));
         mockReceiptService['updateReceiptStatus'].mockReturnValue(of({})); // Mock the inner call
 
@@ -383,7 +381,7 @@ describe('ReceiptManagementComponent', () => {
     });
 
     it('should share receipt but NOT update print status when printStatus is "Y"', () => {
-        component.printStatus = 'Y';
+        component.printStatus = YesNo.Yes;
         mockReceiptManagementService['shareReceipt'].mockReturnValue(of({ msg: 'Success' }));
 
         component.postClientDetails();
