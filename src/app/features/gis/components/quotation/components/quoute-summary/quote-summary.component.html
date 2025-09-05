@@ -178,7 +178,9 @@
             <button type="button" class="btn-close custom-close-style" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <app-share-quotes (sendEvent)="listenToSendEvent($event)"
-            (downloadRequested)="onDownloadRequested()"></app-share-quotes>
+            (downloadRequested)="onDownloadRequested()"(previewRequested)="onPreviewRequested()" 
+            [previewVisible]="previewVisible"
+  [pdfSrc]="pdfSrc"></app-share-quotes>
 
 
         </div>
