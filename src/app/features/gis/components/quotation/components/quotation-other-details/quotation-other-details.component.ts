@@ -12,15 +12,26 @@ const log = new Logger('RiskDetailsComponent');
   styleUrls: ['./quotation-other-details.component.css']
 })
 export class QuotationOtherDetailsComponent {
-  showRevision: boolean = true;
-  quotationRevisions: any[] = [];
+  columnModalPosition = { top: '0px', left: '0px' };
+
   quotationComments: any[] = [];
   quotationCode: number;
   clientCode: number;
 
+  quotationRevisions: any[] = [];
+  showRevision: boolean = true;
+  noRevision:boolean = false;
+  showRevisions: boolean = false;
+  showRevisionsColumnModal = false;
+  revisionColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
+
 
   toggleRevision() {
-    this.showRevision = !this.showRevision;
+    if (this.quotationRevisions && this.quotationRevisions.length > 0) {
+      this.showRevision = !this.showRevision;
+    } else {
+      log.debug('No revisions available to display');
+    }
   }
 
   constructor(
@@ -35,39 +46,30 @@ export class QuotationOtherDetailsComponent {
     log.debug("client code >>", this.quotationCode);
     this.getQuotationRevision();
     this.getQuotationComments();
-    this.quotationRevisions = this.sortRevisionsByNumber(this.quotationRevisions);
-    this.quotationComments = this.sortCommentsByNumber(this.quotationComments);
-
   }
 
+  //revisions
   getQuotationRevision() {
     this.quotationService.getQuotationRevision(this.quotationCode).subscribe({
       next: (res: any) => {
-        this.quotationRevisions = this.sortRevisionsByNumber(res || []);
-        log.debug("Sorted quotation revisions:", this.quotationRevisions);
+        this.quotationRevisions = Array.isArray(res?._embedded) ? res._embedded : [];
+        this.noRevision = this.quotationRevisions.length > 0;
+        log.debug("revisions:", this.quotationRevisions);
+
       },
       error: (error: HttpErrorResponse) => {
         log.debug("Error log", error.error.message);
         this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        this.showRevision = false;
       }
-    });
-  }
-
-  private sortRevisionsByNumber(revisions: any[]): any[] {
-    return [...revisions].sort((a, b) => {
-      const getRevisionNumber = (quotationNo: string) => {
-        const parts = quotationNo.split('/');
-        return parseInt(parts[parts.length - 1], 10);
-      };
-      return getRevisionNumber(b.quotationNo) - getRevisionNumber(a.quotationNo);
     });
   }
 
   getQuotationComments() {
     this.quotationService.getQuotationComments(this.clientCode).subscribe({
       next: (res: any) => {
-        this.quotationComments = this.sortCommentsByNumber(res || []);
-        log.debug("Sorted quotation comments:", this.quotationComments);
+        this.quotationComments = Array.isArray(res?._embedded) ? res._embedded : [];
+        log.debug("comments:", this.quotationComments);
       },
       error: (error: HttpErrorResponse) => {
         log.debug("Error log", error.error.message);
@@ -76,14 +78,12 @@ export class QuotationOtherDetailsComponent {
     });
   }
 
-  private sortCommentsByNumber(revisions: any[]): any[] {
-    return [...revisions].sort((a, b) => {
-      const getCommentNumber = (commentNo: string) => {
-        const parts = commentNo.split('/');
-        return parseInt(parts[parts.length - 1], 10);
-      };
-      return getCommentNumber(b.commentNo) - getCommentNumber(a.commentNo);
-    });
+
+
+  sentenceCase(text: string): string {
+    return text
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (str) => str.toUpperCase());
   }
 
 

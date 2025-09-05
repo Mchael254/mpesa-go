@@ -590,9 +590,13 @@ if (risk1.code) {
 }
 
 
- this.getLimitsofLiability(quotationProductCode, subclassCode,'L');
- this.getLimitsofLiability(quotationProductCode,subclassCode,'E')
+     log.debug('subclassCode: passed for excess', subclassCode);
+log.debug('quotationProductCode: passed for excess', quotationProductCode);
+
+ this.getLimitsofLiability(subclassCode, quotationProductCode,'L');
+ this.getLimitsofLiability(subclassCode,quotationProductCode,'E')
  const defaultRiskCode = this.riskDetails.length > 0 ? this.riskDetails[0].code : null;
+ this.getExcesses(subclassCode);
 
   if (defaultRiskCode) {
     this.getSections(defaultRiskCode);
@@ -1105,8 +1109,11 @@ getSections(data: any) {
     this.getSections(data.code);
     this.getExcesses(subclassCode);
     this.getRiskClauses(data.code);
-    this.getLimitsofLiability(quotationProductCode, subclassCode, 'L');
-    this.getLimitsofLiability(quotationProductCode, subclassCode, 'E')
+
+//       log.debug('subclassCode: passed for excess', subclassCode);
+// log.debug('quotationProductCode: passed for excess', quotationProductCode);
+    this.getLimitsofLiability(subclassCode, quotationProductCode, 'L');
+    this.getLimitsofLiability(subclassCode, quotationProductCode, 'E')
 
   }
 
