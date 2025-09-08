@@ -615,7 +615,7 @@ tr:hover {
 }
 
 .modal-title {
-  margin-left: 1.2rem;
+  /* margin-left: 1.2rem; */
 }
 
 .no-border-header {
@@ -648,4 +648,29 @@ textarea {
 
 .card-title {
   color: #00529b;
+}
+
+.quote-label {
+  color: #000;
+  font-family: Roboto;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+
+  margin-bottom: 15px;
+}
+
+#quote-input {
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  /* height: 50%; */
+  font-size: 14px;
+  height: 30px;
+}
+
+#quote-input-pdropdown {
+  font-size: 14px;
+
 }

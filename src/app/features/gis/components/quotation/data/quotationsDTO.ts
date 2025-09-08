@@ -213,7 +213,7 @@ export interface TaxInformation {
   code: number;
   rateDescription: string;
   rate: number;
-   productCode?: number;
+  productCode?: number;
   quotationCode: number;
   rateType: string;
   taxAmount: number;
@@ -1272,36 +1272,74 @@ export interface ScheduleTab {
 
 
 export interface ProductDetails {
-   coverFrom: Date;
-   coverTo: Date;
-   productName: string;
+  coverFrom: Date;
+  coverTo: Date;
+  productName: string;
 
 }
 
 
 export interface ProductDetails {
-   coverFrom: Date;
-   coverTo: Date;
-   productName: string;
-   premium:number;
-   commission:number;
+  coverFrom: Date;
+  coverTo: Date;
+  productName: string;
+  premium: number;
+  commission: number;
 
 }
 
 
 
 export interface TaxDetails {
-  code: number;               
-  levelCode: string;          
-  productCode?: number;         
-  quotationCode: number;      
-  rate: number;                
-  rateDescription: string;     
-  rateType: string;            
+  code: number;
+  levelCode: string;
+  productCode?: number;
+  quotationCode: number;
+  rate: number;
+  rateDescription: string;
+  rateType: string;
   renewalEndorsement: string | null;
-  riskProductLevel: string;   
-  taxAmount: number;           
-  taxRateCode: number | null;  
-  taxType: string;             
-  transactionCode: string;     
+  riskProductLevel: string;
+  taxAmount: number;
+  taxRateCode: number | null;
+  taxType: string;
+  transactionCode: string;
 }
+export interface UserDetails {
+  id: number;
+  name: string;
+  username: string;
+  emailAddress: string;
+  dateOfBirth: string | null;
+  status: string;
+  userType: string;
+  telNo: string | null;
+  phoneNumber: string | null;
+  otherPhone: string | null;
+  personelRank: string | null;
+  countryCode: string | null;
+  townCode: string | null;
+  physicalAddress: string | null;
+  postalCode: string | null;
+  departmentCode: string | null;
+  activatedBy: string | null;
+  updateBy: string | null;
+  dateCreated: string;
+  profilePicture: string | null;
+  organizationId: number | null;
+  organizationGroupId: number | null;
+  supervisorId: number | null;
+  branchId: number | null;
+  gender: string | null;
+  pinNumber: string | null;
+  idNumber: string | null;
+}
+
+export interface GroupedUser {
+  groupId: number;
+  groupUserId: number;
+  isTeamLeader: 'Y' | 'N'; // explicitly "Y" or "N"
+  userDetails: UserDetails;
+  id: number;
+}
+

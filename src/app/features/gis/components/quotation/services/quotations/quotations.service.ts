@@ -1134,7 +1134,12 @@ export class QuotationsService {
       catchError(this.errorHandl)
     );
   }
-
+  getGroupedUserDetails(groupid: number) {
+    return this.api.GET(`user-groups/${groupid}/users`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
 
 
 }

@@ -2334,20 +2334,18 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       }))
     }
   }
-   onPreviewRequested() {
-    
+  onPreviewRequested() {
     this.previewVisible = false;
     this.pdfSrc = null;
-  
+
     const payload = this.notificationPayload();
     this.quotationService.generateQuotationReport(payload).pipe(
       untilDestroyed(this)
     ).subscribe({
       next: (response) => {
-        const pdfData = `data:application/pdf;base64,${response.base64}#toolbar=0`;
-        this.pdfSrc = this.sanitizer.bypassSecurityTrustResourceUrl(pdfData);
-  
-      
+        // 👇 Just prepend the header, no sanitizer needed
+        this.pdfSrc = `data:application/pdf;base64,${response.base64}`;
+
         setTimeout(() => {
           this.previewVisible = true;
         }, 0);
@@ -2357,6 +2355,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       }
     });
   }
+
 
   onDownloadRequested() {
     const payload = this.notificationPayload();
