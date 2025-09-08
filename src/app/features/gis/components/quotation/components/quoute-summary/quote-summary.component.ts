@@ -12,7 +12,7 @@ import { ClaimsService } from '../../../claim/services/claims.service';
 import { ProductLevelPremium } from "../../data/premium-computation";
 import { ShareQuotesComponent } from '../share-quotes/share-quotes.component';
 import { format } from "date-fns";
-import { mergeMap } from "rxjs";
+import { concatMap, mergeMap, switchMap } from "rxjs";
 import { EmailDto } from "../../../../../../shared/data/common/email-dto";
 import { NotificationService } from "../../services/notification/notification.service";
 import { StringManipulation } from "../../../../../lms/util/string_manipulation";
@@ -296,11 +296,10 @@ pdfSrc: SafeResourceUrl | null = null;
 
   ngOnDestroy(): void {
   }
-
 convertQuoteToNormalQuote() {
   const quotationCode = this.quotationDetails?.code;
   if (!quotationCode) {
-    this.globalMessagingService.displayErrorMessage('Error','Quotation code is missing. Cannot proceed.');
+    this.globalMessagingService.displayErrorMessage('Error', 'Quotation code is missing. Cannot proceed.');
     return;
   }
 
@@ -308,7 +307,6 @@ convertQuoteToNormalQuote() {
   const product = quotation?.quotationProducts?.[0];
   const riskInfo = product?.riskInformation?.[0];
 
-  // Build payload inline
   const payload = {
     premiumAmount: quotation?.premium ?? 0,
     productCode: product?.productCode ?? 0,
@@ -329,31 +327,22 @@ convertQuoteToNormalQuote() {
     })) ?? []
   };
 
-  // Step 1: Update premium
-  log.debug('About to call updateQuotePremium:', quotationCode, payload);
   this.quotationService.updateQuotePremium(quotationCode, payload)
+    .pipe(
+      switchMap(() => this.quotationService.convertToNormalQuote(quotationCode))
+    )
     .subscribe({
-      next: (res) => {
-        log.debug('updateQuotePremium response:', res);
-        // Step 2: Convert only if premium update succeeds
-        this.quotationService.convertToNormalQuote(quotationCode)
-          .subscribe({
-            next: (data: any) => {
-              log.debug("Quote successfully converted:", data);
-              this.router.navigate(['/home/gis/quotation/quotation-summary']);
-            },
-            error: (err) => {
-              this.globalMessagingService.displayErrorMessage('Error','Failed to convert quote.');
-              log.error('Convert to normal quote failed', err);
-            }
-          });
+      next: (data: any) => {
+        log.debug("Quote successfully converted:", data);
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
       },
       error: (err) => {
-        this.globalMessagingService.displayErrorMessage('Error','Failed to update premium. Conversion aborted.');
-        log.error('Update premium failed', err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to convert quote.');
+        log.error('Quote conversion failed', err);
       }
     });
 }
+
 
 
 
@@ -555,21 +544,30 @@ convertQuoteToNormalQuote() {
     }
   }
 
-  onPreviewRequested() {
-  const payload = this.notificationPayload(); 
+ onPreviewRequested() {
+  
+  this.previewVisible = false;
+  this.pdfSrc = null;
+
+  const payload = this.notificationPayload();
   this.quotationService.generateQuotationReport(payload).pipe(
     untilDestroyed(this)
   ).subscribe({
     next: (response) => {
       const pdfData = `data:application/pdf;base64,${response.base64}#toolbar=0`;
       this.pdfSrc = this.sanitizer.bypassSecurityTrustResourceUrl(pdfData);
-      this.previewVisible = true;
+
+    
+      setTimeout(() => {
+        this.previewVisible = true;
+      }, 0);
     },
     error: (err) => {
       console.error('Failed to preview quotation report', err);
     }
   });
 }
+
 
 
   onDownloadRequested() {
