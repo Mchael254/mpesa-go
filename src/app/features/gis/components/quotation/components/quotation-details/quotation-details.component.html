@@ -572,13 +572,19 @@
             <div class="w-75 mb-2 mt-2">
               <p class="quote-label">{{ clientToReassignProduct ? 'Default User' : 'User' }}</p>
 
-              <!-- <input pInputText type="select" class="form-control form-control-sm" id="quote-input"
-                (click)="openChooseClientReassignModal()" [(ngModel)]="clientToReassignProduct"> -->
-              <div class="form-control form-control-sm d-flex align-items-center justify-content-between"
-                id="quote-input" style="cursor: pointer;" (click)="openChooseClientReassignModal()">
+
+              <div *ngIf="!departmentSelected"
+                class="form-control form-control-sm d-flex align-items-center justify-content-between" id="quote-input"
+                style="cursor: pointer;" (click)="openChooseClientReassignModal()">
                 <span cl>{{ clientToReassignProduct}}</span>
                 <i class="pi pi-chevron-down me-2" style="color: #00529B;font-size: 14px;"></i>
               </div>
+
+              <p-dropdown *ngIf="departmentSelected" [options]="groupUsers" optionLabel="userDetails.name"
+                optionValue="id" [(ngModel)]="selectedGroupUserId" placeholder="" class=" form-control-sm ">
+              </p-dropdown>
+
+
 
             </div>
 

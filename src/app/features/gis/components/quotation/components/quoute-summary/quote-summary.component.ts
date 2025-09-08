@@ -70,7 +70,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   organizationId: number;
   isModalLoading = false;
   previewVisible = false;
-pdfSrc: SafeResourceUrl | null = null;
+  pdfSrc: SafeResourceUrl | null = null;
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
@@ -296,52 +296,52 @@ pdfSrc: SafeResourceUrl | null = null;
 
   ngOnDestroy(): void {
   }
-convertQuoteToNormalQuote() {
-  const quotationCode = this.quotationDetails?.code;
-  if (!quotationCode) {
-    this.globalMessagingService.displayErrorMessage('Error', 'Quotation code is missing. Cannot proceed.');
-    return;
-  }
+  convertQuoteToNormalQuote() {
+    const quotationCode = this.quotationDetails?.code;
+    if (!quotationCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Quotation code is missing. Cannot proceed.');
+      return;
+    }
 
-  const quotation = this.quotationDetails;
-  const product = quotation?.quotationProducts?.[0];
-  const riskInfo = product?.riskInformation?.[0];
+    const quotation = this.quotationDetails;
+    const product = quotation?.quotationProducts?.[0];
+    const riskInfo = product?.riskInformation?.[0];
 
-  const payload = {
-    premiumAmount: quotation?.premium ?? 0,
-    productCode: product?.productCode ?? 0,
-    quotProductCode: product?.code ?? 0,
-    productPremium: riskInfo?.annualPremium ?? 0,
-    riskLevelPremiums: riskInfo ? [{
-      code: riskInfo?.code ?? 0,
-      premium: riskInfo?.premium ?? 0,
-      limitPremiumDtos: riskInfo?.riskLimits?.map(limit => ({
-        sectCode: limit?.sectionCode ?? 0,
-        premium: limit?.premiumAmount ?? 0
+    const payload = {
+      premiumAmount: quotation?.premium ?? 0,
+      productCode: product?.productCode ?? 0,
+      quotProductCode: product?.code ?? 0,
+      productPremium: riskInfo?.annualPremium ?? 0,
+      riskLevelPremiums: riskInfo ? [{
+        code: riskInfo?.code ?? 0,
+        premium: riskInfo?.premium ?? 0,
+        limitPremiumDtos: riskInfo?.riskLimits?.map(limit => ({
+          sectCode: limit?.sectionCode ?? 0,
+          premium: limit?.premiumAmount ?? 0
+        })) ?? []
+      }] : [],
+      taxes: quotation?.taxInformation?.map(tax => ({
+        code: tax?.code ?? 0,
+        premium: tax?.taxAmount ?? 0,
+        description: tax?.rateDescription ?? ''
       })) ?? []
-    }] : [],
-    taxes: quotation?.taxInformation?.map(tax => ({
-      code: tax?.code ?? 0,
-      premium: tax?.taxAmount ?? 0,
-      description: tax?.rateDescription ?? ''
-    })) ?? []
-  };
+    };
 
-  this.quotationService.updateQuotePremium(quotationCode, payload)
-    .pipe(
-      switchMap(() => this.quotationService.convertToNormalQuote(quotationCode))
-    )
-    .subscribe({
-      next: (data: any) => {
-        log.debug("Quote successfully converted:", data);
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
-      },
-      error: (err) => {
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to convert quote.');
-        log.error('Quote conversion failed', err);
-      }
-    });
-}
+    this.quotationService.updateQuotePremium(quotationCode, payload)
+      .pipe(
+        switchMap(() => this.quotationService.convertToNormalQuote(quotationCode))
+      )
+      .subscribe({
+        next: (data: any) => {
+          log.debug("Quote successfully converted:", data);
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to convert quote.');
+          log.error('Quote conversion failed', err);
+        }
+      });
+  }
 
 
 
@@ -544,29 +544,50 @@ convertQuoteToNormalQuote() {
     }
   }
 
- onPreviewRequested() {
-  
-  this.previewVisible = false;
-  this.pdfSrc = null;
+  //  onPreviewRequested() {
 
-  const payload = this.notificationPayload();
-  this.quotationService.generateQuotationReport(payload).pipe(
-    untilDestroyed(this)
-  ).subscribe({
-    next: (response) => {
-      const pdfData = `data:application/pdf;base64,${response.base64}#toolbar=0`;
-      this.pdfSrc = this.sanitizer.bypassSecurityTrustResourceUrl(pdfData);
+  //   this.previewVisible = false;
+  //   this.pdfSrc = null;
 
-    
-      setTimeout(() => {
-        this.previewVisible = true;
-      }, 0);
-    },
-    error: (err) => {
-      console.error('Failed to preview quotation report', err);
-    }
-  });
-}
+  //   const payload = this.notificationPayload();
+  //   this.quotationService.generateQuotationReport(payload).pipe(
+  //     untilDestroyed(this)
+  //   ).subscribe({
+  //     next: (response) => {
+  //       const pdfData = `data:application/pdf;base64,${response.base64}#toolbar=0`;
+  //       this.pdfSrc = this.sanitizer.bypassSecurityTrustResourceUrl(pdfData);
+
+
+  //       setTimeout(() => {
+  //         this.previewVisible = true;
+  //       }, 0);
+  //     },
+  //     error: (err) => {
+  //       console.error('Failed to preview quotation report', err);
+  //     }
+  //   });
+  // }
+  onPreviewRequested() {
+    this.previewVisible = false;
+    this.pdfSrc = null;
+
+    const payload = this.notificationPayload();
+    this.quotationService.generateQuotationReport(payload).pipe(
+      untilDestroyed(this)
+    ).subscribe({
+      next: (response) => {
+        // 👇 Just prepend the header, no sanitizer needed
+        this.pdfSrc = `data:application/pdf;base64,${response.base64}`;
+
+        setTimeout(() => {
+          this.previewVisible = true;
+        }, 0);
+      },
+      error: (err) => {
+        console.error('Failed to preview quotation report', err);
+      }
+    });
+  }
 
 
 
