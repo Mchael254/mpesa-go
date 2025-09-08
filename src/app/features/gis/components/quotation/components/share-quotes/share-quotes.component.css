@@ -229,12 +229,33 @@
   background: white !important;
   color: #00529b !important;
   padding: 0.5rem 1rem !important;
-  border-bottom: 1px solid #ddd;
+  
 }
 ::ng-deep .custom-pdf-modal .p-dialog-header-icon {
   color: red !important; 
 }
+:host ::ng-deep .p-dialog-mask {
+  background: rgba(0, 0, 0, 0) !important;
+}
+
+.me-3 {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
 
 
+:host ::ng-deep .custom-pdf-modal .p-dialog-content {
+  background: #fff !important;
+  padding: 0 !important;
+}
 
+:host ::ng-deep .pdfViewer .page,
+:host ::ng-deep .pdfViewer .canvasWrapper {
+  background: white !important;
+  box-shadow: none !important;
+}
 
+:host ::ng-deep .pdfViewer {
+  background: white !important;
+}

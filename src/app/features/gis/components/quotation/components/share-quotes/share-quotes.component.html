@@ -111,14 +111,21 @@
 
 
 
-  <div style="height: calc(100% - 40px); overflow: hidden;">
-    <iframe
-      [src]="pdfSrc"
-      width="100%"
-      height="100%"
-      style="border: none; border-radius: 8px;">
-    </iframe>
-  </div>
+ <div style="height: calc(100% - 40px); overflow: hidden; background: #fff; margin: 0; padding: 0;">
+  <iframe
+    [src]="pdfSrc"
+    width="100%"
+    height="100%"
+    style="
+      border: none;
+      background: white;
+      margin: 0;
+      padding: 0;
+      display: block;
+    ">
+  </iframe>
+</div>
+
 
 </p-dialog>
 
