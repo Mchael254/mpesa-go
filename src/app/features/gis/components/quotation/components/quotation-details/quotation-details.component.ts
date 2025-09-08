@@ -22,7 +22,7 @@ import { IntermediaryService } from "../../../../../entities/services/intermedia
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { forkJoin, mergeMap } from 'rxjs';
-import { ProductDetails, ProductDTO, QuotationDetails, QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
+import { GroupedUser, ProductDetails, ProductDTO, QuotationDetails, QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
 import { ProductClauseDTO, Products } from '../../../setups/data/gisDTO';
 import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
 import { ClaimsService } from '../../../claim/services/claims.service';
@@ -195,7 +195,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   showProductColumnModal: boolean = false;
   columnModalPosition = { top: '0px', left: '0px' }
   columns: { field: string; header: string; visible: boolean }[] = [];
-
+  groupUsers: GroupedUser[] = [];
+  selectedGroupUserId!: number;
+  groupLeaderName: string = '';
 
   constructor(
     public bankService: BankService,
@@ -304,14 +306,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.updateCoverToDate(today);
       }
     });
- 
+
 
 
 
     this.loadPersistedClauses();
     this.getUsers();
     this.getAgents();
-    
+
   }
 
   ngAfterViewInit() {
@@ -393,9 +395,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             this.updateQuotationExpiryDate(initialValue)
           }
           else if (field.name === 'multiUserEntry') {
-    initialValue = savedValue || 'N'; 
-  }
-          
+            initialValue = savedValue || 'N';
+          }
+
           else {
             initialValue = savedValue || '';
           }
@@ -416,10 +418,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             }
           });
 
-          if (field.name === 'multiUserEntry' ) {
+          if (field.name === 'multiUserEntry') {
             if (savedValue === 'Y') {
               this.handleMultiUserYes();
-            } else  {
+            } else {
               this.handleMultiUserNo();
             }
           }
@@ -551,7 +553,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         sortable: true
       }));
 
-    this.productClauseColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false});
+    this.productClauseColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false });
 
     const saved = sessionStorage.getItem('productClauseColumns');
     if (saved) {
@@ -1508,27 +1510,27 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           }
         }
 
-       // PRODUCTS
-this.products = products;
+        // PRODUCTS
+        this.products = products;
 
-const storedProducts = sessionStorage.getItem('availableProducts');
-if (storedProducts) {
-  // Use saved products if they exist
-  this.ProductDescriptionArray = JSON.parse(storedProducts);
-} else {
-  // Fallback to API products
-  this.ProductDescriptionArray = this.products?.map(product => {
-    const description = this.capitalizeWord(product.description);
-    return {
-      code: product.code.toString(),
-      description,
-      filterText: `${product.code} ${description}`.toLowerCase()
-    };
-  });
+        const storedProducts = sessionStorage.getItem('availableProducts');
+        if (storedProducts) {
+          // Use saved products if they exist
+          this.ProductDescriptionArray = JSON.parse(storedProducts);
+        } else {
+          // Fallback to API products
+          this.ProductDescriptionArray = this.products?.map(product => {
+            const description = this.capitalizeWord(product.description);
+            return {
+              code: product.code.toString(),
+              description,
+              filterText: `${product.code} ${description}`.toLowerCase()
+            };
+          });
 
-  // Save initial list to sessionStorage
-  sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
-}
+          // Save initial list to sessionStorage
+          sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+        }
 
 
         console.log("✅ ProductDescriptionArray with filterText:", this.ProductDescriptionArray);
@@ -1681,88 +1683,88 @@ if (storedProducts) {
   // }
 
 
-submitAddProductForm() {
-  // Validate form
-  if (this.quotationProductForm.invalid) {
-    this.quotationProductForm.markAllAsTouched();
-    return;
-  }
-
-  // Get dates from form
-  const coverFromDate = new Date(this.quotationProductForm.get('wef')?.value);
-  const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
-
-  // Get selected product
-  const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
-  if (!selectedProduct) return;
-  const selectedProductCode = selectedProduct.code;
-  log.debug('Selected product CODE', selectedProductCode);
-
-  // Initialize productDetails array if null
-  if (!this.productDetails) {
-    this.productDetails = [];
-  }
-
-  // Check if product already exists
-  const alreadyExists = this.productDetails.some(
-    p => p.productCode.code === selectedProductCode
-  );
-  if (alreadyExists) {
-    this.globalMessagingService.displayErrorMessage('warning', 'This product has already been added');
-    return;
-  }
-
-  // Add new product with a NEW array reference (triggers table update)
-  this.productDetails = [
-    ...this.productDetails,
-    {
-      productCode: selectedProduct,
-      productName: selectedProduct.description,
-      coverFrom: coverFromDate,
-      coverTo: coverToDate
+  submitAddProductForm() {
+    // Validate form
+    if (this.quotationProductForm.invalid) {
+      this.quotationProductForm.markAllAsTouched();
+      return;
     }
-  ];
 
-  // Ensure productName exists and dates are correct
-  this.productDetails = this.productDetails.filter(p => p?.productCode?.description);
-  this.productDetails.forEach(product => {
-    product.coverFrom = new Date(product.coverFrom);
-    product.coverTo = new Date(product.coverTo);
-    if (!product.productName && product.productCode?.description) {
-      product.productName = product.productCode.description;
+    // Get dates from form
+    const coverFromDate = new Date(this.quotationProductForm.get('wef')?.value);
+    const coverToDate = new Date(this.quotationProductForm.get('wet')?.value);
+
+    // Get selected product
+    const selectedProduct = this.quotationProductForm.get('productCodes')?.value;
+    if (!selectedProduct) return;
+    const selectedProductCode = selectedProduct.code;
+    log.debug('Selected product CODE', selectedProductCode);
+
+    // Initialize productDetails array if null
+    if (!this.productDetails) {
+      this.productDetails = [];
     }
-  });
 
-  // Remove the selected product from dropdown options
-  this.ProductDescriptionArray = this.ProductDescriptionArray.filter(
-    (p: any) => p.code !== selectedProductCode
-  );
+    // Check if product already exists
+    const alreadyExists = this.productDetails.some(
+      p => p.productCode.code === selectedProductCode
+    );
+    if (alreadyExists) {
+      this.globalMessagingService.displayErrorMessage('warning', 'This product has already been added');
+      return;
+    }
 
-  // Save to sessionStorage
-  sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
-  log.debug("Saved Product Details to sessionStorage:", this.productDetails);
-  sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+    // Add new product with a NEW array reference (triggers table update)
+    this.productDetails = [
+      ...this.productDetails,
+      {
+        productCode: selectedProduct,
+        productName: selectedProduct.description,
+        coverFrom: coverFromDate,
+        coverTo: coverToDate
+      }
+    ];
 
-  // Reset form
-  this.quotationProductForm.reset({
-    productCodes: [],
-    wef: '',
-    wet: ''
-  });
+    // Ensure productName exists and dates are correct
+    this.productDetails = this.productDetails.filter(p => p?.productCode?.description);
+    this.productDetails.forEach(product => {
+      product.coverFrom = new Date(product.coverFrom);
+      product.coverTo = new Date(product.coverTo);
+      if (!product.productName && product.productCode?.description) {
+        product.productName = product.productCode.description;
+      }
+    });
 
-  // Optionally fetch product clauses
-  this.getProductClause({ code: selectedProductCode });
-  this.setColumnsFromProductDetails(this.productDetails[0]);
+    // Remove the selected product from dropdown options
+    this.ProductDescriptionArray = this.ProductDescriptionArray.filter(
+      (p: any) => p.code !== selectedProductCode
+    );
 
-  // Close modal automatically
-  const closeBtn = document.querySelector('.btn-close') as HTMLElement;
-  closeBtn?.click();
-  // ⚡ Force change detection so p-table updates immediately
-  this.cd.detectChanges();
+    // Save to sessionStorage
+    sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+    log.debug("Saved Product Details to sessionStorage:", this.productDetails);
+    sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
 
-  // Optionally show the table if it’s collapsed
-  this.showProducts = true;
-}
+    // Reset form
+    this.quotationProductForm.reset({
+      productCodes: [],
+      wef: '',
+      wet: ''
+    });
+
+    // Optionally fetch product clauses
+    this.getProductClause({ code: selectedProductCode });
+    this.setColumnsFromProductDetails(this.productDetails[0]);
+
+    // Close modal automatically
+    const closeBtn = document.querySelector('.btn-close') as HTMLElement;
+    closeBtn?.click();
+    // ⚡ Force change detection so p-table updates immediately
+    this.cd.detectChanges();
+
+    // Optionally show the table if it’s collapsed
+    this.showProducts = true;
+  }
 
 
 
@@ -1784,20 +1786,20 @@ submitAddProductForm() {
     this.getProductClause(product.productCode);
   }
   onProductSelected(selectedProduct: any) {
-  if (!selectedProduct) return;
+    if (!selectedProduct) return;
 
 
-  const today = new Date();
-  const nextYear = new Date(today);
-  nextYear.setFullYear(today.getFullYear() + 1);
+    const today = new Date();
+    const nextYear = new Date(today);
+    nextYear.setFullYear(today.getFullYear() + 1);
 
-  this.quotationProductForm.patchValue({
-    wef: today,   
-    wet: nextYear 
-  });
+    this.quotationProductForm.patchValue({
+      wef: today,
+      wet: nextYear
+    });
 
-  
-}
+
+  }
 
 
 
@@ -1825,12 +1827,12 @@ submitAddProductForm() {
 
   deleteProduct() {
     if (!this.productToDelete) return;
-  
+
 
     this.productDetails = this.productDetails.filter(
       p => p.productCode.code !== this.productToDelete.productCode.code
     );
-    
+
     sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
 
     //remove related clauses from allClausesMap
@@ -1840,13 +1842,13 @@ submitAddProductForm() {
 
 
     // Restore deleted product to dropdown
-  this.ProductDescriptionArray.push({
-    code: this.productToDelete.productCode.code,
-    description: this.productToDelete.productCode.description
-  });
+    this.ProductDescriptionArray.push({
+      code: this.productToDelete.productCode.code,
+      description: this.productToDelete.productCode.description
+    });
 
-  // Persist the updated dropdown list again
-sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+    // Persist the updated dropdown list again
+    sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
 
 
     if (this.productCode === this.productToDelete.productCode.code) {
@@ -1863,8 +1865,8 @@ sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescripti
       }
     }
     if (!this.productDetails.length) {
-    this.columns = [];
-  }
+      this.columns = [];
+    }
 
     this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
 
@@ -1999,6 +2001,7 @@ sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescripti
       log.debug("Selected user>>>", this.selectedUser);
       this.globalSearch = this.selectedUser.id;
       this.fullNameSearch = this.selectedUser.name;
+      this.fetchGroupedUserDetails(this.selectedUser)
     }
 
   }
@@ -2115,8 +2118,8 @@ sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescripti
   }
 
   toggleProducts(iconElement: HTMLElement): void {
-    this.showProducts=true;
-    
+    this.showProducts = true;
+
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
@@ -2132,26 +2135,26 @@ sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescripti
   }
 
 
-    setColumnsFromProductDetails(sample: ProductDetails) {
-      const defaultVisibleFields = [
-        'coverFrom',
-        'coverTo',
-        'productName'
-        
-      ];
-      const excludedFields = []; 
-  
-      this.columns = Object.keys(sample)
-        .filter((key) => !excludedFields.includes(key))
-        .map((key) => ({
-          field: key,
-          header: this.sentenceCase(key),
-          visible: defaultVisibleFields.includes(key),
-        }));
-  
-      // manually add actions column
-      this.columns.push({ field: 'actions', header: 'Actions', visible: true,  });
-    }
+  setColumnsFromProductDetails(sample: ProductDetails) {
+    const defaultVisibleFields = [
+      'coverFrom',
+      'coverTo',
+      'productName'
+
+    ];
+    const excludedFields = [];
+
+    this.columns = Object.keys(sample)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: defaultVisibleFields.includes(key),
+      }));
+
+    // manually add actions column
+    this.columns.push({ field: 'actions', header: 'Actions', visible: true, });
+  }
 
 
 
@@ -2185,7 +2188,24 @@ sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescripti
     return value ?? '';
   }
 
+  fetchGroupedUserDetails(selectedUser: any) {
+    const groupedUserId = selectedUser.id;
+    this.quotationService.getGroupedUserDetails(groupedUserId)
+      .subscribe({
+        next: (res: GroupedUser[]) => {
+          this.groupUsers = res;
 
-
+          // Find the team leader
+          const groupLeader = res.find(user => user.isTeamLeader === "Y");
+          if (groupLeader) {
+            this.selectedGroupUserId = groupLeader.id; // auto-select in dropdown
+            this.groupLeaderName = groupLeader.userDetails.name;
+          }
+        },
+        error: (error) => {
+          console.error("Error fetching group users", error);
+        }
+      });
+  }
 
 }
