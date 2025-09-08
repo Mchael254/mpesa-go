@@ -1,5 +1,5 @@
-import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { ShareQuoteDTO } from '../../data/quotationsDTO';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { QuotationReportDto, ShareQuoteDTO } from '../../data/quotationsDTO';
 import { Logger } from "../../../../../../shared/services";
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { EmailDto } from 'src/app/shared/data/common/email-dto';
@@ -26,7 +26,10 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
 
   display = true;
   @Output() downloadRequested = new EventEmitter<void>();
+  @Output() previewRequested = new EventEmitter<void>();
   @Output() sendEvent = new EventEmitter<{ mode: ShareQuoteDTO }>();
+  @Input() previewVisible!: boolean;
+  @Input() pdfSrc!: any;
 
   @ViewChild('closeButton') closeButton: ElementRef;
 
@@ -109,4 +112,10 @@ shareMethods: { label: string; value: ShareMethod; disabled: boolean; tooltip?: 
     })
 
   }
+
+ onPreview() {
+   this.previewRequested.emit();
+  
+}
+
 }
