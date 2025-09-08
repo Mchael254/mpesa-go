@@ -29,7 +29,7 @@ import { ExternalClaimExp } from '../../../policy/data/policy-dto';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { UtilService } from '../../../../../../shared/services';
 import { map } from "rxjs/operators";
-import { QuotationsDTO, riskClause, riskPeril } from 'src/app/features/gis/data/quotations-dto';
+import { QuotationsDTO, riskClause, riskPeril, UpdatePremiumDto } from 'src/app/features/gis/data/quotations-dto';
 import { ComputationPayloadDto, PremiumComputationRequest, ProductLevelPremium } from "../../data/premium-computation";
 import { QuotationDetailsRequestDto } from "../../data/quotation-details";
 import { EmailDto } from "../../../../../../shared/data/common/email-dto";
@@ -890,6 +890,15 @@ export class QuotationsService {
     const params = new HttpParams({ fromObject: paramsObj });
     return this.api.GET(`v2/quotation/convert-to-normal-quot?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
+
+  updateQuotePremium(quotationCode: number, payload: UpdatePremiumDto) {
+  return this.api.POST(
+    `v2/quotation/update-premium/${quotationCode}`,
+    payload,
+    API_CONFIG.GIS_QUOTATION_BASE_URL
+  );
+}
+
 
   updateQuotationDetails(user: string, quotationCode: number, quotationNumber: string, data: quotationDTO) {
     return this.api.PUT(`v1/quotation?user=${user}&quotationCode=${quotationCode}&quotationNumber=${quotationNumber}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
