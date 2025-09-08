@@ -657,6 +657,12 @@ export interface acknowledgementSlipDTO {
 
 
 
+export interface SharePreviewDataDTO {
+  shareType: string;
+  recipientEmail: string | null;
+  recipientPhone: string | null;
+  clientName: string;
+}
  
 
 

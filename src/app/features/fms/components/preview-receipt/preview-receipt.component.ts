@@ -1,21 +1,17 @@
-
 import { Component } from '@angular/core';
-
 import { ReportService } from 'src/app/features/reports/services/report.service';
 import { ReportsDto } from 'src/app/shared/data/common/reports-dto';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-
-
 import { ReceiptService } from '../../services/receipt.service';
-import {OrganizationDTO} from '../../../../features/crm/data/organization-dto';
-import { GlobalMessagingService} from '../../../../shared/services/messaging/global-messaging.service';
-
-import {ReportsService} from '../../../../shared/services/reports/reports.service';
-
-import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
+import { OrganizationDTO } from '../../../../features/crm/data/organization-dto';
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
+import { ReportsService } from '../../../../shared/services/reports/reports.service';
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { ReceiptManagementService } from '../../services/receipt-management.service';
-
+import { ReceiptDataService } from '../../services/receipt-data.service';
+import { SharePreviewDataDTO } from '../../data/receipting-dto';
+import { YesNo } from '../shared/yes-no.component';
 @Component({
   selector: 'app-preview-receipt',
   templateUrl: './preview-receipt.component.html',
@@ -32,7 +28,8 @@ export class PreviewReceiptComponent {
   shareMethod: string;
   recipient: string;
   selectedOrg: OrganizationDTO;
-  printStatus: 'Y' | 'N';
+  printStatus: YesNo;
+  receiptingScreen: YesNo;
   /**
    * @property {OrganizationDTO} defaultOrg - The default organization.
    */
@@ -43,6 +40,8 @@ export class PreviewReceiptComponent {
    */
   filePath: string = '';
   // A local flag to prevent revoking URL too early
+  //  a property to hold the structured share data
+  shareData: SharePreviewDataDTO | null = null;
   private isNavigating = false;
   constructor(
     private sessionStorage: SessionStorageService,
@@ -51,14 +50,14 @@ export class PreviewReceiptComponent {
     private router: Router,
     private translate: TranslateService,
     private receiptService: ReceiptService,
-    private receiptManagementService: ReceiptManagementService
+    private receiptManagementService: ReceiptManagementService,
+    private receiptDataService: ReceiptDataService
   ) {}
   ngOnInit() {
     let storedDefaultOrg = this.sessionStorage.getItem('selectedOrg');
     let storedSelectedOrg = this.sessionStorage.getItem('defaultOrg');
     this.selectedOrg = storedSelectedOrg ? JSON.parse(storedSelectedOrg) : null;
     this.defaultOrg = storedDefaultOrg ? JSON.parse(storedDefaultOrg) : null;
-
     // Ensure only one organization is active at a time
     if (this.selectedOrg) {
       this.defaultOrg = null;
@@ -66,10 +65,8 @@ export class PreviewReceiptComponent {
       this.selectedOrg = null;
     }
     this.receiptNo = Number(this.sessionStorage.getItem('receiptNo'));
-
     const agent_code = this.sessionStorage.getItem('agentCode');
     this.agentCode = Number(agent_code) || null;
-
     const account_code = this.sessionStorage.getItem('accountCode');
     this.accountCode = Number(account_code);
     if (this.agentCode) {
@@ -79,11 +76,14 @@ export class PreviewReceiptComponent {
       this.code = this.accountCode;
       this.agentCode = null;
     }
-    this.recipient = this.sessionStorage.getItem('recipient');
-
-    this.shareMethod = this.sessionStorage.getItem('shareType');
-    this.printStatus = this.sessionStorage.getItem('printed') as 'Y' | 'N';
-    
+    // --- START: NEW WAY TO GET SHARE DATA ---
+    const storedShareData = this.sessionStorage.getItem('sharePreviewData');
+    if (storedShareData) {
+      this.shareData = JSON.parse(storedShareData);
+    }
+    // --- END:
+    this.printStatus = this.sessionStorage.getItem('printed') as YesNo;
+    this.receiptingScreen = this.sessionStorage.getItem('receipting') as YesNo;
     this.getReceiptToPrint();
   }
   /**
@@ -122,7 +122,6 @@ export class PreviewReceiptComponent {
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
-
         const backendError =
           err.error?.msg ||
           err.error?.error ||
@@ -142,13 +141,11 @@ export class PreviewReceiptComponent {
   private navigateBackToPrintTab() {
     this.isNavigating = true;
     this.sessionStorage.setItem('printTabStatus', JSON.stringify(true));
-     this.sessionStorage.removeItem('receiptNumber');
-      this.sessionStorage.removeItem('reprinted');
-      this.sessionStorage.removeItem('shareType');
-      this.sessionStorage.removeItem('recipient');
-      this.sessionStorage.removeItem('printStatus');
+    this.sessionStorage.removeItem('receiptNumber');
+    this.sessionStorage.removeItem('reprinted');
+    this.sessionStorage.removeItem('sharePreviewData');
+    this.sessionStorage.removeItem('printStatus');
     this.router.navigate(['/home/fms/receipt-management']);
-   
   }
   // Handles API error navigation
   private handleNavigationError(customError?: string) {
@@ -172,10 +169,12 @@ export class PreviewReceiptComponent {
   }
   postClientDetails() {
     const body = {
-      shareType: this.shareMethod,
-      recipient: this.recipient,
+      shareType: this.shareData.shareType,
+      recipientEmail: this.shareData.recipientEmail,
+      recipientPhone: this.shareData.recipientPhone,
       receiptNumber: String(this.receiptNo),
       orgCode: String(this.defaultOrg?.id || this.selectedOrg?.id),
+      clientName: this.shareData.clientName,
     };
 
     this.receiptManagementService.shareReceipt(body).subscribe({
@@ -184,11 +183,14 @@ export class PreviewReceiptComponent {
           'success',
           response.msg
         );
-        if (this.printStatus === 'N') {
-         
- this.updatePrintStatus();
+        if (this.printStatus === 'N' || this.receiptingScreen === 'Y') {
+          this.updatePrintStatus();
         }
-        this.navigateToReceiptManagement();
+        if (this.receiptingScreen === 'N') {
+          this.navigateToReceiptManagement();
+        } else if (this.receiptingScreen === 'Y') {
+          this.navigateToReceiptCapture();
+        }
       },
       error: (err) => {
         const customMessage = this.translate.instant('fms.errorMessage');
@@ -216,16 +218,12 @@ export class PreviewReceiptComponent {
     const payload: number[] = [this.receiptNo];
     this.receiptService.updateReceiptStatus(payload).subscribe({
       next: (response) => {
-        // this.globalMessagingService.displaySuccessMessage(
-        //   '',
-        //   response?.msg || response?.error || response?.status
-        // );
-         // On success, set the flag and navigate
+        this.globalMessagingService.displaySuccessMessage(
+          '',
+          response?.msg || response?.error || response?.status
+        );
+        // On success, set the flag and navigate
         //this.navigateBackToPrintTab();
-
-
-
-
       },
 
       error: (err) => {
@@ -243,5 +241,25 @@ export class PreviewReceiptComponent {
         //this.navigateBackToPrintTab();
       },
     });
+  }
+  checkActiveScreen(): void {
+    if (this.receiptingScreen === 'N') {
+      this.navigateToReceiptManagement();
+    } else if (this.receiptingScreen === 'Y') {
+      this.navigateToReceiptCapture();
+    }
+  }
+  navigateToReceiptCapture() {
+    this.sessionStorage.removeItem('receiptNumber');
+    this.sessionStorage.removeItem('shareType');
+    this.sessionStorage.removeItem('recipient');
+    this.sessionStorage.removeItem('receiptCode');
+    this.sessionStorage.removeItem('branchReceiptNumber');
+    this.sessionStorage.removeItem('receiptingPoint');
+    this.sessionStorage.removeItem('globalBankAccount');
+    this.sessionStorage.removeItem('globalBankType');
+    this.receiptDataService.clearReceiptData();
+    this.receiptDataService.clearFormState();
+    this.router.navigate(['/home/fms/receipt-capture']);
   }
 }

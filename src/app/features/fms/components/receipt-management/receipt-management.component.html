@@ -516,20 +516,22 @@
           </p-table>
         </div>
       </div>
-      <!-- end of print table data -->
+    </form>
+    <!-- end of print table data -->
 
-      <!-- receipt sharing  Modal -->
-      <div
-        class="modal fade"
-        id="shareReceiptModal"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        tabindex="-1"
-        aria-labelledby="staticBackdropLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
+    <!-- receipt sharing  Modal -->
+    <div
+      class="modal fade"
+      id="shareReceiptModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+      aria-labelledby="staticBackdropLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <form [formGroup]="rctShareForm">
             <div class="modal-header">
               <h5 class="modal-title" id="staticBackdropLabel">
                 {{ "fms.receipt-management.shareReceipt" | translate }}
@@ -595,7 +597,7 @@
               </div>
               <div
                 class="row"
-                *ngIf="cancelForm.get('shareMethod')?.value === 'whatsapp'"
+                *ngIf="rctShareForm.get('shareMethod')?.value === 'whatsapp'"
               >
                 <div class="col">
                   <label for="phone" style="color: #000">{{
@@ -606,12 +608,34 @@
                     class="form-control"
                     id="phone"
                     formControlName="phone"
+                    placeholder="e.g., 254712345678"
                   />
+                  <!-- START: error message block -->
+                  <div
+                    *ngIf="
+                      rctShareForm.get('phone')?.invalid &&
+                      (rctShareForm.get('phone')?.dirty ||
+                        rctShareForm.get('phone')?.touched)
+                    "
+                    class="text-danger mt-1"
+                    style="font-size: 0.8rem"
+                  >
+                    <div
+                      *ngIf="rctShareForm.get('phone')?.errors?.['required']"
+                    >
+                      Phone number is required.
+                    </div>
+                    <div *ngIf="rctShareForm.get('phone')?.errors?.['pattern']">
+                      Invalid format. Must be xxx followed by 9 digits (e.g.,
+                      254712345678).
+                    </div>
+                  </div>
+                  <!-- END:  error message block -->
                 </div>
               </div>
               <div
                 class="row"
-                *ngIf="cancelForm.get('shareMethod')?.value === 'email'"
+                *ngIf="rctShareForm.get('shareMethod')?.value === 'email'"
               >
                 <div class="col">
                   <label for="email" style="color: #000">{{
@@ -641,9 +665,9 @@
                 {{ "fms.receipt-management.send" | translate }}
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
-    </form>
+    </div>
   </div>
 </div>
