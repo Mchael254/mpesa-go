@@ -219,21 +219,27 @@
   margin: 0 !important;
   padding: 0.5rem 1rem !important;
 }
+
 ::ng-deep .custom-pdf-modal .p-dialog-content {
-  padding: 0 !important; /* Remove inner padding */
-  background: transparent !important; /* Remove dark background */
-  box-shadow: none !important; /* Remove shadow if visible */
+  padding: 0 !important;
+  /* Remove inner padding */
+  background: transparent !important;
+  /* Remove dark background */
+  box-shadow: none !important;
+  /* Remove shadow if visible */
 }
 
 ::ng-deep .custom-pdf-modal .p-dialog-header {
   background: white !important;
   color: #00529b !important;
   padding: 0.5rem 1rem !important;
-  
+
 }
+
 ::ng-deep .custom-pdf-modal .p-dialog-header-icon {
-  color: red !important; 
+  color: red !important;
 }
+
 :host ::ng-deep .p-dialog-mask {
   background: rgba(0, 0, 0, 0) !important;
 }
@@ -257,5 +263,9 @@
 }
 
 :host ::ng-deep .pdfViewer {
+  background: white !important;
+}
+
+iframe {
   background: white !important;
 }

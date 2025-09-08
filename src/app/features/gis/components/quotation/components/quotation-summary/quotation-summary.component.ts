@@ -21,6 +21,7 @@ import { Logger, UtilService } from "../../../../../../shared/services";
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import {
+  GroupedUser,
   LimitsOfLiability,
   ProductClauses,
   ProductDetails,
@@ -61,6 +62,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('closebutton') closebutton;
   @ViewChild('dt') table!: Table;
+  @ViewChild('reassignTable') reassignTable!: any;
   @ViewChild('closeReassignButton') closeReassignButton: ElementRef;
   @ViewChild('reassignQuotationModal') reassignQuotationModalElement!: ElementRef;
   @ViewChild('rejectQuotationModal') rejectQuotationModalElement!: ElementRef;
@@ -154,7 +156,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   taxForm: FormGroup;
   showTaxModal = false;
   reassignComment: string = ''
-  users: any[] = [];
+  users: any;
   selectedUser: any;
   fullNameSearch: string = '';
   globalSearch: string = '';
@@ -175,7 +177,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   noComment: boolean = false;
   afterRejectQuote: boolean = false;
   productClauses: ProductClauses[] = [];
-  activeRiskTab: string = 'sections';
+  activeRiskDetailsTab: string = 'sections';
+  activeRiskTab: string = '';
   products: any[] = [];
   activeScheduleTab: string = '';
   scheduleLevels: string[] = [];
@@ -189,31 +192,35 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   selectAll = false;
   comments: any;
   showProducts: boolean = true;
-  showProductColumnModal: boolean=false;
+  showProductColumnModal: boolean = false;
   columnModalPosition = { top: '0px', left: '0px' }
   columns: { field: string; header: string; visible: boolean }[] = [];
   showClauses: boolean = true;
-  showClausesColumnModal: boolean=false;
-  showTaxesColumnModal: boolean=false;
-  showRiskColumnModal: boolean=false;
-  showSectionColumnModal: boolean=false;
-  showRiskClauseColumnModal:boolean=false;
-  showScheduleColumnModal:boolean=false;
-  showPerilColumnModal:boolean=false;
-  showExcessColumnModal:boolean=false;
-  showLimitsOfLiabilityColumnModal:boolean=false;
+  showClausesColumnModal: boolean = false;
+  showTaxesColumnModal: boolean = false;
+  showRiskColumnModal: boolean = false;
+  showSectionColumnModal: boolean = false;
+  showRiskClauseColumnModal: boolean = false;
+  showScheduleColumnModal: boolean = false;
+  showPerilColumnModal: boolean = false;
+  showExcessColumnModal: boolean = false;
+  showLimitsOfLiabilityColumnModal: boolean = false;
 
   clausesColumns: { field: string; header: string; visible: boolean }[] = [];
   taxesColumns: { field: string; header: string; visible: boolean }[] = [];
   riskColumns: { field: string; header: string; visible: boolean }[] = [];
   sectionColumns: { field: string; header: string; visible: boolean }[] = [];
-  riskClausesColumns:{ field: string; header: string; visible: boolean }[] = [];
+  riskClausesColumns: { field: string; header: string; visible: boolean }[] = [];
   scheduleColumns: { field: string; header: string; visible: boolean }[] = [];
   perilColumns: { field: string; header: string; visible: boolean }[] = [];
   excessColumns: { field: string; header: string; visible: boolean }[] = [];
   limitsColumns: { field: string; header: string; visible: boolean }[] = [];
   summaryPerils: any[] = [];
-  
+  departmentSelected: boolean = false;
+  groupUsers: GroupedUser[] = [];
+  selectedGroupUserId!: number;
+  groupLeaderName: string = '';
+
 
   constructor(
     public quotationService: QuotationsService,
@@ -265,7 +272,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.conversionFlagString = sessionStorage.getItem("conversionFlag");
     this.conversionFlag = JSON.parse(this.conversionFlagString);
     log.debug("conversion flag:", this.conversionFlag);
-    
+
 
     if (this.conversionFlag) {
       this.globalMessagingService.displaySuccessMessage('Success', 'Conversion completed succesfully');
@@ -310,8 +317,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.quotationCode && this.getQuotationDetails(this.quotationCode);
     this.getuser();
     this.getRiskDetails();
-    
+
     this.loadSummaryPerils()
+    this.getUsers();
 
 
     // this.createInsurersForm();
@@ -361,13 +369,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       });
     }
 
-    log.debug('tax details', this.taxDetails)
 
     log.debug('QuotationView', this.quotationView)
     log.debug('quotationDetails', this.quotationDetails)
     // log.debug('quotationDetailsm', this.getQuotationDetails(this.productSubclass))
 
-    
+
 
 
   }
@@ -473,7 +480,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         log.debug("Risk Details quotation-summary", this.riskDetails);
         log.debug('quoationProducts', this.quotationProducts)
 
-        if (this.riskDetails.length>0){
+        if (this.riskDetails.length > 0) {
           this.setColumnsFromRiskDetails(this.riskDetails[0])
         }
 
@@ -488,12 +495,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
         this.productDetails = this.quotationView.quotationProducts
         log.debug('product details', this.productDetails)
-         if(this.productDetails.length>0)
-    {
-    this.setColumnsFromProductDetails(this.productDetails[0]);
-    }
-    
-   
+        if (this.productDetails.length > 0) {
+          this.setColumnsFromProductDetails(this.productDetails[0]);
+        }
+
+
 
         // this.getbranch();
         // this.getPremiumComputationDetails();
@@ -531,88 +537,79 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         });
         this.handleProductClick(this.quotationView.quotationProducts[0])
 
-      const Product1 = this.quotationDetails.quotationProducts[0];
-      log.debug('Product1', Product1);
+        const Product1 = this.quotationDetails.quotationProducts[0];
+        log.debug('Product1', Product1);
 
-if (Product1) {
-  this.taxDetails = Product1.taxInformation;
-  this.productClauses = Product1.productClauses;
-    if(this.taxDetails.length>0){
-  this.setColumnsFromTaxesDetails(this.taxDetails[0])
-    
-     }
-
-  log.debug('taxDetais', this.taxDetails);
-  log.debug('productClauses', this.productClauses);
-  if(this.productClauses.length){
-     this.setColumnsFromClausesDetails(this.productClauses[0])
-     }
-
-  const risk1 = Product1.riskInformation[0];
-  log.debug('risk1', risk1);
-
-  
-  this.sections = risk1.sectionsDetails || [];
-  log.debug('sections', this.sections);
-
-  if (this.sections.length>0){
-    this.setColumnsFromSectionDetails(this.sections[0])
-  }
-
-  
-  const scheduleArray = risk1.scheduleDetails || [];
-  const firstSchedule = scheduleArray[0] || {};
-  const details = firstSchedule.details || {};
-
-  this.availableScheduleLevels = Object.keys(details);  
-  this.schedulesData = {};
-  this.availableScheduleLevels.forEach(level => {
-    const levelData = details[level];
-    this.schedulesData[level] = levelData ? [levelData] : [];
-  });
-
-  this.activeScheduleTab = this.availableScheduleLevels[0] || '';
-
-  log.debug('default schedule', this.schedulesData);
-
- 
-if (risk1.code) {
-  this.getRiskClauses(risk1.code); 
-} else {
-  log.debug('No code found in risk1');
-}
-
-}
+        if (Product1) {
+          this.taxDetails = Product1.taxInformation;
+          this.productClauses = Product1.productClauses;
 
 
-     log.debug('subclassCode: passed for excess', subclassCode);
-log.debug('quotationProductCode: passed for excess', quotationProductCode);
+          log.debug('taxDetais', this.taxDetails);
+          log.debug('productClauses', this.productClauses);
 
- this.getLimitsofLiability(subclassCode, quotationProductCode,'L');
- this.getLimitsofLiability(subclassCode,quotationProductCode,'E')
- const defaultRiskCode = this.riskDetails.length > 0 ? this.riskDetails[0].code : null;
- this.getExcesses(subclassCode);
+          const risk1 = Product1.riskInformation[0];
+          log.debug('risk1', risk1);
 
-  if (defaultRiskCode) {
-    this.getSections(defaultRiskCode);
-  }
+
+          this.sections = risk1.sectionsDetails || [];
+          log.debug('sections', this.sections);
+
+
+
+          const scheduleArray = risk1.scheduleDetails || [];
+          const firstSchedule = scheduleArray[0] || {};
+          const details = firstSchedule.details || {};
+
+          this.availableScheduleLevels = Object.keys(details);
+          this.schedulesData = {};
+          this.availableScheduleLevels.forEach(level => {
+            const levelData = details[level];
+            this.schedulesData[level] = levelData ? [levelData] : [];
+          });
+
+          this.activeScheduleTab = this.availableScheduleLevels[0] || '';
+
+          log.debug('default schedule', this.schedulesData);
+
+
+          if (risk1.code) {
+            this.getRiskClauses(risk1.code);
+          } else {
+            log.debug('No code found in risk1');
+          }
+
+        }
+
+
+        log.debug('subclassCode: passed for excess', subclassCode);
+        log.debug('quotationProductCode: passed for excess', quotationProductCode);
+
+        this.getLimitsofLiability(subclassCode, quotationProductCode, 'L');
+        this.getLimitsofLiability(subclassCode, quotationProductCode, 'E')
+        const defaultRiskCode = this.riskDetails.length > 0 ? this.riskDetails[0].code : null;
+        this.getExcesses(subclassCode);
+
+        if (defaultRiskCode) {
+          this.getSections(defaultRiskCode);
+        }
 
       });
 
 
   }
   getRiskDetails() {
-  const currentProduct = this.products.find(p => p.code === this.activeRiskTab);
-  const riskDetails = currentProduct?.riskInformation || [];
-  
-  this.riskDetails = riskDetails; 
+    const currentProduct = this.products.find(p => p.code === this.activeRiskTab);
+    const riskDetails = currentProduct?.riskInformation || [];
 
-  if (riskDetails.length > 0) {
-    this.setColumnsFromRiskDetails(riskDetails[0]);
-  } else {
-    this.columns = []; 
+    this.riskDetails = riskDetails;
+
+    if (riskDetails.length > 0) {
+      this.setColumnsFromRiskDetails(riskDetails[0]);
+    } else {
+      this.columns = [];
+    }
   }
-}
 
 
 
@@ -640,15 +637,15 @@ log.debug('quotationProductCode: passed for excess', quotationProductCode);
     )
   }
 
-getSections(data: any) {
-  this.riskDetails.forEach((el: { code: any; sectionsDetails: any; scheduleDetails:ScheduleDetails }) => {
-    if (data === el.code) {
-      this.sections = el.sectionsDetails;
-      const scheduleArray = el.scheduleDetails || [];
-      const firstSchedule = scheduleArray[0] || {};
-      const details = firstSchedule.details || {};
+  getSections(data: any) {
+    this.riskDetails.forEach((el: { code: any; sectionsDetails: any; scheduleDetails: ScheduleDetails }) => {
+      if (data === el.code) {
+        this.sections = el.sectionsDetails;
+        const scheduleArray = el.scheduleDetails || [];
+        const firstSchedule = scheduleArray[0] || {};
+        const details = firstSchedule.details || {};
 
-      this.availableScheduleLevels = Object.keys(details); // e.g., ['level1', 'level2']
+        this.availableScheduleLevels = Object.keys(details); // e.g., ['level1', 'level2']
 
         this.schedulesData = {};
         this.availableScheduleLevels.forEach(level => {
@@ -660,13 +657,16 @@ getSections(data: any) {
       }
     });
 
-     if (this.availableScheduleLevels.length > 0) {
-    this.activeScheduleTab = this.availableScheduleLevels[0];
+    if (this.availableScheduleLevels.length > 0) {
+      this.activeScheduleTab = this.availableScheduleLevels[0];
 
-    if (this.getCurrentSchedule().length > 0) {
-      this.setColumnsFromScheduleDetails(this.getCurrentSchedule()[0]);
+      if (this.getCurrentSchedule().length > 0) {
+        this.setColumnsFromScheduleDetails(this.getCurrentSchedule()[0]);
+      }
     }
-  }
+    if (this.sections.length > 0) {
+      this.setColumnsFromSectionDetails(this.sections[0])
+    }
 
     log.debug(this.schedulesData, 'schedulesData by level');
     log.debug(this.sections, 'section Details');
@@ -677,16 +677,16 @@ getSections(data: any) {
   }
 
   selectScheduleTab(tab: string) {
-  this.activeScheduleTab = tab;
-  console.log('Active tab:', tab);
-  console.log('Schedules for this tab:', this.getCurrentSchedule());
+    this.activeScheduleTab = tab;
+    console.log('Active tab:', tab);
+    console.log('Schedules for this tab:', this.getCurrentSchedule());
 
-  if (this.getCurrentSchedule().length > 0) {
-  const sampleSchedule = this.getCurrentSchedule()[0];
-  this.setColumnsFromScheduleDetails(sampleSchedule);
-}
+    if (this.getCurrentSchedule().length > 0) {
+      const sampleSchedule = this.getCurrentSchedule()[0];
+      this.setColumnsFromScheduleDetails(sampleSchedule);
+    }
 
-}
+  }
 
 
   /**
@@ -1071,7 +1071,7 @@ getSections(data: any) {
           this.excesses = res;
           this.excessesList = this.excesses._embedded ?? [];
 
-        
+
 
           log.debug("EXCESS LIST", this.excessesList);
           if (this.limits?.message) {
@@ -1105,8 +1105,8 @@ getSections(data: any) {
     this.getExcesses(subclassCode);
     this.getRiskClauses(data.code);
 
-//       log.debug('subclassCode: passed for excess', subclassCode);
-// log.debug('quotationProductCode: passed for excess', quotationProductCode);
+    //       log.debug('subclassCode: passed for excess', subclassCode);
+    // log.debug('quotationProductCode: passed for excess', quotationProductCode);
     this.getLimitsofLiability(subclassCode, quotationProductCode, 'L');
     this.getLimitsofLiability(subclassCode, quotationProductCode, 'E')
 
@@ -1135,6 +1135,10 @@ getSections(data: any) {
 
     if (matchingProduct) {
       this.taxDetails = matchingProduct.taxInformation;
+      if (this.taxDetails.length > 0) {
+        this.setColumnsFromTaxesDetails(this.taxDetails[0])
+
+      }
       log.debug("Tax Details:", this.taxDetails);
     } else {
       log.debug("No matching product found for the given code.");
@@ -1143,8 +1147,12 @@ getSections(data: any) {
     // this.getProductClause(proCode);
     this.productClauses = data.productClauses
     this.getProductSubclass(proCode);
-    this.fetchSimilarQuotes(quotationProductCode);
-    log.debug('productClauses', this.productClauses)
+    // this.fetchSimilarQuotes(quotationProductCode);
+    log.debug('productClauses -handle click', this.productClauses)
+    if (this.productClauses) {
+      this.setColumnsFromClausesDetails(this.productClauses[0])
+    }
+    this.handleRowClick(matchingProduct.riskInformation[0])
   }
 
   loadAllSubclass() {
@@ -1222,7 +1230,7 @@ getSections(data: any) {
           this.riskClauses = res;
           log.debug("RISK CLAUSES", this.riskClauses);
 
-          if(this.riskClauses.length){
+          if (this.riskClauses.length) {
             this.setColumnsFromRiskClausesDetails(this.riskClauses[0])
           }
         },
@@ -1944,7 +1952,6 @@ getSections(data: any) {
   openChooseClientReassignModal() {
     this.openModals('chooseClientReassign');
     this.closeReassignQuotationModal();
-    this.getUsers();
   }
 
   closeChooseClientReassignModal(): void {
@@ -1953,12 +1960,13 @@ getSections(data: any) {
   }
 
   getUsers() {
-    this.claimsService.getUsers().subscribe({
-      next: (res: any) => {
-        this.users = Array.isArray(res) ? res : (res.content || []);
+    this.claimsService.getUsers(0, 1000).subscribe({
+      next: (res => {
+        this.users = res;
+        this.users = this.users.content;
         log.debug('users>>>', this.users)
 
-      },
+      }),
       error: (error => {
         log.debug('error', error)
         this.globalMessagingService.displayErrorMessage('Error', 'failed to feth users')
@@ -1966,23 +1974,26 @@ getSections(data: any) {
     })
   }
 
+
   //search member to reassign
   filterGlobal(event: any): void {
     const value = event.target.value;
     this.globalSearch = value;
-    this.table.filterGlobal(value, 'contains');
+    this.reassignTable.filterGlobal(value, 'contains');
   }
+
 
   filterByFullName(event: any): void {
     const value = event.target.value;
-    this.table.filter(value, 'name', 'contains');
+    this.reassignTable.filter(value, 'name', 'contains');
   }
-
   onUserSelect(): void {
     if (this.selectedUser) {
       log.debug("Selected user>>>", this.selectedUser);
       this.globalSearch = this.selectedUser.id;
       this.fullNameSearch = this.selectedUser.name;
+      this.fetchGroupedUserDetails(this.selectedUser)
+
     }
   }
 
@@ -1991,7 +2002,6 @@ getSections(data: any) {
     this.globalSearch = '';
     this.fullNameSearch = '';
   }
-
   selectClient() {
     if (!this.selectedUser) {
       this.noUserChosen = true;
@@ -2002,12 +2012,31 @@ getSections(data: any) {
     }
 
     this.clientToReassignQuotation = this.selectedUser.name;
+    if (this.selectedUser.userType == "G") {
+      this.departmentSelected = true
+    }
     this.closeChooseClientReassignModal();
     this.openReassignQuotationModal();
 
   }
 
+  // selectClient() {
+  //   if (!this.selectedUser) {
+  //     this.noUserChosen = true;
+  //     setTimeout(() => {
+  //       this.noUserChosen = false
+  //     }, 3000);
+  //     return;
+  //   }
+
+  //   this.clientToReassignQuotation = this.selectedUser.name;
+  //   this.closeChooseClientReassignModal();
+  //   this.openReassignQuotationModal();
+
+  // }
+
   //reassign quotation
+
   reassignQuotation() {
     if (!this.clientToReassignQuotation) {
       this.noUserChosen = true;
@@ -2143,9 +2172,9 @@ getSections(data: any) {
             this.comments = res._embedded
 
 
-             if (this.excesses.length){
-            this.setColumnsFromExcessDetails(this.excesses[0])
-          }
+            if (this.excesses.length) {
+              this.setColumnsFromExcessDetails(this.excesses[0])
+            }
           }
 
         },
@@ -2297,8 +2326,8 @@ getSections(data: any) {
   }
 
   toggleProducts(iconElement: HTMLElement): void {
-     this.showProducts = true;
-     
+    this.showProducts = true;
+
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
@@ -2312,9 +2341,9 @@ getSections(data: any) {
 
     this.showProductColumnModal = true;
   }
-    toggleClauses(iconElement: HTMLElement): void {
-     this.showClauses = true;
-     
+  toggleClauses(iconElement: HTMLElement): void {
+    this.showClauses = true;
+
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
@@ -2328,9 +2357,9 @@ getSections(data: any) {
 
     this.showClausesColumnModal = true;
   }
-   toggleTaxes(iconElement: HTMLElement): void {
-    
-     
+  toggleTaxes(iconElement: HTMLElement): void {
+
+
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
@@ -2344,9 +2373,9 @@ getSections(data: any) {
 
     this.showTaxesColumnModal = true;
   }
-toggleRisk(iconElement: HTMLElement): void {
-    
-     
+  toggleRisk(iconElement: HTMLElement): void {
+
+
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
@@ -2361,8 +2390,8 @@ toggleRisk(iconElement: HTMLElement): void {
     this.showRiskColumnModal = true;
   }
   toggleSection(iconElement: HTMLElement): void {
-    
-     
+
+
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
@@ -2378,8 +2407,8 @@ toggleRisk(iconElement: HTMLElement): void {
   }
 
   toggleRiskClauses(iconElement: HTMLElement): void {
-    
-     
+
+
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
@@ -2394,9 +2423,9 @@ toggleRisk(iconElement: HTMLElement): void {
     this.showRiskClauseColumnModal = true;
   }
 
-   toggleSchedule(iconElement: HTMLElement): void {
-    
-     
+  toggleSchedule(iconElement: HTMLElement): void {
+
+
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
@@ -2411,8 +2440,8 @@ toggleRisk(iconElement: HTMLElement): void {
     this.showScheduleColumnModal = true;
   }
   togglePeril(iconElement: HTMLElement): void {
-    
-     
+
+
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
@@ -2427,8 +2456,8 @@ toggleRisk(iconElement: HTMLElement): void {
     this.showPerilColumnModal = true;
   }
   toggleExcess(iconElement: HTMLElement): void {
-    
-     
+
+
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
@@ -2443,9 +2472,9 @@ toggleRisk(iconElement: HTMLElement): void {
     this.showExcessColumnModal = true;
   }
 
-   toggleLimitsOfLiability(iconElement: HTMLElement): void {
-    
-     
+  toggleLimitsOfLiability(iconElement: HTMLElement): void {
+
+
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
@@ -2461,76 +2490,99 @@ toggleRisk(iconElement: HTMLElement): void {
   }
 
   setColumnsFromProductDetails(sample: ProductDetails) {
-  const defaultVisibleFields = [
-    'productName',
-    'wet',
-    'wef',
-    'premium',
-    'commission'
-  ];
-  
-  const excludedFields = [
-    'productClauses',
-    'taxInformation',
-    'riskInformation',
-    
-    'limitsOfLiability'
-    
-  
-    
-    
-   
-  ]; 
+    const defaultVisibleFields = [
+      'productName',
+      'wet',
+      'wef',
+      'premium',
+      'commission'
+    ];
 
-  
-  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+    const excludedFields = [
+      'productClauses',
+      'taxInformation',
+      'riskInformation',
 
-  
-  keys = keys.sort((a, b) => {
-    if (a === 'productName') return -1;
-    if (b === 'productName') return 1;
-    return 0;
-  });
+      'limitsOfLiability'
 
 
-  this.columns = keys.map(key => ({
-    field: key,
-    header: this.sentenceCase(key),
-    visible: defaultVisibleFields.includes(key),
-  }));
-}
-  
+
+
+
+    ];
+
+
+    let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+
+    keys = keys.sort((a, b) => {
+      if (a === 'productName') return -1;
+      if (b === 'productName') return 1;
+      return 0;
+    });
+
+
+    this.columns = keys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleFields.includes(key),
+    }));
+  }
+
+  // setColumnsFromClausesDetails(sample: ProductClauses) {
+  //   log.debug("SET COLUMN FOR PRODUCT CLAUSES", sample)
+  //   const defaultVisibleFields = [
+  //     'clauseShortDescription',
+  //     'clauseHeading',
+  //     'clause',
+
+  //   ];
+  //   const excludedFields = [];
+
+  //   this.clausesColumns = Object.keys(sample)
+  //     .filter((key) => !excludedFields.includes(key))
+  //     .map((key) => ({
+  //       field: key,
+  //       header: this.sentenceCase(key),
+  //       visible: defaultVisibleFields.includes(key),
+  //     }));
+
+
+  // }
 
 
   setColumnsFromClausesDetails(sample: ProductClauses) {
-  const defaultVisibleFields = [
-    'clauseShortDescription',
-    'clauseHeading',
-    'clause',
-    
-  ];
-  
-  const excludedFields = [
-    
-  ]; 
+    log.debug("SET COLUMN FOR PRODUCT CLAUSES");
 
-  
-  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+    const defaultVisibleFields = [
+      'clauseShortDescription',
+      'clauseHeading',
+      'clause',
+    ];
 
-  
-  keys = keys.sort((a, b) => {
-    if (a === 'productName') return -1;
-    if (b === 'productName') return 1;
-    return 0;
-  });
+    const excludedFields: string[] = [];
 
+    // All keys from the sample
+    const keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
 
-  this.clausesColumns = keys.map(key => ({
-    field: key,
-    header: this.sentenceCase(key),
-    visible: defaultVisibleFields.includes(key),
-  }));
-}
+    // Separate default fields and the rest
+    const defaultFields = defaultVisibleFields.filter(f => keys.includes(f));
+    const otherFields = keys.filter(k => !defaultVisibleFields.includes(k));
+
+    // Strictly order = defaults first, then others
+    const orderedKeys = [...defaultFields, ...otherFields];
+
+    this.clausesColumns = orderedKeys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleFields.includes(key),
+      truncate: defaultVisibleFields.includes(key), // only these get truncated
+    }));
+
+    log.debug("clause columns", this.clausesColumns);
+    log.debug("product clauses clause columns:", this.productClauses);
+  }
+
 
 
 
@@ -2542,333 +2594,321 @@ toggleRisk(iconElement: HTMLElement): void {
 
 
 
-  setColumnsFromTaxesDetails(sample:TaxDetails) {
-  const defaultVisibleFields = [
-    'rateDescription',
-    'rate',
-    'rateType',
-    'taxType',
-    'taxAmount'
-    
-  ];
-  
-  const excludedFields = [
-    
-  ]; 
+  setColumnsFromTaxesDetails(sample: TaxDetails) {
+    const defaultVisibleFields = [
+      'rateDescription',
+      'rate',
+      'rateType',
+      'taxType',
+      'taxAmount'
 
-  
-  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+    ];
 
-  
-  keys = keys.sort((a, b) => {
-    if (a === 'productName') return -1;
-    if (b === 'productName') return 1;
-    return 0;
-  });
+    const excludedFields = [
 
+    ];
 
-  this.taxesColumns = keys.map(key => ({
-    field: key,
-    header: this.sentenceCase(key),
-    visible: defaultVisibleFields.includes(key),
-  }));
-}
 
+    let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
 
- setColumnsFromRiskDetails(sample:RiskInformation) {
-  const defaultVisibleFields = [
-    'propertyId',
-    'wet',
-    'wef',
-    'itemDesc',
-    'coverTypeDescription'
-    
-  ];
-  
-  const excludedFields = ['prospectCode',
-    'ncdLevel',
-    'location',
-    'riskLimits',
-    'scheduleDetails',
-    'schedules',
-    'sectionsDetails',
-    'taxComputation',
-    'town',
-    'prospectCode',
-    'clientType',
-    'clientShortDescription',
-    'addEdit',
-    'action'
-    
-  ]; 
 
-  
-  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+    keys = keys.sort((a, b) => {
+      if (a === 'productName') return -1;
+      if (b === 'productName') return 1;
+      return 0;
+    });
 
-  
-  keys = keys.sort((a, b) => {
-    if (a === 'productName') return -1;
-    if (b === 'productName') return 1;
-    return 0;
-  });
 
-
-  this.riskColumns = keys.map(key => ({
-    field: key,
-    header: this.sentenceCase(key),
-    visible: defaultVisibleFields.includes(key),
-  }));
-}
-
-
-
- setColumnsFromSectionDetails(sample:RiskInformation) {
-  const defaultVisibleFields = ['sectionShortDescription',
-    'rateType',
-    'limitAmount',
-    'premiumRate',
-    'rowNumber',
-    'rateDivisionFactor',
-    'sectionCode',
-    'calcGroup',
-
-
-
-
-   
-    
-  ];
-  
-  const excludedFields = [
-    
-  ]; 
-
-  
-  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
-
-  
-  keys = keys.sort((a, b) => {
-    if (a === 'productName') return -1;
-    if (b === 'productName') return 1;
-    return 0;
-  });
-
-
-  this.sectionColumns = keys.map(key => ({
-    field: key,
-    header: this.sentenceCase(key),
-    visible: defaultVisibleFields.includes(key),
-  }));
-}
-
- 
-setColumnsFromRiskClausesDetails(sample:riskClauses) {
-  const defaultVisibleFields = ['sectionShortDescription',
-    'clauseCode',
-    'clause',
-    'shortDescription'
-
-
-
-
-   
-    
-  ];
-  
-  const excludedFields = [
-    
-  ]; 
-
-  
-  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
-
-  
-  keys = keys.sort((a, b) => {
-    if (a === 'productName') return -1;
-    if (b === 'productName') return 1;
-    return 0;
-  });
-
-
-  this.riskClausesColumns = keys.map(key => ({
-    field: key,
-    header: this.sentenceCase(key),
-    visible: defaultVisibleFields.includes(key),
-  }));
-}
-
-setColumnsFromScheduleDetails(sample:any) {
-  const defaultVisibleFields = ['sectionShortDescription',
-    'make',
-    'cubicCapacity',
-    'yearOfManufacture',
-    'carryCapacity',
-    'value',
-    'bodyType'
-
-
-
-
-   
-    
-  ];
-  
-  const excludedFields = [
-    
-  ]; 
-
-  
-  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
-
-  
-  keys = keys.sort((a, b) => {
-    if (a === 'productName') return -1;
-    if (b === 'productName') return 1;
-    return 0;
-  });
-
-
-  this.scheduleColumns = keys.map(key => ({
-    field: key,
-    header: this.sentenceCase(key),
-    visible: defaultVisibleFields.includes(key),
-  }));
-}
-setColumnsFromPerilDetails(sample:any) {
-  const defaultVisibleFields = ['sectionShortDescription',
-    'description',
-    'shortDescription',
-    'code',
-    'claimExcessType'
-    
-
-
-
-
-   
-    
-  ];
-  
-  const excludedFields = [
-    
-  ]; 
-
-  
-  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
-
-  
-  keys = keys.sort((a, b) => {
-    if (a === 'productName') return -1;
-    if (b === 'productName') return 1;
-    return 0;
-  });
-
-
-  this.perilColumns = keys.map(key => ({
-    field: key,
-    header: this.sentenceCase(key),
-    visible: defaultVisibleFields.includes(key),
-  }));
-}
-setColumnsFromExcessDetails(sample:any) {
-  const defaultVisibleFields = [
-    'narration',
-    'value'
-    
-
-
-
-
-   
-    
-  ];
-  
-  const excludedFields = [
-    
-  ]; 
-
-  
-  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
-
-  
-  keys = keys.sort((a, b) => {
-    if (a === 'productName') return -1;
-    if (b === 'productName') return 1;
-    return 0;
-  });
-
-
-  this.excessColumns = keys.map(key => ({
-    field: key,
-    header: this.sentenceCase(key),
-    visible: defaultVisibleFields.includes(key),
-  }));
-}
-
-
-setColumnsFromLimitsOfLiabilityDetails(sample:any) {
-  const defaultVisibleFields = [
-    'narration',
-    'value'
-    
-
-
-
-
-   
-    
-  ];
-  
-  const excludedFields = [
-    
-  ]; 
-
-  
-  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
-
-  
-  keys = keys.sort((a, b) => {
-    if (a === 'productName') return -1;
-    if (b === 'productName') return 1;
-    return 0;
-  });
-
-
-  this.limitsColumns = keys.map(key => ({
-    field: key,
-    header: this.sentenceCase(key),
-    visible: defaultVisibleFields.includes(key),
-  }));
-}
-
-
-getCellValue(row: any, field: string): any {
-  const value = row[field];
-
-  
-
-  
-  if (value instanceof Date) {
-    return new Intl.DateTimeFormat('en-GB', { 
-      day: '2-digit', 
-      month: 'short', 
-      year: 'numeric' 
-    }).format(value);
+    this.taxesColumns = keys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleFields.includes(key),
+    }));
   }
 
- 
-  if (value && typeof value === 'object') {
-    return value.code ?? JSON.stringify(value);
+
+  setColumnsFromRiskDetails(sample: RiskInformation) {
+    const defaultVisibleFields = [
+      'propertyId',
+      'wet',
+      'wef',
+      'itemDesc',
+      'coverTypeDescription'
+
+    ];
+
+    const excludedFields = [
+      'riskLimits',
+      'scheduleDetails',
+      'schedules',
+      'sectionsDetails',
+      'taxComputation',
+
+      'action'
+
+    ];
+
+
+    let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+
+    keys = keys.sort((a, b) => {
+      if (a === 'productName') return -1;
+      if (b === 'productName') return 1;
+      return 0;
+    });
+
+
+    this.riskColumns = keys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleFields.includes(key),
+    }));
   }
-  if (value === 0) return 0;
-  if (value === null || value === undefined) return 'N/A';
-
-  return value;
-}
 
 
 
-loadSummaryPerils(): void {
+  setColumnsFromSectionDetails(sample: RiskInformation) {
+    const defaultVisibleFields = [
+      'rowNumber',
+      'calcGroup',
+      'sectionCode',
+      'sectionShortDescription',
+      'limitAmount',
+      'premiumRate',
+      'rateType',
+    ];
+
+    const excludedFields: string[] = [];
+
+    // All keys from the sample, excluding unwanted ones
+    const keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+    // Separate defaults (in order) and the rest
+    const defaultFields = defaultVisibleFields.filter(f => keys.includes(f));
+    const otherFields = keys.filter(k => !defaultVisibleFields.includes(k));
+
+    // If productName exists, make sure it comes first
+    const orderedKeys = [
+      ...(keys.includes('productName') ? ['productName'] : []),
+      ...defaultFields,
+      ...otherFields.filter(f => f !== 'productName')
+    ];
+
+    this.sectionColumns = orderedKeys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleFields.includes(key),
+    }));
+  }
+
+
+
+  setColumnsFromRiskClausesDetails(sample: riskClauses) {
+    const defaultVisibleFields = ['sectionShortDescription',
+      'clauseCode',
+      'clause',
+      'shortDescription'
+
+
+
+
+
+
+    ];
+
+    const excludedFields = [
+
+    ];
+
+
+    let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+
+    keys = keys.sort((a, b) => {
+      if (a === 'productName') return -1;
+      if (b === 'productName') return 1;
+      return 0;
+    });
+
+
+    this.riskClausesColumns = keys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleFields.includes(key),
+    }));
+  }
+
+  setColumnsFromScheduleDetails(sample: any) {
+    const defaultVisibleFields = ['sectionShortDescription',
+      'make',
+      'cubicCapacity',
+      'yearOfManufacture',
+      'carryCapacity',
+      'value',
+      'bodyType'
+
+
+
+
+
+
+    ];
+
+    const excludedFields = [
+
+    ];
+
+
+    let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+
+    keys = keys.sort((a, b) => {
+      if (a === 'productName') return -1;
+      if (b === 'productName') return 1;
+      return 0;
+    });
+
+
+    this.scheduleColumns = keys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleFields.includes(key),
+    }));
+  }
+  setColumnsFromPerilDetails(sample: any) {
+    const defaultVisibleFields = ['sectionShortDescription',
+      'description',
+      'shortDescription',
+      'code',
+      'claimExcessType'
+
+
+
+
+
+
+
+    ];
+
+    const excludedFields = [
+
+    ];
+
+
+    let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+
+    keys = keys.sort((a, b) => {
+      if (a === 'productName') return -1;
+      if (b === 'productName') return 1;
+      return 0;
+    });
+
+
+    this.perilColumns = keys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleFields.includes(key),
+    }));
+  }
+  setColumnsFromExcessDetails(sample: any) {
+    const defaultVisibleFields = [
+      'narration',
+      'value'
+
+
+
+
+
+
+
+    ];
+
+    const excludedFields = [
+
+    ];
+
+
+    let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+
+    keys = keys.sort((a, b) => {
+      if (a === 'productName') return -1;
+      if (b === 'productName') return 1;
+      return 0;
+    });
+
+
+    this.excessColumns = keys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleFields.includes(key),
+    }));
+  }
+
+
+  setColumnsFromLimitsOfLiabilityDetails(sample: any) {
+    const defaultVisibleFields = [
+      'narration',
+      'value'
+
+
+
+
+
+
+
+    ];
+
+    const excludedFields = [
+
+    ];
+
+
+    let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+
+    keys = keys.sort((a, b) => {
+      if (a === 'productName') return -1;
+      if (b === 'productName') return 1;
+      return 0;
+    });
+
+
+    this.limitsColumns = keys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleFields.includes(key),
+    }));
+  }
+
+
+  getCellValue(row: any, field: string): any {
+    const value = row[field];
+
+
+
+
+    if (value instanceof Date) {
+      return new Intl.DateTimeFormat('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }).format(value);
+    }
+
+
+    if (value && typeof value === 'object') {
+      return value.code ?? JSON.stringify(value);
+    }
+    if (value === 0) return 0;
+    if (value === null || value === undefined) return 'N/A';
+
+    return value;
+  }
+
+  loadSummaryPerils(): void {
     const savedPerilsData = sessionStorage.getItem('perilsData');
     console.log("Raw perilsData from sessionStorage:", savedPerilsData);
 
@@ -2880,30 +2920,47 @@ loadSummaryPerils(): void {
 
     try {
       const allPerilsMap = JSON.parse(savedPerilsData);
-      const subclassCode = this.selectedRisk?.subclassCode; 
+      const subclassCode = this.selectedRisk?.subclassCode;
       log.debug("SubclassCode in summary:", subclassCode);
       log.debug("Available subclassCodes in perilsData:", Object.keys(allPerilsMap));
 
       if (subclassCode && allPerilsMap[subclassCode]) {
         this.summaryPerils = allPerilsMap[subclassCode];
       } else {
-        
+
         this.summaryPerils = Object.values(allPerilsMap).flat();
       }
 
       log.debug("Loaded summary perils:", this.summaryPerils);
 
 
-    if(this.summaryPerils){
-      this.setColumnsFromPerilDetails(this.summaryPerils[0])
-    }
+      if (this.summaryPerils) {
+        this.setColumnsFromPerilDetails(this.summaryPerils[0])
+      }
     } catch (error) {
       log.debug("Failed to parse perilsData from sessionStorage:", error);
       this.summaryPerils = [];
     }
   }
+  fetchGroupedUserDetails(selectedUser: any) {
+    const groupedUserId = selectedUser.id;
+    this.quotationService.getGroupedUserDetails(groupedUserId)
+      .subscribe({
+        next: (res: GroupedUser[]) => {
+          this.groupUsers = res;
 
-
+          // Find the team leader
+          const groupLeader = res.find(user => user.isTeamLeader === "Y");
+          if (groupLeader) {
+            this.selectedGroupUserId = groupLeader.id; // auto-select in dropdown
+            this.groupLeaderName = groupLeader.userDetails.name;
+          }
+        },
+        error: (error) => {
+          console.error("Error fetching group users", error);
+        }
+      });
+  }
 
 }
 

@@ -4,39 +4,35 @@
 
 
     <!-- Share method -->
-<div class="method-options">
-  <div
-    class="method-option"
-    *ngFor="let method of shareMethods"
-    (click)="!method.disabled && (shareQuoteData.selectedMethod = method.value)"
-    [class.selected]="shareQuoteData.selectedMethod === method.value"
-    [class.disabled]="method.disabled"
-  >
-    <i class="far fa-circle" *ngIf="shareQuoteData.selectedMethod !== method.value"></i>
-    <i class="fas fa-dot-circle" *ngIf="shareQuoteData.selectedMethod === method.value"></i>
-    <span class="ps-2">{{ method.label }}</span>
-     <span class="custom-tooltip" *ngIf="method.disabled">{{ method.tooltip }}</span>
-  </div>
-</div>
+    <div class="method-options">
+      <div class="method-option" *ngFor="let method of shareMethods"
+        (click)="!method.disabled && (shareQuoteData.selectedMethod = method.value)"
+        [class.selected]="shareQuoteData.selectedMethod === method.value" [class.disabled]="method.disabled">
+        <i class="far fa-circle" *ngIf="shareQuoteData.selectedMethod !== method.value"></i>
+        <i class="fas fa-dot-circle" *ngIf="shareQuoteData.selectedMethod === method.value"></i>
+        <span class="ps-2">{{ method.label }}</span>
+        <span class="custom-tooltip" *ngIf="method.disabled">{{ method.tooltip }}</span>
+      </div>
+    </div>
 
 
 
     <!-- Buttons Container -->
-<div class="d-flex align-items-center my-3" *ngIf="shareQuoteData.selectedMethod === 'email'">
+    <div class="d-flex align-items-center my-3" *ngIf="shareQuoteData.selectedMethod === 'email'">
 
-  <!-- Preview -->
-  <div (click)="onPreview()" class="me-3" role="button" tabindex="0">
-    <i class="pi pi-eye me-2 text-primary"></i>
-    <span class="text-primary">Preview</span>
-  </div>
+      <!-- Preview -->
+      <div (click)="onPreview()" class="me-3" role="button" tabindex="0">
+        <i class="pi pi-eye me-2 text-primary"></i>
+        <span class="text-primary">Preview</span>
+      </div>
 
-  <!-- Download -->
-  <div (click)="onDownload()" role="button" tabindex="0">
-    <i class="pi pi-download me-2 text-primary"></i>
-    <span class="text-primary">Download</span>
-  </div>
+      <!-- Download -->
+      <div (click)="onDownload()" role="button" tabindex="0">
+        <i class="pi pi-download me-2 text-primary"></i>
+        <span class="text-primary">Download</span>
+      </div>
 
-</div>
+    </div>
 
 
     <ng-container *ngIf="shareQuoteData.selectedMethod === 'email';else soonComingChannels">
@@ -52,8 +48,7 @@
         Email address<span class="required"></span>
       </label>
       <input pInputText id="email" type="email" formControlName="email" class="p-inputtext"
-        placeholder="e.g. example@email.com" 
-        (blur)="shareForm.get('email')?.markAsTouched()"/>
+        placeholder="e.g. example@email.com" (blur)="shareForm.get('email')?.markAsTouched()" />
       <div *ngIf="shareForm.get('email')?.touched && shareForm.get('email')?.invalid" class="text-danger mt-1">
         <small *ngIf="shareForm.get('email')?.errors?.['required']">Email is required.</small>
         <small *ngIf="shareForm.get('email')?.errors?.['email']">Please enter a valid email address.</small>
@@ -94,39 +89,34 @@
     </div>
 
   </div>
+
 </form>
-
-<p-dialog
-  [(visible)]="previewVisible"
-  [modal]="true"
-  [style]="{width: '40vw', height: '95vh'}"
-  [closable]="true"
-  [resizable]="false"
-  [draggable]="false"
-  [scrollTop]="false"
-  class="custom-pdf-modal"
-  header="Preview report">
-
-  
+<p-dialog [(visible)]="previewVisible" [modal]="true" [style]="{ width: '40vw', height: '95vh' }"
+  header="Preview report" class="custom-pdf-modal">
+  <div style="height: calc(100% - 40px); background: #fff;  margin: 0; padding: 0;">
+    <pdf-viewer [src]="pdfSrc" [render-text]="true" [original-size]="false"
+      style="display: block; width: 100%; height: 100%; background: #fff;">
+    </pdf-viewer>
+  </div>
+</p-dialog>
 
 
 
- <div style="height: calc(100% - 40px); overflow: hidden; background: #fff; margin: 0; padding: 0;">
-  <iframe
-    [src]="pdfSrc"
-    width="100%"
-    height="100%"
-    style="
+<!-- <p-dialog [(visible)]="previewVisible" [modal]="true" [style]="{width: '40vw', height: '95vh'}" [closable]="true"
+  [resizable]="false" [draggable]="false" [scrollTop]="false" class="custom-pdf-modal" header="Preview report">
+
+
+
+  <div style="height: calc(100% - 40px); overflow: hidden; background: #fff; margin: 0; padding: 0;">
+    <iframe [src]="pdfSrc" width="100%" height="100%" style="
       border: none;
       background: white;
       margin: 0;
       padding: 0;
       display: block;
     ">
-  </iframe>
-</div>
+    </iframe>
+  </div>
 
 
-</p-dialog>
-
-
+</p-dialog> -->
