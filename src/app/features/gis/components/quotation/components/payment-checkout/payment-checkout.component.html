@@ -12,13 +12,28 @@
     <p class="text-muted small">You can now safely close this tab.</p>
   </div>
 
+<div *ngIf="!paymentCompleted" 
+     class="paymentCard border border-outline-primary py-2 px-4 bg-white mb-0 rounded-2 z-10 shadow-lg position-relative" 
+     style="height:auto">
 
-  <div *ngIf="!paymentCompleted" class="paymentCard border border-outline-primary py-2 px-4 bg-white mb-0 rounded-2 z-10 shadow-lg" style="height:auto">
-    <p class="fw-semibold mt-2">Payment details</p>
-    <div [class.invisible]="!paymentStatus" class="text-center">
-      <p *ngIf="success" class="text-center text-success fw-bold">{{ successMessage }}</p>
-      <p *ngIf="failed" class="text-center text-danger fw-bold">{{ failedMessage }}</p>
-    </div>
+  
+  <button type="button" 
+          class="btn p-0 position-absolute top-0 end-0 m-2"
+          style="color: red; font-size: 1.5rem; line-height: 1;" 
+          (click)="cancelPayment()"
+          aria-label="Close">
+    &times;
+  </button>
+
+  <p class="fw-semibold mt-2">Payment details</p>
+
+  <div [class.invisible]="!paymentStatus" class="text-center">
+    <p *ngIf="success" class="text-center text-success fw-bold">{{ successMessage }}</p>
+    <p *ngIf="failed" class="text-center text-danger fw-bold">{{ failedMessage }}</p>
+  </div>
+
+
+
 
     <div class="d-flex justify-content-between mt-4 text-black">
       <div class="d-flex justify-content-around align-items-center gap-2">
@@ -36,14 +51,7 @@
     </div>
     
     <div class="mt-4 py-2 text-black">
-      <div class="row mb-2">
-        <div class="col-5">
-          <p class="mb-0">Amount</p>
-        </div>
-        <div class="col-7">
-          <p class="mb-0"><strong>{{ currencyPrefix }} {{ amount | number:'1.0-0' }}</strong></p>
-        </div>
-      </div>
+     
 
       <div class="row">
         <div class="col-5">
@@ -53,7 +61,31 @@
           <p class="mb-0"><strong>{{ ipayRefNo }}</strong></p>
         </div>
       </div>
+      <div class="row">
+        <div class="col-5">
+          <p class="mb-0">Premium</p>
+        </div>
+        <div class="col-7">
+          <p class="mb-0"><strong>{{ currencyPrefix }} {{ amount | number:'1.0-0' }}</strong></p>
+        </div>
+      </div>
     </div>
+
+<div class="d-flex flex-column mt-3">
+  <label class="text-black">Enter amount</label>
+  <input type="text"
+         class="form-control w-50 mt-2 p-2 border border-outline-primary"
+         [value]="currencyPrefix + ' ' + (payableAmount ?? amount)"
+         (input)="onAmountInput($event)"
+         placeholder="Enter amount"
+         required />
+
+  <div *ngIf="!payableAmount" class="text-danger mt-1">
+    Amount is required and must be at least 1.
+  </div>
+</div>
+
+
 
     <div class="d-flex flex-column mt-3">
       <label class="text-black">Phone number</label>
@@ -69,6 +101,7 @@
     </div>
 
     <div class="d-flex mt-0 mb-0 gap-3 justify-content-end py-2 w-full">
+      <button type="button"class="btn btn-outline-primary"(click)="cancelPayment()" >Cancel</button>
       <button *ngIf="paymentButton" type="button" class="btn mx-0 btn-primary"
         (click)="sendSTK()">{{paymentButtonLabel}}</button>
     </div>

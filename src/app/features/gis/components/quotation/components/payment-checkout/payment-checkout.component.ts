@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Logger } from 'src/app/shared/services';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PaymentService } from '../../services/payment-service/payment.service';
 import { untilDestroyed } from "../../../../../../shared/shared.module";
 import { tap } from "rxjs";
@@ -28,9 +28,10 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
   // Payment completion state
   paymentCompleted: boolean = false
   completionMessage: string = ''
+  payableAmount: number = 0;
 
   constructor(private globalMessagingService: GlobalMessagingService,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute,private router: Router,
     private sessionStorageService: SessionStorageService,
     private paymentService: PaymentService) {
   }
@@ -41,6 +42,7 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
     this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, atob(queryParams.get('tenant')));
     this.ipayRefNo = atob(queryParams.get('reference'))
     this.amount = +atob(queryParams.get('amount'))
+    this.payableAmount = this.amount;
 
     this.checkPaymentCompletion();
     this.restorePaymentState();
@@ -55,6 +57,7 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
   failedMessage: string = ''
   success: boolean = false
   failed: boolean = false
+  
 
   private checkPaymentCompletion() {
     const completedPayment = this.sessionStorageService.get(`payment_completed_${this.ipayRefNo}`);
@@ -154,7 +157,7 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
     const paymentPayload = {
       TransactionCode: this.ipayRefNo,
       PhoneNumber: this.formatPhoneNumber(this.phoneNumber),
-      Amount: Math.round(this.amount)
+      Amount: Math.round(this.payableAmount)
     }
 
     log.debug('this is payment payload>>>', paymentPayload)
@@ -217,4 +220,18 @@ export class PaymentCheckoutComponent implements OnInit, OnDestroy {
       this.savePaymentState();
     }
   }
+  cancelPayment() {
+  this.amount = null;         
+  this.phoneNumber = '';       
+  this.selectedPayment = null;
+  this.router.navigate(['/home/gis/quotation/quote-summary']).then(() => {
+    });
+}
+onAmountInput(event: Event) {
+  const input = (event.target as HTMLInputElement).value;
+
+  const numericValue = parseFloat(input.replace(/[^\d.]/g, '')) || 0;
+  this.payableAmount = numericValue;
+}
+
 }
