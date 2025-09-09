@@ -1,5 +1,5 @@
 <div class="mx-4 my-3">
-  <div class="me-4">
+  <div class="me-4" *ngIf="!isPreviewMode">
     <app-dynamic-breadcrumb [breadCrumbItems]="entityBreadCrumbItems">
     </app-dynamic-breadcrumb>
   </div>
@@ -8,7 +8,7 @@
       <div id="upload-section">
         <form [formGroup]="uploadForm">
           <div class="row">
-            <h6 class="mb-4 ms-md-5 text-primary">New entity</h6>
+            <h6 class="mb-4 ms-md-5 text-primary">{{ subModules[0]?.label[language] | titlecase }}</h6>
             <ng-container *ngFor="let field of uploadGroupSections?.selects;">
               <div class="col-sm-4">
                 <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
@@ -27,7 +27,7 @@
                         (click)="fetchSelectOptions('', field.fieldId)"
                       >
                         <option value="">- Select {{ field.label?.[language] | titlecase }} -</option>
-                        <option *ngFor="let option of field.options" [value]="option">
+                        <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [value]="option">
                           {{ option | titlecase }}
                         </option>
                       </select>
@@ -46,7 +46,7 @@
                         (click)="fetchSelectOptions('', field.fieldId)"
                       >
                         <option value="">- Select {{ field.label?.[language] | titlecase }} -</option>
-                        <option *ngFor="let option of field.options" [value]="option">
+                        <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [value]="option">
                           {{ option | titlecase }}
                         </option>
                       </select>
@@ -331,7 +331,7 @@
                         [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
                       >
                         <option value="">---select {{ field.label?.[language] }}---</option>
-                        <option *ngFor="let option of field.options" [value]="option">
+                        <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [value]="option">
                           {{ option }}
                         </option>
                       </select>
@@ -348,7 +348,7 @@
                         <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <div class="form-check" [id]="field.fieldId">
-                        <div *ngFor="let option of field.options">
+                        <div *ngFor="let option of (!isPreviewMode ? field.options : [])">
                           <input
                             class="form-check-input"
                             type="radio"
@@ -373,7 +373,7 @@
                         <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <div class="form-check">
-                        <div *ngFor="let option of field.options">
+                        <div *ngFor="let option of (!isPreviewMode ? field.options : [])">
                           <input
                             class="form-check-input"
                             type="checkbox"
@@ -417,6 +417,7 @@
                 [subGroupId]="'cnt_corporate_contact_person_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
                 [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
@@ -429,6 +430,7 @@
                 [subGroupId]="'cnt_corporate_branch_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
                 [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
@@ -441,6 +443,7 @@
                 [subGroupId]="'cnt_corporate_payee_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
                 [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
@@ -452,6 +455,7 @@
                 [formFields]="wealthAmlFormFields"
                 [subGroupId]="'cnt_individual_aml_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
@@ -464,6 +468,7 @@
                 [subGroupId]="'cnt_corporate_aml_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
                 [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
@@ -476,6 +481,7 @@
                 [subGroupId]="'cnt_corporate_cr12_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
                 [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
@@ -488,6 +494,7 @@
                 [subGroupId]="'cnt_corporate_ownership_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
                 [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
@@ -507,7 +514,7 @@
 
 
   <!--buttons-->
-  <div>
+  <div *ngIf="!isPreviewMode">
     <div class="row">
       <div class="col-sm-8"></div>
       <div class="col-sm-4 my-4 text-end">

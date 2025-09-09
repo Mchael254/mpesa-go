@@ -230,7 +230,7 @@
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
                       >
                         <option value=""></option>
-                        <option *ngFor="let option of field.options" [value]="option">
+                        <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [value]="option">
                           {{ option | titlecase }}
                         </option>
                       </select>
@@ -246,7 +246,7 @@
                         <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <div class="form-check" [id]="field.fieldId">
-                        <div *ngFor="let option of field.options">
+                        <div *ngFor="let option of (!isPreviewMode ? field.options : [])">
                           <input
                             class="form-check-input"
                             type="radio"
@@ -270,7 +270,7 @@
                         <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <div class="form-check">
-                        <div *ngFor="let option of field.options">
+                        <div *ngFor="let option of (!isPreviewMode ? field.options : [])">
                           <input
                             class="form-check-input"
                             type="checkbox"

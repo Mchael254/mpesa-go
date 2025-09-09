@@ -1,6 +1,5 @@
-import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
-import {HttpClient} from "@angular/common/http";
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Logger, UtilService} from "../../../../../shared/services";
 import {RegexErrorMessages} from "../../../data/field-error.model";
@@ -39,7 +38,7 @@ import {
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto
+  FormGroupsDto, SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('NewEntityV2Component');
@@ -49,7 +48,7 @@ const log = new Logger('NewEntityV2Component');
   templateUrl: './new-entity-v2.component.html',
   styleUrls: ['./new-entity-v2.component.css']
 })
-export class NewEntityV2Component implements OnInit {
+export class NewEntityV2Component implements OnInit, OnChanges {
 
   entityBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -141,11 +140,12 @@ export class NewEntityV2Component implements OnInit {
   protected readonly SearchCountryField = SearchCountryField;
   @Input() previewFormFields: any;
   clientSetupData: DynamicScreenSetupDto;
-
+  subModules: SubModulesDto[] = [];
+  isPreviewMode: boolean = false;
+  dynamicSetupData: DynamicScreenSetupDto;
 
   constructor(
     private fb: FormBuilder,
-    private http: HttpClient,
     private utilService: UtilService,
     private maritalStatusService: MaritalStatusService,
     private paymentModesService: PaymentModesService,
@@ -159,6 +159,7 @@ export class NewEntityV2Component implements OnInit {
     private currencyService: CurrencyService,
     private dmsService: DmsService,
     private dynamicScreensSetupService: DynamicScreensSetupService,
+    private cdr: ChangeDetectorRef,
   ) {
 
     this.uploadForm = this.fb.group({
@@ -175,10 +176,65 @@ export class NewEntityV2Component implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fetchUploadFormFields();
+    this.fetchSubModules();
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
     });
+
+    if (!this.previewFormFields) {
+      this.fetchUploadFormFields();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if ('previewFormFields' in changes) {
+      const curr = changes['previewFormFields']?.currentValue;
+
+      if (curr) {
+        this.isPreviewMode = true;
+        this.category = curr.forms?.formId === 'cnt_individual' ? 'individual' : 'corporate';
+        this.isCategorySelected = !!curr.forms?.formId;
+
+        this.updateFormFields();
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
+  updateFormFields() {
+    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(1, null)
+      .subscribe({
+        next: (data) => {
+          this.dynamicSetupData = data;
+          log.info("client setup>>", data);
+
+          this.uploadFormFields = data.fields.filter(field => field.screenCode === null);
+          this.addUploadFormFields();
+          this.updateOrganizationLabel(this.category);
+
+          this.dynamicSetupData.fields = this.dynamicSetupData.fields.map(field => {
+            const matchedField = this.previewFormFields.fields.find(formField => formField.code === field.code);
+            if (matchedField) {
+              return matchedField;
+            }
+            return field;
+          });
+
+          this.dynamicSetupData.groups = this.previewFormFields.groups.filter(formGroup =>
+            this.dynamicSetupData.groups.some(group => group.formId === formGroup.formId)
+          );
+
+          const groups: FormGroupsDto[] = this.dynamicSetupData?.groups;
+
+
+          const fields: ConfigFormFieldsDto[] = this.dynamicSetupData?.fields;
+          this.orderFormGroup(groups, fields);
+          log.info('Updated form fields22', this.dynamicSetupData.fields, groups, fields);
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        }
+      });
   }
 
   createEntityForm():void {
@@ -192,24 +248,7 @@ export class NewEntityV2Component implements OnInit {
    * @param category
    */
   fetchFormFields(category: string): void {
-    /*this.http.get<any>( 'assets/data/formFields.json').subscribe({
-      next: (data: any) => {
-        this.formPopulateMassage = data.formPopulateMassage;
-        data.category.forEach(item => {
-          if (item.label === category) {
-            this.formFieldPayload = item.category;
-            const groups: Group[] = item?.groups;
-            const fields: FieldModel[] = item?.fields;
-            this.orderFormGroup(groups, fields);
-            log.info('FormFields loaded', item);
-          }
-        })
-      },
-      error: err => {
-        log.error(err);
-      }
-    })*/
-    const formCode = category == 'individual' ? 35 : 34;
+    const formId = category == 'individual' ? 'cnt_individual' : 'cnt_corporate';
     this.dynamicScreensSetupService.fetchDynamicSetupByScreen(1, null)
       .subscribe({
         next: (data) => {
@@ -217,7 +256,7 @@ export class NewEntityV2Component implements OnInit {
           log.info("client setup>>", data);
 
           const groups: FormGroupsDto[] = data?.groups.filter(
-            group => group.formCode === formCode
+            group => group.formId === formId
           );
 
           const fields: ConfigFormFieldsDto[] = data?.fields;
@@ -235,16 +274,6 @@ export class NewEntityV2Component implements OnInit {
    * defines the roles and category selection dropdowns
    */
   fetchUploadFormFields(): void {
-   /* this.http.get<any>( 'assets/data/uploadFormFields.json').subscribe({
-      next: (data: any) => {
-        this.uploadFormFields = data.fields;
-        log.info('Upload FormFields loaded', data);
-        this.addUploadFormFields();
-      },
-      error: err => {
-        log.error(err);
-      }
-    })*/
     this.dynamicScreensSetupService.fetchFormFields(1, null)
       .subscribe({
         next: (data) => {
@@ -364,36 +393,23 @@ export class NewEntityV2Component implements OnInit {
    * @param fields
    * @param formGroupSections
    */
-  assignFieldsToGroupByGroupId(fields: ConfigFormFieldsDto[], formGroupSections: any[]): void { // todo: create Model for formGroupSections
-    let visibleFormFields: ConfigFormFieldsDto[];
-    const formValues = this.uploadForm.getRawValue();
+  assignFieldsToGroupByGroupId(fields: ConfigFormFieldsDto[], formGroupSections: any[]): void {
+    const visibleFormFields = this.getFilteredFields(fields);
 
-    if (formValues.role === 'client' && formValues.category === 'individual') {
-      visibleFormFields = fields.filter((field: ConfigFormFieldsDto) => field.visible && field.formId === 'cnt_individual'
-        && field.formGroupingId !== 'cnt_individual_wealth_aml_details' && field.formSubGroupingId !== 'cnt_individual_privacy_policy');
-
-    } else if(formValues.role === 'client' && formValues.category === 'corporate') {
-      visibleFormFields = fields.filter((field: ConfigFormFieldsDto) => field.visible && field.formId === 'cnt_corporate' &&
-        field.formSubGroupingId !== 'cnt_corporate_contact_person_details' && field.formSubGroupingId !== 'cnt_corporate_privacy_policy' &&
-        field.formSubGroupingId !== 'cnt_corporate_payee_details' && field.formSubGroupingId !== 'cnt_corporate_branch_details' &&
-        field.formGroupingId !== 'cnt_corporate_wealth_aml_details');
-    }
-
-
-    formGroupSections.forEach(section => { // initialize fields to empty array
+    formGroupSections.forEach(section => {
       section.fields = [];
-    })
+    });
 
     visibleFormFields.forEach(field => {
-      formGroupSections.forEach(section => {
-        if (field.formGroupingId == section.groupId) {
-          section.fields.push(field);
-        }
-      })
+      const section = formGroupSections.find(s => s.groupId === field.formGroupingId);
+      if (section) {
+        section.fields.push(field);
+      }
     });
 
     this.formGroupSections = formGroupSections;
     this.addFieldsToSections(formGroupSections);
+
     this.wealthAmlFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_individual_aml_details');
     this.corporateContactDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_contact_person_details');
     this.corporateAddressDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_branch_details');
@@ -402,14 +418,49 @@ export class NewEntityV2Component implements OnInit {
     this.corporateWealthCR12DetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_cr12_details');
     this.corporateWealthOwnershipDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_ownership_details');
     this.privacyPolicyFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_privacy_policy');
-    // this.payeeDetailsFormFields = fields.filter(field => field.formSubGroupingId === 'payee_details');
-    // this.branchDetailsFormFields = fields.filter(field => field.formSubGroupingId === 'branch_details');
+  }
 
-    log.info(`wealthAmlFormFields >>> `, this.wealthAmlFormFields);
-    log.info(`formGroupSections >>> `, this.formGroupSections);
-    log.info(`otpFormFields >>> `, this.privacyPolicyFormFields);
-    // log.info(`payeeDetailsFormFields >>> `, this.payeeDetailsFormFields);
-    // log.info(`branchDetailsFormFields >>> `, this.branchDetailsFormFields);
+  /**
+   * Filters form fields based on preview mode and form type
+   * @param fields Array of form fields to filter
+   * @returns Filtered array of form fields
+   */
+  private getFilteredFields(fields: ConfigFormFieldsDto[]): ConfigFormFieldsDto[] {
+    const formValues = this.uploadForm?.getRawValue();
+    const isIndividual = this.isPreviewMode
+      ? this.previewFormFields?.forms?.formId === 'cnt_individual'
+      : formValues?.role === 'client' && formValues?.category === 'individual';
+
+    const isCorporate = this.isPreviewMode
+      ? this.previewFormFields?.forms?.formId === 'cnt_corporate'
+      : formValues?.role === 'client' && formValues?.category === 'corporate';
+
+    if (isIndividual) {
+      return fields.filter(field =>
+        field.visible &&
+        field.formId === 'cnt_individual' &&
+        field.formGroupingId !== 'cnt_individual_wealth_aml_details' &&
+        field.formSubGroupingId !== 'cnt_individual_privacy_policy'
+      );
+    }
+
+    if (isCorporate) {
+      const excludedSubGroups = [
+        'cnt_corporate_contact_person_details',
+        'cnt_corporate_privacy_policy',
+        'cnt_corporate_payee_details',
+        'cnt_corporate_branch_details'
+      ];
+
+      return fields.filter(field =>
+        field.visible &&
+        field.formId === 'cnt_corporate' &&
+        !excludedSubGroups.includes(field.formSubGroupingId) &&
+        field.formGroupingId !== 'cnt_corporate_wealth_aml_details'
+      );
+    }
+
+    return [];
   }
 
   /**
@@ -596,6 +647,9 @@ export class NewEntityV2Component implements OnInit {
    * @param fieldId
    */
   processSelectOption(event: any, fieldId: string) : void {
+    if (this.isPreviewMode === true) {
+      return;
+    }
     const selectedOption = event.target.value;
     const formValues = this.uploadForm.getRawValue();
     log.info(`processSelectOptions >>> `, selectedOption, fieldId);
@@ -720,6 +774,9 @@ export class NewEntityV2Component implements OnInit {
    * @param fieldId
    */
   fetchSelectOptions(groupId: string, fieldId: string): void {
+    if (this.isPreviewMode === true) {
+      return;
+    }
     log.info(`field to populate >>> `, fieldId);
     let sectionIndex: number, fieldIndex: number;
     if (this.formGroupSections) {
@@ -1655,5 +1712,22 @@ export class NewEntityV2Component implements OnInit {
     return this.collapsedGroups.has(id);
   }
 
-
+  /**
+   * Fetches the sub modules based on the given parameters.
+   *
+   * This function fetches the sub modules based on the given parameters and
+   * assigns the result to the subModules property.
+   */
+  fetchSubModules() {
+    this.dynamicScreensSetupService.fetchSubModules(null, "account_management")
+      .subscribe({
+        next: (data) => {
+          this.subModules = data.sort((a, b) => a.order - b.order);
+          log.info("sub modules>>", data);
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        }
+      });
+  }
 }

@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {
   ConfigFormFieldsDto, DynamicScreenSetupUpdateDto, DynamicSetupImportDto,
   FormGroupsDto, FormSubGroupsDto, MultilingualText,
@@ -16,7 +16,6 @@ import {
   DynamicScreensSetupService
 } from "../../../../shared/services/setups/dynamic-screen-config/dynamic-screens-setup.service";
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
-import {FieldModel, Group} from "../../../entities/data/form-config.model";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
 
 const log = new Logger('CrmScreensConfigComponent');
@@ -984,6 +983,16 @@ export class CrmScreensConfigComponent implements OnInit {
   }
 
   /**
+   * Changes the current language of the application.
+   * @param language The language object containing the code and class.
+   */
+  changeLanguage(language) {
+    this.utilService.setLanguage(language.code);
+    this.defaultLanguage = language.class;
+    this.language = language.code;
+  }
+
+  /**
    * Patches the current validations messages from the provided validations to the form.
    * @param validations The validations containing the messages.
    */
@@ -1668,6 +1677,7 @@ export class CrmScreensConfigComponent implements OnInit {
    * @returns {void}
    */
   previewSetup() {
+    this.updatedFormFields = null;
     const payload: any = {
       fields: this.getAllFieldsFromKeyedCaches(),
       groups: this.subSections,
@@ -1678,256 +1688,8 @@ export class CrmScreensConfigComponent implements OnInit {
 
     log.info('Preview payload:', payload);
     this.sessionStorageService.setItem("PREVIEW_SCREEN_SETUP", payload);
-    this.fetchDynamicSetup(this.selectedScreen.code);
     this.updatedFormFields = payload;
     this.openPreviewModal();
-  }
-
-  /**
-   * Toggles the collapsed state of a group based on its ID. If the group is already
-   * collapsed, it is expanded. If the group is already expanded, it is collapsed.
-   *
-   * @param {any} id - The ID of the group to toggle.
-   * @return {void}
-   */
-  toggleCollapse(id: any): void {
-    if (this.collapsedGroups.has(id)) {
-      this.collapsedGroups.delete(id);
-    } else {
-      this.collapsedGroups.add(id);
-    }
-  }
-
-  /**
-   * Checks if a group with the given ID is currently collapsed.
-   *
-   * @param {any} id - The ID of the group to check.
-   * @return {boolean} True if the group is collapsed, false otherwise.
-   */
-  isCollapsed(id: any): boolean {
-    return this.collapsedGroups.has(id);
-  }
-
-  /**
-   * Shows the selected tab by updating the selectedTab property and setting
-   * shouldShowFields to true.
-   *
-   * @param {string} selectedTab - The ID of the tab to show.
-   * @return {void}
-   */
-  showSelectedTab(selectedTab: string): void {
-    this.selectedTab = selectedTab;
-    this.shouldShowFields = true;
-  }
-
-  /**
-   * Adds the new entity fields data to the upload form.
-   *
-   * @remarks
-   * This function filters the dynamic setup data fields to only include fields
-   * with a screen code of null and creates a form group for the upload form.
-   *
-   * @returns {void}
-   */
-  addUploadFormFields(): void {
-    this.newEntityFieldsData = this.dynamicSetupData.fields.filter(field => field.screenCode === null);
-
-    const group: { [key: string]: FormControl } = {};
-
-    this.newEntityFieldsData.forEach((field: any) => {
-
-      const validators: ValidatorFn[] = [];
-
-      if (field.mandatory) {
-        validators.push(Validators.required);
-      }
-      group[field.fieldId] = new FormControl('', validators);
-    });
-
-    this.uploadForm = this.fb.group(group);
-  }
-
-  /**
-   * Publishes the changes made to the preview screen setup.
-   *
-   * @remarks
-   * This function creates a payload object with the necessary data and makes a
-   * request to the update screen setup endpoint. If the request is successful,
-   * it displays a success message using the global messaging service. If the
-   * request fails, it displays an error message.
-   *
-   * @returns {void}
-   */
-  publishPreviewChanges() {
-    const payload: DynamicScreenSetupUpdateDto = {
-      fields: this.dynamicSetupData.fields,
-      groups: this.dynamicSetupData.groups,
-      forms: this.dynamicSetupData.forms,
-      screens: [this.dynamicSetupData.screen],
-      subModules: [this.dynamicSetupData.subModule],
-    };
-
-    log.info('Publishing preview payload:', payload);
-
-    this.dynamicScreensSetupService.updateScreenSetup(payload)
-      .subscribe({
-        next: (data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success', 'Changes published successfully!'
-          );
-        },
-        error: (err) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Error', 'Failed to publish changes.'
-          );
-        }
-      });
-  }
-
-  /**
-   * Fetches the dynamic setup data for the given screen code.
-   * If the request is successful, it updates the form fields.
-   * If the request fails, it displays an error message.
-   *
-   * @param screenCode - The code of the screen to fetch the setup data for.
-   * @return {void}
-   */
-  fetchDynamicSetup(screenCode?: number) {
-    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(screenCode, null)
-      .subscribe({
-        next: (data) => {
-          this.dynamicSetupData = data;
-          log.info("dynamic setup>>", data);
-          if (this.dynamicSetupData) {
-            this.updateFormFields();
-          }
-        },
-        error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
-        }
-      });
-  }
-
-  /**
-   * Fetches the form fields setup for the current dynamic setup data.
-   * Sorts the form groups and fields by their order and assigns fields to groups.
-   */
-  fetchFormFieldsSetup(): void {
-    const groups: Group[] = this.dynamicSetupData?.groups.filter(
-      group => group.formCode === this.updatedFormFields.forms.code
-    );
-
-    const fields: FieldModel[] = this.dynamicSetupData?.fields;
-    this.orderFormGroup(groups, fields);
-  }
-
-  /**
-   * Sorts the form groups and fields by their order and assigns fields to groups.
-   * @param groups - The form groups to be sorted and assigned fields.
-   * @param fields - The form fields to be sorted and assigned to groups.
-   */
-  orderFormGroup(groups: any[], fields: FieldModel[]) : void {
-    const formGroupSections: any[] = groups?.sort(
-      (a: { order: number; }, b: { order: number; }) => a.order - b.order
-    );
-
-    const fieldOrder: any[] = fields?.sort(
-      (a: { order: number; }, b: { order: number; }) => a.order - b.order
-    );
-
-    this.assignFieldsToGroupByGroupId(fieldOrder, formGroupSections);
-  }
-
-  /**
-   * Assigns the fields to the groups based on their order and form codes.
-   * Sorts the form groups and fields by their order and assigns fields to groups.
-   * @param fields - The form fields to be sorted and assigned to groups.
-   * @param formGroupSections - The form groups to be sorted and assigned fields.
-   */
-  assignFieldsToGroupByGroupId(fields: any[], formGroupSections: any[]): void {
-    let visibleFormFields: any[];
-
-    if (this.updatedFormFields.forms.formId === 'cnt_individual') {
-      visibleFormFields = fields.filter((field: any) => field.visible && field.formCode === 35
-        && field.formGroupingCode !== 113 && field.formSubGroupingCode !== 126 );
-
-    } else if(this.updatedFormFields.forms.formId === 'cnt_corporate') {
-      visibleFormFields = fields.filter((field: any) => field.visible &&  field.formCode === 34 &&
-        field.formSubGroupingCode !== 112  &&
-        field.formSubGroupingCode !== 115 && field.formSubGroupingCode !== 117 &&
-        field.formGroupingCode !== 107 && field.formSubGroupingCode !== 113);
-    }
-
-    formGroupSections.forEach(section => {
-      section.fields = [];
-    })
-
-    visibleFormFields.forEach(field => {
-      formGroupSections.forEach(section => {
-        if (field.formGroupingCode === section.code) {
-          section.fields.push(field);
-        }
-      })
-    });
-
-    this.formGroupSections = formGroupSections;
-    log.info('Form group sections', this.formGroupSections);
-    this.addFieldsToSections(formGroupSections);
-
-    this.wealthAmlFormFields = fields.filter(field => field.formSubGroupingCode === 125);
-    this.corporateContactDetailsFormField = fields.filter(field => field.formSubGroupingCode === 112);
-    this.corporateAddressDetailsFormField = fields.filter(field => field.formSubGroupingCode === 117);
-    this.corporateFinancialDetailsFormField = fields.filter(field => field.formSubGroupingCode === 115);
-    this.corporateWealthAmlFormFieldsDetailsFormField = fields.filter(field => field.formSubGroupingCode === 118);
-    this.corporateWealthCR12DetailsFormField = fields.filter(field => field.formSubGroupingCode === 119);
-    this.corporateWealthOwnershipDetailsFormField = fields.filter(field => field.formSubGroupingCode === 120);
-    this.privacyFormFields = fields.filter(field => field.formSubGroupingCode === 113 );
-    this.branchDetailsFormFields = fields.filter(field => field.formSubGroupingCode === 'branch_details');
-
-    log.info(`wealthAmlFormFields >>> `, this.wealthAmlFormFields);
-    log.info(`formGroupSections >>> `, this.formGroupSections);
-    log.info(`branchDetailsFormFields >>> `, this.branchDetailsFormFields);
-    log.info(`privacyFormFields >>> `, this.privacyFormFields);
-  }
-
-  /**
-   * Adds the fields to the form groups based on their order.
-   * @param formGroupSection - The form groups to be assigned fields.
-   */
-  addFieldsToSections(formGroupSection: any[]): void {
-    formGroupSection.forEach(section => {
-      const group = this.fb.group({});
-
-      section.fields.forEach(field => {
-        const control = field.mandatory
-          ? this.fb.control('', Validators.required)
-          : this.fb.control('');
-
-        group.addControl(field.fieldId, control);
-      });
-
-      this.entityForm.addControl(section.groupId, group);
-    });
-    log.info('Adding fields to sections', this.entityForm);
-  }
-
-  /**
-   * Updates the form fields with the updated form fields data.
-   * Replaces the fields in the dynamic setup data with the matched fields from the updated form fields.
-   * Adds the fields to the form groups based on their order.
-   * Detects changes in the component.
-   */
-  updateFormFields() {
-    this.dynamicSetupData.fields = this.dynamicSetupData.fields.map(field => {
-      const matchedField = this.updatedFormFields.fields.find(formField => formField.code === field.code);
-      if (matchedField) {
-        return matchedField;
-      }
-      return field;
-    });
-    log.info('Updated form fields', this.dynamicSetupData.fields);
-    this.addUploadFormFields();
-    this.fetchFormFieldsSetup();
     this.cdr.detectChanges();
   }
 }

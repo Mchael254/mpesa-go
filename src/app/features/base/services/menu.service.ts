@@ -1381,21 +1381,6 @@ subList:[
         // icon: 'fa-solid fa-gears',
         menuItems: [
           {
-            name: 'Accounts',
-            link: '/home/crm-screen-setup',
-          },
-        ],
-
-        collapsed: true,
-      },
-    ],
-    DYNAMIC_SETUP_TWO: [
-      {
-        name: 'Dynamic Setup two',
-        nameSlug: 'dynamicSetupTwo',
-        // icon: 'fa-solid fa-gears',
-        menuItems: [
-          {
             name: 'Account',
             link: '/home/screens-config',
           },
@@ -1469,14 +1454,8 @@ subList:[
       },
       {
         name: 'Dynamic Setup',
-        link: '/home/screen-setup',
-        value: 'DYNAMIC_SETUP',
-        isActive: true,
-      },
-      {
-        name: 'Dynamic Setup two',
         link: '/home/screens-config',
-        value: 'DYNAMIC_SETUP_TWO',
+        value: 'DYNAMIC_SETUP',
         isActive: true,
       },
     ];

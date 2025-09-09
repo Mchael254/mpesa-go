@@ -1,12 +1,11 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Logger, UtilService} from "../../services";
-import {FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {GlobalMessagingService} from "../../services/messaging/global-messaging.service";
 import {SessionStorageService} from "../../services/session-storage/session-storage.service";
 import {ReusableInputComponent} from "../reusable-input/reusable-input.component";
 import * as bootstrap from 'bootstrap';
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
-import {FieldModel} from "../../../features/entities/data/form-config.model";
 import {RegexErrorMessages} from "../../../features/entities/data/field-error.model";
 import {DynamicColumns} from "../../data/dynamic-columns";
 import {SectorService} from "../../services/setups/sector/sector.service";
@@ -53,6 +52,7 @@ export class DynamicSetupTableComponent implements OnInit {
   @Input() formFields: ConfigFormFieldsDto[] = [];
   @Input() subGroupId: string;
   @Input() selectedAddressCountry: CountryDto;
+  @Input() isPreviewMode: boolean = false;
   @Output() saveDetailsData: EventEmitter<any> = new EventEmitter<any>();
 
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
@@ -373,6 +373,9 @@ export class DynamicSetupTableComponent implements OnInit {
    * @returns {void}
    */
   processSelectOption(event: any, fieldId: string) : void {
+    if (this.isPreviewMode === true) {
+      return;
+    }
     const selectedOption = event.target.value;
     log.info(`processSelectOptions >>> `, selectedOption, fieldId);
     switch (fieldId) {
@@ -457,6 +460,9 @@ export class DynamicSetupTableComponent implements OnInit {
    * @returns {void}
    */
   fetchSelectOptions(fieldId: string) {
+    if (this.isPreviewMode === true) {
+      return;
+    }
     log.info('selectid', fieldId);
     const fieldIndex: number = this.formFields
       .findIndex((field: ConfigFormFieldsDto) => field.fieldId === fieldId);
@@ -473,7 +479,7 @@ export class DynamicSetupTableComponent implements OnInit {
       case 'occupation':
         this.fetchOccupations(fieldIndex);
         break
-      case 'title':
+      case 'titleId':
         this.fetchClientTitles(fieldIndex);
         break
       case 'country':
@@ -487,7 +493,7 @@ export class DynamicSetupTableComponent implements OnInit {
       case 'town':
         this.fetchTowns(fieldIndex);
         break;
-      case 'postalCode':
+      case 'cnt_corporate_branch_details_postalCode':
         this.fetchPostalCode(fieldIndex);
         break;
       case 'bankName':
