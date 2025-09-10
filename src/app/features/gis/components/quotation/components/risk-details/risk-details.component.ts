@@ -563,11 +563,12 @@ export class RiskDetailsComponent {
         next: (res: any) => {
           this.quotationDetails = res;
           log.debug("Quotation details-risk details", this.quotationDetails);
-          this.quoteProductCode = this.quotationDetails.quotationProducts?.[0].riskInformation?.[0].quotationProductCode;
+          this.quoteProductCode = this.quotationDetails.quotationProducts?.[0].code;
           sessionStorage.setItem('newQuotationProductCode', this.quoteProductCode);
-          this.selectedSubclassCode = this.quotationDetails.quotationProducts?.[0].riskInformation?.[0].subclassCode;
+          this.selectedSubclassCode = this.quotationDetails?.quotationProducts?.[0].riskInformation?.[0]?.subclassCode;
           sessionStorage.setItem('selectedSubclasscode', this.selectedSubclassCode);
           this.insuredCode = this.quotationDetails.clientCode
+          log.debug("Insured code:", this.insuredCode)
           this.clientCode = this.quotationDetails.clientCode
           if (this.insuredCode) {
             this.loadClientDetails();
@@ -581,7 +582,7 @@ export class RiskDetailsComponent {
             product => product.productCode === this.selectedProductCode
           )
           // this.quoteProductCode = productDetails.code;
-      
+
           log.debug("limit qpcode", this.quoteProductCode);
 
           //risk details
@@ -893,7 +894,7 @@ export class RiskDetailsComponent {
 
       // Set dropdown options
       this.clientsData = [client]; // wrap in array for dropdown options
-
+      log.debug("Clients data;", this.clientsData)
       // Add the control if it doesn't exist
       if (!this.riskDetailsForm.contains('insureds')) {
         this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
@@ -2263,6 +2264,8 @@ export class RiskDetailsComponent {
       this.setColumnsFromRiskLimit(this.sectionDetails[0]);
     }
     const subclassCode = riskSelectedData.subclassCode;
+    this.selectedSubclassCode = subclassCode
+    this.quoteProductCode = riskSelectedData.quotationProductCode
     const binderCode = riskSelectedData.binderCode;
     const covertypeCode = riskSelectedData.coverTypeCode;
 
@@ -3043,8 +3046,7 @@ export class RiskDetailsComponent {
   }
 
   setClauseColumns(clause: Clause) {
-    const excludedFields = ['version', 'clauseCode', 'clauseExpires', 'clauseType', 'isEditable', 'isLienClause', 'isMandatory',
-      'isRescueClause', 'subClassCode',
+    const excludedFields = [
     ];
 
     this.clauseColumns = Object.keys(clause)
@@ -3071,7 +3073,7 @@ export class RiskDetailsComponent {
     // log.debug("clauseColumns", this.clauseColumns);
   }
 
-  defaultVisibleClauseFields = ['heading', 'shortDescription', , 'wording'];
+  defaultVisibleClauseFields = ['heading', 'shortDescription', 'wording'];
 
   loadAddedClauses(): void {
     const riskCode = this.selectedRiskCode;
@@ -3903,9 +3905,9 @@ export class RiskDetailsComponent {
     this.showLimitsOfLiabilityColumnModal = true;
   }
 
-  setLimitsOfLiabilityColumns(clause: Clause) {
+  setLimitsOfLiabilityColumns(limits: any) {
     const excludedFields = [];
-    this.limitsOfLiabilityColumns = Object.keys(clause)
+    this.limitsOfLiabilityColumns = Object.keys(limits)
       .filter((key) => !excludedFields.includes(key))
       .map((key) => ({
         field: key,
@@ -3949,9 +3951,9 @@ export class RiskDetailsComponent {
       this.limitsOfLiability = JSON.parse(cachedData);
       this.originalLimitsOfLiability = JSON.parse(cachedOriginal);
 
-      if (this.originalLimitsOfLiability.length > 0) {
-        this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
-      }
+      // if (this.originalLimitsOfLiability.length > 0) {
+      //   this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
+      // }
 
       log.debug(`Loaded limits of liability for subclass ${this.selectedRiskCode} from sessionStorage`);
       return;
@@ -3967,9 +3969,9 @@ export class RiskDetailsComponent {
         this.limitsOfLiability = [...limits];
         sessionStorage.setItem(cacheKey, JSON.stringify(this.limitsOfLiability));
 
-        if (this.originalLimitsOfLiability.length > 0) {
-          this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
-        }
+        // if (this.originalLimitsOfLiability.length > 0) {
+        //   this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
+        // }
 
         log.debug(`Fetched and stored limits for subclass ${this.selectedSubclassCode}`);
       },
@@ -4001,25 +4003,33 @@ export class RiskDetailsComponent {
 
 
   loadAddedLimitsOfLiability(): void {
+    log.debug("Selected SUBCLASS CODE:", this.selectedSubclassCode)
+    log.debug("Selected quote product code:", this.quoteProductCode)
+
     if (!this.selectedSubclassCode || !this.quoteProductCode) {
       return;
     }
-
-    const addedCacheKey = `added_limits_of_liability_${this.selectedRiskCode}`;
-    const cachedAddedData = sessionStorage.getItem(addedCacheKey);
-
-    if (cachedAddedData) {
-      try {
-        this.addedLimitsOfLiability = JSON.parse(cachedAddedData);
-        log.debug(`Added limits loaded from cache for subclass ${this.selectedRiskCode}`);
-        return;
-      } catch (error) {
-        log.debug('Error parsing cached added limits, fetching fresh data:', error);
-        sessionStorage.removeItem(addedCacheKey);
-      }
-    }
-
     this.fetchAddedLimitsOfLiability();
+    // const addedCacheKey = `added_limits_of_liability_${this.selectedRiskCode}`;
+    // const cachedAddedData = sessionStorage.getItem(addedCacheKey);
+    // log.debug("cachedAddedData", cachedAddedData)
+
+    // if (cachedAddedData.length > 0) {
+    //   try {
+    //     this.addedLimitsOfLiability = JSON.parse(cachedAddedData);
+    //     log.debug(`Added limits loaded from cache for subclass ${this.selectedRiskCode}`);
+    //     log.debug("ADDED LIMITS OF LIABILITY", this.addedLimitsOfLiability)
+
+    //     return;
+    //   } catch (error) {
+    //     log.debug('Error parsing cached added limits, fetching fresh data:', error);
+    //     sessionStorage.removeItem(addedCacheKey);
+    //   }
+    // } else {
+    //   this.fetchAddedLimitsOfLiability();
+    // }
+
+
   }
 
 
@@ -4139,6 +4149,7 @@ export class RiskDetailsComponent {
   }
 
   fetchAddedLimitsOfLiability(): void {
+    log.debug("FETCH added limits of liability called ")
     if (!this.selectedSubclassCode || !this.quoteProductCode) {
       log.debug('Subclass code or quote product code missing');
       return;
@@ -4149,11 +4160,12 @@ export class RiskDetailsComponent {
       .subscribe({
         next: (response) => {
           this.addedLimitsOfLiability = response._embedded;
+          log.debug("QUOATION LIMITS OF LIABILITY", this.addedLimitsOfLiability);
 
+          this.setLimitsOfLiabilityColumns(this.addedLimitsOfLiability?.[0])
           const addedCacheKey = `added_limits_of_liability_${this.selectedRiskCode}`;
           sessionStorage.setItem(addedCacheKey, JSON.stringify(response._embedded));
 
-          log.debug("Added limits fetched and cached successfully");
         },
         error: (err) => {
           log.debug('Error fetching limits of liability (L):', err);
@@ -4495,10 +4507,7 @@ export class RiskDetailsComponent {
   }
 
   setPerilColumns(excess: Excesses) {
-    const excludedFields = ['sectionShortDescription', 'shortDescription', 'subclassCode', 'sectionCode', 'perCode', 'perilLimit',
-      'sectionDescription', 'multiplier', 'tlExcessType', 'plExcessType', 'expireOnClaim', 'dependLossType', 'benefitPerPeriod',
-      'claimExcessType', 'tlExcess', 'tlExcessMin', 'tlExcessMax', 'claimExcessMin', 'claimExcessMax', 'plExcess', 'plExcessMin',
-      'plExcessMax', 'code',
+    const excludedFields = [
     ];
 
     this.perilColumns = Object.keys(excess)
@@ -5407,22 +5416,34 @@ export class RiskDetailsComponent {
 
     this.showTaxesColumnModal = true;
   }
-
   setTaxesColumns(tax: any) {
-    const excludedFields = ['code', 'productCode', 'quotationCode', 'transactionCode', 'taxRateCode', 'levelCode',];
-    this.taxesColumns = Object.keys(tax)
-      .filter((key) => !excludedFields.includes(key))
-      .map((key) => ({
-        field: key,
-        header: this.sentenceCase(key),
-        visible: this.defaultVisibleTaxesFields.includes(key),
-        filterable: true,
-        sortable: true
-      }));
+    const excludedFields = [];
+    const defaultVisibleTaxesFields = ['rateDescription', 'rate', 'taxAmount', 'rateType',
+    ];
+    // All keys from the sample
+    const keys = Object.keys(tax).filter(key => !excludedFields.includes(key));
+
+    // Separate default fields and the rest
+    const defaultFields = defaultVisibleTaxesFields.filter(f => keys.includes(f));
+    const otherFields = keys.filter(k => !defaultVisibleTaxesFields.includes(k));
+
+    // Strictly order = defaults first, then others
+    const orderedKeys = [...defaultFields, ...otherFields];
+
+    this.taxesColumns = orderedKeys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleTaxesFields.includes(key),
+      truncate: defaultVisibleTaxesFields.includes(key),
+      filterable: true,
+      sortable: true // only these get truncated
+    }));
+
+
 
     this.taxesColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false });
 
-    // Restore visibility from sessionStorage
+    // Restore from sessionStorage 
     const saved = sessionStorage.getItem('taxesColumns');
     if (saved) {
       const savedVisibility = JSON.parse(saved);
@@ -5432,11 +5453,10 @@ export class RiskDetailsComponent {
       });
     }
 
-    log.debug("taxesColumns", this.taxesColumns);
+    log.debug("taxes Columns", this.taxesColumns);
   }
 
-  defaultVisibleTaxesFields = ['rate', 'rateDescription', 'rateType', 'renewalEndorsement', 'riskProductLevel', 'taxAmount',
-  ];
+
 
   openEditTaxModal() {
     if (!this.selectedProduct) {
@@ -5466,9 +5486,9 @@ export class RiskDetailsComponent {
 
         this.taxes = res._embedded;
         log.debug('Taxes', this.taxes)
-        if (this.taxes.length > 0) {
-          this.setTaxesColumns(this.taxes[0]);
-        }
+        // if (this.taxes.length > 0) {
+        //   this.setTaxesColumns(this.taxes[0]);
+        // }
         return;
       });
     } else {

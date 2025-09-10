@@ -85,6 +85,7 @@ import { SessionStorageService } from "../../../../../../shared/services/session
 import { OrganizationDTO } from "../../../../../crm/data/organization-dto";
 
 import { OrganizationService } from "../../../../../crm/services/organization.service";
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -305,6 +306,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   filteredProducts: Products[] = [];
   searchChanged = new Subject<string>();
   destroy$ = new Subject<void>();
+  previewVisible = false;
+  pdfSrc: SafeResourceUrl | null = null;
 
 
   constructor(
@@ -331,7 +334,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     private spinner: NgxSpinnerService,
     private menuService: MenuService,
     private notificationService: NotificationService,
-    private sessionStorageService: SessionStorageService
+    private sessionStorageService: SessionStorageService,
+    private sanitizer: DomSanitizer
   ) {
     this.tableDetails = {
       cols: this.cols,
@@ -2330,6 +2334,28 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       }))
     }
   }
+  onPreviewRequested() {
+    this.previewVisible = false;
+    this.pdfSrc = null;
+
+    const payload = this.notificationPayload();
+    this.quotationService.generateQuotationReport(payload).pipe(
+      untilDestroyed(this)
+    ).subscribe({
+      next: (response) => {
+        // 👇 Just prepend the header, no sanitizer needed
+        this.pdfSrc = `data:application/pdf;base64,${response.base64}`;
+
+        setTimeout(() => {
+          this.previewVisible = true;
+        }, 0);
+      },
+      error: (err) => {
+        console.error('Failed to preview quotation report', err);
+      }
+    });
+  }
+
 
   onDownloadRequested() {
     const payload = this.notificationPayload();
@@ -2339,6 +2365,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf")
     });
   }
+
+
+
 
   fetchCoverRelatedData() {
     const productLevelPremiums$ = this.premiumComputationResponse.productLevelPremiums.map((product) => {

@@ -3,86 +3,80 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
-
-import {OrganizationDTO} from '../../../../features/crm/data/organization-dto';
-import { GlobalMessagingService} from '../../../../shared/services/messaging/global-messaging.service';
-
-import {ReportsService} from '../../../../shared/services/reports/reports.service';
-
-import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
+import { Pipe, PipeTransform } from '@angular/core';
+import { PreviewReceiptComponent } from './preview-receipt.component';
+import { ReceiptDataService } from '../../services/receipt-data.service';
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
+import { ReportsService } from '../../../../shared/services/reports/reports.service';
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { ReceiptManagementService } from '../../services/receipt-management.service';
 import { ReceiptService } from '../../services/receipt.service';
-
-import { PreviewReceiptComponent } from './preview-receipt.component';
-
-
-
-
-
-import { Pipe, PipeTransform } from '@angular/core'; // <-- Import Pipe and PipeTransform
-
-
-
-// ======================================================================
-//        *** THE FIRST PART OF THE FIX IS HERE: Create a Mock Pipe ***
-// This is a simple dummy pipe that takes any value and just returns it.
-// It allows the template to compile without needing the full ngx-translate module.
+import { YesNo } from '../shared/yes-no.component';
+// --- Mock Pipe for the template ---
 @Pipe({ name: 'translate' })
 class MockTranslatePipe implements PipeTransform {
   transform(value: string): string {
     return value;
   }
 }
-// ======================================================================
-
 
 describe('PreviewReceiptComponent', () => {
   let component: PreviewReceiptComponent;
   let fixture: ComponentFixture<PreviewReceiptComponent>;
 
-  let mockSessionStorageService: Partial<jest.Mocked<SessionStorageService>>;
-  let mockGlobalMessagingService: Partial<jest.Mocked<GlobalMessagingService>>;
-  let mockReportsService: Partial<jest.Mocked<ReportsService>>;
-  let mockRouter: Partial<jest.Mocked<Router>>;
-  let mockTranslateService: Partial<jest.Mocked<TranslateService>>;
-  let mockReceiptService: Partial<jest.Mocked<ReceiptService>>;
-  let mockReceiptManagementService: Partial<jest.Mocked<ReceiptManagementService>>;
+  // Use jest.Mocked<T> for strong typing of mocks
+  let mockSessionStorageService: jest.Mocked<SessionStorageService>;
+  let mockGlobalMessagingService: jest.Mocked<GlobalMessagingService>;
+  let mockReportsService: jest.Mocked<ReportsService>;
+  let mockRouter: jest.Mocked<Router>;
+  let mockTranslateService: jest.Mocked<TranslateService>;
+  let mockReceiptService: jest.Mocked<ReceiptService>;
+  let mockReceiptManagementService: jest.Mocked<ReceiptManagementService>;
+  let mockReceiptDataService: jest.Mocked<ReceiptDataService>;
 
-  const mockOrg: OrganizationDTO = { id: 101, name: 'Test Org' } as OrganizationDTO;
+  // Mock Data for the new structure
+  const mockShareData = {
+    shareType: 'WHATSAPP',
+    recipientPhone: '254712345678',
+    recipientEmail: null,
+    clientName: 'Test Client',
+  };
 
   beforeEach(async () => {
-    mockSessionStorageService = { /*...*/ };
-    // ... all other mock service initializations remain the same
+    // Initialize mocks
     mockSessionStorageService = {
-        getItem: jest.fn(),
-        setItem: jest.fn(),
-        clear: jest.fn(),
-      };
-      mockGlobalMessagingService = {
-        displaySuccessMessage: jest.fn(),
-        displayErrorMessage: jest.fn(),
-      };
-      mockReportsService = {
-        generateReport: jest.fn(),
-      };
-      mockRouter = {
-        navigate: jest.fn(),
-      };
-      mockTranslateService = {
-        instant: jest.fn(),
-      };
-      mockReceiptService = {
-        updateReceiptStatus: jest.fn(),
-      };
-      mockReceiptManagementService = {
-        shareReceipt: jest.fn(),
-      };
+      getItem: jest.fn(),
+      setItem: jest.fn(),
+      removeItem: jest.fn(),
+      clear: jest.fn(),
+      get: jest.fn(),
+    } as any;
+    mockGlobalMessagingService = {
+      displaySuccessMessage: jest.fn(),
+      displayErrorMessage: jest.fn(),
+    } as any;
+    mockReportsService = {
+      generateReport: jest.fn(),
+    } as any;
+    mockRouter = {
+      navigate: jest.fn(),
+    } as any;
+    mockTranslateService = {
+      instant: jest.fn().mockReturnValue('Translated Message'),
+    } as any;
+    mockReceiptService = {
+      updateReceiptStatus: jest.fn(),
+    } as any;
+    mockReceiptManagementService = {
+      shareReceipt: jest.fn(),
+    } as any;
+    mockReceiptDataService = {
+      clearReceiptData: jest.fn(),
+      clearFormState: jest.fn(),
+    } as any;
 
     await TestBed.configureTestingModule({
-      // ======================================================================
-      //        *** THE SECOND PART OF THE FIX IS HERE: Declare the Mock Pipe ***
       declarations: [PreviewReceiptComponent, MockTranslatePipe],
-      // ======================================================================
       imports: [RouterTestingModule],
       providers: [
         { provide: SessionStorageService, useValue: mockSessionStorageService },
@@ -92,145 +86,271 @@ describe('PreviewReceiptComponent', () => {
         { provide: TranslateService, useValue: mockTranslateService },
         { provide: ReceiptService, useValue: mockReceiptService },
         { provide: ReceiptManagementService, useValue: mockReceiptManagementService },
+        { provide: ReceiptDataService, useValue: mockReceiptDataService },
       ],
     }).compileComponents();
 
-    // --- Default Mock Setups ---
-    mockTranslateService.instant.mockReturnValue('Translated Error Message');
-    window.URL.createObjectURL = jest.fn();
-    jest.spyOn(window.URL, 'createObjectURL').mockReturnValue('blob:http://localhost/mock-url');
+    // Mock window functions
+    window.URL.createObjectURL = jest.fn().mockReturnValue('blob:http://localhost/mock-url');
 
     fixture = TestBed.createComponent(PreviewReceiptComponent);
     component = fixture.componentInstance;
-    
-    (component as any).reportService = mockReportsService;
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
+  // Helper to centralize mock setup for `ngOnInit`
+  const setupMocksForInit = (shareData: any = mockShareData, receiptingScreen: YesNo = YesNo.No) => {
+    mockSessionStorageService.getItem.mockImplementation((key: string) => {
+      switch (key) {
+        case 'defaultOrg': return JSON.stringify({ id: 1 });
+        case 'selectedOrg': return null;
+        case 'receiptNo': return '12345';
+        case 'printed': return YesNo.No;
+        case 'receipting': return receiptingScreen;
+        case 'sharePreviewData': return shareData ? JSON.stringify(shareData) : null;
+        default: return null;
+      }
+    });
+    mockReportsService.generateReport.mockReturnValue(of(new Blob()));
+  };
 
-  // ... All your 'it' blocks will now work ...
-  
   it('should create', () => {
+    setupMocksForInit(null);
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   describe('ngOnInit', () => {
-    it('should initialize properties from session storage and call getReceiptToPrint', () => {
-      // Arrange
+    it('should initialize properties correctly from session storage', () => {
+      setupMocksForInit();
+
+      fixture.detectChanges();
+
+      expect(component.receiptNo).toBe(12345);
+      expect(component.printStatus).toBe(YesNo.No);
+      expect(component.receiptingScreen).toBe(YesNo.No);
+      expect(component.shareData).toEqual(mockShareData);
+      expect(mockReportsService.generateReport).toHaveBeenCalled();
+    });
+
+    it('should handle missing sharePreviewData gracefully', () => {
+      setupMocksForInit(null);
+      fixture.detectChanges();
+      expect(component.shareData).toBeNull();
+    });
+  });
+
+  describe('ngOnInit - agent/account code handling', () => {
+    it('should prioritize agentCode if available', () => {
       mockSessionStorageService.getItem.mockImplementation((key: string) => {
         switch (key) {
-          case 'defaultOrg': return JSON.stringify(mockOrg);
-          case 'receiptNo': return '12345';
-          case 'recipient': return 'test@example.com';
-          case 'shareType': return 'EMAIL';
+          case 'defaultOrg': return JSON.stringify({ id: 1 });
+          case 'receiptNo': return '999';
+          case 'agentCode': return '456';
+          case 'accountCode': return '789';
           case 'printed': return 'N';
+          case 'receipting': return 'N';
           default: return null;
         }
       });
       mockReportsService.generateReport.mockReturnValue(of(new Blob()));
 
-      // Act
       fixture.detectChanges();
 
-      // Assert
-      expect(component.defaultOrg).toEqual(mockOrg);
-      expect(component.receiptNo).toBe(12345);
-      expect(component.recipient).toBe('test@example.com');
-      expect(component.shareMethod).toBe('EMAIL');
-      expect(component.printStatus).toBe('N');
-      expect(mockReportsService.generateReport).toHaveBeenCalled();
+      expect(component.agentCode).toBe(456);
+      expect(component.accountCode).toBeNull();
+      expect(component.code).toBe(456);
+    });
+
+    it('should fallback to accountCode if agentCode is missing', () => {
+      mockSessionStorageService.getItem.mockImplementation((key: string) => {
+        switch (key) {
+          case 'defaultOrg': return JSON.stringify({ id: 1 });
+          case 'receiptNo': return '999';
+          case 'accountCode': return '789';
+          case 'printed': return 'N';
+          case 'receipting': return 'N';
+          default: return null;
+        }
+      });
+      mockReportsService.generateReport.mockReturnValue(of(new Blob()));
+
+      fixture.detectChanges();
+
+      expect(component.accountCode).toBe(789);
+      expect(component.agentCode).toBeNull();
+      expect(component.code).toBe(789);
     });
   });
 
   describe('getReceiptToPrint', () => {
+    beforeEach(() => {
+      setupMocksForInit();
+      fixture.detectChanges();
+    });
+
     it('should set filePath on successful report generation', () => {
-      // Arrange
-      const mockBlob = new Blob(['pdf-content'], { type: 'application/pdf' });
+      const mockBlob = new Blob(['pdf-content']);
       mockReportsService.generateReport.mockReturnValue(of(mockBlob));
 
-      // Act
       component.getReceiptToPrint();
 
-      // Assert
       expect(component.filePath).toBe('blob:http://localhost/mock-url');
       expect(window.URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
     });
+  });
 
+  describe('getReceiptToPrint - error path', () => {
     it('should show error and navigate on failed report generation', () => {
-      // Arrange
-      mockReportsService.generateReport.mockReturnValue(throwError(() => ({ error: { msg: 'PDF Generation Failed' } })));
+      mockReportsService.generateReport.mockReturnValue(
+        throwError(() => ({ error: { msg: 'PDF Fail' } }))
+      );
+      const navSpy = jest.spyOn(component as any, 'navigateBackToPrintTab');
 
-      // Act
       component.getReceiptToPrint();
 
-      // Assert
-      expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalled();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-management']);
+      expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
+        'Translated Message',
+        'PDF Fail'
+      );
+      expect(navSpy).toHaveBeenCalled();
     });
   });
 
   describe('postClientDetails', () => {
     beforeEach(() => {
-      component.receiptNo = 12345;
-      component.recipient = 'test@example.com';
-      component.shareMethod = 'EMAIL';
+      setupMocksForInit();
+      fixture.detectChanges();
     });
 
-    it('should call shareReceipt, updatePrintStatus, show success, and navigate if printStatus is "N"', () => {
-      // Arrange
-      component.printStatus = 'N';
-      mockReceiptManagementService.shareReceipt.mockReturnValue(of({ msg: 'Shared successfully' }));
-      mockReceiptService.updateReceiptStatus.mockReturnValue(of({ msg: 'Status updated' }));
+    it('should build the correct payload from `shareData`', () => {
+      mockReceiptManagementService.shareReceipt.mockReturnValue(of({ msg: 'Success' }));
+      mockReceiptService.updateReceiptStatus.mockReturnValue(of({ msg: 'Updated' }));
 
-      // Act
       component.postClientDetails();
 
-      // Assert
-      expect(mockReceiptManagementService.shareReceipt).toHaveBeenCalled();
-      expect(mockGlobalMessagingService.displaySuccessMessage).toHaveBeenCalledWith('success', 'Shared successfully');
-      expect(mockReceiptService.updateReceiptStatus).toHaveBeenCalledWith([12345]);
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-management']);
+      const expectedBody = {
+        shareType: mockShareData.shareType,
+        recipientEmail: mockShareData.recipientEmail,
+        recipientPhone: mockShareData.recipientPhone,
+        clientName: mockShareData.clientName,
+        receiptNumber: String(component.receiptNo),
+        orgCode: String(component.defaultOrg.id),
+      };
+
+      expect(mockReceiptManagementService.shareReceipt).toHaveBeenCalledWith(expectedBody);
     });
 
-    it('should call shareReceipt, show success, and navigate but NOT updatePrintStatus if printStatus is "Y"', () => {
-      // Arrange
-      component.printStatus = 'Y';
-      mockReceiptManagementService.shareReceipt.mockReturnValue(of({ msg: 'Shared successfully' }));
+    it('should update status and navigate to Management if receiptingScreen is "N"', () => {
+      const navSpy = jest.spyOn(component, 'navigateToReceiptManagement');
+      component.receiptingScreen = YesNo.No;
+      mockReceiptManagementService.shareReceipt.mockReturnValue(of({ msg: 'Success' }));
+      mockReceiptService.updateReceiptStatus.mockReturnValue(of({ msg: 'Updated' }));
 
-      // Act
       component.postClientDetails();
 
-      // Assert
-      expect(mockReceiptManagementService.shareReceipt).toHaveBeenCalled();
-      expect(mockGlobalMessagingService.displaySuccessMessage).toHaveBeenCalledWith('success', 'Shared successfully');
+      expect(mockReceiptService.updateReceiptStatus).toHaveBeenCalled();
+      expect(navSpy).toHaveBeenCalled();
+    });
+
+    it('should update status and navigate to Capture if receiptingScreen is "Y"', () => {
+      const navSpy = jest.spyOn(component, 'navigateToReceiptCapture');
+      component.receiptingScreen = YesNo.Yes;
+      mockReceiptManagementService.shareReceipt.mockReturnValue(of({ msg: 'Success' }));
+      mockReceiptService.updateReceiptStatus.mockReturnValue(of({ msg: 'Updated' }));
+
+      component.postClientDetails();
+
+      expect(mockReceiptService.updateReceiptStatus).toHaveBeenCalled();
+      expect(navSpy).toHaveBeenCalled();
+    });
+
+    it('should NOT update status if printStatus is "Y"', () => {
+      component.printStatus = YesNo.Yes;
+      mockReceiptManagementService.shareReceipt.mockReturnValue(of({ msg: 'Success' }));
+
+      component.postClientDetails();
+
       expect(mockReceiptService.updateReceiptStatus).not.toHaveBeenCalled();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-management']);
-    });
-
-    it('should show an error message and NOT navigate if shareReceipt fails', () => {
-      // Arrange
-      mockReceiptManagementService.shareReceipt.mockReturnValue(throwError(() => ({ error: { msg: 'Sharing failed' } })));
-
-      // Act
-      component.postClientDetails();
-
-      // Assert
-      expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalled();
-      expect(mockReceiptService.updateReceiptStatus).not.toHaveBeenCalled();
-      expect(mockRouter.navigate).not.toHaveBeenCalled();
     });
   });
 
-  describe('navigateToReceiptManagement', () => {
-    it('should navigate to the receipt management page', () => {
-      // Act
-      component.navigateToReceiptManagement();
+  describe('postClientDetails - error path', () => {
+    it('should display error if shareReceipt fails', () => {
+      mockReceiptManagementService.shareReceipt.mockReturnValue(
+        throwError(() => ({ error: { msg: 'Share failed' } }))
+      );
 
-      // Assert
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-management']);
+      component.postClientDetails();
+
+      expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
+        'Translated Message',
+        'Share failed'
+      );
     });
   });
 
+  describe('updatePrintStatus', () => {
+    it('should display success message on success', () => {
+      mockReceiptService.updateReceiptStatus.mockReturnValue(of({ msg: 'Updated!' }));
+
+      component.receiptNo = 123;
+      component.updatePrintStatus();
+
+      expect(mockReceiptService.updateReceiptStatus).toHaveBeenCalledWith([123]);
+      expect(mockGlobalMessagingService.displaySuccessMessage).toHaveBeenCalledWith(
+        '',
+        'Updated!'
+      );
+    });
+
+    it('should display error message on failure', () => {
+      mockReceiptService.updateReceiptStatus.mockReturnValue(
+        throwError(() => ({ error: { msg: 'Update failed' } }))
+      );
+
+      component.receiptNo = 123;
+      component.updatePrintStatus();
+
+      expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
+        'Translated Message',
+        'Update failed'
+      );
+    });
+  });
+
+  describe('checkActiveScreen', () => {
+    it('should navigate to Management if receiptingScreen is "N"', () => {
+      const navSpy = jest.spyOn(component, 'navigateToReceiptManagement');
+      component.receiptingScreen = YesNo.No;
+
+      component.checkActiveScreen();
+
+      expect(navSpy).toHaveBeenCalled();
+    });
+
+    it('should navigate to Capture if receiptingScreen is "Y"', () => {
+      const navSpy = jest.spyOn(component, 'navigateToReceiptCapture');
+      component.receiptingScreen = YesNo.Yes;
+
+      component.checkActiveScreen();
+
+      expect(navSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Navigation Helpers', () => {
+    it('navigateToReceiptManagement should clean up session and navigate', () => {
+      component['navigateBackToPrintTab']();
+      expect(mockSessionStorageService.setItem).toHaveBeenCalledWith('printTabStatus', JSON.stringify(true));
+      expect(mockSessionStorageService.removeItem).toHaveBeenCalledWith('sharePreviewData');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-management']);
+    });
+
+    it('navigateToReceiptCapture should clear services and navigate', () => {
+      component.navigateToReceiptCapture();
+      expect(mockReceiptDataService.clearReceiptData).toHaveBeenCalled();
+      expect(mockReceiptDataService.clearFormState).toHaveBeenCalled();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-capture']);
+    });
+  });
 });
