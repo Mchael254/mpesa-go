@@ -196,7 +196,9 @@ export interface glAccountDTO {
 }
 export interface shareReceiptDTO{
   shareType:string;
-  recipient:string;
+  clientName:string;
+  recipientEmail:string;
+  recipientPhone:string;
   receiptNumber:string;
   orgCode:string;
 }
