@@ -55,8 +55,14 @@
       <ng-template pTemplate="body" let-rowData>
         <tr [pSelectableRow]="rowData">
           <ng-container *ngFor="let col of columns">
-            <td *ngIf="col.visible">
+            <!--<td *ngIf="col.visible">
               {{ rowData[col.field] | titlecase }}
+            </td>-->
+            <td *ngIf="col.visible">
+              <ng-container *ngIf="rowData[col.field] && rowData[col.field].label; else rawVal">
+                {{ rowData[col.field].label | titlecase }}
+              </ng-container>
+              <ng-template #rawVal>{{ rowData[col.field] | titlecase }}</ng-template>
             </td>
           </ng-container>
 
@@ -226,12 +232,12 @@
                         class="form-select"
                         aria-label="Default select example"
                         (change)="processSelectOption($event, field.fieldId)"
-                        (click)="fetchSelectOptions(field.fieldId)"
+                        (focus)="fetchSelectOptions(field.fieldId)"
                         [class.is-invalid]="dynamicModalForm.get(field.fieldId)?.invalid && dynamicModalForm.get(field.fieldId)?.touched"
                       >
-                        <option value=""></option>
-                        <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [value]="option">
-                          {{ option | titlecase }}
+                        <option [ngValue]="null"></option>
+                        <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [ngValue]="option">
+                          {{ option.label | titlecase }}
                         </option>
                       </select>
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">

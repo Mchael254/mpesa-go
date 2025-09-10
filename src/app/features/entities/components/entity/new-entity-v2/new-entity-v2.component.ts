@@ -469,7 +469,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * create payload for prime identity (primeIdentityPayload)
    */
   saveDetails() : void {
-    this.uploadDocumentToDms();
+    // this.uploadDocumentToDms();
 
     const formValues = this.entityForm.getRawValue();
     const uploadFormValues = this.uploadForm.getRawValue();
@@ -533,16 +533,23 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    */
   saveToDatabase(formValues, upperDetails): void { // todo: define model for formValues & upperDetails
     const payloadObject = {
-      ...formValues.prime_identity,
-      ...formValues.contact_details,
-      ...formValues.privacy_policy,
-      ...formValues.residential_address_details,
-      ...formValues.wealth_aml_details,
-      ...formValues.address_details,
-      ...formValues.financial_details,
+      ...formValues.cnt_individual_prime_identity,
+      ...formValues.cnt_individual_contact_details,
+      ...formValues.cnt_individual_privacy_policy,
+      ...formValues.cnt_individual_residential_address_details,
+      ...formValues.cnt_individual_wealth_aml_details,
+      ...formValues.cnt_individual_address_details,
+      ...formValues.cnt_individual_financial_details,
+      ...formValues.cnt_corporate_prime_identity,
+      ...formValues.cnt_corporate_contact_details,
+      ...formValues.cnt_corporate_privacy_policy,
+      ...formValues.cnt_corporate_residential_address_details,
+      ...formValues.cnt_corporate_wealth_aml_details,
+      ...formValues.cnt_corporate_address_details,
+      ...formValues.cnt_corporate_financial_details,
       ...upperDetails
     }
-
+    log.info(`payloadObject >>>`, payloadObject, formValues);
     const address = {
       boxNumber: "10300",
       countryId: this.selectedAddressCountry?.id,
@@ -561,27 +568,94 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       phoneNumber: payloadObject.telNumber?.internationalNumber,
       smsNumber: payloadObject.smsNumber?.internationalNumber,
       titleId: this.selectedClientTitle?.id,
-      contactChannel: payloadObject.preferedChannel,
+      contactChannel: payloadObject.contactChannel,
       websiteUrl: payloadObject.websiteUrl,
       socialMediaUrl: payloadObject.socialMediaUrl,
     }
 
     const paymentDetails = {
       accountNumber: payloadObject.accountNumber,
-      bankBranchId: payloadObject.branchId,
+      bankBranchId: this.selectedBankBranch?.id,
       currencyId: this.selectedCurrency?.id,
-      preferedChannel: this.selectedPaymentMode?.description,
-      mpayno: null,
+      preferedChannel: payloadObject.paymentMethod,
+      mpayno: payloadObject.cnt_individual_financial_details_mobile_number,
       iban: payloadObject.intlBankAccountNumber,
       swiftCode: payloadObject.swiftCode
     }
 
-    const wealthAmlDetails = this.wealthAmlDetails;
-    const branches = this.branchDetails;
-    const contactPersons = this.contactPersonDetails;
-    const payee = this.payeeDetails;
-    const ownershipDetails = this.ownershipDetails;
-    const cr12Details = this.cr12Details;
+    /*Note:
+    wealthAmlDetails, branches, contactPersons, payee, ownershipDetails should be arrays
+    I have just mapped the correct field ids*/
+    const branches = {
+      code: payloadObject.id,
+      branchName: payloadObject.cnt_corporate_branch_details_name,
+      countryId: payloadObject.country,
+      stateId: payloadObject.county,
+      townId: payloadObject.town,
+      physicalAddress: payloadObject.cnt_corporate_branch_details_physicalAddress,
+      email: payloadObject.cnt_corporate_branch_email,
+    }
+
+    const contactPersons = {
+      clientTitleCode: payloadObject.titleId,
+      name: payloadObject.name,
+      idNumber: payloadObject.docIdNumber,
+      email: payloadObject.emailAddress,
+      mobileNumber: payloadObject.phoneNumber,
+      wef: payloadObject.cnt_corporate_contact_person_details_wef,
+      wet: payloadObject.cnt_corporate_contact_person_details_wet,
+    }
+
+    const payee = {
+      name: payloadObject.payee_details_name,
+      idNo: payloadObject.cnt_corporate_payee_docIdNumber,
+      mobileNo: payloadObject.cnt_corporate_payee_mobileNumber,
+      email: payloadObject.payee_email_address,
+      // payloadObject.bankName,
+      // payloadObject.branchName,
+      accountNumber: payloadObject.cnt_corporate_payee_accountNumber,
+    }
+
+    const wealthAmlDetails = [{
+      fundsSource: payloadObject.source_of_fund || payloadObject.sourceOfFundAml,
+      employmentStatus: payloadObject.type_of_employment,
+      sectorId: payloadObject.economicSector || payloadObject.economicSectorAml,
+      occupationId: payloadObject.occupation,
+      insurancePurpose: payloadObject.purposeOfInsurance,
+      premiumFrequency: payloadObject.premiumFrequency,
+      distributeChannel: payloadObject.distributionChannel,
+      tradingName: payloadObject.tradingName,
+      registeredName: payloadObject.registeredName,
+      certificateRegistrationNumber: payloadObject.certificateRegistrationNumber,
+      certificateYearOfRegistration: payloadObject.certificateRegistrationYear,
+      parentCountryId: payloadObject.parentCountry,
+      operatingCountryId: payloadObject.operatingCountry,
+
+      /*Note: cr12 details[] should be part of wealthAmlDetails[]*/
+    }]
+
+    const cr12Details = {
+      directorName: payloadObject.cr12_name,
+      directorIdRegNo: payloadObject.companyRegistrationNumber,
+      directorDob: payloadObject.companyRegistrationDate,
+      address: payloadObject.cr12_details_address,
+      certificateReferenceNo: payloadObject.referenceNumber,
+      certificateRegistrationYear: payloadObject.referenceNumberYear,
+    }
+
+    const ownershipDetails = [{
+      name: payloadObject.cnt_corporate_ownership_details_name,
+      idNumber: payloadObject.cnt_corporate_ownership_details_docIdNumber,
+      contactPersonPhone: payloadObject.contactPersonPhone,
+      percentOwnership: payloadObject.percentOwnership,
+    }]
+
+    // const wealthAmlDetails = this.wealthAmlDetails;
+    // const branches = this.branchDetails;
+    // const contactPersons = this.contactPersonDetails;
+    // const payee = this.payeeDetails;
+    // const ownershipDetails = this.ownershipDetails;
+    // const cr12Details = this.cr12Details;
 
 
     const client: any = { // todo: update Model (ClientDTO)
@@ -596,16 +670,16 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       cr12Details,
       withEffectFromDate: payloadObject.wef,
       withEffectToDate: payloadObject.wet,
-      firstName: payloadObject.otherNames,
+      firstName: this.category === 'corporate' ? payloadObject.entityName.substring(0, payloadObject.entityName.indexOf(' ')) : payloadObject.otherNames,
       gender: payloadObject.gender,
-      lastName: payloadObject.lastName,
+      lastName: this.category === 'corporate' ? payloadObject.entityName.substring(payloadObject.entityName.indexOf(' ') + 1) : payloadObject.lastName,
       pinNumber: payloadObject.pinNumber /*A487438114W*/,
       category: payloadObject.category,
       countryId: this.selectedAddressCountry?.id,
       clientTypeId: "13" || "14",
-      dateOfBirth: payloadObject.dateOfBirth,
+      dateOfBirth: payloadObject.dateOfBirth || payloadObject.dateOfIncorporation,
       modeOfIdentityId: this.selectedIdType?.id,
-      idNumber: payloadObject.idNumber /*"37678960"*/ /*99245/6789Z*/,
+      idNumber: payloadObject.idNumber || payloadObject.businessRegNumber /*"37678960"*/ /*99245/6789Z*/,
       branchId: 338,
       maritalStatus: this.selectedMaritalStatus?.value/*"S"*/,
       partyId: 3661
@@ -678,6 +752,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         this.selectedState = this.states.find((state: StateDto) => state.name === selectedOption);
         break;
       case 'cityTown':
+      case 'city_town':
         this.selectedTown = this.towns.find((town: TownDto) => town.name === selectedOption);
         break;
       case 'postalCode':
@@ -702,6 +777,10 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         break;
       case 'organizationType':
         this.fetchRequiredDocuments(formValues);
+        break;
+      case 'bankBranchCode':
+        this.selectedBankBranch = this.bankBranches.find((b: BankBranchDTO) => b.name === selectedOption);
+        log.info(`selectedbank branch >>> `, selectedOption, this.selectedBankBranch);
         break;
       default:
           log.info(`no fieldId found`)
@@ -810,6 +889,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         this.fetchStatesByCountryCode(sectionIndex, fieldIndex);
         break;
       case 'cityTown':
+      case 'city_town':
         this.fetchTownsByStateCode(sectionIndex, fieldIndex);
         break;
       case 'postalCode':
@@ -1199,22 +1279,23 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     const dataToSave = eventData.data;
 
     switch (subgroup) {
-      case 'wealth_aml_details':
+      case 'cnt_individual_aml_details':
+      case 'cnt_corporate_aml_details':
         this.wealthAmlDetails = dataToSave;
         break;
-      case 'contact_person_details':
+      case 'cnt_corporate_contact_person_details':
         this.contactPersonDetails = dataToSave;
         break;
-      case 'branch_details':
+      case 'cnt_corporate_branch_details':
         this.branchDetails = dataToSave;
         break;
-      case 'payee_details':
+      case 'cnt_corporate_payee_details':
         this.payeeDetails = dataToSave;
         break;
-      case 'ownership_details':
+      case 'cnt_corporate_ownership_details':
         this.ownershipDetails = dataToSave;
         break;
-      case 'cr12_details':
+      case 'cnt_corporate_cr12_details':
         this.cr12Details = dataToSave;
         break;
       default:
