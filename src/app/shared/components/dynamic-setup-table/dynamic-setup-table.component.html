@@ -48,7 +48,7 @@
               <p-sortIcon [field]="col.field"></p-sortIcon>
             </th>
           </ng-container>
-          <th style="width: 2%"></th>
+          <th class="text-center" style="width: 2%">Action</th>
         </tr>
       </ng-template>
 
@@ -312,7 +312,7 @@
           </form>
         </div>
         <div class="modal-footer border-top-0">
-          <button type="button" class="btn btn-primary"
+          <button type="button" class="btn btn-primary" [disabled]="isPreviewMode"
                   (click)="saveDetails()">{{ 'serviceDesk.saveDetails' | translate }}
           </button>
         </div>

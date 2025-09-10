@@ -8,7 +8,6 @@ import {TranslateModule} from "@ngx-translate/core";
 import { CrmScreensConfigComponent } from './components/crm-screens-config/crm-screens-config.component';
 import {DialogModule} from "primeng/dialog";
 import {NgxIntlTelInputModule} from "ngx-intl-tel-input";
-import { PreviewDynamicSetupTableComponent } from './components/preview-dynamic-setup-table/preview-dynamic-setup-table.component';
 import {FormsModule} from "@angular/forms";
 import {EntitiesModule} from "../entities/entities.module";
 
@@ -16,8 +15,7 @@ import {EntitiesModule} from "../entities/entities.module";
 @NgModule({
   declarations: [
     BaseComponent,
-    CrmScreensConfigComponent,
-    PreviewDynamicSetupTableComponent
+    CrmScreensConfigComponent
   ],
   imports: [
     CommonModule,
