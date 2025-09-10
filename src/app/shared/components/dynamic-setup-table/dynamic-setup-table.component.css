@@ -8,3 +8,9 @@
   max-width: 100% !important;
   box-sizing: border-box;
 }
+
+btn:disabled {
+  pointer-events: all !important;
+  cursor: not-allowed !important;
+  opacity: 0.40;
+}

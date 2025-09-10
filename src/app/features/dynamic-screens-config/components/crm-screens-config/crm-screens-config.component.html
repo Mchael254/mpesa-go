@@ -125,25 +125,45 @@
                   <p-sortIcon [field]="col.field"></p-sortIcon>
                 </th>
               </ng-container>
-              <th style="width: 2%"></th>
+              <th class="text-center" style="width: 2%">Action</th>
             </tr>
           </ng-template>
 
           <ng-template pTemplate="body" let-rowData>
             <tr [pSelectableRow]="rowData">
-              <td>{{ rowData.label[this.language] | titlecase }}</td>
-              <td>{{ rowData?.visible === true ? 'Yes' : 'No' }}</td>
-              <td>{{ rowData?.disabled === true ? 'Yes' : 'No' }}</td>
-              <td>{{ rowData?.mandatory === true ? 'Yes' : 'No' }}</td>
-              <td>{{ rowData?.order }}</td>
-              <td>{{ rowData?.type | titlecase }}</td>
-              <td>
-                <span [title]="getValidationTypes(rowData?.validations)"
-                      *ngIf="rowData?.validations?.length">
-                  {{ rowData?.validations?.length }}
-                </span>
-                <span *ngIf="!rowData?.validations?.length">0</span>
-              </td>
+              <ng-container *ngFor="let col of columns">
+                <td *ngIf="col.visible">
+                  <ng-container [ngSwitch]="col.field">
+                    <span *ngSwitchCase="'label'">
+                      {{ rowData.label[language] | titlecase }}
+                    </span>
+                    <span *ngSwitchCase="'visible'">
+                      {{ rowData?.visible === true ? 'Yes' : 'No' }}
+                    </span>
+                    <span *ngSwitchCase="'disabled'">
+                      {{ rowData?.disabled === true ? 'Yes' : 'No' }}
+                    </span>
+                    <span *ngSwitchCase="'mandatory'">
+                      {{ rowData?.mandatory === true ? 'Yes' : 'No' }}
+                    </span>
+                    <span *ngSwitchCase="'order'">
+                      {{ rowData?.order }}
+                    </span>
+                    <span *ngSwitchCase="'type'">
+                      {{ rowData?.type | titlecase }}
+                    </span>
+                    <span *ngSwitchCase="'validations'">
+                      <span [title]="getValidationTypes(rowData?.validations)" *ngIf="rowData?.validations?.length">
+                        {{ rowData?.validations?.length }}
+                      </span>
+                      <span *ngIf="!rowData?.validations?.length">0</span>
+                    </span>
+                    <span *ngSwitchDefault>
+                      {{ rowData[col.field] }}
+                    </span>
+                  </ng-container>
+                </td>
+              </ng-container>
               <td *ngIf="tableData?.length > 0" class="text-center">
                 <div>
                   <a role="button" class="text-primary" (click)="editSelectedRecord(rowData)">{{ 'crm.edit' | translate }}</a>
