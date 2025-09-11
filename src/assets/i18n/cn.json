@@ -1002,7 +1002,9 @@
     "cr12DetailsDeletedSuccessfully": "CR12详细信息已成功删除！",
     "ownershipDetailsDeletedSuccessfully": "所有权详细信息已成功删除！",
     "branchDetailsDeletedSuccessfully": "分支机构详细信息已成功删除！",
-    "wealthAmlDetailsDeletedSuccessfully": "财富AML详细信息已成功删除！"
+    "wealthAmlDetailsDeletedSuccessfully": "财富AML详细信息已成功删除！",
+    "populatedByDocument": "请稍候，表单正在由文档填充。",
+    "uploadImage": "上传图片"
   },
   "gis": {
     "quotation": {

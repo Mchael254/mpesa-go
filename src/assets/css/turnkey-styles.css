@@ -775,8 +775,7 @@ ngx-intl-tel-input.is-invalid input {
   /* CSS rules */
   .modal-sm,
   .modal-lg {
-    max-width: 90% !important;   /* shrink on tablets/phones */
-    /*margin: 0 auto;              !* center *!*/
+    max-width: 90% !important;
   }
 }
 
@@ -830,7 +829,6 @@ ngx-intl-tel-input.is-invalid input {
 
   .modal-sm,
   .modal-lg {
-    max-width: 95% !important;   /* nearly full width on phones */
-    /*margin: 0.5rem;              !* spacing from edges *!*/
+    max-width: 95% !important;
   }
 }

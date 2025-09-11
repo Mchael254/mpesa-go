@@ -1,12 +1,11 @@
 import {Component, Input} from '@angular/core';
-import {FieldModel} from "../../../../data/form-config.model";
 import {Logger, UtilService} from "../../../../../../shared/services";
 import {FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
-import {AuthService} from "../../../../../../shared/services/auth.service";
 import {Profile} from "../../../../../../shared/data/auth/profile";
 import {ClientService} from "../../../../services/client/client.service";
 import {OtpRequestPayload} from "../../../../data/otp-request.model";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
+import {ConfigFormFieldsDto} from "../../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('PrivacyPolicyInfoComponent');
 
@@ -17,7 +16,8 @@ const log = new Logger('PrivacyPolicyInfoComponent');
 })
 export class PrivacyPolicyComponent {
 
-  @Input() otpFormFields: FieldModel[];
+  @Input() otpFormFields: ConfigFormFieldsDto[];
+  @Input() verifyButtonText: string;
 
   selectedTab: string = 'otp_phone_number';
   shouldShowFields: boolean = false
@@ -49,11 +49,11 @@ export class PrivacyPolicyComponent {
   private setFields(): void {
     const group: { [key: string]: FormControl } = {};
 
-    this.otpFormFields.forEach((field: FieldModel) => {
+    this.otpFormFields.forEach((field: ConfigFormFieldsDto) => {
 
       const validators: ValidatorFn[] = [];
 
-      if (field.isMandatory) {
+      if (field.mandatory) {
         validators.push(Validators.required);
       }
       group[field.fieldId] = new FormControl('', validators);

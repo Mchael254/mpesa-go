@@ -1,12 +1,13 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {Router} from '@angular/router';
-import {DynamicSetupScreensConfigComponent} from './dynamic-setup-screens-config.component';
-import {of} from 'rxjs';
-import {NO_ERRORS_SCHEMA} from '@angular/core';
-import {GlobalMessagingService} from "../../services/messaging/global-messaging.service";
-import {SystemsService} from "../../services/setups/systems/systems.service";
-import {SystemsDto} from "../../data/common/systemsDto";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { BaseComponent } from './base.component';
+import {SystemsDto} from "../../../../shared/data/common/systemsDto";
+import {of} from "rxjs";
+import {SystemsService} from "../../../../shared/services/setups/systems/systems.service";
+import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
 import {TranslateModule} from "@ngx-translate/core";
+import {Router} from "@angular/router";
+import {NO_ERRORS_SCHEMA} from "@angular/core";
 
 const mockSystem: SystemsDto[] = [
   {
@@ -34,9 +35,9 @@ export class MockGlobalMessageService {
   });
 }
 
-describe('DynamicSetupScreensConfigComponent', () => {
-  let component: DynamicSetupScreensConfigComponent;
-  let fixture: ComponentFixture<DynamicSetupScreensConfigComponent>;
+describe('BaseComponent', () => {
+  let component: BaseComponent;
+  let fixture: ComponentFixture<BaseComponent>;
   let mockSystemsService: SystemsService;
   let mockRouter: any;
   let mockGlobalMessagingService: GlobalMessagingService;
@@ -45,9 +46,8 @@ describe('DynamicSetupScreensConfigComponent', () => {
     mockRouter = {
       navigate: jest.fn(),
     };
-
     TestBed.configureTestingModule({
-      declarations: [DynamicSetupScreensConfigComponent],
+      declarations: [BaseComponent],
       imports: [
         TranslateModule.forRoot()
       ],
@@ -58,7 +58,7 @@ describe('DynamicSetupScreensConfigComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA],
     });
-    fixture = TestBed.createComponent(DynamicSetupScreensConfigComponent);
+    fixture = TestBed.createComponent(BaseComponent);
     component = fixture.componentInstance;
     mockSystemsService = TestBed.inject(SystemsService);
     fixture.detectChanges();
