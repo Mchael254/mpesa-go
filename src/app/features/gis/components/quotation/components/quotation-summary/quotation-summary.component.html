@@ -1652,17 +1652,28 @@
           </button>
         </div>
 
-        <!-- Right-side Authorize button with tooltip -->
+        
+ <div class="action-buttons">
+
+  <!-- Right-side Authorize button with tooltip -->
         <span [attr.title]="exceptionsData?.length > 0 ? 'Please resolve exceptions' : null"
           style="display: inline-block;">
-          <!-- <button type="button" class="btn btn-outline-primary" [disabled]="exceptionsData?.length > 0">
-            Authorize quote
-          </button> -->
-          <button type="button" class="btn btn-outline-primary" disabled tooltip="Authorize exceptions first">
+          <button *ngIf="showAuthorizeButton && !(exceptionsData?.length > 0)" type="button" class="btn btn-outline-primary"  (click)="authorizeQuote()">
             Authorize quote
           </button>
+          <!-- <button type="button" class="btn btn-outline-primary" disabled tooltip="Authorize exceptions first">
+            Authorize quote
+          </button> -->
 
         </span>
+  <button class="btn btn-outline-primary me-2" *ngIf="showViewDocumentsButton">
+    View documents
+  </button>
+  <button class="btn btn-primary" *ngIf="showConfirmButton">
+    Confirm
+  </button>
+</div>
+
       </div>
 
 
