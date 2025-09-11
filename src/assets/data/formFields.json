@@ -2638,6 +2638,26 @@
                 "en": "Tax Number",
                 "ke": "Namba ya Ushuru",
                 "fr": "Num'ro Fiscal"
+              },
+              "ALIEN_NUMBER": {
+                "en": "Alien Number",
+                "ke": "Nambari ya Mgeni",
+                "fr": "Numéro d'étranger"
+              },
+              "DRIVERS_LICENCE": {
+                "en": "Drivers License Number",
+                "ke": "Nambari ya Leseni ya Udereva",
+                "fr": "Numéro de Permis de Conduire"
+              },
+              "HUDUMA_NUMBER": {
+                "en": "Huduma Number",
+                "ke": "Nambari ya Huduma",
+                "fr": "Numéro Huduma"
+              },
+              "REGISTRATION_NUMBER": {
+                "en": "Registration Number",
+                "ke": "Nambari ya Usajili",
+                "fr": "Numéro d'Enregistrement"
               }
             }
           },
@@ -2719,6 +2739,91 @@
                       "en": "Certificate of Incorporation number must be 6 to 20 characters",
                       "ke": "Nambari ya cheti cha usajili iwe kati ya herufi/tarakimu 6 hadi 20",
                       "fr": "Le numéro du certificat d'incorporation doit comporter de 6 à 20 caractères"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "field": "modeOfIdentityId",
+              "value": "TAX_NUMBER",
+              "config": {
+                "validations": [
+                  {
+                    "type": "pattern",
+                    "value": "^[A-Z][0-9]{9}[A-Z]$",
+                    "message": {
+                      "en": "Tax number must be in format: A123456789Z",
+                      "ke": "Nambari ya ushuru lazima iwe katika muundo: A123456789Z",
+                      "fr": "Le numéro fiscal doit être au format: A123456789Z"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "field": "modeOfIdentityId",
+              "value": "ALIEN_NUMBER",
+              "config": {
+                "validations": [
+                  {
+                    "type": "pattern",
+                    "value": "^[A-Z0-9]{6,12}$",
+                    "message": {
+                      "en": "Alien number must be 6 to 12 alphanumeric characters",
+                      "ke": "Nambari ya mgeni iwe na herufi/tarakimu 6 hadi 12",
+                      "fr": "Le numéro d'étranger doit comporter de 6 à 12 caractères alphanumériques"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "field": "modeOfIdentityId",
+              "value": "DRIVERS_LICENCE",
+              "config": {
+                "validations": [
+                  {
+                    "type": "pattern",
+                    "value": "^[A-Z][0-9]{8}$",
+                    "message": {
+                      "en": "Driver's license must be 1 letter followed by 8 digits",
+                      "ke": "Leseni ya udereva iwe na herufi 1 ikifuatiwa na tarakimu 8",
+                      "fr": "Le permis de conduire doit comporter 1 lettre suivie de 8 chiffres"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "field": "modeOfIdentityId",
+              "value": "HUDUMA_NUMBER",
+              "config": {
+                "validations": [
+                  {
+                    "type": "pattern",
+                    "value": "^[0-9]{10}$",
+                    "message": {
+                      "en": "Huduma number must be 10 digits",
+                      "ke": "Nambari ya Huduma iwe na tarakimu 10",
+                      "fr": "Le numéro Huduma doit comporter 10 chiffres"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "field": "modeOfIdentityId",
+              "value": "REGISTRATION_NUMBER",
+              "config": {
+                "validations": [
+                  {
+                    "type": "pattern",
+                    "value": "^[A-Z]{2}[0-9]{6}$",
+                    "message": {
+                      "en": "Registration number must be 2 letters followed by 6 digits",
+                      "ke": "Nambari ya usajili iwe na herufi 2 ikifuatiwa na tarakimu 6",
+                      "fr": "Le numéro d'enregistrement doit comporter 2 lettres suivies de 6 chiffres"
                     }
                   }
                 ]

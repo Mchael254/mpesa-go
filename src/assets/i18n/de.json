@@ -998,7 +998,9 @@
     "cr12DetailsDeletedSuccessfully": "CR12-Details erfolgreich gelöscht!",
     "ownershipDetailsDeletedSuccessfully": "Eigentumsdetails erfolgreich gelöscht!",
     "branchDetailsDeletedSuccessfully": "Filialdetails erfolgreich gelöscht!",
-    "wealthAmlDetailsDeletedSuccessfully": "Vermögens-AML-Details erfolgreich gelöscht!"
+    "wealthAmlDetailsDeletedSuccessfully": "Vermögens-AML-Details erfolgreich gelöscht!",
+    "populatedByDocument": "Bitte warten Sie, während das Formular mit den Angaben aus dem Dokument ausgefüllt wird.",
+    "uploadImage": "Bild hochladen"
   },
   "gis": {
     "quotation": {

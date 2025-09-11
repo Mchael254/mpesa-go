@@ -7,6 +7,7 @@ export interface SubModulesDto {
   label: MultilingualText,
   visible: boolean;
   order: number;
+  fields?: ConfigFormFieldsDto[],
 }
 
 export interface ScreensDto {
@@ -18,6 +19,7 @@ export interface ScreensDto {
   visible: boolean;
   order: number;
   hasFields: boolean;
+  subModuleId?: string,
 }
 
 export interface ScreenFormsDto {
@@ -29,6 +31,8 @@ export interface ScreenFormsDto {
   visible: boolean;
   order: number;
   hasFields: boolean;
+  screenId?: string,
+  subModuleId?: string,
 }
 
 export interface FormGroupsDto {
@@ -43,6 +47,9 @@ export interface FormGroupsDto {
   visible: boolean,
   subGroup: FormSubGroupsDto[],
   hasFields: boolean,
+  screenId?: string,
+  subModuleId?: string,
+  formId?: string,
 }
 
 export interface FormSubGroupsDto {
@@ -55,6 +62,7 @@ export interface FormSubGroupsDto {
   visible: boolean;
   order: number;
   hasFields: boolean;
+  formGroupingId: string,
 }
 
 export interface ConfigFormFieldsDto {
@@ -78,7 +86,7 @@ export interface ConfigFormFieldsDto {
   placeholder: MultilingualText,
   tooltip: MultilingualText,
   order: number;
-  options: options[],
+  options: any[],
   formCode: number;
   formGroupingCode: number;
   formSubGroupingCode: number;
@@ -87,6 +95,11 @@ export interface ConfigFormFieldsDto {
   mandatory: boolean;
   isProtected?: boolean;
   showTooltip: boolean;
+  formId?: string,
+  formGroupingId?: string,
+  formSubGroupingId?: string,
+  screenId?: string,
+  subModuleId?: string,
 }
 
 export interface MultilingualText {
@@ -118,7 +131,7 @@ export enum options {
   CORPORATE = "C"
 }
 
-export interface DynamicScreenSetupDto {
+export interface DynamicScreenSetupUpdateDto {
   fields?: ConfigFormFieldsDto[];
   groups: FormGroupsDto[];
   forms: ScreenFormsDto[];
@@ -133,4 +146,12 @@ export interface DynamicSetupImportDto {
   groups: FormGroupsDto[],
   fields: ConfigFormFieldsDto[],
   subGroup: FormSubGroupsDto[],
+}
+
+export interface DynamicScreenSetupDto {
+  fields: ConfigFormFieldsDto[];
+  groups: FormGroupsDto[];
+  forms: ScreenFormsDto[];
+  screens: ScreensDto;
+  subModules: SubModulesDto;
 }

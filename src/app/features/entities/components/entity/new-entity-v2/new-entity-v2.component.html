@@ -1,5 +1,5 @@
 <div class="mx-4 my-3">
-  <div class="me-4">
+  <div class="me-4" *ngIf="!isPreviewMode">
     <app-dynamic-breadcrumb [breadCrumbItems]="entityBreadCrumbItems">
     </app-dynamic-breadcrumb>
   </div>
@@ -8,7 +8,7 @@
       <div id="upload-section">
         <form [formGroup]="uploadForm">
           <div class="row">
-            <h6 class="mb-4 ms-md-5 text-primary">New entity</h6>
+            <h6 class="mb-4 ms-md-5 text-primary">{{ subModules[0]?.label[language] | titlecase }}</h6>
             <ng-container *ngFor="let field of uploadGroupSections?.selects;">
               <div class="col-sm-4">
                 <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
@@ -16,7 +16,7 @@
                     <ng-container *ngIf="field.fieldId !=='organizationType'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <select
                         [formControlName]="field.fieldId"
@@ -27,7 +27,7 @@
                         (click)="fetchSelectOptions('', field.fieldId)"
                       >
                         <option value="">- Select {{ field.label?.[language] | titlecase }} -</option>
-                        <option *ngFor="let option of field.options" [value]="option">
+                        <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [value]="option">
                           {{ option | titlecase }}
                         </option>
                       </select>
@@ -35,7 +35,7 @@
                     <ng-container *ngIf="field.fieldId ==='organizationType' && isCategorySelected ">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <select
                         [formControlName]="field.fieldId"
@@ -46,7 +46,7 @@
                         (click)="fetchSelectOptions('', field.fieldId)"
                       >
                         <option value="">- Select {{ field.label?.[language] | titlecase }} -</option>
-                        <option *ngFor="let option of field.options" [value]="option">
+                        <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [value]="option">
                           {{ option | titlecase }}
                         </option>
                       </select>
@@ -77,8 +77,8 @@
 
                       <label class="btn btn-outline-primary btn-sm d-inline-flex align-items-center">
                         <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <span *ngIf="!photoPreviewUrl">{{ photo.uploadBtnLabel[language] | titlecase }}</span>
-                        <span *ngIf="photoPreviewUrl">{{ photo.editBtnLabel[language] | titlecase }}</span>
+                        <span *ngIf="!photoPreviewUrl">{{ ('entities.uploadImage' | translate) | titlecase }}</span>
+                        <span *ngIf="photoPreviewUrl">{{ ('entities.edit' | translate)  | titlecase }}</span>
                         <input type="file" hidden (change)="onFileSelected($event, photo, 'profile')">
                       </label>
                       <span class="border-end border-primary border-3"></span> &nbsp;
@@ -145,7 +145,7 @@
 
     <ng-container *ngIf="isPatchingFormValues" >
       <div class="lead text-center alert alert-primary">
-        {{ formPopulateMassage[language] }}
+        {{'entities.populatedByDocument' | translate}}
         <div class="spinner-grow text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
@@ -159,8 +159,8 @@
           <div class="row">
             <div class="col-sm-10">
               <h5 class="mb-4 ms-md-5 text-primary">
-                {{ group.groupOrder }}.
-                {{ group.label | titlecase }}
+                {{ group.order }}.
+                {{ group.label?.[language] | titlecase }}
               </h5>
             </div>
             <div class="col-sm-2 text-end">
@@ -173,13 +173,14 @@
           <div [id]="group.groupId" class="collapse-container" [class.expanded]="isCollapsed(group.groupId)">
 
             <ng-container *ngIf="
-              group.subGroup[0].subGroupId === 'banking_information' ||
-              group.subGroup[0].subGroupId=== 'company_contact' ||
-              group.subGroup[0].subGroupId === 'head_office_address'
-              "
+              group?.subGroup[0]?.subGroupId === 'cnt_corporate_banking_information' ||
+              group?.subGroup[0]?.subGroupId=== 'cnt_corporate_company_contacts' ||
+              group?.subGroup[1]?.subGroupId === 'cnt_corporate_head_office_address'"
             >
               <h5 class="text-dark mb-3 pe-md-5 me-md-4 ms-md-5">
-                {{ group.subGroup[0].label | titlecase }}
+                {{ (group?.subGroup[1]?.subGroupId === 'cnt_corporate_head_office_address'
+                  ? group?.subGroup[1]?.label?.[language]
+                  : group?.subGroup[0]?.label?.[language]) | titlecase }}
               </h5>
             </ng-container>
 
@@ -194,12 +195,12 @@
                       <ng-container *ngIf="!['idNumber', 'smsNumber', 'telNumber'].includes(field.fieldId)">
                         <label class="form-label" [for]="field.fieldId">
                           {{ field.label?.[language] | titlecase }}
-                          <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                          <span *ngIf="field.mandatory" class="text-danger">*</span>
                         </label>
                         <input
                           [type]="field.type"
                           [formControlName]="field.fieldId"
-                          [placeholder]="field?.placeholder[language]"
+                          [placeholder]="field?.placeholder[language] || ''"
                           [id]="field.fieldId"
                           class="form-control"
                           [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
@@ -212,12 +213,12 @@
                       <ng-container *ngIf="field.fieldId==='idNumber'">
                         <label class="form-label" [for]="field.fieldId">
                           {{ field.dynamicLabel.mapping[idType][language] | titlecase }}
-                          <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                          <span *ngIf="field.mandatory" class="text-danger">*</span>
                         </label>
                         <input
                           [type]="field.type"
                           [formControlName]="field.fieldId"
-                          [placeholder]="field.dynamicLabel.mapping[idType][language]"
+                          [placeholder]="field.dynamicLabel.mapping[idType][language] || ''"
                           [id]="field.fieldId"
                           class="form-control"
                           [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
@@ -230,7 +231,7 @@
                       <ng-container *ngIf="['smsNumber', 'telNumber'].includes(field.fieldId)">
                         <label class="form-label" [for]="field.fieldId">
                           {{ field.label?.[language] | titlecase }}
-                          <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                          <span *ngIf="field.mandatory" class="text-danger">*</span>
                         </label>
                         <ngx-intl-tel-input
                           [cssClass]="'form-control form-control-md mb-1'"
@@ -238,6 +239,7 @@
                           [preferredCountries]=""
                           [enableAutoCountrySelect]="true"
                           [enablePlaceholder]="true"
+                          [customPlaceholder]="field.placeholder[language] || ''"
                           [searchCountryFlag]="true"
                           [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
                           [selectFirstCountry]="false"
@@ -259,11 +261,11 @@
                     <ng-container *ngIf="field.type === 'textarea'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <textarea
                         [formControlName]="field.fieldId"
-                        [placeholder]="field.placeholder"
+                        [placeholder]="field.placeholder[language] || ''"
                         [id]="field.fieldId"
                         class="form-control"
                         [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
@@ -277,12 +279,12 @@
                     <ng-container *ngIf="field.type === 'date'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <input
                         type="date"
                         [formControlName]="field.fieldId"
-                        [placeholder]="field.placeholder"
+                        [placeholder]="field.placeholder[language] || ''"
                         [id]="field.fieldId"
                         class="form-control"
                         [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
@@ -297,12 +299,12 @@
                     <ng-container *ngIf="field.type === 'number'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <input
                         type="number"
                         [formControlName]="field.fieldId"
-                        [placeholder]="field?.placeholder[language]"
+                        [placeholder]="field?.placeholder[language] || ''"
                         [id]="field.fieldId"
                         class="form-control"
                         [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
@@ -317,7 +319,7 @@
                     <ng-container *ngIf="field.type === 'select'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <select
                         [formControlName]="field.fieldId"
@@ -325,11 +327,11 @@
                         class="form-select"
                         aria-label="Default select example"
                         (change)="processSelectOption($event, field.fieldId)"
-                        (click)="fetchSelectOptions(field.groupId, field.fieldId)"
+                        (click)="fetchSelectOptions(field.formGroupingId, field.fieldId)"
                         [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
                       >
                         <option value="">---select {{ field.label?.[language] }}---</option>
-                        <option *ngFor="let option of field.options" [value]="option">
+                        <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [value]="option">
                           {{ option }}
                         </option>
                       </select>
@@ -343,10 +345,10 @@
                     <ng-container *ngIf="field.type === 'radio'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <div class="form-check" [id]="field.fieldId">
-                        <div *ngFor="let option of field.options">
+                        <div *ngFor="let option of (!isPreviewMode ? field.options : [])">
                           <input
                             class="form-check-input"
                             type="radio"
@@ -368,10 +370,10 @@
                     <ng-container *ngIf="field.type === 'checkbox'">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
-                        <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                        <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
                       <div class="form-check">
-                        <div *ngFor="let option of field.options">
+                        <div *ngFor="let option of (!isPreviewMode ? field.options : [])">
                           <input
                             class="form-check-input"
                             type="checkbox"
@@ -390,10 +392,10 @@
                     </ng-container>
 
                     <!--show validation errors-->
-                    <ng-container *ngIf="field.isMandatory">
+                    <ng-container *ngIf="field.mandatory">
                       <div *ngIf="
                           entityForm.get(field.fieldId)?.touched &&
-                          entityForm.get(field.fieldId)?.hasError(field.isMandatory ? 'required' : '')"
+                          entityForm.get(field.fieldId)?.hasError(field.mandatory ? 'required' : '')"
                       >
                         <span class="text-danger">
                           * {{ field.label?.[language] }} is required.
@@ -406,79 +408,101 @@
 
             </div>
 
-            <div *ngIf="group.groupId === 'contact_details' && category === 'corporate' && corporateContactDetailsFormField.length > 0">
+            <div *ngIf="group.groupId === 'cnt_corporate_contact_details' && category === 'corporate' && corporateContactDetailsFormField.length > 0">
               <app-dynamic-setup-table
-                [tableTitle]="group.subGroup[1]?.label"
-                [addButtonText]="group.subGroup[1]?.addButtonText[language]"
+                [tableTitle]="group.subGroup[1]?.label?.[language]"
+                [addButtonText]="group.subGroup[1]?.addButtonTextLabel?.[language]"
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateContactDetailsFormField"
-                [subGroupId]="'contact_person_details'"
+                [subGroupId]="'cnt_corporate_contact_person_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
                 [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'address_details' && category === 'corporate'">
+            <div *ngIf="group.groupId === 'cnt_corporate_address_details' && category === 'corporate'">
               <app-dynamic-setup-table
-                [tableTitle]="group.subGroup[1]?.label"
-                [addButtonText]="group.subGroup[1]?.addButtonText[language]"
+                [tableTitle]="group.subGroup[0]?.label?.[language]"
+                [addButtonText]="group.subGroup[0]?.addButtonTextLabel?.[language]"
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateAddressDetailsFormField"
-                [subGroupId]="'branch_details'"
+                [subGroupId]="'cnt_corporate_branch_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
                 [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'financial_details' && category === 'corporate'">
+            <div *ngIf="group.groupId === 'cnt_corporate_financial_details' && category === 'corporate'">
               <app-dynamic-setup-table
-                [tableTitle]="group.subGroup[1]?.label"
-                [addButtonText]="group.subGroup[1]?.addButtonText[language]"
+                [tableTitle]="group.subGroup[1]?.label?.[language]"
+                [addButtonText]="group.subGroup[1]?.addButtonTextLabel?.[language]"
                 [emptyTableMessage]="'No record found!'"
-                [formFields]="payeeDetailsFormFields"
-                [subGroupId]="'payee_details'"
+                [formFields]="corporateFinancialDetailsFormField"
+                [subGroupId]="'cnt_corporate_payee_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
                 [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'wealth_aml_details'">
+            <div *ngIf="group.groupId === 'cnt_individual_wealth_aml_details'">
               <app-dynamic-setup-table
-                [tableTitle]="category !== 'individual' ? group.subGroup[0]?.label : ''"
-                [addButtonText]="group.subGroup[0]?.addButtonText[language]"
+                [tableTitle]="group.subGroup[0]?.label?.[language]"
+                [addButtonText]="group.subGroup[0]?.addButtonTextLabel?.[language]"
+                [emptyTableMessage]="'No record found!'"
+                [formFields]="wealthAmlFormFields"
+                [subGroupId]="'cnt_individual_aml_details'"
+                (saveDetailsData)="fetchSavedDetails($event)"
+                [isPreviewMode]="isPreviewMode"
+              ></app-dynamic-setup-table>
+            </div>
+
+            <div *ngIf="group.groupId === 'cnt_corporate_wealth_aml_details' && category === 'corporate'">
+              <app-dynamic-setup-table
+                [tableTitle]="group.subGroup[0]?.label?.[language]"
+                [addButtonText]="group.subGroup[0]?.addButtonTextLabel?.[language]"
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateWealthAmlFormFieldsDetailsFormField"
-                [subGroupId]="amlDetailsLabel"
+                [subGroupId]="'cnt_corporate_aml_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
+                [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'wealth_aml_details' && category === 'corporate'">
+            <div *ngIf="group.groupId === 'cnt_corporate_wealth_aml_details' && category === 'corporate'">
               <app-dynamic-setup-table
-                [tableTitle]="group.subGroup[1]?.label"
-                [addButtonText]="group.subGroup[1]?.addButtonText[language]"
+                [tableTitle]="group.subGroup[1]?.label?.[language]"
+                [addButtonText]="group.subGroup[1]?.addButtonTextLabel?.[language]"
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateWealthCR12DetailsFormField"
-                [subGroupId]="'cr12_details'"
+                [subGroupId]="'cnt_corporate_cr12_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
                 [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'wealth_aml_details' && category === 'corporate'">
+            <div *ngIf="group.groupId === 'cnt_corporate_wealth_aml_details' && category === 'corporate'">
               <app-dynamic-setup-table
-                [tableTitle]="group.subGroup[2]?.label"
-                [addButtonText]="group.subGroup[2]?.addButtonText[language]"
+                [tableTitle]="group.subGroup[2]?.label?.[language]"
+                [addButtonText]="group.subGroup[2]?.addButtonTextLabel?.[language]"
                 [emptyTableMessage]="'No record found!'"
                 [formFields]="corporateWealthOwnershipDetailsFormField"
-                [subGroupId]="'ownership_details'"
+                [subGroupId]="'cnt_corporate_ownership_details'"
                 (saveDetailsData)="fetchSavedDetails($event)"
                 [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
             </div>
 
-            <div *ngIf="group.groupId === 'privacy_policy'">
-              <app-privacy-policy [otpFormFields]="privacyPolicyFormFields"></app-privacy-policy>
+            <div *ngIf="group.groupId === 'cnt_corporate_privacy_policy' || group.groupId === 'cnt_individual_privacy_policy'">
+              <app-privacy-policy
+                [otpFormFields]="privacyPolicyFormFields"
+                [verifyButtonText]="group.subGroup[0]?.addButtonTextLabel?.[language]"
+              ></app-privacy-policy>
             </div>
 
           </div>
@@ -490,7 +514,7 @@
 
 
   <!--buttons-->
-  <div>
+  <div *ngIf="!isPreviewMode">
     <div class="row">
       <div class="col-sm-8"></div>
       <div class="col-sm-4 my-4 text-end">

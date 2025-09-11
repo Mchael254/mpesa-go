@@ -7,8 +7,8 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class MenuService {
    constructor(private translate: TranslateService) {
-    
-      
+
+
   }
   private sidebarMenuList = {
     DEFAULT: [
@@ -603,7 +603,7 @@ subList:[
           name: this.translate.instant('base-fms.defineYrs'),
           link: '/home/fms/',
         },
-      
+
         {
           name: this.translate.instant('base-fms.closeYrs'),
           link: '/home/fms/',
@@ -673,7 +673,7 @@ subList:[
         // icon: 'fa-solid fa-money-check',
 
         menuItems: [
-       
+
           {
             name: 'GL-Parameters',
             nameSlug: 'gl-parameters',
@@ -710,12 +710,12 @@ subList:[
           link: '/home/fms/',
         },
 
-        
+
         {
            name: this.translate.instant('base-fms.oBalances'),
           link: '/home/fms/',
         },
-        
+
         {
            name: this.translate.instant('base-fms.iOBalances'),
           link: '/home/fms/',
@@ -728,7 +728,7 @@ subList:[
            name: this.translate.instant('base-fms.iAcctMapping'),
           link: '/home/fms/',
         }
-    
+
     ],
           },
           {
@@ -774,7 +774,7 @@ subList:[
           name: this.translate.instant('base-fms.cRevaluation'),
           link: '/home/fms/',
         }
-    
+
     ],
           },
           {
@@ -809,7 +809,7 @@ subList:[
           name: this.translate.instant('base-fms.twcCentres'),
           link: '/home/fms/',
         },
-        
+
          {
           name: this.translate.instant('base-fms.glListingRpt'),
           link: '/home/fms/',
@@ -829,7 +829,7 @@ subList:[
           name: this.translate.instant('base-fms.tTrRpt'),
           link: '/home/fms/',
         }
-    
+
     ],
           },
           {
@@ -998,7 +998,7 @@ subList:[
          {
           name: this.translate.instant('base-fms.stalePayment'),
           link: '/home/fms/',
-        }, 
+        },
         {
           name: this.translate.instant('base-fms.dispatchChequeP'),
           link: '/home/fms/',
@@ -1136,7 +1136,7 @@ subList:[
           name: this.translate.instant('base-fms.postBankReco'),
           link: '/home/fms/',
         },
-         
+
          {
           name: this.translate.instant('base-fms.reconEnquiry'),
           link: '/home/fms/',
@@ -1172,7 +1172,7 @@ subList:[
         }
             ],
           },
-          
+
         ],
         collapsed: true,
       },
@@ -1208,7 +1208,7 @@ subList:[
             name: 'Transactions',
             nameSlug: 'transactions',
             subList: [
-              
+
                {
           name: this.translate.instant('base-fms.viewTransactions'),
           link: '/home/fms/',
@@ -1250,12 +1250,12 @@ subList:[
           name: this.translate.instant('base-fms.viewInvoices'),
           link: '/home/fms/',
         },
-      
+
       {
           name: this.translate.instant('base-fms.viewRct'),
           link: '/home/fms/',
         },
-      
+
       {
           name: this.translate.instant('base-fms.acctBalances'),
           link: '/home/fms/',
@@ -1381,8 +1381,8 @@ subList:[
         // icon: 'fa-solid fa-gears',
         menuItems: [
           {
-            name: 'Accounts',
-            link: '/home/crm-screen-setup',
+            name: 'Account',
+            link: '/home/screens-config',
           },
         ],
 
@@ -1454,7 +1454,7 @@ subList:[
       },
       {
         name: 'Dynamic Setup',
-        link: '/home/screen-setup',
+        link: '/home/screens-config',
         value: 'DYNAMIC_SETUP',
         isActive: true,
       },
