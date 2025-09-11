@@ -626,20 +626,30 @@ export class QuotationsService {
   //       catchError(this.errorHandl)
   //     )
   // }
-  getExceptions(quotationCode: number, user: string): Observable<any> {
-    const params = new HttpParams()
-      .set('quotationCode', quotationCode.toString())
-      .set('def', 'QUOTE')
-      .set('user', user);
+getExceptions(quotationCode: number): Observable<any> {
+  const params = new HttpParams()
+    .set('batchNumber', quotationCode.toString())
+    .set('level', 'Q');
 
-    return this.api.POST(
-      `v2/authorise/manage-exceptions?${params.toString()}`,
-      null,
+  return this.api.GET(
+    `v2/uw-exceptions?${params.toString()}`,
+    API_CONFIG.GIS_UNDERWRITING_BASE_URL
+  );
+}
+
+authorizeQuote(quotationCode: number, user: string): Observable<any> {
+  const params = new HttpParams()
+    .set('quotationCode', quotationCode.toString())
+    .set('user', user);
+
+  return this.api.POST(
+    `v2/authorise?${params.toString()}`,
+    null,
+    API_CONFIG.GIS_QUOTATION_BASE_URL
+  );
+}
 
 
-      API_CONFIG.GIS_QUOTATION_BASE_URL
-    );
-  }
 
   AuthoriseExceptions(quotationCode: number, user: string): Observable<any> {
     const params = new HttpParams()
