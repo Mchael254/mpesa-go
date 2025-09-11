@@ -2969,7 +2969,7 @@ authorizeQuote() {
   const user = this.user;
 
   if (!this.hasUnderwriterRights()) {
-    this.error = 'This user does not have the rights to authorize a quote.';
+    this.globalMessagingService.displayErrorMessage('Error','This user does not have the rights to authorize a quote.')
     this.router.navigate(['/quotation-management']);
     return;
   }
