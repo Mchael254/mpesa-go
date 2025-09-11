@@ -205,6 +205,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showPerilColumnModal: boolean = false;
   showExcessColumnModal: boolean = false;
   showLimitsOfLiabilityColumnModal: boolean = false;
+  showAuthorizeButton = true;
+  showViewDocumentsButton = false;
+  showConfirmButton = false;
+
 
   clausesColumns: { field: string; header: string; visible: boolean }[] = [];
   taxesColumns: { field: string; header: string; visible: boolean }[] = [];
@@ -431,7 +435,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.fetchedQuoteNum = this.quotationView.quotationNo;
         this.user = this.quotationView.preparedBy;
         log.debug('this user', this.user)
-        this.getExceptions(this.quotationView.code, this.user);
+        this.getExceptions(this.quotationView.code);
         if (!this.moreDetails) {
           this.quotationDetails = this.quotationView;
           log.debug("MORE DETAILS TEST quotationView", this.quotationDetails)
@@ -2139,21 +2143,20 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
 
-  getExceptions(quotationCode: number, username: string) {
+ getExceptions(quotationCode: number) {
+  this.quotationService.getExceptions(quotationCode).subscribe({
+    next: (res) => {
+      log.debug('exceptions', res);
+      this.exceptionsData = res._embedded;
+      log.debug('exceptionData', this.exceptionsData);
+    },
+    error: (error) => {
+      log.error('Error fetching exceptions:', error);
+      this.error = 'Something went wrong while fetching exceptions.';
+    }
+  });
+}
 
-    this.quotationService.getExceptions(quotationCode, username).subscribe({
-      next: (res) => {
-        log.debug('exceptions', res);
-        this.exceptionsData = res._embedded;
-        log.debug('exceptionData', this.exceptionsData)
-      },
-      error: (error) => {
-        log.error('Error fetching exceptions:', error);
-        this.error = 'Something went wrong while fetching exceptions.';
-      }
-    })
-
-  }
 
 
 
@@ -2961,6 +2964,61 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         }
       });
   }
+authorizeQuote() {
+  const quotationCode = this.quotationCode;
+  const user = this.user;
+
+  if (!this.hasUnderwriterRights()) {
+    this.globalMessagingService.displayErrorMessage('Error','This user does not have the rights to authorize a quote.')
+    this.router.navigate(['/quotation-management']);
+    return;
+  }
+
+  this.quotationService.authorizeQuote(quotationCode, user).subscribe({
+    next: (res) => {
+      log.debug('Authorize response', res);
+
+    if (res?.status?.toUpperCase().trim() === 'SUCCESS') {
+  this.globalMessagingService.displaySuccessMessage(
+    'Success',
+    res?.message || 'Quotation authorized successfully.'
+  );
+}
+
+      else if (
+        res?.status === 'ERROR' &&
+        res?.debugMessage?.includes('already Authorised')
+      ) {
+        
+        this.globalMessagingService.displayInfoMessage(
+          'Notice',
+          'This quotation is already authorized.'
+        );
+      } 
+      else {
+      
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          res?.message || 'Something went wrong.'
+        );
+      }
+
+      // Hide authorize button and show next actions in both cases
+      this.showAuthorizeButton = false;
+      this.showViewDocumentsButton = true;
+      this.showConfirmButton = true;
+    },
+    error: (error) => {
+      log.error('Error authorizing quote:', error);
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        error?.error?.message || 'Something went wrong while authorizing the quote.'
+      );
+    }
+  });
+}
+
+
 
 }
 
