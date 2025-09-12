@@ -550,7 +550,11 @@
     "getStarted": "Empezar",
     "updateInAnotherLanguage": "¿Desea actualizar los cambios en otro idioma?",
     "export": "Exportar",
-    "publishedChangesWillBeExported": "Tenga en cuenta que solo se exportarán los cambios publicados"
+    "publishedChangesWillBeExported": "Tenga en cuenta que solo se exportarán los cambios publicados",
+    "editTableColumns": "Editar columnas de la tabla",
+    "columnLabel": "Etiqueta de columna",
+    "columns": "Columnas",
+    "noRecordsFound": "No se encontraron registros"
   },
   "entities": {
     "account_number": "Número de cuenta",

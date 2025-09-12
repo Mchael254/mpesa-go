@@ -8,6 +8,7 @@ export interface SubModulesDto {
   visible: boolean;
   order: number;
   fields?: ConfigFormFieldsDto[],
+  presentationType?: PresentationType,
 }
 
 export interface ScreensDto {
@@ -20,6 +21,7 @@ export interface ScreensDto {
   order: number;
   hasFields: boolean;
   subModuleId?: string,
+  presentationType?: PresentationType,
 }
 
 export interface ScreenFormsDto {
@@ -33,6 +35,7 @@ export interface ScreenFormsDto {
   hasFields: boolean;
   screenId?: string,
   subModuleId?: string,
+  presentationType?: PresentationType,
 }
 
 export interface FormGroupsDto {
@@ -50,6 +53,7 @@ export interface FormGroupsDto {
   screenId?: string,
   subModuleId?: string,
   formId?: string,
+  presentationType?: PresentationType,
 }
 
 export interface FormSubGroupsDto {
@@ -63,6 +67,7 @@ export interface FormSubGroupsDto {
   order: number;
   hasFields: boolean;
   formGroupingId: string,
+  presentationType?: PresentationType,
 }
 
 export interface ConfigFormFieldsDto {
@@ -126,11 +131,6 @@ export interface ConditionConfig {
   validations: Validation[];
 }
 
-export enum options {
-  INDIVIDUAL = "I",
-  CORPORATE = "C"
-}
-
 export interface DynamicScreenSetupUpdateDto {
   fields?: ConfigFormFieldsDto[];
   groups: FormGroupsDto[];
@@ -154,4 +154,9 @@ export interface DynamicScreenSetupDto {
   forms: ScreenFormsDto[];
   screens: ScreensDto;
   subModules: SubModulesDto;
+}
+
+export enum PresentationType {
+  fields = "fields",
+  table_columns = "table_columns"
 }
