@@ -545,16 +545,18 @@ export class RiskDetailsComponent {
   }
 
   setSectionToDelete(section: any) {
-    this.sectionToDelete = section;
-    log.debug("Section to delete", this.sectionToDelete)
-  }
-  confirmDelete() {
-    if (this.sectionToDelete) {
-      const sectionCode = this.sectionToDelete.code
-      sectionCode && this.deleteRiskSection(sectionCode)
+  this.sectionToDelete = section;
+  log.debug("Section to delete", this.sectionToDelete);
+}
 
+confirmDelete() {
+  if (this.sectionToDelete) {
+    const sectionId = this.sectionToDelete.code; // ✅ use code
+    if (sectionId) {
+      this.deleteRiskSection(sectionId);
     }
   }
+}
 
   fetchQuotationDetails(quotationCode: number) {
     log.debug("Quotation Number tot use:", quotationCode)
@@ -2983,28 +2985,30 @@ export class RiskDetailsComponent {
   }
 
 
+deleteRiskSection(riskSectionCode: number) {
+  log.debug("selected risk section code", riskSectionCode);
 
-  deleteRiskSection(riskSectionCode: number) {
+  if (riskSectionCode) {
+    this.quotationService.deleteRiskSections(riskSectionCode).subscribe({
+      next: (response: any) => {
+        log.debug("Response after deleting a risk section ", response);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Risk section deleted successfully');
 
-    log.debug("selected risk section code", riskSectionCode);
+        // ✅ filter by code
+        this.sectionDetails = this.sectionDetails.filter(
+          (section) => section.code !== this.sectionToDelete.code
+        );
 
-    if (riskSectionCode) {
-      this.quotationService.deleteRiskSections(riskSectionCode).subscribe({
-        next: (response: any) => {
-          log.debug("Response after deleting a risk section ", response);
-          this.globalMessagingService.displaySuccessMessage('Success', 'Risk section deleted successfully');
-          this.sectionDetails = this.sectionDetails.filter(
-            (section) => section.sectioncode !== this.sectionToDelete.sectioncode
-          );
-          this.sectionToDelete = null;
-        },
-        error: (error) => {
-          log.debug("error when deleting a risk section", error);
-          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-        }
-      })
-    }
+        this.sectionToDelete = null;
+      },
+      error: (error) => {
+        log.debug("error when deleting a risk section", error);
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+      }
+    });
   }
+}
+
 
   onResize(event: any) {
     this.modalHeight = event.height;
