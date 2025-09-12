@@ -527,7 +527,11 @@
     "getStarted": "Anza sasa",
     "updateInAnotherLanguage": "Unataka kusasisha mabadiliko kwa lugha nyingine?",
     "export": "Hamisha",
-    "publishedChangesWillBeExported": "Tafadhali kumbuka kuwa ni mabadiliko yaliyochapishwa pekee yatakayohamishwa"
+    "publishedChangesWillBeExported": "Tafadhali kumbuka kuwa ni mabadiliko yaliyochapishwa pekee yatakayohamishwa",
+    "editTableColumns": "Hariri safu za jedwali",
+    "columnLabel": "Lebo ya safu",
+    "columns": "Safu",
+    "noRecordsFound": "Hakuna rekodi zilizopatikana"
   },
   "entities": {
     "account_number": "Nambari ya Akaunti",

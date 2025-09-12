@@ -520,7 +520,11 @@
     "getStarted": "Loslegen",
     "updateInAnotherLanguage": "Möchten Sie Änderungen in einer anderen Sprache aktualisieren?",
     "export": "Exportieren",
-    "publishedChangesWillBeExported": "Bitte beachten Sie, dass nur veröffentlichte Änderungen exportiert werden"
+    "publishedChangesWillBeExported": "Bitte beachten Sie, dass nur veröffentlichte Änderungen exportiert werden",
+    "editTableColumns": "Tabellenspalten bearbeiten",
+    "columnLabel": "Spaltenbezeichnung",
+    "columns": "Spalten",
+    "noRecordsFound": "Keine Datensätze gefunden"
   },
   "entities": {
     "account_number": "Kontonummer",

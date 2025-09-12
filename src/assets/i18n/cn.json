@@ -524,7 +524,11 @@
     "getStarted": "开始",
     "updateInAnotherLanguage": "您想在其他语言中更新更改吗？",
     "export": "导出",
-    "publishedChangesWillBeExported": "请注意，只有已发布的更改将被导出"
+    "publishedChangesWillBeExported": "请注意，只有已发布的更改将被导出",
+    "editTableColumns": "编辑表格列",
+    "columnLabel": "列标签",
+    "columns": "列",
+    "noRecordsFound": "未找到记录"
   },
   "entities": {
     "account_number": "帐号",
