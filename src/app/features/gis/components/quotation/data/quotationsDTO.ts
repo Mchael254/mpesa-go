@@ -1342,4 +1342,69 @@ export interface GroupedUser {
   userDetails: UserDetails;
   id: number;
 }
+export interface OtpPayload {
+  email: string,
+  subject: string,
+  body: string
+}
+export interface OtpResponse {
+  id: number;
+  userIdentifier: string;
+  otpValue: number;
+  generationTime: string;
+  expiryTime: string;
+  verified: number;
+}
+export interface ReportResponse {
+  code: number;
+  systemCode: number;
+  name: string;
+  description: string;
+  datafile: string | null;
+  applicationLevel: string;
+  status: string;
+  subModuleCode: string | null;
+  order: number | null;
+  printSrvAppl: string;
+  printSrvcAppl: string;
+  type: string | null;
+  visible: string | null;
+  shortDescription: string | null;
+  update: string;
+}
+export interface ReportParam {
+  name: string;
+  value: string;
+}
+
+export interface ReportPayload {
+  params: ReportParam[];
+  rptCode: number;
+  system: string;
+  reportFormat: string;
+  encodeFormat: string;
+}
+export interface ReportParamItem {
+  code: number;
+  rptCode: number;
+  name: string;
+  desc: string;
+  prompt: string;
+  type: string;
+  userRequired: string;
+}
+
+export interface ReportParams {
+  rptCode: number;
+  reportName: string;
+  dataFile: string;
+  rptTmplCode: number;
+  templateFile: string;
+  styleFile: string;
+  rptPrntSrvAppl: string;
+  params: ReportParamItem[];
+}
+
+
+
 
