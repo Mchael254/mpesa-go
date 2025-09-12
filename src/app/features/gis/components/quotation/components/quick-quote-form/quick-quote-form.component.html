@@ -398,7 +398,7 @@
   </div>
 </ng-container>
 
-<div class="row  mx-4" *ngIf="premiumComputationResponse">
+<div class="row mb-4 mx-4" *ngIf="premiumComputationResponse">
   <div class="col-6"></div>
   <div class="col-6 d-flex justify-content-end">
     <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal" (click)="fetchCoverRelatedData()"
@@ -415,8 +415,8 @@
               aria-label="Close"></button>
 
           </div>
-          <app-share-quotes (sendEvent)="listenToSendEvent($event)" (downloadRequested)="onDownloadRequested()"(previewRequested)="onPreviewRequested()" [previewVisible]="previewVisible"
-  [pdfSrc]="pdfSrc">
+          <app-share-quotes (sendEvent)="listenToSendEvent($event)" (downloadRequested)="onDownloadRequested()"
+            (previewRequested)="onPreviewRequested()" [previewVisible]="previewVisible" [pdfSrc]="pdfSrc">
 
           </app-share-quotes>
 
@@ -425,11 +425,20 @@
     </div>
     <div>
 
-      <ng-container *ngIf="canMoveToNextScreen">
+      <!-- <ng-container *ngIf="canMoveToNextScreen">
         <button type="button" class="btn btn-primary " id="save-quotation" (click)="saveQuotationDetails()">
           {{ 'gis.quotation.next' | translate }}
         </button>
-      </ng-container>
+      </ng-container> -->
+      <span [attr.title]="!canMoveToNextScreen ? 'Select a cover type for each risk to proceed' : null"
+        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip">
+        <button type="button" class="btn btn-primary" id="save-quotation" [disabled]="!canMoveToNextScreen"
+          (click)="saveQuotationDetails()">
+          {{ 'gis.quotation.next' | translate }}
+        </button>
+      </span>
+
+
     </div>
 
 

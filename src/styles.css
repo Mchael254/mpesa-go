@@ -197,5 +197,4 @@ tr.ng-star-inserted {
 .p-datatable .p-datatable-tbody>tr.p-highlight td {
   background-color: #ddedfb !important;
   color: inherit !important;
-  /* Optional: maintain text color */
 }
