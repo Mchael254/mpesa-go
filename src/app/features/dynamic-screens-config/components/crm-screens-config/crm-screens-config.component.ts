@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {
   ConfigFormFieldsDto, DynamicScreenSetupUpdateDto, DynamicSetupImportDto,
-  FormGroupsDto, FormSubGroupsDto, MultilingualText,
+  FormGroupsDto, FormSubGroupsDto, MultilingualText, PresentationType,
   ScreenFormsDto,
   ScreensDto,
   SubModulesDto, Validation
@@ -112,6 +112,24 @@ export class CrmScreensConfigComponent implements OnInit {
 
   selectedTab: string = 'otp_phone_number';
   shouldShowFields: boolean = false;
+
+  get isTableColumns(): boolean {
+    return (
+      this.selectedSubSectionTwo?.presentationType ??
+      this.selectedSubSection?.presentationType ??
+      this.selectedSection?.presentationType ??
+      this.selectedScreen?.presentationType ??
+      this.selectedSubModule?.presentationType
+    ) === PresentationType.table_columns;
+  }
+
+  get filteredColumns() {
+    if (!Array.isArray(this.columns)) return [];
+    if (!this.isTableColumns) return this.columns;
+
+    const allowed = new Set(['label', 'visible', 'order']);
+    return this.columns.filter(c => allowed.has(c.field));
+  }
 
   @ViewChild('dt2') dt2: Table | undefined;
   dynamicConfigBreadCrumbItems: BreadCrumbItem[] = [
@@ -1269,7 +1287,7 @@ export class CrmScreensConfigComponent implements OnInit {
       this.tableTitle = section.label[this.language];
     }
     this.showFields = section?.hasFields;
-    this.showSubSections = true;
+    this.showSubSections = section.presentationType === PresentationType.fields;
     this.showSubSectionsTwo = false;
     this.selectedSubSection = null;
     this.selectedSubSectionTwo = null;
