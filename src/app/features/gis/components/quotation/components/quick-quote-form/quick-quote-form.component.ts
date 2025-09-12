@@ -617,6 +617,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       const taxList = taxes._embedded as Tax[];
       this.taxList = taxList;
       log.debug("CoverTypeSections", coverTypeSections)
+
       group['applicableTaxes'].setValue(taxList);
       log.debug("Tax list", taxList)
 
@@ -1586,7 +1587,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     ).subscribe(([taxes, coverTypeSections]) => {
       this.taxList = taxes._embedded as Tax[]
       log.debug("CoverTypeSections", coverTypeSections)
-
+      const coverTypeSectionList = coverTypeSections._embedded
+      log.debug("covertypesection list;", coverTypeSectionList)
+      sessionStorage.setItem("covertypeSections", JSON.stringify(coverTypeSectionList))
       riskFormGroup.get('applicableTaxes')?.setValue(taxes._embedded)
       riskFormGroup.get('applicableCoverTypes')?.setValue(coverTypeSections._embedded)
       log.debug("Taxes:::", taxes, this.applicablePremiumRates)

@@ -1,24 +1,24 @@
 <div class="mx-4 mt-3">
-  <p class="title">Quotations:Quotation Details </p>
+  <p class="title">{{ 'gis.quotation.quote_details_title' | translate }} </p>
   <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
 
   <!-- quotation section -->
   <div class="card mb-4">
     <div class="card-body  my-4 mx-4 ">
-      <h6 class="subheading mt-2 mb-3">Quotation details </h6>
-      <p *ngIf="quickQuotationDetails">Quotation number :<strong> {{ quotationNumber }}</strong></p>
+      <h6 class="subheading mt-2 mb-3">{{ 'gis.quotation.quote_detailed_details' | translate }}</h6>
+      <!-- <p *ngIf="quickQuotationDetails">Quotation number :<strong> {{ quotationNumber }}</strong></p> -->
       <div class="d-flex gap-4 mb-3">
         <div class="method-option" (click)="setClientType('new')" [class.selected]="selectedClientType === 'new'">
           <i class="far fa-circle" *ngIf="selectedClientType !== 'new'"></i>
           <i class="fas fa-dot-circle" *ngIf="selectedClientType === 'new'"></i>
-          <span>New client</span>
+          <span> {{ 'gis.quotation.new_client' | translate }}</span>
         </div>
 
         <div class="method-option" (click)="setClientType('existing')"
           [class.selected]="selectedClientType === 'existing'">
           <i class="far fa-circle" *ngIf="selectedClientType !== 'existing'"></i>
           <i class="fas fa-dot-circle" *ngIf="selectedClientType === 'existing'"></i>
-          <span>Existing client</span>
+          <span>{{ 'gis.quotation.existing_client' | translate }}</span>
         </div>
       </div>
 
@@ -28,23 +28,23 @@
         <div *ngIf="newClient" class="row">
           <!-- Client Name -->
           <div class="col-sm-4 col-6 mb-3">
-            <label class="quote-label">Client name</label>
+            <label class="quote-label">{{ 'gis.quotation.client_name' | translate }}</label>
             <input type="text" class="form-control" formControlName="client" id="quote-input" />
           </div>
 
           <!-- Email Address -->
           <div class="col-sm-4 col-6 mb-3">
             <div class="form-group">
-              <label class="quote-label">Email address</label>
+              <label class="quote-label"> {{ 'gis.quotation.email_address' | translate }}</label>
               <input type="email" id="email" class="form-control" formControlName="email" id="quote-input"
                 placeholder="" />
               <div *ngIf="quotationForm.get('email')?.touched && quotationForm.get('email')?.invalid"
                 class="text-danger form-text">
                 <div *ngIf="quotationForm.get('email')?.errors?.['required']">
-                  Email is required.
+                  {{ 'gis.quotation.email_is_required' | translate }}.
                 </div>
                 <div *ngIf="quotationForm.get('email')?.errors?.['pattern']">
-                  Enter a valid email address.
+                  {{ 'gis.quotation.enter_valid_email_address' | translate }}
                 </div>
               </div>
             </div>
@@ -52,7 +52,7 @@
 
           <!-- Phone Number -->
           <div class="col-sm-4 col-6 mb-3">
-            <label class="quote-label">Phone number</label>
+            <label class="quote-label"> {{ 'gis.quotation.phone_number' | translate }}</label>
             <ngx-intl-tel-input id="phoneNumber" [cssClass]="'form-control form-control-sm mb-1'"
               [preferredCountries]="preferredCountries" [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
               [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
@@ -64,7 +64,7 @@
 
             <div *ngIf="quotationForm.get('phone')?.invalid && quotationForm.get('phone')?.touched"
               class="form-text text-danger">
-              Invalid phone number
+              {{ 'gis.quotation.invalid_phone_number' | translate }}
             </div>
 
           </div>
@@ -98,7 +98,7 @@
                       </ng-container>
                       <div
                         *ngIf="quotationForm.get('client')?.hasError('required') && quotationForm.get('client')?.touched"
-                        class="form-text text-danger">Client name is required.</div>
+                        class="form-text text-danger"> {{ 'gis.quotation.client_name_is_required' | translate }}</div>
                       <!-- SOURCE -->
                       <ng-container *ngIf="field.name === 'source'">
                         <p-dropdown formControlName="source" [options]="quotationSources" optionLabel="description"
@@ -107,7 +107,8 @@
                         </p-dropdown>
                         <div
                           *ngIf="quotationForm.get('source')?.hasError('required') && quotationForm.get('source')?.touched"
-                          class="form-text text-danger">Source is required.</div>
+                          class="form-text text-danger">{{ 'gis.quotation.source_is_required' |
+                          translate }}</div>
                       </ng-container>
 
                       <!-- QUOTATION TYPE -->
@@ -117,7 +118,9 @@
                         </p-dropdown>
                         <div
                           *ngIf="quotationForm.get('quotationType')?.hasError('required') && quotationForm.get('quotationType')?.touched"
-                          class="form-text text-danger">Quotation type is required.</div>
+                          class="form-text text-danger"> {{
+                          'gis.quotation.quotation_type_is_required' |
+                          translate }}</div>
                       </ng-container>
 
 
@@ -129,7 +132,9 @@
                         </p-dropdown>
                         <div
                           *ngIf="quotationForm.get('branch')?.hasError('required') && quotationForm.get('branch')?.touched"
-                          class="form-text text-danger">Branch is required.</div>
+                          class="form-text text-danger"> {{
+                          'gis.quotation.branch_is_required' |
+                          translate }}</div>
                       </ng-container>
 
                       <!-- CURRENCY -->
@@ -139,7 +144,9 @@
                         </p-dropdown>
                         <div
                           *ngIf="quotationForm.get('currencyCode')?.hasError('required') && quotationForm.get('currencyCode')?.touched"
-                          class="form-text text-danger">Currency is required.</div>
+                          class="form-text text-danger">{{
+                          'gis.quotation.currency_is_required' |
+                          translate }}</div>
                       </ng-container>
                       <ng-container *ngIf="field.name === 'introducer' ">
                         <div class="position-relative" style="cursor: pointer;">
@@ -169,12 +176,16 @@
                         <div class="form-check form-check-inline">
                           <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUserEntry"
                             id="multiUserYes" value="Y">
-                          <label class="form-check-label quote-label" for="multiUserYes">Yes</label>
+                          <label class="form-check-label quote-label" for="multiUserYes"> {{
+                            'gis.quotation.yes' |
+                            translate }}</label>
                         </div>
                         <div class="form-check form-check-inline ms-4">
                           <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUserEntry"
                             id="multiUserNo" value="N">
-                          <label class="form-check-label quote-label" for="multiUserNo">No</label>
+                          <label class="form-check-label quote-label" for="multiUserNo"> {{
+                            'gis.quotation.no' |
+                            translate }}</label>
                         </div>
                       </div>
 
@@ -183,7 +194,7 @@
                     </ng-container>
                     <div
                       *ngIf="quotationForm.get('client')?.hasError('required') && quotationForm.get('client')?.touched"
-                      class="form-text text-danger">Client name is required.</div>
+                      class="form-text text-danger">{{ 'gis.quotation.client_name_is_required' | translate }}</div>
 
 
                     <!-- Agent Field -->
@@ -194,7 +205,7 @@
                       <div
                         *ngIf="quotationForm.get('agents')?.hasError('required') && quotationForm.get('agents')?.touched"
                         class="form-text text-danger">
-                        Agent is required.
+                        {{ 'gis.quotation.agent_is_required' | translate }}
                       </div>
                     </ng-container>
 
@@ -206,7 +217,7 @@
                       <div
                         *ngIf="quotationForm.get('campaign')?.hasError('required') && quotationForm.get('campaign')?.touched"
                         class="form-text text-danger">
-                        Campaign source is required.
+                        {{ 'gis.quotation.campaign_source_is_required' | translate }}
                       </div>
                     </ng-container>
 
@@ -241,7 +252,8 @@
                       </p-dropdown>
                       <div
                         *ngIf="quotationForm.get('paymentFrequency')?.hasError('required') && quotationForm.get('paymentFrequency')?.touched"
-                        class="form-text text-danger">Payment frequency is required.</div>
+                        class="form-text text-danger">
+                        {{'gis.quotation.payment_frequency_is_required' | translate }}</div>
                     </ng-container>
                     <!-- Marketer field -->
                     <ng-container *ngIf="field.name === 'marketer'">
@@ -251,7 +263,7 @@
                       <div
                         *ngIf="quotationForm.get('marketer')?.hasError('required') && quotationForm.get('marketer')?.touched"
                         class="form-text text-danger">
-                        Marketer source is required.
+                        {{ 'gis.quotation.market_source_is_required' | translate }}
                       </div>
                     </ng-container>
                   </ng-container>
@@ -275,7 +287,7 @@
 
 
       <p class="more mt-4" (click)="toggleDetails()" style="cursor: pointer">
-        Show more details
+        {{ 'gis.quotation.show_more_details' | translate }}
         <span class="ml-1">
           <i class="pi" [ngClass]="{'pi-angle-double-up': show, 'pi-angle-double-down': !show}"
             style="font-size: 13px"></i>
@@ -301,7 +313,7 @@
 
           <div class="d-flex justify-content-center align-items-center">
             <button type="button" class="btn btn-primary btn-sm no-hover" data-bs-toggle="modal"
-              data-bs-target="#addProduct" title="Add Product"> Add Product
+              data-bs-target="#addProduct" title="Add Product"> {{ 'gis.quotation.add_product' | translate }}
             </button>
             <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
               [ngClass]="{ 'pi-caret-up': showProducts, 'pi-caret-down': !showProducts }"
@@ -317,7 +329,7 @@
       <div *ngIf="showProductColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
         [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <strong class="text-primary">Select Columns</strong>
+          <strong class="text-primary"> {{ 'gis.quotation.select_columns' | translate }}</strong>
           <button class="btn-close btn-sm" (click)="showProductColumnModal = false"></button>
         </div>
         <div style="max-height: 200px;max-width:250px; overflow-y: auto;">
@@ -366,24 +378,24 @@
                     <div class="d-flex justify-content-center gap-2">
                       <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product, ri)"
                         class="p-button-sm p-button-text p-button-info no-border">
-                        Edit
+                        {{ 'gis.quotation.edit' | translate }}
                       </button>
                       <button *ngIf="editing" type="button" pSaveEditableRow (click)="onRowEditSaves(product)"
                         class="p-button-sm p-button-text p-button-success no-border">
-                        Save
+                        {{ 'gis.quotation.save' | translate }}
                       </button>
                       <button *ngIf="editing" type="button" pCancelEditableRow (click)="onRowEditCancels(product, ri)"
                         class="p-button-sm p-button-text p-button-secondary no-border">
-                        Cancel
+                        {{ 'gis.quotation.cancel' | translate }}
                       </button>
                       <button type="button" (click)="openProductDeleteModal(product)"
                         class="p-button-sm p-button-text p-button-danger no-border" data-bs-toggle="modal"
                         data-bs-target="#deleteProductModal">
-                        Delete
+                        {{ 'gis.quotation.delete' | translate }}
                       </button>
                       <button *ngIf="reassignButton" type="button" (click)="openReassignProductModal(product)"
                         class="p-button-sm p-button-text p-button-danger no-border">
-                        Reassign
+                        {{ 'gis.quotation.reassign' | translate }}
                       </button>
                     </div>
                   </ng-container>
@@ -426,7 +438,8 @@
         <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
           <div class="modal-content" id="addSectionModal">
             <div class="modal-body">
-              <h5 class="modal-title mt-2" id="editOtherDetailsLabel">Add product
+              <h5 class="modal-title mt-2" id="editOtherDetailsLabel"> {{ 'gis.quotation.add_product'
+                | translate }}
                 <button type="button" class="btn-close float-end custom-close" data-bs-dismiss="modal"
                   aria-label="Close"></button>
               </h5>
@@ -434,7 +447,8 @@
                 <div class="col-sm-6 col-12">
                   <div class="form-group form-group-sm">
                     <br>
-                    <label for="" class="quote-label">Product</label>
+                    <label for="" class="quote-label"> {{ 'gis.quotation.product'
+                      | translate }}</label>
                     <p-dropdown [options]="ProductDescriptionArray" formControlName="productCodes"
                       optionLabel="filterText" filterBy="filterText" [filter]="true" [showClear]="true" placeholder=""
                       class="custom-multiselect" (onChange)="onProductSelected($event.value)">
@@ -451,7 +465,8 @@
 
                       <ng-template pTemplate="empty">
                         <div class="text-danger px-2 py-1">
-                          No products match your search.
+
+                          {{ 'gis.quotation.no_products_match_your_search'| translate }}
                         </div>
                       </ng-template>
                     </p-dropdown>
@@ -459,7 +474,7 @@
                     <div
                       *ngIf="quotationProductForm.get('productCodes')?.hasError('required') && quotationProductForm.get('productCodes')?.touched"
                       class="form-text text-danger">
-                      Product is required.
+                      {{ 'gis.quotation.product_is_required'| translate }}
                     </div>
 
                   </div>
@@ -468,7 +483,8 @@
                 <div class="col-sm-6 col-12">
                   <div class="form-group form-group-sm">
                     <br>
-                    <label for="coverFromDate" class="quote-label">Cover From</label><br>
+                    <label for="coverFromDate" class="quote-label">{{ 'gis.quotation.cover_from'|
+                      translate }}</label><br>
                     <p-calendar formControlName="wef" name="wefDate" id="coverFromDate" inputId="coverFromDate"
                       [dateFormat]="dateFormat" inputStyleClass='form-control' (onSelect)="updateCoverToDate($event)"
                       [minDate]="minDate" [showIcon]="true">
@@ -476,7 +492,8 @@
                     <div
                       *ngIf="quotationProductForm.get('wef').hasError('required') && quotationProductForm.get('wef').touched"
                       class="form-text text-danger">
-                      Cover From is required.
+
+                      {{ 'gis.quotation.cover_from_is_required'| translate }}
                     </div>
                   </div>
                 </div>
@@ -484,14 +501,16 @@
                 <div class="col-sm-6 col-12">
                   <div class="form-group form-group-sm">
                     <br>
-                    <label for="coverToDate" class="quote-label">Cover to</label><br>
+                    <label for="coverToDate" class="quote-label"> {{ 'gis.quotation.cover_to'| translate
+                      }}</label><br>
                     <p-calendar formControlName="wet" name="wetDate" id="coverToDate" inputId="coverToDate"
                       [dateFormat]="dateFormat" inputStyleClass='form-control' [minDate]="minDate" [showIcon]="true">
                     </p-calendar>
                     <div
                       *ngIf="quotationProductForm.get('wet').hasError('required') && quotationProductForm.get('wet').touched"
                       class="form-text text-danger">
-                      Cover to is required.
+
+                      {{ 'gis.quotation.cover_to_is_required'| translate }}
                     </div>
                   </div>
                 </div>
@@ -499,7 +518,7 @@
                 <div class="mt-4 d-flex justify-content-end gap-2">
                   <button type="button" class="btn btn-secondary btn-lightblue" data-bs-dismiss="modal"
                     id="cancelDetails">
-                    Cancel
+                    {{ 'gis.quotation.cancel' | translate }}
                   </button>
                   <button type="button" class="btn btn-primary" id="saveDetails" (click)="submitAddProductForm()">
                     {{ 'gis.quotation.save_details' | translate }}
@@ -519,24 +538,23 @@
           <div class="modal-content ps-4 pt-2 pe-4">
             <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
               <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-                Delete product
+                {{ 'gis.quotation.delete_product' | translate }}
               </p>
               <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
                 style="border: none;">X</button>
             </div>
 
             <div class="d-flex justify-content-between text-black">
-              <p>Are you sure you want to delete product
+              <p>
+                {{ 'gis.quotation.are_you_sure_you_want_to_delete_product' | translate }}
                 <strong>{{ productToDelete?.productName }}</strong>?
               </p>
             </div>
 
             <div class="d-flex justify-content-center mb-3">
               <button type="button" class="btn btn-primary px-5" id="delete" data-bs-dismiss="modal"
-                (click)="deleteProduct()">{{
-                'gis.policy.yes_delete'
-                | translate
-                }}
+                (click)="deleteProduct()">
+                {{'gis.policy.yes_delete'| translate}}
               </button>
             </div>
             <div class="d-flex justify-content-center mb-2">
@@ -554,14 +572,15 @@
           <div class="modal-content ps-4 pt-2 pb-5 pe-4">
             <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0">
               <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-                Reassign task
+                {{'gis.policy.reassign_task'| translate}}
               </p>
               <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
                 style="border: none;">X</button>
             </div>
 
             <div *ngIf="departmentSelected" class="w-75 mb-2 mt-2">
-              <p class="quote-label">Group User</p>
+              <p class="quote-label"> {{ 'gis.quotation.group_user'
+                | translate }}</p>
               <!-- <p-dropdown [options]="clientOptions" [(ngModel)]="clientToReassignQuotation" [showClear]="true"
                 styleClass="w-full">
               </p-dropdown> -->
@@ -589,17 +608,19 @@
             </div>
 
             <div class="w-75 mb-3">
-              <p>Comments</p>
+              <p>{{'gis.policy.comments'| translate}}</p>
               <textarea name="reassignProduct" class="form-control" style="height: 70px"
                 [(ngModel)]="reassignProductComment"></textarea>
             </div>
 
             <small class="text-danger block" [class.invisible]="!noCommentleft">
-              Please leave a comment before reassigning
+
+              {{'gis.policy.please_leave_a_comment_before_reassigning'| translate}}
             </small>
 
             <small class="text-danger block" [class.invisible]="!noUserChosen">
-              Please select a person to reassign before continuing
+
+              {{'gis.policy.please_select_a_user_to_reassign_before_continuing'| translate}}
             </small>
 
             <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
@@ -624,7 +645,7 @@
 
             <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0">
               <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-                Reassign task
+                {{'gis.policy.reassign_task'| translate}}
               </p>
               <button type="button" (click)="closeChooseClientReassignModal()" class="btn p-0 text-danger fw-bold"
                 style="border: none;">X</button>
@@ -637,8 +658,8 @@
                 (onRowUnselect)="onUserUnselect()">
                 <ng-template pTemplate="header">
                   <tr>
-                    <th>User ID</th>
-                    <th>Full Name</th>
+                    <th> {{'gis.policy.user_id'| translate}}</th>
+                    <th> {{'gis.policy.full_name'| translate}}</th>
                   </tr>
                   <tr styleClass="p-striped">
                     <th>
@@ -660,7 +681,7 @@
             </div>
 
             <small class="text-danger block" [class.invisible]="!noUserChosen">
-              Please select a person to reassign before continuing
+              {{'gis.policy.please_select_a_person_to_reassign_before_continuing'| translate}}
             </small>
 
             <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
@@ -711,8 +732,9 @@
           <div class="col-12 d-flex justify-content-end mb-1 me-3">
             <div class="d-flex justify-content-center align-items-center">
               <button type="button" class="btn btn-primary btn-sm no-hover" (click)="openClauseModal()"
-                title="Add Product clause"> Add
-                clauses
+                title="Add Product clause">
+
+                {{'gis.quotation.add_clauses' | translate}}
               </button>
               <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
                 [ngClass]="{ 'pi-caret-up': showClauses, 'pi-caret-down': !showClauses }"
@@ -729,7 +751,9 @@
         <div *ngIf="showProductClauseColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
           [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <strong class="text-primary">Select Columns</strong>
+            <strong class="text-primary">
+              {{'gis.quotation.select_columns' | translate}}
+            </strong>
             <button class="btn-close btn-sm" (click)="showProductClauseColumnModal = false"></button>
           </div>
           <div style="max-height: 250px; overflow-y: auto;">
@@ -837,10 +861,12 @@
                 <td colspan="4" style="text-align: center; padding: 20px;">
                   <div style="color: #6c757d; font-size: 15px;">
                     <ng-container *ngIf="productClause.length === 0">
-                      No clause available. Click on “Add clauses” to add a new clause.
+
+                      {{'gis.quotation.no_clause_available_click_on_add' | translate}}
                     </ng-container>
                     <ng-container *ngIf="productClause.length > 0">
-                      No clauses found matching your search
+                      {{'gis.quotation.no_clauses_found_matching_your_search' | translate}}
+
                     </ng-container>
                   </div>
                 </td>
@@ -865,7 +891,9 @@
                     class="text-center p-4">
                     <div style="color: #6c757d; font-size: 16px;">
                       <i class="pi pi-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                      <p>No additional clauses are available to add.</p>
+                      <p>
+                        {{ 'gis.quotation.no_additional_clauses_are_available_to_add' | translate }}
+                      </p>
                     </div>
                   </div>
 
@@ -878,10 +906,14 @@
                       <tr>
                         <th class="flexible-header1" style="width: 3%"><p-tableHeaderCheckbox /></th>
                         <th class="flexible-header1" style="width: 30%" pSortableColumn="id">
-                          ID <p-sortIcon field="code" />
+
+                          {{ 'gis.quotation.id' | translate }}
+                          <p-sortIcon field="code" />
                         </th>
                         <th class="flexible-header1" style="width: 40%" pSortableColumn="heading">
-                          Description <p-sortIcon field="code" />
+
+                          {{ 'gis.quotation.description' | translate }}
+                          <p-sortIcon field="code" />
                         </th>
                         <th></th>
                       </tr>
@@ -943,13 +975,13 @@
 
                 <div class="d-flex justify-content-between text-black">
                   <div class="d-flex flex-column bg-gray-300 w-25">
-                    <label for="id">ID</label>
+                    <label for="id"> {{ 'gis.quotation.id' | translate }}</label>
                     <input type="text" [value]=" selectedProductClause.shortDescription" pInputText
                       style="background-color:rgb(215, 212, 212); width:18vw" readonly>
 
                   </div>
                   <div class="d-flex flex-column w-50 ">
-                    <label for="heading">Heading</label>
+                    <label for="heading"> {{ 'gis.quotation.heading' | translate }}</label>
                     <input class="bg-gray-300" pInputText [value]=" selectedProductClause.heading | truncate:4"
                       pTooltip="{{  selectedProductClause.heading }}"
                       style="background-color:rgb(215, 212, 212); width:20vw; z-index:auto" readonly>
@@ -957,7 +989,7 @@
                 </div>
 
                 <div class="d-flex flex-column mt-5">
-                  <label class="text-dark mt-0" for="comment">Wording</label>
+                  <label class="text-dark mt-0" for="comment">{{ 'gis.quotation.wording' | translate }}</label>
                   <textarea rows="5" pTextarea [(ngModel)]=" selectedProductClause.wording"
                     class="p-inputtextarea w-full" style="border: 1px solid #ced4da;min-height: 130px">
               </textarea>
@@ -994,7 +1026,10 @@
                 </div>
 
                 <div class="d-flex justify-content-between text-black">
-                  <p>Are you sure you want to delete this clause?</p>
+                  <p>
+                    {{ 'gis.quotation.are_you_sure_you_want_to_delete_this_clause' | translate }}?
+                  </p>
+
                 </div>
 
                 <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
@@ -1030,7 +1065,8 @@
 
         <!-- Modal Body -->
         <div class="modal-body">
-          <h5 class="modal-title mt-2 mb-2" id="editOtherDetailsLabel">Select introducer
+          <h5 class="modal-title mt-2 mb-2" id="editOtherDetailsLabel">
+            {{ 'gis.quotation.select_introducer' | translate }}
             <button type="button" class="btn-close float-end red-close" aria-label="Close"
               (click)="showIntroducerSearchModal = false"></button>
           </h5>
@@ -1042,13 +1078,15 @@
             <ng-template pTemplate="header">
               <tr>
                 <th class="flexible-header1" style="width: 30%" pSortableColumn="id">
-                  Name <p-sortIcon field="name" />
+
+                  {{ 'gis.quotation.name' | translate }}
+                  <p-sortIcon field="name" />
                 </th>
                 <th class="flexible-header1" style="width: 40%" pSortableColumn="heading">
-                  Staff no. <p-sortIcon field="staffNo" />
+                  {{ 'gis.quotation.staff_no' | translate }} <p-sortIcon field="staffNo" />
                 </th>
                 <th class="flexible-header1" style="width: 40%" pSortableColumn="heading">
-                  Company <p-sortIcon field="Company" />
+                  {{ 'gis.quotation.company' | translate }}<p-sortIcon field="Company" />
                 </th>
               </tr>
 
@@ -1081,10 +1119,10 @@
         <div class="mt-4 mb-4 d-flex justify-content-end gap-2">
           <button type="button" class="btn btn-outline-primary" (click)="showIntroducerSearchModal = false"
             id="cancelDetails">
-            Cancel
+            {{ 'gis.quotation.cancel' | translate }}
           </button>
           <button type="button" class="btn btn-primary" id="saveDetails" (click)="saveIntroducer(selectedIntroducer)">
-            Save
+            {{ 'gis.quotation.save' | translate }}
           </button>
         </div>
 
@@ -1095,6 +1133,8 @@
 
   <div class="float-end mb-4">
 
-    <button class="btn btn-primary" (click)="saveQuotationDetails()">Next</button>
+    <button class="btn btn-primary" (click)="saveQuotationDetails()">
+      {{ 'gis.quotation.next' | translate }}
+    </button>
   </div>
 </div>
