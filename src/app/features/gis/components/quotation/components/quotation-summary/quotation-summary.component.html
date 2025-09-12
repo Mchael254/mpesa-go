@@ -1669,7 +1669,8 @@
           <button class="btn btn-outline-primary me-2" *ngIf="showViewDocumentsButton" (click)="fetchReports()">
             View documents
           </button>
-          <button class="btn btn-primary" *ngIf="showConfirmButton">
+          <button class="btn btn-primary" *ngIf="showConfirmButton" data-bs-toggle="modal"
+            data-bs-target="#consentModal">
             Confirm
           </button>
         </div>
