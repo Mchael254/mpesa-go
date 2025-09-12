@@ -344,6 +344,12 @@ export class RiskDetailsComponent {
   showTaxesColumnModal = false;
   taxesColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
   isEditScheduleMode = false
+  isLogBookAvailable = true;
+  selectedFile: File | null = null;
+  isDragging = false;
+  uploading = false;
+  errorMessage = '';
+  successMessage = '';
 
   constructor(
     public subclassService: SubclassesService,
@@ -5961,6 +5967,170 @@ deleteRiskSection(riskSectionCode: number) {
       deductibleDescription: row.deductibleDesc
     }));
   }
+  onLogBookSelected(event: any) {
+    const file: File = event.files[0];
+    const reader = new FileReader();
 
+    reader.onload = () => {
+      // Convert to base64 string (remove prefix like "data:application/pdf;base64,")
+      const base64String = (reader.result as string).split(',')[1];
+
+      const payload = {
+        assistant_id: "DocumentHubAgent",
+        if_not_exists: "create",
+        config: {
+          configurable: {
+            score_extraction: true,
+            strict: false
+          }
+        },
+        input: {
+          schema: {
+            $schema: "https://json-schema.org/draft/2020-12/schema",
+            title: "KenyanLogbook",
+            type: "object",
+            properties: {
+              reg_number: {
+                type: "string",
+                description: "Vehicle registration number (e.g., KAA 123A)"
+              },
+              risk_description: {
+                type: "string",
+                description: "Risk description associated with the vehicle"
+              },
+              vehicle_make: {
+                type: "string",
+                description: "Manufacturer or brand of the vehicle (e.g., Toyota, Nissan)"
+              },
+              vehicle_value: {
+                type: "number",
+                description: "Declared value of the vehicle in Kenyan Shillings"
+              },
+              capacity: {
+                type: "string",
+                description: "Vehicle seating or load capacity"
+              },
+              body_type: {
+                type: "string",
+                description: "Type of vehicle body (e.g., saloon, pickup, lorry)"
+              }
+            },
+            required: ["reg_number", "vehicle_make", "vehicle_value", "capacity", "body_type"],
+            additionalProperties: false
+          },
+          files: [base64String]   // 👈 send BASE64 here instead of URL
+        }
+      }
+      this.quotationService.readScannedDocuments(payload).subscribe({
+        next: (res) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Succesfully scanned Logbook');
+          log.debug("Responser after scanning Logbook", res)
+
+        },
+        error: (err) => {
+          console.error('Delete failed:', err.error.message);
+        }
+      });
+
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    this.validateAndSetFile(file);
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = false;
+
+    if (event.dataTransfer?.files) {
+      const file = event.dataTransfer.files[0];
+      this.validateAndSetFile(file);
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = false;
+  }
+
+  validateAndSetFile(file: File): void {
+    // Reset messages
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    // Check if file exists
+    if (!file) {
+      return;
+    }
+
+    // Check file size (10MB = 10 * 1024 * 1024 bytes)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      this.errorMessage = 'File size exceeds the maximum limit of 10MB';
+      return;
+    }
+
+    // Check file type (optional - you can customize accepted types)
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+      'image/jpeg',
+      'image/png'
+    ];
+
+
+    if (!allowedTypes.includes(file.type)) {
+      this.errorMessage =
+        'Please upload a valid document type (PDF, DOC, DOCX, TXT, PNG, JPG, JPEG)';
+      return;
+    }
+
+    this.selectedFile = file;
+    this.selectedFile && this.uploadFile();
+  }
+
+  removeFile(): void {
+    this.selectedFile = null;
+    this.errorMessage = '';
+  }
+
+  uploadFile(): void {
+    if (!this.selectedFile) return;
+
+    this.uploading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+
+    setTimeout(() => {
+      this.uploading = false;
+      this.successMessage = 'Log book uploaded successfully!';
+
+      setTimeout(() => {
+        this.selectedFile = null;
+      }, 2000);
+    }, 2000);
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
 
 }

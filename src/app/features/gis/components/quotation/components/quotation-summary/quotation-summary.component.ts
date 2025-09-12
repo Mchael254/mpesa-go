@@ -23,13 +23,17 @@ import { ClientService } from 'src/app/features/entities/services/client/client.
 import {
   GroupedUser,
   LimitsOfLiability,
+  OtpResponse,
   ProductClauses,
   ProductDetails,
   QuotationDetails,
   QuotationProduct,
+  ReportParams,
+  ReportResponse,
   RiskInformation,
   ScheduleDetails,
   scheduleDetails,
+  ShareQuoteDTO,
   SubclassSectionPeril,
   TaxDetails,
   TaxInformation,
@@ -40,6 +44,10 @@ import { Table } from 'primeng/table';
 import { ClaimsService } from '../../../claim/services/claims.service';
 import * as bootstrap from 'bootstrap';
 import { riskClauses } from '../../../setups/data/gisDTO';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { NotificationService } from '../../services/notification/notification.service';
+
+type ShareMethod = 'email' | 'sms' | 'whatsapp';
 
 const log = new Logger('QuotationSummaryComponent');
 
@@ -55,6 +63,9 @@ interface FileItem {
   styleUrls: ['./quotation-summary.component.css']
 })
 export class QuotationSummaryComponent implements OnInit, OnDestroy {
+  quotationAuthorized: boolean;
+  fileUrl: SafeResourceUrl;
+
 
   viewClientProfile() {
     throw new Error('Method not implemented.');
@@ -69,6 +80,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
   @ViewChild('productClauseTable') productClauseTable: any;
   @ViewChild('riskClausesTable') riskClausesTable: any;
+  @ViewChild('consentModal') consentModal!: ElementRef;
+  @ViewChild('viewDocumentsModal') viewDocumentsModal!: ElementRef;
 
   private modals: { [key: string]: bootstrap.Modal } = {};
 
@@ -224,6 +237,25 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   groupUsers: GroupedUser[] = [];
   selectedGroupUserId!: number;
   groupLeaderName: string = '';
+  activeConsentTab: string = 'otp';
+  shareMethods: { label: string; value: ShareMethod; disabled: boolean; tooltip?: string }[] = [
+    { label: 'Email', value: 'email', disabled: false },
+    { label: 'SMS', value: 'sms', disabled: true, tooltip: 'SMS sharing coming soon' },
+    { label: 'WhatsApp', value: 'whatsapp', disabled: true, tooltip: 'WhatsApp sharing coming soon' }
+  ];
+  shareForm!: FormGroup;
+  otpGenerated: boolean = false;
+  otpResponse: OtpResponse;
+  changeButtons: boolean = false;
+  filePath: string = '';
+  documentData: any;
+  reports: any[] = [];
+  selectedReports: ReportResponse[] = [];
+  fetchedReports: ReportResponse[] = [];
+  currentIndex: number = 0;
+  activeIndex: number = 1;
+  reportBlobs: { [code: string]: Blob } = {};
+  viewDocForm!: FormGroup;
 
 
   constructor(
@@ -243,6 +275,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     private clientService: ClientService,
     public claimsService: ClaimsService,
     public utilService: UtilService,
+    private notificationService: NotificationService,
+
+
   ) {
     this.viewQuoteFlag = JSON.parse(sessionStorage.getItem('viewQuoteFlag'));
     log.debug("View Quotation Flag", this.viewQuoteFlag)
@@ -264,7 +299,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
 
-
+  shareQuoteData: ShareQuoteDTO = {
+    selectedMethod: 'email',
+    email: '',
+    smsNumber: '',
+    whatsappNumber: '',
+    clientName: ''
+  };
   ngOnInit(): void {
     this.quotationCodeString = sessionStorage.getItem('quotationCode');
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'));
@@ -379,8 +420,18 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // log.debug('quotationDetailsm', this.getQuotationDetails(this.productSubclass))
 
 
+    this.shareForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      otp: ['']
 
-
+    });
+    this.viewDocForm = this.fb.group({
+      to: ['', [Validators.required, Validators.email]],
+      cc: ['', Validators.email],
+      bcc: ['', Validators.email],
+      subject: [''],
+      wording: ['']
+    });
   }
 
   ngAfterViewInit() {
@@ -435,6 +486,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.fetchedQuoteNum = this.quotationView.quotationNo;
         this.user = this.quotationView.preparedBy;
         log.debug('this user', this.user)
+        this.quotationAuthorized = JSON.parse(sessionStorage.getItem('quotationHasBeenAuthorzed'))
+        if (this.quotationAuthorized) {
+          this.showAuthorizeButton = false;
+          this.showViewDocumentsButton = true;
+          this.showConfirmButton = true;
+        }
         this.getExceptions(this.quotationView.code);
         if (!this.moreDetails) {
           this.quotationDetails = this.quotationView;
@@ -468,15 +525,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         const quotationProductCode = firstRisk?.quotationProductCode;
 
         log.debug('Subclass Code:', subclassCode);
-        log.debug('Quotation Product Code:', quotationProductCode);
-
-
-        if (subclassCode && quotationProductCode) {
-
-        }
-
-
-
+        log.debug('Quotation Product Code:', quotationProductCode)
 
         // Extract product details
         this.quotationProducts = this.quotationView.quotationProducts;
@@ -2143,19 +2192,19 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
 
- getExceptions(quotationCode: number) {
-  this.quotationService.getExceptions(quotationCode).subscribe({
-    next: (res) => {
-      log.debug('exceptions', res);
-      this.exceptionsData = res._embedded;
-      log.debug('exceptionData', this.exceptionsData);
-    },
-    error: (error) => {
-      log.error('Error fetching exceptions:', error);
-      this.error = 'Something went wrong while fetching exceptions.';
-    }
-  });
-}
+  getExceptions(quotationCode: number) {
+    this.quotationService.getExceptions(quotationCode).subscribe({
+      next: (res) => {
+        log.debug('exceptions', res);
+        this.exceptionsData = res._embedded;
+        log.debug('exceptionData', this.exceptionsData);
+      },
+      error: (error) => {
+        log.error('Error fetching exceptions:', error);
+        this.error = 'Something went wrong while fetching exceptions.';
+      }
+    });
+  }
 
 
 
@@ -2964,61 +3013,362 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         }
       });
   }
-authorizeQuote() {
-  const quotationCode = this.quotationCode;
-  const user = this.user;
+  authorizeQuote() {
+    const quotationCode = this.quotationCode;
+    const user = this.user;
 
-  if (!this.hasUnderwriterRights()) {
-    this.globalMessagingService.displayErrorMessage('Error','This user does not have the rights to authorize a quote.')
-    this.router.navigate(['/quotation-management']);
-    return;
-  }
+    if (!this.hasUnderwriterRights()) {
+      this.globalMessagingService.displayErrorMessage('Error', 'This user does not have the rights to authorize a quote.')
+      this.router.navigate(['/quotation-management']);
+      return;
+    }
 
-  this.quotationService.authorizeQuote(quotationCode, user).subscribe({
-    next: (res) => {
-      log.debug('Authorize response', res);
+    this.quotationService.authorizeQuote(quotationCode, user).subscribe({
+      next: (res) => {
+        log.debug('Authorize response', res);
 
-    if (res?.status?.toUpperCase().trim() === 'SUCCESS') {
-  this.globalMessagingService.displaySuccessMessage(
-    'Success',
-    res?.message || 'Quotation authorized successfully.'
-  );
-}
+        if (res?.status?.toUpperCase().trim() === 'SUCCESS') {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            res?.message || 'Quotation authorized successfully.'
+          );
+        }
 
-      else if (
-        res?.status === 'ERROR' &&
-        res?.debugMessage?.includes('already Authorised')
-      ) {
-        
-        this.globalMessagingService.displayInfoMessage(
-          'Notice',
-          'This quotation is already authorized.'
-        );
-      } 
-      else {
-      
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          res?.message || 'Something went wrong.'
-        );
+
+
+        // Hide authorize button and show next actions in both cases
+        this.showAuthorizeButton = false;
+        this.showViewDocumentsButton = true;
+        this.showConfirmButton = true;
+      },
+      error: (err: HttpErrorResponse) => {
+        log.error('Error authorizing quote:', err);
+
+        if (
+          err?.error?.status === 'ERROR' &&
+          err?.error?.debugMessage?.includes('already Authorised')
+        ) {
+          log.debug("Already authorized");
+
+          this.globalMessagingService.displayInfoMessage(
+            'Notice',
+            'This quotation is already authorized.'
+          );
+          this.quotationAuthorized = true;
+          sessionStorage.setItem('quotationHasBeenAuthorzed', JSON.stringify(this.quotationAuthorized))
+          this.showAuthorizeButton = false;
+          this.showViewDocumentsButton = true;
+          this.showConfirmButton = true;
+        } else {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err?.error?.message || 'Something went wrong.'
+          );
+        }
       }
 
-      // Hide authorize button and show next actions in both cases
-      this.showAuthorizeButton = false;
-      this.showViewDocumentsButton = true;
-      this.showConfirmButton = true;
-    },
-    error: (error) => {
-      log.error('Error authorizing quote:', error);
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        error?.error?.message || 'Something went wrong while authorizing the quote.'
-      );
+    });
+  }
+
+
+  generateOTP() {
+    this.shareForm.markAllAsTouched();
+    this.shareForm.updateValueAndValidity();
+
+    const emailCtrl = this.shareForm.get('email');
+    if (!emailCtrl || emailCtrl.invalid) {
+      return;
     }
-  });
-}
+
+    log.debug("Client name:", this.clientName);
+
+    const otpPayload = {
+      email: emailCtrl.value,
+      subject: "Action Required: Verify Your Consent with OTP",
+      body: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent:`, // OTP appended by backend
+    };
+
+    this.quotationService.generateOTP(otpPayload).subscribe({
+      next: (res: any) => {
+        this.globalMessagingService.displaySuccessMessage("Succes", "Successfully generated OTP")
+
+        this.otpResponse = res._embedded;
+        this.otpGenerated = true;
+
+      },
+      error: (error) => {
+        console.error("Error generating OTP:", error.error?.message || error);
+      }
+    });
+  }
+
+  verifyOTP() {
+    const userIdentifier = this.otpResponse.userIdentifier
+    const otp = this.shareForm.value.otp
+    this.quotationService.verifyOTP(userIdentifier, otp)
+      .subscribe({
+        next: (res: any[]) => {
+          this.globalMessagingService.displaySuccessMessage("Succes", "Successfully verified OTP")
+          if (res) {
+            // Close modal only on success
+            const modalEl: any = this.consentModal.nativeElement;
+            const modal = bootstrap.Modal.getInstance(modalEl)
+              || new bootstrap.Modal(modalEl);
+            modal.hide();
+            this.otpGenerated = false
+            this.changeButtons = true
+          }
+        },
+        error: (err: any) => {
+          const backendMsg = err.error?.message || err.message || 'An unexpected error occurred'; console.error("OTP Verification Error:", backendMsg);
+
+          // 🔔 Show in global error handler
+          this.globalMessagingService.displayErrorMessage("Error", backendMsg);
+        }
+      });
+  }
+  fetchReports() {
+    const system = 37;
+    const applicationLevel = "QUOTE"
+    this.quotationService.fetchReports(system, applicationLevel)
+      .subscribe({
+        next: (res: any[]) => {
+          this.fetchedReports = res
+          if (res) {
+            const modalEl: any = this.viewDocumentsModal.nativeElement;
+            const modal = bootstrap.Modal.getInstance(modalEl)
+              || new bootstrap.Modal(modalEl);
+            modal.show();
+            const firstReport = this.fetchedReports[0];
+            this.selectedReports = [firstReport];
+
+            this.onReportToggle({ checked: true }, firstReport);
+          }
+        },
+        error: (err: any) => {
+          const backendMsg = err.error?.message || err.message || 'An unexpected error occurred'; console.error("OTP Verification Error:", backendMsg);
+          this.globalMessagingService.displayErrorMessage("Error", backendMsg);
+        }
+      });
+  }
+  // onReportToggle(event: any, report: ReportResponse) {
+  //   if (event.checked) {
+  //     log.debug("Checked:", report);
+
+  //     this.quotationService.fetchReportParams(report.code)
+  //       .subscribe({
+  //         next: (res: ReportParams) => {
+  //           const reportDetails = res
+  //           this.generateReport(reportDetails)
+  //         },
+  //         error: (err: any) => {
+  //           const backendMsg = err.error?.message || err.message || 'An unexpected error occurred'; console.error("OTP Verification Error:", backendMsg);
+  //           this.globalMessagingService.displayErrorMessage("Error", backendMsg);
+  //         }
+  //       });
+  //   } else {
+  //     log.debug("Unchecked:", report);
+  //     // Handle uncheck
+  //   }
+  // }
+  onReportToggle(event: any, report: ReportResponse) {
+    if (event.checked) {
+      const index = this.selectedReports.findIndex(r => r.code === report.code);
+      this.currentIndex = index !== -1 ? index : this.selectedReports.length - 1;
+
+      this.loadAndShowReport(report);
+    } else {
+      // remove or handle uncheck
+    }
+  }
+
+  toggleReport(direction: 'prev' | 'next') {
+    if (!this.selectedReports || this.selectedReports.length === 0) return;
+
+    if (direction === 'prev' && this.currentIndex > 0) {
+      this.currentIndex--;
+    } else if (direction === 'next' && this.currentIndex < this.selectedReports.length - 1) {
+      this.currentIndex++;
+    }
+
+    const report = this.selectedReports[this.currentIndex];
+    this.loadAndShowReport(report);
+  }
+
+  private loadAndShowReport(report: ReportResponse) {
+    this.quotationService.fetchReportParams(report.code).subscribe({
+      next: (res: ReportParams) => this.generateReport(res),
+      error: (err: any) => {
+        const backendMsg = err.error?.message || err.message || 'An unexpected error occurred';
+        this.globalMessagingService.displayErrorMessage("Error", backendMsg);
+      }
+    });
+  }
+  generateReport(selectedReportDetails: ReportParams) {
+    const reportCode = selectedReportDetails.rptCode;
+
+    // Check if report is already generated and cached
+    if (this.reportBlobs[reportCode]) {
+      console.log("Report already generated, downloading from cache...");
+      this.filePath = URL.createObjectURL(this.reportBlobs[reportCode]);
+      // this.downloadReportByCode(reportCode, selectedReportDetails.reportName);
+      return;
+    }
+
+    // Build payload for backend
+    const value = this.quotationCode;
+    const reportPayload = {
+      params: selectedReportDetails.params.map(param => ({
+        name: param.name,   // transform if needed
+        value: value
+      })),
+      rptCode: reportCode,
+      system: "GIS",
+      reportFormat: "PDF",
+      encodeFormat: "RAW"
+    };
+
+    console.log("Generating report payload:", reportPayload);
+
+    // Call backend
+    this.quotationService.generateReports(reportPayload).subscribe({
+      next: (res: Blob) => {
+        // Create PDF blob
+        const blob = new Blob([res], { type: 'application/pdf' });
+        this.filePath = URL.createObjectURL(blob);
+        log.debug("Blob URL:", this.filePath);
+        // Cache the blob
+        this.reportBlobs[reportCode] = blob;
+
+        console.log("Report generated and cached:", reportCode);
+
+        // this.downloadReportByCode(reportCode, selectedReportDetails.reportName);
+      },
+      error: (err: any) => {
+        const backendMsg = err.error?.message || err.message || 'An unexpected error occurred';
+        console.error("Error generating report:", backendMsg);
+        this.globalMessagingService.displayErrorMessage("Error", backendMsg);
+      }
+    });
+  }
+
+  downloadReport(report: any) {
+    const reportCode = report.rptCode || report.code;
+    this.downloadReportByCode(reportCode, report.description);
+  }
+  downloadReportByCode(reportCode: number, fileName?: string) {
+    const blob = this.reportBlobs[reportCode];
+    if (!blob) {
+      console.warn("No cached blob found for report:", reportCode);
+      return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fileName || 'report'}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    console.log("Report downloaded:", reportCode);
+  }
 
 
+  printReport(report: any) {
+    const reportCode = report.rptCode || report.code;
+    const blob = this.reportBlobs[reportCode];
+
+    if (!blob) {
+      console.warn("No cached blob found for report:", reportCode);
+      return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+
+    document.body.appendChild(iframe);
+    iframe.contentWindow?.focus();
+    iframe.contentWindow?.print();
+
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+      URL.revokeObjectURL(url);
+    }, 1000);
+  }
+  async sendReportViaEmail() {
+    this.viewDocForm.markAllAsTouched();
+    this.viewDocForm.updateValueAndValidity()
+    if (!this.selectedReports || this.selectedReports.length === 0) return;
+
+    const viewDocForm = this.viewDocForm.value;
+    log.debug("Selected reports:", this.selectedReports)
+    log.debug("Report blobs", this.reportBlobs)
+    const attachments = await Promise.all(
+      this.selectedReports.map(async (report: any) => {
+        const reportKey = report.rptCode || report.code; // <-- unified key
+        const blob = this.reportBlobs[reportKey];
+        console.log('Blob for report', reportKey, blob);
+        if (!blob) return null;
+
+        const base64 = await this.blobToBase64(blob);
+        return {
+          name: `${report.description || reportKey}.pdf`,
+          content: base64,
+          type: 'application/pdf',
+          disposition: 'attachment',
+          contentId: reportKey
+        };
+      })
+    );
+
+
+    // Filter out any nulls (in case blob not found)
+    const filteredAttachments = attachments.filter(att => att !== null);
+
+    const payload: EmailDto = {
+      code: null,
+      address: [viewDocForm.to],
+      subject: viewDocForm.subject,
+      message: viewDocForm.wording,
+      status: 'D',
+      emailAggregator: 'N',
+      response: '524L',
+      systemModule: 'NB for New Business',
+      systemCode: 0,
+      attachments: filteredAttachments,
+      sendOn: new Date().toISOString(),
+      clientCode: 0,
+      agentCode: 0
+    };
+
+    this.notificationService.sendEmail(payload).subscribe({
+      next: (res: any) => {
+        this.globalMessagingService.displaySuccessMessage("Success", "Reports sent successfully!")
+        if (res) {
+          const modalEl: any = this.viewDocumentsModal.nativeElement;
+          const modal = bootstrap.Modal.getInstance(modalEl)
+            || new bootstrap.Modal(modalEl);
+          modal.hide();
+        }
+      },
+      error: (err) => {
+        const msg = err.error?.message || err.message || 'Failed to send reports';
+        this.globalMessagingService.displayErrorMessage("Error", msg);
+      }
+    });
+  }
+  blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve((reader.result as string).split(',')[1]); // remove data: prefix
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
 
 }
 
