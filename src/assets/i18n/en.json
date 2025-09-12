@@ -635,7 +635,11 @@
     "getStarted": "Get started",
     "updateInAnotherLanguage": "Do you want to update changes in another language",
     "export": "export",
-    "publishedChangesWillBeExported": "Please note that only published changes will be exported"
+    "publishedChangesWillBeExported": "Please note that only published changes will be exported",
+    "editTableColumns": "Edit table columns",
+    "columnLabel": "Column label",
+    "columns": "Columns",
+    "noRecordsFound": "No records found"
   },
   "entities": {
     "account_number": "Account Number",
