@@ -86,7 +86,15 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
       log.debug("Selected coverType >>>>", selectedCoverType)
       this.onCoverTypeSelected(selectedCoverType)
       this.openPolicy = 'additionalBenefits';
-
+      // const coverTypeSections = JSON.parse(sessionStorage.getItem('coverTypeSectionList'))
+      // const defaultCover = coverTypeSections.find(c => c.isDefault === 'Y');
+      // log.debug('default cover', defaultCover)
+      // const riskLevelPremiumCover = this._riskLevelPremium.coverTypeDetails.find(cover => cover.coverTypeCode
+      //   === defaultCover.coverTypeCode)
+      // log.debug('Risk level premium cover:', riskLevelPremiumCover)
+      // if (riskLevelPremiumCover) {
+      //   this.selectedCoverTypeCode = riskLevelPremiumCover.coverTypeCode;
+      // }
     }
   }
 
@@ -330,7 +338,18 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
       align: 'left',
     };
 
+    const coverTypeSections = JSON.parse(sessionStorage.getItem('covertypeSections'))
+    log.debug('session sorage covers', coverTypeSections)
 
+    const defaultCover = coverTypeSections.find(c => c.isDefault === 'Y');
+    log.debug('default cover', defaultCover)
+    const riskLevelPremiumCover = this._riskLevelPremium.coverTypeDetails.find(cover => cover.coverTypeCode
+      === defaultCover.coverTypeCode)
+    log.debug('Risk level premium cover:', riskLevelPremiumCover)
+    if (riskLevelPremiumCover) {
+      this.selectedCoverTypeCode = riskLevelPremiumCover.coverTypeCode;
+      this.onCoverTypeSelected(riskLevelPremiumCover)
+    }
   }
 
   ngOnDestroy(): void {
@@ -791,5 +810,6 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   openRiskDeleteModal(limitToDelete: any) {
     this.additionalBenefitsRemovedEvent.emit({ risk: this.riskLevelPremium, premiumItems: limitToDelete })
   }
+
 }
 

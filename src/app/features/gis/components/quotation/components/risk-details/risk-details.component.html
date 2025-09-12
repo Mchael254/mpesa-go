@@ -5,7 +5,7 @@
         <div *ngIf="showRiskDetailsColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
             style="top: 0px; right: 0px; z-index: 1050;">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <strong class="text-primary">Select Columns</strong>
+                <strong class="text-primary"> {{ 'gis.quotation.select_columns' | translate }}</strong>
                 <button class="btn-close btn-sm" (click)="showRiskDetailsColumnModal = false"></button>
             </div>
             <div style="max-height: 250px; overflow-y: auto;">
@@ -59,7 +59,7 @@
                                     <span type="button" class="fw-bold text-primary" style="cursor: pointer"
                                         tooltipPosition="top" data-bs-toggle="modal" data-bs-target="#deleteRisk"
                                         (click)="$event.stopPropagation()">
-                                        Delete
+                                        {{ 'gis.quotation.delete' | translate }}
                                     </span>
                                 </div>
                             </ng-container>
@@ -77,7 +77,8 @@
             <ng-template pTemplate="emptymessage">
                 <tr>
                     <td colspan="8" style="padding: 20px; text-align:center" id="empty">
-                        No risk Click on + icon to add risk
+
+                        {{ 'gis.quotation.no_risk_click_on_icon_to_add' | translate }}
                     </td>
                 </tr>
             </ng-template>
@@ -92,15 +93,58 @@
                 <div class="modal-content" style="max-height: 704px; overflow: hidden;min-height: 250px;">
 
                     <div class="modal-body" style="height: 100%; max-height: 500px; overflow-y: auto;">
-                        <h5 *ngIf="!isEditMode" class="modal-title mt-2 mb-2 addRiskTitle ">Add risk
+                        <h5 *ngIf="!isEditMode" class="modal-title mt-3 mb-2 addRiskTitle ">
+                            {{ 'gis.quotation.add_risk' | translate }}
                             <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </h5>
 
-                        <h5 *ngIf="isEditMode" class="modal-title mt-2 mb-2 addRiskTitle ">Edit risk
+                        <h5 *ngIf="isEditMode" class="modal-title mt-3 mb-2 addRiskTitle ">
+                            {{ 'gis.quotation.edit_risk' | translate }}
                             <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </h5>
+                        <ng-container>
+                            <!-- <div class="mb-4 d-block w-100 p-4 text-center border border-dashed rounded">
+                                <p-fileUpload name="logbook" mode="basic"
+                                    chooseLabel="Click this area to upload Log book" [auto]="true"
+                                    [maxFileSize]="10485760" (onSelect)="onLogBookSelected($event)"
+                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                </p-fileUpload>
+
+
+                            </div> -->
+                        </ng-container>
+                        <!-- <div class="upload-area mt-4 mt-4" (click)="fileInput.click()" [class.dragover]="isDragging"
+                            (drop)="onDrop($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+
+                            <div class="upload-content">
+                                <i class="pi pi-upload upload-icon"></i>
+
+                                <p class="upload-text">Click this area to upload Log book</p>
+                                <p class="upload-subtext">Maximum file size 10MB</p>
+                            </div>
+
+                            <input #fileInput type="file" (change)="onFileSelected($event)"
+                                accept=".pdf,.doc,.docx,.txt,.log,.jpg,.jpeg,.png," style="display: none;">
+                        </div>
+
+                        <div class="selected-file" *ngIf="selectedFile">
+                            <div class="file-info">
+                                <span class="file-name">{{ selectedFile.name }}</span>
+                                <span class="file-size">{{ formatFileSize(selectedFile.size) }}</span>
+                            </div>
+                            <button class="remove-btn" (click)="removeFile()">×</button>
+                        </div>
+
+                      
+                        <div class="error-message" *ngIf="errorMessage">
+                            {{ errorMessage }}
+                        </div>
+
+                        <div class="success-message" *ngIf="successMessage">
+                            {{ successMessage }}
+                        </div> -->
                         <form [formGroup]="riskDetailsForm">
                             <div class="row ">
                                 <ng-container *ngFor="let field of formData; let i = index">
@@ -232,11 +276,13 @@
                                                 class="text-danger small mt-1">
 
                                                 <div *ngIf="errors['required']">
-                                                    {{ field.label | translate }} is required.
+                                                    {{ field.label | translate }} {{
+                                                    'gis.quotation.is_required' | translate }}
                                                 </div>
 
                                                 <div *ngIf="errors['pattern']">
-                                                    {{ field.label | translate }} format is invalid.
+                                                    {{ field.label | translate }}
+                                                    {{ 'gis.quotation.format_is_invalid' | translate }}
                                                 </div>
 
                                             </div>
@@ -253,9 +299,10 @@
                                 data-bs-dismiss="modal" (click)="clearRiskForm()">{{'gis.policy.cancel' |
                                 translate}}</button>
                             <button *ngIf="!isEditMode" type="button" class="btn btn-primary " id="saveDetails"
-                                (click)="createRiskDetail()">Save</button>
+                                (click)="createRiskDetail()"> {{ 'gis.quotation.save' | translate }}</button>
                             <button *ngIf="isEditMode" type="button" class="btn btn-primary " id="saveDetails"
-                                (click)="UpdateRiskDetail()">Save changes</button>
+                                (click)="UpdateRiskDetail()"> {{ 'gis.quotation.save_changes' | translate
+                                }}</button>
                         </div>
                     </div>
 
@@ -337,14 +384,16 @@
                                     <button pButton pRipple type="button"
                                         class="p-button-text p-button-sm p-button-info custom-button" tooltip="Edit"
                                         (click)="editOtherDetails(tab);fetchLimitationOfUse();">
-                                        Edit
+
+                                        {{ 'gis.quotation.edit' | translate }}
                                     </button>
 
                                     <button pButton pRipple type="button"
                                         class="p-button-text p-button-sm custom-button" data-bs-toggle="modal"
                                         data-bs-target="#deleteSchedule" tooltip="Delete"
                                         (click)="getLevelName(tab.levelNumber)">
-                                        Delete
+
+                                        {{ 'gis.quotation.delete' | translate }}
                                     </button>
                                 </ng-container>
 
@@ -360,7 +409,8 @@
                     <ng-template pTemplate="emptymessage">
                         <tr>
                             <td [attr.colspan]="levelTableColumnsMap[tab.levelName]?.length || 1" class="text-center">
-                                No schedule. Click on + icon to add schedule.
+
+                                {{ 'gis.quotation.no_schedule_click_on_add' | translate }}
                             </td>
                         </tr>
                     </ng-template>
@@ -378,7 +428,7 @@
 
                         <div class="modal-body">
                             <div *ngIf="!isEditScheduleMode">
-                                <h5 class="modal-title mt-2 mb-4 ">Add {{
+                                <h5 class="modal-title mt-2 mb-4 ">{{ 'gis.quotation.add' | translate }} {{
                                     activeModalTab?.levelName |
                                     sentenceCase }}
 
@@ -387,7 +437,7 @@
                                 </h5>
                             </div>
                             <div *ngIf="isEditScheduleMode">
-                                <h5 class="modal-title mt-2 mb-4 ">Edit {{
+                                <h5 class="modal-title mt-2 mb-4 ">{{ 'gis.quotation.edit' | translate }} {{
                                     activeModalTab?.levelName |
                                     sentenceCase }}
 
@@ -457,8 +507,8 @@
                             data-bs-dismiss="modal">{{'gis.policy.cancel' |
                             translate}}</button>
                         <div *ngIf="!isEditScheduleMode">
-                            <button type="button" class="btn btn-primary " id="saveDetails"
-                                (click)=onOtherDetailSave()>Save
+                            <button type="button" class="btn btn-primary " id="saveDetails" (click)=onOtherDetailSave()>
+                                {{ 'gis.quotation.save' | translate }}
                             </button>
                         </div>
                         <div *ngIf="isEditScheduleMode">
@@ -466,7 +516,7 @@
                                 <button type="button" class="btn btn-primary" id="saveDetails"
                                     [disabled]="!scheduleOtherDetailsForm.dirty || scheduleOtherDetailsForm.invalid"
                                     (click)="onOtherDetailUpdate()">
-                                    Update
+                                    {{ 'gis.quotation.update' | translate }}
                                 </button>
                             </span>
                         </div>
@@ -528,7 +578,7 @@
             <div class="row mt-3" *ngIf="isSectionDetailsOpen">
                 <div class="col-12 d-flex justify-content-end">
                     <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                        (click)="openAddSectionModal()"> Add Section
+                        (click)="openAddSectionModal()"> {{'gis.quotation.add_section' | translate}}
                     </button>
 
                     <!-- <i class="pi border border-black p-1 rounded-1 text-black" [ngClass]="{
@@ -555,7 +605,8 @@
                 <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
                     <div class="modal-content" id="addSectionModal">
                         <div class="modal-body">
-                            <h5 class="modal-title mt-2" id="editOtherDetailsLabel">Add risk section
+                            <h5 class="modal-title mt-2" id="editOtherDetailsLabel">
+                                {{'gis.quotation.add_risk_section' | translate}}
                                 <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </h5>
@@ -603,7 +654,7 @@
                                 <ng-template pTemplate="emptymessage">
                                     <tr>
                                         <td colspan="5" class="text-center text-muted py-3">
-                                            No sections found matching your search.
+                                            {{'gis.quotation.no_sections_found_matching_your_search' | translate}}
                                         </td>
                                     </tr>
                                 </ng-template>
@@ -664,7 +715,8 @@
                     <div class="modal-content" style=" min-width:700px;">
                         <div class="modal-body" style="padding-left: 40px; max-height:550px; overflow-y: auto;">
                             <h5 class="modal-title mt-2" id="editScheduleLabel">
-                                Edit section details
+
+                                {{'gis.quotation.edit_section_details' | translate}}
                                 <button type="button" class="btn-close red-close float-end"
                                     (click)="closeEditSectionModal()" aria-label="Close"></button>
                             </h5>
@@ -988,7 +1040,8 @@
                                 </div>
                                 <div class="col-6 d-flex justify-content-end">
                                     <button type="button" class="btn btn-primary" (click)="closeEditSectionModal()"
-                                        style="background-color:#ffffff; color: #00529b;">Cancel</button>
+                                        style="background-color:#ffffff; color: #00529b;"> {{'gis.quotation.cancel' |
+                                        translate}}</button>
                                     <!-- <button type="button" class="btn btn-primary"  data-bs-dismiss="modal" (click)="updateRiskSection()" >Save Details</button> -->
                                     <button type="button" class="btn btn-primary" (click)="editSection()">
                                         {{'gis.quotation.save_details' | translate}}</button>
@@ -1006,7 +1059,9 @@
                 <div class="modal-dialog modal-dialog-centered ">
                     <div class="modal-content">
                         <div class="modal-header" style="border-bottom: none;">
-                            <h5 class="delete-title" id="exampleModalLabel">Delete section</h5>
+                            <h5 class="delete-title" id="exampleModalLabel">
+                                {{'gis.quotation.delete_section' | translate}}
+                            </h5>
                             <button type="button" class="btn-close red-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
@@ -1031,7 +1086,7 @@
             <div *ngIf="showColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
                 [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong class="text-primary">Select Columns</strong>
+                    <strong class="text-primary"> {{'gis.quotation.select_columns' | translate}}</strong>
                     <button class="btn-close btn-sm" (click)="showColumnModal = false"></button>
                 </div>
                 <div style="max-height: 200px;max-width:250px; overflow-y: auto;">
@@ -1072,14 +1127,14 @@
                                     <button pButton type="button"
                                         class="p-button-text p-button-sm p-text-bold text-primary"
                                         (click)="onOpenEditSectionModal(section)">
-                                        Edit
+                                        {{'gis.quotation.edit' | translate}}
                                     </button>
 
                                     <button pButton type="button"
                                         class="p-button-text p-button-sm  p-text-bold text-primary"
                                         (click)="setSectionToDelete(section)" data-bs-toggle="modal"
                                         data-bs-target="#deleteSection">
-                                        Delete
+                                        {{'gis.quotation.delete' | translate}}
                                     </button>
                                 </ng-container>
                                 <ng-container *ngSwitchDefault>
@@ -1103,7 +1158,8 @@
                 <ng-template pTemplate="emptymessage">
                     <tr>
                         <td [attr.colspan]="columns.length" style="padding: 20px; text-align:center">
-                            No section. Click on + icon to add section.
+
+                            {{'gis.quotation.no_section_click_on_add_icon' | translate}}
                         </td>
                     </tr>
                 </ng-template>
@@ -1275,7 +1331,8 @@
                     <!-- clause action tabs -->
                     <div *ngIf="riskActiveTab === 'riskClauses'">
                         <button class="btn btn-primary btn-sm mb-1" (click)="openClauseModal()">
-                            Add risk Clause
+
+                            {{'gis.quotation.add_risk_clause' | translate}}
                         </button>
                         <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
                             [ngClass]="{ 'pi-caret-up': showClauses, 'pi-caret-down': !showClauses }"
@@ -1287,7 +1344,8 @@
                     <!-- limits action tabs -->
                     <div *ngIf="riskActiveTab === 'riskLimits'">
                         <button class="btn btn-primary btn-sm mb-1" (click)="openLimitModal()">
-                            Add risk limit
+
+                            {{'gis.quotation.add_risk_limit' | translate}}
                         </button>
                         <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
                             [ngClass]="{ 'pi-caret-up': showLimitsOfLiability, 'pi-caret-down': !showLimitsOfLiability }"
@@ -1299,7 +1357,8 @@
                     <!-- perils action tabs -->
                     <div *ngIf="riskActiveTab === 'riskPerils'">
                         <button class="btn btn-primary btn-sm mb-1" (click)="openChoosePerilsModal()">
-                            Add Perils
+
+                            {{'gis.quotation.add_perils' | translate}}
                         </button>
 
                         <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
@@ -1312,7 +1371,8 @@
                     <!-- excess action tabs -->
                     <div *ngIf="riskActiveTab === 'riskExcesses'">
                         <button class="btn btn-primary btn-sm mb-1" (click)="openExcessModal()">
-                            Add risk excess
+
+                            {{'gis.quotation.add_risk_excess' | translate}}
                         </button>
 
                         <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
@@ -1324,7 +1384,8 @@
                     <!-- taxes action tabs -->
                     <div *ngIf="riskActiveTab === 'riskTaxes'">
                         <button class="btn btn-primary btn-sm mb-1" type="button" (click)="handleAddTaxClick()">
-                            Add Tax
+
+                            {{'gis.quotation.add_tax' | translate}}
                         </button>
 
                         <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
@@ -1355,7 +1416,9 @@
             <div *ngIf="showClauseColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
                 [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong class="text-primary">Select Columns</strong>
+                    <strong class="text-primary">
+                        {{'gis.quotation.select_columns' | translate}}
+                    </strong>
                     <button class="btn-close btn-sm" (click)="showClauseColumnModal = false"></button>
                 </div>
                 <div style="max-height: 250px; overflow-y: auto;">
@@ -1461,11 +1524,13 @@
                     <tr>
                         <td [attr.colspan]="clauseColumns.length" class="text-center p-4 text-muted">
                             <ng-container *ngIf="sessionClauses?.length === 0">
-                                <strong>No clauses available.</strong> There are currently no clauses to add.
+
+                                {{'gis.quotation.no_clauses_available_there_are_currently' | translate}}
                             </ng-container>
                             <ng-container
                                 *ngIf="riskClauseTable.filteredValue?.length === 0 && sessionClauses?.length > 0">
-                                No matching clauses found.
+
+                                {{'gis.quotation.no_matching_clauses_found' | translate}}
                             </ng-container>
                         </td>
                     </tr>

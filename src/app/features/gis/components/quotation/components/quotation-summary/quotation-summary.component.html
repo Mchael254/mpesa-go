@@ -680,7 +680,6 @@
                     </li>
                   </ul>
 
-
                   <div class="d-flex justify-content-end align-items-center">
                     <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
                       [ngClass]="{ 'pi-caret-up': !showRiskColumnModal, 'pi-caret-down': showRiskColumnModal }"
@@ -1652,33 +1651,296 @@
           </button>
         </div>
 
-        
- <div class="action-buttons">
 
-  <!-- Right-side Authorize button with tooltip -->
-        <span [attr.title]="exceptionsData?.length > 0 ? 'Please resolve exceptions' : null"
-          style="display: inline-block;">
-          <button *ngIf="showAuthorizeButton && !(exceptionsData?.length > 0)" type="button" class="btn btn-outline-primary"  (click)="authorizeQuote()">
-            Authorize quote
-          </button>
-          <!-- <button type="button" class="btn btn-outline-primary" disabled tooltip="Authorize exceptions first">
+        <div class="action-buttons">
+
+          <!-- Right-side Authorize button with tooltip -->
+          <span [attr.title]="exceptionsData?.length > 0 ? 'Please resolve exceptions' : null"
+            style="display: inline-block;">
+            <button *ngIf="showAuthorizeButton && !(exceptionsData?.length > 0)" type="button"
+              class="btn btn-outline-primary" (click)="authorizeQuote()">
+              Authorize quote
+            </button>
+            <!-- <button type="button" class="btn btn-outline-primary" disabled tooltip="Authorize exceptions first">
             Authorize quote
           </button> -->
 
-        </span>
-  <button class="btn btn-outline-primary me-2" *ngIf="showViewDocumentsButton">
-    View documents
-  </button>
-  <button class="btn btn-primary" *ngIf="showConfirmButton">
-    Confirm
-  </button>
-</div>
+          </span>
+          <button class="btn btn-outline-primary me-2" *ngIf="showViewDocumentsButton" (click)="fetchReports()">
+            View documents
+          </button>
+          <button class="btn btn-primary" *ngIf="showConfirmButton">
+            Confirm
+          </button>
+        </div>
+        <div *ngIf="changeButtons" class="d-flex gap-2 flex-wrap">
+          <button type="button" class="btn btn-primary" [disabled]="afterRejectQuote">
+            Convert to policy
+          </button>
 
+          <button type="button" class="btn btn-primary" [disabled]="afterRejectQuote">
+            Merge to Policy
+          </button>
+
+
+        </div>
       </div>
 
 
 
     </div>
+    <!-- Consent Modal -->
+    <div class="modal fade" id="consentModal" #consentModal tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm" style="min-width:609px">
+        <div class="modal-content px-4 pt-2 pb-4 ">
+
+
+          <div class="d-flex justify-content-between align-items-center rounded-3 mb-1">
+            <p class="modal-title fw-bold ms-0">Privacy policy and consent</p>
+            <button type="button" data-bs-dismiss="modal" class="btn p-1 text-danger fw-bold"
+              style="border: none;">X</button>
+          </div>
+
+          <!-- Tabs -->
+          <ul class="nav nav-tabs me-auto mt-4" id="taxTabs" role="tablist">
+            <!-- OTP tab -->
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" [class.active]="activeConsentTab === 'otp'" (click)="activeConsentTab = 'otp'"
+                type="button">
+                Share OTP
+              </button>
+            </li>
+
+            <!-- Upload tab (disabled for now) -->
+            <li class="nav-item" role="presentation">
+              <span data-bs-toggle="tooltip" data-bs-placement="top" title="Functionality to be worked on"
+                data-bs-custom-class="tooltip-strong">
+                <button class="nav-link" type="button" disabled tabindex="-1">
+                  Upload Signed Document
+                </button>
+              </span>
+
+
+            </li>
+          </ul>
+
+          <!-- Tab content -->
+          <div class="tab-content mt-3 mb-4">
+            <!-- OTP content -->
+            <div class="tab-pane fade show active" *ngIf="activeConsentTab === 'otp'">
+              <!-- Share method selection -->
+              <div class="method-options mt-2">
+                <div class="method-option" *ngFor="let method of shareMethods"
+                  (click)="!method.disabled && (shareQuoteData.selectedMethod = method.value)"
+                  [class.selected]="shareQuoteData.selectedMethod === method.value" [class.disabled]="method.disabled">
+                  <i class="far fa-circle" *ngIf="shareQuoteData.selectedMethod !== method.value"></i>
+                  <i class="fas fa-dot-circle" *ngIf="shareQuoteData.selectedMethod === method.value"></i>
+                  <span class="ps-2">{{ method.label }}</span>
+                  <span class="custom-tooltip" *ngIf="method.disabled">{{ method.tooltip }}</span>
+                </div>
+              </div>
+              <form [formGroup]="shareForm">
+                <div class="row mt-2">
+                  <label for="email" class="label quote-label">Email address<span class="required"></span></label>
+                  <div class="row">
+                    <div class="col-sm-9">
+                      <input id="email" type="email" formControlName="email" class="form-control form-control-sm"
+                        placeholder="" (blur)="shareForm.get('email')?.markAsTouched()" />
+                      <div *ngIf="shareForm.get('email')?.touched && shareForm.get('email')?.invalid"
+                        class="text-danger mt-1">
+                        <small *ngIf="shareForm.get('email')?.errors?.['required']">Email is required.</small>
+                        <small *ngIf="shareForm.get('email')?.errors?.['email']">Please enter a valid email
+                          address.</small>
+                      </div>
+                    </div>
+                    <div class="col-sm-3">
+                      <button type="button" class="btn btn-outline-primary btn-sm fw-bold" (click)="generateOTP()">Send
+                        OTP</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="otpGenerated" class="row mt-3">
+                  <div class="col-sm-9">
+                    <label for="otp" class="label quote-label">Enter OTP</label>
+                    <input id="otp" type="number" formControlName="otp" class="form-control form-control-sm" />
+                  </div>
+                  <div class="col-sm-3"></div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Upload tab placeholder -->
+            <div class="tab-pane fade" *ngIf="activeConsentTab === 'upload'">
+              <p class="text-muted mt-3">Functionality to be worked on</p>
+            </div>
+          </div>
+          <div *ngIf="otpGenerated" class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
+            <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary fw-bold">Cancel</button>
+            <button type="button" class="btn" style="background-color: #00529B;color:white;"
+              (click)="verifyOTP()">Verify</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- View documents Modal -->
+    <!-- Modal -->
+    <div class="modal fade" id="viewDocumentsModal" #viewDocumentsModal tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content px-4 pt-2 pb-4">
+
+          <!-- Header -->
+          <div class="d-flex justify-content-between align-items-center rounded-3 mb-1">
+            <p class="modal-title fw-bold ms-0">Generated Documents</p>
+            <button type="button" data-bs-dismiss="modal" class="btn p-1 text-danger fw-bold"
+              style="border: none;">X</button>
+          </div>
+
+          <div class="row mt-4" style="max-height: 350px;">
+            <!-- Left side: reports list -->
+            <div class="col-4 border-end overflow-auto" style="max-height: 350px; padding-right: 1rem;">
+              <div *ngFor="let report of fetchedReports; let i = index" class="d-flex align-items-center mb-2">
+                <!-- PrimeNG checkbox (multiple selection) -->
+                <p-checkbox [(ngModel)]="selectedReports" [value]="report" inputId="{{'chk-' + report.code}}"
+                  (onChange)="onReportToggle($event, report)">
+                </p-checkbox>
+
+                <label [for]="'chk-' + report.code" class="ms-2 flex-grow-1 report-label" style="cursor: pointer;">
+                  {{ report.description }}
+                </label>
+
+                <!-- Download / Print icons -->
+                <i class="pi pi-download ms-3 text-primary cursor-pointer" (click)="downloadReport(report)"
+                  pTooltip="Download" tooltipPosition="top" style="font-size: 13px;"></i>
+
+                <i class="pi pi-print ms-2 text-primary cursor-pointer" (click)="printReport(report)" pTooltip="Print"
+                  tooltipPosition="top" style="font-size: 13px;"></i>
+              </div>
+            </div>
+
+            <!-- Right side: preview + nav -->
+            <div class="col-8">
+              <div style="height: 350px; background: #fff; margin: 0; padding: 0; position: relative;">
+
+                <!-- LEFT NAV ICON (centered vertically on left side) -->
+                <button class="btn position-absolute p-0 border-0 bg-transparent"
+                  style="top: 50%; left: 8px; transform: translateY(-50%);" [attr.aria-label]="'Previous report'"
+                  (click)="toggleReport('prev')">
+                  <i class="pi pi-chevron-left fs-5"></i>
+                </button>
+
+                <!-- PDF Viewer -->
+                <div style="width:100%; height:100%; overflow:auto;" class="px-4">
+
+                  <pdf-viewer *ngIf="filePath" [src]="filePath" [render-text]="true" [show-all]="true"
+                    [original-size]="false" [fit-to-page]="true" style="width:100%; height:100%; display:block;">
+                  </pdf-viewer>
+
+                  <!-- Placeholder if no file loaded -->
+                  <div *ngIf="!filePath" class="d-flex align-items-center justify-content-center" style="height:100%;">
+                    <div class="text-muted">No document selected. Check a report on the left to load the PDF.</div>
+                  </div>
+                </div>
+
+                <!-- RIGHT NAV ICON (centered vertically on right side) -->
+                <button class="btn position-absolute p-0 border-0 bg-transparent"
+                  style="top: 50%; right: 8px; transform: translateY(-50%);" [attr.aria-label]="'Next report'"
+                  (click)="toggleReport('next')">
+                  <i class="pi pi-chevron-right fs-5"></i>
+                </button>
+              </div>
+
+
+            </div>
+          </div>
+          <h6 class="share_via_title text-primary ms-2">Share via</h6>
+          <p-tabView [(activeIndex)]="activeIndex" class="custom-tabs">
+            <!-- SMS Tab (disabled style with tooltip) -->
+            <p-tabPanel header="SMS">
+              <ng-template pTemplate="header">
+                <span class="text-muted" pTooltip="Feature coming soon" tooltipPosition="top">
+                  SMS
+                </span>
+              </ng-template>
+              <div class="p-3">
+                <p class="text-secondary">SMS feature coming soon...</p>
+              </div>
+            </p-tabPanel>
+
+            <!-- Email Tab -->
+            <p-tabPanel header="Email">
+              <ng-template pTemplate="header">
+                <span>Email</span>
+              </ng-template>
+              <form [formGroup]="viewDocForm">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label>Email address <span class="text-danger">*</span></label>
+                    <input pInputText type="email" class="form-control" formControlName="to" />
+                    <div *ngIf="viewDocForm.get('to')?.invalid && viewDocForm.get('to')?.touched"
+                      class="text-danger small">
+                      Valid email required
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label>CC</label>
+                    <input pInputText type="email" class="form-control" formControlName="cc" />
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label>BCC</label>
+                    <input pInputText type="email" class="form-control" formControlName="bcc" />
+                  </div>
+                  <div class="col-md-6">
+                    <label>Subject</label>
+                    <input pInputText type="text" class="form-control" formControlName="subject" />
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label>Wording</label>
+                  <textarea pInputTextarea class="form-control" rows="3" formControlName="wording"></textarea>
+                </div>
+              </form>
+            </p-tabPanel>
+          </p-tabView>
+
+
+          <div class="d-flex justify-content-between align-items-center">
+            <!-- Left buttons -->
+            <div class="d-flex">
+              <button type="button" class="btn btn-outline-primary btn-sm me-3 text-muted"
+                (click)="printReport(selectedReports)" disabled>
+                Print
+              </button>
+
+              <button type="button" class="btn btn-outline-primary btn-sm text-muted"
+                (click)="downloadReport(selectedReports)" disabled>
+                Download
+              </button>
+            </div>
+
+            <!-- Right buttons -->
+            <div class="d-flex">
+              <button type="button" class="btn btn-outline-primary btn-sm me-3" data-bs-dismiss="modal">
+                Cancel
+              </button>
+              <button type="button" class="btn btn-primary btn-sm" (click)="sendReportViaEmail()">
+                Send
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
 
     <!-- quotation other details -->
     <div class="tab-pane fade" id="nav-quotation-other-details" role="tabpanel" aria-labelledby="nav-authorization-tab"

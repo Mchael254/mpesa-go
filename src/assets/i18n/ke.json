@@ -172,7 +172,6 @@
     "Required Documents": "Hati za Kuhitajika",
     "Service Provider Type": "Aina za Watoa Huduma",
     "FMS": "FMS",
-
     "setups": "Usanidi",
     "General Ledger": "Ledger Kuu",
     "Cashbook": "Kitabu cha Fedha",
@@ -183,19 +182,16 @@
     "Invoices/DR Notes": "Ankara/Notisi za Madeni",
     "Cheque signing": "Kusaini hundi",
     "Inquiries": "Maswali",
-
     "Invoices/Cr Notes": "Ankara/Noti za Mkopo",
     "Gl-Inquiries": "Uchunguzi wa Kitabu Kikuu",
     "Gl-Transactions": "Miamala ya Kitabu Kikuu",
     "Inquires": "Uchunguzi",
     "GL-Parameters": "Vigezo vya Kitabu Kikuu",
-
     "Parameters": "Vigezo",
     "Transactions": "Miamala",
     "Requisitions": "Maombi",
     "cheques": "Hundi",
     "Petty cash": "Fedha Ndogo",
-
     "Campaigns": "Kampeni",
     "Client Attributes": "Sifa za Mteja",
     "Product Attributes": "Sifa za Bidhaa",
@@ -1065,7 +1061,6 @@
       "whatsapp": "WhatsApp",
       "client_name": "Jina la Mteja",
       "send": "Tuma",
-
       "quote_details": "Maelezo ya Ofa ya Bima",
       "quote_number": "Nambari ya Ofa ya Bima",
       "quote_date": "Tarehe ya nukuu",
@@ -1090,7 +1085,6 @@
       "quotation_summary": "Machapisho: Muhtasari wa bima",
       "provide_reason_for_cancellation": "Tafadhali toa sababu ya kufuta",
       "reason": "Sababu",
-
       "quotation_risk_detail": "Maelezo ya Sehemu ya Hatari ya Kutoa Bima",
       "insured": "Mwenye Bima",
       "subclass": "Nusukundi",
@@ -1251,7 +1245,39 @@
       "deleting_associated_risk": "Kufuta bidhaa hii kutafuta hatari zote zinazohusiana",
       "sure_deleting_risk": "Una uhakika unataka kufuta Hatari hii?",
       "cover_types": "Aina ya bima",
-      "section": "Sehemu"
+      "section": "Sehemu",
+      "quote_details_title": "Nukuu: Maelezo ya Nukuu",
+      "quote_detailed_details": "Maelezo ya Nukuu",
+      "email_is_required": "Barua pepe inahitajika",
+      "enter_valid_email_address": "Weka anwani sahihi ya barua pepe",
+      "invalid_phone_number": "Nambari ya simu si sahihi",
+      "client_name_is_required": "Jina la mteja linahitajika.",
+      "quotation_type_is_required": "Aina ya nukuu inahitajika.",
+      "currency_is_required": "Sarafu inahitajika.",
+      "yes": "Ndiyo",
+      "no": "Hapana",
+      "agent_is_required": "Wakala anahitajika.",
+      "campaign_source_is_required": "Chanzo cha kampeni kinahitajika.",
+      "payment_frequency_is_required": "Mzunguko wa malipo unahitajika.",
+      "market_source_is_required": "Chanzo cha masoko kinahitajika.",
+      "show_more_details": "Onyesha maelezo zaidi",
+      "select_columns": "Chagua safu",
+      "no_products_match_your_search": "Hakuna bidhaa zinazolingana na utafutaji wako.",
+      "are_you_sure_you_want_to_delete_product": "Je, una uhakika unataka kufuta bidhaa hii?",
+      "group_user": "Mtumiaji wa Kundi",
+      "please_leave_a_comment_before_reassigning": "Tafadhali acha maoni kabla ya kugawa upya",
+      "please_select_a_user_to_reassign_before_continuing": "Tafadhali chagua mtumiaji wa kugawa upya kabla ya kuendelea",
+      "user_id": "Kitambulisho cha Mtumiaji",
+      "full_name": "Jina Kamili",
+      "please_select_a_person_to_reassign_before_continuing": "Tafadhali chagua mtu wa kugawa upya kabla ya kuendelea",
+      "add_clauses": "Ongeza vifungu",
+      "no_clause_available_click_on_add": "Hakuna kifungu kilichopo. Bonyeza “Ongeza vifungu” kuongeza kipya.",
+      "no_clauses_found_matching_your_search": "Hakuna vifungu vilivyopatikana vinavyolingana na utafutaji wako",
+      "no_additional_clauses_are_available_to_add": "Hakuna vifungu vya ziada vilivyopo vya kuongeza.",
+      "are_you_sure_you_want_to_delete_this_clause": "Je, una uhakika unataka kufuta kifungu hiki?",
+      "select_introducer": "Chagua mletaji",
+      "staff_no": "Nambari ya Mfanyakazi",
+      "company": "Kampuni"
     },
     "policy": {
       "underwriting_new_transaction": "Uwekaji wa Saini: Biashara Mpya",
@@ -1385,7 +1411,6 @@
       "quake_flood_zone": "Eneo la Tetemeko la Ardhi/Mafuriko",
       "relational_group": "Kikundi cha Uhusiano",
       "risk_class": "Daraja la Hatari",
-
       "underwriting_coinsurance_details": "Maelezo ya Kuhudumia Wenza: Maelezo ya Usimamizi",
       "coinsurance_details": "Maelezo ya Kuhudumia Wenza",
       "coinsurance_leader": "Kiongozi wa Kuhudumia Wenza",
@@ -1407,7 +1432,6 @@
       "premium": "Ada ya Bima",
       "fee_rate": "Kiwango cha Ada",
       "fee_amount": "Kiasi cha Ada",
-
       "import_schedule": "Ingiza ratiba",
       "from_csv_file": "Kutoka faili ya CSV",
       "from_another_policy": "Kutoka sera nyingine",
@@ -1485,7 +1509,6 @@
       "ref_no": "Namba ya kumbukumbu",
       "risk_note": "Kipande cha hatari",
       "uw_year": "Mwaka wa uhakiki",
-
       "select_risk_clauses": "Chagua vifungu vya hatari",
       "peril": "Hatari",
       "limit_description": "Maelezo ya kikomo",
@@ -1494,7 +1517,6 @@
       "excess_type": "Aina ya ziada",
       "peril_id": "ID",
       "previous": "Ya awali",
-
       "select_required_documents": "Chagua nyaraka zinazohitajika",
       "edit_required_documents": "Hariri nyaraka zinazohitajika",
       "certificates": "Vyeti",
@@ -2376,8 +2398,7 @@
     "correction": "Tuma kwa marekebisho",
     "reject": "Kataa",
     "errorMessage": "Hitilafu imetokea!",
-     "printUpdateError":"Imeshindwa kusasisha hali ya uchapishaji ya Rct",
-
+    "printUpdateError": "Imeshindwa kusasisha hali ya uchapishaji ya Rct",
     "receipting": {
       "receipting": "Utoaji wa risiti",
       "cbReceipting": "Kitabu cha fedha-Utoaji wa risiti",
@@ -2427,7 +2448,6 @@
       "searchCriteria": "Vigezo vya utafutaji",
       "search": "Tafuta",
       "Debit Note": "Noti ya Denari",
-
       "receiptAmount": "Kiasi cha risiti",
       "receiptAllocations": "Mgao wa risiti",
       "enterAmount": "Ingiza kiasi",
@@ -2457,7 +2477,6 @@
       "amount": "Kiasi",
       "unallocatedAmount": "Kiasi kisichotengwa",
       "client_name": "Jina la mteja",
-
       "name": "Jina",
       "type": "Aina",
       "actions": "Vitendo",
