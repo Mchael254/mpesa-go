@@ -997,29 +997,6 @@
                 class="btn p-0 text-danger fw-bold border-0">X</button>
       </div>
 
-<<<<<<< Updated upstream
-                <div class="d-flex justify-content-between text-black">
-                  <div class="d-flex flex-column bg-gray-300 w-25">
-                    <label for="id"> {{ 'gis.quotation.id' | translate }}</label>
-                    <input type="text" [value]=" selectedProductClause.shortDescription" pInputText
-                      style="background-color:rgb(215, 212, 212); width:18vw" readonly>
-
-                  </div>
-                  <div class="d-flex flex-column w-50 ">
-                    <label for="heading"> {{ 'gis.quotation.heading' | translate }}</label>
-                    <input class="bg-gray-300" pInputText [value]=" selectedProductClause.heading | truncate:4"
-                      pTooltip="{{  selectedProductClause.heading }}"
-                      style="background-color:rgb(215, 212, 212); width:20vw; z-index:auto" readonly>
-                  </div>
-                </div>
-
-                <div class="d-flex flex-column mt-5">
-                  <label class="text-dark mt-0" for="comment">{{ 'gis.quotation.wording' | translate }}</label>
-                  <textarea rows="5" pTextarea [(ngModel)]=" selectedProductClause.wording"
-                    class="p-inputtextarea w-full" style="border: 1px solid #ced4da;min-height: 130px">
-              </textarea>
-                </div>
-=======
       <!-- ID + Heading -->
       <div class="row g-3 text-black">
         <div class="col-md-4 d-flex flex-column">
@@ -1048,7 +1025,6 @@
                   class="form-control"
                   style="min-height:130px;"></textarea>
       </div>
->>>>>>> Stashed changes
 
       <!-- Footer buttons -->
       <div class="d-flex justify-content-end gap-3 mt-4">
