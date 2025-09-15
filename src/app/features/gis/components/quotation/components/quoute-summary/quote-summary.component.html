@@ -82,8 +82,10 @@
 
 
       <!-- Product Table -->
-      <p-table [value]="productDetails" [sortField]="'productName'" [sortOrder]="1" rowGroupMode="rowspan"
-        groupField="productName" class="mt-4 ui-datatable">
+      <p-table [value]="productDetails" [sortField]="'productName'" [sortOrder]="1" rowGroupMode="rowspan" [paginator]="productDetails?.length > 10" [rowsPerPageOptions]="[2, 3, 5]"
+
+       [rows]="3"
+  groupField="productName" class="mt-4 ui-datatable">
         <!-- Table Header -->
         <ng-template pTemplate="header">
           <tr>
