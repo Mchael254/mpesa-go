@@ -357,6 +357,7 @@
       "cheques": "支票",
       "pettyCash": "小额现金",
       "receipts": "收据",
+       "banking": "银行流程",
       "receiptingPoints": "收款点",
       "narration": "叙述",
       "manageReceipt": "管理收据",

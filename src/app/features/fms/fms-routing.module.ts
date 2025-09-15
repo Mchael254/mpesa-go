@@ -14,6 +14,9 @@ import { ReceiptPrintPreviewComponent } from './components/receipt-print-preview
 import { PreviewReceiptComponent } from './components/preview-receipt/preview-receipt.component';
 import { ReceiptPreviewGuard } from './services/receipt-preview-guard.service';
 
+import { NewBankingProcessComponent } from './components/new-banking-process/new-banking-process.component';
+import { BankingDashboardComponent } from './components/banking-dashboard/banking-dashboard.component';
+
 
 const routes: Routes = [
   {
@@ -63,6 +66,14 @@ const routes: Routes = [
  {
   path:'preview-receipt',
   component:PreviewReceiptComponent
+ },
+ {
+  path:'banking-dashboard',
+  component:BankingDashboardComponent
+ },
+ {
+  path:'new-banking-process',
+  component:NewBankingProcessComponent
  }
 ];
 
