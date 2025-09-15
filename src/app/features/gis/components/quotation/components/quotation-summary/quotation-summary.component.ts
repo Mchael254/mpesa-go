@@ -46,6 +46,7 @@ import * as bootstrap from 'bootstrap';
 import { riskClauses } from '../../../setups/data/gisDTO';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NotificationService } from '../../services/notification/notification.service';
+import { NgxCurrencyConfig } from 'ngx-currency';
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
 
@@ -253,9 +254,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   selectedReports: ReportResponse[] = [];
   fetchedReports: ReportResponse[] = [];
   currentIndex: number = 0;
+  currentReport!: ReportResponse;
   activeIndex: number = 1;
   reportBlobs: { [code: string]: Blob } = {};
   viewDocForm!: FormGroup;
+  public currencyObj: NgxCurrencyConfig;
 
 
   constructor(
@@ -432,6 +435,21 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       subject: [''],
       wording: ['']
     });
+    const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
+    const currencySymbol = sessionStorage.getItem('currencySymbol')
+    log.debug("currency Object:", currencySymbol)
+    log.debug("currency Delimeter:", currencyDelimiter)
+    this.currencyObj = {
+      prefix: currencySymbol + ' ',
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
   }
 
   ngAfterViewInit() {
@@ -3139,10 +3157,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             const modal = bootstrap.Modal.getInstance(modalEl)
               || new bootstrap.Modal(modalEl);
             modal.show();
-            const firstReport = this.fetchedReports[0];
-            this.selectedReports = [firstReport];
+            if (this.fetchedReports?.length) {
+              this.currentIndex = 0;
+              this.currentReport = this.fetchedReports[0];
+              this.selectedReports = [this.currentReport]; // show first as checked
+              this.loadAndShowReport(this.currentReport);
+            }
 
-            this.onReportToggle({ checked: true }, firstReport);
           }
         },
         error: (err: any) => {
@@ -3172,28 +3193,47 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   //   }
   // }
   onReportToggle(event: any, report: ReportResponse) {
-    if (event.checked) {
-      const index = this.selectedReports.findIndex(r => r.code === report.code);
-      this.currentIndex = index !== -1 ? index : this.selectedReports.length - 1;
 
+    if (event.checked) {
+      this.currentIndex = this.fetchedReports.findIndex(r => r.code === report.code);
+      this.currentReport = report;
       this.loadAndShowReport(report);
     } else {
-      // remove or handle uncheck
+
+      if (this.currentReport && this.currentReport.code === report.code) {
+        if (this.selectedReports && this.selectedReports.length) {
+          this.currentReport = this.selectedReports[0];
+          this.currentIndex = this.fetchedReports.findIndex(r => r.code === this.currentReport.code);
+          this.loadAndShowReport(this.currentReport);
+        } else {
+          this.currentReport = null;
+          this.filePath = null;
+        }
+      }
     }
   }
 
+
   toggleReport(direction: 'prev' | 'next') {
-    if (!this.selectedReports || this.selectedReports.length === 0) return;
+    if (!this.fetchedReports || this.fetchedReports.length === 0) return;
 
     if (direction === 'prev' && this.currentIndex > 0) {
       this.currentIndex--;
-    } else if (direction === 'next' && this.currentIndex < this.selectedReports.length - 1) {
+    } else if (direction === 'next' && this.currentIndex < this.fetchedReports.length - 1) {
       this.currentIndex++;
+    } else {
+      return;
     }
 
-    const report = this.selectedReports[this.currentIndex];
-    this.loadAndShowReport(report);
+    this.currentReport = this.fetchedReports[this.currentIndex];
+
+    // visually select only the active report (this will uncheck others)
+    this.selectedReports = [this.currentReport];
+
+    // generate and preview
+    this.loadAndShowReport(this.currentReport);
   }
+
 
   private loadAndShowReport(report: ReportResponse) {
     this.quotationService.fetchReportParams(report.code).subscribe({
@@ -3252,10 +3292,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  downloadReport(report: any) {
-    const reportCode = report.rptCode || report.code;
-    this.downloadReportByCode(reportCode, report.description);
+  downloadReports(reports: any[]) {
+    if (!reports || reports.length === 0) return;
+
+    reports.forEach(report => {
+      const reportCode = report.rptCode || report.code;
+      this.downloadReportByCode(reportCode, report.description);
+    });
   }
+
   downloadReportByCode(reportCode: number, fileName?: string) {
     const blob = this.reportBlobs[reportCode];
     if (!blob) {
@@ -3282,23 +3327,35 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     if (!blob) {
       console.warn("No cached blob found for report:", reportCode);
+      this.globalMessagingService.displayInfoMessage('Info', 'Select a report to continue');
       return;
     }
+
+    this.spinner.show();
 
     const url = URL.createObjectURL(blob);
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
     iframe.src = url;
 
-    document.body.appendChild(iframe);
-    iframe.contentWindow?.focus();
-    iframe.contentWindow?.print();
+    iframe.onload = () => {
+      try {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      } finally {
+        this.spinner.hide();
+      }
 
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-      URL.revokeObjectURL(url);
-    }, 1000);
+      iframe.contentWindow?.addEventListener("afterprint", () => {
+        document.body.removeChild(iframe);
+        URL.revokeObjectURL(url);
+      });
+    };
+
+    document.body.appendChild(iframe);
   }
+
+
   async sendReportViaEmail() {
     this.viewDocForm.markAllAsTouched();
     this.viewDocForm.updateValueAndValidity()

@@ -511,7 +511,7 @@ textarea {
   box-sizing: border-box;
 } */
 
-.clause-wrapper {
+/* .clause-wrapper {
   position: relative;
   display: inline-block;
 }
@@ -533,14 +533,43 @@ textarea {
 
 .clause-wrapper:hover .hover-card {
   display: block;
-}
+} */
 
 .actions-column {
-  width: 200px;           
-  text-align: center;     
+  width: 200px;
+  text-align: start;
 }
 
 .actions-column .d-flex {
-  justify-content: center; 
-  align-items: center;    
-} 
+  justify-content: start;
+  align-items: start;
+}
+
+.clause-wrapper {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  /* you can adjust this */
+  display: inline-block;
+  /* required for ellipsis to work */
+  vertical-align: middle;
+}
+
+.hover-card {
+  display: none;
+  /* hidden by default */
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  max-width: 400px;
+  /* tooltip size */
+  white-space: normal;
+  /* allow wrapping in tooltip */
+  z-index: 1000;
+}
+
+.clause-wrapper:hover .hover-card {
+  display: block;
+}
