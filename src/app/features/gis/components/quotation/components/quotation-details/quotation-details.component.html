@@ -313,7 +313,8 @@
 
           <div class="d-flex justify-content-center align-items-center">
             <button type="button" class="btn btn-primary btn-sm no-hover" data-bs-toggle="modal"
-              data-bs-target="#addProduct" title="Add Product"> {{ 'gis.quotation.add_product' | translate }}
+              data-bs-target="#addProduct" title="Add Product" (click)="openAddProductModal()"> {{
+              'gis.quotation.add_product' | translate }}
             </button>
             <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
               [ngClass]="{ 'pi-caret-up': showProducts, 'pi-caret-down': !showProducts }"
@@ -398,6 +399,43 @@
                         {{ 'gis.quotation.reassign' | translate }}
                       </button>
                     </div>
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'productName'">
+                    <p-cellEditor>
+                      <ng-template pTemplate="input">
+                        <span>{{ product[col.field] }}</span>
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                        {{ getCellValue(product, col.field) }}
+                      </ng-template>
+                    </p-cellEditor>
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'coverFrom'">
+                    <p-cellEditor>
+                      <ng-template pTemplate="input">
+                        <p-calendar [(ngModel)]="product[col.field]" dateFormat="dd/mm/yy" [showIcon]="true"
+                          [touchUI]="true">
+                        </p-calendar>
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                        {{ product[col.field] | date:'dd/MM/yyyy' }}
+                      </ng-template>
+                    </p-cellEditor>
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'coverTo'">
+                    <p-cellEditor>
+                      <ng-template pTemplate="input">
+                        <p-calendar [(ngModel)]="product[col.field]" dateFormat="dd/mm/yy" [showIcon]="true"
+                          [touchUI]="true">
+                        </p-calendar>
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                        {{ product[col.field] | date:'dd/MM/yyyy' }}
+                      </ng-template>
+                    </p-cellEditor>
                   </ng-container>
 
                   <!-- Default case: display value dynamically -->
