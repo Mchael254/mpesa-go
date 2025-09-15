@@ -1620,10 +1620,26 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   }
 
+  openAddProductModal(): void {
+    const payloadString = sessionStorage.getItem('quickQuotePayload');
+    const productsString = sessionStorage.getItem('availableProducts');
 
+    const quickQuotePayload = JSON.parse(payloadString);
+    this.ProductDescriptionArray = JSON.parse(productsString);
 
+    const product = quickQuotePayload.products[0];
 
+    const matchingProduct = this.ProductDescriptionArray.find(
+      (p: any) => String(p.code) === String(product.code)
+    );
 
+    this.quotationProductForm.patchValue({
+      productCodes: matchingProduct || null,
+      wef: new Date(quickQuotePayload.effectiveDate),
+      wet: new Date(product.effectiveTo)
+    });
+
+  }
 
 
   onRowEditSave(product: any) {
