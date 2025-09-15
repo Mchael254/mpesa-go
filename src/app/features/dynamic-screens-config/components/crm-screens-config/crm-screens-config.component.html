@@ -10,7 +10,7 @@
         <h4 class="column-title">{{ 'crm.subModules' | translate }}</h4>
         <div class="edit-row" *ngFor="let subModule of subModules">
           <label class="form-label" (click)="onClickSubModule(subModule)"
-            [class.highlight]="selectedSubModule?.code === subModule.code"
+                 [class.highlight]="selectedSubModule?.code === subModule.code"
           >
             {{ subModule.label?.[language] | titlecase }}
           </label>
@@ -19,7 +19,7 @@
       </div>
 
       <!-- Screens -->
-      <div class="col-md-2 border-end p-3" *ngIf="selectedSubModule && showScreens">
+      <div class="col-md-2 border-end p-3" *ngIf="selectedSubModule && showScreens && screens.length > 0">
         <h4 class="column-title">{{ 'crm.screens' | translate }}</h4>
         <div class="edit-row" *ngFor="let screen of screens">
           <label class="form-label" (click)="onClickScreen(screen)"
@@ -73,11 +73,14 @@
   <div class="container mt-4 section-container bg-white" *ngIf="showFields">
     <div class="row mb-3 mx-md-1">
       <div class="col-sm-12 col-md-6">
-        <h5 class="my-3 text-dark">{{tableTitle | titlecase}} {{ 'crm.fields' | translate }}</h5>
+        <h5 class="my-3 text-dark">
+          {{tableTitle | titlecase}}
+          {{ isTableColumns ? ('crm.columns' | translate) : ('crm.fields' | translate) }}
+        </h5>
         <input
           type="text"
           class="form-control w-50"
-          placeholder="Search by field label"
+          placeholder="Search by label"
           (input)="filterFields($event)"
         />
       </div>
@@ -89,8 +92,8 @@
           <i class="fa-solid fa-caret-down fs-5 text-dark"></i>
         </button>
 
-        <p-dialog header="Columns" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '330px'}">
-          <div *ngFor="let col of columns">
+        <p-dialog header="{{ 'crm.columns' | translate }}" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '330px'}">
+          <div *ngFor="let col of filteredColumns">
             <div class="form-check form-check-inline float-start">
               <input class="form-check-input" type="checkbox" value="" id="checkChecked" [checked]="col.visible" [(ngModel)]="col.visible">
               <label class="form-check-label" for="checkChecked">
@@ -118,48 +121,52 @@
 
           <ng-template pTemplate="header">
             <tr>
-              <ng-container *ngFor="let col of columns">
+              <ng-container *ngFor="let col of filteredColumns">
                 <th *ngIf="col.visible"
                     [pSortableColumn]="col.field">
                   {{ col.header | titlecase }}
                   <p-sortIcon [field]="col.field"></p-sortIcon>
                 </th>
               </ng-container>
-              <th style="width: 2%"></th>
+              <th class="text-center" style="width: 2%">Action</th>
             </tr>
           </ng-template>
 
           <ng-template pTemplate="body" let-rowData>
             <tr [pSelectableRow]="rowData">
-              <td>{{ rowData.label[this.language] | titlecase }}</td>
-              <td>{{ rowData?.visible === true ? 'Yes' : 'No' }}</td>
-              <td>{{ rowData?.disabled === true ? 'Yes' : 'No' }}</td>
-              <td>{{ rowData?.mandatory === true ? 'Yes' : 'No' }}</td>
-              <td>{{ rowData?.order }}</td>
-              <td>{{ rowData?.type | titlecase }}</td>
-              <td>
-                <span [title]="getValidationTypes(rowData?.validations)"
-                      *ngIf="rowData?.validations?.length">
-                  {{ rowData?.validations?.length }}
-                </span>
-                <span *ngIf="!rowData?.validations?.length">0</span>
-              </td>
-
-              <!--<td>
-                <span [title]="rowData?.validations?.map(v => v.type).join(', ')"
-                      *ngIf="rowData?.validations?.length > 0">
-                  {{ rowData?.validations?.length }}
-                </span>
-                <span *ngIf="!rowData?.validations?.length">0</span>
-              </td>-->
-
-              <!--              <td>{{ rowData?.validations }}</td>-->
-              <!--<ng-container *ngFor="let col of columns">
+              <ng-container *ngFor="let col of filteredColumns">
                 <td *ngIf="col.visible">
-                  {{ rowData[col.field] }}
+                  <ng-container [ngSwitch]="col.field">
+                    <span *ngSwitchCase="'label'">
+                      {{ rowData.label[language] | titlecase }}
+                    </span>
+                    <span *ngSwitchCase="'visible'">
+                      {{ rowData?.visible === true ? 'Yes' : 'No' }}
+                    </span>
+                    <span *ngSwitchCase="'disabled'">
+                      {{ rowData?.disabled === true ? 'Yes' : 'No' }}
+                    </span>
+                    <span *ngSwitchCase="'mandatory'">
+                      {{ rowData?.mandatory === true ? 'Yes' : 'No' }}
+                    </span>
+                    <span *ngSwitchCase="'order'">
+                      {{ rowData?.order }}
+                    </span>
+                    <span *ngSwitchCase="'type'">
+                      {{ rowData?.type | titlecase }}
+                    </span>
+                    <span *ngSwitchCase="'validations'">
+                      <span [title]="getValidationTypes(rowData?.validations)" *ngIf="rowData?.validations?.length">
+                        {{ rowData?.validations?.length }}
+                      </span>
+                      <span *ngIf="!rowData?.validations?.length">0</span>
+                    </span>
+                    <span *ngSwitchDefault>
+                      {{ rowData[col.field] }}
+                    </span>
+                  </ng-container>
                 </td>
-              </ng-container>-->
-
+              </ng-container>
               <td *ngIf="tableData?.length > 0" class="text-center">
                 <div>
                   <a role="button" class="text-primary" (click)="editSelectedRecord(rowData)">{{ 'crm.edit' | translate }}</a>
@@ -169,7 +176,9 @@
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td>No records found</td>
+              <td [attr.colspan]="filteredColumns?.length + 1" class="text-center">
+                {{'crm.noRecordsFound' | translate}}
+              </td>
             </tr>
           </ng-template>
         </p-table>
@@ -182,7 +191,7 @@
       <button class="btn btn-outline-primary" (click)="openExportSetupModal()">{{ 'crm.exportSetup' | translate }}</button>
     </div>
     <div class="float-end my-3">
-      <button class="btn btn-primary" (click)="previewSetup()" *ngIf="this.selectedSection">{{ 'crm.preview' | translate }}</button>
+      <button class="btn btn-primary" (click)="previewSetup()" *ngIf="this.selectedSection && !isTableColumns">{{ 'crm.preview' | translate }}</button>
       <button class="btn btn-primary" (click)="publishChanges()">{{ 'crm.publish' | translate }}</button>
     </div>
   </ng-container>
@@ -228,7 +237,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.subModulesLabel' | translate }}
+                {{ 'crm.subModulesLabel' | translate }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.original' | translate }})</span>
               </label>
               <input
@@ -241,7 +250,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.module' | translate }}
+                {{ 'crm.module' | translate }}
               </label>
               <input
                 type="text"
@@ -253,7 +262,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.subModulesLabel' | translate }}
+                {{ 'crm.subModulesLabel' | translate }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
               </label>
               <input
@@ -266,7 +275,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                  {{ 'crm.visible' | translate }}
+                {{ 'crm.visible' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="Y" formControlName="visible">
@@ -279,7 +288,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.subModulesLevel' | translate }}
+                {{ 'crm.subModulesLevel' | translate }}
               </label>
               <select
                 formControlName="subModuleLevel"
@@ -488,7 +497,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.sectionLabel' | translate }}
+                {{ 'crm.sectionLabel' | translate }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
               </label>
               <input
@@ -501,7 +510,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                  {{ 'crm.visible' | translate }}
+                {{ 'crm.visible' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="Y" formControlName="visible">
@@ -693,7 +702,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.subSectionTwoLabel' | translate }}
+                {{ 'crm.subSectionTwoLabel' | translate }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.original' | translate }})</span>
               </label>
               <input
@@ -706,7 +715,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.section' | translate }}
+                {{ 'crm.section' | translate }}
               </label>
               <select
                 formControlName="section"
@@ -722,7 +731,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.subSectionTwoLabel' | translate }}
+                {{ 'crm.subSectionTwoLabel' | translate }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
               </label>
               <input
@@ -782,7 +791,9 @@
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title text-primary" id="exampleModalLabel">{{ 'crm.editFieldProperties' | translate }}</h5>
+        <h5 class="modal-title text-primary" id="exampleModalLabel">
+          {{ isTableColumns ? ('crm.editTableColumns' | translate) : ('crm.editFieldProperties' | translate) }}
+        </h5>
         <div class="ms-auto">
           <span class="nav-item dropdown">
             <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -811,7 +822,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                  {{ 'crm.fieldLabel' | translate }}
+                {{ isTableColumns ? ('crm.columnLabel' | translate) : ('crm.fieldLabel' | translate) }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.original' | translate }})</span>
               </label>
               <input
@@ -822,7 +833,7 @@
 
               />
             </div>
-            <div class="col-md-6 mb-3">
+            <div class="col-md-6 mb-3" *ngIf="!isTableColumns">
               <label class="form-label" >
                 {{ 'crm.placeholder' | translate }}
               </label>
@@ -836,7 +847,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label" >
-                {{ 'crm.fieldLabel' | translate }}
+                {{ isTableColumns ? ('crm.columnLabel' | translate) : ('crm.fieldLabel' | translate) }}
                 <span class="text-primary" style="font-size: .9rem;">({{ 'crm.current' | translate }})</span>
               </label>
               <input
@@ -847,7 +858,7 @@
 
               />
             </div>
-            <div class="col-md-6 mb-3">
+            <div class="col-md-6 mb-3" *ngIf="!isTableColumns">
               <label class="form-label" >
                 {{ 'crm.inputType' | translate }}
               </label>
@@ -865,7 +876,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label w-100" >
-                  {{ 'crm.visible' | translate }}
+                {{ 'crm.visible' | translate }}
               </label>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="visibility" value="Y" formControlName="visible">
@@ -876,7 +887,7 @@
                 <label class="form-check-label text-dark" for="visibility">{{ 'entities.no' | translate }}</label>
               </div>
             </div>
-            <div class="col-md-6 mb-3">
+            <div class="col-md-6 mb-3" *ngIf="!isTableColumns">
               <label class="form-label w-100" >
                 {{ 'crm.mandatory' | translate }}
               </label>
@@ -889,7 +900,7 @@
                 <label class="form-check-label text-dark" for="mandatory">{{ 'entities.no' | translate }}</label>
               </div>
             </div>
-            <div class="col-md-6 mb-3">
+            <div class="col-md-6 mb-3" *ngIf="!isTableColumns">
               <label class="form-label w-100" >
                 {{ 'crm.disabled' | translate }}
               </label>
@@ -902,7 +913,7 @@
                 <label class="form-check-label text-dark" for="disabled">{{ 'entities.no' | translate }}</label>
               </div>
             </div>
-            <div class="col-md-6 mb-3">
+            <div class="col-md-6 mb-3" *ngIf="!isTableColumns">
               <label class="form-label" >
                 {{ 'crm.sections' | translate }}
               </label>
@@ -919,7 +930,7 @@
               </select>
             </div>
 
-            <div class="col-md-6 mb-3">
+            <div class="col-md-6 mb-3" *ngIf="!isTableColumns">
               <label class="form-label w-100" >
                 {{ 'crm.toolTips' | translate }}
               </label>
@@ -932,7 +943,7 @@
                 <label class="form-check-label text-dark" for="tooltips">No</label>
               </div>
             </div>
-            <div class="col-md-6 mb-3">
+            <div class="col-md-6 mb-3" *ngIf="!isTableColumns">
               <label class="form-label" >
                 {{ 'crm.toolTipWords' | translate }}
               </label>
@@ -953,12 +964,12 @@
                 class="form-select"
               >
                 <option value="">{{ 'crm.selectOrder' | translate }}</option>
-                  <option *ngFor="let i of [].constructor(tableData?.length); let j = index" [value]="j+1">{{ j + 1 }}
-                  </option>
+                <option *ngFor="let i of [].constructor(tableData?.length); let j = index" [value]="j+1">{{ j + 1 }}
+                </option>
               </select>
             </div>
 
-            <div class="container mb-3">
+            <div class="container mb-3" *ngIf="!isTableColumns">
               <div class="d-flex align-items-center mb-2">
                 <span class="text-dark me-2">{{ 'crm.validations' | translate }}</span>
                 <button class="btn btn-link p-0 text-primary" (click)="addSection()"
@@ -1032,44 +1043,44 @@
 
 <!--Multilingual confirmation modal-->
 <div class="modal fade" id="multilingualModal" aria-labelledby="multilingualModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content position-relative p-4">
-        <div class="d-flex align-items-center">
-          <div
-            class="d-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-25 me-4"
-            style="width: 60px; height: 60px;"
-          >
-            <i class="fas fa-info text-primary" style="font-size: 1.5rem;"></i>
-          </div>
-          <div>
-            <h5 class="fw-bold mb-2">Info</h5>
-            <p class="text-muted mb-3">
-              {{ 'crm.updateInAnotherLanguage' | translate }}
-            </p>
-            <div class="d-flex justify-content-center gap-2">
-              <button
-                type="button"
-                class="btn btn-outline-primary btn-md"
-                (click)="closeMultilingualModal()"
-              >
-                {{ 'entities.no' | translate }}
-              </button>
-              <button type="button" class="btn btn-primary btn-md" (click)="closeMultilingualModal(true)">
-                {{ 'entities.yes' | translate }}
-              </button>
-            </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content position-relative p-4">
+      <div class="d-flex align-items-center">
+        <div
+          class="d-flex justify-content-center align-items-center rounded-circle bg-primary bg-opacity-25 me-4"
+          style="width: 60px; height: 60px;"
+        >
+          <i class="fas fa-info text-primary" style="font-size: 1.5rem;"></i>
+        </div>
+        <div>
+          <h5 class="fw-bold mb-2">Info</h5>
+          <p class="text-muted mb-3">
+            {{ 'crm.updateInAnotherLanguage' | translate }}
+          </p>
+          <div class="d-flex justify-content-center gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-primary btn-md"
+              (click)="closeMultilingualModal()"
+            >
+              {{ 'entities.no' | translate }}
+            </button>
+            <button type="button" class="btn btn-primary btn-md" (click)="closeMultilingualModal(true)">
+              {{ 'entities.yes' | translate }}
+            </button>
           </div>
         </div>
-
-        <!-- Close button -->
-        <button
-          type="button"
-          class="btn-close position-absolute top-0 end-0 m-3"
-          (click)="closeMultilingualModal()"
-          aria-label="Close"
-        ></button>
       </div>
+
+      <!-- Close button -->
+      <button
+        type="button"
+        class="btn-close position-absolute top-0 end-0 m-3"
+        (click)="closeMultilingualModal()"
+        aria-label="Close"
+      ></button>
     </div>
+  </div>
 </div>
 
 <!--Export setup modal-->
@@ -1174,379 +1185,42 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h1 class="modal-title fs-5" id="previewModalLabel">Preview</h1>
-        <button type="button" class="btn-close" style="position: absolute; top: 0.5rem; right: 1rem;" aria-label="Close"
-                (click)="closePreviewModal()">
-        </button>
+        <h5 class="modal-title text-primary" id="exampleModalLabel">Preview</h5>
+        <div class="ms-auto">
+          <span class="nav-item dropdown">
+            <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
+              <i class="fas fa-angle-down text-primary ms-2"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li *ngFor="let language of languages">
+                <a class="dropdown-item" href="javascript:void(0)" (click)="changeLanguage(language)">
+                  <span [class]="language.class"></span>
+                  <span style="color: black; font-size: 14px;"> {{language.lang}}</span>
+                </a>
+              </li>
+            </ul>
+          </span>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closePreviewModal()"
+        ></button>
       </div>
       <div class="modal-body">
-        <div class="card mb-3" *ngIf="newEntityFieldsData.length > 0">
-          <form [formGroup]="uploadForm">
-            <div class="row m-3">
-              <h5 class="mb-4 ms-md-5 text-primary">{{'entities.new_entity' | translate}}</h5>
-              <div class="col-sm-4" *ngFor="let field of newEntityFieldsData">
-                <div class="mb-3 pe-md-4 ms-md-5 me-md-5">
-                  <label class="form-label" [for]="field.fieldId">
-                    {{ field.label?.[language] | titlecase }}
-                    <span *ngIf="field.mandatory" class="text-danger">*</span>
-                  </label>
-                  <select
-                    [formControlName]="field.fieldId"
-                    [id]="field.fieldId"
-                    class="form-select"
-                    aria-label="Default select example"
-                  >
-                    <option value="">- Select {{ field.label?.[language] | titlecase }} -</option>
-                    <option *ngFor="let option of field.options" [value]="option">
-                      {{ option }}
-                    </option>
-                  </select>
-                </div>
-              </div>
+        <ng-container *ngIf="updatedFormFields">
+          <app-new-entity-v2
+            [previewFormFields] = updatedFormFields
+          ></app-new-entity-v2>
+        </ng-container>
 
-            </div>
-          </form>
-        </div>
-        <form [formGroup]="entityForm">
 
-          <ng-container *ngFor="let group of formGroupSections" [formGroupName]="group.groupId">
-            <div class="card mb-3">
-              <div class="m-3 text-muted">
-
-                <div class="row">
-                  <div class="col-sm-10">
-                    <h5 class="mb-4 ms-md-5 text-primary">
-                      {{ group.order }}.
-                      {{ group.label?.[language] | titlecase }}
-                    </h5>
-                  </div>
-                  <div class="col-sm-2 text-end">
-                <span class="p-2 me-5 caret" (click)="toggleCollapse(group.groupId)">
-                  <i class="fa fa-caret-down text-primary"></i>
-                </span>
-                  </div>
-                </div>
-
-                <div [id]="group.groupId" class="collapse-container" [class.expanded]="isCollapsed(group.groupId)">
-
-                  <ng-container *ngIf="
-                    group?.subGroup[0]?.subGroupId === 'cnt_corporate_banking_information' ||
-                    group?.subGroup[0]?.subGroupId === 'cnt_corporate_company_contacts' ||
-                    group?.subGroup[1]?.subGroupId === 'cnt_corporate_head_office_address'">
-                    <h5 class="text-dark mb-3 pe-md-4 me-md-4 ms-md-5">
-                      {{ group?.subGroup[0]?.label?.[language] | titlecase }}
-                    </h5>
-                  </ng-container>
-
-                  <div class="row">
-                    <!--form-inputs-->
-                    <ng-container *ngFor="let field of group.fields; let i = index">
-                      <div class="col-sm-4 col-12 mb-3">
-                        <div class="mb-3 pe-md-4 me-md-4 ms-md-5">
-
-                          <!-- Text / Email / Tel / etc -->
-                          <ng-container *ngIf="field.type === 'text' || field.type === 'email' || field.type==='tel'">
-                            <ng-container *ngIf="!['idNumber', 'smsNumber', 'telNumber'].includes(field.fieldId)">
-                              <label class="form-label" [for]="field.fieldId">
-                                {{ field.label?.[language] | titlecase }}
-                                <span *ngIf="field.mandatory" class="text-danger">*</span>
-                              </label>
-                              <input
-                                [type]="field.type"
-                                [formControlName]="field.fieldId"
-                                [placeholder]="field?.placeholder[language]"
-                                [id]="field.fieldId"
-                                class="form-control"/>
-
-                            </ng-container>
-                            <ng-container *ngIf="field.fieldId==='idNumber'">
-                              <label class="form-label" [for]="field.fieldId">
-                                {{ field.dynamicLabel.mapping[idType][language] | titlecase }}
-                                <span *ngIf="field.mandatory" class="text-danger">*</span>
-                              </label>
-                              <input
-                                [type]="field.type"
-                                [formControlName]="field.fieldId"
-                                [placeholder]="field.dynamicLabel.mapping[idType][language]"
-                                [id]="field.fieldId"
-                                class="form-control"/>
-
-                            </ng-container>
-                            <ng-container *ngIf="['smsNumber', 'telNumber'].includes(field.fieldId)">
-                              <label class="form-label" [for]="field.fieldId">
-                                {{ field.label?.[language] | titlecase }}
-                                <span *ngIf="field.mandatory" class="text-danger">*</span>
-                              </label>
-                              <ngx-intl-tel-input
-                                [cssClass]="'form-control form-control-md mb-1'"
-                                [id]="field.fieldId"
-                                [preferredCountries]=""
-                                [enableAutoCountrySelect]="true"
-                                [enablePlaceholder]="true"
-                                [searchCountryFlag]="true"
-                                [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-                                [selectFirstCountry]="false"
-                                [selectedCountryISO]="CountryISO.Nigeria"
-                                [phoneValidation]="true"
-                                [separateDialCode]="true"
-                                [numberFormat]="PhoneNumberFormat.National"
-                                [formControlName]="field.fieldId"
-                                [style]="{ width: '100%' }">
-                              </ngx-intl-tel-input>
-                            </ng-container>
-                          </ng-container>
-
-                          <!-- Textarea -->
-                          <ng-container *ngIf="field.type === 'textarea'">
-                            <label class="form-label" [for]="field.fieldId">
-                              {{ field.label?.[language] | titlecase }}
-                              <span *ngIf="field.mandatory" class="text-danger">*</span>
-                            </label>
-                            <textarea
-                              [formControlName]="field.fieldId"
-                              [placeholder]="field.placeholder"
-                              [id]="field.fieldId"
-                              class="form-control"
-                            ></textarea>
-                          </ng-container>
-
-                          <!--Date-->
-                          <ng-container *ngIf="field.type === 'date'">
-                            <label class="form-label" [for]="field.fieldId">
-                              {{ field.label?.[language] | titlecase }}
-                              <span *ngIf="field.mandatory" class="text-danger">*</span>
-                            </label>
-                            <input
-                              type="date"
-                              [formControlName]="field.fieldId"
-                              [placeholder]="field.placeholder"
-                              [id]="field.fieldId"
-                              class="form-control"
-                            />
-                          </ng-container>
-
-                          <!-- Number -->
-                          <ng-container *ngIf="field.type === 'number'">
-                            <label class="form-label" [for]="field.fieldId">
-                              {{ field.label?.[language] | titlecase }}
-                              <span *ngIf="field.mandatory" class="text-danger">*</span>
-                            </label>
-                            <input
-                              type="number"
-                              [formControlName]="field.fieldId"
-                              [placeholder]="field?.placeholder[language]"
-                              [id]="field.fieldId"
-                              class="form-control"
-                            />
-                          </ng-container>
-
-                          <!-- Select -->
-                          <ng-container *ngIf="field.type === 'select'">
-                            <label class="form-label" [for]="field.fieldId">
-                              {{ field.label?.[language] | titlecase }}
-                              <span *ngIf="field.mandatory" class="text-danger">*</span>
-                            </label>
-                            <select
-                              [formControlName]="field.fieldId"
-                              [id]="field.fieldId"
-                              class="form-select"
-                              aria-label="Default select example"
-                            >
-                              <option value="">---select {{ field.label?.[language] }}---</option>
-                              <option *ngFor="let option of field.options" [value]="option">
-                                {{ option }}
-                              </option>
-                            </select>
-                          </ng-container>
-
-                          <!-- radio -->
-                          <ng-container>
-                            <div class="form-check" *ngIf="field.type === 'radio'" [id]="field.fieldId">
-                              <label  class="form-check-label" *ngFor="let option of field.options">
-                                <span *ngIf="field.mandatory" class="text-danger">*</span>
-                                <input
-                                  class="form-check-input"
-                                  type="radio"
-                                  [value]="option"
-                                  [formControlName]="field.fieldId"
-                                >
-                                {{ option }}
-                              </label>
-                            </div>
-                          </ng-container>
-
-                          <!-- checkbox -->
-                          <ng-container>
-                            <div class="form-check" *ngIf="field.type === 'checkbox'">
-                              <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="checkDefault"
-                                [formControlName]="field.fieldId"
-                                [id]="field.fieldId"
-                              >
-                              <label class="form-label" [for]="field.fieldId" *ngIf="field.type !== 'checkbox'">
-                                {{ field.label?.[language] | titlecase }}
-                                <span *ngIf="field.mandatory" class="text-danger">*</span>
-                              </label>
-                            </div>
-                          </ng-container>
-
-                          <!--show validation errors-->
-                          <ng-container *ngIf="field.mandatory">
-                            <div *ngIf="
-                          entityForm.get(field.fieldId)?.touched &&
-                          entityForm.get(field.fieldId)?.hasError(field.mandatory ? 'required' : '')"
-                            >
-                        <span class="text-danger">
-                          * {{ field.label?.[language] }} is required.
-                        </span>
-                            </div>
-                          </ng-container>
-                        </div>
-                      </div>
-                    </ng-container>
-
-                  </div>
-
-                  <div *ngIf="group.groupId === 'cnt_corporate_contact_details' && updatedFormFields.forms.code === 34 && corporateContactDetailsFormField.length > 0">
-                    <app-preview-dynamic-setup-table
-                      [tableTitle]="group.subGroup[1]?.label?.[language]"
-                      [addButtonText]="group.subGroup[1]?.addButtonTextLabel?.[language]"
-                      [emptyTableMessage]="'No record found!'"
-                      [formFields]="corporateContactDetailsFormField"
-                      [subGroupId]="112"
-                    ></app-preview-dynamic-setup-table>
-                  </div>
-
-                  <div *ngIf="group.groupId === 'cnt_corporate_address_details' && updatedFormFields.forms.code === 34">
-                    <app-preview-dynamic-setup-table
-                      [tableTitle]="group.subGroup[0]?.label?.[language]"
-                      [addButtonText]="group.subGroup[0]?.addButtonTextLabel?.[language]"
-                      [emptyTableMessage]="'No record found!'"
-                      [formFields]="corporateAddressDetailsFormField"
-                      [subGroupId]="117"
-                    ></app-preview-dynamic-setup-table>
-                  </div>
-
-                  <div *ngIf="group.groupId === 'cnt_corporate_financial_details' && updatedFormFields.forms.code === 34">
-                    <app-preview-dynamic-setup-table
-                      [tableTitle]="group.subGroup[1]?.label?.[language]"
-                      [addButtonText]="group.subGroup[1]?.addButtonTextLabel?.[language]"
-                      [emptyTableMessage]="'No record found!'"
-                      [formFields]="corporateFinancialDetailsFormField"
-                      [subGroupId]="115"
-                    ></app-preview-dynamic-setup-table>
-                  </div>
-
-                  <div *ngIf="group.groupId === 'cnt_individual_wealth_aml_details'">
-                    <app-preview-dynamic-setup-table
-                      [tableTitle]="group.subGroup[0]?.label?.[language]"
-                      [addButtonText]="group.subGroup[0]?.addButtonTextLabel?.[language]"
-                      [emptyTableMessage]="'No record found!'"
-                      [formFields]="wealthAmlFormFields"
-                      [subGroupId]="125"
-                    ></app-preview-dynamic-setup-table>
-                  </div>
-
-                  <div *ngIf="group.groupId === 'cnt_corporate_wealth_aml_details' && updatedFormFields.forms.code === 34">
-                    <app-preview-dynamic-setup-table
-                      [tableTitle]="group.subGroup[0]?.label?.[language]"
-                      [addButtonText]="group.subGroup[0]?.addButtonTextLabel?.[language]"
-                      [emptyTableMessage]="'No record found!'"
-                      [formFields]="corporateWealthAmlFormFieldsDetailsFormField"
-                      [subGroupId]="118"
-                    ></app-preview-dynamic-setup-table>
-                  </div>
-
-                  <div *ngIf="group.groupId === 'cnt_corporate_wealth_aml_details' && updatedFormFields.forms.code === 34">
-                    <app-preview-dynamic-setup-table
-                      [tableTitle]="group.subGroup[1]?.label?.[language]"
-                      [addButtonText]="group.subGroup[1]?.addButtonTextLabel?.[language]"
-                      [emptyTableMessage]="'No record found!'"
-                      [formFields]="corporateWealthCR12DetailsFormField"
-                      [subGroupId]="119"
-                    ></app-preview-dynamic-setup-table>
-                  </div>
-
-                  <div *ngIf="group.groupId === 'cnt_corporate_wealth_aml_details' && updatedFormFields.forms.code === 34">
-                    <app-preview-dynamic-setup-table
-                      [tableTitle]="group.subGroup[2]?.label?.[language]"
-                      [addButtonText]="group.subGroup[2]?.addButtonTextLabel?.[language]"
-                      [emptyTableMessage]="'No record found!'"
-                      [formFields]="corporateWealthOwnershipDetailsFormField"
-                      [subGroupId]="120"
-                    ></app-preview-dynamic-setup-table>
-                  </div>
-
-                  <div *ngIf="group.groupId === 'cnt_individual_privacy_policy' ||
-                  group.groupId === 'cnt_corporate_privacy_policy'">
-
-                    <div class="px-5">
-                      <p>Share OTP Via</p>
-                      <ul class="nav nav-underline">
-                        <li class="nav-item">
-                          <button
-                            class="nav-link text-primary"
-                            (click)="showSelectedTab('otp_sms')"
-                            [ngClass]="{'active': selectedTab === 'otp_sms'}"
-                          >
-                            SMS
-                          </button>
-                        </li>
-                        <li class="nav-item">
-                          <button
-                            class="nav-link text-primary"
-                            (click)="showSelectedTab('otp_email')"
-                            [ngClass]="{'active': selectedTab === 'otp_email'}"
-                          >
-                            Email
-                          </button>
-                        </li>
-                      </ul>
-
-                      <div class="mt-3" *ngIf="shouldShowFields">
-                        <ng-container *ngFor="let field of privacyFormFields">
-                          <div class="row" *ngIf="selectedTab===field.fieldId || field.fieldId==='enter_otp'">
-                            <div class="col-sm-3">
-                              <div class="mb-3">
-                                <label class="form-label" [for]="field.fieldId">
-                                  {{ field.label[language] | titlecase }}
-                                  <span *ngIf="field.mandatory" class="text-danger">*</span>
-                                </label>
-                                <input
-                                  [type]="field.type"
-                                  [formControlName]="field.fieldId"
-                                  [placeholder]="field.label[language]"
-                                  [id]="field.fieldId"
-                                  class="form-control"
-                                />
-                              </div>
-                            </div>
-                            <div class="col-sm-3">
-                              <button
-                                class="btn btn-outline-primary send-verify-button ms-5"
-                              >
-                                Verify OTP
-                              </button>
-                            </div>
-                          </div>
-                        </ng-container>
-                        <p class="lead text-primary">OTP code expires in 0:30</p>
-
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          </ng-container>
-        </form>
       </div>
       <div class="modal-footer border-top-0">
         <button type="button" class="btn btn-secondary" (click)="closePreviewModal()">Close</button>
-        <button type="button" class="btn btn-primary" (click)="publishPreviewChanges()">{{'crm.publish' | translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="publishChanges()">{{'crm.publish' | translate}}</button>
       </div>
     </div>
   </div>

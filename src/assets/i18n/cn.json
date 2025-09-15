@@ -182,13 +182,11 @@
     "Invoices/Cr Notes": "贷方发票/通知",
     "Invoices/DR Notes": "借方发票/通知",
     "Inquiries": "查询",
-
     "Gl-Inquiries": "总账查询",
     "Gl-Transactions": "总账交易",
     "Inquires": "查询",
     "GL-Parameters": "总账参数",
     "Gl-Final Reports": "总账最终报告",
-
     "Requisitions": "申请",
     "cheques": "支票",
     "pettyCash": "零用现金",
@@ -524,7 +522,11 @@
     "getStarted": "开始",
     "updateInAnotherLanguage": "您想在其他语言中更新更改吗？",
     "export": "导出",
-    "publishedChangesWillBeExported": "请注意，只有已发布的更改将被导出"
+    "publishedChangesWillBeExported": "请注意，只有已发布的更改将被导出",
+    "editTableColumns": "编辑表格列",
+    "columnLabel": "列标签",
+    "columns": "列",
+    "noRecordsFound": "未找到记录"
   },
   "entities": {
     "account_number": "帐号",
@@ -1002,7 +1004,9 @@
     "cr12DetailsDeletedSuccessfully": "CR12详细信息已成功删除！",
     "ownershipDetailsDeletedSuccessfully": "所有权详细信息已成功删除！",
     "branchDetailsDeletedSuccessfully": "分支机构详细信息已成功删除！",
-    "wealthAmlDetailsDeletedSuccessfully": "财富AML详细信息已成功删除！"
+    "wealthAmlDetailsDeletedSuccessfully": "财富AML详细信息已成功删除！",
+    "populatedByDocument": "请稍候，表单正在由文档填充。",
+    "uploadImage": "上传图片"
   },
   "gis": {
     "quotation": {
@@ -1230,7 +1234,6 @@
       "reject": "拒绝",
       "reject_quote": "拒绝报价单",
       "payment_details": "付款详情",
-
       "quotation_summmary": "报价摘要",
       "quotation_status": "报价状态",
       "ticket_number": "票号",
@@ -1246,7 +1249,39 @@
       "sure_deleting_risk": "您确定要删除此风险吗？",
       "cover_types": "保障类型",
       "basic_premium:": "基本保费：",
-      "section": "部分"
+      "section": "部分",
+      "quote_details_title": "报价：报价详情",
+      "quote_detailed_details": "报价详情",
+      "email_is_required": "邮箱是必填项",
+      "enter_valid_email_address": "请输入有效的邮箱地址",
+      "invalid_phone_number": "无效的电话号码",
+      "client_name_is_required": "客户姓名是必填项。",
+      "quotation_type_is_required": "报价类型是必填项。",
+      "currency_is_required": "货币是必填项。",
+      "yes": "是",
+      "no": "否",
+      "agent_is_required": "代理人是必填项。",
+      "campaign_source_is_required": "活动来源是必填项。",
+      "payment_frequency_is_required": "付款频率是必填项。",
+      "market_source_is_required": "营销来源是必填项。",
+      "show_more_details": "显示更多详情",
+      "select_columns": "选择列",
+      "no_products_match_your_search": "没有与您的搜索匹配的产品。",
+      "are_you_sure_you_want_to_delete_product": "您确定要删除该产品吗？",
+      "group_user": "组用户",
+      "please_leave_a_comment_before_reassigning": "请在重新分配前留下评论",
+      "please_select_a_user_to_reassign_before_continuing": "请在继续之前选择一个用户进行重新分配",
+      "user_id": "用户编号",
+      "full_name": "全名",
+      "please_select_a_person_to_reassign_before_continuing": "请在继续之前选择一个人进行重新分配",
+      "add_clauses": "添加条款",
+      "no_clause_available_click_on_add": "没有可用条款。点击“添加条款”来添加新条款。",
+      "no_clauses_found_matching_your_search": "没有找到与您的搜索匹配的条款",
+      "no_additional_clauses_are_available_to_add": "没有可添加的附加条款。",
+      "are_you_sure_you_want_to_delete_this_clause": "您确定要删除此条款吗？",
+      "select_introducer": "选择介绍人",
+      "staff_no": "员工编号",
+      "company": "公司"
     },
     "policy": {
       "underwriting_new_transaction": "核保：新交易",
@@ -2368,10 +2403,9 @@
     "correction": "发送以更正",
     "reject": "拒绝",
     "errorMessage": "发生错误",
-    "printUpdateError":"更新Rct打印状态失败",
+    "printUpdateError": "更新Rct打印状态失败",
     "rctPrintError": "收据已成功保存，但无法打印",
     "pdPrintError": "收据已成功保存，但无法打印小票",
-
     "receipting": {
       "receipting": "收据处理",
       "cbReceipting": "现金簿收据处理",
@@ -2417,9 +2451,7 @@
       "search": "搜索",
       "receiptSummary": "收据摘要",
       "isReceiptPrinted?": "收据是否已打印",
-
       "Debit Note": "借方票据",
-
       "receiptAmount": "收据金额",
       "receiptAllocations": "收据分配",
       "enterAmount": "输入金额",
@@ -2447,7 +2479,6 @@
       "amount": "金额",
       "unallocatedAmount": "未分配金额",
       "client_name": "客户姓名",
-
       "name": "名称",
       "type": "类型",
       "actions": "操作",

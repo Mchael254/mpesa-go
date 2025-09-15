@@ -548,7 +548,11 @@
     "getStarted": "Commencer",
     "updateInAnotherLanguage": "Voulez-vous mettre à jour les modifications dans une autre langue ?",
     "export": "Exporter",
-    "publishedChangesWillBeExported": "Veuillez noter que seuls les changements publiés seront exportés"
+    "publishedChangesWillBeExported": "Veuillez noter que seuls les changements publiés seront exportés",
+    "editTableColumns": "Modifier les colonnes du tableau",
+    "columnLabel": "Étiquette de colonne",
+    "columns": "Colonnes",
+    "noRecordsFound": "Aucun enregistrement trouvé"
   },
   "entities": {
     "account_number": "Numéro de compte",
@@ -1026,7 +1030,9 @@
     "cr12DetailsDeletedSuccessfully": "Détails CR12 supprimés avec succès!",
     "ownershipDetailsDeletedSuccessfully": "Détails de propriété supprimés avec succès!",
     "branchDetailsDeletedSuccessfully": "Détails de la succursale supprimés avec succès!",
-    "wealthAmlDetailsDeletedSuccessfully": "Détails AML de richesse supprimés avec succès!"
+    "wealthAmlDetailsDeletedSuccessfully": "Détails AML de richesse supprimés avec succès!",
+    "populatedByDocument": "Veuillez patienter pendant que le formulaire est rempli par le document.",
+    "uploadImage": "Télécharger l'image"
   },
   "gis": {
     "quotation": {
@@ -1268,7 +1274,39 @@
       "deleting_associated_risk": "La suppression de ce produit entraînera la suppression de tous les risques associés",
       "sure_deleting_risk": "Êtes-vous sûr de vouloir supprimer ce risque ?",
       "cover_types": "Types de couverture",
-      "section": "Section"
+      "section": "Section",
+      "quote_details_title": "Devis : Détails du devis",
+      "quote_detailed_details": "Détails du devis",
+      "email_is_required": "L'e-mail est requis",
+      "enter_valid_email_address": "Veuillez entrer une adresse e-mail valide",
+      "invalid_phone_number": "Numéro de téléphone invalide",
+      "client_name_is_required": "Le nom du client est requis.",
+      "quotation_type_is_required": "Le type de devis est requis.",
+      "currency_is_required": "La devise est requise.",
+      "yes": "Oui",
+      "no": "Non",
+      "agent_is_required": "L'agent est requis.",
+      "campaign_source_is_required": "La source de campagne est requise.",
+      "payment_frequency_is_required": "La fréquence de paiement est requise.",
+      "market_source_is_required": "La source marketing est requise.",
+      "show_more_details": "Afficher plus de détails",
+      "select_columns": "Sélectionner les colonnes",
+      "no_products_match_your_search": "Aucun produit ne correspond à votre recherche.",
+      "are_you_sure_you_want_to_delete_product": "Êtes-vous sûr de vouloir supprimer ce produit ?",
+      "group_user": "Utilisateur du groupe",
+      "please_leave_a_comment_before_reassigning": "Veuillez laisser un commentaire avant de réaffecter",
+      "please_select_a_user_to_reassign_before_continuing": "Veuillez sélectionner un utilisateur à réaffecter avant de continuer",
+      "user_id": "Identifiant utilisateur",
+      "full_name": "Nom complet",
+      "please_select_a_person_to_reassign_before_continuing": "Veuillez sélectionner une personne à réaffecter avant de continuer",
+      "add_clauses": "Ajouter des clauses",
+      "no_clause_available_click_on_add": "Aucune clause disponible. Cliquez sur « Ajouter des clauses » pour en ajouter une nouvelle.",
+      "no_clauses_found_matching_your_search": "Aucune clause trouvée correspondant à votre recherche",
+      "no_additional_clauses_are_available_to_add": "Aucune clause supplémentaire n'est disponible à ajouter.",
+      "are_you_sure_you_want_to_delete_this_clause": "Êtes-vous sûr de vouloir supprimer cette clause ?",
+      "select_introducer": "Sélectionner un introducteur",
+      "staff_no": "Numéro de personnel",
+      "company": "Entreprise"
     },
     "policy": {
       "underwriting_new_transaction": "Souscription : Nouvelle transaction",
@@ -2903,10 +2941,9 @@
     "correction": "Envoyer pour correction",
     "reject": "Rejeter",
     "errorMessage": "Une erreur s'est produite !",
-    "printUpdateError":"Échec de la mise à jour du statut d’impression Rct",
+    "printUpdateError": "Échec de la mise à jour du statut d’impression Rct",
     "rctPrintError": "Reçu enregistré avec succès mais impossible de l’imprimer",
-  "pdPrintError": "Reçu enregistré avec succès mais impossible d’imprimer le ticket",
-
+    "pdPrintError": "Reçu enregistré avec succès mais impossible d’imprimer le ticket",
     "receipting": {
       "receipting": "Emission de reçus",
       "cbReceipting": "Livre de caisse-Emission de reçus",

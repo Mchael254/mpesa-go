@@ -520,7 +520,11 @@
     "getStarted": "Loslegen",
     "updateInAnotherLanguage": "Möchten Sie Änderungen in einer anderen Sprache aktualisieren?",
     "export": "Exportieren",
-    "publishedChangesWillBeExported": "Bitte beachten Sie, dass nur veröffentlichte Änderungen exportiert werden"
+    "publishedChangesWillBeExported": "Bitte beachten Sie, dass nur veröffentlichte Änderungen exportiert werden",
+    "editTableColumns": "Tabellenspalten bearbeiten",
+    "columnLabel": "Spaltenbezeichnung",
+    "columns": "Spalten",
+    "noRecordsFound": "Keine Datensätze gefunden"
   },
   "entities": {
     "account_number": "Kontonummer",
@@ -998,7 +1002,9 @@
     "cr12DetailsDeletedSuccessfully": "CR12-Details erfolgreich gelöscht!",
     "ownershipDetailsDeletedSuccessfully": "Eigentumsdetails erfolgreich gelöscht!",
     "branchDetailsDeletedSuccessfully": "Filialdetails erfolgreich gelöscht!",
-    "wealthAmlDetailsDeletedSuccessfully": "Vermögens-AML-Details erfolgreich gelöscht!"
+    "wealthAmlDetailsDeletedSuccessfully": "Vermögens-AML-Details erfolgreich gelöscht!",
+    "populatedByDocument": "Bitte warten Sie, während das Formular mit den Angaben aus dem Dokument ausgefüllt wird.",
+    "uploadImage": "Bild hochladen"
   },
   "gis": {
     "quotation": {
@@ -1241,7 +1247,39 @@
       "sure_deleting_risk": "Sind Sie sicher, dass Sie dieses Risiko löschen möchten?",
       "cover_types": "Deckungsarten",
       "basic_premium:": "Grundprämie:",
-      "section": "Abschnitt"
+      "section": "Abschnitt",
+      "quote_details_title": "Angebote: Angebotsdetails",
+      "quote_detailed_details": "Angebotsdetails",
+      "email_is_required": "E-Mail ist erforderlich",
+      "enter_valid_email_address": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "invalid_phone_number": "Ungültige Telefonnummer",
+      "client_name_is_required": "Kundenname ist erforderlich.",
+      "quotation_type_is_required": "Angebotsart ist erforderlich.",
+      "currency_is_required": "Währung ist erforderlich.",
+      "yes": "Ja",
+      "no": "Nein",
+      "agent_is_required": "Agent ist erforderlich.",
+      "campaign_source_is_required": "Kampagnenquelle ist erforderlich.",
+      "payment_frequency_is_required": "Zahlungsfrequenz ist erforderlich.",
+      "market_source_is_required": "Marketingquelle ist erforderlich.",
+      "show_more_details": "Mehr Details anzeigen",
+      "select_columns": "Spalten auswählen",
+      "no_products_match_your_search": "Keine Produkte entsprechen Ihrer Suche.",
+      "are_you_sure_you_want_to_delete_product": "Sind Sie sicher, dass Sie das Produkt löschen möchten?",
+      "group_user": "Gruppenbenutzer",
+      "please_leave_a_comment_before_reassigning": "Bitte hinterlassen Sie einen Kommentar, bevor Sie neu zuweisen",
+      "please_select_a_user_to_reassign_before_continuing": "Bitte wählen Sie einen Benutzer zur Neuzuweisung aus, bevor Sie fortfahren",
+      "user_id": "Benutzer-ID",
+      "full_name": "Vollständiger Name",
+      "please_select_a_person_to_reassign_before_continuing": "Bitte wählen Sie eine Person zur Neuzuweisung aus, bevor Sie fortfahren",
+      "add_clauses": "Klauseln hinzufügen",
+      "no_clause_available_click_on_add": "Keine Klauseln verfügbar. Klicken Sie auf „Klauseln hinzufügen“, um eine neue Klausel hinzuzufügen.",
+      "no_clauses_found_matching_your_search": "Keine Klauseln gefunden, die Ihrer Suche entsprechen",
+      "no_additional_clauses_are_available_to_add": "Keine zusätzlichen Klauseln verfügbar.",
+      "are_you_sure_you_want_to_delete_this_clause": "Sind Sie sicher, dass Sie diese Klausel löschen möchten?",
+      "select_introducer": "Einführer auswählen",
+      "staff_no": "Mitarbeiternummer",
+      "company": "Unternehmen"
     },
     "policy": {
       "underwriting_new_transaction": "Unterzeichnung: Neue Transaktion",
@@ -2363,10 +2401,9 @@
     "correction": "Zur Korrektur senden",
     "reject": "Ablehnen",
     "errorMessage": "Ein Fehler ist aufgetreten!",
-    "printUpdateError":"Fehler beim Aktualisieren des Rct-Druckstatus",
+    "printUpdateError": "Fehler beim Aktualisieren des Rct-Druckstatus",
     "rctPrintError": "Beleg wurde erfolgreich gespeichert, konnte jedoch nicht gedruckt werden",
     "pdPrintError": "Beleg wurde erfolgreich gespeichert, aber der Bon konnte nicht gedruckt werden",
-
     "receipting": {
       "receipting": "Belegerstellung",
       "cbReceipting": "Kassenbuch-Belegerstellung",

@@ -184,6 +184,7 @@ export interface QuotationDetails {
   agentName: string;
   clientName: string;
   sumInsured: number;
+  taxInformation?: TaxInformation[];
 }
 
 export interface QuotationProduct {
@@ -212,7 +213,7 @@ export interface TaxInformation {
   code: number;
   rateDescription: string;
   rate: number;
-   productCode?: number;
+  productCode?: number;
   quotationCode: number;
   rateType: string;
   taxAmount: number;
@@ -1271,36 +1272,139 @@ export interface ScheduleTab {
 
 
 export interface ProductDetails {
-   coverFrom: Date;
-   coverTo: Date;
-   productName: string;
+  coverFrom: Date;
+  coverTo: Date;
+  productName: string;
 
 }
 
 
 export interface ProductDetails {
-   coverFrom: Date;
-   coverTo: Date;
-   productName: string;
-   premium:number;
-   commission:number;
+  coverFrom: Date;
+  coverTo: Date;
+  productName: string;
+  premium: number;
+  commission: number;
 
 }
 
 
 
 export interface TaxDetails {
-  code: number;               
-  levelCode: string;          
-  productCode?: number;         
-  quotationCode: number;      
-  rate: number;                
-  rateDescription: string;     
-  rateType: string;            
+  code: number;
+  levelCode: string;
+  productCode?: number;
+  quotationCode: number;
+  rate: number;
+  rateDescription: string;
+  rateType: string;
   renewalEndorsement: string | null;
-  riskProductLevel: string;   
-  taxAmount: number;           
-  taxRateCode: number | null;  
-  taxType: string;             
-  transactionCode: string;     
+  riskProductLevel: string;
+  taxAmount: number;
+  taxRateCode: number | null;
+  taxType: string;
+  transactionCode: string;
 }
+export interface UserDetails {
+  id: number;
+  name: string;
+  username: string;
+  emailAddress: string;
+  dateOfBirth: string | null;
+  status: string;
+  userType: string;
+  telNo: string | null;
+  phoneNumber: string | null;
+  otherPhone: string | null;
+  personelRank: string | null;
+  countryCode: string | null;
+  townCode: string | null;
+  physicalAddress: string | null;
+  postalCode: string | null;
+  departmentCode: string | null;
+  activatedBy: string | null;
+  updateBy: string | null;
+  dateCreated: string;
+  profilePicture: string | null;
+  organizationId: number | null;
+  organizationGroupId: number | null;
+  supervisorId: number | null;
+  branchId: number | null;
+  gender: string | null;
+  pinNumber: string | null;
+  idNumber: string | null;
+}
+
+export interface GroupedUser {
+  groupId: number;
+  groupUserId: number;
+  isTeamLeader: 'Y' | 'N'; // explicitly "Y" or "N"
+  userDetails: UserDetails;
+  id: number;
+}
+export interface OtpPayload {
+  email: string,
+  subject: string,
+  body: string
+}
+export interface OtpResponse {
+  id: number;
+  userIdentifier: string;
+  otpValue: number;
+  generationTime: string;
+  expiryTime: string;
+  verified: number;
+}
+export interface ReportResponse {
+  code: number;
+  systemCode: number;
+  name: string;
+  description: string;
+  datafile: string | null;
+  applicationLevel: string;
+  status: string;
+  subModuleCode: string | null;
+  order: number | null;
+  printSrvAppl: string;
+  printSrvcAppl: string;
+  type: string | null;
+  visible: string | null;
+  shortDescription: string | null;
+  update: string;
+}
+export interface ReportParam {
+  name: string;
+  value: string;
+}
+
+export interface ReportPayload {
+  params: ReportParam[];
+  rptCode: number;
+  system: string;
+  reportFormat: string;
+  encodeFormat: string;
+}
+export interface ReportParamItem {
+  code: number;
+  rptCode: number;
+  name: string;
+  desc: string;
+  prompt: string;
+  type: string;
+  userRequired: string;
+}
+
+export interface ReportParams {
+  rptCode: number;
+  reportName: string;
+  dataFile: string;
+  rptTmplCode: number;
+  templateFile: string;
+  styleFile: string;
+  rptPrntSrvAppl: string;
+  params: ReportParamItem[];
+}
+
+
+
+

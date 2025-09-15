@@ -344,6 +344,12 @@ export class RiskDetailsComponent {
   showTaxesColumnModal = false;
   taxesColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
   isEditScheduleMode = false
+  isLogBookAvailable = true;
+  selectedFile: File | null = null;
+  isDragging = false;
+  uploading = false;
+  errorMessage = '';
+  successMessage = '';
 
   constructor(
     public subclassService: SubclassesService,
@@ -413,6 +419,7 @@ export class RiskDetailsComponent {
       this.selectedSubclassCode = savedSubclass;
       this.loadExcesses();
     }
+    this.fetchAddedLimitsOfLiability();
     this.initializePerilDetails();
     this.initializePerils();
     this.loadAddedClauses();
@@ -544,16 +551,18 @@ export class RiskDetailsComponent {
   }
 
   setSectionToDelete(section: any) {
-    this.sectionToDelete = section;
-    log.debug("Section to delete", this.sectionToDelete)
-  }
-  confirmDelete() {
-    if (this.sectionToDelete) {
-      const sectionCode = this.sectionToDelete.code
-      sectionCode && this.deleteRiskSection(sectionCode)
+  this.sectionToDelete = section;
+  log.debug("Section to delete", this.sectionToDelete);
+}
 
+confirmDelete() {
+  if (this.sectionToDelete) {
+    const sectionId = this.sectionToDelete.code; // ✅ use code
+    if (sectionId) {
+      this.deleteRiskSection(sectionId);
     }
   }
+}
 
   fetchQuotationDetails(quotationCode: number) {
     log.debug("Quotation Number tot use:", quotationCode)
@@ -562,7 +571,12 @@ export class RiskDetailsComponent {
         next: (res: any) => {
           this.quotationDetails = res;
           log.debug("Quotation details-risk details", this.quotationDetails);
+          this.quoteProductCode = this.quotationDetails.quotationProducts?.[0].code;
+          sessionStorage.setItem('newQuotationProductCode', this.quoteProductCode);
+          this.selectedSubclassCode = this.quotationDetails?.quotationProducts?.[0].riskInformation?.[0]?.subclassCode;
+          sessionStorage.setItem('selectedSubclasscode', this.selectedSubclassCode);
           this.insuredCode = this.quotationDetails.clientCode
+          log.debug("Insured code:", this.insuredCode)
           this.clientCode = this.quotationDetails.clientCode
           if (this.insuredCode) {
             this.loadClientDetails();
@@ -575,8 +589,8 @@ export class RiskDetailsComponent {
           const productDetails = this.quotationDetails.quotationProducts.find(
             product => product.productCode === this.selectedProductCode
           )
-          this.quoteProductCode = productDetails.code;
-          sessionStorage.setItem('newQuotationProductCode', this.quoteProductCode);
+          // this.quoteProductCode = productDetails.code;
+
           log.debug("limit qpcode", this.quoteProductCode);
 
           //risk details
@@ -888,7 +902,7 @@ export class RiskDetailsComponent {
 
       // Set dropdown options
       this.clientsData = [client]; // wrap in array for dropdown options
-
+      log.debug("Clients data;", this.clientsData)
       // Add the control if it doesn't exist
       if (!this.riskDetailsForm.contains('insureds')) {
         this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
@@ -2258,6 +2272,8 @@ export class RiskDetailsComponent {
       this.setColumnsFromRiskLimit(this.sectionDetails[0]);
     }
     const subclassCode = riskSelectedData.subclassCode;
+    this.selectedSubclassCode = subclassCode
+    this.quoteProductCode = riskSelectedData.quotationProductCode
     const binderCode = riskSelectedData.binderCode;
     const covertypeCode = riskSelectedData.coverTypeCode;
 
@@ -2975,28 +2991,30 @@ export class RiskDetailsComponent {
   }
 
 
+deleteRiskSection(riskSectionCode: number) {
+  log.debug("selected risk section code", riskSectionCode);
 
-  deleteRiskSection(riskSectionCode: number) {
+  if (riskSectionCode) {
+    this.quotationService.deleteRiskSections(riskSectionCode).subscribe({
+      next: (response: any) => {
+        log.debug("Response after deleting a risk section ", response);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Risk section deleted successfully');
 
-    log.debug("selected risk section code", riskSectionCode);
+        // ✅ filter by code
+        this.sectionDetails = this.sectionDetails.filter(
+          (section) => section.code !== this.sectionToDelete.code
+        );
 
-    if (riskSectionCode) {
-      this.quotationService.deleteRiskSections(riskSectionCode).subscribe({
-        next: (response: any) => {
-          log.debug("Response after deleting a risk section ", response);
-          this.globalMessagingService.displaySuccessMessage('Success', 'Risk section deleted successfully');
-          this.sectionDetails = this.sectionDetails.filter(
-            (section) => section.sectioncode !== this.sectionToDelete.sectioncode
-          );
-          this.sectionToDelete = null;
-        },
-        error: (error) => {
-          log.debug("error when deleting a risk section", error);
-          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-        }
-      })
-    }
+        this.sectionToDelete = null;
+      },
+      error: (error) => {
+        log.debug("error when deleting a risk section", error);
+        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+      }
+    });
   }
+}
+
 
   onResize(event: any) {
     this.modalHeight = event.height;
@@ -3038,8 +3056,7 @@ export class RiskDetailsComponent {
   }
 
   setClauseColumns(clause: Clause) {
-    const excludedFields = ['version', 'clauseCode', 'clauseExpires', 'clauseType', 'isEditable', 'isLienClause', 'isMandatory',
-      'isRescueClause', 'subClassCode',
+    const excludedFields = [
     ];
 
     this.clauseColumns = Object.keys(clause)
@@ -3066,7 +3083,7 @@ export class RiskDetailsComponent {
     // log.debug("clauseColumns", this.clauseColumns);
   }
 
-  defaultVisibleClauseFields = ['heading', 'shortDescription', , 'wording'];
+  defaultVisibleClauseFields = ['heading', 'shortDescription', 'wording'];
 
   loadAddedClauses(): void {
     const riskCode = this.selectedRiskCode;
@@ -3898,9 +3915,9 @@ export class RiskDetailsComponent {
     this.showLimitsOfLiabilityColumnModal = true;
   }
 
-  setLimitsOfLiabilityColumns(clause: Clause) {
+  setLimitsOfLiabilityColumns(limits: any) {
     const excludedFields = [];
-    this.limitsOfLiabilityColumns = Object.keys(clause)
+    this.limitsOfLiabilityColumns = Object.keys(limits)
       .filter((key) => !excludedFields.includes(key))
       .map((key) => ({
         field: key,
@@ -3944,9 +3961,9 @@ export class RiskDetailsComponent {
       this.limitsOfLiability = JSON.parse(cachedData);
       this.originalLimitsOfLiability = JSON.parse(cachedOriginal);
 
-      if (this.originalLimitsOfLiability.length > 0) {
-        this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
-      }
+      // if (this.originalLimitsOfLiability.length > 0) {
+      //   this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
+      // }
 
       log.debug(`Loaded limits of liability for subclass ${this.selectedRiskCode} from sessionStorage`);
       return;
@@ -3962,9 +3979,9 @@ export class RiskDetailsComponent {
         this.limitsOfLiability = [...limits];
         sessionStorage.setItem(cacheKey, JSON.stringify(this.limitsOfLiability));
 
-        if (this.originalLimitsOfLiability.length > 0) {
-          this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
-        }
+        // if (this.originalLimitsOfLiability.length > 0) {
+        //   this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
+        // }
 
         log.debug(`Fetched and stored limits for subclass ${this.selectedSubclassCode}`);
       },
@@ -3986,6 +4003,7 @@ export class RiskDetailsComponent {
     this.showLimitModal = true;
     this.loadLimitsOfLiability();
 
+
     const modalElement = document.getElementById('addLimit');
     if (modalElement) {
       const modal = new (window as any).bootstrap.Modal(modalElement);
@@ -3995,25 +4013,33 @@ export class RiskDetailsComponent {
 
 
   loadAddedLimitsOfLiability(): void {
+    log.debug("Selected SUBCLASS CODE:", this.selectedSubclassCode)
+    log.debug("Selected quote product code:", this.quoteProductCode)
+
     if (!this.selectedSubclassCode || !this.quoteProductCode) {
       return;
     }
-
-    const addedCacheKey = `added_limits_of_liability_${this.selectedRiskCode}`;
-    const cachedAddedData = sessionStorage.getItem(addedCacheKey);
-
-    if (cachedAddedData) {
-      try {
-        this.addedLimitsOfLiability = JSON.parse(cachedAddedData);
-        log.debug(`Added limits loaded from cache for subclass ${this.selectedRiskCode}`);
-        return;
-      } catch (error) {
-        log.debug('Error parsing cached added limits, fetching fresh data:', error);
-        sessionStorage.removeItem(addedCacheKey);
-      }
-    }
-
     this.fetchAddedLimitsOfLiability();
+    // const addedCacheKey = `added_limits_of_liability_${this.selectedRiskCode}`;
+    // const cachedAddedData = sessionStorage.getItem(addedCacheKey);
+    // log.debug("cachedAddedData", cachedAddedData)
+
+    // if (cachedAddedData.length > 0) {
+    //   try {
+    //     this.addedLimitsOfLiability = JSON.parse(cachedAddedData);
+    //     log.debug(`Added limits loaded from cache for subclass ${this.selectedRiskCode}`);
+    //     log.debug("ADDED LIMITS OF LIABILITY", this.addedLimitsOfLiability)
+
+    //     return;
+    //   } catch (error) {
+    //     log.debug('Error parsing cached added limits, fetching fresh data:', error);
+    //     sessionStorage.removeItem(addedCacheKey);
+    //   }
+    // } else {
+    //   this.fetchAddedLimitsOfLiability();
+    // }
+
+
   }
 
 
@@ -4133,6 +4159,7 @@ export class RiskDetailsComponent {
   }
 
   fetchAddedLimitsOfLiability(): void {
+    log.debug("FETCH added limits of liability called ")
     if (!this.selectedSubclassCode || !this.quoteProductCode) {
       log.debug('Subclass code or quote product code missing');
       return;
@@ -4143,11 +4170,12 @@ export class RiskDetailsComponent {
       .subscribe({
         next: (response) => {
           this.addedLimitsOfLiability = response._embedded;
+          log.debug("QUOATION LIMITS OF LIABILITY", this.addedLimitsOfLiability);
 
+          this.setLimitsOfLiabilityColumns(this.addedLimitsOfLiability?.[0])
           const addedCacheKey = `added_limits_of_liability_${this.selectedRiskCode}`;
           sessionStorage.setItem(addedCacheKey, JSON.stringify(response._embedded));
 
-          log.debug("Added limits fetched and cached successfully");
         },
         error: (err) => {
           log.debug('Error fetching limits of liability (L):', err);
@@ -4316,7 +4344,7 @@ export class RiskDetailsComponent {
       const modal = new (window as any).bootstrap.Modal(modalElement);
       modal.show();
     }
-
+    this.getAddedExcesses();
     this.loadExcesses();
   }
 
@@ -4489,10 +4517,7 @@ export class RiskDetailsComponent {
   }
 
   setPerilColumns(excess: Excesses) {
-    const excludedFields = ['sectionShortDescription', 'shortDescription', 'subclassCode', 'sectionCode', 'perCode', 'perilLimit',
-      'sectionDescription', 'multiplier', 'tlExcessType', 'plExcessType', 'expireOnClaim', 'dependLossType', 'benefitPerPeriod',
-      'claimExcessType', 'tlExcess', 'tlExcessMin', 'tlExcessMax', 'claimExcessMin', 'claimExcessMax', 'plExcess', 'plExcessMin',
-      'plExcessMax', 'code',
+    const excludedFields = [
     ];
 
     this.perilColumns = Object.keys(excess)
@@ -5401,22 +5426,34 @@ export class RiskDetailsComponent {
 
     this.showTaxesColumnModal = true;
   }
-
   setTaxesColumns(tax: any) {
-    const excludedFields = ['code', 'productCode', 'quotationCode', 'transactionCode', 'taxRateCode', 'levelCode',];
-    this.taxesColumns = Object.keys(tax)
-      .filter((key) => !excludedFields.includes(key))
-      .map((key) => ({
-        field: key,
-        header: this.sentenceCase(key),
-        visible: this.defaultVisibleTaxesFields.includes(key),
-        filterable: true,
-        sortable: true
-      }));
+    const excludedFields = [];
+    const defaultVisibleTaxesFields = ['rateDescription', 'rate', 'taxAmount', 'rateType',
+    ];
+    // All keys from the sample
+    const keys = Object.keys(tax).filter(key => !excludedFields.includes(key));
+
+    // Separate default fields and the rest
+    const defaultFields = defaultVisibleTaxesFields.filter(f => keys.includes(f));
+    const otherFields = keys.filter(k => !defaultVisibleTaxesFields.includes(k));
+
+    // Strictly order = defaults first, then others
+    const orderedKeys = [...defaultFields, ...otherFields];
+
+    this.taxesColumns = orderedKeys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleTaxesFields.includes(key),
+      truncate: defaultVisibleTaxesFields.includes(key),
+      filterable: true,
+      sortable: true // only these get truncated
+    }));
+
+
 
     this.taxesColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false });
 
-    // Restore visibility from sessionStorage
+    // Restore from sessionStorage 
     const saved = sessionStorage.getItem('taxesColumns');
     if (saved) {
       const savedVisibility = JSON.parse(saved);
@@ -5426,11 +5463,10 @@ export class RiskDetailsComponent {
       });
     }
 
-    log.debug("taxesColumns", this.taxesColumns);
+    log.debug("taxes Columns", this.taxesColumns);
   }
 
-  defaultVisibleTaxesFields = ['rate', 'rateDescription', 'rateType', 'renewalEndorsement', 'riskProductLevel', 'taxAmount',
-  ];
+
 
   openEditTaxModal() {
     if (!this.selectedProduct) {
@@ -5460,9 +5496,9 @@ export class RiskDetailsComponent {
 
         this.taxes = res._embedded;
         log.debug('Taxes', this.taxes)
-        if (this.taxes.length > 0) {
-          this.setTaxesColumns(this.taxes[0]);
-        }
+        // if (this.taxes.length > 0) {
+        //   this.setTaxesColumns(this.taxes[0]);
+        // }
         return;
       });
     } else {
@@ -5619,7 +5655,9 @@ export class RiskDetailsComponent {
 
     // Show the modal
     this.showTaxModal = true;
-  } openEditTaxModalFromDB(taxToEdit: any) {
+  }
+
+  openEditTaxModalFromDB(taxToEdit: any) {
     console.log('--- openEditTaxModalFromDB Triggered ---', taxToEdit);
 
     if (!taxToEdit) {
@@ -5795,9 +5833,6 @@ export class RiskDetailsComponent {
     log.debug("Tax Details:", this.taxDetails);
     if (matchingProduct) {
       this.taxDetails = matchingProduct.taxInformation;
-
-
-
     } else {
       log.debug("No matching product found for code:", quotationProductCode);
     }
@@ -5932,6 +5967,170 @@ export class RiskDetailsComponent {
       deductibleDescription: row.deductibleDesc
     }));
   }
+  onLogBookSelected(event: any) {
+    const file: File = event.files[0];
+    const reader = new FileReader();
 
+    reader.onload = () => {
+      // Convert to base64 string (remove prefix like "data:application/pdf;base64,")
+      const base64String = (reader.result as string).split(',')[1];
+
+      const payload = {
+        assistant_id: "DocumentHubAgent",
+        if_not_exists: "create",
+        config: {
+          configurable: {
+            score_extraction: true,
+            strict: false
+          }
+        },
+        input: {
+          schema: {
+            $schema: "https://json-schema.org/draft/2020-12/schema",
+            title: "KenyanLogbook",
+            type: "object",
+            properties: {
+              reg_number: {
+                type: "string",
+                description: "Vehicle registration number (e.g., KAA 123A)"
+              },
+              risk_description: {
+                type: "string",
+                description: "Risk description associated with the vehicle"
+              },
+              vehicle_make: {
+                type: "string",
+                description: "Manufacturer or brand of the vehicle (e.g., Toyota, Nissan)"
+              },
+              vehicle_value: {
+                type: "number",
+                description: "Declared value of the vehicle in Kenyan Shillings"
+              },
+              capacity: {
+                type: "string",
+                description: "Vehicle seating or load capacity"
+              },
+              body_type: {
+                type: "string",
+                description: "Type of vehicle body (e.g., saloon, pickup, lorry)"
+              }
+            },
+            required: ["reg_number", "vehicle_make", "vehicle_value", "capacity", "body_type"],
+            additionalProperties: false
+          },
+          files: [base64String]   // 👈 send BASE64 here instead of URL
+        }
+      }
+      this.quotationService.readScannedDocuments(payload).subscribe({
+        next: (res) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Succesfully scanned Logbook');
+          log.debug("Responser after scanning Logbook", res)
+
+        },
+        error: (err) => {
+          console.error('Delete failed:', err.error.message);
+        }
+      });
+
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    this.validateAndSetFile(file);
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = false;
+
+    if (event.dataTransfer?.files) {
+      const file = event.dataTransfer.files[0];
+      this.validateAndSetFile(file);
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = false;
+  }
+
+  validateAndSetFile(file: File): void {
+    // Reset messages
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    // Check if file exists
+    if (!file) {
+      return;
+    }
+
+    // Check file size (10MB = 10 * 1024 * 1024 bytes)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      this.errorMessage = 'File size exceeds the maximum limit of 10MB';
+      return;
+    }
+
+    // Check file type (optional - you can customize accepted types)
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+      'image/jpeg',
+      'image/png'
+    ];
+
+
+    if (!allowedTypes.includes(file.type)) {
+      this.errorMessage =
+        'Please upload a valid document type (PDF, DOC, DOCX, TXT, PNG, JPG, JPEG)';
+      return;
+    }
+
+    this.selectedFile = file;
+    this.selectedFile && this.uploadFile();
+  }
+
+  removeFile(): void {
+    this.selectedFile = null;
+    this.errorMessage = '';
+  }
+
+  uploadFile(): void {
+    if (!this.selectedFile) return;
+
+    this.uploading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+
+    setTimeout(() => {
+      this.uploading = false;
+      this.successMessage = 'Log book uploaded successfully!';
+
+      setTimeout(() => {
+        this.selectedFile = null;
+      }, 2000);
+    }, 2000);
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
 
 }
