@@ -1,0 +1,69 @@
+<div class="contianer ms-2">
+  <div class="row me-4 mt-1 align-items-center">
+    <div class="col-8">
+      <app-dynamic-breadcrumb
+        [breadCrumbItems]="[
+      {
+        label: 'FMS',
+        url: '/home/fms',
+      },
+      {
+        label: this.translate.instant('fms.receipting.cbReceipting'),
+        url: '/home/fms/',
+      },
+      {
+        label: this.translate.instant('base.base-fms.banking'),
+        url: '/home/fms/',
+      }
+     
+    ]"
+      >
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+  <div class="main">
+    <h6 class="pt-4 pb-1">Retrieve receipt</h6>
+    <div class="mb-3">
+      <form [formGroup]="bankingForm">
+        <div class="row">
+          <div class="col col-4">
+            <label for="sdate">From Date</label>
+            <input
+              type="date"
+              class="form-control"
+              formControlName="startDate"
+              id="sdate"
+            />
+          </div>
+          <div class="col col-4">
+            <label for="edate">To Date</label>
+            <input
+              type="date"
+              class="form-control"
+              formControlName="endDate"
+              id="edate"
+            />
+          </div>
+          <div class="col col-4">
+            <label for="paymentMode">Payment Mode</label>
+            <select
+              class="form-select"
+              id="paymentMode"
+              formControlName="paymentMethod"
+            >
+              <option
+                *ngFor="let paymentMode of paymentMethods"
+                value="paymentMode"
+              >
+                {{ paymentMode }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-primary">Retrieve Receipts</button>
+    </div>
+  </div>
+</div>
