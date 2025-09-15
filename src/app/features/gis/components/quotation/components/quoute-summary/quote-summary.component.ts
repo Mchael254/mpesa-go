@@ -12,13 +12,15 @@ import { ClaimsService } from '../../../claim/services/claims.service';
 import { ProductLevelPremium } from "../../data/premium-computation";
 import { ShareQuotesComponent } from '../share-quotes/share-quotes.component';
 import { format } from "date-fns";
-import { mergeMap } from "rxjs";
+import { concatMap, mergeMap, switchMap } from "rxjs";
 import { EmailDto } from "../../../../../../shared/data/common/email-dto";
 import { NotificationService } from "../../services/notification/notification.service";
 import { StringManipulation } from "../../../../../lms/util/string_manipulation";
 import { SESSION_KEY } from "../../../../../lms/util/session_storage_enum";
 import { SessionStorageService } from "../../../../../../shared/services/session-storage/session-storage.service";
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { UpdatePremiumDto } from 'src/app/features/gis/data/quotations-dto';
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -67,6 +69,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   isClientSearchModalVisible = false;
   organizationId: number;
   isModalLoading = false;
+  previewVisible = false;
+  pdfSrc: SafeResourceUrl | null = null;
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
@@ -76,7 +80,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     public utilService: UtilService,
     public cdr: ChangeDetectorRef,
     private session_storage: SessionStorageService,
-    private sessionStorageService: SessionStorageService
+    private sessionStorageService: SessionStorageService,
+    private sanitizer: DomSanitizer
 
   ) {
     this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
@@ -291,32 +296,55 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy(): void {
   }
-
-
   convertQuoteToNormalQuote() {
-    log.debug("Quotation Details", this.quotationDetails);
-
-    const quotationNumber = this.quotationDetails?.quotationNo;
-    log.debug("Quotation Number", quotationNumber);
-    sessionStorage.setItem("quotationNum", quotationNumber);
-
-    const conversionFlag = true;
-    sessionStorage.setItem("conversionFlag", JSON.stringify(conversionFlag));
-
-    // Get the quotCode
     const quotationCode = this.quotationDetails?.code;
-    log.debug("Quotation Code", this.quotationCode);
+    if (!quotationCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Quotation code is missing. Cannot proceed.');
+      return;
+    }
 
-    // Call the API to convert quote to normal quote
-    this.quotationService
-      .convertToNormalQuote(quotationCode)
-      .subscribe((data: any) => {
-        log.debug("Response after converting quote to a normalQuote:", data)
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+    const quotation = this.quotationDetails;
+    const product = quotation?.quotationProducts?.[0];
+    const riskInfo = product?.riskInformation?.[0];
 
-      }
-      );
+    const payload = {
+      premiumAmount: quotation?.premium ?? 0,
+      productCode: product?.productCode ?? 0,
+      quotProductCode: product?.code ?? 0,
+      productPremium: riskInfo?.annualPremium ?? 0,
+      riskLevelPremiums: riskInfo ? [{
+        code: riskInfo?.code ?? 0,
+        premium: riskInfo?.premium ?? 0,
+        limitPremiumDtos: riskInfo?.riskLimits?.map(limit => ({
+          sectCode: limit?.sectionCode ?? 0,
+          premium: limit?.premiumAmount ?? 0
+        })) ?? []
+      }] : [],
+      taxes: quotation?.taxInformation?.map(tax => ({
+        code: tax?.code ?? 0,
+        premium: tax?.taxAmount ?? 0,
+        description: tax?.rateDescription ?? ''
+      })) ?? []
+    };
+
+    this.quotationService.updateQuotePremium(quotationCode, payload)
+      .pipe(
+        switchMap(() => this.quotationService.convertToNormalQuote(quotationCode))
+      )
+      .subscribe({
+        next: (data: any) => {
+          log.debug("Quote successfully converted:", data);
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to convert quote.');
+          log.error('Quote conversion failed', err);
+        }
+      });
   }
+
+
+
 
   storeCurrentComment() {
     this.originalComment = this.quotationDetails.comments;
@@ -515,6 +543,53 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       }))
     }
   }
+
+  //  onPreviewRequested() {
+
+  //   this.previewVisible = false;
+  //   this.pdfSrc = null;
+
+  //   const payload = this.notificationPayload();
+  //   this.quotationService.generateQuotationReport(payload).pipe(
+  //     untilDestroyed(this)
+  //   ).subscribe({
+  //     next: (response) => {
+  //       const pdfData = `data:application/pdf;base64,${response.base64}#toolbar=0`;
+  //       this.pdfSrc = this.sanitizer.bypassSecurityTrustResourceUrl(pdfData);
+
+
+  //       setTimeout(() => {
+  //         this.previewVisible = true;
+  //       }, 0);
+  //     },
+  //     error: (err) => {
+  //       console.error('Failed to preview quotation report', err);
+  //     }
+  //   });
+  // }
+  onPreviewRequested() {
+    this.previewVisible = false;
+    this.pdfSrc = null;
+
+    const payload = this.notificationPayload();
+    this.quotationService.generateQuotationReport(payload).pipe(
+      untilDestroyed(this)
+    ).subscribe({
+      next: (response) => {
+        // 👇 Just prepend the header, no sanitizer needed
+        this.pdfSrc = `data:application/pdf;base64,${response.base64}`;
+
+        setTimeout(() => {
+          this.previewVisible = true;
+        }, 0);
+      },
+      error: (err) => {
+        console.error('Failed to preview quotation report', err);
+      }
+    });
+  }
+
+
 
   onDownloadRequested() {
     const payload = this.notificationPayload();

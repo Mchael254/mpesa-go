@@ -1,14 +1,16 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {CrmScreensConfigComponent} from './crm-screens-config.component';
-import {UtilService} from "../../../services";
+import { CrmScreensConfigComponent } from './crm-screens-config.component';
 import {of} from "rxjs";
+import {UtilService} from "../../../../shared/services";
 import {RouterTestingModule} from "@angular/router/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TableModule} from "primeng/table";
 import {TranslateModule} from "@ngx-translate/core";
-import {DynamicScreensSetupService} from "../../../services/setups/dynamic-screen-config/dynamic-screens-setup.service";
-import {GlobalMessagingService} from "../../../services/messaging/global-messaging.service";
+import {
+  DynamicScreensSetupService
+} from "../../../../shared/services/setups/dynamic-screen-config/dynamic-screens-setup.service";
+import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
 
 export class MockGlobalMessageService {
   displayErrorMessage = jest.fn((summary, detail) => {
@@ -22,9 +24,9 @@ export class MockGlobalMessageService {
   });
 }
 
- export class MockUtilService {
-   currentLanguage = of('en');
- }
+export class MockUtilService {
+  currentLanguage = of('en');
+}
 
 export class MockDynamicScreensSetupService {
   updateScreenSetup = jest.fn().mockReturnValue(of([]))

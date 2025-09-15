@@ -536,8 +536,8 @@ export class AccountService {
 
   getPreferredCommunicationChannels(): Observable<AccountsEnum[]> {
     return this.api.GET<AccountsEnum[]>(
-      `reference-enum/preferred-communication-channels`,
-      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+      `system-definitions/preferred-communication-channels`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 

@@ -268,3 +268,10 @@ body {
 .p-paginator-current {
   order: -1; /* Moves the "Showing X to Y of Z entries" to the center */
 }
+.customcss {
+  margin: 0px 0px 10px 0px;
+  
+}
+.clientcss {
+  margin-bottom: 10px;
+}

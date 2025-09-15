@@ -125,7 +125,7 @@ import { WealthAmlComponent } from './components/entity/view-entity/wealth-aml/w
     DialogModule,
     CheckboxModule,
   ],
-  exports: [StaffModalComponent, NewClientComponent],
+  exports: [StaffModalComponent, NewClientComponent, NewEntityV2Component],
   providers: [DatePipe],
 })
 export class EntitiesModule {}

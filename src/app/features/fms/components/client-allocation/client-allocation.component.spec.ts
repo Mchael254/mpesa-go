@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { ReactiveFormsModule, FormBuilder, FormArray, FormControl, FormGroup,FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormArray, FormControl, FormGroup,FormsModule, Validators } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { ClientAllocationComponent } from './client-allocation.component';
@@ -32,6 +32,8 @@ describe('ClientAllocationComponent', () => {
   let mockReportsService: any;
   let mockSessionStorageService: any;
   let mockFmsSetupService: any;
+    let mockIntermediaryService: any;
+  let mockReceiptManagementService: any;
 
    // --- Mock common properties needed for save methods ---
    const setupValidSaveState = () => {
@@ -68,10 +70,10 @@ describe('ClientAllocationComponent', () => {
     
     mockReceiptDataService = {
       getReceiptData: jest.fn(),
-
+      getSelectedClient: jest.fn().mockReturnValue({ code: 1, name: 'Default Test Client' }),
       getTransactions: jest.fn().mockReturnValue([]), // Mock getTransactions to return an empty array by default
       getAllocatedAmounts: jest.fn(),
-      getSelectedClient: jest.fn(),
+      
       getGlobalAccountTypeSelected: jest.fn(),
       updateAllocatedAmount: jest.fn(),
       setReceiptData: jest.fn(),
@@ -105,19 +107,26 @@ mockReceiptService = {
       deleteDocumentById: jest.fn()
     };
     mockReportsService = {};
-    mockSessionStorageService = {
-      getItem: jest.fn().mockImplementation((key: string) => {
-        if (key === 'receiptingPoint') {
-          return JSON.stringify({ id: 1, name: 'Test Point' }); // Or return null/undefined for testing default value
-        }
-        // Add other key-value pairs as needed for your tests
-        return null; // Default return value for other keys
-      }),
-      // getItem: jest.fn(),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-      clear: jest.fn(),
-    };
+   mockSessionStorageService = {
+  // Define a single implementation function to avoid repeating yourself
+  storageGetImplementation: (key: string) => {
+    // Return a default value for keys your tests might depend on.
+    if (key === 'defaultBranch' || key === 'selectedOrg' || key === 'defaultOrg') {
+        return JSON.stringify({ id: 1 });
+    }
+    // A sensible default for other calls
+    return null;
+  },
+
+  // Now, create spies that use this same implementation
+  get: jest.fn().mockImplementation(key => mockSessionStorageService.storageGetImplementation(key)),
+  getItem: jest.fn().mockImplementation(key => mockSessionStorageService.storageGetImplementation(key)),
+  
+  // Keep the other methods as they are
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+};
     mockFmsSetupService = {
       getParamStatus: jest.fn().mockReturnValue(of({ data: 'Y' }))
     };
@@ -157,7 +166,159 @@ mockReceiptService = {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+ // ======================================================
+  // NEW AND UPDATED TESTS FOR RECEIPT SHARING
+  // ======================================================
 
+  describe('Receipt Sharing Functionality', () => {
+
+    beforeEach(() => {
+        // Ensure the form is initialized before each test in this block
+        component.initializeRctSharingForm();
+    });
+
+    it('should initialize rctShareForm with correct validators and default values', () => {
+        expect(component.rctShareForm).toBeDefined();
+        expect(component.rctShareForm.get('name')?.hasValidator(Validators.required)).toBeTruthy();
+        expect(component.rctShareForm.get('shareMethod')?.value).toEqual('whatsapp');
+        
+        const phoneControl = component.rctShareForm.get('phone');
+        expect(phoneControl?.hasValidator(Validators.required)).toBeTruthy();
+        
+        phoneControl?.setValue('254712345678');
+        expect(phoneControl?.valid).toBeTruthy();
+
+        phoneControl?.setValue('0712345678');
+        expect(phoneControl?.valid).toBeFalsy(); // Should fail pattern validation
+    });
+
+    it('should call getAgentById on init if a client code exists', () => {
+        const getAgentSpy = jest.spyOn(component, 'getAgentById');
+        mockReceiptDataService.getSelectedClient.mockReturnValue({ code: 123 });
+        component.ngOnInit();
+        expect(getAgentSpy).toHaveBeenCalledWith(123);
+    });
+
+    it('should patch form values on successful getAgentById call', () => {
+        const agentData = { name: 'Test Agent', emailAddress: 'test@agent.com', phoneNumber: '254712345678' };
+        mockIntermediaryService.getAgentById.mockReturnValue(of(agentData));
+        
+        component.getAgentById(123);
+
+        expect(component.rctShareForm.value).toEqual(jasmine.objectContaining({
+            name: agentData.name,
+            email: agentData.emailAddress,
+            phone: agentData.phoneNumber
+ }));
+    });
+
+    describe('prepareShareData', () => {
+        it('should return null and show error if name is missing', () => {
+            component.rctShareForm.patchValue({ name: '' });
+            const result = (component as any).prepareShareData();
+            expect(result).toBeNull();
+           // expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Validation Error', jasmine.stringContaining('Client Name is required'));
+        });
+
+        it('should return null and show error for invalid whatsapp number', () => {
+            component.rctShareForm.patchValue({ name: 'Test Client', shareMethod: 'whatsapp', phone: '123' });
+            const result = (component as any).prepareShareData();
+            expect(result).toBeNull();
+           // expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Validation Error', jasmine.stringContaining('Invalid phone number format'));
+        });
+
+        it('should return correct data object for a valid whatsapp share', () => {
+            component.rctShareForm.patchValue({ name: 'Test Client', shareMethod: 'whatsapp', phone: '254712345678' });
+            const result = (component as any).prepareShareData();
+            expect(result).toEqual({
+                shareType: 'WHATSAPP',
+                recipientEmail: '',
+                recipientPhone: '254712345678'
+            });
+        });
+
+        it('should return correct data object for a valid email share', () => {
+            component.rctShareForm.patchValue({ name: 'Test Client', shareMethod: 'email', email: 'test@test.com' });
+            const result = (component as any).prepareShareData();
+            expect(result).toEqual({
+                shareType: 'EMAIL',
+                recipientEmail: 'test@test.com',
+                recipientPhone: null
+            });
+        });
+    });
+
+    describe('onClickPreview', () => {
+        it('should mark form as touched and call prepareShareData', () => {
+            const markTouchedSpy = jest.spyOn(component.rctShareForm, 'markAllAsTouched');
+            const prepareDataSpy = jest.spyOn(component as any, 'prepareShareData').mockReturnValue(null); // Mock to stop execution
+            
+            component.onClickPreview();
+
+            expect(markTouchedSpy).toHaveBeenCalled();
+            expect(prepareDataSpy).toHaveBeenCalled();
+        });
+
+        it('should set session storage and navigate on valid data', () => {
+            component.rctShareForm.patchValue({ name: 'Test Client', shareMethod: 'whatsapp', phone: '254712345678' });
+            component.onClickPreview();
+
+            const expectedPreviewData = {
+                shareType: 'WHATSAPP',
+                recipientEmail: '',
+                recipientPhone: '254712345678',
+                clientName: 'Test Client'
+            };
+
+            expect(mockSessionStorageService.setItem).toHaveBeenCalledWith('sharePreviewData', JSON.stringify(expectedPreviewData));
+            expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/preview-receipt']);
+        });
+    });
+
+    describe('postClientDetails', () => {
+        beforeEach(() => {
+            // Mock necessary properties for the body
+            component.agent = { name: 'Test Agent' } as any;
+            component.receiptResponse = { receiptNumber: 'R123' };
+            component.defaultOrg = { id: 1 } as any;
+        });
+
+        it('should mark form as touched and stop if data is invalid', () => {
+            const markTouchedSpy = jest.spyOn(component.rctShareForm, 'markAllAsTouched');
+            component.rctShareForm.patchValue({ name: '' }); // Make form invalid
+            
+            component.postClientDetails();
+
+            expect(markTouchedSpy).toHaveBeenCalled();
+            expect(mockReceiptManagementService.shareReceipt).not.toHaveBeenCalled();
+        });
+
+        it('should call shareReceipt service with correct payload, update status, and show success', () => {
+            component.rctShareForm.patchValue({ name: 'Test Client', shareMethod: 'whatsapp', phone: '254712345678' });
+            const updateStatusSpy = jest.spyOn(component, 'updatePrintStatus');
+
+            component.postClientDetails();
+
+            const expectedBody = {
+                shareType: 'WHATSAPP',
+                clientName: 'Test Agent',
+                recipientEmail: '',
+                recipientPhone: '254712345678',
+                receiptNumber: 'R123',
+                orgCode: '1'
+            };
+            
+            expect(mockReceiptManagementService.shareReceipt).toHaveBeenCalledWith(expectedBody);
+            expect(updateStatusSpy).toHaveBeenCalled();
+            expect(mockGlobalMessagingService.displaySuccessMessage).toHaveBeenCalledWith('success', 'Receipt Shared');
+            expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-capture']);
+        });
+    });
+
+  });
+  // ======================================================
+  // END OF NEW AND UPDATED TESTS
+  // ======================================================
   it('should initialize the receiptingDetailsForm on ngOnInit', () => {
     component.ngOnInit();
     expect(component.receiptingDetailsForm).toBeDefined();

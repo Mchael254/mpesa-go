@@ -4,12 +4,14 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular
 import {
   CreateLimitsOfLiability,
   EditRisk,
+  OtpPayload,
   premiumPayloadData,
   QuotationComment,
   quotationDTO, QuotationReportDto,
   quotationRisk,
   QuotationUpdate,
   RegexPattern,
+  ReportPayload,
   riskSection, RiskValidationDto,
   scheduleDetails,
   Sources,
@@ -29,7 +31,7 @@ import { ExternalClaimExp } from '../../../policy/data/policy-dto';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { UtilService } from '../../../../../../shared/services';
 import { map } from "rxjs/operators";
-import { QuotationsDTO, riskClause, riskPeril } from 'src/app/features/gis/data/quotations-dto';
+import { QuotationsDTO, riskClause, riskPeril, UpdatePremiumDto } from 'src/app/features/gis/data/quotations-dto';
 import { ComputationPayloadDto, PremiumComputationRequest, ProductLevelPremium } from "../../data/premium-computation";
 import { QuotationDetailsRequestDto } from "../../data/quotation-details";
 import { EmailDto } from "../../../../../../shared/data/common/email-dto";
@@ -626,20 +628,30 @@ export class QuotationsService {
   //       catchError(this.errorHandl)
   //     )
   // }
-  getExceptions(quotationCode: number, user: string): Observable<any> {
+  getExceptions(quotationCode: number): Observable<any> {
+    const params = new HttpParams()
+      .set('batchNumber', quotationCode.toString())
+      .set('level', 'Q');
+
+    return this.api.GET(
+      `v2/uw-exceptions?${params.toString()}`,
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
+  }
+
+  authorizeQuote(quotationCode: number, user: string): Observable<any> {
     const params = new HttpParams()
       .set('quotationCode', quotationCode.toString())
-      .set('def', 'QUOTE')
       .set('user', user);
 
     return this.api.POST(
-      `v2/authorise/manage-exceptions?${params.toString()}`,
+      `v2/authorise?${params.toString()}`,
       null,
-
-
       API_CONFIG.GIS_QUOTATION_BASE_URL
     );
   }
+
+
 
   AuthoriseExceptions(quotationCode: number, user: string): Observable<any> {
     const params = new HttpParams()
@@ -891,6 +903,15 @@ export class QuotationsService {
     return this.api.GET(`v2/quotation/convert-to-normal-quot?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
+  updateQuotePremium(quotationCode: number, payload: UpdatePremiumDto) {
+    return this.api.POST(
+      `v2/quotation/update-premium/${quotationCode}`,
+      payload,
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    );
+  }
+
+
   updateQuotationDetails(user: string, quotationCode: number, quotationNumber: string, data: quotationDTO) {
     return this.api.PUT(`v1/quotation?user=${user}&quotationCode=${quotationCode}&quotationNumber=${quotationNumber}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
 
@@ -1125,8 +1146,58 @@ export class QuotationsService {
       catchError(this.errorHandl)
     );
   }
+  getGroupedUserDetails(groupid: number) {
+    return this.api.GET(`user-groups/${groupid}/users`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+  readScannedDocuments(payload: any /*AiDocumentHubRequest*/): Observable<any> {
+    return this.api.AI_DOC_UPLOAD(
+      'ai-helper/document-extract',
+      payload,
+      API_CONFIG.AI_DOCUMENT_SERVICE
+    );
+  }
+  generateOTP(payload: OtpPayload) {
+    return this.api.POST<any>(`v2/otp/generate-and-send`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+  verifyOTP(user: string, otp: number) {
+    return this.api.POST<any>(`v2/otp/verify?userIdentifier=${user}&otp=${otp}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+  fetchReports(system: number, applicationLevel: string) {
+    return this.api.GET(`reports?system=${system}&applicationLevel=${applicationLevel}`, API_CONFIG.REPORT_SERVICE_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+  // generateReports(reportPayload: ReportPayload) {
+  //   return this.api.POST<any>(
+  //     `reports`,
+  //     reportPayload,
+  //     API_CONFIG.REPORT_SERVICE_BASE_URL
+  //   ).pipe(
+  //     retry(1),
+  //     catchError(this.errorHandl)
+  //   );
+  // }
+  generateReports(data: any) {
+
+    return this.api.POSTBYTE('reports', data, API_CONFIG.REPORT_SERVICE_BASE_URL);
+  }
 
 
-
+  fetchReportParams(reportCode: number) {
+    return this.api.GET(`reports/${reportCode}`, API_CONFIG.REPORT_SERVICE_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
 }
 

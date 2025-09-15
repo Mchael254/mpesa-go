@@ -406,29 +406,30 @@
                 </div>
               </div>
 
-              <!-- Floating Column Selector -->
-              <div *ngIf="showClausesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <strong class="text-primary">Select Clauses Columns</strong>
-                  <button class="btn-close btn-sm" (click)="showClausesColumnModal = false"></button>
-                </div>
-                <div style="max-height: 200px;max-width:250px; overflow-y: auto;">
-                  <div *ngFor="let col of clausesColumns">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" style="color: #00529B;" [(ngModel)]="col.visible"
-                        [id]="col.field">
-                      <label class="form-check-label" [for]="col.field">
-                        {{ col.header }}
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
 
               <div class="tab-content mb-4" id="nav-tabContent">
 
                 <!-- CLAUSES -->
+                <!-- Floating Clauses Column Selector -->
+                <div *ngIf="showClausesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-primary">Select Clauses Columns</strong>
+                    <button class="btn-close btn-sm" (click)="showClausesColumnModal = false"></button>
+                  </div>
+                  <div style="max-height: 200px;max-width:250px; overflow-y: auto;">
+                    <div *ngFor="let col of clausesColumns">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                          [(ngModel)]="col.visible" [id]="col.field">
+                        <label class="form-check-label" [for]="col.field">
+                          {{ col.header }}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div class="tab-pane fade show active" id="nav-clauses" role="tabpanel" aria-labelledby="nav-clauses"
                   tabindex="0">
                   <p-table [value]="productClauses" #productClauseTable [rows]="3" [paginator]="true"
@@ -462,8 +463,27 @@
                       <!-- Data Row -->
                       <tr>
                         <td *ngFor="let col of clausesColumns" [hidden]="!col.visible">
-                          {{ getCellValue(clause, col.field) | truncate:5 | sentenceCase }}
+                          <ng-container [ngSwitch]="col.field">
+
+                            <!-- Truncated fields -->
+                            <span *ngSwitchCase="'clause'">
+                              {{ clause[col.field] | truncate:5 | sentenceCase }}
+                            </span>
+                            <span *ngSwitchCase="'clauseHeading'">
+                              {{ clause[col.field] | truncate:5 | sentenceCase }}
+                            </span>
+                            <span *ngSwitchCase="'clauseShortDescription'">
+                              {{ clause[col.field] | truncate:5 | sentenceCase }}
+                            </span>
+
+                            <!-- All other fields -->
+                            <span *ngSwitchDefault>
+                              {{ clause[col.field] }}
+                            </span>
+
+                          </ng-container>
                         </td>
+
                       </tr>
                     </ng-template>
 
@@ -478,6 +498,8 @@
 
                   </p-table>
                 </div>
+
+                <!-- TAXES -->
                 <div class="d-flex justify-content-end align-items-center">
                   <i *ngIf="activeTab === 'taxes'" #iconTaxes class="pi border border-black p-1 rounded-1 text-black"
                     [ngClass]="{ 'pi-caret-down': showTaxesColumnModal, 'pi-caret-up': !showTaxesColumnModal }"
@@ -603,58 +625,7 @@
                     </div>
                   </div>
                 </div>
-                <!-- SIMILAR QUOTES -->
-                <div class="tab-pane fade" id="nav-similarQuotes" role="tabpanel" aria-labelledby="nav-similarities"
-                  tabindex="0">
-                  <p-table [value]="similarQuotesList" [tableStyle]="{ 'min-width': '50rem' }" class="ui-datatable"
-                    responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
-                    <ng-template pTemplate="header">
-                      <tr>
-                        <th class="flexible-header">
-                          {{ "gis.quotation.quotation_number" | translate }}
-                        </th>
-                        <th class="flexible-header">
-                          {{ "gis.quotation.client" | translate }}
-                        </th>
-                        <th class="flexible-header">
-                          {{ "gis.quotation.cover_from" | translate }}
-                        </th>
-                        <th class="flexible-header">
-                          {{ "gis.quotation.cover_to" | translate }}
-                        </th>
-                        <th class="flexible-header">
-                          {{ "gis.quotation.branch" | translate }}
-                        </th>
-                        <th class="flexible-header">
-                          {{ "gis.quotation.agent" | translate }}
-                        </th>
-                        <th class="flexible-header">
-                          {{ "gis.quotation.product" | translate }}
-                        </th>
-                      </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-data>
-                      <tr>
-                        <td>{{ data.quotNo }}</td>
-                        <td>{{ data.client | sentenceCase }}</td>
-                        <td>{{ data.quotCoverFrom }}</td>
-                        <td>{{ data.quotCoverTo }}</td>
-                        <td>{{ data.branchName | sentenceCase }}</td>
-                        <td>{{ data.agentName | sentenceCase }}</td>
-                        <td>{{ data.productDesc | sentenceCase }}</td>
-                      </tr>
-                    </ng-template>
 
-                    <!-- Template for empty data -->
-                    <ng-template pTemplate="emptymessage">
-                      <tr>
-                        <td colspan="7" class="text-center">
-                          No similar quotations to display
-                        </td>
-                      </tr>
-                    </ng-template>
-                  </p-table>
-                </div>
               </div>
             </div>
           </div>
@@ -708,7 +679,6 @@
                       </button>
                     </li>
                   </ul>
-
 
                   <div class="d-flex justify-content-end align-items-center">
                     <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
@@ -782,40 +752,41 @@
             <br />
             <ul class="nav nav-underline mt-2 mb-4">
               <li class="nav-item">
-                <a class="nav-link active" [class.active]="activeRiskTab === 'sections'"
-                  (click)="activeRiskTab = 'sections'">Sections</a>
+                <a class="nav-link active" [class.active]="activeRiskDetailsTab === 'sections'"
+                  (click)="activeRiskDetailsTab = 'sections'">Sections</a>
               </li>
               <br />
               <li class="nav-item">
-                <a class="nav-link" [class.active]="activeRiskTab === 'riskClauses'"
-                  (click)="activeRiskTab = 'riskClauses'">Clauses</a>
+                <a class="nav-link" [class.active]="activeRiskDetailsTab === 'riskClauses'"
+                  (click)="activeRiskDetailsTab = 'riskClauses'">Clauses</a>
               </li>
               <br />
               <li class="nav-item">
-                <a class="nav-link" [class.active]="activeRiskTab === 'schedules'"
-                  (click)="activeRiskTab = 'schedules'">Schedules</a>
+                <a class="nav-link" [class.active]="activeRiskDetailsTab === 'schedules'"
+                  (click)="activeRiskDetailsTab = 'schedules'">Schedules</a>
               </li>
               <br />
               <li class="nav-item">
-                <a class="nav-link" [class.active]="activeRiskTab === 'peril'" (click)="activeRiskTab = 'peril'">Risk
+                <a class="nav-link" [class.active]="activeRiskDetailsTab === 'peril'"
+                  (click)="activeRiskDetailsTab = 'peril'">Risk
                   peril</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" [class.active]="activeRiskTab === 'excesses'"
-                  (click)="activeRiskTab = 'excesses'">Excess</a>
+                <a class="nav-link" [class.active]="activeRiskDetailsTab === 'excesses'"
+                  (click)="activeRiskDetailsTab = 'excesses'">Excess</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-muted" [class.active]="activeRiskTab === 'comments'"
+                <a class="nav-link text-muted" [class.active]="activeRiskDetailsTab === 'comments'"
                   pTooltip="Feature under development" tooltipPosition="top">
                   Comments
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" [class.active]="activeRiskTab === 'limits-liability'"
-                  (click)="activeRiskTab = 'limits-liability'">Limits of liability</a>
+                <a class="nav-link" [class.active]="activeRiskDetailsTab === 'limits-liability'"
+                  (click)="activeRiskDetailsTab = 'limits-liability'">Limits of liability</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-muted" [class.active]="activeRiskTab === 'commissions'"
+                <a class="nav-link text-muted" [class.active]="activeRiskDetailsTab === 'commissions'"
                   pTooltip="Feature under development" tooltipPosition="top">
                   Commissions
                 </a>
@@ -825,9 +796,10 @@
             <div class="tab-content mb-4" id="nav-tabContent">
               <!-- SECTIONS -->
               <div class="tab-pane show active" id="nav-sections" role="tabpanel"
-                [class.show]="activeRiskTab === 'sections'" [class.active]="activeRiskTab === 'sections'"
+                [class.show]="activeRiskDetailsTab === 'sections'" [class.active]="activeRiskDetailsTab === 'sections'"
                 aria-labelledby="nav-sections" tabindex="0">
-                <div class="d-flex justify-content-end align-items-center" [hidden]="activeRiskTab !== 'sections'">
+                <div class="d-flex justify-content-end align-items-center"
+                  [hidden]="activeRiskDetailsTab !== 'sections'">
                   <i #iconSection class="pi border border-black p-1 rounded-1 text-black"
                     [ngClass]="{ 'pi-caret-down': !showSectionColumnModal, 'pi-caret-up': showSectionColumnModal }"
                     style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
@@ -872,8 +844,22 @@
                   <ng-template pTemplate="body" let-section>
                     <tr [pSelectableRow]="section" class="point" [class.disabled]="!section?.sectionCode">
                       <td *ngFor="let col of sectionColumns" [hidden]="!col.visible">
-                        {{ getCellValue(section, col.field) }}
+
+                        <ng-container [ngSwitch]="col.field">
+
+                          <!-- Truncated fields -->
+                          <span *ngSwitchCase="'limitAmount'">
+                            {{ section[col.field] | number }}
+                          </span>
+
+                          <!-- All other fields -->
+                          <span *ngSwitchDefault>
+                            {{ section[col.field] }}
+                          </span>
+
+                        </ng-container>
                       </td>
+
                     </tr>
                   </ng-template>
 
@@ -890,8 +876,9 @@
 
               </div>
               <!-- RISK CLAUSES -->
-              <div class="tab-pane" id="nav-riskClauses" role="tabpanel" [class.show]="activeRiskTab === 'riskClauses'"
-                [class.active]="activeRiskTab === 'riskClauses'" aria-labelledby="nav-riskClauses" tabindex="0">
+              <div class="tab-pane" id="nav-riskClauses" role="tabpanel"
+                [class.show]="activeRiskDetailsTab === 'riskClauses'"
+                [class.active]="activeRiskDetailsTab === 'riskClauses'" aria-labelledby="nav-riskClauses" tabindex="0">
                 <div class="d-flex justify-content-end align-items-center">
                   <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
                     [ngClass]="{ 'pi-caret-down': !showRiskClauseColumnModal, 'pi-caret-up': showRiskClauseColumnModal }"
@@ -965,7 +952,8 @@
               </div>
               <!-- SCHEDULES -->
               <div class="tab-pane " id="nav-schedules" role="tabpanel" aria-labelledby="nav-schedules" tabindex="0"
-                [class.show]="activeRiskTab === 'schedules'" [class.active]="activeRiskTab === 'schedules'">
+                [class.show]="activeRiskDetailsTab === 'schedules'"
+                [class.active]="activeRiskDetailsTab === 'schedules'">
 
                 <!-- Dynamic Tabs -->
                 <ul class="nav nav-tabs mb-3">
@@ -1037,8 +1025,8 @@
 
 
               <!-- Risk peril-->
-              <div class="tab-pane fade" id="nav-peril" role="tabpanel" [class.show]="activeRiskTab === 'peril'"
-                [class.active]="activeRiskTab === 'peril'" aria-labelledby="nav-schedules" tabindex="0">
+              <div class="tab-pane fade" id="nav-peril" role="tabpanel" [class.show]="activeRiskDetailsTab === 'peril'"
+                [class.active]="activeRiskDetailsTab === 'peril'" aria-labelledby="nav-schedules" tabindex="0">
 
 
                 <div class="d-flex justify-content-end align-items-center">
@@ -1104,8 +1092,9 @@
 
               <!-- Excess-->
 
-              <div class="tab-pane fade" id="nav-excesses" role="tabpanel" [class.show]="activeRiskTab === 'excesses'"
-                [class.active]="activeRiskTab === 'excesses'" aria-labelledby="nav-limits" tabindex="0">
+              <div class="tab-pane fade" id="nav-excesses" role="tabpanel"
+                [class.show]="activeRiskDetailsTab === 'excesses'" [class.active]="activeRiskDetailsTab === 'excesses'"
+                aria-labelledby="nav-limits" tabindex="0">
 
 
                 <div class="d-flex justify-content-end align-items-center">
@@ -1178,8 +1167,9 @@
 
 
               <!-- Comments -->
-              <div class="tab-pane fade" id="nav-comments" role="tabpanel" [class.show]="activeRiskTab === 'comments'"
-                [class.active]="activeRiskTab === 'comments'" aria-labelledby="nav-riskClauses" tabindex="0">
+              <div class="tab-pane fade" id="nav-comments" role="tabpanel"
+                [class.show]="activeRiskDetailsTab === 'comments'" [class.active]="activeRiskDetailsTab === 'comments'"
+                aria-labelledby="nav-riskClauses" tabindex="0">
                 <p-table [value]="comments" [tableStyle]="{ 'width': '100%' }" [scrollable]="true"
                   responsiveLayout="scroll" class="ui-datatable" [autoLayout]="true">
 
@@ -1224,76 +1214,71 @@
                     </tr>
                   </ng-template>
                 </p-table>
-                                                      <div class="d-flex justify-content-end align-items-center">
-                <i  #iconRisk class="pi border border-black p-1 rounded-1 text-black"
-   [ngClass]="{ 'pi-caret-down': !showExcessColumnModal, 'pi-caret-up': showExcessColumnModal }"
-   style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-   (click)="toggleExcess(iconRisk)">
-</i>
-</div>
-           <!-- Floating Column Selector for Risk -->
-<div *ngIf="showExcessColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <strong class="text-primary">Select Excess Columns</strong>
-    <button class="btn-close btn-sm" (click)="showExcessColumnModal = false"></button>
-  </div>
-  <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
-    <div *ngFor="let col of excessColumns">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
-        <label class="form-check-label" [for]="col.field">
-          {{ col.header }}
-        </label>
-      </div>
-    </div>
-  </div>
-</div>
-<p-table [value]="excesses" #excessesTable
-          *ngIf="excessColumns?.length"
-          [tableStyle]="{ 'min-width': '50rem' }"
-          [paginator]="true" [rows]="2" [rowsPerPageOptions]="[2,4,6]"
-          [scrollable]="true" responsiveLayout="scroll"
-          styleClass="p-datatable-striped">
+                <div class="d-flex justify-content-end align-items-center">
+                  <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
+                    [ngClass]="{ 'pi-caret-down': !showExcessColumnModal, 'pi-caret-up': showExcessColumnModal }"
+                    style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                    (click)="toggleExcess(iconRisk)">
+                  </i>
+                </div>
+                <!-- Floating Column Selector for Risk -->
+                <div *ngIf="showExcessColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-primary">Select Excess Columns</strong>
+                    <button class="btn-close btn-sm" (click)="showExcessColumnModal = false"></button>
+                  </div>
+                  <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+                    <div *ngFor="let col of excessColumns">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
+                        <label class="form-check-label" [for]="col.field">
+                          {{ col.header }}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p-table [value]="excesses" #excessesTable *ngIf="excessColumns?.length"
+                  [tableStyle]="{ 'min-width': '50rem' }" [paginator]="true" [rows]="2" [rowsPerPageOptions]="[2,4,6]"
+                  [scrollable]="true" responsiveLayout="scroll" styleClass="p-datatable-striped">
 
-  <!-- Header -->
-  <ng-template pTemplate="header">
-    <tr>
-      <th *ngFor="let col of excessColumns"
-          [hidden]="!col.visible"
-          class="flexible-header"
-          [pSortableColumn]="col.field">
-        {{ col.header }}
-        <p-sortIcon [field]="col.field"></p-sortIcon>
-      </th>
-    </tr>
-  </ng-template>
+                  <!-- Header -->
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th *ngFor="let col of excessColumns" [hidden]="!col.visible" class="flexible-header"
+                        [pSortableColumn]="col.field">
+                        {{ col.header }}
+                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                      </th>
+                    </tr>
+                  </ng-template>
 
-  <!-- Body -->
-  <ng-template pTemplate="body" let-rowData>
-    <tr>
-      <td *ngFor="let col of excessColumns" [hidden]="!col.visible">
-        {{ getCellValue(rowData, col.field) }}
-      </td>
-    </tr>
-  </ng-template>
+                  <!-- Body -->
+                  <ng-template pTemplate="body" let-rowData>
+                    <tr>
+                      <td *ngFor="let col of excessColumns" [hidden]="!col.visible">
+                        {{ getCellValue(rowData, col.field) }}
+                      </td>
+                    </tr>
+                  </ng-template>
 
-  <!-- Empty Message -->
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td [attr.colspan]="excessColumns.length" class="text-center text-muted py-3">
-        No excesses available for this risk.
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
+                  <!-- Empty Message -->
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td [attr.colspan]="excessColumns.length" class="text-center text-muted py-3">
+                        No excesses available for this risk.
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
 
 
               </div>
               <!-- Limits of liablility -->
               <div class="tab-pane fade" id="nav-limits-liability" role="tabpanel"
-                [class.show]="activeRiskTab === 'limits-liability'"
-                [class.active]="activeRiskTab === 'limits-liability'" aria-labelledby="nav-limits" tabindex="0">
+                [class.show]="activeRiskDetailsTab === 'limits-liability'"
+                [class.active]="activeRiskDetailsTab === 'limits-liability'" aria-labelledby="nav-limits" tabindex="0">
 
                 <div class="d-flex justify-content-end align-items-center">
                   <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
@@ -1479,35 +1464,49 @@
 
 
 
-      <!-- Reassign quote Modal 1 (re assign)-->
-      <div class="modal fade" id="reassignQuotationModal" #reassignQuotationModal tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="min-width: 200px">
+      <!-- Reassign Product Modal 1 -->
+      <div class="modal fade " id="reassignQuotation" #reassignQuotationModal tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="min-width:200px">
           <div class="modal-content ps-4 pt-2 pb-5 pe-4">
             <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0">
-              <p class="modal-title" style="color: #00529b; font-weight: 600; font-size: 20px">
+              <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
                 Reassign task
               </p>
-              <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold" style="border: none">
-                X
-              </button>
+              <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                style="border: none;">X</button>
             </div>
 
-            <div class="w-75 mb-3 mt-2">
-              <p style="color: #000000">Group User</p>
-              <p-dropdown [options]="clientOptions" [(ngModel)]="clientToReassignQuotation"
-                placeholder="Select a client" [showClear]="true" styleClass="w-full">
+            <div *ngIf="departmentSelected" class="w-75 mb-2 mt-2">
+              <p class="quote-label">Group User</p>
+              <!-- <p-dropdown [options]="clientOptions" [(ngModel)]="clientToReassignQuotation" [showClear]="true"
+                  styleClass="w-full">
+                </p-dropdown> -->
+              <input pInputText type="select" class="form-control form-control-sm" id="quote-input"
+                [(ngModel)]="clientToReassignQuotation">
+            </div>
+
+            <div class="w-75 mb-2 mt-2">
+              <p class="quote-label">{{ clientToReassignQuotation ? 'Default User' : 'User' }}</p>
+
+
+              <div *ngIf="!departmentSelected"
+                class="form-control form-control-sm d-flex align-items-center justify-content-between" id="quote-input"
+                style="cursor: pointer;" (click)="openChooseClientReassignModal()">
+                <span cl>{{ clientToReassignQuotation}}</span>
+                <i class="pi pi-chevron-down me-2" style="color: #00529B;font-size: 14px;"></i>
+              </div>
+
+              <p-dropdown *ngIf="departmentSelected" [options]="groupUsers" optionLabel="userDetails.name"
+                optionValue="id" [(ngModel)]="selectedGroupUserId" placeholder="" class=" form-control-sm ">
               </p-dropdown>
+
+
+
             </div>
 
-            <div class="w-75">
-              <p style="color: #000000">Default User</p>
-              <input pInputText type="text" style="color: #000000" class="form-control"
-                (click)="openChooseClientReassignModal()" [(ngModel)]="clientToReassignQuotation" />
-            </div>
-
-            <div class="w-75 mt-4 mb-3">
-              <p style="color: #000000">Comments</p>
-              <textarea name="reassignProduct" style="color: #000000" class="form-control" style="height: 70px"
+            <div class="w-75 mb-3">
+              <p class="quote-label">Comments</p>
+              <textarea name="reassignProduct" class="form-control" style="height: 70px"
                 [(ngModel)]="reassignQuotationComment"></textarea>
             </div>
 
@@ -1519,41 +1518,39 @@
               Please select a person to reassign before continuing
             </small>
 
-            <div class="w-full d-flex flex-row-reverse gap-4 mt-2">
-              <button type="button" class="btn" style="
-                  background-color: #00529b;
-                  color: white;
-                  text-decoration: none;
-                " (click)="reassignQuotation()">
-                {{ "gis.quotation.reassign" | translate }}
+            <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
+              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+                (click)="reassignQuotation()">{{
+                'gis.quotation.reassign' | translate }}
               </button>
               <button type="button" (click)="closeReassignQuotationModal()" class="btn btn-outline-primary"
-                style="text-decoration: none">
-                {{ "gis.quotation.cancel" | translate }}
+                style="text-decoration: none;">{{'gis.quotation.cancel' | translate}}
               </button>
             </div>
+
           </div>
         </div>
       </div>
 
-      <!-- reassign quote modal 2 (choose user)-->
-      <div class="modal fade" id="chooseClientReassignModal" #chooseClientReassignModal tabindex="-1"
+      <!-- Reassign Product Modal 2 -->
+      <div class="modal fade " id="chooseClientReassingModal" #chooseClientReassignModal tabindex="-1"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="min-width: 500px">
-          <div class="modal-content ps-4 pt-2 pe-4">
-            <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
-              <p class="modal-title" style="color: #00529b; font-weight: 600; font-size: 20px">
-                {{ "gis.quotation.reassign_task" | translate }}
+        <div class="modal-dialog modal-dialog-centered" style="min-width:200px">
+          <div class="modal-content ps-4 pt-2 pb-5 pe-4">
+
+            <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0">
+              <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                Reassign task
               </p>
               <button type="button" (click)="closeChooseClientReassignModal()" class="btn p-0 text-danger fw-bold"
-                style="border: none">
-                X
-              </button>
+                style="border: none;">X</button>
             </div>
+
             <div class="row mt-2">
-              <p-table #dt [value]="users" [rows]="3" [paginator]="true" [globalFilterFields]="['id', 'name']"
-                selectionMode="single" [(selection)]="selectedUser" styleClass="p-datatable-striped"
-                (onRowSelect)="onUserSelect()" (onRowUnselect)="onUserUnselect()">
+              <p-table #reassignTable [value]="users" [rows]="3" [paginator]="true"
+                [rowsPerPageOptions]="[5, 10, 20, 50]" [globalFilterFields]="['id', 'name']" selectionMode="single"
+                [(selection)]="selectedUser" styleClass="p-datatable-striped" (onRowSelect)="onUserSelect()"
+                (onRowUnselect)="onUserUnselect()">
                 <ng-template pTemplate="header">
                   <tr>
                     <th>User ID</th>
@@ -1561,57 +1558,39 @@
                   </tr>
                   <tr styleClass="p-striped">
                     <th>
-                      <input type="text" [(ngModel)]="globalSearch" (input)="filterGlobal($event)" />
+                      <input type="text" [(ngModel)]="globalSearch" (input)="filterGlobal($event)">
                     </th>
                     <th>
-                      <input type="text" [(ngModel)]="fullNameSearch" (input)="filterByFullName($event)" />
+                      <input type="text" [(ngModel)]="fullNameSearch" (input)="filterByFullName($event)">
                     </th>
                   </tr>
-                </ng-template>
 
+                </ng-template>
                 <ng-template pTemplate="body" let-user>
                   <tr [pSelectableRow]="user">
                     <td>{{ user.id }}</td>
                     <td>{{ user.name }}</td>
                   </tr>
                 </ng-template>
-
-                <!-- empty/search states -->
-                <ng-template pTemplate="emptymessage">
-                  <tr>
-                    <td colspan="4" style="text-align: center; padding: 20px">
-                      <div style="color: #6c757d; font-size: 15px">
-                        <ng-container *ngIf="users.length === 0">
-                          No users available.
-                        </ng-container>
-                        <ng-container *ngIf="users.length > 0">
-                          No user found matching your search
-                        </ng-container>
-                      </div>
-                    </td>
-                  </tr>
-                </ng-template>
               </p-table>
             </div>
 
-            <hr class="mt-1" style="border: none; border-top: 2.5px solid #0000004d" />
             <small class="text-danger block" [class.invisible]="!noUserChosen">
               Please select a person to reassign before continuing
             </small>
 
-            <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-2 mt-2 p-0">
-              <button type="button" class="btn" style="
-                  background-color: #00529b;
-                  color: white;
-                  text-decoration: none;
-                " (click)="selectClient()">
-                {{ "gis.quotation.reassign" | translate }}
+            <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
+              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+                (click)="selectClient()">{{
+                'gis.quotation.save' | translate }}
               </button>
               <button type="button" (click)="closeChooseClientReassignModal()" class="btn btn-outline-primary"
-                style="text-decoration: none">
-                {{ "gis.quotation.cancel" | translate }}
+                style="text-decoration: none;">{{
+                'gis.quotation.cancel' | translate
+                }}
               </button>
             </div>
+
           </div>
         </div>
       </div>
@@ -1672,22 +1651,297 @@
           </button>
         </div>
 
-        <!-- Right-side Authorize button with tooltip -->
-        <span [attr.title]="exceptionsData?.length > 0 ? 'Please resolve exceptions' : null"
-          style="display: inline-block;">
-          <!-- <button type="button" class="btn btn-outline-primary" [disabled]="exceptionsData?.length > 0">
+
+        <div class="action-buttons">
+
+          <!-- Right-side Authorize button with tooltip -->
+          <span [attr.title]="exceptionsData?.length > 0 ? 'Please resolve exceptions' : null"
+            style="display: inline-block;">
+            <button *ngIf="showAuthorizeButton && !(exceptionsData?.length > 0)" type="button"
+              class="btn btn-outline-primary" (click)="authorizeQuote()">
+              Authorize quote
+            </button>
+            <!-- <button type="button" class="btn btn-outline-primary" disabled tooltip="Authorize exceptions first">
             Authorize quote
           </button> -->
-          <button type="button" class="btn btn-outline-primary" disabled tooltip="Authorize exceptions first">
-            Authorize quote
+
+          </span>
+          <button class="btn btn-outline-primary me-2" *ngIf="showViewDocumentsButton" (click)="fetchReports()">
+            View documents
+          </button>
+          <button class="btn btn-primary" *ngIf="showConfirmButton" data-bs-toggle="modal"
+            data-bs-target="#consentModal">
+            Confirm
+          </button>
+        </div>
+        <div *ngIf="changeButtons" class="d-flex gap-2 flex-wrap">
+          <button type="button" class="btn btn-primary" [disabled]="afterRejectQuote">
+            Convert to policy
           </button>
 
-        </span>
+          <button type="button" class="btn btn-primary" [disabled]="afterRejectQuote">
+            Merge to Policy
+          </button>
+
+
+        </div>
       </div>
 
 
 
     </div>
+    <!-- Consent Modal -->
+    <div class="modal fade" id="consentModal" #consentModal tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm" style="min-width:609px">
+        <div class="modal-content px-4 pt-2 pb-4 ">
+
+
+          <div class="d-flex justify-content-between align-items-center rounded-3 mb-1">
+            <p class="modal-title fw-bold ms-0">Privacy policy and consent</p>
+            <button type="button" data-bs-dismiss="modal" class="btn p-1 text-danger fw-bold"
+              style="border: none;">X</button>
+          </div>
+
+          <!-- Tabs -->
+          <ul class="nav nav-tabs me-auto mt-4" id="taxTabs" role="tablist">
+            <!-- OTP tab -->
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" [class.active]="activeConsentTab === 'otp'" (click)="activeConsentTab = 'otp'"
+                type="button">
+                Share OTP
+              </button>
+            </li>
+
+            <!-- Upload tab (disabled for now) -->
+            <li class="nav-item" role="presentation">
+              <span data-bs-toggle="tooltip" data-bs-placement="top" title="Functionality to be worked on"
+                data-bs-custom-class="tooltip-strong">
+                <button class="nav-link" type="button" disabled tabindex="-1">
+                  Upload Signed Document
+                </button>
+              </span>
+
+
+            </li>
+          </ul>
+
+          <!-- Tab content -->
+          <div class="tab-content mt-3 mb-4">
+            <!-- OTP content -->
+            <div class="tab-pane fade show active" *ngIf="activeConsentTab === 'otp'">
+              <!-- Share method selection -->
+              <div class="method-options mt-2">
+                <div class="method-option" *ngFor="let method of shareMethods"
+                  (click)="!method.disabled && (shareQuoteData.selectedMethod = method.value)"
+                  [class.selected]="shareQuoteData.selectedMethod === method.value" [class.disabled]="method.disabled">
+                  <i class="far fa-circle" *ngIf="shareQuoteData.selectedMethod !== method.value"></i>
+                  <i class="fas fa-dot-circle" *ngIf="shareQuoteData.selectedMethod === method.value"></i>
+                  <span class="ps-2">{{ method.label }}</span>
+                  <span class="custom-tooltip" *ngIf="method.disabled">{{ method.tooltip }}</span>
+                </div>
+              </div>
+              <form [formGroup]="shareForm">
+                <div class="row mt-2">
+                  <label for="email" class="label quote-label">Email address<span class="required"></span></label>
+                  <div class="row">
+                    <div class="col-sm-9">
+                      <input id="email" type="email" formControlName="email" class="form-control form-control-sm"
+                        placeholder="" (blur)="shareForm.get('email')?.markAsTouched()" />
+                      <div *ngIf="shareForm.get('email')?.touched && shareForm.get('email')?.invalid"
+                        class="text-danger mt-1">
+                        <small *ngIf="shareForm.get('email')?.errors?.['required']">Email is required.</small>
+                        <small *ngIf="shareForm.get('email')?.errors?.['email']">Please enter a valid email
+                          address.</small>
+                      </div>
+                    </div>
+                    <div class="col-sm-3">
+                      <button type="button" class="btn btn-outline-primary btn-sm fw-bold" (click)="generateOTP()">Send
+                        OTP</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="otpGenerated" class="row mt-3">
+                  <div class="col-sm-9">
+                    <label for="otp" class="label quote-label">Enter OTP</label>
+                    <input id="otp" type="number" formControlName="otp" class="form-control form-control-sm" />
+                  </div>
+                  <div class="col-sm-3"></div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Upload tab placeholder -->
+            <div class="tab-pane fade" *ngIf="activeConsentTab === 'upload'">
+              <p class="text-muted mt-3">Functionality to be worked on</p>
+            </div>
+          </div>
+          <div *ngIf="otpGenerated" class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
+            <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary fw-bold">Cancel</button>
+            <button type="button" class="btn" style="background-color: #00529B;color:white;"
+              (click)="verifyOTP()">Verify</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- View documents Modal -->
+    <!-- Modal -->
+    <div class="modal fade" id="viewDocumentsModal" #viewDocumentsModal tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content px-4 pt-2 pb-4">
+
+          <!-- Header -->
+          <div class="d-flex justify-content-between align-items-center rounded-3 mb-1">
+            <p class="modal-title fw-bold ms-0">Generated Documents</p>
+            <button type="button" data-bs-dismiss="modal" class="btn p-1 text-danger fw-bold"
+              style="border: none;">X</button>
+          </div>
+
+          <div class="row mt-4" style="max-height: 350px;">
+            <!-- Left side: reports list -->
+            <div class="col-4 border-end overflow-auto" style="max-height: 350px; padding-right: 1rem;">
+              <div *ngFor="let report of fetchedReports; let i = index" class="d-flex align-items-center mb-2">
+                <!-- PrimeNG checkbox (multiple selection) -->
+                <p-checkbox [(ngModel)]="selectedReports" [value]="report" inputId="{{'chk-' + report.code}}"
+                  (onChange)="onReportToggle($event, report)">
+                </p-checkbox>
+
+                <label [for]="'chk-' + report.code" class="ms-2 flex-grow-1 report-label" style="cursor: pointer;">
+                  {{ report.description }}
+                </label>
+
+                <!-- Download / Print icons -->
+                <i class="pi pi-download ms-3 text-primary cursor-pointer" (click)="downloadReport(report)"
+                  pTooltip="Download" tooltipPosition="top" style="font-size: 13px;"></i>
+
+                <i class="pi pi-print ms-2 text-primary cursor-pointer" (click)="printReport(report)" pTooltip="Print"
+                  tooltipPosition="top" style="font-size: 13px;"></i>
+              </div>
+            </div>
+
+            <!-- Right side: preview + nav -->
+            <div class="col-8">
+              <div style="height: 350px; background: #fff; margin: 0; padding: 0; position: relative;">
+
+                <!-- LEFT NAV ICON (centered vertically on left side) -->
+                <button class="btn position-absolute p-0 border-0 bg-transparent"
+                  style="top: 50%; left: 8px; transform: translateY(-50%);" [attr.aria-label]="'Previous report'"
+                  (click)="toggleReport('prev')">
+                  <i class="pi pi-chevron-left fs-5"></i>
+                </button>
+
+                <!-- PDF Viewer -->
+                <div style="width:100%; height:100%; overflow:auto;" class="px-4">
+
+                  <pdf-viewer *ngIf="filePath" [src]="filePath" [render-text]="true" [show-all]="true"
+                    [original-size]="false" [fit-to-page]="true" style="width:100%; height:100%; display:block;">
+                  </pdf-viewer>
+
+                  <!-- Placeholder if no file loaded -->
+                  <div *ngIf="!filePath" class="d-flex align-items-center justify-content-center" style="height:100%;">
+                    <div class="text-muted">No document selected. Check a report on the left to load the PDF.</div>
+                  </div>
+                </div>
+
+                <!-- RIGHT NAV ICON (centered vertically on right side) -->
+                <button class="btn position-absolute p-0 border-0 bg-transparent"
+                  style="top: 50%; right: 8px; transform: translateY(-50%);" [attr.aria-label]="'Next report'"
+                  (click)="toggleReport('next')">
+                  <i class="pi pi-chevron-right fs-5"></i>
+                </button>
+              </div>
+
+
+            </div>
+          </div>
+          <h6 class="share_via_title text-primary ms-2">Share via</h6>
+          <p-tabView [(activeIndex)]="activeIndex" class="custom-tabs">
+            <!-- SMS Tab (disabled style with tooltip) -->
+            <p-tabPanel header="SMS">
+              <ng-template pTemplate="header">
+                <span class="text-muted" pTooltip="Feature coming soon" tooltipPosition="top">
+                  SMS
+                </span>
+              </ng-template>
+              <div class="p-3">
+                <p class="text-secondary">SMS feature coming soon...</p>
+              </div>
+            </p-tabPanel>
+
+            <!-- Email Tab -->
+            <p-tabPanel header="Email">
+              <ng-template pTemplate="header">
+                <span>Email</span>
+              </ng-template>
+              <form [formGroup]="viewDocForm">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label>Email address <span class="text-danger">*</span></label>
+                    <input pInputText type="email" class="form-control" formControlName="to" />
+                    <div *ngIf="viewDocForm.get('to')?.invalid && viewDocForm.get('to')?.touched"
+                      class="text-danger small">
+                      Valid email required
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label>CC</label>
+                    <input pInputText type="email" class="form-control" formControlName="cc" />
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label>BCC</label>
+                    <input pInputText type="email" class="form-control" formControlName="bcc" />
+                  </div>
+                  <div class="col-md-6">
+                    <label>Subject</label>
+                    <input pInputText type="text" class="form-control" formControlName="subject" />
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label>Wording</label>
+                  <textarea pInputTextarea class="form-control" rows="3" formControlName="wording"></textarea>
+                </div>
+              </form>
+            </p-tabPanel>
+          </p-tabView>
+
+
+          <div class="d-flex justify-content-between align-items-center">
+            <!-- Left buttons -->
+            <div class="d-flex">
+              <button type="button" class="btn btn-outline-primary btn-sm me-3 text-muted"
+                (click)="printReport(selectedReports)" disabled>
+                Print
+              </button>
+
+              <button type="button" class="btn btn-outline-primary btn-sm text-muted"
+                (click)="downloadReport(selectedReports)" disabled>
+                Download
+              </button>
+            </div>
+
+            <!-- Right buttons -->
+            <div class="d-flex">
+              <button type="button" class="btn btn-outline-primary btn-sm me-3" data-bs-dismiss="modal">
+                Cancel
+              </button>
+              <button type="button" class="btn btn-primary btn-sm" (click)="sendReportViaEmail()">
+                Send
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
 
     <!-- quotation other details -->
     <div class="tab-pane fade" id="nav-quotation-other-details" role="tabpanel" aria-labelledby="nav-authorization-tab"

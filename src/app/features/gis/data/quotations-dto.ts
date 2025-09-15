@@ -233,3 +233,30 @@ export interface riskPeril {
   claimLimit: number;
   description: string;
 }
+
+
+export interface LimitPremiumDto {
+  sectCode: number;
+  premium: number;
+}
+
+export interface RiskLevelPremiumDto {
+  code: number;
+  premium: number;
+  limitPremiumDtos: LimitPremiumDto[];
+}
+
+export interface TaxDto {
+  code: number;
+  premium: number;
+  description: string;
+}
+
+export interface UpdatePremiumDto {
+  premiumAmount: number;
+  productCode: number;
+  quotProductCode: number;
+  productPremium: number;
+  riskLevelPremiums: RiskLevelPremiumDto[];
+  taxes: TaxDto[];
+}

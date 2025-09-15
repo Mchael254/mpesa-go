@@ -31,12 +31,12 @@
             <div class="mb-3">
               <label class="form-label" [for]="field.fieldId">
                 {{ field.label[language] | titlecase }}
-                <span *ngIf="field.isMandatory" class="text-danger">*</span>
+                <span *ngIf="field.mandatory" class="text-danger">*</span>
               </label>
               <input
                 [type]="field.type"
                 [formControlName]="field.fieldId"
-                [placeholder]="field.label[language]"
+                [placeholder]="field.label[language] || ''"
                 [id]="field.fieldId"
                 class="form-control"
               />
@@ -48,7 +48,7 @@
               (click)="processInput(field.fieldId)"
               [disabled]="(field.fieldId === 'otp_sms' || field.fieldId === 'otp_email') && countdownTime!==0"
             >
-              {{ field.buttonLabel[language] }}
+              {{ verifyButtonText }}
             </button>
           </div>
         </div>

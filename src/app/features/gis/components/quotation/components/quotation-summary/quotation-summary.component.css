@@ -614,9 +614,9 @@ tr:hover {
   font-size: 14px;
 }
 
-.modal-title {
+/* .modal-title {
   margin-left: 1.2rem;
-}
+} */
 
 .no-border-header {
   border-bottom: none !important;
@@ -648,4 +648,181 @@ textarea {
 
 .card-title {
   color: #00529b;
+}
+
+.quote-label {
+  color: #000;
+  font-family: Roboto;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+
+  margin-bottom: 15px;
+}
+
+#quote-input {
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.20);
+  /* height: 50%; */
+  font-size: 14px;
+  height: 30px;
+}
+
+#quote-input-pdropdown {
+  font-size: 14px;
+
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.btn {
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.method-options {
+  font-family: Roboto;
+  display: flex;
+  gap: 2rem;
+  font-size: 16px;
+  color: #000000;
+  font-weight: 400;
+}
+
+/* .method-option {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  } */
+.method-option.disabled {
+  opacity: 0.5;
+}
+
+
+
+.method-option.selected {
+  font-weight: 500;
+  color: #00529B;
+}
+
+.method-option {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  transition: 0.3s ease;
+
+}
+
+.custom-tooltip {
+  visibility: hidden;
+  background-color: #333;
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 4px;
+  position: absolute;
+  bottom: 100%;
+  /* position above */
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.method-option.disabled:hover .custom-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .method-options {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    margin-left: 0;
+  }
+
+  .action-buttons button {
+    width: 100%;
+  }
+}
+
+.tooltip-strong .tooltip-inner {
+  background-color: #333;
+  /* darker background */
+  color: #fff;
+  /* white text */
+  font-weight: bold;
+  /* make it pop */
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  border: none;
+}
+
+.tooltip-strong .tooltip-arrow {
+  display: none;
+  /* optional: hide arrow for cleaner look */
+}
+
+.report-label {
+  font-family: Roboto;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 15px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #000;
+}
+
+.share_via_title {
+  font-family: Roboto;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+}
+
+/* Remove default PrimeNG tab borders */
+::ng-deep .custom-tabs .p-tabview-nav {
+  border: none !important;
+}
+
+/* Grey inactive tab text */
+::ng-deep .custom-tabs .p-tabview-nav li .p-tabview-nav-link {
+  border: none !important;
+  color: #6c757d;
+  /* Bootstrap muted color */
+  font-weight: 500;
+}
+
+/* Active tab with underline */
+::ng-deep .custom-tabs .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  color: #000;
+  /* black text */
+  border-bottom: 2px solid #0d6efd !important;
+  /* Bootstrap primary underline */
+}
+
+/* Hover for inactive tabs */
+::ng-deep .custom-tabs .p-tabview-nav li:not(.p-highlight) .p-tabview-nav-link:hover {
+  color: #495057;
+  cursor: pointer;
 }
