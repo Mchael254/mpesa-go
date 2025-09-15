@@ -602,8 +602,9 @@ export class ClientAllocationComponent {
     });
   }
   initializeRctSharingForm() {
+    const emailPattern = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$';
     this.rctShareForm = this.fb.group({
-      email: ['', [Validators.email]], // Not required initially
+      email: ['', [Validators.pattern(emailPattern), Validators.required]], // Not required initially
       phone: ['', [Validators.required, Validators.pattern(/^\d{12}$/)]], // Initially required with 12 digits
       name: ['', Validators.required],
       shareMethod: ['whatsapp', Validators.required], // Default to 'whatsapp'
@@ -1906,25 +1907,22 @@ export class ClientAllocationComponent {
     recipientEmail: string | null;
     recipientPhone: string | null;
   } | null {
-    //I have used form.get() so as to get the form control instance-with (.value, .valid, .invalid, .errors etc)
-    //form.getRawValue() gives us just the plain data snapshot (no validation state).
-    const nameControl = this.rctShareForm.get('name');
     const shareMethod = this.rctShareForm.get('shareMethod')?.value;
     const phoneControl = this.rctShareForm.get('phone');
     const emailControl = this.rctShareForm.get('email');
-    // --- START:
-    if (nameControl?.invalid) {
-      this.globalMessagingService.displayErrorMessage(
-        'Validation Error',
-        'Client Name is required. It may not have loaded correctly.'
-      );
-      return null;
-    }
-    // --- END:
+    const nameControl = this.rctShareForm.get('name');
+
     if (!shareMethod) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'Please select a share method.'
+      );
+      return null;
+    }
+     if(nameControl?.invalid){
+        this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Name is required'
       );
       return null;
     }
@@ -1942,7 +1940,6 @@ export class ClientAllocationComponent {
         recipientPhone: null,
       };
     } else if (shareMethod === 'whatsapp') {
-      // 'whatsapp'
       // --- START: ADDED VALIDATION BLOCK ---
       const phoneRegex = /^\d{12}$/;
       if (phoneControl?.invalid || !phoneRegex.test(phoneControl?.value)) {
@@ -1972,9 +1969,13 @@ export class ClientAllocationComponent {
     //  Mark all fields as touched to show any validation errors in the UI
     this.rctShareForm.markAllAsTouched();
     const shareData = this.prepareShareData();
-    if (!shareData) {
+   if (!shareData) {
       return; // Stop if data is invalid (e.g., no method selected)
     }
+    // const shareData = this.rctShareForm.getRawValue();
+    // if (this.rctShareForm.invalid) {
+    //   return; // Stop if data is invalid (e.g., no method selected)
+    // }
     const body = {
       shareType: shareData.shareType,
       clientName: this.agent.name,
@@ -2074,9 +2075,9 @@ export class ClientAllocationComponent {
     //  Mark all fields as touched to show any validation errors in the UI
     this.rctShareForm.markAllAsTouched();
     this.sessionStorage.setItem('receipting', 'Y');
-    const shareData = this.prepareShareData();
-    if (!shareData) {
-      return; // Stop if data is invalid
+       const shareData = this.prepareShareData();
+   if (!shareData) {
+      return; // Stop if data is invalid (e.g., no method selected)
     }
     // Create a single, comprehensive object to store
     const previewData = {
