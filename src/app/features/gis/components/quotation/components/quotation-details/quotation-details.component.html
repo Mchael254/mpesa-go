@@ -198,7 +198,7 @@
 
 
                     <!-- Agent Field -->
-                    <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
+                    <!-- <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
                       <p-dropdown formControlName="agents" [options]="agents" optionLabel="label" optionValue="value"
                         placeholder="" [filter]="true" [filterBy]="'label'">
                       </p-dropdown>
@@ -207,8 +207,25 @@
                         class="form-text text-danger">
                         {{ 'gis.quotation.agent_is_required' | translate }}
                       </div>
-                    </ng-container>
+                    </ng-container> -->
+                    <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
+                      <div class="position-relative" style="cursor: pointer;">
+                        <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
+                          [value]="selectedAgentName" readonly (click)="showAgentSearchModal = true"
+                          style="cursor: pointer;" formControlName="agents" />
+                        <i class="pi pi-search position-absolute"
+                          style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
+                      </div>
+                      <button *ngIf="showAgentSearchModal" data-bs-toggle="modal" data-bs-target="#searchAgent"
+                        style="display: none;">
 
+                      </button>
+                      <div
+                        *ngIf="quotationForm.get('agents')?.hasError('required') && quotationForm.get('agents')?.touched"
+                        class="form-text text-danger">
+                        {{ 'gis.quotation.agent_is_required' | translate }}
+                      </div>
+                    </ng-container>
                     <!-- campaign field -->
                     <ng-container *ngIf="field.name === 'campaign' && showCampaignField">
                       <p-dropdown formControlName="campaign" [options]="campaignList" optionLabel="label"
@@ -243,7 +260,7 @@
                 <ng-container [ngSwitch]="field.type">
 
                   <ng-container *ngSwitchCase="'select'">
-                  
+
 
 
 
@@ -272,26 +289,26 @@
                   </ng-container>
 
                   <ng-container *ngSwitchCase="'text'">
-                       
-                      <textarea *ngIf="field.name === 'internalComments'" rows="3" class="form-control"[formControlName]="field.name" style="overflow-y:auto; overflow-x:auto; white-space:pre;"
->
+
+                    <textarea *ngIf="field.name === 'internalComments'" rows="3" class="form-control"
+                      [formControlName]="field.name" style="overflow-y:auto; overflow-x:auto; white-space:pre;">
 
                       </textarea>
-                     <textarea *ngIf="field.name === 'externalComments'" rows="3" class="form-control"[formControlName]="field.name" style="overflow-y:auto; overflow-x:auto; white-space:pre;"
->
+                    <textarea *ngIf="field.name === 'externalComments'" rows="3" class="form-control"
+                      [formControlName]="field.name" style="overflow-y:auto; overflow-x:auto; white-space:pre;">
 
                       </textarea>
-                      <input *ngIf="field.name !== 'internalComments' && field.name !== 'externalComments'" type="text" id="quote-input" class="form-control form-conttrol-sm"
-                      [formControlName]="field.name">
-
-                      
-
-                     </ng-container>
-
-                     
+                    <input *ngIf="field.name !== 'internalComments' && field.name !== 'externalComments'" type="text"
+                      id="quote-input" class="form-control form-conttrol-sm" [formControlName]="field.name">
 
 
-                    
+
+                  </ng-container>
+
+
+
+
+
                 </ng-container>
               </div>
             </div>
@@ -343,150 +360,153 @@
 
         </div>
       </div>
+      <div class="position-relative">
 
-      <!-- Floating Column Selector -->
-      <div *ngIf="showProductColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-        [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <strong class="text-primary"> {{ 'gis.quotation.select_columns' | translate }}</strong>
-          <button class="btn-close btn-sm" (click)="showProductColumnModal = false"></button>
-        </div>
-        <div style="max-height: 200px;max-width:250px; overflow-y: auto;">
-          <div *ngFor="let col of columns">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" style="color: #00529B;" [(ngModel)]="col.visible"
-                [id]="col.field">
-              <label class="form-check-label" [for]="col.field">
-                {{ col.header }}
-              </label>
+        <div *ngIf="showProductColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+          [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+          (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)" (document:mouseup)="onDragEnd()">
+
+          <div class="d-flex justify-content-between align-items-center mb-2 cursor-move">
+            <strong class="text-primary">{{ 'gis.quotation.select_columns' | translate }}</strong>
+            <button class="btn-close btn-sm" (click)="showProductColumnModal = false"></button>
+          </div>
+
+          <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+            <div *ngFor="let col of columns">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
+                <label class="form-check-label" [for]="col.field">
+                  {{ col.header }}
+                </label>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- product table  -->
+        <div class="collapse" [ngClass]="{'show': showProducts}" id="collapseProduct">
+          <p-table [value]="productDetails" dataKey="productCode.code" editMode="row"
+            [paginator]="productDetails?.length > 10" [rowsPerPageOptions]="[5, 10, 20]" [rows]="5"
+            [tableStyle]="{'min-width': '50rem','table-layout': 'fixed'}">
+
+            <!-- Table Header -->
+            <ng-template pTemplate="header">
+              <tr>
+                <th *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header1"
+                  [ngClass]="{'actions-column': col.field === 'actions'}" [pSortableColumn]="col.field">
+                  {{ col.header }}
+                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                </th>
+              </tr>
+            </ng-template>
+
+            <!-- Table Body -->
+            <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
+              <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRowIndex !== ri"
+                [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product)"
+                class="hover:!bg-gray-50 !cursor-pointer transition-colors" title="Click to select row">
+
+                <td *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header1"
+                  [ngClass]="{'actions-column': col.field === 'actions'}">
+
+                  <ng-container [ngSwitch]="col.field">
+
+                    <!-- Only handle actions separately -->
+                    <ng-container *ngSwitchCase="'actions'">
+                      <div class="d-flex justify-content-start gap-2">
+                        <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product, ri)"
+                          class="p-button-sm p-button-text p-button-info no-border">
+                          {{ 'gis.quotation.edit' | translate }}
+                        </button>
+                        <button *ngIf="editing" type="button" pSaveEditableRow (click)="onRowEditSaves(product)"
+                          class="p-button-sm p-button-text p-button-success no-border">
+                          {{ 'gis.quotation.save' | translate }}
+                        </button>
+                        <button *ngIf="editing" type="button" pCancelEditableRow (click)="onRowEditCancels(product, ri)"
+                          class="p-button-sm p-button-text p-button-secondary no-border">
+                          {{ 'gis.quotation.cancel' | translate }}
+                        </button>
+                        <button type="button" (click)="openProductDeleteModal(product)"
+                          class="p-button-sm p-button-text p-button-danger no-border" data-bs-toggle="modal"
+                          data-bs-target="#deleteProductModal">
+                          {{ 'gis.quotation.delete' | translate }}
+                        </button>
+                        <button *ngIf="reassignButton" type="button" (click)="openReassignProductModal(product)"
+                          class="p-button-sm p-button-text p-button-danger no-border">
+                          {{ 'gis.quotation.reassign' | translate }}
+                        </button>
+                      </div>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'productName'">
+                      <p-cellEditor>
+                        <ng-template pTemplate="input">
+                          <span>{{ product[col.field] }}</span>
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                          {{ getCellValue(product, col.field) }}
+                        </ng-template>
+                      </p-cellEditor>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'coverFrom'">
+                      <p-cellEditor>
+                        <ng-template pTemplate="input">
+                          <p-calendar [(ngModel)]="product[col.field]" [dateFormat]="dateFormat" [showIcon]="true"
+                            appendTo="body">
+                          </p-calendar>
+
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                          {{ product[col.field] | date:'dd/MM/yyyy' }}
+                        </ng-template>
+                      </p-cellEditor>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'coverTo'">
+                      <p-cellEditor>
+                        <ng-template pTemplate="input">
+                          <p-calendar [(ngModel)]="product[col.field]" [dateFormat]="dateFormat" [showIcon]="true"
+                            appendTo="body">
+                          </p-calendar>
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                          {{ product[col.field] | date:'dd/MM/yyyy' }}
+                        </ng-template>
+                      </p-cellEditor>
+                    </ng-container>
+
+                    <!-- Default case: display value dynamically -->
+                    <ng-container *ngSwitchDefault>
+                      <p-cellEditor>
+                        <ng-template pTemplate="input">
+                          <input type="text" pInputText [(ngModel)]="product[col.field]" />
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                          {{ getCellValue(product, col.field) }}
+                        </ng-template>
+                      </p-cellEditor>
+                    </ng-container>
+
+
+
+                  </ng-container>
+                </td>
+              </tr>
+            </ng-template>
+
+            <!-- Empty Message -->
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td [attr.colspan]="columns.length" style="text-align:center; padding: 20px;">
+                  {{ 'gis.quotation.no_data_to_display' | translate }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
       </div>
 
-
-      <!-- product table  -->
-      <div class="collapse" [ngClass]="{'show': showProducts}" id="collapseProduct">
-        <p-table [value]="productDetails" dataKey="productCode.code" editMode="row" [paginator]="productDetails?.length > 10" [rowsPerPageOptions]="[2, 3, 5]"
-
-       [rows]="3"
-          [tableStyle]="{'min-width': '50rem','table-layout': 'fixed'}">
-
-          <!-- Table Header -->
-          <ng-template pTemplate="header">
-            <tr>
-              <th *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header1"
-                [ngClass]="{'actions-column': col.field === 'actions'}" [pSortableColumn]="col.field">
-                {{ col.header }}
-                <p-sortIcon [field]="col.field"></p-sortIcon>
-              </th>
-            </tr>
-          </ng-template>
-
-          <!-- Table Body -->
-          <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
-            <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRowIndex !== ri"
-              [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product)"
-              class="hover:!bg-gray-50 !cursor-pointer transition-colors" title="Click to select row">
-
-              <td *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header"
-                [ngClass]="{'actions-column': col.field === 'actions'}">
-
-                <ng-container [ngSwitch]="col.field">
-
-                  <!-- Only handle actions separately -->
-                  <ng-container *ngSwitchCase="'actions'">
-                    <div class="d-flex justify-content-center gap-2">
-                      <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product, ri)"
-                        class="p-button-sm p-button-text p-button-info no-border">
-                        {{ 'gis.quotation.edit' | translate }}
-                      </button>
-                      <button *ngIf="editing" type="button" pSaveEditableRow (click)="onRowEditSaves(product)"
-                        class="p-button-sm p-button-text p-button-success no-border">
-                        {{ 'gis.quotation.save' | translate }}
-                      </button>
-                      <button *ngIf="editing" type="button" pCancelEditableRow (click)="onRowEditCancels(product, ri)"
-                        class="p-button-sm p-button-text p-button-secondary no-border">
-                        {{ 'gis.quotation.cancel' | translate }}
-                      </button>
-                      <button type="button" (click)="openProductDeleteModal(product)"
-                        class="p-button-sm p-button-text p-button-danger no-border" data-bs-toggle="modal"
-                        data-bs-target="#deleteProductModal">
-                        {{ 'gis.quotation.delete' | translate }}
-                      </button>
-                      <button *ngIf="reassignButton" type="button" (click)="openReassignProductModal(product)"
-                        class="p-button-sm p-button-text p-button-danger no-border">
-                        {{ 'gis.quotation.reassign' | translate }}
-                      </button>
-                    </div>
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'productName'">
-                    <p-cellEditor>
-                      <ng-template pTemplate="input">
-                        <span>{{ product[col.field] }}</span>
-                      </ng-template>
-                      <ng-template pTemplate="output">
-                        {{ getCellValue(product, col.field) }}
-                      </ng-template>
-                    </p-cellEditor>
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'coverFrom'">
-                    <p-cellEditor>
-                      <ng-template pTemplate="input">
-                        <p-calendar [(ngModel)]="product[col.field]" dateFormat="dd/mm/yy" [showIcon]="true"
-                          [touchUI]="true">
-                        </p-calendar>
-                      </ng-template>
-                      <ng-template pTemplate="output">
-                        {{ product[col.field] | date:'dd/MM/yyyy' }}
-                      </ng-template>
-                    </p-cellEditor>
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'coverTo'">
-                    <p-cellEditor>
-                      <ng-template pTemplate="input">
-                        <p-calendar [(ngModel)]="product[col.field]" dateFormat="dd/mm/yy" [showIcon]="true"
-                          [touchUI]="true">
-                        </p-calendar>
-                      </ng-template>
-                      <ng-template pTemplate="output">
-                        {{ product[col.field] | date:'dd/MM/yyyy' }}
-                      </ng-template>
-                    </p-cellEditor>
-                  </ng-container>
-
-                  <!-- Default case: display value dynamically -->
-                  <ng-container *ngSwitchDefault>
-                    <p-cellEditor>
-                      <ng-template pTemplate="input">
-                        <input type="text" pInputText [(ngModel)]="product[col.field]" />
-                      </ng-template>
-                      <ng-template pTemplate="output">
-                        {{ getCellValue(product, col.field) }}
-                      </ng-template>
-                    </p-cellEditor>
-                  </ng-container>
-
-
-
-                </ng-container>
-              </td>
-            </tr>
-          </ng-template>
-
-          <!-- Empty Message -->
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td [attr.colspan]="columns.length" style="text-align:center; padding: 20px;">
-                {{ 'gis.quotation.no_data_to_display' | translate }}
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </div>
 
 
 
@@ -604,8 +624,7 @@
 
             <div class="d-flex justify-content-between text-black">
               <p>
-                {{ 'gis.quotation.are_you_sure_you_want_to_delete_product' | translate }}
-                <strong>{{ productToDelete?.productName }}</strong>?
+                {{ 'gis.quotation.are_you_sure_you_want_to_delete_product' | translate }}?
               </p>
             </div>
 
@@ -805,183 +824,192 @@
         </div>
 
         <!-- clauses table -->
-        <!-- Floating Column Selector -->
-        <div *ngIf="showProductClauseColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-          [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <strong class="text-primary">
-              {{'gis.quotation.select_columns' | translate}}
-            </strong>
-            <button class="btn-close btn-sm" (click)="showProductClauseColumnModal = false"></button>
-          </div>
-          <div style="max-height: 250px; overflow-y: auto;">
-            <div *ngFor="let col of productClauseColumns">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" style="color: #00529B;" [(ngModel)]="col.visible"
-                  (change)="toggleProductClauseColumnVisibility(col.field)" [id]="col.field">
-                <label class="form-check-label" [for]="col.field">
-                  {{ col.header }}
-                </label>
+        <div class="position-relative">
+
+          <!-- Floating Column Selector -->
+          <div *ngIf="showProductClauseColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+            (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+            (document:mouseup)="onDragEnd()">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong class="text-primary">
+                {{ 'gis.quotation.select_columns' | translate }}
+              </strong>
+              <button class="btn-close btn-sm" (click)="showProductClauseColumnModal = false"></button>
+            </div>
+
+            <div style="max-height: 250px; overflow-y: auto;">
+              <div *ngFor="let col of productClauseColumns">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible"
+                    (change)="toggleProductClauseColumnVisibility(col.field)" [id]="col.field">
+                  <label class="form-check-label" [for]="col.field">
+                    {{ col.header }}
+                  </label>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="collapse mb-4" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
-          <p-table #productClauseTable [value]="sessionClauses " [paginator]="sessionClauses?.length > 10" [rowsPerPageOptions]="[2, 3, 5]"
 
-       [rows]="3" styleClass="p-datatable-striped">
+          <div class="collapse mb-4" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
+            <p-table #productClauseTable [value]="sessionClauses " [paginator]="sessionClauses?.length > 10"
+              [rowsPerPageOptions]="[5, 10, 20]" [rows]="5"
+              [tableStyle]="{'min-width': '50rem','table-layout': 'fixed'}">
 
-            <!-- Table Header -->
-            <ng-template pTemplate="header">
-              <tr>
-                <th *ngFor="let col of productClauseColumns" [hidden]="!col.visible" class="px-3"
-                  [pSortableColumn]="col.field">
 
-                  <div class="d-flex align-items-center gap-1 flex-nowrap">
-                    <span class="text-truncate">{{ col.header }}</span>
-                    <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
-                  </div>
+              <!-- Table Header -->
+              <ng-template pTemplate="header">
+                <tr>
 
-                </th>
-              </tr>
-              <tr>
-                <th *ngFor="let col of productClauseColumns" [hidden]="!col.visible" class="px-3">
-                  <input *ngIf="col.filterable !== false" class="form-control form-control-sm" pInputText type="text"
-                    (input)="productClauseTable.filter($event.target['value'], col.field, 'contains')" />
-                </th>
-              </tr>
-            </ng-template>
+                  <th *ngFor="let col of productClauseColumns" [hidden]="!col.visible" class="flexible-header1"
+                    [ngClass]="{'actions-column': col.field === 'actions'}" [pSortableColumn]="col.field">
+                    {{ col.header }}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                  </th>
+                </tr>
+                <tr class="filter-row mt-1">
+                  <td *ngFor="let col of productClauseColumns" [hidden]="!col.visible">
+                    <input *ngIf="col.filterable !== false" class="form-control form-control-sm" pInputText type="text"
+                      (input)="productClauseTable.filter($event.target['value'], col.field, 'contains')" />
+                  </td>
+                </tr>
+              </ng-template>
 
-            <ng-template pTemplate="body" let-productClause>
-              <tr>
-                <td *ngFor="let col of productClauseColumns" [hidden]="!col.visible">
-                  <ng-container [ngSwitch]="col.field">
-                    <!-- Default (for future columns added dynamically) -->
-                    <ng-container *ngSwitchDefault>
-                      {{ productClause[col.field] }}
-                    </ng-container>
-                    <!-- Wording (with hover card) -->
-                    <ng-container *ngSwitchCase="'wording'">
-                      <div class="clause-wrapper">
-                        {{ productClause.wording | truncate:4 | sentenceCase }}
+              <ng-template pTemplate="body" let-productClause>
+                <tr>
+                  <td *ngFor="let col of productClauseColumns" [hidden]="!col.visible" class="flexible-header1"
+                    [ngClass]="{'actions-column': col.field === 'actions'}">
+                    <ng-container [ngSwitch]="col.field">
+                      <!-- Default (for future columns added dynamically) -->
+                      <ng-container *ngSwitchDefault>
+                        {{ productClause[col.field] }}
+                      </ng-container>
+                      <!-- Wording (with hover card) -->
+                      <ng-container *ngSwitchCase="'wording'">
+                        <!-- <div class="clause-wrapper">
+                        {{ productClause.wording | truncate:3 | sentenceCase }}
                         <div class="hover-card">
                           {{ productClause.wording | sentenceCase }}
                         </div>
-                      </div>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'heading'">
-                      <div class="clause-wrapper" [title]="productClause.heading | sentenceCase">
-                        {{ productClause.heading | truncate: 4 | sentenceCase }}
-                        <div class="hover-card">
-                          {{ productClause.heading | sentenceCase }}
+                      </div> -->
+                        <div class="clause-wrapper">
+                          {{ productClause.wording | sentenceCase }}
+                          <div class="hover-card">
+                            {{ productClause.wording | sentenceCase }}
+                          </div>
                         </div>
-                      </div>
-                    </ng-container>
-                    <!-- Actions -->
-                    <ng-container *ngSwitchCase="'actions'">
-                      <div class="flex justify-start gap-2">
-                        <!-- Edit -->
-                        <span class="p-button-label p-text-bold " [ngStyle]="{
-                            color: productClause.isEditable === 'Y' ? '#00529B' : '#6B7280', 
-                            marginRight: '16px',
-                            marginLeft: '10px',
-                            cursor: productClause.isEditable === 'Y' ? 'pointer' : 'default',
-                            display: 'inline-block',
-                            width: '60px'  
-                            }" [attr.data-bs-toggle]="productClause.isEditable === 'Y' ? 'modal' : null"
+
+                      </ng-container>
+                      <ng-container *ngSwitchCase="'heading'">
+                        <div class="clause-wrapper" [title]="productClause.heading | sentenceCase">
+                          {{ productClause.heading | truncate: 4 | sentenceCase }}
+                          <div class="hover-card">
+                            {{ productClause.heading | sentenceCase }}
+                          </div>
+                        </div>
+                      </ng-container>
+                      <!-- Actions -->
+                      <ng-container *ngSwitchCase="'actions'">
+                        <div class="flex justify-start gap-4">
+                          <!-- Edit -->
+                          <!-- <span class="p-button-label p-text-bold " [attr.data-bs-toggle]="productClause.isEditable === 'Y' ? 'modal' : null"
                           [attr.data-bs-target]="productClause.isEditable === 'Y' ? '#editClause' : null"
                           (click)="productClause.isEditable === 'Y' && populateEditClauseModal(productClause)">
                           {{ productClause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
-                        </span>
-
-                        <!-- Delete -->
-                        <span *ngIf="productClause.isMandatory === 'N'" class="p-button-label p-text-bold text-center"
-                          [ngStyle]="{
+                        </span> -->
+                          <button type="button"
+                            (click)="productClause.isEditable === 'Y' && populateEditClauseModal(productClause)"
+                            class="p-button-sm p-button-text p-button-info no-border">
+                            {{ 'gis.quotation.edit' | translate }}
+                          </button>
+                          <!-- Delete -->
+                          <span *ngIf="productClause.isMandatory === 'N'" class="p-button-label p-text-bold text-center"
+                            [ngStyle]="{
                             color: '#00529B',
                             cursor: 'pointer'
                             }" data-bs-toggle="modal" data-bs-target="#deleteClause"
-                          (click)="prepareDeleteClause(productClause)">
-                          {{ 'gis.quotation.delete' | translate }}
-                        </span>
-                      </div>
-                    </ng-container>
+                            (click)="prepareDeleteClause(productClause)">
+                            {{ 'gis.quotation.delete' | translate }}
+                          </span>
+                          <span *ngIf="productClause.isMandatory === 'Y'"
+                            class="p-button-label p-text-bold text-center text-muted"
+                            pTooltip="You can’t delete mandatory clauses.">
+                            Delete
+                          </span>
+                        </div>
+                      </ng-container>
 
 
-
-                  </ng-container>
-                </td>
-              </tr>
-            </ng-template>
-
-            <!-- empty/search states -->
-            <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="4" style="text-align: center; padding: 20px;">
-                  <div style="color: #6c757d; font-size: 15px;">
-                    <ng-container *ngIf="productClause.length === 0">
-
-                      {{'gis.quotation.no_clause_available_click_on_add' | translate}}
-                    </ng-container>
-                    <ng-container *ngIf="productClause.length > 0">
-                      {{'gis.quotation.no_clauses_found_matching_your_search' | translate}}
 
                     </ng-container>
-                  </div>
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
+                  </td>
+                </tr>
+              </ng-template>
 
-          <!-- add clause modal -->
-          <div class="modal fade" id="addClause" tabindex="-1" aria-labelledby="addClauseLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
-              <div class="modal-content ps-4 pt-2 pe-4">
-                <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
-                  <p class="modal-title" id="addClauseLabel" style="color: #00529B; font-weight:600; font-size:20px;">
-                    {{ 'gis.quotation.add_product_cluase' | translate }}
-                  </p>
-                  <button type="button" class="btn-close custom-close" data-bs-dismiss="modal"
-                    aria-label="Close"></button>
-                </div>
+              <!-- empty/search states -->
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td [attr.colspan]="productClauseColumns.length">
+                    <div style="color: #6c757d; font-size: 15px;">
+                      <ng-container *ngIf="productClause.length === 0">
 
-                <div class="row mt-3">
-                  <div *ngIf="nonMandatoryProductClause && nonMandatoryProductClause.length === 0"
-                    class="text-center p-4">
-                    <div style="color: #6c757d; font-size: 16px;">
-                      <i class="pi pi-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                      <p>
-                        {{ 'gis.quotation.no_additional_clauses_are_available_to_add' | translate }}
-                      </p>
+                        {{'gis.quotation.no_clause_available_click_on_add' | translate}}
+                      </ng-container>
+                      <ng-container *ngIf="productClause.length > 0">
+                        {{'gis.quotation.no_clauses_found_matching_your_search' | translate}}
+
+                      </ng-container>
                     </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+
+            <!-- add clause modal -->
+            <div class="modal fade" id="addClause" tabindex="-1" aria-labelledby="addClauseLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+                <div class="modal-content ps-4 pt-2 pe-4">
+                  <div class="d-flex justify-content-between align-items-center rounded-3 mb-1 p-1">
+                    <p class="modal-title" id="addClauseLabel" style="color: #00529B; font-weight:600; font-size:20px;">
+                      {{ 'gis.quotation.add_product_cluase' | translate }}
+                    </p>
+                    <button type="button" class="btn-close custom-close" data-bs-dismiss="modal"
+                      aria-label="Close"></button>
                   </div>
 
-                  <p-table *ngIf="nonMandatoryProductClause && nonMandatoryProductClause.length > 0"
-                    #addProductClausesTable [value]="nonMandatoryProductClause" [rows]="5" [paginator]="true"
-                    selectionMode="multiple" [(selection)]="selectedClauses" stripedRows
-                    styleClass="p-datatable-striped" [rowsPerPageOptions]="[5, 10, 20]">
+                  <div class="row mt-3">
+                    <div *ngIf="nonMandatoryProductClause && nonMandatoryProductClause.length === 0"
+                      class="text-center p-4">
+                      <div style="color: #6c757d; font-size: 16px;">
+                        <i class="pi pi-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>
+                          {{ 'gis.quotation.no_additional_clauses_are_available_to_add' | translate }}
+                        </p>
+                      </div>
+                    </div>
 
-                    <ng-template pTemplate="header">
-                      <tr>
-                        <th class="flexible-header1" style="width: 3%"><p-tableHeaderCheckbox /></th>
-                        <th class="flexible-header1" style="width: 30%" pSortableColumn="id">
+                    <p-table *ngIf="nonMandatoryProductClause && nonMandatoryProductClause.length > 0"
+                      #addProductClausesTable [value]="nonMandatoryProductClause" [rows]="5" [paginator]="true"
+                      selectionMode="multiple" [(selection)]="selectedClauses" stripedRows
+                      styleClass="p-datatable-striped" [rowsPerPageOptions]="[5, 10, 20]">
 
-                          {{ 'gis.quotation.id' | translate }}
-                          <p-sortIcon field="code" />
-                        </th>
-                        <th class="flexible-header1" style="width: 40%" pSortableColumn="heading">
-
-                          {{ 'gis.quotation.description' | translate }}
-                          <p-sortIcon field="code" />
-                        </th>
-                        <th></th>
-                      </tr>
-
-                    </ng-template>
-
-                    <ng-template pTemplate="body" let-clause let-columns="columns" let-rowIndex="rowIndex">
-                      <ng-container *ngIf="rowIndex === 0">
+                      <ng-template pTemplate="header">
                         <tr>
+                          <th class="flexible-header1" style="width: 3%"><p-tableHeaderCheckbox /></th>
+                          <th class="flexible-header1" style="width: 30%" pSortableColumn="id">
+
+                            {{ 'gis.quotation.id' | translate }}
+                            <p-sortIcon field="code" />
+                          </th>
+                          <th class="flexible-header1" style="width: 40%" pSortableColumn="heading">
+
+                            {{ 'gis.quotation.description' | translate }}
+                            <p-sortIcon field="code" />
+                          </th>
+                          <th></th>
+                        </tr>
+                        <tr class="filter-row">
                           <td></td>
                           <td>
                             <input type="text" class="form-control form-control-sm"
@@ -991,145 +1019,134 @@
                             <input type="text" class="form-control form-control-sm"
                               (input)="filterByAddHeading($event)">
                           </td>
-
-                          <td></td>
                         </tr>
-                      </ng-container>
-                      <tr>
-                        <td style="max-width: 10px; min-width: 10px;">
-                          <p-tableCheckbox [value]="clause" />
-                        </td>
-                        <td>{{ clause.shortDescription }}</td>
-                        <td>{{ clause.heading }}</td>
-                      </tr>
-                    </ng-template>
-                  </p-table>
-                </div>
 
-                <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
-                  <button type="button" class="btn" data-bs-dismiss="modal" [disabled]="!selectedClauses?.length"
-                    style="background-color: #00529B;color:white;text-decoration: none;" (click)="addProductClauses()">
-                    {{ 'gis.quotation.save' | translate }}
-                  </button>
-                  <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
-                    style="text-decoration: none;" (click)="closeClauseModal()">
-                    {{ 'gis.quotation.cancel' | translate }}
-                  </button>
+                      </ng-template>
+
+                      <ng-template pTemplate="body" let-clause let-columns="columns" let-rowIndex="rowIndex">
+
+                        <tr>
+                          <td style="max-width: 10px; min-width: 10px;">
+                            <p-tableCheckbox [value]="clause" />
+                          </td>
+                          <td>{{ clause.shortDescription }}</td>
+                          <td>{{ clause.heading }}</td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+
+                  <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+                    <button type="button" class="btn" data-bs-dismiss="modal" [disabled]="!selectedClauses?.length"
+                      style="background-color: #00529B;color:white;text-decoration: none;"
+                      (click)="addProductClauses()">
+                      {{ 'gis.quotation.save' | translate }}
+                    </button>
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                      style="text-decoration: none;" (click)="closeClauseModal()">
+                      {{ 'gis.quotation.cancel' | translate }}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-         <!-- edit clause modal -->
-<div class="modal fade" id="editClause">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content p-4">
+            <!-- edit clause modal -->
+            <div class="modal fade" id="editClause">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content p-4">
 
-      <!-- Header -->
-      <div class="d-flex justify-content-between align-items-center rounded-3 mb-2">
-        <p class="modal-title text-primary fw-semibold fs-5 mb-0">
-          {{ 'gis.quotation.edit_clause' | translate }}
-        </p>
-        <button type="button"
-                data-bs-dismiss="modal"
-                class="btn p-0 text-danger fw-bold border-0">X</button>
-      </div>
+                  <!-- Header -->
+                  <div class="d-flex justify-content-between align-items-center rounded-3 mb-2">
+                    <p class="modal-title text-primary fw-semibold fs-5 mb-0">
+                      {{ 'gis.quotation.edit_clause' | translate }}
+                    </p>
+                    <button type="button" data-bs-dismiss="modal"
+                      class="btn p-0 text-danger fw-bold border-0">X</button>
+                  </div>
 
-      <!-- ID + Heading -->
-      <div class="row g-3 text-black">
-        <div class="col-md-4 d-flex flex-column">
-          <label for="id">ID</label>
-          <input type="text"
-                 class="form-control bg-light"
-                 [value]="selectedProductClause.shortDescription"
-                 readonly>
-        </div>
+                  <!-- ID + Heading -->
+                  <div class="row g-3 text-black">
+                    <div class="col-md-4 d-flex flex-column">
+                      <label for="id">ID</label>
+                      <input type="text" class="form-control bg-light" [value]="selectedProductClause.shortDescription"
+                        readonly>
+                    </div>
 
-        <div class="col-md-8 d-flex flex-column">
-          <label for="heading">Heading</label>
-          <input class="form-control bg-light text-truncate"
-                 [value]="selectedProductClause.heading"
-                 pTooltip="{{ selectedProductClause.heading }}"
-                 readonly>
-        </div>
-      </div>
+                    <div class="col-md-8 d-flex flex-column">
+                      <label for="heading">Heading</label>
+                      <input class="form-control bg-light text-truncate" [value]="selectedProductClause.heading"
+                        pTooltip="{{ selectedProductClause.heading }}" readonly>
+                    </div>
+                  </div>
 
-      <!-- Wording -->
-      <div class="mt-4">
-        <label class="text-dark" for="comment">Wording</label>
-        <textarea rows="5"
-                  pTextarea
-                  [(ngModel)]="selectedProductClause.wording"
-                  class="form-control"
-                  style="min-height:130px;"></textarea>
-      </div>
+                  <!-- Wording -->
+                  <div class="mt-4">
+                    <label class="text-dark" for="comment">Wording</label>
+                    <textarea rows="5" pTextarea [(ngModel)]="selectedProductClause.wording" class="form-control"
+                      style="min-height:130px;"></textarea>
+                  </div>
 
-      <!-- Footer buttons -->
-      <div class="d-flex justify-content-end gap-3 mt-4">
-        <button #closeReassignButton type="button"
-                data-bs-dismiss="modal"
-                style="display:none;"></button>
-
-      
-
-        <button type="button"
-                class="btn btn-outline-primary"
-                data-bs-dismiss="modal">
-          {{ 'gis.quotation.cancel' | translate }}
-        </button>
-
-          <button type="button"
-                class="btn btn-primary"
-                (click)="editClause()"
-                [disabled]="!wasModified()"
-                data-bs-dismiss="modal">
-          {{ 'gis.quotation.save_changes' | translate }}
-        </button>
-      </div>
-
-    </div>
-  </div>
-</div>
+                  <!-- Footer buttons -->
+                  <div class="d-flex justify-content-end gap-3 mt-4">
+                    <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display:none;"></button>
 
 
-          <!-- delete clause modal -->
-          <div class="modal fade" id="deleteClause">
-            <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
-              <div class="modal-content ps-4 pt-2 pe-4">
-                <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
-                  <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-                    {{ 'gis.quotation.delete_clause' | translate }}</p>
-                  <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
-                    style="border: none;">X
-                  </button>
-                </div>
 
-                <div class="d-flex justify-content-between text-black">
-                  <p>
-                    {{ 'gis.quotation.are_you_sure_you_want_to_delete_this_clause' | translate }}?
-                  </p>
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                      {{ 'gis.quotation.cancel' | translate }}
+                    </button>
+
+                    <button type="button" class="btn btn-primary" (click)="editClause()" [disabled]="!wasModified()"
+                      data-bs-dismiss="modal">
+                      {{ 'gis.quotation.save_changes' | translate }}
+                    </button>
+                  </div>
 
                 </div>
-
-                <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
-                  <button type="button" class="btn" data-bs-dismiss="modal"
-                    style="background-color: #00529B;color:white;text-decoration: none;"
-                    (click)="deleteProductClause()">
-                    {{ 'gis.quotation.delete' | translate }}
-                  </button>
-                  <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
-                    style="text-decoration: none;">{{
-                    'gis.quotation.cancel' | translate
-                    }}
-                  </button>
-                </div>
-
               </div>
             </div>
 
+
+            <!-- delete clause modal -->
+            <div class="modal fade" id="deleteClause">
+              <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+                <div class="modal-content ps-4 pt-2 pe-4">
+                  <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+                    <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                      {{ 'gis.quotation.delete_clause' | translate }}</p>
+                    <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                      style="border: none;">X
+                    </button>
+                  </div>
+
+                  <div class="d-flex justify-content-between text-black">
+                    <p>
+                      {{ 'gis.quotation.are_you_sure_you_want_to_delete_this_clause' | translate }}?
+                    </p>
+
+                  </div>
+
+                  <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                      style="background-color: #00529B;color:white;text-decoration: none;"
+                      (click)="deleteProductClause()">
+                      {{ 'gis.quotation.delete' | translate }}
+                    </button>
+                    <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                      style="text-decoration: none;">{{
+                      'gis.quotation.cancel' | translate
+                      }}
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+
           </div>
-
-
         </div>
       </div>
 
@@ -1209,6 +1226,74 @@
     </div>
   </div>
 
+  <!-- Agent Modal -->
+  <div id="searchAgent" *ngIf="showAgentSearchModal" class="modal fade show" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="width:700px">
+      <div class="modal-content">
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+          <h5 class="modal-title mt-2 mb-2" id="editOtherDetailsLabel">
+            Select agent
+            <button type="button" class="btn-close float-end red-close" aria-label="Close"
+              (click)="showAgentSearchModal = false"></button>
+          </h5>
+
+          <p-table #selectAgentTable [value]="agents" [tableStyle]="{'min-width': '300px'}" [rows]="5"
+            [paginator]="agents?.length > 10" selectionMode="single" dataKey="id" [rowsPerPageOptions]="[5, 10, 20]"
+            [(selection)]="selectedAgent">
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="flexible-header1" style="width: 30%" pSortableColumn="id">
+
+                  Id
+                  <p-sortIcon field="id" />
+                </th>
+                <th class="flexible-header1" style="width: 40%" pSortableColumn="name">
+                  Name <p-sortIcon field="name" />
+                </th>
+                <th class="flexible-header1" style="width: 40%" pSortableColumn="accountType">
+                  Intermediary type<p-sortIcon field="accountType" />
+                </th>
+              </tr>
+              <tr class=" filter-row mb-5 mt-5">
+                <td>
+                  <input type="text" class="form-control form-control-sm" (input)="filterById($event)">
+                </td>
+                <td>
+                  <input type="text" class="form-control form-control-sm" (input)="filterByAgentName($event)">
+                </td>
+                <td>
+                  <input type="text" class="form-control form-control-sm" (input)="filterByIntermediaryType($event)">
+                </td>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-agent let-rowIndex="rowIndex">
+
+              <tr [class.p-highlight]="agent === selectedAgent" [pSelectableRow]="agent" class="point">
+
+                <td>{{ agent.id }}</td>
+                <td>{{ agent.name |sentenceCase }}</td>
+                <td>{{ agent.accountType |sentenceCase }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div> <!-- Modal Footer -->
+        <div class="mt-4 mb-4 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-outline-primary" (click)="showAgentSearchModal = false"
+            id="cancelDetails">
+            {{ 'gis.quotation.cancel' | translate }}
+          </button>
+          <button type="button" class="btn btn-primary" id="saveDetails" (click)="saveAgent(selectedAgent)">
+            {{ 'gis.quotation.save' | translate }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
   <div class="float-end mb-4">
 
