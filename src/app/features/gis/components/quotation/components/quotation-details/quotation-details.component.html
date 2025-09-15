@@ -243,6 +243,9 @@
                 <ng-container [ngSwitch]="field.type">
 
                   <ng-container *ngSwitchCase="'select'">
+                  
+
+
 
 
                     <!-- PAYMENT FREQUENCY -->
@@ -267,13 +270,28 @@
                       </div>
                     </ng-container>
                   </ng-container>
+
                   <ng-container *ngSwitchCase="'text'">
+                       
+                      <textarea *ngIf="field.name === 'internalComments'" rows="3" class="form-control"[formControlName]="field.name" style="overflow-y:auto; overflow-x:auto; white-space:pre;"
+>
 
+                      </textarea>
+                     <textarea *ngIf="field.name === 'externalComments'" rows="3" class="form-control"[formControlName]="field.name" style="overflow-y:auto; overflow-x:auto; white-space:pre;"
+>
 
-                    <input type="text" id="quote-input" class="form-control form-control-sm"
+                      </textarea>
+                      <input *ngIf="field.name !== 'internalComments' && field.name !== 'externalComments'" type="text" id="quote-input" class="form-control form-conttrol-sm"
                       [formControlName]="field.name">
 
-                  </ng-container>
+                      
+
+                     </ng-container>
+
+                     
+
+
+                    
                 </ng-container>
               </div>
             </div>
@@ -349,7 +367,9 @@
 
       <!-- product table  -->
       <div class="collapse" [ngClass]="{'show': showProducts}" id="collapseProduct">
-        <p-table [value]="productDetails" dataKey="productCode.code" editMode="row"
+        <p-table [value]="productDetails" dataKey="productCode.code" editMode="row" [paginator]="productDetails?.length > 10" [rowsPerPageOptions]="[2, 3, 5]"
+
+       [rows]="3"
           [tableStyle]="{'min-width': '50rem','table-layout': 'fixed'}">
 
           <!-- Table Header -->
@@ -808,8 +828,9 @@
         </div>
 
         <div class="collapse mb-4" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
-          <p-table #productClauseTable [value]="sessionClauses " [rows]="3" [rowsPerPageOptions]="[3, 10, 20]"
-            [paginator]="true" styleClass="p-datatable-striped">
+          <p-table #productClauseTable [value]="sessionClauses " [paginator]="sessionClauses?.length > 10" [rowsPerPageOptions]="[2, 3, 5]"
+
+       [rows]="3" styleClass="p-datatable-striped">
 
             <!-- Table Header -->
             <ng-template pTemplate="header">
@@ -999,57 +1020,77 @@
             </div>
           </div>
 
-          <!-- edit clause modal -->
-          <div class="modal fade" id="editClause">
-            <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
-              <div class="modal-content ps-4 pt-2 pe-4">
-                <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
-                  <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-                    {{ 'gis.quotation.edit_clause' | translate }}</p>
-                  <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
-                    style="border: none;">X
-                  </button>
-                </div>
+         <!-- edit clause modal -->
+<div class="modal fade" id="editClause">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-4">
 
-                <div class="d-flex justify-content-between text-black">
-                  <div class="d-flex flex-column bg-gray-300 w-25">
-                    <label for="id"> {{ 'gis.quotation.id' | translate }}</label>
-                    <input type="text" [value]=" selectedProductClause.shortDescription" pInputText
-                      style="background-color:rgb(215, 212, 212); width:18vw" readonly>
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center rounded-3 mb-2">
+        <p class="modal-title text-primary fw-semibold fs-5 mb-0">
+          {{ 'gis.quotation.edit_clause' | translate }}
+        </p>
+        <button type="button"
+                data-bs-dismiss="modal"
+                class="btn p-0 text-danger fw-bold border-0">X</button>
+      </div>
 
-                  </div>
-                  <div class="d-flex flex-column w-50 ">
-                    <label for="heading"> {{ 'gis.quotation.heading' | translate }}</label>
-                    <input class="bg-gray-300" pInputText [value]=" selectedProductClause.heading | truncate:4"
-                      pTooltip="{{  selectedProductClause.heading }}"
-                      style="background-color:rgb(215, 212, 212); width:20vw; z-index:auto" readonly>
-                  </div>
-                </div>
+      <!-- ID + Heading -->
+      <div class="row g-3 text-black">
+        <div class="col-md-4 d-flex flex-column">
+          <label for="id">ID</label>
+          <input type="text"
+                 class="form-control bg-light"
+                 [value]="selectedProductClause.shortDescription"
+                 readonly>
+        </div>
 
-                <div class="d-flex flex-column mt-5">
-                  <label class="text-dark mt-0" for="comment">{{ 'gis.quotation.wording' | translate }}</label>
-                  <textarea rows="5" pTextarea [(ngModel)]=" selectedProductClause.wording"
-                    class="p-inputtextarea w-full" style="border: 1px solid #ced4da;min-height: 130px">
-              </textarea>
-                </div>
+        <div class="col-md-8 d-flex flex-column">
+          <label for="heading">Heading</label>
+          <input class="form-control bg-light text-truncate"
+                 [value]="selectedProductClause.heading"
+                 pTooltip="{{ selectedProductClause.heading }}"
+                 readonly>
+        </div>
+      </div>
 
-                <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
-                  <button #closeReassignButton type="button" data-bs-dismiss="modal" style="display: none;"></button>
-                  <button type="button" class="btn" data-bs-dismiss="modal"
-                    style="background-color: #00529B;color:white;text-decoration: none;" (click)="editClause()"
-                    [disabled]="!wasModified()">{{ 'gis.quotation.save_changes' | translate }}
-                  </button>
-                  <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
-                    style="text-decoration: none;">{{
-                    'gis.quotation.cancel' | translate
-                    }}
-                  </button>
-                </div>
+      <!-- Wording -->
+      <div class="mt-4">
+        <label class="text-dark" for="comment">Wording</label>
+        <textarea rows="5"
+                  pTextarea
+                  [(ngModel)]="selectedProductClause.wording"
+                  class="form-control"
+                  style="min-height:130px;"></textarea>
+      </div>
 
-              </div>
-            </div>
+      <!-- Footer buttons -->
+      <div class="d-flex justify-content-end gap-3 mt-4">
+        <button #closeReassignButton type="button"
+                data-bs-dismiss="modal"
+                style="display:none;"></button>
 
-          </div>
+      
+
+        <button type="button"
+                class="btn btn-outline-primary"
+                data-bs-dismiss="modal">
+          {{ 'gis.quotation.cancel' | translate }}
+        </button>
+
+          <button type="button"
+                class="btn btn-primary"
+                (click)="editClause()"
+                [disabled]="!wasModified()"
+                data-bs-dismiss="modal">
+          {{ 'gis.quotation.save_changes' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
           <!-- delete clause modal -->
           <div class="modal fade" id="deleteClause">
