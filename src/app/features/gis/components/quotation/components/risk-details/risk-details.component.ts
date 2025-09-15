@@ -415,15 +415,16 @@ export class RiskDetailsComponent {
     this.quoteProductCode = sessionStorage.getItem('newQuotationProductCode');
     const savedSubclass = sessionStorage.getItem('selectedSubclassCode');
 
-    if (savedSubclass) {
-      this.selectedSubclassCode = savedSubclass;
-      this.loadExcesses();
-    }
+    // if (savedSubclass) {
+    //   this.selectedSubclassCode = savedSubclass;
+    //   this.loadExcesses();
+    // }
     this.fetchAddedLimitsOfLiability();
     this.initializePerilDetails();
     this.initializePerils();
     this.loadAddedClauses();
     this.getAddedExcesses();
+    this.loadExcesses();
     this.loadPersistedRiskClauses();
     if (this.selectedSubclassCode) {
       this.loadLimitsOfLiability();
@@ -551,18 +552,18 @@ export class RiskDetailsComponent {
   }
 
   setSectionToDelete(section: any) {
-  this.sectionToDelete = section;
-  log.debug("Section to delete", this.sectionToDelete);
-}
+    this.sectionToDelete = section;
+    log.debug("Section to delete", this.sectionToDelete);
+  }
 
-confirmDelete() {
-  if (this.sectionToDelete) {
-    const sectionId = this.sectionToDelete.code; // ✅ use code
-    if (sectionId) {
-      this.deleteRiskSection(sectionId);
+  confirmDelete() {
+    if (this.sectionToDelete) {
+      const sectionId = this.sectionToDelete.code; // ✅ use code
+      if (sectionId) {
+        this.deleteRiskSection(sectionId);
+      }
     }
   }
-}
 
   fetchQuotationDetails(quotationCode: number) {
     log.debug("Quotation Number tot use:", quotationCode)
@@ -624,6 +625,8 @@ confirmDelete() {
             this.showOtherSscheduleDetails = false;
 
           }
+          this.getAddedExcesses();
+          this.loadExcesses();
 
 
         },
@@ -2991,29 +2994,29 @@ confirmDelete() {
   }
 
 
-deleteRiskSection(riskSectionCode: number) {
-  log.debug("selected risk section code", riskSectionCode);
+  deleteRiskSection(riskSectionCode: number) {
+    log.debug("selected risk section code", riskSectionCode);
 
-  if (riskSectionCode) {
-    this.quotationService.deleteRiskSections(riskSectionCode).subscribe({
-      next: (response: any) => {
-        log.debug("Response after deleting a risk section ", response);
-        this.globalMessagingService.displaySuccessMessage('Success', 'Risk section deleted successfully');
+    if (riskSectionCode) {
+      this.quotationService.deleteRiskSections(riskSectionCode).subscribe({
+        next: (response: any) => {
+          log.debug("Response after deleting a risk section ", response);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Risk section deleted successfully');
 
-        // ✅ filter by code
-        this.sectionDetails = this.sectionDetails.filter(
-          (section) => section.code !== this.sectionToDelete.code
-        );
+          // ✅ filter by code
+          this.sectionDetails = this.sectionDetails.filter(
+            (section) => section.code !== this.sectionToDelete.code
+          );
 
-        this.sectionToDelete = null;
-      },
-      error: (error) => {
-        log.debug("error when deleting a risk section", error);
-        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-      }
-    });
+          this.sectionToDelete = null;
+        },
+        error: (error) => {
+          log.debug("error when deleting a risk section", error);
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        }
+      });
+    }
   }
-}
 
 
   onResize(event: any) {
@@ -4159,7 +4162,7 @@ deleteRiskSection(riskSectionCode: number) {
   }
 
   fetchAddedLimitsOfLiability(): void {
-    log.debug("FETCH added limits of liability called ")
+    log.debug("FETCH added limits of liability called ");
     if (!this.selectedSubclassCode || !this.quoteProductCode) {
       log.debug('Subclass code or quote product code missing');
       return;
@@ -4169,13 +4172,33 @@ deleteRiskSection(riskSectionCode: number) {
       .getAddedLimitsOfLiability(this.selectedSubclassCode, this.quoteProductCode, 'L')
       .subscribe({
         next: (response) => {
-          this.addedLimitsOfLiability = response._embedded;
-          log.debug("QUOATION LIMITS OF LIABILITY", this.addedLimitsOfLiability);
+          this.addedLimitsOfLiability = response._embedded || [];
+          log.debug("QUOTATION LIMITS OF LIABILITY", this.addedLimitsOfLiability);
 
-          this.setLimitsOfLiabilityColumns(this.addedLimitsOfLiability?.[0])
+          const cacheKey = `limits_of_liability_${this.selectedRiskCode}`;
+          const originalCacheKey = `original_limits_of_liability_${this.selectedRiskCode}`;
+          const originalData = sessionStorage.getItem(originalCacheKey);
+
+          let availableLimits: any[] = [];
+          if (originalData) {
+            const originalLimits = JSON.parse(originalData);
+
+            availableLimits = originalLimits.filter(
+              (lim: any) => !this.addedLimitsOfLiability.some(al => al.quotationValueCode === lim.code)
+            );
+          }
+
+          this.limitsOfLiability = availableLimits;
+          sessionStorage.setItem(cacheKey, JSON.stringify(this.limitsOfLiability));
+
           const addedCacheKey = `added_limits_of_liability_${this.selectedRiskCode}`;
-          sessionStorage.setItem(addedCacheKey, JSON.stringify(response._embedded));
+          sessionStorage.setItem(addedCacheKey, JSON.stringify(this.addedLimitsOfLiability));
 
+          if (this.addedLimitsOfLiability.length > 0) {
+            this.setLimitsOfLiabilityColumns(this.addedLimitsOfLiability[0]);
+          }
+
+          this.cdr.detectChanges();
         },
         error: (err) => {
           log.debug('Error fetching limits of liability (L):', err);
@@ -4393,11 +4416,28 @@ deleteRiskSection(riskSectionCode: number) {
       .subscribe({
         next: (res) => {
           this.addedExcessess = res._embedded ? [...res._embedded] : [];
+
+          const cacheKey = `excesses_${this.selectedSubclassCode}`;
+          const originalCacheKey = `original_excesses_${this.selectedSubclassCode}`;
+          const originalData = sessionStorage.getItem(originalCacheKey);
+
+          let availableExcesses: any[] = [];
+          if (originalData) {
+            const originalExcesses = JSON.parse(originalData);
+            availableExcesses = originalExcesses.filter(
+              (ex: any) => !this.addedExcessess.some(ae => ae.quotationValueCode === ex.code)
+            );
+          }
+
+          this.excessesData = availableExcesses;
+          sessionStorage.setItem(cacheKey, JSON.stringify(this.excessesData));
+
           this.cdr.detectChanges();
         },
         error: (err) => log.debug('Error fetching added excesses', err)
       });
   }
+
 
   populateEditExcessModal(excess: any): void {
     this.selectedExcess = { ...excess };
