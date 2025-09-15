@@ -291,15 +291,32 @@
                   <tr (click)="handleProductClick(product)" [ngClass]="{ 'selected-row': selectedProduct === product }"
                     [pEditableRow]="product" class="hover:!bg-gray-50 !cursor-pointer transition-colors">
 
-                    <td *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header">
+                    <td *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header"
+                      [ngClass]="{ 'text-end': col.field === 'premium' || col.field === 'totalSumInsured' }">
 
                       <ng-container [ngSwitch]="col.field">
 
-                        <!-- Default: display dynamic value -->
-                        <ng-container *ngSwitchDefault>
+
+                        <!-- <ng-container *ngSwitchDefault>
                           {{ getCellValue(product, col.field) }}
                         </ng-container>
+                        <ng-container *ngIf="col.field === 'premium' || col.field === 'totalSumInsured'">
+                          {{ product[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.0-0' }}
+                        </ng-container> -->
 
+                        <ng-container *ngSwitchDefault>
+                          <ng-container *ngSwitchDefault>
+                            <ng-container
+                              *ngIf="col.field === 'premium' || col.field === 'totalSumInsured'; else defaultField">
+                              {{ product[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.0-0'
+                              }}
+                            </ng-container>
+                            <ng-template #defaultField>
+                              {{ product[col.field] }}
+                            </ng-template>
+                          </ng-container>
+
+                        </ng-container>
                       </ng-container>
                     </td>
                   </tr>
@@ -1823,7 +1840,7 @@
               style="border: none;">X</button>
           </div>
 
-          <div class="row mt-4" style="max-height: 350px;">
+          <div class="row mt-4" style="max-height: 280px;">
             <!-- Left side: reports list -->
             <div class="col-4 border-end overflow-auto" style="max-height: 350px; padding-right: 1rem;">
               <div *ngFor="let report of fetchedReports; let i = index" class="d-flex align-items-center mb-2">
@@ -1837,7 +1854,7 @@
                 </label>
 
                 <!-- Download / Print icons -->
-                <i class="pi pi-download ms-3 text-primary cursor-pointer" (click)="downloadReport(report)"
+                <i class="pi pi-download ms-3 text-primary cursor-pointer" (click)="downloadReports(selectedReports)"
                   pTooltip="Download" tooltipPosition="top" style="font-size: 13px;"></i>
 
                 <i class="pi pi-print ms-2 text-primary cursor-pointer" (click)="printReport(report)" pTooltip="Print"
@@ -1902,7 +1919,7 @@
               <form [formGroup]="viewDocForm">
                 <div class="row mb-3">
                   <div class="col-md-6">
-                    <label>Email address <span class="text-danger">*</span></label>
+                    <label class="quote-label">Email address <span class="text-danger">*</span></label>
                     <input pInputText type="email" class="form-control" formControlName="to" />
                     <div *ngIf="viewDocForm.get('to')?.invalid && viewDocForm.get('to')?.touched"
                       class="text-danger small">
@@ -1910,24 +1927,24 @@
                     </div>
                   </div>
                   <div class="col-md-6">
-                    <label>CC</label>
+                    <label class="quote-label">CC</label>
                     <input pInputText type="email" class="form-control" formControlName="cc" />
                   </div>
                 </div>
 
                 <div class="row mb-3">
                   <div class="col-md-6">
-                    <label>BCC</label>
+                    <label class="quote-label">BCC</label>
                     <input pInputText type="email" class="form-control" formControlName="bcc" />
                   </div>
                   <div class="col-md-6">
-                    <label>Subject</label>
+                    <label class="quote-label">Subject</label>
                     <input pInputText type="text" class="form-control" formControlName="subject" />
                   </div>
                 </div>
 
                 <div class="mb-3">
-                  <label>Wording</label>
+                  <label class="quote-label">Wording</label>
                   <textarea pInputTextarea class="form-control" rows="3" formControlName="wording"></textarea>
                 </div>
               </form>
@@ -1938,13 +1955,12 @@
           <div class="d-flex justify-content-between align-items-center">
             <!-- Left buttons -->
             <div class="d-flex">
-              <button type="button" class="btn btn-outline-primary btn-sm me-3 text-muted"
-                (click)="printReport(selectedReports)" disabled>
+              <button type="button" class="btn btn-outline-primary btn-sm me-3  btn-greyed-out"
+                pTooltip="Feature under development">
                 Print
               </button>
 
-              <button type="button" class="btn btn-outline-primary btn-sm text-muted"
-                (click)="downloadReport(selectedReports)" disabled>
+              <button type="button" class="btn btn-outline-primary btn-sm " (click)="downloadReports(selectedReports)">
                 Download
               </button>
             </div>

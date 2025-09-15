@@ -826,3 +826,11 @@ textarea {
   color: #495057;
   cursor: pointer;
 }
+
+.btn-greyed-out {
+  opacity: 0.6;
+  cursor: pointer;
+  /* Optional: make it look more like disabled state */
+  color: #6c757d !important;
+  border-color: #6c757d !important;
+}

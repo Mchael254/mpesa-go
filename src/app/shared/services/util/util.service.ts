@@ -18,8 +18,8 @@ import { HttpParams } from "@angular/common/http";
 import { DatePipe } from "@angular/common";
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { BehaviorSubject } from "rxjs";
-import {Logger} from "../logger/logger.service";
-import {ConfigFormFieldsDto} from "../../data/common/dynamic-screens-dto";
+import { Logger } from "../logger/logger.service";
+import { ConfigFormFieldsDto } from "../../data/common/dynamic-screens-dto";
 
 // import { format, subYears } from 'date-fns';
 
@@ -716,7 +716,7 @@ export class UtilService {
       'insuredCode',
       'binderList',
       'allClausesMap',
-      'productFormDetails',
+      'productFormDetails', 'availableProducts',
       'quotation_branch', 'riskClauseMap', 'selectedRiskCode',
       'quotation_currency', 'sumInsured',
       'riskFormDetails', 'SelectedClientName', 'quotationForm', 'quotationPayload',

@@ -2,7 +2,47 @@
 <div class=" mx-4 mt-n1">
   <div class="card mb-3" style=" position: relative;">
     <div class="card-body">
-      <p-table [value]="gisQuotationList" [paginator]="true" [rows]="15" [scrollable]="true"
+      <div class="row mb-2">
+        <div class="col-7">
+          <!-- <div>
+                  <div class="row">
+                    <div class="col-8">
+                      <div class="input-group mb-3" style="font-size: 15px">
+                        <span class="input-group-text" id="basic-addon1">
+                          <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input style="font-size: 12px !important" type="text" class="form-control" placeholder="Search"
+                          aria-label="Username" aria-describedby="basic-addon1" />
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="input-group mb-3">
+                        <label class="input-group-text" for="inputGroupSelect01" style="font-size: 11px !important">Sort
+                          by:</label>
+                        <select style="font-size: 11px;" class="form-select" id="inputGroupSelect01">
+                          <option selected>
+                            Status
+                          </option>
+                          <option></option>
+        
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div> -->
+        </div>
+
+        <div class="col-5">
+          <div class="d-flex justify-content-end">
+            <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary"
+              (click)="createQuote('QUICK')">Quick Quotation</button>
+            <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary"
+              (click)="createQuote('NORMAL')"> Normal Quotation </button>
+
+          </div>
+        </div>
+      </div>
+      <p-table [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true"
         scrollDirection="horizontal" [showCurrentPageReport]="true" [tableStyle]="{'max-width': '150rem'}"
         currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
         [resizableColumns]="true" [reorderableColumns]="true">
@@ -41,12 +81,12 @@
             </th>
           </tr>
 
-          <tr class="mb-5 mt-5">
-            <th style="background-color: #ffffff;">
+          <tr class=" filter-row mb-5 mt-5">
+            <td class="me-1" style="background-color: #ffffff;">
               <input type="text" class="form-control" style="width: 100%;" (keyup.enter)="fetchGISQuotations();"
                 (input)="inputQuotationNo($event)">
-            </th>
-            <th style="background-color: #ffffff;">
+            </td>
+            <td class="me-1" style="background-color: #ffffff;">
               <div class="position-relative">
                 <input type="text" id="quote-input" class="form-select form-control custom-select" style="width: 100%;"
                   [value]="displayClientName" (click)="openClientSearchModal()" readonly
@@ -66,8 +106,8 @@
                   (onClickSaveClient)="onClientSelected($event)" (modalClosed)="isClientSearchModalVisible = false">
                 </app-client-search-modal>
               </div>
-            </th>
-            <th style="background-color: #ffffff;">
+            </td>
+            <td style="background-color: #ffffff;">
               <div class="position-relative">
                 <input type="text" id="quote-input" class="form-select form-control custom-select" style="width: 100%;"
                   [value]="displayAgentName" data-bs-toggle="modal" data-bs-target="#agentSearchModal" readonly
@@ -83,32 +123,43 @@
                 <!-- Agent Search Modal Component -->
                 <app-agent-search-modal (agentSelected)="onAgentSelected($event)"></app-agent-search-modal>
               </div>
-            </th>
-            <th style="background-color: #ffffff;">
-              <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
+            </td>
+            <td style="background-color: #ffffff;">
+              <!-- <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
                 [showIcon]="true" [showButtonBar]="true" [minDate]="minDate" (onSelect)="onDateFromInputChange($event)"
                 (onClear)="clearDateFilters()" appendTo="body" (keyup.enter)="fetchGISQuotations();"
                 [style]="{'width': '100%'}">
+              </p-calendar> -->
+              <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
+                [showIcon]="true" [showButtonBar]="true" [minDate]="minDate" (onSelect)="onDateFromInputChange($event)"
+                (onClear)="clearDateFilters()" appendTo="body" (keyup.enter)="fetchGISQuotations()"
+                styleClass="calendar-input w-100">
               </p-calendar>
-            </th>
-            <th style="background-color: #ffffff;">
-              <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat" [showIcon]="true"
+
+            </td>
+            <td style="background-color: #ffffff;">
+              <!-- <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat" [showIcon]="true"
                 [showButtonBar]="true" [minDate]="minToDate" appendTo="body" (onSelect)="onDateToInputChange($event)"
                 (onClear)="clearDateFilters()" (keyup.enter)="fetchGISQuotations();" [style]="{'width': '100%'}">
+              </p-calendar> -->
+              <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat" [showIcon]="true"
+                [showButtonBar]="true" [minDate]="minToDate" (onSelect)="onDateToInputChange($event)"
+                (onClear)="clearDateFilters()" appendTo="body" (keyup.enter)="fetchGISQuotations()"
+                styleClass="calendar-input w-100">
               </p-calendar>
-            </th>
-            <th style="background-color: #ffffff;">
+            </td>
+            <td style="background-color: #ffffff;">
               <p-dropdown [options]="status" optionLabel="status" optionValue="status" [filter]="true" filterBy="status"
                 [(ngModel)]="selectedStatus" appendTo="body" [style]="{ 'width': '100%', 'height': '35px' }"
                 (onChange)="onStatusSelected($event.value)" (keyup.enter)="fetchGISQuotations();" [showClear]="true"
                 styleClass="custom-dropdown">
               </p-dropdown>
-            </th>
-            <th></th>
-            <th style="background-color: #ffffff;" class="text-end">
+            </td>
+            <td></td>
+            <td style="background-color: #ffffff;" class="text-end">
               <button type="button" class="btn btn-sm  btn-outline-primary" (click)="clearFilters();">{{
                 'gis.quotation.clear' | translate }}</button>
-            </th>
+            </td>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-quotation>
@@ -134,18 +185,24 @@
             </td>
           </tr>
         </ng-template>
+        <!-- Empty Message -->
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="1"></td>
-            <td colspan="10" style="padding:20px;padding-left: 340px;" id="empty">
-              {{'gis.quotation.no_data_to_display' | translate}}
+            <td [attr.colspan]="gisQuotationList.length" class="text-center p-4 text-muted">
+              <ng-container>
+
+                No quotations found
+              </ng-container>
+              <!-- <ng-container *ngIf="riskClauseTable.filteredValue?.length === 0 && sessionClauses?.length > 0">
+        
+                {{'gis.quotation.no_matching_clauses_found' | translate}}
+              </ng-container> -->
             </td>
           </tr>
         </ng-template>
       </p-table>
     </div>
   </div>
-</div>
 
-<br>
-<br><br><br><br>
+  <br>
+  <br><br><br><br>
