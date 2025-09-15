@@ -42,6 +42,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('productClauseTable') productClauseTable!: any;
   @ViewChild('addProductClausesTable') addProductClausesTable!: any;
   @ViewChild('selectIntroducerTable') selectIntroducerTable!: any;
+  @ViewChild('selectAgentTable') selectAgentTable!: any;
 
   @ViewChild('reassignTable') reassignTable!: any;
 
@@ -198,7 +199,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   groupUsers: GroupedUser[] = [];
   selectedGroupUserId!: number;
   groupLeaderName: string = '';
-
+  showAgentSearchModal = false;
+  selectedAgentName: string;
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -524,12 +526,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   toggleProductClauseColumns(iconElement: HTMLElement): void {
-    this.showProductClauses = !this.showProductClauses;
+
+    this.showProductClauses = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 160;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -957,8 +960,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         currencyCode: quotationFormValues.currency.id || this.defaultCurrency.id,
         source: quotationFormValues.source.code,
         currencyRate: this.exchangeRate,
-        agentShortDescription: this.agentDetails?.shortDesc || "Direct",
-        agentCode: 0,
+        agentShortDescription: this.selectedAgent?.shortDesc || "Direct",
+        agentCode: this.selectedAgent?.id || 0,
         clientCode: this.selectedClientCode,
         clientType: "I",
         wefDate: this.formatDate(this.productDetails[0].coverFrom),
@@ -1028,11 +1031,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       untilDestroyed(this)
     )
       .subscribe(data => {
-        this.agents = data.content.map(agent => ({
-          label: `${agent.name}`,
-          value: agent
-        }));
+        this.agents = data.content;
         log.debug("AGENTS", data)
+        log.debug("AGENTS", this.agents)
         this.marketerList = data.content.filter(agent => agent.accountTypeId == 10)
         log.debug("Marketer list", this.marketerList)
 
@@ -2133,14 +2134,33 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.showIntroducerSearchModal = false
   }
 
+  filterByAgentName(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectAgentTable.filter(input.value, 'name', 'contains');
+  }
+  filterById(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectAgentTable.filter(input.value, 'id', 'contains');
+  }
+  filterByIntermediaryType(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectAgentTable.filter(input.value, 'accountType', 'contains');
+  }
+  saveAgent(agent: any) {
+    log.debug("Selected Agent", agent)
+    this.selectedAgent = agent
+    this.selectedAgentName = agent.name
+    this.showAgentSearchModal = false
+  }
+
+
   toggleProducts(iconElement: HTMLElement): void {
     this.showProducts = true;
 
-
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2148,6 +2168,25 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     };
 
     this.showProductColumnModal = true;
+  }
+  dragging = false;
+  dragOffset = { x: 0, y: 0 };
+
+  onDragStart(event: MouseEvent): void {
+    this.dragging = true;
+    this.dragOffset.x = event.clientX - parseInt(this.columnModalPosition.left, 10);
+    this.dragOffset.y = event.clientY - parseInt(this.columnModalPosition.top, 10);
+  }
+
+  onDragMove(event: MouseEvent): void {
+    if (this.dragging) {
+      this.columnModalPosition.top = `${event.clientY - this.dragOffset.y}px`;
+      this.columnModalPosition.left = `${event.clientX - this.dragOffset.x}px`;
+    }
+  }
+
+  onDragEnd(): void {
+    this.dragging = false;
   }
 
 

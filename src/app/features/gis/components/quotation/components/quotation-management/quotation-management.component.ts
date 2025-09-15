@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { QuotationList, Status, StatusEnum } from '../../data/quotationsDTO';
-import { Logger } from '../../../../../../shared/services';
+import { Logger, UtilService } from '../../../../../../shared/services';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 import { Router } from '@angular/router';
 import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
@@ -73,6 +73,8 @@ export class QuotationManagementComponent {
     public quotationService: QuotationsService,
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
+    private utilService: UtilService,
+
   ) {
 
     this.menuItems = [];
@@ -436,4 +438,14 @@ export class QuotationManagementComponent {
   }
 
 
+  createQuote(type: string) {
+    this.utilService.clearSessionStorageData()
+    let nextPage = '/home/gis/quotation/quick-quote'
+    if (type === 'NORMAL') {
+      this.utilService.clearNormalQuoteSessionStorage()
+      nextPage = '/home/gis/quotation/quotation-details'
+    }
+    this.router.navigate([nextPage]).then(r => {
+    })
+  }
 }
