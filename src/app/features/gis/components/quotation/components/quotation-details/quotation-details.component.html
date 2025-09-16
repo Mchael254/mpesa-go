@@ -301,26 +301,15 @@
                     <input *ngIf="field.name !== 'internalComments' && field.name !== 'externalComments'" type="text"
                       id="quote-input" class="form-control form-conttrol-sm" [formControlName]="field.name">
 
-
-
                   </ng-container>
-
-
-
-
-
                 </ng-container>
               </div>
             </div>
           </ng-container>
         </div>
 
-
-
       </form>
-
-
-
+      
       <p class="more mt-4" (click)="toggleDetails()" style="cursor: pointer">
         {{ 'gis.quotation.show_more_details' | translate }}
         <span class="ml-1">
