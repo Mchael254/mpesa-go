@@ -28,6 +28,7 @@ import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel
 import { ClaimsService } from '../../../claim/services/claims.service';
 import * as bootstrap from 'bootstrap';
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
+import { Modal } from 'bootstrap';
 
 const log = new Logger('QuotationDetails');
 
@@ -271,9 +272,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("product Form details", this.productDetails)
   }
 
-
-
   ngOnInit(): void {
+    this.updateProductsFromQuickQuote();
+    this.checkProducts();
     this.getuser();
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
@@ -309,13 +310,24 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }
     });
 
-
-
-
     this.loadPersistedClauses();
     this.getUsers();
     this.getAgents();
 
+  }
+
+  ngOnChanges(): void {
+    this.checkProducts();
+    this.updateProductsFromQuickQuote();
+  }
+
+
+
+
+  checkProducts() {
+    if (this.productDetails && this.productDetails.length > 0) {
+      this.isProductClauseOpen = true;
+    }
   }
 
   ngAfterViewInit() {
@@ -1065,8 +1077,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.quotationForm.controls['agentCode'].setValue(this.agentDetails.name);*/
     /* this.agentService.getAgentById(data).subscribe({
        next: (res) => {
- 
- 
+   
+   
        }
      })*/
   }
@@ -1108,7 +1120,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     /* if (this.quotationType === "D") {
        this.quotationForm.controls['agentCode'].setValue(0);
        this.quotationForm.controls['agentShortDescription'].setValue("DIRECT")
-
+  
      } else if (this.quotationType === "I") {
        this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
      }*/
@@ -1249,10 +1261,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             const day = coverFromDate.getDate();
             const month = coverFromDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
             const year = coverFromDate.getFullYear();
-
+  
             // Format the date in 'dd-Month-yyyy' format
             const formattedDate = `${day}-${month}-${year}`;
-
+  
             this.coverToDate = formattedDate;
             log.debug('Cover to  Date', this.coverToDate);
             sessionStorage.setItem("selectedCoverToDate", this.formatDate(this.coverToDate))
@@ -1262,13 +1274,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           },
           error: (error: HttpErrorResponse) => {
             log.debug("Error log", error.error.message);
-
+  
             this.globalMessagingService.displayErrorMessage(
               'Error',
               error.error?.message
             );
           },
-
+  
         })
     }*/
   updateQuotationExpiryDate(date: any) {
@@ -1438,7 +1450,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
           log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
 
-          this.fetchUserOrgId()
+          this.fetchUserOrgId();
         }
         if (this.storedQuotationFormDetails?.currency) {
           const selectedCurrency = this.currency.find(currency => currency.id === this.storedQuotationFormDetails?.currency.id);
@@ -1551,6 +1563,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         if (this.quotationNumber) {
           this.quickQuoteDetails();
         }
+
+
       });
   }
 
@@ -1621,26 +1635,61 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   }
 
-  openAddProductModal(): void {
+  // openAddProductModal(): void {
+  //   const payloadString = sessionStorage.getItem('quickQuotePayload');
+  //   const productsString = sessionStorage.getItem('availableProducts');
+
+  //   const quickQuotePayload = JSON.parse(payloadString);
+  //   this.ProductDescriptionArray = JSON.parse(productsString);
+
+  //   const product = quickQuotePayload.products[0];
+
+  //   const matchingProduct = this.ProductDescriptionArray.find(
+  //     (p: any) => String(p.code) === String(product.code)
+  //   );
+
+  //   this.quotationProductForm.patchValue({
+  //     productCodes: matchingProduct || null,
+  //     wef: new Date(quickQuotePayload.effectiveDate),
+  //     wet: new Date(product.effectiveTo)
+  //   });
+
+  // }
+
+  updateProductsFromQuickQuote(): void {
     const payloadString = sessionStorage.getItem('quickQuotePayload');
     const productsString = sessionStorage.getItem('availableProducts');
 
+    if (!payloadString || !productsString) return;
+
     const quickQuotePayload = JSON.parse(payloadString);
-    this.ProductDescriptionArray = JSON.parse(productsString);
+    let availableProducts = JSON.parse(productsString);
 
-    const product = quickQuotePayload.products[0];
+    if (!quickQuotePayload?.products || !Array.isArray(quickQuotePayload.products)) {
+      return;
+    }
 
-    const matchingProduct = this.ProductDescriptionArray.find(
-      (p: any) => String(p.code) === String(product.code)
-    );
-
-    this.quotationProductForm.patchValue({
-      productCodes: matchingProduct || null,
-      wef: new Date(quickQuotePayload.effectiveDate),
-      wet: new Date(product.effectiveTo)
+    this.productDetails = quickQuotePayload.products.map((p: any) => {
+      return {
+        productCode: { code: p.code, description: p.productName || p.description },
+        productName: p.productName || p.description,
+        coverFrom: new Date(quickQuotePayload.effectiveDate),
+        coverTo: new Date(p.effectiveTo),
+        ...p
+      };
     });
 
+    const usedCodes = quickQuotePayload.products.map((p: any) => String(p.code));
+
+    availableProducts = availableProducts.filter(
+      (ap: any) => !usedCodes.includes(String(ap.code))
+    );
+
+    sessionStorage.setItem('availableProducts', JSON.stringify(availableProducts));
+        // this.getProductClause({ code: selectedProductCode });
   }
+
+
 
 
   onRowEditSave(product: any) {
@@ -1802,9 +1851,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.selectedRow = product;
     this.getProductClause(product.productCode);
   }
+
   onProductSelected(selectedProduct: any) {
     if (!selectedProduct) return;
-
 
     const today = new Date();
     const nextYear = new Date(today);
@@ -1920,55 +1969,65 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
 
-  onRowEditInits(product: any, index: any) {
-    this.clonedProducts[product.productCode.code] = { ...product };
-    this.selectedEditRowIndex = index;
+  // onRowEditInits(product: any, index: any) {
+  //   this.clonedProducts[product.productCode.code] = { ...product };
+  //   this.selectedEditRowIndex = index;
 
-    log.debug('Editing row:', product);
-  }
+  //   log.debug('Editing row:', product);
+  // }
 
-  onRowEditSaves(product: any) {
-    const coverFromDate = product.coverFrom;
-    const coverToDate = product.coverTo;
+  editIndex: number | null = null;
+  openEditProductModal(product: any, index: any) {
+    this.editIndex = index;
 
-    // If there's a pending product code from dropdown selection, finalize it
-    if (product._pendingProductCode) {
-      product.productCode = product._pendingProductCode;
-      product.productName = product._pendingProductCode.description;
-      delete product._pendingProductCode;
-    }
+    const productFormDetails = JSON.parse(sessionStorage.getItem('productFormDetails') || '[]');
+    const selectedProduct = productFormDetails.find(
+      (p: any) => String(p.productCode.code) === String(product.productCode.code)
+    )?.productCode;
 
-    // Ensure required values exist
-    if (coverFromDate && coverToDate && product.productCode?.code) {
-      product.coverFrom = new Date(coverFromDate);
-      product.coverTo = new Date(coverToDate);
-
-      // ✅ Update using row index instead of matching by productCode
-      if (this.selectedEditRowIndex !== undefined) {
-        this.productDetails[this.selectedEditRowIndex] = {
-          ...product,
-          productCode: { ...product.productCode }
-        };
+    if (selectedProduct) {
+      log.debug("selectedProduct", selectedProduct)
+      const exists = this.ProductDescriptionArray.some(
+        (p: any) => String(p.code) === String(selectedProduct.code)
+      );
+      if (!exists) {
+        this.ProductDescriptionArray = [...this.ProductDescriptionArray, selectedProduct];
       }
+    }
 
-      sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
-      log.debug("Saved to sessionStorage:", JSON.parse(sessionStorage.getItem('productFormDetails')));
+    this.quotationProductForm.patchValue({
+      productCodes: selectedProduct,
+      wef: new Date(product.coverFrom),
+      wet: new Date(product.coverTo),
+    });
+  }
 
-      delete this.clonedProducts[product.productCode.code];
-    } else {
-      // Optionally show validation errors
-      // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill in all required fields' });
+  editProduct() {
+    const formValue = this.quotationProductForm.value;
+
+    const updatedProduct = {
+      ...this.productDetails[this.editIndex],
+      productCode: formValue.productCodes,
+      productName: formValue.productCodes?.description,
+      coverFrom: new Date(formValue.wef),
+      coverTo: new Date(formValue.wet),
+    };
+
+    log.debug("updatedProducts", updatedProduct)
+    this.productDetails[this.editIndex] = updatedProduct;
+    sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+    this.closeEditProductModal();
+
+  }
+
+  closeEditProductModal() {
+    const modalEl = document.getElementById('editProduct');
+    if (modalEl) {
+      const modalInstance = Modal.getInstance(modalEl) || new Modal(modalEl);
+      modalInstance.hide();
     }
   }
 
-
-  onRowEditCancels(product: any, index: number) {
-    const code = product.productCode.code;
-    this.productDetails[index] = this.clonedProducts[code];
-    delete this.clonedProducts[code];
-
-    // this.messageService.add({ severity: 'info', summary: 'Cancelled', detail: 'Edit cancelled' });
-  }
 
   onProductChanges(event: any, rowIndex: number, product: any) {
     const selectedProduct = this.ProductDescriptionArray.find(p => p.code === event.code);

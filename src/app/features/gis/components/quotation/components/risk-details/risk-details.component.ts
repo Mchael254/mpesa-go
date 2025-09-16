@@ -1007,6 +1007,12 @@ export class RiskDetailsComponent {
     // If the date is already in the correct format or cannot be formatted, return it as is
     return date as string;
   }
+
+  sanitizeCurrency(raw: string): number {
+    const cleaned = raw.replace(/[^0-9]/g, '');
+    return Number(cleaned);
+  }
+
   onBinderSelected(event: any) {
     const selectedValue = event.value;
     log.debug("Selected value(On binder selected", selectedValue)

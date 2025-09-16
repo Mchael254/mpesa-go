@@ -348,7 +348,7 @@
 
           <div class="d-flex justify-content-center align-items-center">
             <button type="button" class="btn btn-primary btn-sm no-hover" data-bs-toggle="modal"
-              data-bs-target="#addProduct" title="Add Product" (click)="openAddProductModal()"> {{
+              data-bs-target="#addProduct" title="Add Product"> {{
               'gis.quotation.add_product' | translate }}
             </button>
             <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
@@ -414,18 +414,12 @@
                     <!-- Only handle actions separately -->
                     <ng-container *ngSwitchCase="'actions'">
                       <div class="d-flex justify-content-start gap-2">
-                        <button *ngIf="!editing" type="button" pInitEditableRow (click)="onRowEditInits(product, ri)"
-                          class="p-button-sm p-button-text p-button-info no-border">
+                        <button *ngIf="!editing" type="button"
+                          class="p-button-sm p-button-text p-button-info no-border" data-bs-toggle="modal"
+                          data-bs-target="#editProduct" (click)="openEditProductModal(product, ri)">
                           {{ 'gis.quotation.edit' | translate }}
                         </button>
-                        <button *ngIf="editing" type="button" pSaveEditableRow (click)="onRowEditSaves(product)"
-                          class="p-button-sm p-button-text p-button-success no-border">
-                          {{ 'gis.quotation.save' | translate }}
-                        </button>
-                        <button *ngIf="editing" type="button" pCancelEditableRow (click)="onRowEditCancels(product, ri)"
-                          class="p-button-sm p-button-text p-button-secondary no-border">
-                          {{ 'gis.quotation.cancel' | translate }}
-                        </button>
+
                         <button type="button" (click)="openProductDeleteModal(product)"
                           class="p-button-sm p-button-text p-button-danger no-border" data-bs-toggle="modal"
                           data-bs-target="#deleteProductModal">
@@ -506,9 +500,6 @@
           </p-table>
         </div>
       </div>
-
-
-
 
       <!-- Add Product Modal -->
       <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
@@ -599,6 +590,106 @@
                     {{ 'gis.quotation.cancel' | translate }}
                   </button>
                   <button type="button" class="btn btn-primary" id="saveDetails" (click)="submitAddProductForm()">
+                    {{ 'gis.quotation.save_details' | translate }}
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- edit product modal -->
+      <div class="modal fade" id="editProduct" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm " style="min-width: 518px;" role="document">
+          <div class="modal-content" id="addSectionModal">
+            <div class="modal-body">
+              <h5 class="modal-title mt-2" id="editOtherDetailsLabel"> {{ 'gis.quotation.edit_product'
+                | translate }}
+                <button type="button" class="btn-close float-end custom-close" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+              </h5>
+              <div class="row mb-4" [formGroup]='quotationProductForm'>
+                <div class="col-sm-6 col-12">
+                  <div class="form-group form-group-sm">
+                    <br>
+                    <label for="" class="quote-label"> {{ 'gis.quotation.product'
+                      | translate }}</label>
+                    <p-dropdown [options]="ProductDescriptionArray" formControlName="productCodes"
+                      optionLabel="filterText" filterBy="filterText" [filter]="true" [showClear]="true" placeholder=""
+                      class="custom-multiselect" (onChange)="onProductSelected($event.value)">
+
+
+                      <ng-template let-product pTemplate="item">
+                        <div>{{ product?.description }}</div>
+                      </ng-template>
+
+
+                      <ng-template let-product pTemplate="selectedItem">
+                        <div>{{ product?.description }}</div>
+                      </ng-template>
+
+                      <ng-template pTemplate="empty">
+                        <div class="text-danger px-2 py-1">
+
+                          {{ 'gis.quotation.no_products_match_your_search'| translate }}
+                        </div>
+                      </ng-template>
+                    </p-dropdown>
+
+                    <div
+                      *ngIf="quotationProductForm.get('productCodes')?.hasError('required') && quotationProductForm.get('productCodes')?.touched"
+                      class="form-text text-danger">
+                      {{ 'gis.quotation.product_is_required'| translate }}
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="col-sm-6 col-12">
+                  <div class="form-group form-group-sm">
+                    <br>
+                    <label for="coverFromDate" class="quote-label">{{ 'gis.quotation.cover_from'|
+                      translate }}</label><br>
+                    <p-calendar formControlName="wef" name="wefDate" id="coverFromDate" inputId="coverFromDate"
+                      [dateFormat]="dateFormat" inputStyleClass='form-control' (onSelect)="updateCoverToDate($event)"
+                      [minDate]="minDate" [showIcon]="true">
+                    </p-calendar>
+                    <div
+                      *ngIf="quotationProductForm.get('wef').hasError('required') && quotationProductForm.get('wef').touched"
+                      class="form-text text-danger">
+
+                      {{ 'gis.quotation.cover_from_is_required'| translate }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-sm-6 col-12">
+                  <div class="form-group form-group-sm">
+                    <br>
+                    <label for="coverToDate" class="quote-label"> {{ 'gis.quotation.cover_to'| translate
+                      }}</label><br>
+                    <p-calendar formControlName="wet" name="wetDate" id="coverToDate" inputId="coverToDate"
+                      [dateFormat]="dateFormat" inputStyleClass='form-control' [minDate]="minDate" [showIcon]="true">
+                    </p-calendar>
+                    <div
+                      *ngIf="quotationProductForm.get('wet').hasError('required') && quotationProductForm.get('wet').touched"
+                      class="form-text text-danger">
+
+                      {{ 'gis.quotation.cover_to_is_required'| translate }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-4 d-flex justify-content-end gap-2">
+                  <button type="button" class="btn btn-secondary btn-lightblue" data-bs-dismiss="modal"
+                    id="cancelDetails">
+                    {{ 'gis.quotation.cancel' | translate }}
+                  </button>
+                  <button type="button" class="btn btn-primary" id="saveDetails" (click)="editProduct()">
                     {{ 'gis.quotation.save_details' | translate }}
                   </button>
                 </div>
