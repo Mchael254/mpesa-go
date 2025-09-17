@@ -827,10 +827,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     })
   }
 
-
-
-
-
+  sanitizeCurrency(raw: string): number {
+    const cleaned = raw.replace(/[^0-9]/g, '');
+    return Number(cleaned);
+  }
 
 
   /**
@@ -2773,18 +2773,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
 
-
   setColumnsFromRiskClausesDetails(sample: riskClauses) {
     const defaultVisibleFields = ['sectionShortDescription',
       'clauseCode',
       'clause',
       'shortDescription'
-
-
-
-
-
-
     ];
 
     const excludedFields = [
