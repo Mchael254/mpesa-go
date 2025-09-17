@@ -138,7 +138,10 @@
           <div class="row mb-3">
             <div class="col-md-4 d-flex">
               <p class="label w-50">Premium</p>
-              <p class="content w-50">{{ quotationView?.premium | number }}</p>
+              <p class="content w-50">
+                {{ quotationView?.premium | currency: currencyObj?.prefix :
+                'symbol' : '1.0-0'}}
+              </p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Sum Insured</p>
@@ -270,9 +273,8 @@
             <!-- Product table -->
             <div class="mt-3" id="">
               <p-table [value]="productDetails" dataKey="productCode?.code" editMode="row"
-                [tableStyle]="{'min-width': '50rem'}" [scrollable]="true" scrollDirection="horizontal" [paginator]="productDetails?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3"
+                [tableStyle]="{'min-width': '50rem'}" [scrollable]="true" scrollDirection="horizontal"
+                [paginator]="productDetails?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
                 [resizableColumns]="true" scrollHeight="400px">
 
                 <!-- Table Header -->
@@ -451,9 +453,8 @@
                 </div>
                 <div class="tab-pane fade show active" id="nav-clauses" role="tabpanel" aria-labelledby="nav-clauses"
                   tabindex="0">
-                  <p-table [value]="productClauses" #productClauseTable [paginator]="productClauses?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3" [showCurrentPageReport]="true"
+                  <p-table [value]="productClauses" #productClauseTable [paginator]="productClauses?.length > 10"
+                    [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [showCurrentPageReport]="true"
                     currentPageReportTemplate="{first} - {last} of {totalRecords}" class="ui-datatable"
                     responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
 
@@ -551,9 +552,8 @@
 
                 <!-- TAXES -->
                 <div class="tab-pane fade" id="nav-taxes" role="tabpanel" aria-labelledby="nav-taxes" tabindex="0">
-                  <p-table [value]="taxDetails" #taxTable [tableStyle]="{ 'min-width': '50rem' }" [paginator]="taxDetails?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3">
+                  <p-table [value]="taxDetails" #taxTable [tableStyle]="{ 'min-width': '50rem' }"
+                    [paginator]="taxDetails?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
 
                     <!-- Table Header -->
                     <ng-template pTemplate="header">
@@ -735,10 +735,9 @@
 
 
 
-            <p-table [value]="riskDetails" #riskTable [tableStyle]="{ 'min-width': '50rem' }" [paginator]="riskDetails?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3"[scrollable]="true" responsiveLayout="scroll"
-              styleClass="p-datatable-striped">
+            <p-table [value]="riskDetails" #riskTable [tableStyle]="{ 'min-width': '50rem' }"
+              [paginator]="riskDetails?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true"
+              responsiveLayout="scroll" styleClass="p-datatable-striped">
 
               <!-- Table Header -->
               <ng-template pTemplate="header">
@@ -849,10 +848,9 @@
 
                 </div>
                 <p-table [value]="sections" #sectionsTable *ngIf="sections?.length && sectionColumns?.length"
-                  [tableStyle]="{ 'min-width': '50rem' }" [paginator]="sections?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3"
-                  [scrollable]="true" responsiveLayout="scroll" styleClass="p-datatable-striped">
+                  [tableStyle]="{ 'min-width': '50rem' }" [paginator]="sections?.length > 10"
+                  [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true" responsiveLayout="scroll"
+                  styleClass="p-datatable-striped">
 
                   <!-- Dynamic Table Header -->
                   <ng-template pTemplate="header">
@@ -868,22 +866,27 @@
                   <!-- Dynamic Table Body -->
                   <ng-template pTemplate="body" let-section>
                     <tr [pSelectableRow]="section" class="point" [class.disabled]="!section?.sectionCode">
-                      <td *ngFor="let col of sectionColumns" [hidden]="!col.visible">
 
+                      <td *ngFor="let col of sectionColumns" [hidden]="!col.visible">
                         <ng-container [ngSwitch]="col.field">
 
-                          <!-- Truncated fields -->
-                          <span *ngSwitchCase="'limitAmount'">
-                            {{ section[col.field] | number }}
-                          </span>
+                          <!-- Default branch checks internally -->
+                          <ng-container *ngSwitchDefault>
+                            <ng-container *ngIf="col.field === 'limitAmount' || col.field === 'premiumAmount'
+                              || col.field === 'freeLimit'; else defaultField">
+                              <div class="text-end">
+                                {{ section[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.0-0' }}
+                              </div>
+                            </ng-container>
 
-                          <!-- All other fields -->
-                          <span *ngSwitchDefault>
-                            {{ section[col.field] }}
-                          </span>
+                            <ng-template #defaultField>
+                              {{ section[col.field] }}
+                            </ng-template>
+                          </ng-container>
 
                         </ng-container>
                       </td>
+
 
                     </tr>
                   </ng-template>
@@ -930,10 +933,9 @@
                   </div>
                 </div>
                 <p-table [value]="riskClauses" #riskClausesTable dataKey="code" editMode="row"
-                  [tableStyle]="{ 'width': '100%' }" [paginator]="riskClauses?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3"
-                  [scrollable]="true" responsiveLayout="scroll" class="ui-datatable" [autoLayout]="true">
+                  [tableStyle]="{ 'width': '100%' }" [paginator]="riskClauses?.length > 10"
+                  [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true" responsiveLayout="scroll"
+                  class="ui-datatable" [autoLayout]="true">
 
                   <!-- Dynamic Table Header -->
                   <ng-template pTemplate="header">
@@ -1017,9 +1019,8 @@
                   </div>
                 </div>
 
-                <p-table [value]="getCurrentSchedule()" [tableStyle]="{ 'width': '100%' }" [paginator]="getCurrentSchedule()?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3">
+                <p-table [value]="getCurrentSchedule()" [tableStyle]="{ 'width': '100%' }"
+                  [paginator]="getCurrentSchedule()?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
                   <!-- Header -->
                   <ng-template pTemplate="header">
                     <tr>
@@ -1035,10 +1036,27 @@
                   <ng-template pTemplate="body" let-rowData>
                     <tr>
                       <td *ngFor="let col of scheduleColumns" [hidden]="!col.visible">
-                        {{ getCellValue(rowData,col.field) }}
+                        <ng-container [ngSwitch]="col.field">
+
+                          <!-- Currency fields -->
+                          <ng-container *ngSwitchDefault>
+                            <ng-container *ngIf="col.field === 'value'; else defaultField">
+                              <div class="text-end">
+                                {{ rowData[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.0-0' }}
+                              </div>
+                            </ng-container>
+
+                            <!-- Default (non-currency fields) -->
+                            <ng-template #defaultField>
+                              {{ rowData[col.field] }}
+                            </ng-template>
+                          </ng-container>
+
+                        </ng-container>
                       </td>
                     </tr>
                   </ng-template>
+
 
                   <!-- Empty message -->
                   <ng-template pTemplate="emptymessage">
@@ -1086,9 +1104,8 @@
 
 
                 <!-- Dynamic peril table -->
-                <p-table [value]="summaryPerils" [tableStyle]="{ 'width': '100%' }" [paginator]="summaryPerils?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3">
+                <p-table [value]="summaryPerils" [tableStyle]="{ 'width': '100%' }"
+                  [paginator]="summaryPerils?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
                   <!-- Header -->
                   <ng-template pTemplate="header">
                     <tr>
@@ -1154,9 +1171,8 @@
                   </div>
                 </div>
                 <!-- Dynamic Excess Table -->
-                <p-table [value]="excesses" #excessesTable [tableStyle]="{ 'width': '100%' }" [paginator]="excesses?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3">
+                <p-table [value]="excesses" #excessesTable [tableStyle]="{ 'width': '100%' }"
+                  [paginator]="excesses?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
                   <!-- Header -->
                   <ng-template pTemplate="header">
                     <tr>
@@ -1182,8 +1198,26 @@
                     <!-- Data Rows -->
                     <tr>
                       <td *ngFor="let col of excessColumns" [hidden]="!col.visible">
-                        {{ getCellValue(rowData, col.field) }}
+                        <ng-container [ngSwitch]="col.field">
+
+                          <!-- Currency + numeric fields -->
+                          <ng-container *ngSwitchDefault>
+                            <ng-container *ngIf="col.field === 'value'; else defaultField">
+                              <div class="text-end">
+                                {{ getCellValue(rowData, col.field) | currency: currencyObj?.prefix : 'symbol' : '1.0-0'
+                                }}
+                              </div>
+                            </ng-container>
+
+                            <!-- Default (non-currency fields) -->
+                            <ng-template #defaultField>
+                              {{ getCellValue(rowData, col.field) }}
+                            </ng-template>
+                          </ng-container>
+
+                        </ng-container>
                       </td>
+
                     </tr>
                   </ng-template>
 
@@ -1203,9 +1237,8 @@
               <div class="tab-pane fade" id="nav-comments" role="tabpanel"
                 [class.show]="activeRiskDetailsTab === 'comments'" [class.active]="activeRiskDetailsTab === 'comments'"
                 aria-labelledby="nav-riskClauses" tabindex="0">
-                <p-table [value]="comments" [tableStyle]="{ 'width': '100%' }" [scrollable]="true" [paginator]="comments?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3"
+                <p-table [value]="comments" [tableStyle]="{ 'width': '100%' }" [scrollable]="true"
+                  [paginator]="comments?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
                   responsiveLayout="scroll" class="ui-datatable" [autoLayout]="true">
 
                   <!-- HEADER -->
@@ -1226,17 +1259,11 @@
                   <!-- BODY -->
                   <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
 
-
-
                     <!-- DATA ROWS -->
                     <tr [pEditableRow]="data">
                       <td>{{ data.description }}</td>
                       <td>{{ data.details | sentenceCase }}</td>
-
-
                     </tr>
-
-
 
                   </ng-template>
 
@@ -1275,10 +1302,9 @@
                   </div>
                 </div>
                 <p-table [value]="excesses" #excessesTable *ngIf="excessColumns?.length"
-                  [tableStyle]="{ 'min-width': '50rem' }" [paginator]="excesses?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3"
-                  [scrollable]="true" responsiveLayout="scroll" styleClass="p-datatable-striped">
+                  [tableStyle]="{ 'min-width': '50rem' }" [paginator]="excesses?.length > 10"
+                  [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true" responsiveLayout="scroll"
+                  styleClass="p-datatable-striped">
 
                   <!-- Header -->
                   <ng-template pTemplate="header">
@@ -1344,9 +1370,8 @@
                   </div>
                 </div>
                 <!-- Dynamic Limits of Liability Table -->
-                <p-table [value]="limitsRiskofLiability" #limitsRiskofLiabilityTable [tableStyle]="{ 'width': '100%' }" [paginator]="limitsRiskofLiability?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3">
+                <p-table [value]="limitsRiskofLiability" #limitsRiskofLiabilityTable [tableStyle]="{ 'width': '100%' }"
+                  [paginator]="limitsRiskofLiability?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
 
                   <!-- Header -->
                   <ng-template pTemplate="header">
@@ -1374,7 +1399,24 @@
                     <!-- Data Rows -->
                     <tr>
                       <td *ngFor="let col of limitsColumns" [hidden]="!col.visible">
-                        {{ getCellValue(rowData, col.field) }}
+                        <ng-container [ngSwitch]="col.field">
+
+                          <!-- Currency + numeric fields -->
+                          <ng-container *ngSwitchDefault>
+                            <ng-container *ngIf="col.field === 'value'; else defaultField">
+                              <div class="text-end">
+                                {{ sanitizeCurrency(getCellValue(rowData, col.field))
+                                | currency: currencyObj?.prefix : 'symbol' : '1.0-0' }}
+                              </div>
+                            </ng-container>
+
+                            <ng-template #defaultField>
+                              {{ getCellValue(rowData, col.field) }}
+                            </ng-template>
+                          </ng-container>
+
+
+                        </ng-container>
                       </td>
                     </tr>
                   </ng-template>
@@ -1419,9 +1461,8 @@
 
           <!-- Exceptions Table -->
           <div *ngIf="!exceptionsCollapsed">
-            <p-table [value]="exceptionsData" [scrollable]="true" scrollHeight="200px" responsiveLayout="scroll" [paginator]="exceptionsData?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
-
-       [rows]="3"
+            <p-table [value]="exceptionsData" [scrollable]="true" scrollHeight="200px" responsiveLayout="scroll"
+              [paginator]="exceptionsData?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
               [tableStyle]="{ 'width': '100%' }">
               <ng-template pTemplate="header">
                 <tr>

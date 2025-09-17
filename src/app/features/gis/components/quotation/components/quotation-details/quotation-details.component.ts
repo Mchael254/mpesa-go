@@ -1686,7 +1686,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     );
 
     sessionStorage.setItem('availableProducts', JSON.stringify(availableProducts));
-        // this.getProductClause({ code: selectedProductCode });
+    // this.getProductClause({ code: selectedProductCode });
   }
 
 
@@ -1821,6 +1821,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     // Optionally fetch product clauses
     this.getProductClause({ code: selectedProductCode });
     this.setColumnsFromProductDetails(this.productDetails[0]);
+    this.checkProducts();
 
     // Close modal automatically
     const closeBtn = document.querySelector('.btn-close') as HTMLElement;
