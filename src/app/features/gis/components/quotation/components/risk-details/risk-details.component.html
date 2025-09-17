@@ -394,27 +394,45 @@
                             [class.p-highlight]="row?.__originalSchedule === selectedSchedule">
                             <td *ngFor="let col of columns" class="flexible-header">
                                 <!-- Actions Column -->
-                                <ng-container *ngIf="col.field === 'actions'; else defaultCell">
-                                    <button pButton pRipple type="button"
-                                        class="p-button-text p-button-sm p-button-info custom-button" tooltip="Edit"
-                                        (click)="editOtherDetails(tab);fetchLimitationOfUse();">
 
-                                        {{ 'gis.quotation.edit' | translate }}
-                                    </button>
+                                <ng-container [ngSwitch]="col.field">
 
-                                    <button pButton pRipple type="button"
-                                        class="p-button-text p-button-sm custom-button" data-bs-toggle="modal"
-                                        data-bs-target="#deleteSchedule" tooltip="Delete"
-                                        (click)="getLevelName(tab.levelNumber)">
+                                    <!-- Default columns added dynamically) -->
+                                    <ng-container *ngSwitchDefault>
 
-                                        {{ 'gis.quotation.delete' | translate }}
-                                    </button>
+                                        <ng-container *ngIf="col.field === 'value'; else defaultCell">
+                                            <div class="text-end"> {{ row[col.field] | currency: currencyObj?.prefix :
+                                                'symbol' : '1.2-2' }}
+                                            </div>
+                                        </ng-container>
+                                    </ng-container>
+                                    <ng-template #defaultCell>
+                                        {{ row[col.field] }}
+                                    </ng-template>
+
+
+
+                                    <!-- Actions -->
+                                    <ng-container *ngSwitchCase="'actions'">
+                                        <button pButton pRipple type="button"
+                                            class="p-button-text p-button-sm p-button-info custom-button" tooltip="Edit"
+                                            (click)="editOtherDetails(tab);fetchLimitationOfUse();">
+
+                                            {{ 'gis.quotation.edit' | translate }}
+                                        </button>
+
+                                        <button pButton pRipple type="button"
+                                            class="p-button-text p-button-sm custom-button" data-bs-toggle="modal"
+                                            data-bs-target="#deleteSchedule" tooltip="Delete"
+                                            (click)="getLevelName(tab.levelNumber)">
+
+                                            {{ 'gis.quotation.delete' | translate }}
+                                        </button>
+                                    </ng-container>
+
+
+
                                 </ng-container>
-
-                                <!-- Default Cell Content -->
-                                <ng-template #defaultCell>
-                                    {{ row[col.field] }}
-                                </ng-template>
                             </td>
                         </tr>
                     </ng-template>
@@ -1158,7 +1176,7 @@
                                         <ng-container *ngIf="col.field === 'limitAmount'; else defaultField">
                                             <div class="text-end">
                                                 {{ section[col.field] | currency: currencyObj?.prefix: 'symbol' :
-                                                '1.0-0'}}
+                                                '1.2-2'}}
                                             </div>
                                         </ng-container>
                                         <ng-template #defaultField>
@@ -1459,105 +1477,104 @@
                 [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
                 [globalFilterFields]="['shortDescription', 'wording', 'heading']" [scrollable]="true"
                 responsiveLayout="scroll" class="mt-3">
-                <<<<<<< Updated upstream=======>>>>>>> Stashed changes
 
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th *ngFor="let col of clauseColumns" [hidden]="!col.visible" class="px-3 mb-2"
-                                [pSortableColumn]="col.field">
-                                <div class="d-flex align-items-center gap-1 flex-nowrap">
-                                    <span class="text-truncate">{{ col.header }}</span>
-                                    <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
-                                </div>
-                            </th>
-                        </tr>
 
-                        <tr class="filter-row ">
-                            <td *ngFor="let col of clauseColumns" [hidden]="!col.visible">
-                                <input *ngIf="col.field !== 'actions'" type="text" pInputText class="form-control w-100"
-                                    (input)="riskClauseTable.filter($event.target['value'], col.field, 'contains')" />
-                            </td>
-                        </tr>
-                    </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngFor="let col of clauseColumns" [hidden]="!col.visible" class="px-3 mb-2"
+                            [pSortableColumn]="col.field">
+                            <div class="d-flex align-items-center gap-1 flex-nowrap">
+                                <span class="text-truncate">{{ col.header }}</span>
+                                <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
+                            </div>
+                        </th>
+                    </tr>
 
-                    <!-- Table Body -->
-                    <ng-template pTemplate="body" let-clause>
-                        <tr>
-                            <td *ngFor="let col of clauseColumns" [hidden]="!col.visible">
-                                <ng-container [ngSwitch]="col.field">
+                    <tr class="filter-row ">
+                        <td *ngFor="let col of clauseColumns" [hidden]="!col.visible">
+                            <input *ngIf="col.field !== 'actions'" type="text" pInputText class="form-control w-100"
+                                (input)="riskClauseTable.filter($event.target['value'], col.field, 'contains')" />
+                        </td>
+                    </tr>
+                </ng-template>
 
-                                    <!-- Short Description -->
-                                    <ng-container *ngSwitchCase="'shortDescription'">
-                                        {{ clause.shortDescription }}
-                                    </ng-container>
+                <!-- Table Body -->
+                <ng-template pTemplate="body" let-clause>
+                    <tr>
+                        <td *ngFor="let col of clauseColumns" [hidden]="!col.visible">
+                            <ng-container [ngSwitch]="col.field">
 
-                                    <!-- Heading -->
-                                    <ng-container *ngSwitchCase="'heading'">
-                                        {{ clause.heading | truncate:3 | sentenceCase }}
-                                    </ng-container>
+                                <!-- Short Description -->
+                                <ng-container *ngSwitchCase="'shortDescription'">
+                                    {{ clause.shortDescription }}
+                                </ng-container>
 
-                                    <!-- Wording -->
-                                    <ng-container *ngSwitchCase="'wording'">
-                                        <div class="clause-wrapper">
-                                            {{ clause.wording | truncate:5 | sentenceCase }}
-                                            <div class="hover-card">
-                                                {{ clause.wording | sentenceCase }}
-                                            </div>
+                                <!-- Heading -->
+                                <ng-container *ngSwitchCase="'heading'">
+                                    {{ clause.heading | truncate:3 | sentenceCase }}
+                                </ng-container>
+
+                                <!-- Wording -->
+                                <ng-container *ngSwitchCase="'wording'">
+                                    <div class="clause-wrapper">
+                                        {{ clause.wording | truncate:5 | sentenceCase }}
+                                        <div class="hover-card">
+                                            {{ clause.wording | sentenceCase }}
                                         </div>
-                                    </ng-container>
+                                    </div>
+                                </ng-container>
 
-                                    <!-- Actions -->
-                                    <ng-container *ngSwitchCase="'actions'">
-                                        <div class="flex justify-start gap-2">
-                                            <!-- Edit -->
-                                            <span class="p-button-label p-text-bold" [ngStyle]="{
+                                <!-- Actions -->
+                                <ng-container *ngSwitchCase="'actions'">
+                                    <div class="flex justify-start gap-2">
+                                        <!-- Edit -->
+                                        <span class="p-button-label p-text-bold" [ngStyle]="{
                               color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280',
                               cursor: clause.isEditable === 'Y' ? 'pointer' : 'default',
                               display: 'inline-block',
                               width: '60px'
                             }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
-                                                [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
-                                                (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
-                                                {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--'
-                                                }}
-                                            </span>
+                                            [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
+                                            (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
+                                            {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--'
+                                            }}
+                                        </span>
 
-                                            <!-- Delete -->
-                                            <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold"
-                                                [ngStyle]="{ color: '#00529B', cursor: 'pointer' }"
-                                                data-bs-toggle="modal" data-bs-target="#deleteClause"
-                                                (click)="prepareDeleteClause(clause)">
-                                                {{ 'gis.quotation.delete' | translate }}
-                                            </span>
-                                        </div>
-                                    </ng-container>
-
-                                    <!-- Default -->
-                                    <ng-container *ngSwitchDefault>
-                                        {{ clause[col.field] }}
-                                    </ng-container>
-
+                                        <!-- Delete -->
+                                        <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold"
+                                            [ngStyle]="{ color: '#00529B', cursor: 'pointer' }" data-bs-toggle="modal"
+                                            data-bs-target="#deleteClause" (click)="prepareDeleteClause(clause)">
+                                            {{ 'gis.quotation.delete' | translate }}
+                                        </span>
+                                    </div>
                                 </ng-container>
-                            </td>
-                        </tr>
-                    </ng-template>
 
-                    <!-- Empty Message -->
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                            <td [attr.colspan]="clauseColumns.length" class="text-center p-4 text-muted">
-                                <ng-container *ngIf="sessionClauses?.length === 0">
-
-                                    {{'gis.quotation.no_clauses_available_there_are_currently' | translate}}
+                                <!-- Default -->
+                                <ng-container *ngSwitchDefault>
+                                    {{ clause[col.field] }}
                                 </ng-container>
-                                <ng-container
-                                    *ngIf="riskClauseTable.filteredValue?.length === 0 && sessionClauses?.length > 0">
 
-                                    {{'gis.quotation.no_matching_clauses_found' | translate}}
-                                </ng-container>
-                            </td>
-                        </tr>
-                    </ng-template>
+                            </ng-container>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <!-- Empty Message -->
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td [attr.colspan]="clauseColumns.length" class="text-center p-4 text-muted">
+                            <ng-container *ngIf="sessionClauses?.length === 0">
+
+                                {{'gis.quotation.no_clauses_available_there_are_currently' | translate}}
+                            </ng-container>
+                            <ng-container
+                                *ngIf="riskClauseTable.filteredValue?.length === 0 && sessionClauses?.length > 0">
+
+                                {{'gis.quotation.no_matching_clauses_found' | translate}}
+                            </ng-container>
+                        </td>
+                    </tr>
+                </ng-template>
             </p-table>
 
 
@@ -1834,7 +1851,7 @@
                                     <ng-container *ngIf="col.field === 'value'; else defaultField">
                                         <div class="text-end">
                                             {{ sanitizeCurrency(limit[col.field]) | currency: currencyObj?.prefix :
-                                            'symbol' : '1.0-0' }}
+                                            'symbol' : '1.2-2' }}
                                         </div>
                                     </ng-container>
                                     <ng-template #defaultField>
@@ -2137,7 +2154,7 @@
                                                col.field === 'excessMax' || col.field === 'personLimit' ||
                                                col.field === 'perilLimit' || col.field === 'claimLimit'; else defaultField">
                                         <div class="text-end">{{ peril[col.field] | currency: currencyObj?.prefix :
-                                            'symbol' : '1.0-0' }}
+                                            'symbol' : '1.2-2' }}
                                         </div>
                                     </ng-container>
                                     <ng-template #defaultField>
@@ -2497,7 +2514,7 @@
 
                                     <ng-container *ngIf="col.field === 'taxAmount'; else defaultField">
                                         <div class="text-end"> {{ tax[col.field] | currency: currencyObj?.prefix :
-                                            'symbol' : '1.0-0' }}
+                                            'symbol' : '1.2-2' }}
                                         </div>
                                     </ng-container>
                                     <ng-template #defaultField>
@@ -2875,7 +2892,7 @@
                                     <ng-container *ngIf="col.field === 'value'; else defaultField">
                                         <div class="text-end">
                                             {{ sanitizeCurrency(excess[col.field]) | currency: currencyObj?.prefix :
-                                            'symbol' : '1.0-0' }}
+                                            'symbol' : '1.2-2' }}
                                         </div>
                                     </ng-container>
                                     <ng-template #defaultField>
