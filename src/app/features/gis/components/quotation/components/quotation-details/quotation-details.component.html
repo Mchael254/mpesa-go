@@ -403,9 +403,9 @@
                     <!-- Only handle actions separately -->
                     <ng-container *ngSwitchCase="'actions'">
                       <div class="d-flex justify-content-start gap-2">
-                        <button *ngIf="!editing" type="button"
-                          class="p-button-sm p-button-text p-button-info no-border" data-bs-toggle="modal"
-                          data-bs-target="#editProduct" (click)="openEditProductModal(product, ri)">
+                        <button *ngIf="!editing" type="button" class="p-button-sm p-button-text p-button-info no-border"
+                          data-bs-toggle="modal" data-bs-target="#editProduct"
+                          (click)="openEditProductModal(product, ri)">
                           {{ 'gis.quotation.edit' | translate }}
                         </button>
 
@@ -729,7 +729,7 @@
           <div class="modal-content ps-4 pt-2 pb-5 pe-4">
             <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0">
               <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-                {{'gis.policy.reassign_task'| translate}}
+                {{'gis.quotation.reassign_task'| translate}}
               </p>
               <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
                 style="border: none;">X</button>
@@ -765,7 +765,7 @@
             </div>
 
             <div class="w-75 mb-3">
-              <p>{{'gis.policy.comments'| translate}}</p>
+              <p>{{'gis.quotation.comments'| translate}}</p>
               <textarea name="reassignProduct" class="form-control" style="height: 70px"
                 [(ngModel)]="reassignProductComment"></textarea>
             </div>
@@ -802,7 +802,7 @@
 
             <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0">
               <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
-                {{'gis.policy.reassign_task'| translate}}
+                {{'gis.quotation.reassign_task'| translate}}
               </p>
               <button type="button" (click)="closeChooseClientReassignModal()" class="btn p-0 text-danger fw-bold"
                 style="border: none;">X</button>
@@ -815,8 +815,8 @@
                 (onRowUnselect)="onUserUnselect()">
                 <ng-template pTemplate="header">
                   <tr>
-                    <th> {{'gis.policy.user_id'| translate}}</th>
-                    <th> {{'gis.policy.full_name'| translate}}</th>
+                    <th> {{'gis.quotation.user_id'| translate}}</th>
+                    <th> {{'gis.quotation.full_name'| translate}}</th>
                   </tr>
                   <tr styleClass="p-striped">
                     <th>

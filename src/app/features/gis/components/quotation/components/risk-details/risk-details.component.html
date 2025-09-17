@@ -3,7 +3,9 @@
     <div class="card-body border-0 mx-4" style="padding-top: 0px;position: relative;">
 
         <div *ngIf="showRiskDetailsColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-            style="top: 0px; right: 0px; z-index: 1050;">
+            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+            (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+            (document:mouseup)="onDragEnd()">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <strong class="text-primary"> {{ 'gis.quotation.select_columns' | translate }}</strong>
                 <button class="btn-close btn-sm" (click)="showRiskDetailsColumnModal = false"></button>
@@ -155,6 +157,7 @@
                                                 {{ field.label | translate }}
                                             </label>
 
+
                                             <!-- text input -->
                                             <input *ngIf="field.type === 'text'" type="text" class="form-control"
                                                 [formControlName]="field.name"
@@ -171,14 +174,25 @@
                                                     (onChange)="field.name === 'subclass' && onSubclassSelected($event)">
                                                 </p-dropdown>
                                             </ng-container>
+
                                             <!-- INSURED -->
                                             <ng-container *ngIf="field.name === 'insureds' && clientsData?.length">
                                                 <p-dropdown formControlName="insureds" [options]="clientsData"
                                                     optionLabel="clientFullName" optionValue="id"
                                                     placeholder="Select Insured" [filter]="true"
                                                     filterBy="clientFullName">
+
                                                 </p-dropdown>
                                             </ng-container>
+
+
+                                            <!-- <ng-container *ngIf="field.name === 'insureds' && clientsData?.length">
+                                                <p-dropdown formControlName="insureds" [options]="clientsData"
+                                                    optionLabel="clientFullName" optionValue="id"
+                                                    placeholder="Select Insured" [filter]="true"
+                                                    filterBy="clientFullName">
+                                                </p-dropdown>
+                                            </ng-container> -->
 
                                             <!-- date -->
                                             <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
@@ -1084,7 +1098,9 @@
             <!-- Column Selector Modal -->
             <!-- Floating Column Selector -->
             <div *ngIf="showColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                (document:mouseup)="onDragEnd()">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary"> {{'gis.quotation.select_columns' | translate}}</strong>
                     <button class="btn-close btn-sm" (click)="showColumnModal = false"></button>
@@ -1416,7 +1432,9 @@
             class="mt-0 w-100">
             <!-- Floating Column Selector For Risk Clauses -->
             <div *ngIf="showClauseColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                (document:mouseup)="onDragEnd()">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">
                         {{'gis.quotation.select_columns' | translate}}
@@ -1441,102 +1459,105 @@
                 [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
                 [globalFilterFields]="['shortDescription', 'wording', 'heading']" [scrollable]="true"
                 responsiveLayout="scroll" class="mt-3">
+                <<<<<<< Updated upstream=======>>>>>>> Stashed changes
 
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th *ngFor="let col of clauseColumns" [hidden]="!col.visible" class="px-3 mb-2"
-                            [pSortableColumn]="col.field">
-                            <div class="d-flex align-items-center gap-1 flex-nowrap">
-                                <span class="text-truncate">{{ col.header }}</span>
-                                <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
-                            </div>
-                        </th>
-                    </tr>
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th *ngFor="let col of clauseColumns" [hidden]="!col.visible" class="px-3 mb-2"
+                                [pSortableColumn]="col.field">
+                                <div class="d-flex align-items-center gap-1 flex-nowrap">
+                                    <span class="text-truncate">{{ col.header }}</span>
+                                    <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
+                                </div>
+                            </th>
+                        </tr>
 
-                    <tr class="filter-row ">
-                        <td *ngFor="let col of clauseColumns" [hidden]="!col.visible">
-                            <input *ngIf="col.field !== 'actions'" type="text" pInputText class="form-control w-100"
-                                (input)="riskClauseTable.filter($event.target['value'], col.field, 'contains')" />
-                        </td>
-                    </tr>
-                </ng-template>
+                        <tr class="filter-row ">
+                            <td *ngFor="let col of clauseColumns" [hidden]="!col.visible">
+                                <input *ngIf="col.field !== 'actions'" type="text" pInputText class="form-control w-100"
+                                    (input)="riskClauseTable.filter($event.target['value'], col.field, 'contains')" />
+                            </td>
+                        </tr>
+                    </ng-template>
 
-                <!-- Table Body -->
-                <ng-template pTemplate="body" let-clause>
-                    <tr>
-                        <td *ngFor="let col of clauseColumns" [hidden]="!col.visible">
-                            <ng-container [ngSwitch]="col.field">
+                    <!-- Table Body -->
+                    <ng-template pTemplate="body" let-clause>
+                        <tr>
+                            <td *ngFor="let col of clauseColumns" [hidden]="!col.visible">
+                                <ng-container [ngSwitch]="col.field">
 
-                                <!-- Short Description -->
-                                <ng-container *ngSwitchCase="'shortDescription'">
-                                    {{ clause.shortDescription }}
-                                </ng-container>
+                                    <!-- Short Description -->
+                                    <ng-container *ngSwitchCase="'shortDescription'">
+                                        {{ clause.shortDescription }}
+                                    </ng-container>
 
-                                <!-- Heading -->
-                                <ng-container *ngSwitchCase="'heading'">
-                                    {{ clause.heading | truncate:3 | sentenceCase }}
-                                </ng-container>
+                                    <!-- Heading -->
+                                    <ng-container *ngSwitchCase="'heading'">
+                                        {{ clause.heading | truncate:3 | sentenceCase }}
+                                    </ng-container>
 
-                                <!-- Wording -->
-                                <ng-container *ngSwitchCase="'wording'">
-                                    <div class="clause-wrapper">
-                                        {{ clause.wording | truncate:5 | sentenceCase }}
-                                        <div class="hover-card">
-                                            {{ clause.wording | sentenceCase }}
+                                    <!-- Wording -->
+                                    <ng-container *ngSwitchCase="'wording'">
+                                        <div class="clause-wrapper">
+                                            {{ clause.wording | truncate:5 | sentenceCase }}
+                                            <div class="hover-card">
+                                                {{ clause.wording | sentenceCase }}
+                                            </div>
                                         </div>
-                                    </div>
-                                </ng-container>
+                                    </ng-container>
 
-                                <!-- Actions -->
-                                <ng-container *ngSwitchCase="'actions'">
-                                    <div class="flex justify-start gap-2">
-                                        <!-- Edit -->
-                                        <span class="p-button-label p-text-bold" [ngStyle]="{
+                                    <!-- Actions -->
+                                    <ng-container *ngSwitchCase="'actions'">
+                                        <div class="flex justify-start gap-2">
+                                            <!-- Edit -->
+                                            <span class="p-button-label p-text-bold" [ngStyle]="{
                               color: clause.isEditable === 'Y' ? '#00529B' : '#6B7280',
                               cursor: clause.isEditable === 'Y' ? 'pointer' : 'default',
                               display: 'inline-block',
                               width: '60px'
                             }" [attr.data-bs-toggle]="clause.isEditable === 'Y' ? 'modal' : null"
-                                            [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
-                                            (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
-                                            {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
-                                        </span>
+                                                [attr.data-bs-target]="clause.isEditable === 'Y' ? '#editClause' : null"
+                                                (click)="clause.isEditable === 'Y' && populateEditClauseModal(clause)">
+                                                {{ clause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--'
+                                                }}
+                                            </span>
 
-                                        <!-- Delete -->
-                                        <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold"
-                                            [ngStyle]="{ color: '#00529B', cursor: 'pointer' }" data-bs-toggle="modal"
-                                            data-bs-target="#deleteClause" (click)="prepareDeleteClause(clause)">
-                                            {{ 'gis.quotation.delete' | translate }}
-                                        </span>
-                                    </div>
+                                            <!-- Delete -->
+                                            <span *ngIf="clause.isMandatory === 'N'" class="p-button-label p-text-bold"
+                                                [ngStyle]="{ color: '#00529B', cursor: 'pointer' }"
+                                                data-bs-toggle="modal" data-bs-target="#deleteClause"
+                                                (click)="prepareDeleteClause(clause)">
+                                                {{ 'gis.quotation.delete' | translate }}
+                                            </span>
+                                        </div>
+                                    </ng-container>
+
+                                    <!-- Default -->
+                                    <ng-container *ngSwitchDefault>
+                                        {{ clause[col.field] }}
+                                    </ng-container>
+
                                 </ng-container>
+                            </td>
+                        </tr>
+                    </ng-template>
 
-                                <!-- Default -->
-                                <ng-container *ngSwitchDefault>
-                                    {{ clause[col.field] }}
+                    <!-- Empty Message -->
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td [attr.colspan]="clauseColumns.length" class="text-center p-4 text-muted">
+                                <ng-container *ngIf="sessionClauses?.length === 0">
+
+                                    {{'gis.quotation.no_clauses_available_there_are_currently' | translate}}
                                 </ng-container>
+                                <ng-container
+                                    *ngIf="riskClauseTable.filteredValue?.length === 0 && sessionClauses?.length > 0">
 
-                            </ng-container>
-                        </td>
-                    </tr>
-                </ng-template>
-
-                <!-- Empty Message -->
-                <ng-template pTemplate="emptymessage">
-                    <tr>
-                        <td [attr.colspan]="clauseColumns.length" class="text-center p-4 text-muted">
-                            <ng-container *ngIf="sessionClauses?.length === 0">
-
-                                {{'gis.quotation.no_clauses_available_there_are_currently' | translate}}
-                            </ng-container>
-                            <ng-container
-                                *ngIf="riskClauseTable.filteredValue?.length === 0 && sessionClauses?.length > 0">
-
-                                {{'gis.quotation.no_matching_clauses_found' | translate}}
-                            </ng-container>
-                        </td>
-                    </tr>
-                </ng-template>
+                                    {{'gis.quotation.no_matching_clauses_found' | translate}}
+                                </ng-container>
+                            </td>
+                        </tr>
+                    </ng-template>
             </p-table>
 
 
@@ -1726,7 +1747,9 @@
             <!-- Floating Column Selector For Limits of Liability -->
             <div *ngIf="showLimitsOfLiabilityColumnModal"
                 class="card shadow rounded p-2 position-absolute bg-white border"
-                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                (document:mouseup)="onDragEnd()">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Columns</strong>
                     <button class="btn-close btn-sm" (click)="showLimitsOfLiabilityColumnModal = false"></button>
@@ -2027,7 +2050,9 @@
             class="mt-2 w-100">
             <!-- Floating Column Selector for perils-->
             <div *ngIf="showPerilColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                (document:mouseup)="onDragEnd()">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Columns</strong>
                     <button class="btn-close btn-sm" (click)="showPerilColumnModal = false"></button>
@@ -2416,7 +2441,9 @@
             [@slideInOut]="isClausesOpen ? 'open' : 'closed'">
             <!-- Floating Column Selector for Taxes-->
             <div *ngIf="showTaxesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                (document:mouseup)="onDragEnd()">
 
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Columns</strong>
@@ -2762,7 +2789,9 @@
             class="mt-2 w-100">
             <!-- Floating Column Selector for excesses -->
             <div *ngIf="showExcessesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                (document:mouseup)="onDragEnd()">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Columns</strong>
                     <button class="btn-close btn-sm" (click)="showExcessesColumnModal = false"></button>

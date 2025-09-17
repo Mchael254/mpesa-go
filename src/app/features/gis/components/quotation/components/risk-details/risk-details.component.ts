@@ -55,7 +55,6 @@ const log = new Logger('RiskDetailsComponent');
 })
 
 export class RiskDetailsComponent {
-  selectedLevelNumber: any;
 
   getFreeLimitLabel(arg0: any) {
     throw new Error('Method not implemented.');
@@ -350,6 +349,10 @@ export class RiskDetailsComponent {
   uploading = false;
   errorMessage = '';
   successMessage = '';
+  dragging = false;
+  dragOffset = { x: 0, y: 0 };
+  selectedLevelNumber: any;
+  isNewClientSelected: boolean = false;
 
   constructor(
     public subclassService: SubclassesService,
@@ -409,6 +412,8 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
+    this.isNewClientSelected = JSON.parse(sessionStorage.getItem('isNewClientSelected'))
+    log.debug("Is this new client:", this.isNewClientSelected)
     this.quotationRiskCode = sessionStorage.getItem('selectedRiskCode');
     this.quotationCode = sessionStorage.getItem('quotationCode');
     this.fetchQuotationDetails(this.quotationCode);
@@ -466,7 +471,7 @@ export class RiskDetailsComponent {
 
     this.loadAllClients();
     if (!this.riskDetailsForm.contains('insureds')) {
-      this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
+      this.riskDetailsForm.addControl('insureds', new FormControl('',));
     }
 
     //dropdown changes
@@ -483,9 +488,14 @@ export class RiskDetailsComponent {
 
     const savedClientId = sessionStorage.getItem('selectedClientId');
     if (savedClientId) {
+      this.isNewClientSelected = false
       this.riskDetailsForm.patchValue({ insureds: +savedClientId });
     }
-
+    if (this.isNewClientSelected) {
+      this.riskDetailsForm.get('insureds')?.disable();
+    } else {
+      this.riskDetailsForm.get('insureds')?.enable();
+    }
 
   }
 
@@ -576,7 +586,7 @@ export class RiskDetailsComponent {
           sessionStorage.setItem('newQuotationProductCode', this.quoteProductCode);
           this.selectedSubclassCode = this.quotationDetails?.quotationProducts?.[0].riskInformation?.[0]?.subclassCode;
           sessionStorage.setItem('selectedSubclasscode', this.selectedSubclassCode);
-          this.insuredCode = this.quotationDetails.clientCode
+          this.insuredCode = this.quotationDetails.clientCode || this.clientCode
           log.debug("Insured code:", this.insuredCode)
           this.clientCode = this.quotationDetails.clientCode
           if (this.insuredCode) {
@@ -666,13 +676,29 @@ export class RiskDetailsComponent {
     this.saveRiskDetailsColumnsToSession();
   }
 
+  // toggleRiskDetailsColumns(iconElement: HTMLElement): void {
+  //   this.showRiskDetails = !this.showRiskDetails;
+
+  //   const rect = iconElement.getBoundingClientRect();
+
+  //   const top = rect.top + rect.height + window.scrollY + 4;
+  //   const left = rect.left + window.scrollX;
+
+  //   this.columnModalPosition = {
+  //     top: `${top}px`,
+  //     left: `${left}px`
+  //   };
+
+  //   this.showRiskDetailsColumnModal = true;
+  // }
+
   toggleRiskDetailsColumns(iconElement: HTMLElement): void {
-    this.showRiskDetails = !this.showRiskDetails;
+    this.showRiskDetails = true;
 
-    const rect = iconElement.getBoundingClientRect();
+    const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = rect.top + rect.height + window.scrollY + 4;
-    const left = rect.left + window.scrollX;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -682,10 +708,27 @@ export class RiskDetailsComponent {
     this.showRiskDetailsColumnModal = true;
   }
 
+
+  onDragStart(event: MouseEvent): void {
+    this.dragging = true;
+    this.dragOffset.x = event.clientX - parseInt(this.columnModalPosition.left, 10);
+    this.dragOffset.y = event.clientY - parseInt(this.columnModalPosition.top, 10);
+  }
+
+  onDragMove(event: MouseEvent): void {
+    if (this.dragging) {
+      this.columnModalPosition.top = `${event.clientY - this.dragOffset.y}px`;
+      this.columnModalPosition.left = `${event.clientX - this.dragOffset.x}px`;
+    }
+  }
+
+  onDragEnd(): void {
+    this.dragging = false;
+  }
+
   setRiskDetailsColumns(risk: any) {
     const excludedFields = ['riskLimits', 'clauseCodes', 'sectionsDetails', 'sectionsDetails', 'location', 'ncdLevel', 'fp',
-      'subclass', 'quotationProductCode', 'quotationRiskNo', 'quotationCode', 'value', 'code', 'subclassCode', 'coverTypeCode',
-      'code', 'itemDesc', 'subclass.description', 'binderCode',
+      'subclass',
     ];
     this.riskDetailsColumns = Object.keys(risk)
       .filter((key) => !excludedFields.includes(key))
@@ -709,9 +752,14 @@ export class RiskDetailsComponent {
     }
   }
 
-  defaultVisibleRiskDetailsFields = ['wef', 'wet', 'actions', 'propertyId', 'coverTypeDescription'];
+  defaultVisibleRiskDetailsFields = ['wef', 'wet', 'actions', 'propertyId', 'coverTypeDescription', 'binderCode'];
 
   openAddRiskModal() {
+    if (!this.isNewClientSelected && !this.insuredCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'No insured selected');
+      return;
+    }
+
     this.modalInstance?.show();
     this.isEditMode = false
     this.isAddMode = true
@@ -861,7 +909,7 @@ export class RiskDetailsComponent {
 
 
   loadAllClients() {
-    const pageSize = 100
+    const pageSize = 20
     const pageIndex = 0;
     this.clientService.getClients(pageIndex, pageSize).subscribe({
       next: (data: any) => {
@@ -908,7 +956,7 @@ export class RiskDetailsComponent {
       log.debug("Clients data;", this.clientsData)
       // Add the control if it doesn't exist
       if (!this.riskDetailsForm.contains('insureds')) {
-        this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
+        this.riskDetailsForm.addControl('insureds', new FormControl('',));
       }
 
       // Pre-select the dropdown
@@ -2411,13 +2459,14 @@ export class RiskDetailsComponent {
     this.loadPersistedRiskClauses();
   }
 
+
   toggleSections(iconElement: HTMLElement): void {
-    this.showSections = !this.showSections;
+    this.showSections = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -3048,13 +3097,14 @@ export class RiskDetailsComponent {
     this.saveClauseColumnsToSession();
   }
 
+
   toggleClauseColumns(iconElement: HTMLElement): void {
-    this.showClauses = !this.showClauses;
+    this.showClauses = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -3063,7 +3113,6 @@ export class RiskDetailsComponent {
 
     this.showClauseColumnModal = true;
   }
-
   setClauseColumns(clause: Clause) {
     const excludedFields = [
     ];
@@ -3908,13 +3957,14 @@ export class RiskDetailsComponent {
     this.saveLimitsOfLiabilityColumnsToSession();
   }
 
+
   toggleLimitsOfLiabilityColumns(iconElement: HTMLElement): void {
-    this.showLimitsOfLiability = !this.showLimitsOfLiability;
+    this.showLimitsOfLiability = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -3923,7 +3973,6 @@ export class RiskDetailsComponent {
 
     this.showLimitsOfLiabilityColumnModal = true;
   }
-
   setLimitsOfLiabilityColumns(limits: any) {
     const excludedFields = [];
     this.limitsOfLiabilityColumns = Object.keys(limits)
@@ -4275,12 +4324,12 @@ export class RiskDetailsComponent {
   }
 
   toggleExcessesColumns(iconElement: HTMLElement): void {
-    this.showExcesses = !this.showExcesses;
+    this.showExcesses = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -4289,7 +4338,6 @@ export class RiskDetailsComponent {
 
     this.showExcessesColumnModal = true;
   }
-
   setExcessesColumns(excess: Excesses) {
     const excludedFields = ['actions'];
 
@@ -4546,13 +4594,14 @@ export class RiskDetailsComponent {
     this.savePerilColumnsToSession();
   }
 
+
   togglePerilColumns(iconElement: HTMLElement): void {
-    this.showPerils = !this.showPerils;
+    this.showPerils = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -4561,7 +4610,6 @@ export class RiskDetailsComponent {
 
     this.showPerilColumnModal = true;
   }
-
   setPerilColumns(excess: Excesses) {
     const excludedFields = [
     ];
@@ -5458,12 +5506,12 @@ export class RiskDetailsComponent {
   }
 
   toggleTaxesColumns(iconElement: HTMLElement): void {
-    this.showTaxes = !this.showTaxes;
+    this.showTaxes = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
