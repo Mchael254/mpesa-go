@@ -430,13 +430,14 @@
           {{ 'gis.quotation.next' | translate }}
         </button>
       </ng-container> -->
-      <span [attr.title]="!canMoveToNextScreen ? 'Select a cover type for each risk to proceed' : null"
-        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip">
+      <span pTooltip="Select a cover type for each risk to proceed" tooltipPosition="top"
+        [tooltipDisabled]="canMoveToNextScreen">
         <button type="button" class="btn btn-primary" id="save-quotation" [disabled]="!canMoveToNextScreen"
           (click)="saveQuotationDetails()">
           {{ 'gis.quotation.next' | translate }}
         </button>
       </span>
+
 
 
     </div>

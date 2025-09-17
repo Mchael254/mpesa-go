@@ -202,6 +202,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   groupLeaderName: string = '';
   showAgentSearchModal = false;
   selectedAgentName: string;
+  dragging = false;
+  dragOffset = { x: 0, y: 0 };
+  isNewClientSelected: boolean = false;
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -457,6 +460,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   setClientType(value: 'new' | 'existing') {
     this.selectedClientType = value;
     this.newClient = value === 'new';
+
+    this.newClient && (this.isNewClientSelected = true);
+    sessionStorage.setItem('isNewClientSelected', JSON.stringify(this.isNewClientSelected))
     log.debug("New client status", this.newClient)
   }
   handleSaveClient(eventData: any) {
@@ -2229,8 +2235,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     this.showProductColumnModal = true;
   }
-  dragging = false;
-  dragOffset = { x: 0, y: 0 };
+
 
   onDragStart(event: MouseEvent): void {
     this.dragging = true;

@@ -102,9 +102,13 @@
           <p class="card-titles mb-4">Client information</p>
 
           <div class="row mb-3">
-            <div class="col-md-4 d-flex">
+            <div *ngIf="!isNewClientSelected" class="col-md-4 d-flex">
               <p class="label w-50">Client</p>
               <p class="content w-50">{{ quotationView?.clientName }}</p>
+            </div>
+            <div *ngIf="isNewClientSelected" class="col-md-4 d-flex">
+              <p class="label w-50">Prospect</p>
+              <p class="content w-50">{{ storedQuotationFormDetails?.client |sentenceCase}}</p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Proposer</p>
@@ -120,7 +124,7 @@
             <div class="col-md-4 d-flex">
               <p class="label w-50">Source</p>
               <p class="content w-50">
-                {{ quotationView?.source.description }}
+                {{ quotationView?.source?.description }}
               </p>
             </div>
             <div class="col-md-4 d-flex">
@@ -253,7 +257,9 @@
 
             <!-- Floating Column Selector -->
             <div *ngIf="showProductColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-              [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+              [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+              (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+              (document:mouseup)="onDragEnd()">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <strong class="text-primary">Select Columns</strong>
                 <button class="btn-close btn-sm" (click)="showProductColumnModal = false"></button>
@@ -434,7 +440,9 @@
                 <!-- CLAUSES -->
                 <!-- Floating Clauses Column Selector -->
                 <div *ngIf="showClausesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Clauses Columns</strong>
                     <button class="btn-close btn-sm" (click)="showClausesColumnModal = false"></button>
@@ -532,7 +540,9 @@
 
                 <!-- Floating Column Selector for Taxes -->
                 <div *ngIf="showTaxesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Tax Columns</strong>
                     <button class="btn-close btn-sm" (click)="showTaxesColumnModal = false"></button>
@@ -713,7 +723,9 @@
 
                   <!-- Floating Column Selector for Risk -->
                   <div *ngIf="showRiskColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                    [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                    [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                    (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                    (document:mouseup)="onDragEnd()">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                       <strong class="text-primary">Select Risk Columns</strong>
                       <button class="btn-close btn-sm" (click)="showRiskColumnModal = false"></button>
@@ -830,7 +842,9 @@
                 </div>
                 <!-- Floating Column Selector for section -->
                 <div *ngIf="showSectionColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Section Columns</strong>
                     <button class="btn-close btn-sm" (click)="showSectionColumnModal = false"></button>
@@ -916,7 +930,9 @@
                 </div>
                 <!-- Floating Column Selector for Risk -->
                 <div *ngIf="showRiskClauseColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select RiskClauses Columns</strong>
                     <button class="btn-close btn-sm" (click)="showRiskClauseColumnModal = false"></button>
@@ -1002,7 +1018,9 @@
                 </div>
                 <!-- Floating Column Selector for Risk -->
                 <div *ngIf="showScheduleColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Schedules Columns</strong>
                     <button class="btn-close btn-sm" (click)="showScheduleColumnModal = false"></button>
@@ -1085,7 +1103,9 @@
                 </div>
                 <!-- Floating Column Selector for peril -->
                 <div *ngIf="showPerilColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Perils Columns</strong>
                     <button class="btn-close btn-sm" (click)="showPerilColumnModal = false"></button>
@@ -1154,7 +1174,9 @@
                 </div>
                 <!-- Floating Column Selector for Risk -->
                 <div *ngIf="showExcessColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Excess Columns</strong>
                     <button class="btn-close btn-sm" (click)="showExcessColumnModal = false"></button>
@@ -1285,7 +1307,9 @@
                 </div>
                 <!-- Floating Column Selector for Risk -->
                 <div *ngIf="showExcessColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Excess Columns</strong>
                     <button class="btn-close btn-sm" (click)="showExcessColumnModal = false"></button>
@@ -1353,7 +1377,9 @@
                 <!-- Floating Column Selector for limits -->
                 <div *ngIf="showLimitsOfLiabilityColumnModal"
                   class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select liability Columns</strong>
                     <button class="btn-close btn-sm" (click)="showLimitsOfLiabilityColumnModal = false"></button>
