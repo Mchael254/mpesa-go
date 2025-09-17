@@ -110,17 +110,21 @@ export class QuotationManagementComponent {
 
     // Add the rest of the items
     items.push(
+      // {
+      //   label: 'Revise Quote',
+      //   command: () => this.printQuote(quotation)
+      // },
+      // {
+      //   label: 'Reuse Quote',
+      //   command: () => this.deleteQuote(quotation)
+      // },
+      // {
+      //   label: 'Reassign Quote',
+      //   command: () => this.deleteQuote(quotation)
+      // },
       {
-        label: 'Revise Quote',
-        command: () => this.printQuote(quotation)
-      },
-      {
-        label: 'Reuse Quote',
-        command: () => this.deleteQuote(quotation)
-      },
-      {
-        label: 'Reassign Quote',
-        command: () => this.deleteQuote(quotation)
+        label: 'Process',
+        command: () => this.process(quotation)
       }
     );
 
@@ -128,23 +132,27 @@ export class QuotationManagementComponent {
     this.menu.toggle(event);
   }
 
-  viewQuote(quotation: any): void {
+  viewQuote(quotation: QuotationList): void {
     log.debug('View quote clicked:', quotation);
     this.setQuotationNumber(
+      quotation.quotationCode,
       quotation.quotationNumber,
-      quotation.productCode,
       quotation.clientCode
     );
   }
-
-  setQuotationNumber(quotationNumber: string, productCode: number, clientCode: number): void {
+  process(quotation: QuotationList): void {
+    log.debug('View quote clicked:', quotation);
+    this.processSelectedQuote(
+      quotation.quotationCode,
+      quotation.quotationNumber,
+      quotation.clientCode
+    );
+  }
+  setQuotationNumber(quotationCode: number, quotationNumber: string, clientCode: number): void {
     if (quotationNumber && quotationNumber.trim() !== '') {
       sessionStorage.setItem('quotationNum', quotationNumber);
-      if (productCode != null) {
-        sessionStorage.setItem('productCode', productCode.toString());
-      } else {
-        console.warn('Invalid productCode:', productCode);
-      }
+      sessionStorage.setItem('quotationCode', JSON.stringify(quotationCode));
+
       if (clientCode != null) {
         sessionStorage.setItem('clientCode', clientCode.toString());
       } else {
@@ -152,7 +160,6 @@ export class QuotationManagementComponent {
       }
       console.debug(`Quotation number ${quotationNumber} has been saved to session storage.`);
       console.debug(`ClientCode ${clientCode} has been saved to session storage.`);
-      console.debug(`ProductCode ${productCode} has been saved to session storage.`);
 
       this.viewQuoteFlag = true;
       sessionStorage.setItem('viewQuoteFlag', JSON.stringify(this.viewQuoteFlag));
@@ -161,7 +168,17 @@ export class QuotationManagementComponent {
       this.router.navigate(['/home/gis/quotation/quotation-summary']);
     }
   }
+  processSelectedQuote(quotationCode: number, quotationNumber: string, clientCode: number): void {
+    if (quotationNumber && quotationNumber.trim() !== '') {
+      sessionStorage.setItem('quotationNum', quotationNumber);
+      sessionStorage.setItem('quotationCode', JSON.stringify(quotationCode));
 
+
+
+
+      this.router.navigate(['/home/gis/quotation/quotation-summary']);
+    }
+  }
   onStatusSelected(selectedValue: any) {
 
     this.selectedStatus = selectedValue;
@@ -440,6 +457,8 @@ export class QuotationManagementComponent {
 
   createQuote(type: string) {
     this.utilService.clearSessionStorageData()
+    this.utilService.clearNormalQuoteSessionStorage()
+
     let nextPage = '/home/gis/quotation/quick-quote'
     if (type === 'NORMAL') {
       this.utilService.clearNormalQuoteSessionStorage()

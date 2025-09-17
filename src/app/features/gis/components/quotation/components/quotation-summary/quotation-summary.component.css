@@ -290,6 +290,10 @@ ul li a.active {
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
 .cancel {

@@ -309,7 +309,7 @@
         </div>
 
       </form>
-      
+
       <p class="more mt-4" (click)="toggleDetails()" style="cursor: pointer">
         {{ 'gis.quotation.show_more_details' | translate }}
         <span class="ml-1">
@@ -578,7 +578,7 @@
                     id="cancelDetails">
                     {{ 'gis.quotation.cancel' | translate }}
                   </button>
-                  <button type="button" class="btn btn-primary" id="saveDetails" (click)="submitAddProductForm()">
+                  <button type="button" class="btn btn-primary" id="saveDetails" (click)="submitAddProductForm();">
                     {{ 'gis.quotation.save_details' | translate }}
                   </button>
                 </div>
@@ -876,8 +876,7 @@
 
         <div class="col-8 d-flex justify-content-end">
           <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse"
-            data-bs-target="#productClauses" aria-expanded="false" aria-controls="riskClauses"
-            (click)="toggleProductClausesopen()">
+            data-bs-target="#productClauses" aria-expanded="false" (click)="toggleProductClausesopen()">
             <i class="fa-solid fa-chevron-down"></i>
           </button>
         </div>
@@ -991,7 +990,7 @@
                       </ng-container>
                       <!-- Actions -->
                       <ng-container *ngSwitchCase="'actions'">
-                        <div class="flex justify-start gap-4">
+                        <div class="flex justify-content-center gap-4">
                           <!-- Edit -->
                           <!-- <span class="p-button-label p-text-bold " [attr.data-bs-toggle]="productClause.isEditable === 'Y' ? 'modal' : null"
                           [attr.data-bs-target]="productClause.isEditable === 'Y' ? '#editClause' : null"
@@ -1377,7 +1376,10 @@
 
   <div class="float-end mb-4">
 
-    <button class="btn btn-primary" (click)="saveQuotationDetails()">
+    <button *ngIf="!quickQuoteConverted" class="btn btn-primary" (click)="saveQuotationDetails()">
+      {{ 'gis.quotation.next' | translate }}
+    </button>
+    <button *ngIf="quickQuoteConverted" class="btn btn-primary" (click)="updateQuickQuoteDetails()">
       {{ 'gis.quotation.next' | translate }}
     </button>
   </div>

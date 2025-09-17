@@ -353,6 +353,7 @@ export class RiskDetailsComponent {
   dragOffset = { x: 0, y: 0 };
   selectedLevelNumber: any;
   isNewClientSelected: boolean = false;
+  quickQuoteConverted: boolean = false;
 
   constructor(
     public subclassService: SubclassesService,
@@ -377,6 +378,8 @@ export class RiskDetailsComponent {
     private router: Router,
 
   ) {
+    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteConvertedFlag'))
+
     this.quotationCode = sessionStorage.getItem('quotationCode');
     this.quotationNumber = sessionStorage.getItem('quotationNum');
     log.debug("Quotation number from session storage:", this.quotationNumber)
@@ -830,15 +833,15 @@ export class RiskDetailsComponent {
       coverType: this.selectedRisk.coverTypeCode,
       premiumBand: this.selectedRisk.binderCode,
       value: this.selectedRisk.value,
-      vehicleMake: this.selectedRisk.scheduleDetails[0].details.level1.make,
-      vehicleModel: this.selectedRisk.scheduleDetails[0].details.level1.model,
-      yearOfManufacture: this.selectedRisk.scheduleDetails[0].details.level1.yearOfManufacture,
-      cubicCapacity: this.selectedRisk.scheduleDetails[0].details.level1.cubicCapacity,
-      seatingCapacity: this.selectedRisk.scheduleDetails[0].details.level1.carryCapacity,
-      bodyType: this.selectedRisk.scheduleDetails[0].details.level1.bodyType,
-      color: this.selectedRisk.scheduleDetails[0].details.level1.color,
-      chasisNumber: this.selectedRisk.scheduleDetails[0].details.level1.chasisNumber,
-      engineNumber: this.selectedRisk.scheduleDetails[0].details.level1.engineNumber
+      vehicleMake: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.make,
+      vehicleModel: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.model,
+      yearOfManufacture: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.yearOfManufacture,
+      cubicCapacity: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.cubicCapacity,
+      seatingCapacity: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.carryCapacity,
+      bodyType: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.bodyType,
+      color: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.color,
+      chasisNumber: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.chasisNumber,
+      engineNumber: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.engineNumber
     });
 
     log.debug("Patched form with selectedRisk:", this.selectedRisk);
@@ -1316,13 +1319,13 @@ export class RiskDetailsComponent {
     if (this.selectedSubclassCode) {
       try {
         await this.loadSelectedSubclassRiskFields(this.selectedSubclassCode);
-        const selectedVehicleMake = Number(this.selectedRisk?.scheduleDetails[0].details.level1.make)
+        const selectedVehicleMake = Number(this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.make)
         this.fetchTaxes();
         this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
         this.loadAllBinders();
         this.loadSubclassClauses(this.selectedSubclassCode);
         this.getVehicleMake();
-        this.getVehicleModel(selectedVehicleMake);
+        selectedVehicleMake && this.getVehicleModel(selectedVehicleMake);
 
         this.fetchYearOfManufacture();
       } catch (err) {
@@ -1692,7 +1695,14 @@ export class RiskDetailsComponent {
           this.quotationCode = quotationCode
           const quotationNo = data._embedded.quotationNo
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk edited succesfully');
-          this.updateSchedule()
+          // this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
+
+          if (this.quickQuoteConverted) {
+            this.createScheduleL1(this.quotationRiskCode)
+          } else {
+            this.updateSchedule()
+
+          }
 
 
           const subclasscode = this.selectedSubclassCode
@@ -2050,7 +2060,7 @@ export class RiskDetailsComponent {
 
     schedule.riskCode = this.quotationRiskCode;
     schedule.transactionType = "Q";
-    schedule.version = this.selectedRisk.scheduleDetails[0].version;
+    schedule.version = this.selectedRisk?.scheduleDetails?.[0] || 0;
 
     // Remove unnecessary fields
     const removeFields = [
@@ -2164,12 +2174,12 @@ export class RiskDetailsComponent {
   }
   prepareSchedulePayload() {
     const schedule = this.scheduleDetailsForm.value;
-    const riskform = JSON.parse(sessionStorage.getItem('riskFormDetails'));
+    const riskform = JSON.parse(sessionStorage.getItem('riskFormDetails')) || this.riskDetailsForm.value;
 
     log.debug('SELECTED RISK:', this.selectedRisk)
     log.debug("Risk form-session storage:", riskform)
     schedule.details.level1 = {
-      bodyType: riskform.bodyType,
+      bodyType: riskform?.bodyType,
       yearOfManufacture: riskform.yearOfManufacture,
       color: riskform.color,
       engineNumber: riskform.engineNumber,
@@ -5152,7 +5162,7 @@ export class RiskDetailsComponent {
           sumInsured: risk.value,
           useOfProperty: risk.subclass.description, // Default value
           taxes: product.taxInformation?.map(tax => ({
-            taxRateType: tax.taxType,
+            taxRateType: tax.taxType || tax.rateType,
             applicationLevel: null,
             code: tax.code || 0,
             divisionFactor: 0,
