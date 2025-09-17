@@ -206,35 +206,37 @@
     width: 100%;
   }
 }
-
+/* 
 ::ng-deep .custom-pdf-modal .p-dialog {
   margin: 0 !important;
 }
 
 ::ng-deep .custom-pdf-modal .p-dialog-content {
   padding: 0 !important;
-}
+} */
 
-::ng-deep .custom-pdf-modal .p-dialog-header {
+/* ::ng-deep .custom-pdf-modal .p-dialog-header {
   margin: 0 !important;
   padding: 0.5rem 1rem !important;
-}
+} */
 
-::ng-deep .custom-pdf-modal .p-dialog-content {
-  padding: 0 !important;
-  /* Remove inner padding */
-  background: transparent !important;
-  /* Remove dark background */
-  box-shadow: none !important;
-  /* Remove shadow if visible */
-}
 
 ::ng-deep .custom-pdf-modal .p-dialog-header {
-  background: white !important;
-  color: #00529b !important;
-  padding: 0.5rem 1rem !important;
-
+    display: flex !important;            
+    justify-content: space-between;        
+    align-items: flex-start;               
+    padding: 1rem 2.5rem 1rem 1rem;
+    background: white !important;
+    color: #00529b !important;
 }
+
+.dialog-header-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
 
 ::ng-deep .custom-pdf-modal .p-dialog-header-icon {
   color: red !important;
@@ -268,4 +270,4 @@
 
 iframe {
   background: white !important;
-}
+} 
