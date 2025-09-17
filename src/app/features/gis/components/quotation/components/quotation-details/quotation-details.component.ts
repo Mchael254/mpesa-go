@@ -205,6 +205,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   dragging = false;
   dragOffset = { x: 0, y: 0 };
   isNewClientSelected: boolean = false;
+  quickQuoteConverted: boolean = false;
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -224,6 +225,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private cd: ChangeDetectorRef
   ) {
+    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteConvertedFlag'))
     this.quotationAction = sessionStorage.getItem('quotationAction')
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
     this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
@@ -276,8 +278,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.updateProductsFromQuickQuote();
-    this.checkProducts();
+
     this.getuser();
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
@@ -319,18 +320,18 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   }
 
-  ngOnChanges(): void {
-    this.checkProducts();
-    this.updateProductsFromQuickQuote();
-  }
+  // ngOnChanges(): void {
+  //   this.checkProducts();
+  //   this.updateProductsFromQuickQuote();
+  // }
 
 
 
 
   checkProducts() {
-    if (this.productDetails && this.productDetails.length > 0) {
-      this.isProductClauseOpen = true;
-    }
+    // if (this.productDetails && this.productDetails.length > 0) {
+    //   this.isProductClauseOpen = true;
+    // }
   }
 
   ngAfterViewInit() {
@@ -469,7 +470,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug('Event received from Client search comp', eventData);
     const clientCode = eventData.id;
     this.selectedClientCode = clientCode;
-    this.selectedClientName = eventData.clientFullName
+    this.selectedClientName =
+      eventData.firstName && eventData.lastName
+        ? `${eventData.firstName} ${eventData.lastName}`
+        : eventData.firstName || eventData.lastName || '';
     sessionStorage.setItem("SelectedClientName", this.selectedClientName);
     this.quotationForm.controls['client'].setValue(this.selectedClientCode);
     if (document.activeElement instanceof HTMLElement) {
@@ -608,6 +612,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       if (this.sessionClauses.length > 0) {
         this.setProductClauseColumns(this.sessionClauses[0]);
       }
+
       return;
     }
 
@@ -1027,7 +1032,69 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   }
+  updateQuickQuoteDetails() {
+    log.debug('THIS IS CALEED IF IT IS A CONVERSION FROM QUICK QUOTE')
+    log.debug("Quotation form details >>>>", this.quotationForm)
+    log.debug("Selected agent >>>>", this.agentDetails)
+    log.debug("ProductDetails:", this.productDetails)
+    log.debug("QuoteDetails:", this.quotationDetails)
+    if (this.quotationForm.valid) {
+      const quotationFormValues = this.quotationForm.getRawValue();
+      const quotationPayload = {
+        quotationNumber: this.quotationDetails?.quotationNo,
+        quotationCode: this.quotationCode || null,
+        user: this.user,
+        branchCode: quotationFormValues.branch.id,
+        RFQDate: this.formatDate(quotationFormValues.RFQDate),
+        expiryDate: this.formatDate(quotationFormValues.expiryDate),
+        currencyCode: quotationFormValues.currency.id || this.defaultCurrency.id,
+        source: quotationFormValues.source.code,
+        currencyRate: this.exchangeRate,
+        agentShortDescription: this.selectedAgent?.shortDesc || "Direct",
+        agentCode: this.selectedAgent?.id || 0,
+        clientCode: this.selectedClientCode,
+        clientType: "I",
+        wefDate: this.formatDate(this.productDetails[0].coverFrom),
+        wetDate: this.formatDate(this.productDetails[0].coverTo),
+        frequencyOfPayment: quotationFormValues?.frequencyOfPayment?.value,
+        prospectCode: this.quotationDetails?.prospectCode,
+        premium: this.quotationDetails?.premium,
+        comments: this.quotationDetails?.comments,
 
+        quotationProducts: this.productDetails.map((value) => {
+          const existingProduct = this.quotationDetails?.quotationProducts?.find(
+            (p) => Number(p.productCode) == Number(value.productCode)
+          );
+          log.debug('existing product:', existingProduct)
+
+          return {
+            code: existingProduct?.code || null, // If editing, use existing code; otherwise null
+            quotationCode: this.quotationCode,
+            wef: this.formatDate(value.coverFrom),
+            wet: this.formatDate(value.coverTo),
+            productCode: value.productCode,
+            productName: value.productCode.description
+          };
+        })
+
+      }
+      log.debug("quotation payload to save", quotationPayload);
+      this.createQuotation(quotationPayload)
+    } else {
+      // Mark all fields as touched and validate the form
+      this.quotationForm.markAllAsTouched();
+      this.quotationForm.updateValueAndValidity();
+      for (let controlsKey in this.quotationForm.controls) {
+        if (this.quotationForm.get(controlsKey).invalid) {
+          log.debug(
+            `${controlsKey} is invalid`,
+            this.quotationForm.get(controlsKey).errors
+          );
+        }
+      }
+    }
+    return
+  }
   /**
    * Applies a global filter to the DataTable.
    * @method applyFilterGlobal
@@ -1533,6 +1600,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.products = products;
 
         const storedProducts = sessionStorage.getItem('availableProducts');
+        log.debug("StoredProducts:", storedProducts);
+
         if (storedProducts) {
           // Use saved products if they exist
           this.ProductDescriptionArray = JSON.parse(storedProducts);
@@ -1550,9 +1619,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           // Save initial list to sessionStorage
           sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
         }
+        this.updateProductsFromQuickQuote();
+        this.checkProducts();
 
-
-        console.log("✅ ProductDescriptionArray with filterText:", this.ProductDescriptionArray);
+        log.debug("ProductDescriptionArray with filterText:", this.ProductDescriptionArray);
 
 
         if (this.storedQuotationFormDetails?.productCode) {
@@ -1664,34 +1734,78 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   updateProductsFromQuickQuote(): void {
     const payloadString = sessionStorage.getItem('quickQuotePayload');
-    const productsString = sessionStorage.getItem('availableProducts');
-
-    if (!payloadString || !productsString) return;
+    if (!payloadString) return;
 
     const quickQuotePayload = JSON.parse(payloadString);
-    let availableProducts = JSON.parse(productsString);
 
     if (!quickQuotePayload?.products || !Array.isArray(quickQuotePayload.products)) {
       return;
     }
 
-    this.productDetails = quickQuotePayload.products.map((p: any) => {
-      return {
-        productCode: { code: p.code, description: p.productName || p.description },
-        productName: p.productName || p.description,
-        coverFrom: new Date(quickQuotePayload.effectiveDate),
-        coverTo: new Date(p.effectiveTo),
-        ...p
-      };
+    // reset productDetails
+    this.productDetails = [];
+
+    quickQuotePayload.products.forEach((payloadProduct: any) => {
+      const matchedDesc = this.ProductDescriptionArray.find((desc: any) =>
+        desc.code?.toString() === payloadProduct.code?.toString()
+      );
+
+      if (matchedDesc) {
+        this.productDetails.push({
+          productCode: payloadProduct.code?.toString(),
+          productName: payloadProduct.description || matchedDesc.description,
+          coverFrom: quickQuotePayload.effectiveDate,
+          coverTo: payloadProduct.effectiveTo || null
+        });
+
+        // this.ProductDescriptionArray = this.ProductDescriptionArray.filter(
+        //   (p: any) => p.code?.toString() !== payloadProduct.code?.toString()
+        // );
+      }
     });
 
-    const usedCodes = quickQuotePayload.products.map((p: any) => String(p.code));
+    // save updated values to sessionStorage
+    // sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+    // log.debug("Saved Product Details to sessionStorage:", this.productDetails);
+    // sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
 
-    availableProducts = availableProducts.filter(
-      (ap: any) => !usedCodes.includes(String(ap.code))
-    );
+    // reset form
+    // this.quotationProductForm.reset({
+    //   productCodes: [],
+    //   wef: '',
+    //   wet: ''
+    // });
 
-    sessionStorage.setItem('availableProducts', JSON.stringify(availableProducts));
+    // call getProductClause for all products in productDetails
+    this.productDetails.forEach((prod: any) => {
+      this.getProductClause({ code: prod.productCode });
+    });
+
+
+    log.debug("Final product details:", this.productDetails);
+
+    if (this.productDetails.length > 0) {
+      this.setColumnsFromProductDetails(this.productDetails[0]);
+    }
+
+
+    // this.productDetails = quickQuotePayload.products.map((p: any) => {
+    //   return {
+    //     productCode: { code: p.code, description: p.productName || p.description },
+    //     productName: p.productName || p.description,
+    //     coverFrom: new Date(quickQuotePayload.effectiveDate),
+    //     coverTo: new Date(p.effectiveTo),
+    //     ...p
+    //   };
+    // });
+
+    // const usedCodes = quickQuotePayload.products.map((p: any) => String(p.code));
+
+    // availableProducts = availableProducts.filter(
+    //   (ap: any) => !usedCodes.includes(String(ap.code))
+    // );
+
+    // sessionStorage.setItem('availableProducts', JSON.stringify(availableProducts));
     // this.getProductClause({ code: selectedProductCode });
   }
 
@@ -1824,19 +1938,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       wet: ''
     });
 
-    // Optionally fetch product clauses
     this.getProductClause({ code: selectedProductCode });
     this.setColumnsFromProductDetails(this.productDetails[0]);
     this.checkProducts();
 
-    // Close modal automatically
     const closeBtn = document.querySelector('.btn-close') as HTMLElement;
     closeBtn?.click();
-    // ⚡ Force change detection so p-table updates immediately
     this.cd.detectChanges();
 
-    // Optionally show the table if it’s collapsed
     this.showProducts = true;
+    this.isProductClauseOpen = true
   }
 
 

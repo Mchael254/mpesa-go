@@ -1210,6 +1210,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     );
 
     if (matchingProduct) {
+      this.handleRowClick(matchingProduct.riskInformation[0])
+      this.isRiskCollapsibleOpen = true
       this.taxDetails = matchingProduct.taxInformation;
       if (this.taxDetails.length > 0) {
         this.setColumnsFromTaxesDetails(this.taxDetails[0])
@@ -1228,7 +1230,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     if (this.productClauses) {
       this.setColumnsFromClausesDetails(this.productClauses[0])
     }
-    this.handleRowClick(matchingProduct.riskInformation[0])
   }
 
   loadAllSubclass() {
@@ -1737,6 +1738,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.clientService.getClientById(id).subscribe((data) => {
       this.clientDetails = data;
       log.debug('Selected Client Details:', this.clientDetails);
+      // this.selectedClientName = this.clientDetails.firstName +''+ this.clientDetails.lastName
       const clientDetailsString = JSON.stringify(this.clientDetails);
       sessionStorage.setItem('clientDetails', clientDetailsString);
       this.saveclient();
@@ -1752,8 +1754,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
    */
   saveclient() {
     this.clientCode = Number(this.clientDetails.id);
-    this.clientName =
-      this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
+    this.clientName = (this.clientDetails?.firstName ?? '') + ' ' + (this.clientDetails?.lastName ?? '');
+
+    log.debug("Client name:", this.clientName)
     sessionStorage.setItem('clientCode', this.clientCode);
   }
 
@@ -2789,7 +2792,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   setColumnsFromRiskClausesDetails(sample: riskClauses) {
-    const defaultVisibleFields = ['sectionShortDescription',
+    const defaultVisibleFields = [
       'clauseCode',
       'clause',
       'shortDescription'
