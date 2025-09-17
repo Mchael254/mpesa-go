@@ -716,7 +716,7 @@ export class UtilService {
       'insuredCode', 'original_limits_of_liability_20242190068', 'original_excesses_460',
       'binderList', 'selectedSubclasscode', 'selectedClient', 'selectedClientId',
       'allClausesMap', 'isNewClientSelected', 'selectedSubclassCode',
-      'productFormDetails', 'availableProducts',
+      'productFormDetails', 'availableProducts', 'quickQuoteConvertedFlag',
       'quotation_branch', 'riskClauseMap', 'selectedRiskCode',
       'quotation_currency', 'sumInsured',
       'riskFormDetails', 'SelectedClientName', 'quotationForm', 'quotationPayload',

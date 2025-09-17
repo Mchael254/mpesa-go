@@ -104,11 +104,18 @@
           <div class="row mb-3">
             <div *ngIf="!isNewClientSelected" class="col-md-4 d-flex">
               <p class="label w-50">Client</p>
-              <p class="content w-50">{{ quotationView?.clientName }}</p>
+              <p class="content w-50">{{ quotationView?.clientName || clientName }}</p>
             </div>
             <div *ngIf="isNewClientSelected" class="col-md-4 d-flex">
               <p class="label w-50">Prospect</p>
-              <p class="content w-50">{{ storedQuotationFormDetails?.client |sentenceCase}}</p>
+              <!-- <p class="content w-50">{{ storedQuotationFormDetails?.client |sentenceCase}}</p> -->
+              <span class="content w-50 d-inline-block text-truncate" [pTooltip]="storedQuotationFormDetails?.client"
+                tooltipPosition="top">
+                {{ storedQuotationFormDetails?.client | sentenceCase }}
+              </span>
+
+
+
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Proposer</p>
@@ -144,7 +151,7 @@
               <p class="label w-50">Premium</p>
               <p class="content w-50">
                 {{ quotationView?.premium | currency: currencyObj?.prefix :
-                'symbol' : '1.0-0'}}
+                'symbol' : '1.2-2'}}
               </p>
             </div>
             <div class="col-md-4 d-flex">
@@ -316,7 +323,7 @@
                           <ng-container *ngSwitchDefault>
                             <ng-container
                               *ngIf="col.field === 'premium' || col.field === 'totalSumInsured'; else defaultField">
-                              {{ product[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.0-0'
+                              {{ product[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2'
                               }}
                             </ng-container>
                             <ng-template #defaultField>
@@ -589,7 +596,15 @@
 
                       <tr>
                         <td *ngFor="let col of taxesColumns" [hidden]="!col.visible">
-                          {{ getCellValue(tax, col.field) }}
+
+                          <ng-container *ngIf="col.field === 'taxAmount'; else defaultField">
+                            <div class="text-end"> {{ tax[col.field] | currency: currencyObj?.prefix :
+                              'symbol' : '1.2-2' }}
+                            </div>
+                          </ng-container>
+                          <ng-template #defaultField>
+                            {{ tax[col.field] }}
+                          </ng-template>
                         </td>
                       </tr>
                     </ng-template>
@@ -889,7 +904,7 @@
                             <ng-container *ngIf="col.field === 'limitAmount' || col.field === 'premiumAmount'
                               || col.field === 'freeLimit'; else defaultField">
                               <div class="text-end">
-                                {{ section[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.0-0' }}
+                                {{ section[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
                               </div>
                             </ng-container>
 
@@ -1060,7 +1075,7 @@
                           <ng-container *ngSwitchDefault>
                             <ng-container *ngIf="col.field === 'value'; else defaultField">
                               <div class="text-end">
-                                {{ rowData[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.0-0' }}
+                                {{ rowData[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
                               </div>
                             </ng-container>
 
@@ -1226,7 +1241,7 @@
                           <ng-container *ngSwitchDefault>
                             <ng-container *ngIf="col.field === 'value'; else defaultField">
                               <div class="text-end">
-                                {{ getCellValue(rowData, col.field) | currency: currencyObj?.prefix : 'symbol' : '1.0-0'
+                                {{ getCellValue(rowData, col.field) | currency: currencyObj?.prefix : 'symbol' : '1.2-2'
                                 }}
                               </div>
                             </ng-container>
@@ -1432,7 +1447,7 @@
                             <ng-container *ngIf="col.field === 'value'; else defaultField">
                               <div class="text-end">
                                 {{ sanitizeCurrency(getCellValue(rowData, col.field))
-                                | currency: currencyObj?.prefix : 'symbol' : '1.0-0' }}
+                                | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
                               </div>
                             </ng-container>
 
