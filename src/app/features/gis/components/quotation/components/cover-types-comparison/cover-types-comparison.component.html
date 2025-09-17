@@ -1,28 +1,11 @@
 <div class="mx-4  mt-4">
-  <div class="row" *ngIf="isExpanded">
+  <div class="row" *ngIf="isExpanded" [class.error-border]="!selectedCoverTypeCode"
+    pTooltip="Select cover type to continue" tooltipPosition="top" [tooltipDisabled]="!!selectedCoverTypeCode">
     <!-- Cover Section -->
     <div class="col-5">
       <div class="row">
         <div class="col-12 scrollable-container">
-          <!-- <div class="card mb-3" *ngFor="let coverType of riskLevelPremium.coverTypeDetails; let i = index">
-              <div class="card-body cover-types-body">
-                <label>
-                  <input type="radio" name="{{riskLevelPremium.code +  coverType.coverTypeCode}}"
-                    [value]="coverType.coverTypeCode" [(ngModel)]="selectedCoverTypeCode" [checked]="i === 0"
-                    (change)="onCoverTypeSelected(coverType) " class="radio-btn" />
-                  <span class="cover-name">{{
-                    coverType.coverTypeDescription ||
-                    coverType.coverTypeShortDescription
-                    | sentenceCase
-                    }}</span><br />
-                  <small class="cover-premium">
-                    {{ 'gis.quotation.basic_premium' | translate }}:<span style="font-weight: bold;">{{
-                      coverType.computedPremium | number: '1.2-2'
-                      }}</span>
-                  </small>
-                </label>
-              </div>
-            </div> -->
+
           <div class="card mb-3" *ngFor="let coverType of riskLevelPremium.coverTypeDetails; let i = index"
             [class.selected]="selectedCoverTypeCode === coverType.coverTypeCode"
             (click)="onCoverTypeSelected(coverType);" style="cursor: pointer;">

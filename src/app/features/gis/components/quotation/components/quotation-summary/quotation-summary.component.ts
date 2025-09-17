@@ -259,7 +259,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   reportBlobs: { [code: string]: Blob } = {};
   viewDocForm!: FormGroup;
   public currencyObj: NgxCurrencyConfig;
-
+  dragging = false;
+  dragOffset = { x: 0, y: 0 };
+  isNewClientSelected: boolean = false;
+  storedQuotationFormDetails: any = null
 
   constructor(
     public quotationService: QuotationsService,
@@ -316,7 +319,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.quotationNumber = sessionStorage.getItem('quotationNumber') || sessionStorage.getItem('quotationNum');
     log.debug('quotationCode', this.quotationCodeString)
     log.debug("quick Quotation number", this.quotationNumber);
-
+    this.isNewClientSelected = JSON.parse(sessionStorage.getItem('isNewClientSelected'))
+    this.storedQuotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
+    log.debug("QUOTATION FORM DETAILS", this.storedQuotationFormDetails)
     this.conversionFlagString = sessionStorage.getItem("conversionFlag");
     this.conversionFlag = JSON.parse(this.conversionFlagString);
     log.debug("conversion flag:", this.conversionFlag);
@@ -578,9 +583,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
         // extract client-code and productCode
         this.prodCode = this.quotationView.quotationProducts[0].code;
-        this.clientCode = this.quotationView.clientCode;
+        this.clientCode = this.quotationView?.clientCode;
 
-        this.loadClientDetails(this.clientCode);
+        this.clientCode && this.loadClientDetails(this.clientCode);
         // this.getExternalClaimsExperience(this.clientCode);
         // this.getInternalClaimsExperience(this.clientCode);
         // Handle risk information and session storage
@@ -2395,14 +2400,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     return hasRights;
   }
 
+
   toggleProducts(iconElement: HTMLElement): void {
     this.showProducts = true;
 
-
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2411,14 +2416,33 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showProductColumnModal = true;
   }
+
+
+  onDragStart(event: MouseEvent): void {
+    this.dragging = true;
+    this.dragOffset.x = event.clientX - parseInt(this.columnModalPosition.left, 10);
+    this.dragOffset.y = event.clientY - parseInt(this.columnModalPosition.top, 10);
+  }
+
+  onDragMove(event: MouseEvent): void {
+    if (this.dragging) {
+      this.columnModalPosition.top = `${event.clientY - this.dragOffset.y}px`;
+      this.columnModalPosition.left = `${event.clientX - this.dragOffset.x}px`;
+    }
+  }
+
+  onDragEnd(): void {
+    this.dragging = false;
+  }
+
+
   toggleClauses(iconElement: HTMLElement): void {
     this.showClauses = true;
 
-
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2427,14 +2451,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showClausesColumnModal = true;
   }
+
   toggleTaxes(iconElement: HTMLElement): void {
-
-
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2445,12 +2468,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
   toggleRisk(iconElement: HTMLElement): void {
 
-
-
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2459,14 +2480,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showRiskColumnModal = true;
   }
+
   toggleSection(iconElement: HTMLElement): void {
-
-
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2476,14 +2496,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.showSectionColumnModal = true;
   }
 
+
+
   toggleRiskClauses(iconElement: HTMLElement): void {
-
-
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2495,12 +2515,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   toggleSchedule(iconElement: HTMLElement): void {
 
-
-
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2509,14 +2527,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showScheduleColumnModal = true;
   }
+
+
   togglePeril(iconElement: HTMLElement): void {
-
-
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2525,14 +2543,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showPerilColumnModal = true;
   }
+
+
   toggleExcess(iconElement: HTMLElement): void {
-
-
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2544,12 +2562,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   toggleLimitsOfLiability(iconElement: HTMLElement): void {
 
-
-
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2558,7 +2574,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showLimitsOfLiabilityColumnModal = true;
   }
-
   setColumnsFromProductDetails(sample: ProductDetails) {
     const defaultVisibleFields = [
       'productName',
