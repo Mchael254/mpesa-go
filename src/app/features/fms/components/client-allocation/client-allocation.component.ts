@@ -29,7 +29,7 @@ import { Router } from '@angular/router';
 import { ReportsService } from '../../../../shared/services/reports/reports.service';
 
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
-;import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
+import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { DmsService } from '../../../../shared/services/dms/dms.service';
 import { FmsSetupService } from '../../services/fms-setup.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -435,7 +435,7 @@ export class ClientAllocationComponent {
   flattenedAllocationDetails: any[] = [];
   agent: AgentDTO;
   rctShareForm: FormGroup;
-emailPattern :string;
+  emailPattern: string;
   /**
    * Constructor for `ClientAllocationComponent`.
    * @param receiptDataService Service for managing receipt data
@@ -609,11 +609,10 @@ emailPattern :string;
       phone: ['', [Validators.required, Validators.pattern(/^\d{12}$/)]], // Initially required with 12 digits
       name: ['', Validators.required],
       shareMethod: ['whatsapp', Validators.required], // Default to 'whatsapp'
-      
     });
     this.listenForShareMethodChanges();
   }
- listenForShareMethodChanges(): void {
+  listenForShareMethodChanges(): void {
     // Get a reference to the shareMethod control
     const shareMethodControl = this.rctShareForm.get('shareMethod');
 
@@ -624,12 +623,15 @@ emailPattern :string;
         const emailControl = this.rctShareForm.get('email');
         if (method === 'email') {
           // If email is selected:
-  
-          emailControl.setValidators([Validators.required, Validators.pattern(this.emailPattern)]);
+
+          emailControl.setValidators([
+            Validators.required,
+            Validators.pattern(this.emailPattern),
+          ]);
           phoneControl.clearValidators(); // Remove validators from phone
         } else {
           // If whatsapp is selected:
-          
+
           phoneControl.setValidators(Validators.required);
           emailControl.clearValidators(); // Remove validators from email
         }
@@ -1930,32 +1932,32 @@ emailPattern :string;
    * BEST PRACTICE: I have a single helper function to build the share data.
    * This avoids repeating logic and is the single source of truth.
    */
-   /**
- * A streamlined helper function to build the share data payload.
- * It assumes the form has already been validated.
- */
-private prepareShareData(): {
-  shareType: string;
-  recipientEmail: string | null;
-  recipientPhone: string | null;
-} {
- 
-  const formValues = this.rctShareForm.getRawValue();
+  /**
+   * A streamlined helper function to build the share data payload.
+   * It assumes the form has already been validated.
+   */
+  private prepareShareData(): {
+    shareType: string;
+    recipientEmail: string | null;
+    recipientPhone: string | null;
+  } {
+    const formValues = this.rctShareForm.getRawValue();
 
-  if (formValues.shareMethod === 'email') {
-    return {
-      shareType:formValues.shareMethod.toUpperCase() ,
-      recipientEmail: formValues.email,
-      recipientPhone: null,
-    };
-  } else { // 'whatsapp'
-    return {
-      shareType: formValues.shareMethod.toUpperCase(),
-      recipientPhone: formValues.phone,
-      recipientEmail: null, // Ensure email is null for whatsapp
-    };
+    if (formValues.shareMethod === 'email') {
+      return {
+        shareType: formValues.shareMethod.toUpperCase(),
+        recipientEmail: formValues.email,
+        recipientPhone: null,
+      };
+    } else {
+      // 'whatsapp'
+      return {
+        shareType: formValues.shareMethod.toUpperCase(),
+        recipientPhone: formValues.phone,
+        recipientEmail: null, // Ensure email is null for whatsapp
+      };
+    }
   }
-}
 
   /**
    *
@@ -1966,16 +1968,19 @@ private prepareShareData(): {
   postClientDetails() {
     //  Mark all fields as touched to show any validation errors in the UI
     this.rctShareForm.markAllAsTouched();
-     //  Check the form's overall validity.
-  if (this.rctShareForm.invalid) {
-    this.globalMessagingService.displayErrorMessage('Validation Error', 'Please correct the errors before sending.');
-    return; // Stop if the form is invalid
-  }
+    //  Check the form's overall validity.
+    if (this.rctShareForm.invalid) {
+      this.globalMessagingService.displayErrorMessage(
+        'Validation Error',
+        'Please correct the errors before sending.'
+      );
+      return; // Stop if the form is invalid
+    }
     const shareData = this.prepareShareData();
-   if (!shareData) {
+    if (!shareData) {
       return; // Stop if data is invalid (e.g., no method selected)
     }
-  
+
     const body = {
       shareType: shareData.shareType,
       clientName: this.agent.name,
@@ -2018,6 +2023,7 @@ private prepareShareData(): {
           customMessage,
           backendError
         );
+        //route to receipt capture screen if receipt share fails
         this.router.navigate(['/home/fms/receipt-capture']);
       },
     });
@@ -2076,13 +2082,16 @@ private prepareShareData(): {
     //  Mark all fields as touched to show any validation errors in the UI
     this.rctShareForm.markAllAsTouched();
     this.sessionStorage.setItem('receipting', 'Y');
-     //  Check the form's overall validity.
-  if (this.rctShareForm.invalid) {
-    this.globalMessagingService.displayErrorMessage('Validation Error', 'Please correct the errors before sending.');
-    return; // Stop if the form is invalid
-  }
-       const shareData = this.prepareShareData();
-   if (!shareData) {
+    //  Check the form's overall validity.
+    if (this.rctShareForm.invalid) {
+      this.globalMessagingService.displayErrorMessage(
+        'Validation Error',
+        'Please correct the errors before sending.'
+      );
+      return; // Stop if the form is invalid
+    }
+    const shareData = this.prepareShareData();
+    if (!shareData) {
       return; // Stop if data is invalid (e.g., no method selected)
     }
     // Create a single, comprehensive object to store
