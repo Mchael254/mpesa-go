@@ -2018,6 +2018,7 @@ private prepareShareData(): {
           customMessage,
           backendError
         );
+        this.router.navigate(['/home/fms/receipt-capture']);
       },
     });
   }
