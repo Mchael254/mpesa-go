@@ -13,7 +13,8 @@ import { Router } from '@angular/router';
 
 import {ReportsService} from '../../../../shared/services/reports/reports.service';
 import {DmsService} from '../../../../shared/services/dms/dms.service';
-import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
+
+import {  SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { FmsSetupService } from '../../services/fms-setup.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -544,6 +545,8 @@ it('should display an error message when getAllocations fails', () => {
 
     // Act
     component.getAllocations();
+    // Act
+    component.getAllocations();
 
     // Assert
     // FIX: Expect the translation key
@@ -717,7 +720,16 @@ it('should display error message if fetching document fails', () => {
 
     // Act
     component.fetchParamStatus();
+    // Act
+    component.fetchParamStatus();
 
+    // Assert
+    // FIX: Expect the correct title and the defined error message
+    expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
+        'fms.errorMessage',
+        errorMessage
+    );
+});
     // Assert
     // FIX: Expect the correct title and the defined error message
     expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(

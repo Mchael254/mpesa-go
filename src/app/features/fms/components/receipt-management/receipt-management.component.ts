@@ -29,7 +29,8 @@ import { Pagination } from 'src/app/shared/data/common/pagination';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
 import { ReceiptService } from '../../services/receipt.service';
-
+import { Logger } from 'src/app/shared/services';
+const log= new Logger('ReceiptManagementComponent');
 import { YesNo } from '../shared/yes-no.component';
 @Component({
   selector: 'app-receipt-management',
@@ -118,6 +119,7 @@ export class ReceiptManagementComponent implements OnInit {
    * @property {OrganizationDTO} defaultOrg - The default organization.
    */
   defaultOrg: OrganizationDTO;
+  emailPattern:string;
   //raiseBankCharge: string = 'no';
   constructor(
     private receiptManagementService: ReceiptManagementService,
@@ -223,30 +225,31 @@ export class ReceiptManagementComponent implements OnInit {
     });
 
     // Listen for changes to be truly reactive
-    this.listenForShareMethodChanges();
+  
   }
   initializeRctSharingForm() {
-      const emailPattern = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$';
+      this.emailPattern = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$';
     this.rctShareForm = this.fb.group({
-      email: ['', [Validators.pattern(emailPattern), Validators.required]], // Not required initially
+      email: ['', [Validators.pattern(this.emailPattern), Validators.required]], // Not required initially
       phone: ['', [Validators.required, Validators.pattern(/^\d{12}$/)]], // Initially required with 12 digits for a phone
       name: ['', Validators.required],
       shareMethod: ['whatsapp', Validators.required], // Default to 'whatsapp'
     });
+      this.listenForShareMethodChanges();
   }
   listenForShareMethodChanges(): void {
     // Get a reference to the shareMethod control
-    const shareMethodControl = this.cancelForm.get('shareMethod');
+    const shareMethodControl = this.rctShareForm.get('shareMethod');
 
     if (shareMethodControl) {
       // Subscribe to its valueChanges observable
       shareMethodControl.valueChanges.subscribe((method) => {
-        const phoneControl = this.cancelForm.get('phone');
-        const emailControl = this.cancelForm.get('email');
+        const phoneControl = this.rctShareForm.get('phone');
+        const emailControl = this.rctShareForm.get('email');
         if (method === 'email') {
           // If email is selected:
           this.whatsappSelected = false;
-          emailControl.setValidators([Validators.required, Validators.email]);
+          emailControl.setValidators([Validators.required, Validators.pattern(this.emailPattern)]);
           phoneControl.clearValidators(); // Remove validators from phone
         } else {
           // If whatsapp is selected:
@@ -254,7 +257,7 @@ export class ReceiptManagementComponent implements OnInit {
           phoneControl.setValidators(Validators.required);
           emailControl.clearValidators(); // Remove validators from email
         }
-        // Important: Update the validity state of the controls
+        //  Update the validity state of the controls
         emailControl.updateValueAndValidity();
         phoneControl.updateValueAndValidity();
       });
@@ -730,65 +733,33 @@ export class ReceiptManagementComponent implements OnInit {
     });
   }
   /**
-   * BEST PRACTICE: I have a single helper function to build the share data.
-   * This avoids repeating logic and is the single source of truth.
-   */
-  private prepareShareData(): {
-    shareType: string;
-    recipientEmail: string | null;
-    recipientPhone: string | null;
-  } | null {
-    const shareMethod = this.rctShareForm.get('shareMethod')?.value;
-    const phoneControl = this.rctShareForm.get('phone');
-    const emailControl = this.rctShareForm.get('email');
-    const nameControl = this.rctShareForm.get('name');
+ * A streamlined helper function to build the share data payload.
+ * It assumes the form has already been validated.
+ */
+private prepareShareData(): {
+  shareType: string;
+  recipientEmail: string | null;
+  recipientPhone: string | null;
+} {
+  // Use getRawValue() once to get a clean snapshot of all form values.
+  const formValues = this.rctShareForm.getRawValue();
 
-    if (!shareMethod) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Please select a share method.'
-      );
-      return null;
-    }
-    if(nameControl?.invalid){
-        this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'Name is required'
-      );
-      return null;
-    }
-    if (shareMethod === 'email') {
-      if (emailControl?.invalid) {
-        this.globalMessagingService.displayErrorMessage(
-          'Validation Error',
-          'Please enter a valid email address.'
-        );
-        return null;
-      }
-      return {
-        shareType: 'EMAIL',
-        recipientEmail: this.rctShareForm.get('email')?.value || '',
-        recipientPhone: null,
-      };
-    } else if (shareMethod === 'whatsapp') {
-      // --- START: ADDED VALIDATION BLOCK ---
-      const phoneRegex = /^\d{12}$/;
-      if (phoneControl?.invalid || !phoneRegex.test(phoneControl?.value)) {
-        this.globalMessagingService.displayErrorMessage(
-          'Validation Error',
-          'Invalid phone number format. It must be xxx followed by 9 digits.'
-        );
-        return null; // Stop the process
-      }
-      // --- END:
-      return {
-        shareType: 'WHATSAPP',
-        recipientPhone: this.rctShareForm.get('phone')?.value || '',
-        recipientEmail: '',
-      };
-    }
-    return null; // Should not happen if a share method is selected
+  if (formValues.shareMethod === 'email') {
+    return {
+      shareType: formValues.shareMethod.toUpperCase(),
+      recipientEmail: formValues.email,
+      recipientPhone: null,
+    };
+  } else { // 'whatsapp'
+    return {
+      shareType: formValues.shareMethod.toUpperCase(),
+      recipientPhone: formValues.phone,
+      recipientEmail: null, // Ensure email is null for whatsapp
+    };
   }
+}
+  
+
   /**
    *
    * @description this method performs validation check of the form inputs before it posts
@@ -799,15 +770,17 @@ export class ReceiptManagementComponent implements OnInit {
     //  Mark all fields as touched to show any validation errors in the UI
 
     this.rctShareForm.markAllAsTouched();
-
+  //  Check the form's overall validity.
+  if (this.rctShareForm.invalid) {
+    this.globalMessagingService.displayErrorMessage('Validation Error', 'Please correct the errors before sending.');
+    return; // Stop if the form is invalid
+  }
     //const shareData = this.rctShareForm.getRawValue();
       const shareData = this.prepareShareData();
    if (!shareData) {
       return; // Stop if data is invalid (e.g., no method selected)
     }
-    // if (this.rctShareForm.invalid) {
-    //   return; // Stop if data is invalid
-    // }
+  
     const body = {
       shareType: shareData.shareType,
       clientName: this.agent.name,
@@ -879,7 +852,11 @@ export class ReceiptManagementComponent implements OnInit {
     //  Mark all fields as touched to show any validation errors in the UI
     this.rctShareForm.markAllAsTouched();
     this.sessionStorage.setItem('receipting', 'N');
-    
+      //  Check the form's overall validity.
+  if (this.rctShareForm.invalid) {
+    this.globalMessagingService.displayErrorMessage('Validation Error', 'Please correct the errors before sending.');
+    return; // Stop if the form is invalid
+  }
        const shareData = this.prepareShareData();
    if (!shareData) {
       return; // Stop if data is invalid (e.g., no method selected)
