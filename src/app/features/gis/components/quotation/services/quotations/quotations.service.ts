@@ -972,7 +972,7 @@ export class QuotationsService {
     const today = new Date().toISOString().split('T')[0];
 
     // Use today's date as default for dateFrom if not provided
-    paramsObj['dateFrom'] = dateFrom || today;
+    // paramsObj['dateFrom'] = dateFrom;
 
     // Add mandatory parameters with default values
     paramsObj['pageNo'] = pageNo.toString();
@@ -988,9 +988,9 @@ export class QuotationsService {
     if (productCode) {
       paramsObj['productCode'] = productCode;
     }
-    // if (dateFrom) {
-    //   paramsObj['dateFrom'] = dateFrom || today;
-    // }
+    if (dateFrom) {
+      paramsObj['dateFrom'] = dateFrom
+    }
     if (dateTo) {
       paramsObj['dateTo'] = dateTo;
     }

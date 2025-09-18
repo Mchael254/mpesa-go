@@ -18,8 +18,8 @@ import { HttpParams } from "@angular/common/http";
 import { DatePipe } from "@angular/common";
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { BehaviorSubject } from "rxjs";
-import {Logger} from "../logger/logger.service";
-import {ConfigFormFieldsDto} from "../../data/common/dynamic-screens-dto";
+import { Logger } from "../logger/logger.service";
+import { ConfigFormFieldsDto } from "../../data/common/dynamic-screens-dto";
 
 // import { format, subYears } from 'date-fns';
 
@@ -708,15 +708,15 @@ export class UtilService {
       'quotation_quotationType',
       'quotation_rfqDate',
       'quotation_source',
-      'selectedCoverFromDate',
-      'selectedCoverToDate',
-      'selectedProductCode',
-      'selectedVehicleModel',
-      'vehicleModelList',
-      'insuredCode',
-      'binderList',
-      'allClausesMap',
-      'productFormDetails',
+      'selectedCoverFromDate', 'limits_of_liability_20242190068',
+      'selectedCoverToDate', 'added_limits_of_liability_undefined',
+      'selectedProductCode', 'added_limits_of_liability_20242190068', 'added_limits_of_liability_undefined',
+      'selectedVehicleModel', 'excesses_460', 'dynamicSubclassFormField', 'availablePerils_460',
+      'vehicleModelList', 'newQuotationProductCode', 'limits_of_liability_undefined',
+      'insuredCode', 'original_limits_of_liability_20242190068', 'original_excesses_460',
+      'binderList', 'selectedSubclasscode', 'selectedClient', 'selectedClientId',
+      'allClausesMap', 'isNewClientSelected', 'selectedSubclassCode',
+      'productFormDetails', 'availableProducts', 'quickQuoteConvertedFlag',
       'quotation_branch', 'riskClauseMap', 'selectedRiskCode',
       'quotation_currency', 'sumInsured',
       'riskFormDetails', 'SelectedClientName', 'quotationForm', 'quotationPayload',

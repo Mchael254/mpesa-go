@@ -102,9 +102,20 @@
           <p class="card-titles mb-4">Client information</p>
 
           <div class="row mb-3">
-            <div class="col-md-4 d-flex">
+            <div *ngIf="!isNewClientSelected" class="col-md-4 d-flex">
               <p class="label w-50">Client</p>
-              <p class="content w-50">{{ quotationView?.clientName }}</p>
+              <p class="content w-50">{{ quotationView?.clientName || clientName }}</p>
+            </div>
+            <div *ngIf="isNewClientSelected" class="col-md-4 d-flex">
+              <p class="label w-50">Prospect</p>
+              <!-- <p class="content w-50">{{ storedQuotationFormDetails?.client |sentenceCase}}</p> -->
+              <span class="content w-50 d-inline-block text-truncate" [pTooltip]="storedQuotationFormDetails?.client"
+                tooltipPosition="top">
+                {{ storedQuotationFormDetails?.client | sentenceCase }}
+              </span>
+
+
+
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Proposer</p>
@@ -120,7 +131,7 @@
             <div class="col-md-4 d-flex">
               <p class="label w-50">Source</p>
               <p class="content w-50">
-                {{ quotationView?.source.description }}
+                {{ quotationView?.source?.description }}
               </p>
             </div>
             <div class="col-md-4 d-flex">
@@ -138,7 +149,10 @@
           <div class="row mb-3">
             <div class="col-md-4 d-flex">
               <p class="label w-50">Premium</p>
-              <p class="content w-50">{{ quotationView?.premium | number }}</p>
+              <p class="content w-50">
+                {{ quotationView?.premium | currency: currencyObj?.prefix :
+                'symbol' : '1.2-2'}}
+              </p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Sum Insured</p>
@@ -250,7 +264,9 @@
 
             <!-- Floating Column Selector -->
             <div *ngIf="showProductColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-              [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+              [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+              (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+              (document:mouseup)="onDragEnd()">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <strong class="text-primary">Select Columns</strong>
                 <button class="btn-close btn-sm" (click)="showProductColumnModal = false"></button>
@@ -271,6 +287,7 @@
             <div class="mt-3" id="">
               <p-table [value]="productDetails" dataKey="productCode?.code" editMode="row"
                 [tableStyle]="{'min-width': '50rem'}" [scrollable]="true" scrollDirection="horizontal"
+                [paginator]="productDetails?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
                 [resizableColumns]="true" scrollHeight="400px">
 
                 <!-- Table Header -->
@@ -289,15 +306,32 @@
                   <tr (click)="handleProductClick(product)" [ngClass]="{ 'selected-row': selectedProduct === product }"
                     [pEditableRow]="product" class="hover:!bg-gray-50 !cursor-pointer transition-colors">
 
-                    <td *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header">
+                    <td *ngFor="let col of columns" [hidden]="!col.visible" class="flexible-header"
+                      [ngClass]="{ 'text-end': col.field === 'premium' || col.field === 'totalSumInsured' }">
 
                       <ng-container [ngSwitch]="col.field">
 
-                        <!-- Default: display dynamic value -->
-                        <ng-container *ngSwitchDefault>
+
+                        <!-- <ng-container *ngSwitchDefault>
                           {{ getCellValue(product, col.field) }}
                         </ng-container>
+                        <ng-container *ngIf="col.field === 'premium' || col.field === 'totalSumInsured'">
+                          {{ product[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.0-0' }}
+                        </ng-container> -->
 
+                        <ng-container *ngSwitchDefault>
+                          <ng-container *ngSwitchDefault>
+                            <ng-container
+                              *ngIf="col.field === 'premium' || col.field === 'totalSumInsured'; else defaultField">
+                              {{ product[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2'
+                              }}
+                            </ng-container>
+                            <ng-template #defaultField>
+                              {{ product[col.field] }}
+                            </ng-template>
+                          </ng-container>
+
+                        </ng-container>
                       </ng-container>
                     </td>
                   </tr>
@@ -413,7 +447,9 @@
                 <!-- CLAUSES -->
                 <!-- Floating Clauses Column Selector -->
                 <div *ngIf="showClausesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Clauses Columns</strong>
                     <button class="btn-close btn-sm" (click)="showClausesColumnModal = false"></button>
@@ -432,8 +468,8 @@
                 </div>
                 <div class="tab-pane fade show active" id="nav-clauses" role="tabpanel" aria-labelledby="nav-clauses"
                   tabindex="0">
-                  <p-table [value]="productClauses" #productClauseTable [rows]="3" [paginator]="true"
-                    [rowsPerPageOptions]="[3, 6, 9]" [showCurrentPageReport]="true"
+                  <p-table [value]="productClauses" #productClauseTable [paginator]="productClauses?.length > 10"
+                    [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [showCurrentPageReport]="true"
                     currentPageReportTemplate="{first} - {last} of {totalRecords}" class="ui-datatable"
                     responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
 
@@ -511,7 +547,9 @@
 
                 <!-- Floating Column Selector for Taxes -->
                 <div *ngIf="showTaxesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Tax Columns</strong>
                     <button class="btn-close btn-sm" (click)="showTaxesColumnModal = false"></button>
@@ -531,7 +569,8 @@
 
                 <!-- TAXES -->
                 <div class="tab-pane fade" id="nav-taxes" role="tabpanel" aria-labelledby="nav-taxes" tabindex="0">
-                  <p-table [value]="taxDetails" #taxTable [tableStyle]="{ 'min-width': '50rem' }">
+                  <p-table [value]="taxDetails" #taxTable [tableStyle]="{ 'min-width': '50rem' }"
+                    [paginator]="taxDetails?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
 
                     <!-- Table Header -->
                     <ng-template pTemplate="header">
@@ -557,7 +596,15 @@
 
                       <tr>
                         <td *ngFor="let col of taxesColumns" [hidden]="!col.visible">
-                          {{ getCellValue(tax, col.field) }}
+
+                          <ng-container *ngIf="col.field === 'taxAmount'; else defaultField">
+                            <div class="text-end"> {{ tax[col.field] | currency: currencyObj?.prefix :
+                              'symbol' : '1.2-2' }}
+                            </div>
+                          </ng-container>
+                          <ng-template #defaultField>
+                            {{ tax[col.field] }}
+                          </ng-template>
                         </td>
                       </tr>
                     </ng-template>
@@ -691,7 +738,9 @@
 
                   <!-- Floating Column Selector for Risk -->
                   <div *ngIf="showRiskColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                    [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                    [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                    (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                    (document:mouseup)="onDragEnd()">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                       <strong class="text-primary">Select Risk Columns</strong>
                       <button class="btn-close btn-sm" (click)="showRiskColumnModal = false"></button>
@@ -713,9 +762,9 @@
 
 
 
-            <p-table [value]="riskDetails" #riskTable [tableStyle]="{ 'min-width': '50rem' }" [paginator]="true"
-              [rows]="2" [rowsPerPageOptions]="[2,4,6]" [scrollable]="true" responsiveLayout="scroll"
-              styleClass="p-datatable-striped">
+            <p-table [value]="riskDetails" #riskTable [tableStyle]="{ 'min-width': '50rem' }"
+              [paginator]="riskDetails?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true"
+              responsiveLayout="scroll" styleClass="p-datatable-striped">
 
               <!-- Table Header -->
               <ng-template pTemplate="header">
@@ -808,7 +857,9 @@
                 </div>
                 <!-- Floating Column Selector for section -->
                 <div *ngIf="showSectionColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Section Columns</strong>
                     <button class="btn-close btn-sm" (click)="showSectionColumnModal = false"></button>
@@ -826,8 +877,9 @@
 
                 </div>
                 <p-table [value]="sections" #sectionsTable *ngIf="sections?.length && sectionColumns?.length"
-                  [tableStyle]="{ 'min-width': '50rem' }" [paginator]="true" [rows]="2" [rowsPerPageOptions]="[2,4,6]"
-                  [scrollable]="true" responsiveLayout="scroll" styleClass="p-datatable-striped">
+                  [tableStyle]="{ 'min-width': '50rem' }" [paginator]="sections?.length > 10"
+                  [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true" responsiveLayout="scroll"
+                  styleClass="p-datatable-striped">
 
                   <!-- Dynamic Table Header -->
                   <ng-template pTemplate="header">
@@ -843,22 +895,27 @@
                   <!-- Dynamic Table Body -->
                   <ng-template pTemplate="body" let-section>
                     <tr [pSelectableRow]="section" class="point" [class.disabled]="!section?.sectionCode">
-                      <td *ngFor="let col of sectionColumns" [hidden]="!col.visible">
 
+                      <td *ngFor="let col of sectionColumns" [hidden]="!col.visible">
                         <ng-container [ngSwitch]="col.field">
 
-                          <!-- Truncated fields -->
-                          <span *ngSwitchCase="'limitAmount'">
-                            {{ section[col.field] | number }}
-                          </span>
+                          <!-- Default branch checks internally -->
+                          <ng-container *ngSwitchDefault>
+                            <ng-container *ngIf="col.field === 'limitAmount' || col.field === 'premiumAmount'
+                              || col.field === 'freeLimit'; else defaultField">
+                              <div class="text-end">
+                                {{ section[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                              </div>
+                            </ng-container>
 
-                          <!-- All other fields -->
-                          <span *ngSwitchDefault>
-                            {{ section[col.field] }}
-                          </span>
+                            <ng-template #defaultField>
+                              {{ section[col.field] }}
+                            </ng-template>
+                          </ng-container>
 
                         </ng-container>
                       </td>
+
 
                     </tr>
                   </ng-template>
@@ -888,7 +945,9 @@
                 </div>
                 <!-- Floating Column Selector for Risk -->
                 <div *ngIf="showRiskClauseColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select RiskClauses Columns</strong>
                     <button class="btn-close btn-sm" (click)="showRiskClauseColumnModal = false"></button>
@@ -905,8 +964,9 @@
                   </div>
                 </div>
                 <p-table [value]="riskClauses" #riskClausesTable dataKey="code" editMode="row"
-                  [tableStyle]="{ 'width': '100%' }" [paginator]="true" [rows]="2" [rowsPerPageOptions]="[2,4,6]"
-                  [scrollable]="true" responsiveLayout="scroll" class="ui-datatable" [autoLayout]="true">
+                  [tableStyle]="{ 'width': '100%' }" [paginator]="riskClauses?.length > 10"
+                  [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true" responsiveLayout="scroll"
+                  class="ui-datatable" [autoLayout]="true">
 
                   <!-- Dynamic Table Header -->
                   <ng-template pTemplate="header">
@@ -973,7 +1033,9 @@
                 </div>
                 <!-- Floating Column Selector for Risk -->
                 <div *ngIf="showScheduleColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Schedules Columns</strong>
                     <button class="btn-close btn-sm" (click)="showScheduleColumnModal = false"></button>
@@ -990,7 +1052,8 @@
                   </div>
                 </div>
 
-                <p-table [value]="getCurrentSchedule()" [tableStyle]="{ 'width': '100%' }">
+                <p-table [value]="getCurrentSchedule()" [tableStyle]="{ 'width': '100%' }"
+                  [paginator]="getCurrentSchedule()?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
                   <!-- Header -->
                   <ng-template pTemplate="header">
                     <tr>
@@ -1006,10 +1069,27 @@
                   <ng-template pTemplate="body" let-rowData>
                     <tr>
                       <td *ngFor="let col of scheduleColumns" [hidden]="!col.visible">
-                        {{ getCellValue(rowData,col.field) }}
+                        <ng-container [ngSwitch]="col.field">
+
+                          <!-- Currency fields -->
+                          <ng-container *ngSwitchDefault>
+                            <ng-container *ngIf="col.field === 'value'; else defaultField">
+                              <div class="text-end">
+                                {{ rowData[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                              </div>
+                            </ng-container>
+
+                            <!-- Default (non-currency fields) -->
+                            <ng-template #defaultField>
+                              {{ rowData[col.field] }}
+                            </ng-template>
+                          </ng-container>
+
+                        </ng-container>
                       </td>
                     </tr>
                   </ng-template>
+
 
                   <!-- Empty message -->
                   <ng-template pTemplate="emptymessage">
@@ -1038,7 +1118,9 @@
                 </div>
                 <!-- Floating Column Selector for peril -->
                 <div *ngIf="showPerilColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Perils Columns</strong>
                     <button class="btn-close btn-sm" (click)="showPerilColumnModal = false"></button>
@@ -1057,7 +1139,8 @@
 
 
                 <!-- Dynamic peril table -->
-                <p-table [value]="summaryPerils" [tableStyle]="{ 'width': '100%' }">
+                <p-table [value]="summaryPerils" [tableStyle]="{ 'width': '100%' }"
+                  [paginator]="summaryPerils?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
                   <!-- Header -->
                   <ng-template pTemplate="header">
                     <tr>
@@ -1106,7 +1189,9 @@
                 </div>
                 <!-- Floating Column Selector for Risk -->
                 <div *ngIf="showExcessColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Excess Columns</strong>
                     <button class="btn-close btn-sm" (click)="showExcessColumnModal = false"></button>
@@ -1123,7 +1208,8 @@
                   </div>
                 </div>
                 <!-- Dynamic Excess Table -->
-                <p-table [value]="excesses" #excessesTable [tableStyle]="{ 'width': '100%' }">
+                <p-table [value]="excesses" #excessesTable [tableStyle]="{ 'width': '100%' }"
+                  [paginator]="excesses?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
                   <!-- Header -->
                   <ng-template pTemplate="header">
                     <tr>
@@ -1149,8 +1235,26 @@
                     <!-- Data Rows -->
                     <tr>
                       <td *ngFor="let col of excessColumns" [hidden]="!col.visible">
-                        {{ getCellValue(rowData, col.field) }}
+                        <ng-container [ngSwitch]="col.field">
+
+                          <!-- Currency + numeric fields -->
+                          <ng-container *ngSwitchDefault>
+                            <ng-container *ngIf="col.field === 'value'; else defaultField">
+                              <div class="text-end">
+                                {{ getCellValue(rowData, col.field) | currency: currencyObj?.prefix : 'symbol' : '1.2-2'
+                                }}
+                              </div>
+                            </ng-container>
+
+                            <!-- Default (non-currency fields) -->
+                            <ng-template #defaultField>
+                              {{ getCellValue(rowData, col.field) }}
+                            </ng-template>
+                          </ng-container>
+
+                        </ng-container>
                       </td>
+
                     </tr>
                   </ng-template>
 
@@ -1171,6 +1275,7 @@
                 [class.show]="activeRiskDetailsTab === 'comments'" [class.active]="activeRiskDetailsTab === 'comments'"
                 aria-labelledby="nav-riskClauses" tabindex="0">
                 <p-table [value]="comments" [tableStyle]="{ 'width': '100%' }" [scrollable]="true"
+                  [paginator]="comments?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
                   responsiveLayout="scroll" class="ui-datatable" [autoLayout]="true">
 
                   <!-- HEADER -->
@@ -1191,17 +1296,11 @@
                   <!-- BODY -->
                   <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
 
-
-
                     <!-- DATA ROWS -->
                     <tr [pEditableRow]="data">
                       <td>{{ data.description }}</td>
                       <td>{{ data.details | sentenceCase }}</td>
-
-
                     </tr>
-
-
 
                   </ng-template>
 
@@ -1223,7 +1322,9 @@
                 </div>
                 <!-- Floating Column Selector for Risk -->
                 <div *ngIf="showExcessColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Excess Columns</strong>
                     <button class="btn-close btn-sm" (click)="showExcessColumnModal = false"></button>
@@ -1240,8 +1341,9 @@
                   </div>
                 </div>
                 <p-table [value]="excesses" #excessesTable *ngIf="excessColumns?.length"
-                  [tableStyle]="{ 'min-width': '50rem' }" [paginator]="true" [rows]="2" [rowsPerPageOptions]="[2,4,6]"
-                  [scrollable]="true" responsiveLayout="scroll" styleClass="p-datatable-striped">
+                  [tableStyle]="{ 'min-width': '50rem' }" [paginator]="excesses?.length > 10"
+                  [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true" responsiveLayout="scroll"
+                  styleClass="p-datatable-striped">
 
                   <!-- Header -->
                   <ng-template pTemplate="header">
@@ -1290,7 +1392,9 @@
                 <!-- Floating Column Selector for limits -->
                 <div *ngIf="showLimitsOfLiabilityColumnModal"
                   class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }">
+                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                  (document:mouseup)="onDragEnd()">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select liability Columns</strong>
                     <button class="btn-close btn-sm" (click)="showLimitsOfLiabilityColumnModal = false"></button>
@@ -1307,7 +1411,8 @@
                   </div>
                 </div>
                 <!-- Dynamic Limits of Liability Table -->
-                <p-table [value]="limitsRiskofLiability" #limitsRiskofLiabilityTable [tableStyle]="{ 'width': '100%' }">
+                <p-table [value]="limitsRiskofLiability" #limitsRiskofLiabilityTable [tableStyle]="{ 'width': '100%' }"
+                  [paginator]="limitsRiskofLiability?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
 
                   <!-- Header -->
                   <ng-template pTemplate="header">
@@ -1335,7 +1440,24 @@
                     <!-- Data Rows -->
                     <tr>
                       <td *ngFor="let col of limitsColumns" [hidden]="!col.visible">
-                        {{ getCellValue(rowData, col.field) }}
+                        <ng-container [ngSwitch]="col.field">
+
+                          <!-- Currency + numeric fields -->
+                          <ng-container *ngSwitchDefault>
+                            <ng-container *ngIf="col.field === 'value'; else defaultField">
+                              <div class="text-end">
+                                {{ sanitizeCurrency(getCellValue(rowData, col.field))
+                                | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                              </div>
+                            </ng-container>
+
+                            <ng-template #defaultField>
+                              {{ getCellValue(rowData, col.field) }}
+                            </ng-template>
+                          </ng-container>
+
+
+                        </ng-container>
                       </td>
                     </tr>
                   </ng-template>
@@ -1381,6 +1503,7 @@
           <!-- Exceptions Table -->
           <div *ngIf="!exceptionsCollapsed">
             <p-table [value]="exceptionsData" [scrollable]="true" scrollHeight="200px" responsiveLayout="scroll"
+              [paginator]="exceptionsData?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
               [tableStyle]="{ 'width': '100%' }">
               <ng-template pTemplate="header">
                 <tr>
@@ -1799,7 +1922,7 @@
               style="border: none;">X</button>
           </div>
 
-          <div class="row mt-4" style="max-height: 350px;">
+          <div class="row mt-4" style="max-height: 280px;">
             <!-- Left side: reports list -->
             <div class="col-4 border-end overflow-auto" style="max-height: 350px; padding-right: 1rem;">
               <div *ngFor="let report of fetchedReports; let i = index" class="d-flex align-items-center mb-2">
@@ -1813,7 +1936,7 @@
                 </label>
 
                 <!-- Download / Print icons -->
-                <i class="pi pi-download ms-3 text-primary cursor-pointer" (click)="downloadReport(report)"
+                <i class="pi pi-download ms-3 text-primary cursor-pointer" (click)="downloadReports(selectedReports)"
                   pTooltip="Download" tooltipPosition="top" style="font-size: 13px;"></i>
 
                 <i class="pi pi-print ms-2 text-primary cursor-pointer" (click)="printReport(report)" pTooltip="Print"
@@ -1878,7 +2001,7 @@
               <form [formGroup]="viewDocForm">
                 <div class="row mb-3">
                   <div class="col-md-6">
-                    <label>Email address <span class="text-danger">*</span></label>
+                    <label class="quote-label">Email address <span class="text-danger">*</span></label>
                     <input pInputText type="email" class="form-control" formControlName="to" />
                     <div *ngIf="viewDocForm.get('to')?.invalid && viewDocForm.get('to')?.touched"
                       class="text-danger small">
@@ -1886,24 +2009,24 @@
                     </div>
                   </div>
                   <div class="col-md-6">
-                    <label>CC</label>
+                    <label class="quote-label">CC</label>
                     <input pInputText type="email" class="form-control" formControlName="cc" />
                   </div>
                 </div>
 
                 <div class="row mb-3">
                   <div class="col-md-6">
-                    <label>BCC</label>
+                    <label class="quote-label">BCC</label>
                     <input pInputText type="email" class="form-control" formControlName="bcc" />
                   </div>
                   <div class="col-md-6">
-                    <label>Subject</label>
+                    <label class="quote-label">Subject</label>
                     <input pInputText type="text" class="form-control" formControlName="subject" />
                   </div>
                 </div>
 
                 <div class="mb-3">
-                  <label>Wording</label>
+                  <label class="quote-label">Wording</label>
                   <textarea pInputTextarea class="form-control" rows="3" formControlName="wording"></textarea>
                 </div>
               </form>
@@ -1914,13 +2037,12 @@
           <div class="d-flex justify-content-between align-items-center">
             <!-- Left buttons -->
             <div class="d-flex">
-              <button type="button" class="btn btn-outline-primary btn-sm me-3 text-muted"
-                (click)="printReport(selectedReports)" disabled>
+              <button type="button" class="btn btn-outline-primary btn-sm me-3  btn-greyed-out"
+                pTooltip="Feature under development">
                 Print
               </button>
 
-              <button type="button" class="btn btn-outline-primary btn-sm text-muted"
-                (click)="downloadReport(selectedReports)" disabled>
+              <button type="button" class="btn btn-outline-primary btn-sm " (click)="downloadReports(selectedReports)">
                 Download
               </button>
             </div>

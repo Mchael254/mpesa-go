@@ -55,7 +55,6 @@ const log = new Logger('RiskDetailsComponent');
 })
 
 export class RiskDetailsComponent {
-  selectedLevelNumber: any;
 
   getFreeLimitLabel(arg0: any) {
     throw new Error('Method not implemented.');
@@ -350,6 +349,11 @@ export class RiskDetailsComponent {
   uploading = false;
   errorMessage = '';
   successMessage = '';
+  dragging = false;
+  dragOffset = { x: 0, y: 0 };
+  selectedLevelNumber: any;
+  isNewClientSelected: boolean = false;
+  quickQuoteConverted: boolean = false;
 
   constructor(
     public subclassService: SubclassesService,
@@ -374,6 +378,8 @@ export class RiskDetailsComponent {
     private router: Router,
 
   ) {
+    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteConvertedFlag'))
+
     this.quotationCode = sessionStorage.getItem('quotationCode');
     this.quotationNumber = sessionStorage.getItem('quotationNum');
     log.debug("Quotation number from session storage:", this.quotationNumber)
@@ -409,21 +415,24 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
+    this.isNewClientSelected = JSON.parse(sessionStorage.getItem('isNewClientSelected'))
+    log.debug("Is this new client:", this.isNewClientSelected)
     this.quotationRiskCode = sessionStorage.getItem('selectedRiskCode');
     this.quotationCode = sessionStorage.getItem('quotationCode');
     this.fetchQuotationDetails(this.quotationCode);
     this.quoteProductCode = sessionStorage.getItem('newQuotationProductCode');
     const savedSubclass = sessionStorage.getItem('selectedSubclassCode');
 
-    if (savedSubclass) {
-      this.selectedSubclassCode = savedSubclass;
-      this.loadExcesses();
-    }
+    // if (savedSubclass) {
+    //   this.selectedSubclassCode = savedSubclass;
+    //   this.loadExcesses();
+    // }
     this.fetchAddedLimitsOfLiability();
     this.initializePerilDetails();
     this.initializePerils();
     this.loadAddedClauses();
     this.getAddedExcesses();
+    this.loadExcesses();
     this.loadPersistedRiskClauses();
     if (this.selectedSubclassCode) {
       this.loadLimitsOfLiability();
@@ -465,7 +474,7 @@ export class RiskDetailsComponent {
 
     this.loadAllClients();
     if (!this.riskDetailsForm.contains('insureds')) {
-      this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
+      this.riskDetailsForm.addControl('insureds', new FormControl('',));
     }
 
     //dropdown changes
@@ -482,9 +491,14 @@ export class RiskDetailsComponent {
 
     const savedClientId = sessionStorage.getItem('selectedClientId');
     if (savedClientId) {
+      this.isNewClientSelected = false
       this.riskDetailsForm.patchValue({ insureds: +savedClientId });
     }
-
+    if (this.isNewClientSelected) {
+      this.riskDetailsForm.get('insureds')?.disable();
+    } else {
+      this.riskDetailsForm.get('insureds')?.enable();
+    }
 
   }
 
@@ -551,18 +565,18 @@ export class RiskDetailsComponent {
   }
 
   setSectionToDelete(section: any) {
-  this.sectionToDelete = section;
-  log.debug("Section to delete", this.sectionToDelete);
-}
+    this.sectionToDelete = section;
+    log.debug("Section to delete", this.sectionToDelete);
+  }
 
-confirmDelete() {
-  if (this.sectionToDelete) {
-    const sectionId = this.sectionToDelete.code; // ✅ use code
-    if (sectionId) {
-      this.deleteRiskSection(sectionId);
+  confirmDelete() {
+    if (this.sectionToDelete) {
+      const sectionId = this.sectionToDelete.code; // ✅ use code
+      if (sectionId) {
+        this.deleteRiskSection(sectionId);
+      }
     }
   }
-}
 
   fetchQuotationDetails(quotationCode: number) {
     log.debug("Quotation Number tot use:", quotationCode)
@@ -575,7 +589,7 @@ confirmDelete() {
           sessionStorage.setItem('newQuotationProductCode', this.quoteProductCode);
           this.selectedSubclassCode = this.quotationDetails?.quotationProducts?.[0].riskInformation?.[0]?.subclassCode;
           sessionStorage.setItem('selectedSubclasscode', this.selectedSubclassCode);
-          this.insuredCode = this.quotationDetails.clientCode
+          this.insuredCode = this.quotationDetails.clientCode || this.clientCode
           log.debug("Insured code:", this.insuredCode)
           this.clientCode = this.quotationDetails.clientCode
           if (this.insuredCode) {
@@ -624,6 +638,8 @@ confirmDelete() {
             this.showOtherSscheduleDetails = false;
 
           }
+          this.getAddedExcesses();
+          this.loadExcesses();
 
 
         },
@@ -663,13 +679,29 @@ confirmDelete() {
     this.saveRiskDetailsColumnsToSession();
   }
 
+  // toggleRiskDetailsColumns(iconElement: HTMLElement): void {
+  //   this.showRiskDetails = !this.showRiskDetails;
+
+  //   const rect = iconElement.getBoundingClientRect();
+
+  //   const top = rect.top + rect.height + window.scrollY + 4;
+  //   const left = rect.left + window.scrollX;
+
+  //   this.columnModalPosition = {
+  //     top: `${top}px`,
+  //     left: `${left}px`
+  //   };
+
+  //   this.showRiskDetailsColumnModal = true;
+  // }
+
   toggleRiskDetailsColumns(iconElement: HTMLElement): void {
-    this.showRiskDetails = !this.showRiskDetails;
+    this.showRiskDetails = true;
 
-    const rect = iconElement.getBoundingClientRect();
+    const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = rect.top + rect.height + window.scrollY + 4;
-    const left = rect.left + window.scrollX;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -679,10 +711,27 @@ confirmDelete() {
     this.showRiskDetailsColumnModal = true;
   }
 
+
+  onDragStart(event: MouseEvent): void {
+    this.dragging = true;
+    this.dragOffset.x = event.clientX - parseInt(this.columnModalPosition.left, 10);
+    this.dragOffset.y = event.clientY - parseInt(this.columnModalPosition.top, 10);
+  }
+
+  onDragMove(event: MouseEvent): void {
+    if (this.dragging) {
+      this.columnModalPosition.top = `${event.clientY - this.dragOffset.y}px`;
+      this.columnModalPosition.left = `${event.clientX - this.dragOffset.x}px`;
+    }
+  }
+
+  onDragEnd(): void {
+    this.dragging = false;
+  }
+
   setRiskDetailsColumns(risk: any) {
     const excludedFields = ['riskLimits', 'clauseCodes', 'sectionsDetails', 'sectionsDetails', 'location', 'ncdLevel', 'fp',
-      'subclass', 'quotationProductCode', 'quotationRiskNo', 'quotationCode', 'value', 'code', 'subclassCode', 'coverTypeCode',
-      'code', 'itemDesc', 'subclass.description', 'binderCode',
+      'subclass',
     ];
     this.riskDetailsColumns = Object.keys(risk)
       .filter((key) => !excludedFields.includes(key))
@@ -706,9 +755,14 @@ confirmDelete() {
     }
   }
 
-  defaultVisibleRiskDetailsFields = ['wef', 'wet', 'actions', 'propertyId', 'coverTypeDescription'];
+  defaultVisibleRiskDetailsFields = ['wef', 'wet', 'actions', 'propertyId', 'coverTypeDescription', 'binderCode'];
 
   openAddRiskModal() {
+    if (!this.isNewClientSelected && !this.insuredCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'No insured selected');
+      return;
+    }
+
     this.modalInstance?.show();
     this.isEditMode = false
     this.isAddMode = true
@@ -779,15 +833,15 @@ confirmDelete() {
       coverType: this.selectedRisk.coverTypeCode,
       premiumBand: this.selectedRisk.binderCode,
       value: this.selectedRisk.value,
-      vehicleMake: this.selectedRisk.scheduleDetails[0].details.level1.make,
-      vehicleModel: this.selectedRisk.scheduleDetails[0].details.level1.model,
-      yearOfManufacture: this.selectedRisk.scheduleDetails[0].details.level1.yearOfManufacture,
-      cubicCapacity: this.selectedRisk.scheduleDetails[0].details.level1.cubicCapacity,
-      seatingCapacity: this.selectedRisk.scheduleDetails[0].details.level1.carryCapacity,
-      bodyType: this.selectedRisk.scheduleDetails[0].details.level1.bodyType,
-      color: this.selectedRisk.scheduleDetails[0].details.level1.color,
-      chasisNumber: this.selectedRisk.scheduleDetails[0].details.level1.chasisNumber,
-      engineNumber: this.selectedRisk.scheduleDetails[0].details.level1.engineNumber
+      vehicleMake: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.make,
+      vehicleModel: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.model,
+      yearOfManufacture: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.yearOfManufacture,
+      cubicCapacity: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.cubicCapacity,
+      seatingCapacity: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.carryCapacity,
+      bodyType: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.bodyType,
+      color: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.color,
+      chasisNumber: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.chasisNumber,
+      engineNumber: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.engineNumber
     });
 
     log.debug("Patched form with selectedRisk:", this.selectedRisk);
@@ -858,7 +912,7 @@ confirmDelete() {
 
 
   loadAllClients() {
-    const pageSize = 100
+    const pageSize = 20
     const pageIndex = 0;
     this.clientService.getClients(pageIndex, pageSize).subscribe({
       next: (data: any) => {
@@ -905,7 +959,7 @@ confirmDelete() {
       log.debug("Clients data;", this.clientsData)
       // Add the control if it doesn't exist
       if (!this.riskDetailsForm.contains('insureds')) {
-        this.riskDetailsForm.addControl('insureds', new FormControl('', Validators.required));
+        this.riskDetailsForm.addControl('insureds', new FormControl('',));
       }
 
       // Pre-select the dropdown
@@ -1004,6 +1058,12 @@ confirmDelete() {
     // If the date is already in the correct format or cannot be formatted, return it as is
     return date as string;
   }
+
+  sanitizeCurrency(raw: string): number {
+    const cleaned = raw.replace(/[^0-9]/g, '');
+    return Number(cleaned);
+  }
+
   onBinderSelected(event: any) {
     const selectedValue = event.value;
     log.debug("Selected value(On binder selected", selectedValue)
@@ -1259,13 +1319,13 @@ confirmDelete() {
     if (this.selectedSubclassCode) {
       try {
         await this.loadSelectedSubclassRiskFields(this.selectedSubclassCode);
-        const selectedVehicleMake = Number(this.selectedRisk?.scheduleDetails[0].details.level1.make)
+        const selectedVehicleMake = Number(this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.make)
         this.fetchTaxes();
         this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
         this.loadAllBinders();
         this.loadSubclassClauses(this.selectedSubclassCode);
         this.getVehicleMake();
-        this.getVehicleModel(selectedVehicleMake);
+        selectedVehicleMake && this.getVehicleModel(selectedVehicleMake);
 
         this.fetchYearOfManufacture();
       } catch (err) {
@@ -1635,7 +1695,14 @@ confirmDelete() {
           this.quotationCode = quotationCode
           const quotationNo = data._embedded.quotationNo
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk edited succesfully');
-          this.updateSchedule()
+          // this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
+
+          if (this.quickQuoteConverted) {
+            this.createScheduleL1(this.quotationRiskCode)
+          } else {
+            this.updateSchedule()
+
+          }
 
 
           const subclasscode = this.selectedSubclassCode
@@ -1993,7 +2060,7 @@ confirmDelete() {
 
     schedule.riskCode = this.quotationRiskCode;
     schedule.transactionType = "Q";
-    schedule.version = this.selectedRisk.scheduleDetails[0].version;
+    schedule.version = this.selectedRisk?.scheduleDetails?.[0] || 0;
 
     // Remove unnecessary fields
     const removeFields = [
@@ -2107,12 +2174,12 @@ confirmDelete() {
   }
   prepareSchedulePayload() {
     const schedule = this.scheduleDetailsForm.value;
-    const riskform = JSON.parse(sessionStorage.getItem('riskFormDetails'));
+    const riskform = JSON.parse(sessionStorage.getItem('riskFormDetails')) || this.riskDetailsForm.value;
 
     log.debug('SELECTED RISK:', this.selectedRisk)
     log.debug("Risk form-session storage:", riskform)
     schedule.details.level1 = {
-      bodyType: riskform.bodyType,
+      bodyType: riskform?.bodyType,
       yearOfManufacture: riskform.yearOfManufacture,
       color: riskform.color,
       engineNumber: riskform.engineNumber,
@@ -2402,13 +2469,14 @@ confirmDelete() {
     this.loadPersistedRiskClauses();
   }
 
+
   toggleSections(iconElement: HTMLElement): void {
-    this.showSections = !this.showSections;
+    this.showSections = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2991,29 +3059,29 @@ confirmDelete() {
   }
 
 
-deleteRiskSection(riskSectionCode: number) {
-  log.debug("selected risk section code", riskSectionCode);
+  deleteRiskSection(riskSectionCode: number) {
+    log.debug("selected risk section code", riskSectionCode);
 
-  if (riskSectionCode) {
-    this.quotationService.deleteRiskSections(riskSectionCode).subscribe({
-      next: (response: any) => {
-        log.debug("Response after deleting a risk section ", response);
-        this.globalMessagingService.displaySuccessMessage('Success', 'Risk section deleted successfully');
+    if (riskSectionCode) {
+      this.quotationService.deleteRiskSections(riskSectionCode).subscribe({
+        next: (response: any) => {
+          log.debug("Response after deleting a risk section ", response);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Risk section deleted successfully');
 
-        // ✅ filter by code
-        this.sectionDetails = this.sectionDetails.filter(
-          (section) => section.code !== this.sectionToDelete.code
-        );
+          // ✅ filter by code
+          this.sectionDetails = this.sectionDetails.filter(
+            (section) => section.code !== this.sectionToDelete.code
+          );
 
-        this.sectionToDelete = null;
-      },
-      error: (error) => {
-        log.debug("error when deleting a risk section", error);
-        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-      }
-    });
+          this.sectionToDelete = null;
+        },
+        error: (error) => {
+          log.debug("error when deleting a risk section", error);
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        }
+      });
+    }
   }
-}
 
 
   onResize(event: any) {
@@ -3039,13 +3107,14 @@ deleteRiskSection(riskSectionCode: number) {
     this.saveClauseColumnsToSession();
   }
 
+
   toggleClauseColumns(iconElement: HTMLElement): void {
-    this.showClauses = !this.showClauses;
+    this.showClauses = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -3054,7 +3123,6 @@ deleteRiskSection(riskSectionCode: number) {
 
     this.showClauseColumnModal = true;
   }
-
   setClauseColumns(clause: Clause) {
     const excludedFields = [
     ];
@@ -3899,13 +3967,14 @@ deleteRiskSection(riskSectionCode: number) {
     this.saveLimitsOfLiabilityColumnsToSession();
   }
 
+
   toggleLimitsOfLiabilityColumns(iconElement: HTMLElement): void {
-    this.showLimitsOfLiability = !this.showLimitsOfLiability;
+    this.showLimitsOfLiability = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -3914,7 +3983,6 @@ deleteRiskSection(riskSectionCode: number) {
 
     this.showLimitsOfLiabilityColumnModal = true;
   }
-
   setLimitsOfLiabilityColumns(limits: any) {
     const excludedFields = [];
     this.limitsOfLiabilityColumns = Object.keys(limits)
@@ -4159,7 +4227,7 @@ deleteRiskSection(riskSectionCode: number) {
   }
 
   fetchAddedLimitsOfLiability(): void {
-    log.debug("FETCH added limits of liability called ")
+    log.debug("FETCH added limits of liability called ");
     if (!this.selectedSubclassCode || !this.quoteProductCode) {
       log.debug('Subclass code or quote product code missing');
       return;
@@ -4169,13 +4237,33 @@ deleteRiskSection(riskSectionCode: number) {
       .getAddedLimitsOfLiability(this.selectedSubclassCode, this.quoteProductCode, 'L')
       .subscribe({
         next: (response) => {
-          this.addedLimitsOfLiability = response._embedded;
-          log.debug("QUOATION LIMITS OF LIABILITY", this.addedLimitsOfLiability);
+          this.addedLimitsOfLiability = response._embedded || [];
+          log.debug("QUOTATION LIMITS OF LIABILITY", this.addedLimitsOfLiability);
 
-          this.setLimitsOfLiabilityColumns(this.addedLimitsOfLiability?.[0])
+          const cacheKey = `limits_of_liability_${this.selectedRiskCode}`;
+          const originalCacheKey = `original_limits_of_liability_${this.selectedRiskCode}`;
+          const originalData = sessionStorage.getItem(originalCacheKey);
+
+          let availableLimits: any[] = [];
+          if (originalData) {
+            const originalLimits = JSON.parse(originalData);
+
+            availableLimits = originalLimits.filter(
+              (lim: any) => !this.addedLimitsOfLiability.some(al => al.quotationValueCode === lim.code)
+            );
+          }
+
+          this.limitsOfLiability = availableLimits;
+          sessionStorage.setItem(cacheKey, JSON.stringify(this.limitsOfLiability));
+
           const addedCacheKey = `added_limits_of_liability_${this.selectedRiskCode}`;
-          sessionStorage.setItem(addedCacheKey, JSON.stringify(response._embedded));
+          sessionStorage.setItem(addedCacheKey, JSON.stringify(this.addedLimitsOfLiability));
 
+          if (this.addedLimitsOfLiability.length > 0) {
+            this.setLimitsOfLiabilityColumns(this.addedLimitsOfLiability[0]);
+          }
+
+          this.cdr.detectChanges();
         },
         error: (err) => {
           log.debug('Error fetching limits of liability (L):', err);
@@ -4246,12 +4334,12 @@ deleteRiskSection(riskSectionCode: number) {
   }
 
   toggleExcessesColumns(iconElement: HTMLElement): void {
-    this.showExcesses = !this.showExcesses;
+    this.showExcesses = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -4260,7 +4348,6 @@ deleteRiskSection(riskSectionCode: number) {
 
     this.showExcessesColumnModal = true;
   }
-
   setExcessesColumns(excess: Excesses) {
     const excludedFields = ['actions'];
 
@@ -4393,11 +4480,28 @@ deleteRiskSection(riskSectionCode: number) {
       .subscribe({
         next: (res) => {
           this.addedExcessess = res._embedded ? [...res._embedded] : [];
+
+          const cacheKey = `excesses_${this.selectedSubclassCode}`;
+          const originalCacheKey = `original_excesses_${this.selectedSubclassCode}`;
+          const originalData = sessionStorage.getItem(originalCacheKey);
+
+          let availableExcesses: any[] = [];
+          if (originalData) {
+            const originalExcesses = JSON.parse(originalData);
+            availableExcesses = originalExcesses.filter(
+              (ex: any) => !this.addedExcessess.some(ae => ae.quotationValueCode === ex.code)
+            );
+          }
+
+          this.excessesData = availableExcesses;
+          sessionStorage.setItem(cacheKey, JSON.stringify(this.excessesData));
+
           this.cdr.detectChanges();
         },
         error: (err) => log.debug('Error fetching added excesses', err)
       });
   }
+
 
   populateEditExcessModal(excess: any): void {
     this.selectedExcess = { ...excess };
@@ -4500,13 +4604,14 @@ deleteRiskSection(riskSectionCode: number) {
     this.savePerilColumnsToSession();
   }
 
+
   togglePerilColumns(iconElement: HTMLElement): void {
-    this.showPerils = !this.showPerils;
+    this.showPerils = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -4515,7 +4620,6 @@ deleteRiskSection(riskSectionCode: number) {
 
     this.showPerilColumnModal = true;
   }
-
   setPerilColumns(excess: Excesses) {
     const excludedFields = [
     ];
@@ -5058,7 +5162,7 @@ deleteRiskSection(riskSectionCode: number) {
           sumInsured: risk.value,
           useOfProperty: risk.subclass.description, // Default value
           taxes: product.taxInformation?.map(tax => ({
-            taxRateType: tax.taxType,
+            taxRateType: tax.taxType || tax.rateType,
             applicationLevel: null,
             code: tax.code || 0,
             divisionFactor: 0,
@@ -5412,12 +5516,12 @@ deleteRiskSection(riskSectionCode: number) {
   }
 
   toggleTaxesColumns(iconElement: HTMLElement): void {
-    this.showTaxes = !this.showTaxes;
+    this.showTaxes = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,

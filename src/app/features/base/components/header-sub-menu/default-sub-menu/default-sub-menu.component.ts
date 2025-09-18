@@ -1,10 +1,10 @@
-import {Component, OnInit} from '@angular/core';
-import {SidebarMenu} from "../../../model/sidebar.menu";
-import {Router} from "@angular/router";
-import {MenuService} from "../../../services/menu.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {EntityService} from "../../../../entities/services/entity/entity.service";
-import {Logger, UtilService} from "../../../../../shared/services";
+import { Component, OnInit } from '@angular/core';
+import { SidebarMenu } from "../../../model/sidebar.menu";
+import { Router } from "@angular/router";
+import { MenuService } from "../../../services/menu.service";
+import { FormBuilder, FormGroup } from "@angular/forms";
+import { EntityService } from "../../../../entities/services/entity/entity.service";
+import { Logger, UtilService } from "../../../../../shared/services";
 
 const log = new Logger("HeaderSubMenuComponent")
 
@@ -33,13 +33,13 @@ export class DefaultSubMenuComponent implements OnInit {
   searchTerm: string;
 
   constructor(
-    private router:Router,
+    private router: Router,
     private menuService: MenuService,
     private fb: FormBuilder,
     private entityService: EntityService,
     private utilService: UtilService
   ) {
-    this.defaultSidebar = {name: 'Summary', value: "DEFAULT", link: '/home/dashboard'}
+    this.defaultSidebar = { name: 'Summary', value: "DEFAULT", link: '/home/dashboard' }
   }
 
 
@@ -57,11 +57,11 @@ export class DefaultSubMenuComponent implements OnInit {
   }
 
   dynamicSideBarMenu(sidebarMenu: SidebarMenu) {
-    if(sidebarMenu.link.length > 0){this.router.navigate([sidebarMenu.link])}
+    if (sidebarMenu.link.length > 0) { this.router.navigate([sidebarMenu.link]) }
     this.menuService.updateSidebarMainMenu(sidebarMenu.value)
   }
 
-  navLink(menuLink:string): void {
+  navLink(menuLink: string): void {
     this.router.navigate([menuLink])
   }
 
@@ -76,11 +76,11 @@ export class DefaultSubMenuComponent implements OnInit {
     const searchFormValue = this.searchAccountForm.getRawValue();
     log.info('search value', searchFormValue);
 
-    this.entityService.searchTermObject.set({...searchFormValue, fromSearchScreen: true});
+    this.entityService.searchTermObject.set({ ...searchFormValue, fromSearchScreen: true });
     this.navLink('/home/entity/list');
   }
 
-  onSearch(): void{
+  onSearch(): void {
     this.searchTerm = this.nameSearchTerm || this.idSearchTerm;
     localStorage.setItem('searchTerm', this.searchTerm)
     this.nameSearchTerm = '';
