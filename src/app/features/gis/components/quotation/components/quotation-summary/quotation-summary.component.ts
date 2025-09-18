@@ -128,6 +128,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   documentTypes: any;
   riskClauses: any;
   modalHeight: number = 200;
+  introducer: string;
 
 
   files = [];
@@ -373,6 +374,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.loadSummaryPerils()
     this.getUsers();
+    this.getquotationDetails();
 
 
     // this.createInsurersForm();
@@ -470,6 +472,24 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   closeModals(modalName: string) {
     this.modals[modalName]?.hide();
 
+  }
+
+  getquotationDetails() {
+    const saved = sessionStorage.getItem("quotationFormDetails");
+    const introducerData = sessionStorage.getItem("introducer");
+
+    if (introducerData) {
+      const introducerObj = JSON.parse(introducerData);
+      this.introducer = `${introducerObj.surName} ${introducerObj.otherNames}`;
+    }
+
+    if (saved) {
+      this.storedQuotationFormDetails = JSON.parse(saved);
+      const branchName = this.storedQuotationFormDetails?.branch?.name;
+      if (branchName) {
+        this.branch = branchName;
+      }
+    }
   }
 
 
