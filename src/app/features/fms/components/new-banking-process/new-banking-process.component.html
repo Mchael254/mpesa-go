@@ -1,0 +1,105 @@
+<div class="contianer ms-2">
+  <div class="row me-4 mt-1 align-items-center">
+    <div class="col-8">
+      <app-dynamic-breadcrumb
+        [breadCrumbItems]="[
+      {
+        label: 'FMS',
+        url: '/home/fms',
+      },
+      {
+        label: this.translate.instant('fms.receipting.cbReceipting'),
+        url: '/home/fms/',
+      },
+      {
+        label: this.translate.instant('base.base-fms.banking'),
+        url: '/home/fms/',
+      }
+     
+    ]"
+      >
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="pt-4 pb-1">Retrieve receipt</h5>
+      <div class="mb-3">
+        <form [formGroup]="bankingForm">
+          <div class="row">
+            <div class="col col-4">
+              <label for="sdate">From Date</label>
+              <input
+                type="date"
+                class="form-control"
+                formControlName="startDate"
+                id="sdate"
+              />
+            </div>
+            <div class="col col-4">
+              <label for="edate">To Date</label>
+              <input
+                type="date"
+                class="form-control"
+                formControlName="endDate"
+                id="edate"
+              />
+            </div>
+            <div class="col col-4">
+              <label for="paymentMode">Payment Mode</label>
+              <select
+                class="form-select"
+                id="paymentMode"
+                formControlName="paymentMethod"
+              >
+                <option
+                  *ngFor="let paymentMode of paymentMethods"
+                  value="paymentMode"
+                >
+                  {{ paymentMode }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-primary">Retrieve Receipts</button>
+      </div>
+      <p-table
+        [value]="receiptData"
+        [(selection)]="receiptData"
+        dataKey="receiptId"
+        selectionMode="multiple"
+        [tableStyle]="{ 'min-width': '50rem' }"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
+            <th>ReceiptId</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Collection A/C</th>
+            <th>Assigned to</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-receipt>
+          <tr>
+            <td>
+              <p-tableCheckbox [value]="receiptData" />
+            </td>
+            <td>{{ receipt.receiptId }}</td>
+            <td>{{ receipt.date | date : "dd/MM/yyyy" }}</td>
+            <td>{{ receipt.customer }}</td>
+            <td>{{ receipt.amount }}</td>
+            <td>{{ receipt.collectionAcc }}</td>
+            <td>{{ receipt.assignedTo }}</td>
+            <td>assign</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

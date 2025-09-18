@@ -1093,6 +1093,10 @@ subList:[
           name: this.translate.instant('base-fms.receipting'),
           link: '/home/fms/receipt-capture',
         },
+         {
+          name: this.translate.instant('base-fms.banking'),
+          link: '/home/fms/banking-process',
+        },
         {
           name: this.translate.instant('base-fms.receiptingExceptions'),
           link: '/home/fms/',

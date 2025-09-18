@@ -1015,6 +1015,10 @@ Relationship Management) application. Each object has the following properties: 
           link: '/home/fms/receipt-capture',
         },
         {
+   label: this.translate.instant('base.base-fms.banking'),
+          link: '/home/fms/banking-dashboard',
+        },
+        {
           label: this.translate.instant('base.base-fms.receiptingExceptions'),
           link: '/home/fms/',
         },

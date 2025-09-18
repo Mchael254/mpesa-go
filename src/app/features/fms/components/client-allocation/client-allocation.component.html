@@ -672,6 +672,19 @@
                     id="clientName"
                     formControlName="name"
                   />
+                  <div
+                    class="text-danger mt-1"
+                    style="font-size: 0.8rem"
+                    *ngIf="
+                      (rctShareForm.get('name')?.invalid &&
+                        rctShareForm.get('name')?.dirty) ||
+                      rctShareForm.get('name')?.touched
+                    "
+                  >
+                    <div *ngIf="rctShareForm.get('name')?.errors?.['required']">
+                      Name is required
+                    </div>
+                  </div>
                 </div>
               </div>
               <div
@@ -726,6 +739,24 @@
                     id="email"
                     formControlName="email"
                   />
+                  <div
+                    class="text-danger mt-1"
+                    style="font-size: 0.8rem"
+                    *ngIf="
+                      (rctShareForm.get('email')?.invalid &&
+                        rctShareForm.get('email')?.dirty) ||
+                      rctShareForm.get('email')?.touched
+                    "
+                  >
+                    <div
+                      *ngIf="rctShareForm.get('email')?.errors?.['required']"
+                    >
+                      Email is required
+                    </div>
+                    <div *ngIf="rctShareForm.get('email')?.errors?.['pattern']">
+                      Invalid email format
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -23,6 +23,8 @@ import { StepperComponent } from './components/shared/stepper/stepper.component'
 import { ReceiptPrintPreviewComponent } from './components/receipt-print-preview/receipt-print-preview.component';
 import { FmsHorizontalStepperComponent } from './components/shared/fms-horizontal-stepper/fms-horizontal-stepper.component';
 import { PreviewReceiptComponent } from './components/preview-receipt/preview-receipt.component';
+import { BankingDashboardComponent } from './components/banking-dashboard/banking-dashboard.component';
+import { NewBankingProcessComponent } from './components/new-banking-process/new-banking-process.component';
 
 
 
@@ -44,7 +46,9 @@ import { PreviewReceiptComponent } from './components/preview-receipt/preview-re
     StepperComponent,
     ReceiptPrintPreviewComponent,
     FmsHorizontalStepperComponent,
-    PreviewReceiptComponent
+    PreviewReceiptComponent,
+    BankingDashboardComponent,
+    NewBankingProcessComponent
 
    
   ],
