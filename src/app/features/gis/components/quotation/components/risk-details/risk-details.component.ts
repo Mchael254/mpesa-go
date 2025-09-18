@@ -64,6 +64,7 @@ export class RiskDetailsComponent {
   @ViewChild('limitTable') limitTable!: Table;
   @ViewChild('addedlimitTable') addedlimitTable!: Table;
   @ViewChild('excessTable') excessTable!: Table;
+   @ViewChild('addExcessTable') addExcessTable!: Table;
   @ViewChild('riskClauseTable') riskClauseTable!: Table;
   @ViewChild('addRiskModal') addRiskModalRef!: ElementRef;
   @ViewChild('addRiskSection') addRiskSectionRef!: ElementRef;
@@ -2625,6 +2626,9 @@ export class RiskDetailsComponent {
     }
     if (this.excessTable) {
       this.excessTable.filterGlobal(filterValue, 'contains');
+    }
+    if (this.addExcessTable) {
+      this.addExcessTable.filterGlobal(filterValue, 'contains');
     }
     if (this.riskClauseTable) {
       this.riskClauseTable.filterGlobal(filterValue, 'contains');

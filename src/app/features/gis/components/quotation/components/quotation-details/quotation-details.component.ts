@@ -44,6 +44,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('addProductClausesTable') addProductClausesTable!: any;
   @ViewChild('selectIntroducerTable') selectIntroducerTable!: any;
   @ViewChild('selectAgentTable') selectAgentTable!: any;
+  @ViewChild('selectMarketerTable') selectMarketerTable!: any;
+
 
   @ViewChild('reassignTable') reassignTable!: any;
 
@@ -191,6 +193,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   clientOptions: any;
   quotationAction: string;
   marketerList: AgentDTO[] = [];
+  showMarketerSearchModal = false;
+  selectedMarketerName: string;
+  selectedMarketer!: any
   departmentSelected: boolean = false;
   showIntroducerSearchModal = false;
   selectedIntroducerName: string;
@@ -278,8 +283,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     this.getuser();
+    this.getAgents();
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
       phone: ['', this.newClient ? [Validators.required] : []],
@@ -309,14 +314,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           wet: oneYearLater
         });
 
-
         this.updateCoverToDate(today);
       }
     });
 
     this.loadPersistedClauses();
     this.getUsers();
-    this.getAgents();
 
   }
 
@@ -324,8 +327,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   //   this.checkProducts();
   //   this.updateProductsFromQuickQuote();
   // }
-
-
 
 
   checkProducts() {
@@ -983,8 +984,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         currencyCode: quotationFormValues.currency.id || this.defaultCurrency.id,
         source: quotationFormValues.source.code,
         currencyRate: this.exchangeRate,
-        agentShortDescription: this.selectedAgent?.shortDesc || "Direct",
-        agentCode: this.selectedAgent?.id || 0,
+        agentShortDescription: quotationFormValues?.agent?.shortDesc || "Direct",
+        agentCode: quotationFormValues?.agent?.id || 0,
         clientCode: this.selectedClientCode,
         clientType: "I",
         wefDate: this.formatDate(this.productDetails[0].coverFrom),
@@ -992,7 +993,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         frequencyOfPayment: quotationFormValues?.frequencyOfPayment?.value,
         prospectCode: this.quotationDetails?.prospectCode,
         premium: this.quotationDetails?.premium,
-        comments: this.quotationDetails?.comments,
+        comments: this.quotationDetails?.comments || quotationFormValues?.externalComments,
+        internalComments: quotationFormValues?.internalComments,
+        introducerCode: quotationFormValues?.introducer,
+        marketerAgentCode: quotationFormValues?.marketer?.id,
 
         quotationProducts: this.productDetails.map((value) => {
           const existingProduct = this.quotationDetails?.quotationProducts?.find(
@@ -1050,8 +1054,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         currencyCode: quotationFormValues.currency.id || this.defaultCurrency.id,
         source: quotationFormValues.source.code,
         currencyRate: this.exchangeRate,
-        agentShortDescription: this.selectedAgent?.shortDesc || "Direct",
-        agentCode: this.selectedAgent?.id || 0,
+        agentShortDescription: quotationFormValues?.agent?.shortDesc || "Direct",
+        agentCode: quotationFormValues?.agent?.id || 0,
         clientCode: this.selectedClientCode,
         clientType: "I",
         wefDate: this.formatDate(this.productDetails[0].coverFrom),
@@ -1060,6 +1064,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         prospectCode: this.quotationDetails?.prospectCode,
         premium: this.quotationDetails?.premium,
         comments: this.quotationDetails?.comments,
+        internalComments: quotationFormValues?.internalComments,
+        introducerCode: quotationFormValues?.introducer,
+        marketerAgentCode: quotationFormValues?.marketer?.id,
 
         quotationProducts: this.productDetails.map((value) => {
           const existingProduct = this.quotationDetails?.quotationProducts?.find(
@@ -1111,6 +1118,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
    * @method getAgents
    * @return {void}
    */
+
   getAgents() {
     this.quotationService.getAgents().pipe(
       untilDestroyed(this)
@@ -1119,11 +1127,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.agents = data.content;
         log.debug("AGENTS", data)
         log.debug("AGENTS", this.agents)
-        this.marketerList = data.content.filter(agent => agent.accountTypeId == 10)
-        log.debug("Marketer list", this.marketerList)
-
-
-
+        this.marketerList = data.content.filter(agent => agent.accountTypeId == 10);
+        log.debug("Marketer list", this.marketerList);
       })
   }
 
@@ -1593,6 +1598,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           const selectedIntroducer = this.introducers.find(introducer => introducer.code === this.storedQuotationFormDetails?.introducer);
           if (selectedIntroducer) {
             this.quotationForm.patchValue({ introducer: selectedIntroducer.code });
+            sessionStorage.setItem('introducer', JSON.stringify({
+              surName: selectedIntroducer.surName,
+              otherNames: selectedIntroducer.otherNames
+            }));
           }
         }
 
@@ -2305,8 +2314,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     this.selectIntroducerTable.filter(input.value, 'groupCompany', 'contains');
   }
+
   saveIntroducer(introducer: Introducer) {
-    log.debug("Selected Introducer", introducer)
+    log.debug("Selected Introducer", introducer);
+    this.quotationForm.controls['introducer'].setValue(introducer.code);
     this.selectedIntroducerName = introducer?.surName
     this.showIntroducerSearchModal = false
   }
@@ -2323,11 +2334,31 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     this.selectAgentTable.filter(input.value, 'accountType', 'contains');
   }
+
   saveAgent(agent: any) {
-    log.debug("Selected Agent", agent)
+    log.debug("Selected Agent", agent);
+    this.quotationForm.controls['agent'].setValue(agent);
     this.selectedAgent = agent
     this.selectedAgentName = agent.name
     this.showAgentSearchModal = false
+  }
+
+  filterByMarketerName(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectMarketerTable.filter(input.value, 'name', 'contains');
+  }
+
+  filterByMarketerId(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectMarketerTable.filter(input.value, 'id', 'contains');
+  }
+
+  saveMarketer(marketer: any) {
+    log.debug("Selected Marketer", marketer);
+    this.quotationForm.controls['marketer'].setValue(marketer);
+    this.selectedMarketer = marketer
+    this.selectedMarketerName = marketer.name
+    this.showMarketerSearchModal = false
   }
 
 
