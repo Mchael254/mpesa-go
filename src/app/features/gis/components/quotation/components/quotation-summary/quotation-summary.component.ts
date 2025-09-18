@@ -46,6 +46,7 @@ import * as bootstrap from 'bootstrap';
 import { riskClauses } from '../../../setups/data/gisDTO';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NotificationService } from '../../services/notification/notification.service';
+import { NgxCurrencyConfig } from 'ngx-currency';
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
 
@@ -253,10 +254,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   selectedReports: ReportResponse[] = [];
   fetchedReports: ReportResponse[] = [];
   currentIndex: number = 0;
+  currentReport!: ReportResponse;
   activeIndex: number = 1;
   reportBlobs: { [code: string]: Blob } = {};
   viewDocForm!: FormGroup;
-
+  public currencyObj: NgxCurrencyConfig;
+  dragging = false;
+  dragOffset = { x: 0, y: 0 };
+  isNewClientSelected: boolean = false;
+  storedQuotationFormDetails: any = null
 
   constructor(
     public quotationService: QuotationsService,
@@ -313,7 +319,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.quotationNumber = sessionStorage.getItem('quotationNumber') || sessionStorage.getItem('quotationNum');
     log.debug('quotationCode', this.quotationCodeString)
     log.debug("quick Quotation number", this.quotationNumber);
-
+    this.isNewClientSelected = JSON.parse(sessionStorage.getItem('isNewClientSelected'))
+    this.storedQuotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
+    log.debug("QUOTATION FORM DETAILS", this.storedQuotationFormDetails)
     this.conversionFlagString = sessionStorage.getItem("conversionFlag");
     this.conversionFlag = JSON.parse(this.conversionFlagString);
     log.debug("conversion flag:", this.conversionFlag);
@@ -432,6 +440,21 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       subject: [''],
       wording: ['']
     });
+    const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
+    const currencySymbol = sessionStorage.getItem('currencySymbol')
+    log.debug("currency Object:", currencySymbol)
+    log.debug("currency Delimeter:", currencyDelimiter)
+    this.currencyObj = {
+      prefix: currencySymbol + ' ',
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
   }
 
   ngAfterViewInit() {
@@ -560,9 +583,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
         // extract client-code and productCode
         this.prodCode = this.quotationView.quotationProducts[0].code;
-        this.clientCode = this.quotationView.clientCode;
+        this.clientCode = this.quotationView?.clientCode;
 
-        this.loadClientDetails(this.clientCode);
+        this.clientCode && this.loadClientDetails(this.clientCode);
         // this.getExternalClaimsExperience(this.clientCode);
         // this.getInternalClaimsExperience(this.clientCode);
         // Handle risk information and session storage
@@ -809,10 +832,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     })
   }
 
-
-
-
-
+  sanitizeCurrency(raw: string): number {
+    const cleaned = raw.replace(/[^0-9]/g, '');
+    return Number(cleaned);
+  }
 
 
   /**
@@ -1187,6 +1210,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     );
 
     if (matchingProduct) {
+      this.handleRowClick(matchingProduct.riskInformation[0])
+      this.isRiskCollapsibleOpen = true
       this.taxDetails = matchingProduct.taxInformation;
       if (this.taxDetails.length > 0) {
         this.setColumnsFromTaxesDetails(this.taxDetails[0])
@@ -1205,7 +1230,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     if (this.productClauses) {
       this.setColumnsFromClausesDetails(this.productClauses[0])
     }
-    this.handleRowClick(matchingProduct.riskInformation[0])
   }
 
   loadAllSubclass() {
@@ -1714,6 +1738,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.clientService.getClientById(id).subscribe((data) => {
       this.clientDetails = data;
       log.debug('Selected Client Details:', this.clientDetails);
+      // this.selectedClientName = this.clientDetails.firstName +''+ this.clientDetails.lastName
       const clientDetailsString = JSON.stringify(this.clientDetails);
       sessionStorage.setItem('clientDetails', clientDetailsString);
       this.saveclient();
@@ -1729,8 +1754,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
    */
   saveclient() {
     this.clientCode = Number(this.clientDetails.id);
-    this.clientName =
-      this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
+    this.clientName = (this.clientDetails?.firstName ?? '') + ' ' + (this.clientDetails?.lastName ?? '');
+
+    log.debug("Client name:", this.clientName)
     sessionStorage.setItem('clientCode', this.clientCode);
   }
 
@@ -2377,14 +2403,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     return hasRights;
   }
 
+
   toggleProducts(iconElement: HTMLElement): void {
     this.showProducts = true;
 
-
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2393,14 +2419,33 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showProductColumnModal = true;
   }
+
+
+  onDragStart(event: MouseEvent): void {
+    this.dragging = true;
+    this.dragOffset.x = event.clientX - parseInt(this.columnModalPosition.left, 10);
+    this.dragOffset.y = event.clientY - parseInt(this.columnModalPosition.top, 10);
+  }
+
+  onDragMove(event: MouseEvent): void {
+    if (this.dragging) {
+      this.columnModalPosition.top = `${event.clientY - this.dragOffset.y}px`;
+      this.columnModalPosition.left = `${event.clientX - this.dragOffset.x}px`;
+    }
+  }
+
+  onDragEnd(): void {
+    this.dragging = false;
+  }
+
+
   toggleClauses(iconElement: HTMLElement): void {
     this.showClauses = true;
 
-
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2409,14 +2454,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showClausesColumnModal = true;
   }
+
   toggleTaxes(iconElement: HTMLElement): void {
-
-
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2427,12 +2471,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
   toggleRisk(iconElement: HTMLElement): void {
 
-
-
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2441,14 +2483,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showRiskColumnModal = true;
   }
+
   toggleSection(iconElement: HTMLElement): void {
-
-
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2458,14 +2499,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.showSectionColumnModal = true;
   }
 
+
+
   toggleRiskClauses(iconElement: HTMLElement): void {
-
-
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2477,12 +2518,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   toggleSchedule(iconElement: HTMLElement): void {
 
-
-
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2491,14 +2530,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showScheduleColumnModal = true;
   }
+
+
   togglePeril(iconElement: HTMLElement): void {
-
-
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2507,14 +2546,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showPerilColumnModal = true;
   }
+
+
   toggleExcess(iconElement: HTMLElement): void {
-
-
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2526,12 +2565,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   toggleLimitsOfLiability(iconElement: HTMLElement): void {
 
-
-
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2540,7 +2577,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.showLimitsOfLiabilityColumnModal = true;
   }
-
   setColumnsFromProductDetails(sample: ProductDetails) {
     const defaultVisibleFields = [
       'productName',
@@ -2755,18 +2791,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
 
-
   setColumnsFromRiskClausesDetails(sample: riskClauses) {
-    const defaultVisibleFields = ['sectionShortDescription',
+    const defaultVisibleFields = [
       'clauseCode',
       'clause',
       'shortDescription'
-
-
-
-
-
-
     ];
 
     const excludedFields = [
@@ -3139,10 +3168,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             const modal = bootstrap.Modal.getInstance(modalEl)
               || new bootstrap.Modal(modalEl);
             modal.show();
-            const firstReport = this.fetchedReports[0];
-            this.selectedReports = [firstReport];
+            if (this.fetchedReports?.length) {
+              this.currentIndex = 0;
+              this.currentReport = this.fetchedReports[0];
+              this.selectedReports = [this.currentReport]; // show first as checked
+              this.loadAndShowReport(this.currentReport);
+            }
 
-            this.onReportToggle({ checked: true }, firstReport);
           }
         },
         error: (err: any) => {
@@ -3172,28 +3204,47 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   //   }
   // }
   onReportToggle(event: any, report: ReportResponse) {
-    if (event.checked) {
-      const index = this.selectedReports.findIndex(r => r.code === report.code);
-      this.currentIndex = index !== -1 ? index : this.selectedReports.length - 1;
 
+    if (event.checked) {
+      this.currentIndex = this.fetchedReports.findIndex(r => r.code === report.code);
+      this.currentReport = report;
       this.loadAndShowReport(report);
     } else {
-      // remove or handle uncheck
+
+      if (this.currentReport && this.currentReport.code === report.code) {
+        if (this.selectedReports && this.selectedReports.length) {
+          this.currentReport = this.selectedReports[0];
+          this.currentIndex = this.fetchedReports.findIndex(r => r.code === this.currentReport.code);
+          this.loadAndShowReport(this.currentReport);
+        } else {
+          this.currentReport = null;
+          this.filePath = null;
+        }
+      }
     }
   }
 
+
   toggleReport(direction: 'prev' | 'next') {
-    if (!this.selectedReports || this.selectedReports.length === 0) return;
+    if (!this.fetchedReports || this.fetchedReports.length === 0) return;
 
     if (direction === 'prev' && this.currentIndex > 0) {
       this.currentIndex--;
-    } else if (direction === 'next' && this.currentIndex < this.selectedReports.length - 1) {
+    } else if (direction === 'next' && this.currentIndex < this.fetchedReports.length - 1) {
       this.currentIndex++;
+    } else {
+      return;
     }
 
-    const report = this.selectedReports[this.currentIndex];
-    this.loadAndShowReport(report);
+    this.currentReport = this.fetchedReports[this.currentIndex];
+
+    // visually select only the active report (this will uncheck others)
+    this.selectedReports = [this.currentReport];
+
+    // generate and preview
+    this.loadAndShowReport(this.currentReport);
   }
+
 
   private loadAndShowReport(report: ReportResponse) {
     this.quotationService.fetchReportParams(report.code).subscribe({
@@ -3252,10 +3303,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  downloadReport(report: any) {
-    const reportCode = report.rptCode || report.code;
-    this.downloadReportByCode(reportCode, report.description);
+  downloadReports(reports: any[]) {
+    if (!reports || reports.length === 0) return;
+
+    reports.forEach(report => {
+      const reportCode = report.rptCode || report.code;
+      this.downloadReportByCode(reportCode, report.description);
+    });
   }
+
   downloadReportByCode(reportCode: number, fileName?: string) {
     const blob = this.reportBlobs[reportCode];
     if (!blob) {
@@ -3282,23 +3338,35 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     if (!blob) {
       console.warn("No cached blob found for report:", reportCode);
+      this.globalMessagingService.displayInfoMessage('Info', 'Select a report to continue');
       return;
     }
+
+    this.spinner.show();
 
     const url = URL.createObjectURL(blob);
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
     iframe.src = url;
 
-    document.body.appendChild(iframe);
-    iframe.contentWindow?.focus();
-    iframe.contentWindow?.print();
+    iframe.onload = () => {
+      try {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      } finally {
+        this.spinner.hide();
+      }
 
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-      URL.revokeObjectURL(url);
-    }, 1000);
+      iframe.contentWindow?.addEventListener("afterprint", () => {
+        document.body.removeChild(iframe);
+        URL.revokeObjectURL(url);
+      });
+    };
+
+    document.body.appendChild(iframe);
   }
+
+
   async sendReportViaEmail() {
     this.viewDocForm.markAllAsTouched();
     this.viewDocForm.updateValueAndValidity()

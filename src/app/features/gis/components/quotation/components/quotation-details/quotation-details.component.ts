@@ -28,6 +28,7 @@ import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel
 import { ClaimsService } from '../../../claim/services/claims.service';
 import * as bootstrap from 'bootstrap';
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
+import { Modal } from 'bootstrap';
 
 const log = new Logger('QuotationDetails');
 
@@ -42,6 +43,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('productClauseTable') productClauseTable!: any;
   @ViewChild('addProductClausesTable') addProductClausesTable!: any;
   @ViewChild('selectIntroducerTable') selectIntroducerTable!: any;
+  @ViewChild('selectAgentTable') selectAgentTable!: any;
 
   @ViewChild('reassignTable') reassignTable!: any;
 
@@ -198,7 +200,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   groupUsers: GroupedUser[] = [];
   selectedGroupUserId!: number;
   groupLeaderName: string = '';
-
+  showAgentSearchModal = false;
+  selectedAgentName: string;
+  dragging = false;
+  dragOffset = { x: 0, y: 0 };
+  isNewClientSelected: boolean = false;
+  quickQuoteConverted: boolean = false;
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -218,6 +225,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private cd: ChangeDetectorRef
   ) {
+    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteConvertedFlag'))
     this.quotationAction = sessionStorage.getItem('quotationAction')
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
     this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
@@ -269,9 +277,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("product Form details", this.productDetails)
   }
 
-
-
   ngOnInit(): void {
+
     this.getuser();
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
@@ -307,13 +314,24 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }
     });
 
-
-
-
     this.loadPersistedClauses();
     this.getUsers();
     this.getAgents();
 
+  }
+
+  // ngOnChanges(): void {
+  //   this.checkProducts();
+  //   this.updateProductsFromQuickQuote();
+  // }
+
+
+
+
+  checkProducts() {
+    // if (this.productDetails && this.productDetails.length > 0) {
+    //   this.isProductClauseOpen = true;
+    // }
   }
 
   ngAfterViewInit() {
@@ -443,13 +461,19 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   setClientType(value: 'new' | 'existing') {
     this.selectedClientType = value;
     this.newClient = value === 'new';
+
+    this.newClient && (this.isNewClientSelected = true);
+    sessionStorage.setItem('isNewClientSelected', JSON.stringify(this.isNewClientSelected))
     log.debug("New client status", this.newClient)
   }
   handleSaveClient(eventData: any) {
     log.debug('Event received from Client search comp', eventData);
     const clientCode = eventData.id;
     this.selectedClientCode = clientCode;
-    this.selectedClientName = eventData.clientFullName
+    this.selectedClientName =
+      eventData.firstName && eventData.lastName
+        ? `${eventData.firstName} ${eventData.lastName}`
+        : eventData.firstName || eventData.lastName || '';
     sessionStorage.setItem("SelectedClientName", this.selectedClientName);
     this.quotationForm.controls['client'].setValue(this.selectedClientCode);
     if (document.activeElement instanceof HTMLElement) {
@@ -524,12 +548,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
   toggleProductClauseColumns(iconElement: HTMLElement): void {
-    this.showProductClauses = !this.showProductClauses;
+
+    this.showProductClauses = true;
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 160;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -587,6 +612,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       if (this.sessionClauses.length > 0) {
         this.setProductClauseColumns(this.sessionClauses[0]);
       }
+
       return;
     }
 
@@ -957,8 +983,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         currencyCode: quotationFormValues.currency.id || this.defaultCurrency.id,
         source: quotationFormValues.source.code,
         currencyRate: this.exchangeRate,
-        agentShortDescription: this.agentDetails?.shortDesc || "Direct",
-        agentCode: 0,
+        agentShortDescription: this.selectedAgent?.shortDesc || "Direct",
+        agentCode: this.selectedAgent?.id || 0,
         clientCode: this.selectedClientCode,
         clientType: "I",
         wefDate: this.formatDate(this.productDetails[0].coverFrom),
@@ -1006,7 +1032,69 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   }
+  updateQuickQuoteDetails() {
+    log.debug('THIS IS CALEED IF IT IS A CONVERSION FROM QUICK QUOTE')
+    log.debug("Quotation form details >>>>", this.quotationForm)
+    log.debug("Selected agent >>>>", this.agentDetails)
+    log.debug("ProductDetails:", this.productDetails)
+    log.debug("QuoteDetails:", this.quotationDetails)
+    if (this.quotationForm.valid) {
+      const quotationFormValues = this.quotationForm.getRawValue();
+      const quotationPayload = {
+        quotationNumber: this.quotationDetails?.quotationNo,
+        quotationCode: this.quotationCode || null,
+        user: this.user,
+        branchCode: quotationFormValues.branch.id,
+        RFQDate: this.formatDate(quotationFormValues.RFQDate),
+        expiryDate: this.formatDate(quotationFormValues.expiryDate),
+        currencyCode: quotationFormValues.currency.id || this.defaultCurrency.id,
+        source: quotationFormValues.source.code,
+        currencyRate: this.exchangeRate,
+        agentShortDescription: this.selectedAgent?.shortDesc || "Direct",
+        agentCode: this.selectedAgent?.id || 0,
+        clientCode: this.selectedClientCode,
+        clientType: "I",
+        wefDate: this.formatDate(this.productDetails[0].coverFrom),
+        wetDate: this.formatDate(this.productDetails[0].coverTo),
+        frequencyOfPayment: quotationFormValues?.frequencyOfPayment?.value,
+        prospectCode: this.quotationDetails?.prospectCode,
+        premium: this.quotationDetails?.premium,
+        comments: this.quotationDetails?.comments,
 
+        quotationProducts: this.productDetails.map((value) => {
+          const existingProduct = this.quotationDetails?.quotationProducts?.find(
+            (p) => Number(p.productCode) == Number(value.productCode)
+          );
+          log.debug('existing product:', existingProduct)
+
+          return {
+            code: existingProduct?.code || null, // If editing, use existing code; otherwise null
+            quotationCode: this.quotationCode,
+            wef: this.formatDate(value.coverFrom),
+            wet: this.formatDate(value.coverTo),
+            productCode: value.productCode,
+            productName: value.productCode.description
+          };
+        })
+
+      }
+      log.debug("quotation payload to save", quotationPayload);
+      this.createQuotation(quotationPayload)
+    } else {
+      // Mark all fields as touched and validate the form
+      this.quotationForm.markAllAsTouched();
+      this.quotationForm.updateValueAndValidity();
+      for (let controlsKey in this.quotationForm.controls) {
+        if (this.quotationForm.get(controlsKey).invalid) {
+          log.debug(
+            `${controlsKey} is invalid`,
+            this.quotationForm.get(controlsKey).errors
+          );
+        }
+      }
+    }
+    return
+  }
   /**
    * Applies a global filter to the DataTable.
    * @method applyFilterGlobal
@@ -1028,11 +1116,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       untilDestroyed(this)
     )
       .subscribe(data => {
-        this.agents = data.content.map(agent => ({
-          label: `${agent.name}`,
-          value: agent
-        }));
+        this.agents = data.content;
         log.debug("AGENTS", data)
+        log.debug("AGENTS", this.agents)
         this.marketerList = data.content.filter(agent => agent.accountTypeId == 10)
         log.debug("Marketer list", this.marketerList)
 
@@ -1064,8 +1150,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.quotationForm.controls['agentCode'].setValue(this.agentDetails.name);*/
     /* this.agentService.getAgentById(data).subscribe({
        next: (res) => {
- 
- 
+   
+   
        }
      })*/
   }
@@ -1107,7 +1193,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     /* if (this.quotationType === "D") {
        this.quotationForm.controls['agentCode'].setValue(0);
        this.quotationForm.controls['agentShortDescription'].setValue("DIRECT")
-
+  
      } else if (this.quotationType === "I") {
        this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
      }*/
@@ -1248,10 +1334,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             const day = coverFromDate.getDate();
             const month = coverFromDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
             const year = coverFromDate.getFullYear();
-
+  
             // Format the date in 'dd-Month-yyyy' format
             const formattedDate = `${day}-${month}-${year}`;
-
+  
             this.coverToDate = formattedDate;
             log.debug('Cover to  Date', this.coverToDate);
             sessionStorage.setItem("selectedCoverToDate", this.formatDate(this.coverToDate))
@@ -1261,13 +1347,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           },
           error: (error: HttpErrorResponse) => {
             log.debug("Error log", error.error.message);
-
+  
             this.globalMessagingService.displayErrorMessage(
               'Error',
               error.error?.message
             );
           },
-
+  
         })
     }*/
   updateQuotationExpiryDate(date: any) {
@@ -1437,7 +1523,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
           log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
 
-          this.fetchUserOrgId()
+          this.fetchUserOrgId();
         }
         if (this.storedQuotationFormDetails?.currency) {
           const selectedCurrency = this.currency.find(currency => currency.id === this.storedQuotationFormDetails?.currency.id);
@@ -1514,6 +1600,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.products = products;
 
         const storedProducts = sessionStorage.getItem('availableProducts');
+        log.debug("StoredProducts:", storedProducts);
+
         if (storedProducts) {
           // Use saved products if they exist
           this.ProductDescriptionArray = JSON.parse(storedProducts);
@@ -1531,9 +1619,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           // Save initial list to sessionStorage
           sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
         }
+        this.updateProductsFromQuickQuote();
+        this.checkProducts();
 
-
-        console.log("✅ ProductDescriptionArray with filterText:", this.ProductDescriptionArray);
+        log.debug("ProductDescriptionArray with filterText:", this.ProductDescriptionArray);
 
 
         if (this.storedQuotationFormDetails?.productCode) {
@@ -1550,6 +1639,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         if (this.quotationNumber) {
           this.quickQuoteDetails();
         }
+
+
       });
   }
 
@@ -1620,8 +1711,103 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   }
 
+  // openAddProductModal(): void {
+  //   const payloadString = sessionStorage.getItem('quickQuotePayload');
+  //   const productsString = sessionStorage.getItem('availableProducts');
+
+  //   const quickQuotePayload = JSON.parse(payloadString);
+  //   this.ProductDescriptionArray = JSON.parse(productsString);
+
+  //   const product = quickQuotePayload.products[0];
+
+  //   const matchingProduct = this.ProductDescriptionArray.find(
+  //     (p: any) => String(p.code) === String(product.code)
+  //   );
+
+  //   this.quotationProductForm.patchValue({
+  //     productCodes: matchingProduct || null,
+  //     wef: new Date(quickQuotePayload.effectiveDate),
+  //     wet: new Date(product.effectiveTo)
+  //   });
+
+  // }
+
+  updateProductsFromQuickQuote(): void {
+    const payloadString = sessionStorage.getItem('quickQuotePayload');
+    if (!payloadString) return;
+
+    const quickQuotePayload = JSON.parse(payloadString);
+
+    if (!quickQuotePayload?.products || !Array.isArray(quickQuotePayload.products)) {
+      return;
+    }
+
+    // reset productDetails
+    this.productDetails = [];
+
+    quickQuotePayload.products.forEach((payloadProduct: any) => {
+      const matchedDesc = this.ProductDescriptionArray.find((desc: any) =>
+        desc.code?.toString() === payloadProduct.code?.toString()
+      );
+
+      if (matchedDesc) {
+        this.productDetails.push({
+          productCode: payloadProduct.code?.toString(),
+          productName: payloadProduct.description || matchedDesc.description,
+          coverFrom: quickQuotePayload.effectiveDate,
+          coverTo: payloadProduct.effectiveTo || null
+        });
+
+        // this.ProductDescriptionArray = this.ProductDescriptionArray.filter(
+        //   (p: any) => p.code?.toString() !== payloadProduct.code?.toString()
+        // );
+      }
+    });
+
+    // save updated values to sessionStorage
+    // sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+    // log.debug("Saved Product Details to sessionStorage:", this.productDetails);
+    // sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+
+    // reset form
+    // this.quotationProductForm.reset({
+    //   productCodes: [],
+    //   wef: '',
+    //   wet: ''
+    // });
+
+    // call getProductClause for all products in productDetails
+    this.productDetails.forEach((prod: any) => {
+      this.getProductClause({ code: prod.productCode });
+    });
 
 
+    log.debug("Final product details:", this.productDetails);
+
+    if (this.productDetails.length > 0) {
+      this.setColumnsFromProductDetails(this.productDetails[0]);
+    }
+
+
+    // this.productDetails = quickQuotePayload.products.map((p: any) => {
+    //   return {
+    //     productCode: { code: p.code, description: p.productName || p.description },
+    //     productName: p.productName || p.description,
+    //     coverFrom: new Date(quickQuotePayload.effectiveDate),
+    //     coverTo: new Date(p.effectiveTo),
+    //     ...p
+    //   };
+    // });
+
+    // const usedCodes = quickQuotePayload.products.map((p: any) => String(p.code));
+
+    // availableProducts = availableProducts.filter(
+    //   (ap: any) => !usedCodes.includes(String(ap.code))
+    // );
+
+    // sessionStorage.setItem('availableProducts', JSON.stringify(availableProducts));
+    // this.getProductClause({ code: selectedProductCode });
+  }
 
 
 
@@ -1752,18 +1938,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       wet: ''
     });
 
-    // Optionally fetch product clauses
     this.getProductClause({ code: selectedProductCode });
     this.setColumnsFromProductDetails(this.productDetails[0]);
+    this.checkProducts();
 
-    // Close modal automatically
     const closeBtn = document.querySelector('.btn-close') as HTMLElement;
     closeBtn?.click();
-    // ⚡ Force change detection so p-table updates immediately
     this.cd.detectChanges();
 
-    // Optionally show the table if it’s collapsed
     this.showProducts = true;
+    this.isProductClauseOpen = true
   }
 
 
@@ -1785,9 +1969,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.selectedRow = product;
     this.getProductClause(product.productCode);
   }
+
   onProductSelected(selectedProduct: any) {
     if (!selectedProduct) return;
-
 
     const today = new Date();
     const nextYear = new Date(today);
@@ -1903,55 +2087,65 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
 
-  onRowEditInits(product: any, index: any) {
-    this.clonedProducts[product.productCode.code] = { ...product };
-    this.selectedEditRowIndex = index;
+  // onRowEditInits(product: any, index: any) {
+  //   this.clonedProducts[product.productCode.code] = { ...product };
+  //   this.selectedEditRowIndex = index;
 
-    log.debug('Editing row:', product);
-  }
+  //   log.debug('Editing row:', product);
+  // }
 
-  onRowEditSaves(product: any) {
-    const coverFromDate = product.coverFrom;
-    const coverToDate = product.coverTo;
+  editIndex: number | null = null;
+  openEditProductModal(product: any, index: any) {
+    this.editIndex = index;
 
-    // If there's a pending product code from dropdown selection, finalize it
-    if (product._pendingProductCode) {
-      product.productCode = product._pendingProductCode;
-      product.productName = product._pendingProductCode.description;
-      delete product._pendingProductCode;
-    }
+    const productFormDetails = JSON.parse(sessionStorage.getItem('productFormDetails') || '[]');
+    const selectedProduct = productFormDetails.find(
+      (p: any) => String(p.productCode.code) === String(product.productCode.code)
+    )?.productCode;
 
-    // Ensure required values exist
-    if (coverFromDate && coverToDate && product.productCode?.code) {
-      product.coverFrom = new Date(coverFromDate);
-      product.coverTo = new Date(coverToDate);
-
-      // ✅ Update using row index instead of matching by productCode
-      if (this.selectedEditRowIndex !== undefined) {
-        this.productDetails[this.selectedEditRowIndex] = {
-          ...product,
-          productCode: { ...product.productCode }
-        };
+    if (selectedProduct) {
+      log.debug("selectedProduct", selectedProduct)
+      const exists = this.ProductDescriptionArray.some(
+        (p: any) => String(p.code) === String(selectedProduct.code)
+      );
+      if (!exists) {
+        this.ProductDescriptionArray = [...this.ProductDescriptionArray, selectedProduct];
       }
+    }
 
-      sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
-      log.debug("Saved to sessionStorage:", JSON.parse(sessionStorage.getItem('productFormDetails')));
+    this.quotationProductForm.patchValue({
+      productCodes: selectedProduct,
+      wef: new Date(product.coverFrom),
+      wet: new Date(product.coverTo),
+    });
+  }
 
-      delete this.clonedProducts[product.productCode.code];
-    } else {
-      // Optionally show validation errors
-      // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill in all required fields' });
+  editProduct() {
+    const formValue = this.quotationProductForm.value;
+
+    const updatedProduct = {
+      ...this.productDetails[this.editIndex],
+      productCode: formValue.productCodes,
+      productName: formValue.productCodes?.description,
+      coverFrom: new Date(formValue.wef),
+      coverTo: new Date(formValue.wet),
+    };
+
+    log.debug("updatedProducts", updatedProduct)
+    this.productDetails[this.editIndex] = updatedProduct;
+    sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+    this.closeEditProductModal();
+
+  }
+
+  closeEditProductModal() {
+    const modalEl = document.getElementById('editProduct');
+    if (modalEl) {
+      const modalInstance = Modal.getInstance(modalEl) || new Modal(modalEl);
+      modalInstance.hide();
     }
   }
 
-
-  onRowEditCancels(product: any, index: number) {
-    const code = product.productCode.code;
-    this.productDetails[index] = this.clonedProducts[code];
-    delete this.clonedProducts[code];
-
-    // this.messageService.add({ severity: 'info', summary: 'Cancelled', detail: 'Edit cancelled' });
-  }
 
   onProductChanges(event: any, rowIndex: number, product: any) {
     const selectedProduct = this.ProductDescriptionArray.find(p => p.code === event.code);
@@ -2117,14 +2311,33 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.showIntroducerSearchModal = false
   }
 
+  filterByAgentName(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectAgentTable.filter(input.value, 'name', 'contains');
+  }
+  filterById(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectAgentTable.filter(input.value, 'id', 'contains');
+  }
+  filterByIntermediaryType(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectAgentTable.filter(input.value, 'accountType', 'contains');
+  }
+  saveAgent(agent: any) {
+    log.debug("Selected Agent", agent)
+    this.selectedAgent = agent
+    this.selectedAgentName = agent.name
+    this.showAgentSearchModal = false
+  }
+
+
   toggleProducts(iconElement: HTMLElement): void {
     this.showProducts = true;
 
-
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop + iconElement.offsetHeight + 4;
-    const left = iconElement.offsetLeft;
+    const top = iconElement.offsetTop; // align vertically with icon
+    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2132,6 +2345,24 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     };
 
     this.showProductColumnModal = true;
+  }
+
+
+  onDragStart(event: MouseEvent): void {
+    this.dragging = true;
+    this.dragOffset.x = event.clientX - parseInt(this.columnModalPosition.left, 10);
+    this.dragOffset.y = event.clientY - parseInt(this.columnModalPosition.top, 10);
+  }
+
+  onDragMove(event: MouseEvent): void {
+    if (this.dragging) {
+      this.columnModalPosition.top = `${event.clientY - this.dragOffset.y}px`;
+      this.columnModalPosition.left = `${event.clientX - this.dragOffset.x}px`;
+    }
+  }
+
+  onDragEnd(): void {
+    this.dragging = false;
   }
 
 

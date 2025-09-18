@@ -290,6 +290,10 @@ ul li a.active {
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
 .cancel {
@@ -825,4 +829,12 @@ textarea {
 ::ng-deep .custom-tabs .p-tabview-nav li:not(.p-highlight) .p-tabview-nav-link:hover {
   color: #495057;
   cursor: pointer;
+}
+
+.btn-greyed-out {
+  opacity: 0.6;
+  cursor: pointer;
+  /* Optional: make it look more like disabled state */
+  color: #6c757d !important;
+  border-color: #6c757d !important;
 }
