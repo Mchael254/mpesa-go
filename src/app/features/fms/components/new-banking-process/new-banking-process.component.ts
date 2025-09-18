@@ -11,14 +11,35 @@ import { PaymentMethod } from 'src/app/features/lms/grp/components/claims/models
 export class NewBankingProcessComponent {
   bankingForm:FormGroup;
   paymentMethods=['mpesa','cash','bank'];
+  receiptData:ReceiptDto[]=[
+    {
+      receiptId:"RO1",
+      customer:"frankline",
+      amount:2000,
+      collectionAcc:"CA001",
+      assignedTo:"unassigned",
+      date:new Date("2020/01/25")
+
+
+    },
+    {
+receiptId:"RO1",
+      customer:"frankline",
+      amount:2000,
+      collectionAcc:"CA001",
+      assignedTo:"unassigned",
+      date:new Date("2000/02/24")
+    }
+  ];
 constructor(
   public translate:TranslateService,
   private fb:FormBuilder
 ){}
 ngOnInit(){
-  this.initializeForm();
+  this.createBankingForm();
+  
 }
-initializeForm():void{
+createBankingForm():void{
 this.bankingForm = this.fb.group(
   {
     startDate:['',Validators.required],
@@ -26,6 +47,17 @@ this.bankingForm = this.fb.group(
     paymentMethod:['',Validators.required]
   }
 )
+
 }
+
+
+}
+export interface ReceiptDto{
+  receiptId:string;
+  date:Date;
+  customer:string;
+  amount:number;
+  collectionAcc:string;
+  assignedTo:string;
 
 }

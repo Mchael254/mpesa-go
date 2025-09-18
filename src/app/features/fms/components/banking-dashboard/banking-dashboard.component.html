@@ -22,163 +22,162 @@
     </div>
   </div>
 
-  <div class="main pb-3">
-    <h6 class="pt-4 pb-1">Banking Process</h6>
-    <div class="d-flex justify-content-end pb-1">
-      <button class="btn btn-primary" (click)="navigateToBanking()">
-        New Banking Process
-      </button>
-    </div>
-    <div class="card">
-      <p-table
-        [value]="filteredReceipts"
-        stripedRows
-        [scrollable]="true"
-        selectionMode="single"
-        scrollHeight="500px"
-        [(selection)]="selectedReceipt"
-        (onRowSelect)="onRowSelect($event)"
-        dataKey="batchNo"
-        [metaKeySelection]="metaKey"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="batchNo" class="header-bg">
-              <div class="flex items-center gap-2">
-                Batch number
-                <p-sortIcon field="batchNo" />
-              </div>
-            </th>
-            <th pSortableColumn="slipNo" class="header-bg">
-              <div class="flex items-center gap-2">
-                Slip number
-                <p-sortIcon field="slipNo" />
-              </div>
-            </th>
-            <th pSortableColumn="date" class="header-bg">
-              <div class="flex items-center gap-2">
-                Date
-                <p-sortIcon field="date" />
-              </div>
-            </th>
-            <th pSortableColumn="assignee" class="header-bg">
-              <div class="flex items-center gap-2">
-                Assignee
-                <p-sortIcon field="assignee" />
-              </div>
-            </th>
+  <div class="card">
+    <div class="card-body">
+      <h6 class="pt-4 pb-1">Banking Process</h6>
+      <div class="d-flex justify-content-end pb-1">
+        <button class="btn btn-primary" (click)="navigateToBanking()">
+          New Banking Process
+        </button>
+      </div>
+      <div class="card">
+        <p-table
+          [value]="filteredReceipts"
+          [resizableColumns]="true"
+          [scrollable]="true"
+          selectionMode="single"
+          scrollHeight="500px"
+          (onRowSelect)="onRowSelect($event)"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="batchNo">
+                <div class="flex items-center gap-2">
+                  Batch number
+                  <p-sortIcon field="batchNo" />
+                </div>
+              </th>
+              <th pSortableColumn="slipNo">
+                <div class="flex items-center gap-2">
+                  Slip number
+                  <p-sortIcon field="slipNo" />
+                </div>
+              </th>
+              <th pSortableColumn="date">
+                <div class="flex items-center gap-2">
+                  Date
+                  <p-sortIcon field="date" />
+                </div>
+              </th>
+              <th pSortableColumn="assignee">
+                <div class="flex items-center gap-2">
+                  Assignee
+                  <p-sortIcon field="assignee" />
+                </div>
+              </th>
 
-            <th pSortableColumn="amount" class="header-bg">
-              <div class="flex items-center gap-2">
-                Amount
-                <p-sortIcon field="amount" />
-              </div>
-            </th>
-            <th pSortableColumn="bankAcc" class="header-bg">
-              <div class="flex items-center gap-2">
-                Bank account
-                <p-sortIcon field="bankAcc" />
-              </div>
-            </th>
-            <th pSortableColumn="status" class="header-bg">
-              <div class="flex items-center gap-2">
-                Status
-                <p-sortIcon field="status" />
-              </div>
-            </th>
-            <th class="header-bg">
-              <div class="flex items-center gap-2">Actions</div>
-            </th>
-          </tr>
-          <tr>
-            <!-- Filter row -->
-            <th>
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                (keyup.enter)="filter($event, 'batchNo')"
-                (input)="filter($event, 'batchNo')"
-                placeholder="{{ 'fms.receipting.filter' | translate }}"
-              />
-            </th>
+              <th pSortableColumn="amount">
+                <div class="flex items-center gap-2">
+                  Amount
+                  <p-sortIcon field="amount" />
+                </div>
+              </th>
+              <th pSortableColumn="bankAcc">
+                <div class="flex items-center gap-2">
+                  Bank account
+                  <p-sortIcon field="bankAcc" />
+                </div>
+              </th>
+              <th pSortableColumn="status">
+                <div class="flex items-center gap-2">
+                  Status
+                  <p-sortIcon field="status" />
+                </div>
+              </th>
+              <th>
+                <div class="flex items-center gap-2">Actions</div>
+              </th>
+            </tr>
+            <tr>
+              <!-- Filter row -->
+              <th>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  (keyup.enter)="filter($event, 'batchNo')"
+                  (input)="filter($event, 'batchNo')"
+                  placeholder="{{ 'fms.receipting.filter' | translate }}"
+                />
+              </th>
 
-            <th>
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                (keyup.enter)="filter($event, 'slipNo')"
-                (input)="filter($event, 'slipNo')"
-                placeholder="{{ 'fms.receipting.filter' | translate }}"
-              />
-            </th>
-            <th>
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                (keyup.enter)="filter($event, 'date')"
-                (input)="filter($event, 'date')"
-                placeholder="{{ 'fms.receipting.filter' | translate }}"
-              />
-            </th>
-            <th>
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                (keyup.enter)="filter($event, 'assignee')"
-                (input)="filter($event, 'assignee')"
-                placeholder="{{ 'fms.receipting.filter' | translate }}"
-              />
-            </th>
-            <th>
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                (keyup.enter)="filter($event, 'amount')"
-                (input)="filter($event, 'amount')"
-                placeholder="{{ 'fms.receipting.filter' | translate }}"
-              />
-            </th>
-            <th>
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                (keyup.enter)="filter($event, 'bankAcc')"
-                (input)="filter($event, 'bankAcc')"
-                placeholder="{{ 'fms.receipting.filter' | translate }}"
-              />
-            </th>
-            <th>
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                (keyup.enter)="filter($event, 'status')"
-                (input)="filter($event, 'status')"
-                placeholder="{{ 'fms.receipting.filter' | translate }}"
-              />
-            </th>
-            <th>
-              <button
-                class="btn btn-outline-primary btn-sm"
-                (click)="clearFilter()"
-              >
-                clear filters
-              </button>
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-receipt>
-          <tr [pSelectableRow]="receipt">
-            <td>{{ receipt.batchNo }}</td>
-            <td>{{ receipt.slipNo }}</td>
-            <td>{{ receipt.date | date : "yyyy-MM-dd" }}</td>
-            <td>{{ receipt.assignee }}</td>
-            <td>{{ receipt.amount }}</td>
-            <td>{{ receipt.bankAcc }}</td>
-            <td>{{ receipt.status }}</td>
-            <td><a class="btn">deposit</a></td>
-          </tr>
-        </ng-template>
-      </p-table>
+              <th>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  (keyup.enter)="filter($event, 'slipNo')"
+                  (input)="filter($event, 'slipNo')"
+                  placeholder="{{ 'fms.receipting.filter' | translate }}"
+                />
+              </th>
+              <th>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  (keyup.enter)="filter($event, 'date')"
+                  (input)="filter($event, 'date')"
+                  placeholder="{{ 'fms.receipting.filter' | translate }}"
+                />
+              </th>
+              <th>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  (keyup.enter)="filter($event, 'assignee')"
+                  (input)="filter($event, 'assignee')"
+                  placeholder="{{ 'fms.receipting.filter' | translate }}"
+                />
+              </th>
+              <th>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  (keyup.enter)="filter($event, 'amount')"
+                  (input)="filter($event, 'amount')"
+                  placeholder="{{ 'fms.receipting.filter' | translate }}"
+                />
+              </th>
+              <th>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  (keyup.enter)="filter($event, 'bankAcc')"
+                  (input)="filter($event, 'bankAcc')"
+                  placeholder="{{ 'fms.receipting.filter' | translate }}"
+                />
+              </th>
+              <th>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  (keyup.enter)="filter($event, 'status')"
+                  (input)="filter($event, 'status')"
+                  placeholder="{{ 'fms.receipting.filter' | translate }}"
+                />
+              </th>
+              <th>
+                <button
+                  class="btn btn-outline-primary btn-sm"
+                  (click)="clearFilter()"
+                >
+                  clear filters
+                </button>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-receipt>
+            <tr [pSelectableRow]="receipt">
+              <td>{{ receipt.batchNo }}</td>
+              <td>{{ receipt.slipNo }}</td>
+              <td>{{ receipt.date | date : "yyyy-MM-dd" }}</td>
+              <td>{{ receipt.assignee }}</td>
+              <td>{{ receipt.amount }}</td>
+              <td>{{ receipt.bankAcc }}</td>
+              <td>{{ receipt.status }}</td>
+              <td><a class="btn">deposit</a></td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
     </div>
   </div>
 </div>
