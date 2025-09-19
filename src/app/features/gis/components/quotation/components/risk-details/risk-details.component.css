@@ -503,3 +503,23 @@ h2 {
   background-color: #e8f5e9;
   border-radius: 4px;
 }
+
+.modal-overlay-spinner {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1060;
+}
+
+.upload-area.disabled {
+  pointer-events: none;
+  /* disable interactions */
+  opacity: 0.5;
+  /* greyed out */
+  cursor: not-allowed;
+}

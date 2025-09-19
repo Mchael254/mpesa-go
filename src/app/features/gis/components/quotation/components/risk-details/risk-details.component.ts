@@ -27,6 +27,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import * as bootstrap from 'bootstrap';
 import { riskClause, riskPeril } from 'src/app/features/gis/data/quotations-dto';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 
 const log = new Logger('RiskDetailsComponent');
@@ -55,6 +56,7 @@ const log = new Logger('RiskDetailsComponent');
 })
 
 export class RiskDetailsComponent {
+  logBookUploaded: boolean;
 
   getFreeLimitLabel(arg0: any) {
     throw new Error('Method not implemented.');
@@ -355,7 +357,7 @@ export class RiskDetailsComponent {
   selectedLevelNumber: any;
   isNewClientSelected: boolean = false;
   quickQuoteConverted: boolean = false;
-
+  showModalSpinner = false;
   constructor(
     public subclassService: SubclassesService,
     private subclassCoverTypesService: SubClassCoverTypesService,
@@ -377,6 +379,7 @@ export class RiskDetailsComponent {
     public cdr: ChangeDetectorRef,
     private renderer: Renderer2,
     private router: Router,
+    private spinner: NgxSpinnerService
 
   ) {
     this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteConvertedFlag'))
@@ -1174,9 +1177,8 @@ export class RiskDetailsComponent {
   }
 
 
-  getVehicleModel(code: number) {
-    const vehicleMakeCode = code;
-    this.vehicleModelService.getAllVehicleModel(vehicleMakeCode).subscribe(data => {
+  getVehicleModel(code: number, callback?: () => void) {
+    this.vehicleModelService.getAllVehicleModel(code).subscribe(data => {
       this.vehicleModelList = data;
       this.vehicleModelDetails = this.vehicleModelList._embedded.vehicle_model_dto_list.map((value) => ({
         ...value,
@@ -1185,17 +1187,22 @@ export class RiskDetailsComponent {
 
       log.debug("Vehicle Model Details", this.vehicleModelDetails);
       sessionStorage.setItem('vehicleModelList', JSON.stringify(this.vehicleModelDetails));
-
       // populate 
       this.safePopulateSelectOptions(this.subclassFormData, 'vehicleModel', this.vehicleModelDetails, 'name', 'code');
 
-      // patch if stored data exists
+
+      // existing logic...
       if (this.storedRiskFormDetails) {
-        const selectedVehicleModel = this.vehicleModelDetails.find(model => model.code === this.storedRiskFormDetails?.vehicleModel);
+        const selectedVehicleModel = this.vehicleModelDetails.find(
+          model => model.code === this.storedRiskFormDetails?.vehicleModel
+        );
         if (selectedVehicleModel) {
           this.riskDetailsForm.patchValue({ vehicleModel: selectedVehicleModel.code });
         }
       }
+
+      // ✅ notify caller
+      if (callback) callback();
     });
   }
 
@@ -6114,8 +6121,8 @@ export class RiskDetailsComponent {
       deductibleDescription: row.deductibleDesc
     }));
   }
-  onLogBookSelected(event: any) {
-    const file: File = event.files[0];
+  onLogBookSelected(selectedFile: any) {
+    const file = selectedFile
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -6149,35 +6156,79 @@ export class RiskDetailsComponent {
                 type: "string",
                 description: "Manufacturer or brand of the vehicle (e.g., Toyota, Nissan)"
               },
+              vehicle_model: {
+                type: "string",
+                description: "Model of the vehicle (e.g., Corolla, X-Trail)"
+              },
               vehicle_value: {
                 type: "number",
                 description: "Declared value of the vehicle in Kenyan Shillings"
               },
-              capacity: {
-                type: "string",
-                description: "Vehicle seating or load capacity"
-              },
               body_type: {
                 type: "string",
                 description: "Type of vehicle body (e.g., saloon, pickup, lorry)"
+              },
+              engine_number: {
+                "type": "string",
+                "description": "Unique identifier stamped on the engine of the vehicle"
+              },
+              chassis_number: {
+                "type": "string",
+                "description": "Unique identifier stamped on the chassis/frame of the vehicle"
+              },
+              color: {
+                "type": "string",
+                "description": "Color of the vehicle (e.g., Red, Blue, White)"
+              },
+              seating_capacity: {
+                "type": "integer",
+                "description": "Number of passengers the vehicle can carry"
+              },
+              cubic_capacity: {
+                "type": "integer",
+                "description": "Engine cubic capacity in cc"
+              },
+              year_of_manufacture: {
+                "type": "integer",
+                "description": "Year the vehicle was manufactured (e.g., 2019)"
               }
             },
-            required: ["reg_number", "vehicle_make", "vehicle_value", "capacity", "body_type"],
+            required: ["reg_number", "vehicle_make", "vehicle_value", "body_type", 'chassis_number',
+              "vehicle_model", "engine_number", "year_of_manufacture", "seating_capacity", "color"
+            ],
             additionalProperties: false
           },
           files: [base64String]   // 👈 send BASE64 here instead of URL
         }
       }
+      this.spinner.show('modal-spinner');
+      this.showModalSpinner = true;
       this.quotationService.readScannedDocuments(payload).subscribe({
         next: (res) => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'Succesfully scanned Logbook');
-          log.debug("Responser after scanning Logbook", res)
-
+          const data = res.data;
+          this.patchUploadedData(data);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully scanned Logbook');
+          log.debug("Response after scanning Logbook", res);
+          this.spinner.hide('modal-spinner');
+          this.showModalSpinner = false;
         },
         error: (err) => {
-          console.error('Delete failed:', err.error.message);
+          log.error('[RiskDetailsComponent] Log book upload failed:', err);
+          log.error('Error fetched log: ', err);
+
+          log.debug('Full error object for investigation:', err);
+
+          this.globalMessagingService.displayErrorMessage(
+            'Upload Failed',
+            err?.error?.message || 'An error occurred while uploading logbook'
+          );
+
+          this.spinner.hide('modal-spinner');
+          this.showModalSpinner = false;
         }
+
       });
+
 
     };
 
@@ -6245,6 +6296,7 @@ export class RiskDetailsComponent {
 
     this.selectedFile = file;
     this.selectedFile && this.uploadFile();
+    this.onLogBookSelected(this.selectedFile)
   }
 
   removeFile(): void {
@@ -6278,6 +6330,70 @@ export class RiskDetailsComponent {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+  patchUploadedData(data: any) {
+    this.logBookUploaded = true
+    let uploadedVehicleModel
+    log.debug("VehicleMake List:", this.vehicleMakeList)
+    log.debug("Vehicle Model List:", this.vehicleModelDetails)
+    log.debug("color", this.motorColorsList)
+    log.debug("bodytype", this.bodytypesList)
+    const uploadedVehicleMake = this.vehicleMakeList.find(
+      make => make.name.toLowerCase().includes(data.vehicle_make.toLowerCase())
+    );
+    log.debug("Vehicle make:", uploadedVehicleMake)
+    if (uploadedVehicleMake) {
+      this.getVehicleModel(uploadedVehicleMake.code, () => {
+        uploadedVehicleModel = this.vehicleModelDetails.find(
+          model => data.vehicle_model.toLowerCase().includes(model.name.toLowerCase())
+        );
+        this.riskDetailsForm.patchValue({ vehicleModel: uploadedVehicleModel.code });
+
+        log.debug("Vehicle Model:", uploadedVehicleModel);
+      });
+    }
+    this.selectedVehicleMakeName = uploadedVehicleMake?.name
+    this.selectedVehicleModelName = uploadedVehicleModel?.name
+    this.vehiclemakeModel = this.selectedVehicleMakeName + ' ' + this.selectedVehicleModelName;
+    log.debug('Selected Vehicle make model', this.vehiclemakeModel);
+    if (this.vehiclemakeModel) {
+      this.riskDetailsForm.patchValue({ riskDescription: this.vehiclemakeModel });
+    }
+    const uploadedVehicleColor = this.motorColorsList.find(
+      color => data.color.toLowerCase().includes(color.description.toLowerCase())
+    );
+    let uploadedBodyType = this.bodytypesList.find(
+      bodyType => data.body_type.toLowerCase().includes(bodyType.description.toLowerCase())
+    );
+
+    if (!uploadedBodyType) {
+      // fallback: normalize and compare
+      const normalize = (str: string) =>
+        str.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      uploadedBodyType = this.bodytypesList.find(
+        bodyType => normalize(data.body_type).includes(normalize(bodyType.description))
+      );
+    }
+
+    log.debug("body type:", uploadedBodyType);
+
+    this.riskDetailsForm.patchValue({
+      registrationNumber: data?.reg_number,
+      // riskDescription: this.selectedRisk.itemDesc,
+      // coverType: this.selectedRisk.coverTypeCode,
+      // premiumBand: this.selectedRisk.binderCode,
+      value: data?.vehicle_value,
+      vehicleMake: uploadedVehicleMake?.code,
+      // vehicleModel: uploadedVehicleModel?.code,
+      yearOfManufacture: data?.year_of_manufacture,
+      cubicCapacity: data?.cubic_capacity,
+      seatingCapacity: data?.seating_capacity,
+      bodyType: uploadedBodyType?.description,
+      color: uploadedVehicleColor?.code,
+      chasisNumber: data?.chassis_number,
+      engineNumber: data?.engine_number
+    });
   }
 
 }
