@@ -22,6 +22,7 @@ export interface ScreensDto {
   hasFields: boolean;
   subModuleId?: string,
   presentationType?: PresentationType,
+  targetEntityShortDescription?: string,
 }
 
 export interface ScreenFormsDto {

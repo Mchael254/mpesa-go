@@ -72,6 +72,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   uploadForm!: FormGroup;
   language: string = 'en'
   category: string = '';
+  role: string = '';
   idType: string = 'NATIONAL_ID'
   validationObject = {} // todo: add type to this
 
@@ -143,6 +144,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   subModules: SubModulesDto[] = [];
   isPreviewMode: boolean = false;
   dynamicSetupData: DynamicScreenSetupDto;
+  initialUploadFormFields!: ConfigFormFieldsDto[];
+  originalFormId: string;
 
   constructor(
     private fb: FormBuilder,
@@ -192,7 +195,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
 
       if (curr) {
         this.isPreviewMode = true;
-        this.category = curr.forms?.formId === 'cnt_individual' ? 'individual' : 'corporate';
+        this.originalFormId = this.previewFormFields?.forms?.formId;
+        this.category = curr.forms?.originalLabel?.toLowerCase();
         this.isCategorySelected = !!curr.forms?.formId;
 
         this.updateFormFields();
@@ -202,15 +206,15 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   }
 
   updateFormFields() {
-    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(1, null)
+    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(null, this.previewFormFields?.screens?.screenId)
       .subscribe({
         next: (data) => {
           this.dynamicSetupData = data;
-          log.info("client setup>>", data);
+          log.info("dynamic setup>>", data);
 
           this.uploadFormFields = data.fields.filter(field => field.screenCode === null);
           this.addUploadFormFields();
-          this.updateOrganizationLabel(this.category);
+          this.shouldUploadProfilePhoto = true;
 
           this.dynamicSetupData.fields = this.dynamicSetupData.fields.map(field => {
             const matchedField = this.previewFormFields.fields.find(formField => formField.code === field.code);
@@ -225,11 +229,10 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           );
 
           const groups: FormGroupsDto[] = this.dynamicSetupData?.groups;
-
-
           const fields: ConfigFormFieldsDto[] = this.dynamicSetupData?.fields;
+
           this.orderFormGroup(groups, fields);
-          log.info('Updated form fields22', this.dynamicSetupData.fields, groups, fields);
+          log.info('Updated form fields', this.dynamicSetupData.fields, groups, fields);
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);
@@ -247,20 +250,37 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * fetches all form categories based on category (individual | corporate)
    * @param category
    */
-  fetchFormFields(category: string): void {
-    const formId = category == 'individual' ? 'cnt_individual' : 'cnt_corporate';
-    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(1, null)
+  fetchFormFields(category: string, role: string): void {
+    const selectedRole = this.roles.find(partyTypeShtDesc => partyTypeShtDesc.partyTypeName.toLowerCase() === role);
+
+    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(null, null, null, this.subModules[0].subModuleId, selectedRole.partyTypeShtDesc)
       .subscribe({
         next: (data) => {
           this.clientSetupData = data;
           log.info("client setup>>", data);
 
+          const originalFormId = data?.forms.find(form => form.originalLabel.toLowerCase() === category);
+          this.originalFormId = originalFormId?.formId;
+
           const groups: FormGroupsDto[] = data?.groups.filter(
-            group => group.formId === formId
+            group => group.formId === originalFormId?.formId
           );
 
           const fields: ConfigFormFieldsDto[] = data?.fields;
           this.orderFormGroup(groups, fields);
+
+          const upload = data.fields.filter(field => field.formGroupingId === null && field.formId === originalFormId?.formId);
+          this.uploadFormFields = [...this.initialUploadFormFields];
+          this.uploadFormFields.push(...upload);
+
+          this.addUploadFormFields();
+
+          this.uploadForm.controls['role'].setValue(
+            this.role
+          );
+          this.uploadForm.controls['category'].setValue(
+            this.category
+          );
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);
@@ -278,7 +298,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       .subscribe({
         next: (data) => {
           this.uploadFormFields = data;
-          log.info("client setup>>", data);
+          this.initialUploadFormFields = data;
           // this.uploadFormFields = data.fields.filter(field => field.screenCode === null);
           this.addUploadFormFields();
         },
@@ -428,17 +448,17 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   private getFilteredFields(fields: ConfigFormFieldsDto[]): ConfigFormFieldsDto[] {
     const formValues = this.uploadForm?.getRawValue();
     const isIndividual = this.isPreviewMode
-      ? this.previewFormFields?.forms?.formId === 'cnt_individual'
-      : formValues?.role === 'client' && formValues?.category === 'individual';
+      ? this.previewFormFields?.forms?.formId === this.originalFormId
+      : formValues?.role === this.role && formValues?.category === 'individual';
 
     const isCorporate = this.isPreviewMode
-      ? this.previewFormFields?.forms?.formId === 'cnt_corporate'
-      : formValues?.role === 'client' && formValues?.category === 'corporate';
+      ? this.previewFormFields?.forms?.formId === this.originalFormId
+      : formValues?.role === this.role && formValues?.category === 'corporate';
 
     if (isIndividual) {
       return fields.filter(field =>
         field.visible &&
-        field.formId === 'cnt_individual' &&
+        field.formId === this.originalFormId &&
         field.formGroupingId !== 'cnt_individual_wealth_aml_details' &&
         field.formSubGroupingId !== 'cnt_individual_privacy_policy'
       );
@@ -454,7 +474,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
 
       return fields.filter(field =>
         field.visible &&
-        field.formId === 'cnt_corporate' &&
+        field.formId === this.originalFormId &&
         !excludedSubGroups.includes(field.formSubGroupingId) &&
         field.formGroupingId !== 'cnt_corporate_wealth_aml_details'
       );
@@ -770,12 +790,15 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       case 'role':
         this.createEntityForm();
         this.category = formValues.category;
-        if (formValues.category && formValues.role) this.fetchFormFields(formValues.category);
+        this.role = formValues.role;
+        if (formValues.category && formValues.role) this.fetchFormFields(formValues.category, formValues.role);
+
         this.idType = this.category ==='corporate' ? 'CERT_OF_INCOP_NUMBER' : 'NATIONAL_ID';
         this.isCategorySelected = formValues.category ? true : false;
-        this.updateOrganizationLabel(formValues.category);
+        this.shouldUploadProfilePhoto = true;
         break;
       case 'organizationType':
+      case 'clientType':
         this.fetchRequiredDocuments(formValues);
         break;
       case 'bankBranchCode':
@@ -793,13 +816,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param formValues
    */
   fetchRequiredDocuments(formValues) : void {
-    if (formValues.category && formValues.role && formValues.organizationType) {
+    const selectedOrgOrClientType = formValues.organizationType || formValues.clientType;
+    if (formValues.category && formValues.role && selectedOrgOrClientType && this.isCategorySelected) {
       const accountType: PartyTypeDto = this.roles.filter(
         (r:PartyTypeDto) => r.partyTypeName.toLowerCase() === formValues.role.toLowerCase())[0];
 
       const category: string = formValues.category;
       const accountSubType: ClientTypeDTO = this.clientTypes.filter(
-        (c: ClientTypeDTO) => c.clientTypeName.toLowerCase() === formValues.organizationType.toLowerCase())[0];
+        (c: ClientTypeDTO) => c.clientTypeName.toLowerCase() === selectedOrgOrClientType.toLowerCase())[0];
       log.info(`accountSubType >>> `, accountSubType, this.clientTypes);
 
       this.requiredDocumentsService.getAccountTypeRequiredDocument(accountType.partyTypeShtDesc, category, accountSubType.code, null).subscribe({
@@ -821,7 +845,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * if category == individual, label = "client type" ELSE label = "organization type"
    * @param category
    */
-  updateOrganizationLabel(category: string) : void {
+  /*updateOrganizationLabel(category: string) : void {
     this.shouldUploadProfilePhoto = true;
     const index: number = this.uploadFormFields.findIndex(field => field.fieldId === "organizationType");
     if (category === 'corporate') {
@@ -843,7 +867,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         ke: ''
       }
     }
-  }
+  }*/
 
 
   /**
@@ -896,6 +920,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         this.fetchPostalCodeByTownCode(sectionIndex, fieldIndex);
         break;
       case 'organizationType':
+      case 'clientType':
         this.fetchOrganizationTypes();
         break;
       case 'role':
@@ -1325,20 +1350,20 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * Fetch client types
    */
   fetchClientTypes(): void {
-    if(!(this.clientTypes.length > 0)) {
+    // if(!(this.clientTypes.length > 0)) {
       this.clientTypeService.getClientTypes().subscribe({
         next: (data: ClientTypeDTO[]) => {
           this.clientTypes = data;
           const clientTypesArr: string[] = data.map((clientType: ClientTypeDTO) => clientType.clientTypeName);
           log.info(`clientTypesArr>>> `, clientTypesArr);
-          const index: number = this.uploadGroupSections.selects.findIndex(field => field.fieldId === "organizationType");
+          const index: number = this.uploadGroupSections.selects.findIndex(field => field.fieldId === "organizationType" || field.fieldId === "clientType");
           this.uploadGroupSections.selects[index].options = clientTypesArr;
         },
         error: err => {
           log.error(`could not fetch `, err);
         }
       });
-    }
+    // }
   }
 
 
@@ -1803,7 +1828,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     this.dynamicScreensSetupService.fetchSubModules(null, "account_management")
       .subscribe({
         next: (data) => {
-          this.subModules = data.sort((a, b) => a.order - b.order);
+          this.subModules = data;
           log.info("sub modules>>", data);
         },
         error: (err) => {
