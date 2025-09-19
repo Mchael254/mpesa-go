@@ -123,8 +123,6 @@
                           translate }}</div>
                       </ng-container>
 
-
-
                       <!-- BRANCH -->
                       <ng-container *ngIf="field.name === 'branch'">
                         <p-dropdown formControlName="branch" [options]="branch" optionLabel="name" placeholder=" "
@@ -238,11 +236,6 @@
                       </div>
                     </ng-container>
 
-
-
-
-
-
                   </ng-container>
                 </div>
               </div>
@@ -261,10 +254,6 @@
 
                   <ng-container *ngSwitchCase="'select'">
 
-
-
-
-
                     <!-- PAYMENT FREQUENCY -->
                     <ng-container *ngIf="field.name === 'paymentFrequency'">
                       <p-dropdown formControlName="paymentFrequency" [options]="paymentFrequencies" optionLabel="label"
@@ -275,11 +264,31 @@
                         class="form-text text-danger">
                         {{'gis.quotation.payment_frequency_is_required' | translate }}</div>
                     </ng-container>
+
                     <!-- Marketer field -->
-                    <ng-container *ngIf="field.name === 'marketer'">
+                    <!-- <ng-container *ngIf="field.name === 'marketer'">
                       <p-dropdown formControlName="marketer" [options]="marketerList" optionLabel="name"
                         optionValue="id" placeholder="" [filter]="true" [filterBy]="'name'">
                       </p-dropdown>
+                      <div
+                        *ngIf="quotationForm.get('marketer')?.hasError('required') && quotationForm.get('marketer')?.touched"
+                        class="form-text text-danger">
+                        {{ 'gis.quotation.market_source_is_required' | translate }}
+                      </div>
+                    </ng-container> -->
+
+                    <ng-container *ngIf="field.name === 'marketer'">
+                      <div class="position-relative" style="cursor: pointer;">
+                        <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
+                          [value]="selectedMarketerName" readonly (click)="showMarketerSearchModal = true"
+                          style="cursor: pointer;" formControlName="marketer" />
+                        <i class="pi pi-search position-absolute"
+                          style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
+                      </div>
+                      <button *ngIf="showMarketerSearchModal" data-bs-toggle="modal" data-bs-target="#searchMarketer"
+                        style="display: none;">
+
+                      </button>
                       <div
                         *ngIf="quotationForm.get('marketer')?.hasError('required') && quotationForm.get('marketer')?.touched"
                         class="form-text text-danger">
@@ -1366,6 +1375,67 @@
             {{ 'gis.quotation.cancel' | translate }}
           </button>
           <button type="button" class="btn btn-primary" id="saveDetails" (click)="saveAgent(selectedAgent)">
+            {{ 'gis.quotation.save' | translate }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Marketer modal -->
+  <div id="searchMarketer" *ngIf="showMarketerSearchModal" class="modal fade show" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="width:700px">
+      <div class="modal-content">
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+          <h5 class="modal-title mt-2 mb-2" id="editOtherDetailsLabel">
+            Select marketer
+            <button type="button" class="btn-close float-end red-close" aria-label="Close"
+              (click)="showMarketerSearchModal = false"></button>
+          </h5>
+
+          <p-table #selectMarketerTable [value]="marketerList" [tableStyle]="{'min-width': '300px'}" [rows]="5"
+            [paginator]="marketerList?.length > 10" selectionMode="single" dataKey="id" [rowsPerPageOptions]="[5, 10, 20]"
+            [(selection)]="selectedMarketer">
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="flexible-header1" style="width: 30%" pSortableColumn="id">
+                  Code
+                  <p-sortIcon field="id" />
+                </th>
+                <th class="flexible-header1" style="width: 40%" pSortableColumn="name">
+                  Name <p-sortIcon field="name" />
+                </th>
+                
+              </tr>
+              <tr class=" filter-row mb-5 mt-5">
+                <td>
+                  <input type="text" class="form-control form-control-sm" (input)="filterByMarketerId($event)">
+                </td>
+                <td>
+                  <input type="text" class="form-control form-control-sm" (input)="filterByMarketerName($event)">
+                </td>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-marketer let-rowIndex="rowIndex">
+
+              <tr [class.p-highlight]="marketer === selectedMarketer" [pSelectableRow]="marketer" class="point">
+                <td>{{ marketer.id }}</td>
+                <td>{{ marketer.name |sentenceCase }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div> <!-- Modal Footer -->
+        <div class="mt-4 mb-4 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-outline-primary" (click)="showMarketerSearchModal = false"
+            id="cancelDetails">
+            {{ 'gis.quotation.cancel' | translate }}
+          </button>
+          <button type="button" class="btn btn-primary" id="saveDetails" (click)="saveMarketer(selectedMarketer)">
             {{ 'gis.quotation.save' | translate }}
           </button>
         </div>
