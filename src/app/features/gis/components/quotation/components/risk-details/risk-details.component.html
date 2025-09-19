@@ -2937,7 +2937,7 @@
                             </h5>
 
                             <ng-container>
-                                <p-table #excessTable [value]="excessesData" dataKey="code"
+                                <p-table #addExcessTable [value]="excessesData" dataKey="code"
                                     [paginator]="excessesData?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
                                     [globalFilterFields]="['narration', 'value']" [scrollable]="true"
                                     scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3"
@@ -2958,13 +2958,13 @@
                                             <td>
                                                 <input class="form-control form-control-sm" pInputText #narrationFilter
                                                     type="text"
-                                                    (input)="excessTable.filterGlobal(narrationFilter.value, 'contains')"
+                                                    (input)="addExcessTable.filterGlobal(narrationFilter.value, 'contains')"
                                                     style="width: 50%;" />
                                             </td>
                                             <td>
                                                 <input class="form-control form-control-sm" pInputText #valueFilter
                                                     type="text"
-                                                    (input)="excessTable.filterGlobal(valueFilter.value, 'contains')"
+                                                    (input)="addExcessTable.filterGlobal(valueFilter.value, 'contains')"
                                                     style="width: 50%;" />
                                             </td>
                                         </tr>
