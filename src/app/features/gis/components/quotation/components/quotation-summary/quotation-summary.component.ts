@@ -11,7 +11,7 @@ import { MenuItem } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { switchMap, takeUntil, tap } from 'rxjs/operators';
 import { IntermediaryService } from "../../../../../entities/services/intermediary/intermediary.service";
 import { ProductService } from "../../../../services/product/product.service";
 import { AuthService } from "../../../../../../shared/services/auth.service";
@@ -3062,62 +3062,66 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         }
       });
   }
+  
   authorizeQuote() {
-    const quotationCode = this.quotationCode;
-    const user = this.user;
+  const quotationCode = this.quotationCode;
+  const user = this.user;
 
-    if (!this.hasUnderwriterRights()) {
-      this.globalMessagingService.displayErrorMessage('Error', 'This user does not have the rights to authorize a quote.')
-      this.router.navigate(['/quotation-management']);
-      return;
-    }
+  if (!this.hasUnderwriterRights()) {
+    this.globalMessagingService.displayErrorMessage(
+      'Error',
+      'This user does not have the rights to authorize a quote.'
+    );
+    this.router.navigate(['/quotation-management']);
+    return;
+  }
 
-    this.quotationService.authorizeQuote(quotationCode, user).subscribe({
-      next: (res) => {
-        log.debug('Authorize response', res);
-
+  this.quotationService.authorizeQuote(quotationCode, user)
+    .pipe(
+      tap(res => {
         if (res?.status?.toUpperCase().trim() === 'SUCCESS') {
           this.globalMessagingService.displaySuccessMessage(
             'Success',
             res?.message || 'Quotation authorized successfully.'
           );
+        } else {
+          throw new Error('Authorization failed');
         }
+      }),
+      switchMap(() => {
+        const newStatus = 'Pending';
+        const reason = '';
+        return this.quotationService.updateQuotationStatus(
+          quotationCode,
+          newStatus,
+          reason
+        );
+      })
+    )
+    .subscribe({
+      next: (updateRes) => {
+        log.debug('Status update response', updateRes);
+        this.globalMessagingService.displaySuccessMessage(
+          'Status Updated',
+          'Quotation status changed to Pending'
+        );
+        this.getQuotationDetails(this.quotationCode);
 
-
-
-        // Hide authorize button and show next actions in both cases
+        
         this.showAuthorizeButton = false;
         this.showViewDocumentsButton = true;
         this.showConfirmButton = true;
       },
-      error: (err: HttpErrorResponse) => {
-        log.error('Error authorizing quote:', err);
-
-        if (
-          err?.error?.status === 'ERROR' &&
-          err?.error?.debugMessage?.includes('already Authorised')
-        ) {
-          log.debug("Already authorized");
-
-          this.globalMessagingService.displayInfoMessage(
-            'Notice',
-            'This quotation is already authorized.'
-          );
-          this.quotationAuthorized = true;
-          sessionStorage.setItem('quotationHasBeenAuthorzed', JSON.stringify(this.quotationAuthorized))
-          this.showAuthorizeButton = false;
-          this.showViewDocumentsButton = true;
-          this.showConfirmButton = true;
-        } else {
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            err?.error?.message || 'Something went wrong.'
-          );
-        }
+      error: (err) => {
+        log.error('Error in quote authorization or status update', err);
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          err?.error?.message || err.message || 'Something went wrong.'
+        );
       }
-
     });
-  }
+}
+
 
 
   generateOTP() {
