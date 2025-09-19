@@ -13,7 +13,7 @@
               <div class="col-sm-4">
                 <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
                   <ng-container *ngIf="field.type === 'select'">
-                    <ng-container *ngIf="field.fieldId !=='organizationType'">
+                    <ng-container *ngIf="field.fieldId">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
                         <span *ngIf="field.mandatory" class="text-danger">*</span>
@@ -32,7 +32,7 @@
                         </option>
                       </select>
                     </ng-container>
-                    <ng-container *ngIf="field.fieldId ==='organizationType' && isCategorySelected ">
+                    <!--<ng-container *ngIf="field.fieldId ==='organizationType' && isCategorySelected ">
                       <label class="form-label" [for]="field.fieldId">
                         {{ field.label?.[language] | titlecase }}
                         <span *ngIf="field.mandatory" class="text-danger">*</span>
@@ -50,7 +50,7 @@
                           {{ option | titlecase }}
                         </option>
                       </select>
-                    </ng-container>
+                    </ng-container>-->
                   </ng-container>
                 </div>
               </div>
