@@ -838,3 +838,27 @@ textarea {
   color: #6c757d !important;
   border-color: #6c757d !important;
 }
+
+.pdf-container {
+  position: relative;
+}
+
+.magnifier {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px solid #333;
+  background-repeat: no-repeat;
+  background-size: 200% 200%;
+  /* Zoom factor */
+  pointer-events: none;
+  /* let mouse events pass through */
+}
+
+.btn-zoom-xs {
+  padding: 0.15rem 0.35rem;
+  font-size: 0.7rem;
+  line-height: 1;
+  border-radius: 0.2rem;
+}
