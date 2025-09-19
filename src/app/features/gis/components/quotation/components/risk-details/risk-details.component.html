@@ -86,8 +86,6 @@
             </ng-template>
         </p-table>
 
-
-
         <!-- Add/edit Risk  Modal -->
         <div class="modal fade" id="addRisk" #addRiskModal tabindex="-1" role="dialog" aria-labelledby="addRiskLabel"
             aria-hidden="true">
@@ -343,6 +341,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Delete Risk Modal -->
         <div class="modal fade" id="deleteRisk" tabindex="-1" role="dialog" aria-labelledby="deleteProduct"
             aria-hidden="true">
@@ -368,6 +367,8 @@
         </div>
     </div>
 </div>
+
+
 <!-- SCHEDULE DETAILS CARD -->
 <div class="card  mb-3">
     <div class="card-body my-4 mx-4">
@@ -1353,16 +1354,19 @@
                         </button>
                     </div>
                     <!-- under development -->
-                    <div>
-                        <button class="btn btn-sm text-secondary border-0" pTooltip="Feature under development"
-                            tooltipPosition="top">
-                            {{ 'gis.quotation.commissions' | translate }}
+                    <div pTooltip="Feature under development" tooltipPosition="top" class="d-inline-block"
+                        style="cursor: pointer">
+                        <button class="btn btn-sm text-muted" disabled style="cursor: pointer" [ngClass]="{
+                            'no-border-bottom': riskActiveTab === 'commissions', 'border-0': riskActiveTab !== 'commissions'
+                            }" (click)="setRiskTab('commissions')"> {{ 'gis.quotation.commissions' | translate }}
                         </button>
                     </div>
-                    <div>
-                        <button class="btn btn-sm text-secondary border-0" pTooltip="Feature under development"
-                            tooltipPosition="top">
-                            {{ 'gis.quotation.comments' | translate }}
+
+                    <div pTooltip="Feature under development" tooltipPosition="top" class="d-inline-block"
+                        style="cursor: pointer">
+                        <button class="btn btn-sm text-muted" disabled [ngClass]="{
+                            'no-border-bottom': riskActiveTab === 'comments', 'border-0': riskActiveTab !== 'comments'
+                            }" (click)="setRiskTab('comments')"> {{ 'gis.quotation.comments' | translate }}
                         </button>
                     </div>
 
@@ -3126,5 +3130,11 @@
 <div class="mt-2 d-flex justify-content-between mx-3">
     <button style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"
         (click)="navigateToRiskDetails()">Back</button>
-    <button class="btn btn-primary" (click)="computePremium()">Next</button>
+
+    <div class="d-inline-block" pTooltip="{{ nextButtonTooltip }}" tooltipPosition="top"
+        [tooltipDisabled]="!nextButtonDisabled" style="cursor: pointer">
+        <button class="btn" [ngClass]="{'btn-primary': !nextButtonDisabled, 'btn-secondary': nextButtonDisabled}" [disabled]="nextButtonDisabled" (click)="computePremium()">
+            Next
+        </button>
+    </div>
 </div>

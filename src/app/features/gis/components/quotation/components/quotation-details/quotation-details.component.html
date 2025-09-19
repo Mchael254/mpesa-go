@@ -4,9 +4,9 @@
 
   <!-- quotation section -->
   <div class="card mb-4">
-    <div class="card-body  my-4 mx-4 ">
+    <div class="card-body my-4 mx-4">
       <h6 class="subheading mt-2 mb-3">{{ 'gis.quotation.quote_detailed_details' | translate }}</h6>
-      <!-- <p *ngIf="quickQuotationDetails">Quotation number :<strong> {{ quotationNumber }}</strong></p> -->
+
       <div class="d-flex gap-4 mb-3">
         <div class="method-option" (click)="setClientType('new')" [class.selected]="selectedClientType === 'new'">
           <i class="far fa-circle" *ngIf="selectedClientType !== 'new'"></i>
@@ -23,21 +23,20 @@
       </div>
 
       <form [formGroup]="quotationForm">
-
         <!-- New Client Form -->
-        <div *ngIf="newClient" class="row">
+        <div *ngIf="newClient" class="row mb-3">
           <!-- Client Name -->
-          <div class="col-sm-4 col-6 mb-3">
+          <div class="col-sm-4 col-6 mb-2">
             <label class="quote-label">{{ 'gis.quotation.client_name' | translate }}</label>
-            <input type="text" class="form-control" formControlName="client" id="quote-input" />
+            <input type="text" class="form-control form-control-sm" formControlName="client" id="quote-input" />
           </div>
 
           <!-- Email Address -->
-          <div class="col-sm-4 col-6 mb-3">
+          <div class="col-sm-4 col-6 mb-2">
             <div class="form-group">
               <label class="quote-label"> {{ 'gis.quotation.email_address' | translate }}</label>
-              <input type="email" id="email" class="form-control" formControlName="email" id="quote-input"
-                placeholder="" />
+              <input type="email" id="email" class="form-control form-control-sm" formControlName="email"
+                id="quote-input" placeholder="" />
               <div *ngIf="quotationForm.get('email')?.touched && quotationForm.get('email')?.invalid"
                 class="text-danger form-text">
                 <div *ngIf="quotationForm.get('email')?.errors?.['required']">
@@ -51,7 +50,7 @@
           </div>
 
           <!-- Phone Number -->
-          <div class="col-sm-4 col-6 mb-3">
+          <div class="col-sm-4 col-6 mb-2">
             <label class="quote-label"> {{ 'gis.quotation.phone_number' | translate }}</label>
             <ngx-intl-tel-input id="phoneNumber" [cssClass]="'form-control form-control-sm mb-1'"
               [preferredCountries]="preferredCountries" [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
@@ -61,20 +60,18 @@
               formControlName="phone">
             </ngx-intl-tel-input>
 
-
             <div *ngIf="quotationForm.get('phone')?.invalid && quotationForm.get('phone')?.touched"
               class="form-text text-danger">
               {{ 'gis.quotation.invalid_phone_number' | translate }}
             </div>
-
           </div>
         </div>
 
         <div class="row g-3">
           <ng-container *ngFor="let field of detailedQuotationFormData">
             <ng-container *ngIf="field.isPriority === 'Y' && !(newClient && field.name === 'client')">
-              <div class="col-sm-4 col-6" *ngIf="shouldShowField(field.name)">
-                <div class="form-group form-group-sm">
+              <div class="col-sm-4 col-6 mb-3" *ngIf="shouldShowField(field.name)">
+                <div class="form-group form-group-sm h-100">
                   <!-- Label -->
                   <label class="quote-label" [ngClass]="{ 'required': field.isMandatory === 'Y' }">
                     {{ field.label | translate }}
@@ -102,50 +99,43 @@
                       <!-- SOURCE -->
                       <ng-container *ngIf="field.name === 'source'">
                         <p-dropdown formControlName="source" [options]="quotationSources" optionLabel="description"
-                          placeholder=" " [filter]="true" [filterBy]="'description'"
-                          (onChange)="onSourceChange($event)">
-                        </p-dropdown>
+                          placeholder=" " [filter]="true" [filterBy]="'description'" (onChange)="onSourceChange($event)"
+                          styleClass="w-100"></p-dropdown>
                         <div
                           *ngIf="quotationForm.get('source')?.hasError('required') && quotationForm.get('source')?.touched"
-                          class="form-text text-danger">{{ 'gis.quotation.source_is_required' |
-                          translate }}</div>
+                          class="form-text text-danger">{{ 'gis.quotation.source_is_required' | translate }}</div>
                       </ng-container>
 
                       <!-- QUOTATION TYPE -->
                       <ng-container *ngIf="field.name === 'quotationType'">
                         <p-dropdown formControlName="quotationType" [options]="quotationType" optionLabel="label"
-                          optionValue="value" placeholder=" " [filter]="true" [filterBy]="'label'">
-                        </p-dropdown>
+                          optionValue="value" placeholder=" " [filter]="true" [filterBy]="'label'"
+                          styleClass="w-100"></p-dropdown>
                         <div
                           *ngIf="quotationForm.get('quotationType')?.hasError('required') && quotationForm.get('quotationType')?.touched"
-                          class="form-text text-danger"> {{
-                          'gis.quotation.quotation_type_is_required' |
-                          translate }}</div>
+                          class="form-text text-danger"> {{ 'gis.quotation.quotation_type_is_required' | translate }}
+                        </div>
                       </ng-container>
 
                       <!-- BRANCH -->
                       <ng-container *ngIf="field.name === 'branch'">
                         <p-dropdown formControlName="branch" [options]="branch" optionLabel="name" placeholder=" "
-                          value="id" [filter]="true" [filterBy]="'name'">
-                        </p-dropdown>
+                          value="id" [filter]="true" [filterBy]="'name'" styleClass="w-100"></p-dropdown>
                         <div
                           *ngIf="quotationForm.get('branch')?.hasError('required') && quotationForm.get('branch')?.touched"
-                          class="form-text text-danger"> {{
-                          'gis.quotation.branch_is_required' |
-                          translate }}</div>
+                          class="form-text text-danger"> {{ 'gis.quotation.branch_is_required' | translate }}</div>
                       </ng-container>
 
                       <!-- CURRENCY -->
                       <ng-container *ngIf="field.name === 'currency'">
                         <p-dropdown formControlName="currency" [options]="currency" optionLabel="name" value="id"
-                          placeholder=" " [filter]="true" [filterBy]="'name'" (onChange)="fetchUserOrgId()">
-                        </p-dropdown>
+                          placeholder=" " [filter]="true" [filterBy]="'name'" (onChange)="fetchUserOrgId()"
+                          styleClass="w-100"></p-dropdown>
                         <div
                           *ngIf="quotationForm.get('currencyCode')?.hasError('required') && quotationForm.get('currencyCode')?.touched"
-                          class="form-text text-danger">{{
-                          'gis.quotation.currency_is_required' |
-                          translate }}</div>
+                          class="form-text text-danger">{{ 'gis.quotation.currency_is_required' | translate }}</div>
                       </ng-container>
+
                       <ng-container *ngIf="field.name === 'introducer' ">
                         <div class="position-relative" style="cursor: pointer;">
                           <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
@@ -155,18 +145,14 @@
                             style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
                         </div>
                         <button *ngIf="showIntroducerSearchModal" data-bs-toggle="modal"
-                          data-bs-target="#searchIntroducer" style="display: none;">
-
-                        </button>
-
+                          data-bs-target="#searchIntroducer" style="display: none;"></button>
                       </ng-container>
-
                     </ng-container>
 
                     <!-- DATE -->
                     <p-calendar *ngSwitchCase="'date'" [formControlName]="field.name" [dateFormat]="dateFormat"
-                      inputStyleClass="form-control" [showButtonBar]="true" [dataType]="'string'" [showIcon]="true">
-                    </p-calendar>
+                      inputStyleClass="form-control form-control-sm" [showButtonBar]="true" [dataType]="'string'"
+                      [showIcon]="true" styleClass="w-100"></p-calendar>
 
                     <!-- TEXT -->
                     <ng-container *ngSwitchCase="'text'">
@@ -174,15 +160,13 @@
                         <div class="form-check form-check-inline">
                           <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUserEntry"
                             id="multiUserYes" value="Y">
-                          <label class="form-check-label quote-label" for="multiUserYes"> {{
-                            'gis.quotation.yes' |
+                          <label class="form-check-label quote-label" for="multiUserYes"> {{ 'gis.quotation.yes' |
                             translate }}</label>
                         </div>
                         <div class="form-check form-check-inline ms-4">
                           <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUserEntry"
                             id="multiUserNo" value="N">
-                          <label class="form-check-label quote-label" for="multiUserNo"> {{
-                            'gis.quotation.no' |
+                          <label class="form-check-label quote-label" for="multiUserNo"> {{ 'gis.quotation.no' |
                             translate }}</label>
                         </div>
                       </div>
@@ -190,22 +174,12 @@
                       <input *ngIf="field.name !== 'multiUserEntry'" type="text" id="quote-input"
                         class="form-control form-control-sm" [formControlName]="field.name">
                     </ng-container>
+
                     <div
                       *ngIf="quotationForm.get('client')?.hasError('required') && quotationForm.get('client')?.touched"
                       class="form-text text-danger">{{ 'gis.quotation.client_name_is_required' | translate }}</div>
 
-
                     <!-- Agent Field -->
-                    <!-- <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
-                      <p-dropdown formControlName="agents" [options]="agents" optionLabel="label" optionValue="value"
-                        placeholder="" [filter]="true" [filterBy]="'label'">
-                      </p-dropdown>
-                      <div
-                        *ngIf="quotationForm.get('agents')?.hasError('required') && quotationForm.get('agents')?.touched"
-                        class="form-text text-danger">
-                        {{ 'gis.quotation.agent_is_required' | translate }}
-                      </div>
-                    </ng-container> -->
                     <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
                       <div class="position-relative" style="cursor: pointer;">
                         <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
@@ -215,50 +189,45 @@
                           style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
                       </div>
                       <button *ngIf="showAgentSearchModal" data-bs-toggle="modal" data-bs-target="#searchAgent"
-                        style="display: none;">
-
-                      </button>
+                        style="display: none;"></button>
                       <div
                         *ngIf="quotationForm.get('agents')?.hasError('required') && quotationForm.get('agents')?.touched"
                         class="form-text text-danger">
                         {{ 'gis.quotation.agent_is_required' | translate }}
                       </div>
                     </ng-container>
+
                     <!-- campaign field -->
                     <ng-container *ngIf="field.name === 'campaign' && showCampaignField">
                       <p-dropdown formControlName="campaign" [options]="campaignList" optionLabel="label"
-                        optionValue="value" placeholder="" [filter]="true" [filterBy]="'label'">
-                      </p-dropdown>
+                        optionValue="value" placeholder="" [filter]="true" [filterBy]="'label'"
+                        styleClass="w-100"></p-dropdown>
                       <div
                         *ngIf="quotationForm.get('campaign')?.hasError('required') && quotationForm.get('campaign')?.touched"
                         class="form-text text-danger">
                         {{ 'gis.quotation.campaign_source_is_required' | translate }}
                       </div>
                     </ng-container>
-
                   </ng-container>
                 </div>
               </div>
-
             </ng-container>
-            <!-- NON-PRIORITY FIELDS (toggle with show) -->
 
-            <div class="col-sm-4 col-6  " *ngIf="show && field.isPriority === 'N'">
-              <div class="form-group form-group-sm">
+            <!-- NON-PRIORITY FIELDS (toggle with show) -->
+            <div class="col-sm-4 col-6 mb-3" *ngIf="show && field.isPriority === 'N'">
+              <div class="form-group form-group-sm h-100">
                 <label *ngIf="field.name && !(newClient && field.name === 'client')" class="quote-label"
                   [ngClass]="{ 'required': field.isMandatory === 'Y' }">
                   {{ field.label | translate }}
                 </label>
 
                 <ng-container [ngSwitch]="field.type">
-
                   <ng-container *ngSwitchCase="'select'">
-
                     <!-- PAYMENT FREQUENCY -->
                     <ng-container *ngIf="field.name === 'paymentFrequency'">
                       <p-dropdown formControlName="paymentFrequency" [options]="paymentFrequencies" optionLabel="label"
-                        optionValue="value" placeholder=" " [filter]="true" [filterBy]="'label'">
-                      </p-dropdown>
+                        optionValue="value" placeholder=" " [filter]="true" [filterBy]="'label'"
+                        styleClass="w-100"></p-dropdown>
                       <div
                         *ngIf="quotationForm.get('paymentFrequency')?.hasError('required') && quotationForm.get('paymentFrequency')?.touched"
                         class="form-text text-danger">
@@ -266,17 +235,6 @@
                     </ng-container>
 
                     <!-- Marketer field -->
-                    <!-- <ng-container *ngIf="field.name === 'marketer'">
-                      <p-dropdown formControlName="marketer" [options]="marketerList" optionLabel="name"
-                        optionValue="id" placeholder="" [filter]="true" [filterBy]="'name'">
-                      </p-dropdown>
-                      <div
-                        *ngIf="quotationForm.get('marketer')?.hasError('required') && quotationForm.get('marketer')?.touched"
-                        class="form-text text-danger">
-                        {{ 'gis.quotation.market_source_is_required' | translate }}
-                      </div>
-                    </ng-container> -->
-
                     <ng-container *ngIf="field.name === 'marketer'">
                       <div class="position-relative" style="cursor: pointer;">
                         <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
@@ -286,9 +244,7 @@
                           style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
                       </div>
                       <button *ngIf="showMarketerSearchModal" data-bs-toggle="modal" data-bs-target="#searchMarketer"
-                        style="display: none;">
-
-                      </button>
+                        style="display: none;"></button>
                       <div
                         *ngIf="quotationForm.get('marketer')?.hasError('required') && quotationForm.get('marketer')?.touched"
                         class="form-text text-danger">
@@ -298,25 +254,21 @@
                   </ng-container>
 
                   <ng-container *ngSwitchCase="'text'">
-
                     <textarea *ngIf="field.name === 'internalComments'" rows="3" class="form-control"
                       [formControlName]="field.name" style="overflow-y:auto; overflow-x:auto; white-space:pre;">
+                    </textarea>
 
-                      </textarea>
                     <textarea *ngIf="field.name === 'externalComments'" rows="3" class="form-control"
                       [formControlName]="field.name" style="overflow-y:auto; overflow-x:auto; white-space:pre;">
-
-                      </textarea>
+                    </textarea>
                     <input *ngIf="field.name !== 'internalComments' && field.name !== 'externalComments'" type="text"
-                      id="quote-input" class="form-control form-conttrol-sm" [formControlName]="field.name">
-
+                      id="quote-input" class="form-control form-control-sm" [formControlName]="field.name">
                   </ng-container>
                 </ng-container>
               </div>
             </div>
           </ng-container>
         </div>
-
       </form>
 
       <p class="more mt-4" (click)="toggleDetails()" style="cursor: pointer">
@@ -328,6 +280,7 @@
       </p>
     </div>
   </div>
+
 
 
   <!-- product section -->
@@ -1400,8 +1353,8 @@
           </h5>
 
           <p-table #selectMarketerTable [value]="marketerList" [tableStyle]="{'min-width': '300px'}" [rows]="5"
-            [paginator]="marketerList?.length > 10" selectionMode="single" dataKey="id" [rowsPerPageOptions]="[5, 10, 20]"
-            [(selection)]="selectedMarketer">
+            [paginator]="marketerList?.length > 10" selectionMode="single" dataKey="id"
+            [rowsPerPageOptions]="[5, 10, 20]" [(selection)]="selectedMarketer">
 
             <ng-template pTemplate="header">
               <tr>
@@ -1412,7 +1365,7 @@
                 <th class="flexible-header1" style="width: 40%" pSortableColumn="name">
                   Name <p-sortIcon field="name" />
                 </th>
-                
+
               </tr>
               <tr class=" filter-row mb-5 mt-5">
                 <td>
@@ -1449,11 +1402,30 @@
 
   <div class="float-end mb-4">
 
-    <button *ngIf="!quickQuoteConverted" class="btn btn-primary" (click)="saveQuotationDetails()">
+    <!-- <button *ngIf="!quickQuoteConverted" class="btn btn-primary" (click)="saveQuotationDetails()">
       {{ 'gis.quotation.next' | translate }}
-    </button>
-    <button *ngIf="quickQuoteConverted" class="btn btn-primary" (click)="updateQuickQuoteDetails()">
+    </button> -->
+
+    <div class="d-inline-block" pTooltip="{{ validationStatus.tooltipMessage }}" tooltipPosition="top"
+      [tooltipDisabled]="validationStatus.isValid" style="cursor: pointer">
+      <button *ngIf="!quickQuoteConverted" class="btn" [ngClass]="{ 'btn-primary': validationStatus.isValid,
+        'btn-secondary': !validationStatus.isValid
+        }" [disabled]="!validationStatus.isValid" (click)="saveQuotationDetails()">
+        {{ 'gis.quotation.next' | translate }}
+      </button>
+    </div>
+
+    <!-- <button *ngIf="quickQuoteConverted" class="btn btn-primary" (click)="updateQuickQuoteDetails()">
       {{ 'gis.quotation.next' | translate }}
-    </button>
+    </button> -->
+    <div class="d-inline-block" pTooltip="{{ validationStatus.tooltipMessage }}" tooltipPosition="top"
+      [tooltipDisabled]="validationStatus.isValid">
+      <button *ngIf="quickQuoteConverted" class="btn" [ngClass]="{'btn-primary': validationStatus.isValid,
+        'btn-secondary': !validationStatus.isValid
+        }" [disabled]="!validationStatus.isValid" (click)="updateQuickQuoteDetails()">
+        {{ 'gis.quotation.next' | translate }}
+      </button>
+    </div>
+
   </div>
 </div>
