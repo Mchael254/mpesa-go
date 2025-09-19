@@ -21,6 +21,7 @@ import { SessionStorageService } from "../../../../../../shared/services/session
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UpdatePremiumDto } from 'src/app/features/gis/data/quotations-dto';
+import { NgxCurrencyConfig } from 'ngx-currency';
 
 
 const log = new Logger('QuoteSummaryComponent');
@@ -71,6 +72,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   isModalLoading = false;
   previewVisible = false;
   pdfSrc: SafeResourceUrl | null = null;
+  public currencyObj: NgxCurrencyConfig;
+
   constructor(
     private quotationService: QuotationsService,
     private router: Router,
@@ -131,7 +134,21 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     if (organization) {
       this.organizationId = organization.id
     }
-
+    const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
+    const currencySymbol = sessionStorage.getItem('currencySymbol')
+    log.debug("currency Object:", currencySymbol)
+    log.debug("currency Delimeter:", currencyDelimiter)
+    this.currencyObj = {
+      prefix: currencySymbol + ' ',
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
   }
 
   openShareModal() {

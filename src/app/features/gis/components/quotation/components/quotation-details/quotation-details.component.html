@@ -67,7 +67,7 @@
           </div>
         </div>
 
-        <div class="row g-3">
+        <div class="row ">
           <ng-container *ngFor="let field of detailedQuotationFormData">
             <ng-container *ngIf="field.isPriority === 'Y' && !(newClient && field.name === 'client')">
               <div class="col-sm-4 col-6 mb-3" *ngIf="shouldShowField(field.name)">
@@ -158,15 +158,16 @@
                     <ng-container *ngSwitchCase="'text'">
                       <div *ngIf="field.name === 'multiUserEntry'">
                         <div class="form-check form-check-inline">
-                          <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUserEntry"
+                          <input class="form-check-input" type="radio" formControlName="multiUserEntry"
                             id="multiUserYes" value="Y">
                           <label class="form-check-label quote-label" for="multiUserYes"> {{ 'gis.quotation.yes' |
                             translate }}</label>
                         </div>
                         <div class="form-check form-check-inline ms-4">
-                          <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUserEntry"
-                            id="multiUserNo" value="N">
-                          <label class="form-check-label quote-label" for="multiUserNo"> {{ 'gis.quotation.no' |
+                          <input class="form-check-input" type="radio" formControlName="multiUserEntry" id="multiUserNo"
+                            value="N">
+                          <label class="form-check-label quote-label" for="multiUserNo"> {{
+                            'gis.quotation.no' |
                             translate }}</label>
                         </div>
                       </div>
@@ -255,12 +256,14 @@
 
                   <ng-container *ngSwitchCase="'text'">
                     <textarea *ngIf="field.name === 'internalComments'" rows="3" class="form-control"
-                      [formControlName]="field.name" style="overflow-y:auto; overflow-x:auto; white-space:pre;">
-                    </textarea>
+                      [formControlName]="field.name"
+                      style="overflow-y:auto; overflow-x:hidden; white-space:pre-wrap; word-wrap:break-word;">
 
                     <textarea *ngIf="field.name === 'externalComments'" rows="3" class="form-control"
-                      [formControlName]="field.name" style="overflow-y:auto; overflow-x:auto; white-space:pre;">
-                    </textarea>
+                      [formControlName]="field.name"
+                      style="overflow-y:auto; overflow-x:hidden; white-space:pre-wrap; word-wrap:break-word;">
+
+                      </textarea>
                     <input *ngIf="field.name !== 'internalComments' && field.name !== 'externalComments'" type="text"
                       id="quote-input" class="form-control form-control-sm" [formControlName]="field.name">
                   </ng-container>
@@ -271,16 +274,13 @@
         </div>
       </form>
 
-<p class="more mt-4" (click)="toggleDetails()" style="cursor: pointer">
-  {{ show ? 'Less Details' : 'More Details' }}
-  <span class="ml-1">
-    <i
-      class="pi"
-      [ngClass]="{ 'pi-angle-double-up': show, 'pi-angle-double-down': !show }"
-      style="font-size: 13px"
-    ></i>
-  </span>
-</p>
+      <p class="more mt-4" (click)="toggleDetails()" style="cursor: pointer">
+        {{ show ? 'Less Details' : 'More Details' }}
+        <span class="ml-1">
+          <i class="pi" [ngClass]="{ 'pi-angle-double-down': show, 'pi-angle-double-up': !show }"
+            style="font-size: 13px"></i>
+        </span>
+      </p>
 
     </div>
   </div>
@@ -368,7 +368,7 @@
 
                     <!-- Only handle actions separately -->
                     <ng-container *ngSwitchCase="'actions'">
-                      <div class="d-flex justify-content-start" style=" text-align: center;">
+                      <div class="d-flex justify-content-center" style=" text-align: center;">
                         <button *ngIf="!editing" type="button" class="p-button-sm p-button-text p-button-info no-border"
                           data-bs-toggle="modal" data-bs-target="#editProduct"
                           (click)="openEditProductModal(product, ri)">
@@ -832,7 +832,7 @@
 
   <!-- Clauses section -->
   <div class="card mb-3 " *ngIf="productDetails && productDetails.length > 0">
-    <div class="card-body my-4 mx-4 me-5">
+    <div class="card-body my-4 mx-4 ">
 
       <div class="row mb-3">
         <div class="col-4">
@@ -948,7 +948,7 @@
                       </ng-container>
                       <ng-container *ngSwitchCase="'heading'">
                         <div class="clause-wrapper" [title]="productClause.heading | sentenceCase">
-                          {{ productClause.heading | truncate: 4 | sentenceCase }}
+                          {{ productClause.heading | sentenceCase }}
                           <div class="hover-card">
                             {{ productClause.heading | sentenceCase }}
                           </div>
