@@ -10,8 +10,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { MenuItem } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
-import { Subject } from 'rxjs';
-import { switchMap, takeUntil, tap } from 'rxjs/operators';
+import { Subject, throwError } from 'rxjs';
+import { catchError, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { IntermediaryService } from "../../../../../entities/services/intermediary/intermediary.service";
 import { ProductService } from "../../../../services/product/product.service";
 import { AuthService } from "../../../../../../shared/services/auth.service";
@@ -72,7 +72,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     throw new Error('Method not implemented.');
   }
   @ViewChild('fileInput') fileInput!: ElementRef;
-  @ViewChild('closebutton') closebutton;
+  // @ViewChild('closebutton') closebutton;
   @ViewChild('dt') table!: Table;
   @ViewChild('reassignTable') reassignTable!: any;
   @ViewChild('closeReassignButton') closeReassignButton: ElementRef;
@@ -111,7 +111,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   currency: any;
   externalTable: any;
   internalTable: any;
-  menuItems: MenuItem[] | undefined;
   sumInsured: any;
   userDetails: any;
   emailForm: FormGroup;
@@ -393,28 +392,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.hasUnderwriterRights();
 
 
-    this.menuItems = [
-      {
-        label: 'Claims Experience',
-        expanded: false, // Initially expanded
-        items: [
-          {
-            label: 'External',
-            command: () => {
-              this.external();
-              this.closeMenu();
-            }
-          },
-          {
-            label: 'Internal',
-            command: () => {
-              this.internal();
-              this.closeMenu();
-            }
-          }
-        ]
-      }
-    ];
 
     // Add this to your existing ngOnInit
     const modal = document.getElementById('addExternalClaimExperienceModal');
@@ -505,11 +482,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.showExternalClaims = false;
   }
 
-  closeMenu() {
-    this.menuItems[0].expanded = false; // Collapse the section
-    this.menuItems = [...this.menuItems]; // Trigger change detection
-    this.cdr.detectChanges(); // Ensure UI updates
-  }
+  // closeMenu() {
+  //   this.menuItems[0].expanded = false; // Collapse the section
+  //   this.menuItems = [...this.menuItems]; // Trigger change detection
+  //   this.cdr.detectChanges(); // Ensure UI updates
+  // }
 
   /**
    * Retrieves quotation details based on the provided code.
@@ -633,7 +610,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         });
         this.handleProductClick(this.quotationView.quotationProducts[0])
 
-        const Product1 = this.quotationDetails.quotationProducts[0];
+        const Product1 = this.quotationDetails?.quotationProducts?.[0];
         log.debug('Product1', Product1);
 
         if (Product1) {
@@ -1146,9 +1123,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.quotationService.assignProductLimits(productCode).subscribe({
       next: (res) => {
         this.quotationService.getLimits(productCode, 'L').subscribe({
-          next: (res) => {
+          next: (res: any) => {
             this.limits = res
-            this.limitsList = this.limits._embedded
+            this.limitsList = this.limits?._embedded
             this.globalMessagingService.displaySuccessMessage('Success', this.limits.message);
             log.debug(res)
           }
@@ -1163,9 +1140,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.quotationService.getSubclassSectionPeril(subClassCode)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
-        next: (res) => {
+        next: (res: any) => {
           this.excesses = res;
-          this.excessesList = this.excesses._embedded ?? [];
+          this.excessesList = res?._embedded ?? [];
 
 
 
@@ -1183,8 +1160,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   handleRowClick(data: any) {
+    log.debug("Risk data passed", data)
     if (!data?.code) {
       log.debug('Invalid data for row click:', data);
+      this.riskDetails = []
       return;
     }
 
@@ -1228,6 +1207,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     const matchingProduct = this.quotationView.quotationProducts.find(
       product => product.code === quotationProductCode
     );
+    log.debug("Matching product ", matchingProduct);
 
     if (matchingProduct) {
       this.handleRowClick(matchingProduct.riskInformation[0])
@@ -1571,7 +1551,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     insurer.clientCode = this.clientCode;
 
 
-    this.closebutton.nativeElement.click();
+    // this.closebutton.nativeElement.click();
 
     log.debug("EXTERNAL CLAIMS FORM-ADDING", insurer)
     this.quotationService
@@ -1642,7 +1622,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     insurer.code = this.selectedExternalClaimExp.code;
 
 
-    this.closebutton.nativeElement.click();
+    // this.closebutton.nativeElement.click();
 
     log.debug("EXTERNAL CLAIMS FORM-EDITING", insurer)
     this.quotationService
@@ -1762,7 +1742,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       const clientDetailsString = JSON.stringify(this.clientDetails);
       sessionStorage.setItem('clientDetails', clientDetailsString);
       this.saveclient();
-      this.closebutton.nativeElement.click();
+      // this.closebutton.nativeElement.click();
     });
   }
 
@@ -2953,21 +2933,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     const defaultVisibleFields = [
       'narration',
       'value'
-
-
-
-
-
-
-
     ];
 
     const excludedFields = [
-
     ];
 
 
-    let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+    let keys = Object?.keys(sample)?.filter(key => !excludedFields.includes(key));
 
 
     keys = keys.sort((a, b) => {
@@ -3062,65 +3034,90 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         }
       });
   }
-  
+
   authorizeQuote() {
-  const quotationCode = this.quotationCode;
-  const user = this.user;
+    const quotationCode = this.quotationCode;
+    const user = this.user;
 
-  if (!this.hasUnderwriterRights()) {
-    this.globalMessagingService.displayErrorMessage(
-      'Error',
-      'This user does not have the rights to authorize a quote.'
-    );
-    this.router.navigate(['/quotation-management']);
-    return;
-  }
+    if (!this.hasUnderwriterRights()) {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'This user does not have the rights to authorize a quote.'
+      );
+      this.router.navigate(['/quotation-management']);
+      return;
+    }
 
-  this.quotationService.authorizeQuote(quotationCode, user)
-    .pipe(
-      tap(res => {
+    // Step 1: Authorize
+    this.quotationService.authorizeQuote(quotationCode, user).subscribe({
+      next: (res) => {
         if (res?.status?.toUpperCase().trim() === 'SUCCESS') {
           this.globalMessagingService.displaySuccessMessage(
             'Success',
             res?.message || 'Quotation authorized successfully.'
           );
-        } else {
-          throw new Error('Authorization failed');
-        }
-      }),
-      switchMap(() => {
-        const newStatus = 'Pending';
-        const reason = '';
-        return this.quotationService.updateQuotationStatus(
-          quotationCode,
-          newStatus,
-          reason
-        );
-      })
-    )
-    .subscribe({
-      next: (updateRes) => {
-        log.debug('Status update response', updateRes);
-        this.globalMessagingService.displaySuccessMessage(
-          'Status Updated',
-          'Quotation status changed to Pending'
-        );
-        this.getQuotationDetails(this.quotationCode);
 
-        
-        this.showAuthorizeButton = false;
-        this.showViewDocumentsButton = true;
-        this.showConfirmButton = true;
+          // Step 2: Update Status
+          const newStatus = 'Pending';
+          const reason = '';
+          this.quotationService.updateQuotationStatus(quotationCode, newStatus, reason)
+            .subscribe({
+              next: (updateRes) => {
+                log.debug('Status update response', updateRes);
+                this.globalMessagingService.displaySuccessMessage(
+                  'Status Updated',
+                  'Quotation status changed to Pending'
+                );
+                this.getQuotationDetails(this.quotationCode);
+
+                this.showAuthorizeButton = false;
+                this.showViewDocumentsButton = true;
+                this.showConfirmButton = true;
+              },
+              error: (err: HttpErrorResponse) => {
+                log.error('Error updating quotation status', err);
+                this.globalMessagingService.displayErrorMessage(
+                  'Status Update Error',
+                  err?.error?.message || err.message || 'Failed to update status.'
+                );
+              }
+            });
+
+        } else {
+          this.globalMessagingService.displayErrorMessage(
+            'Authorization Error',
+            res?.message || 'Authorization failed.'
+          );
+        }
       },
-      error: (err) => {
-        log.error('Error in quote authorization or status update', err);
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          err?.error?.message || err.message || 'Something went wrong.'
-        );
+      error: (err: HttpErrorResponse) => {
+        log.error('Error authorizing quote:', err);
+
+        if (
+          err?.error?.status === 'ERROR' &&
+          err?.error?.debugMessage?.includes('already Authorised')
+        ) {
+          log.debug("Already authorized");
+
+          this.globalMessagingService.displayInfoMessage(
+            'Notice',
+            'This quotation is already authorized.'
+          );
+          this.quotationAuthorized = true;
+          sessionStorage.setItem('quotationHasBeenAuthorzed', JSON.stringify(this.quotationAuthorized))
+          this.showAuthorizeButton = false;
+          this.showViewDocumentsButton = true;
+          this.showConfirmButton = true;
+        } else {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err?.error?.message || 'Something went wrong.'
+          );
+        }
       }
     });
-}
+  }
+
 
 
 

@@ -356,13 +356,13 @@ th .sort-header p-sortIcon {
   margin-left: 4px;
 }
 
-.modal-backdrop {
+/* .modal-backdrop {
   display: none !important;
 }
 
 .modal {
   background: transparent !important;
-}
+} */
 
 :host ::ng-deep .p-table thead th {
   white-space: nowrap;
