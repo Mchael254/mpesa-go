@@ -411,7 +411,7 @@
 
                     <!-- Only handle actions separately -->
                     <ng-container *ngSwitchCase="'actions'">
-                      <div class="d-flex justify-content-start gap-2">
+                      <div class="d-flex justify-content-start" style=" text-align: center;">
                         <button *ngIf="!editing" type="button" class="p-button-sm p-button-text p-button-info no-border"
                           data-bs-toggle="modal" data-bs-target="#editProduct"
                           (click)="openEditProductModal(product, ri)">
@@ -999,18 +999,21 @@
                       </ng-container>
                       <!-- Actions -->
                       <ng-container *ngSwitchCase="'actions'">
-                        <div class="flex justify-content-center gap-4">
+                        <div class="flex justify-content-center " style="text-align: center;">
                           <!-- Edit -->
-                          <!-- <span class="p-button-label p-text-bold " [attr.data-bs-toggle]="productClause.isEditable === 'Y' ? 'modal' : null"
-                          [attr.data-bs-target]="productClause.isEditable === 'Y' ? '#editClause' : null"
-                          (click)="productClause.isEditable === 'Y' && populateEditClauseModal(productClause)">
-                          {{ productClause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
-                        </span> -->
-                          <button type="button"
+                          <span class="p-button-label p-text-bold me-4 " [ngStyle]="{
+                            color: '#00529B',
+                            cursor: 'pointer'
+                            }" [attr.data-bs-toggle]="productClause.isEditable === 'Y' ? 'modal' : null"
+                            [attr.data-bs-target]="productClause.isEditable === 'Y' ? '#editClause' : null"
+                            (click)="productClause.isEditable === 'Y' && populateEditClauseModal(productClause)">
+                            {{ productClause.isEditable === 'Y' ? ('gis.quotation.edit' | translate) : '--' }}
+                          </span>
+                          <!-- <button type="button"
                             (click)="productClause.isEditable === 'Y' && populateEditClauseModal(productClause)"
                             class="p-button-sm p-button-text p-button-info no-border">
                             {{ 'gis.quotation.edit' | translate }}
-                          </button>
+                          </button> -->
                           <!-- Delete -->
                           <span *ngIf="productClause.isMandatory === 'N'" class="p-button-label p-text-bold text-center"
                             [ngStyle]="{

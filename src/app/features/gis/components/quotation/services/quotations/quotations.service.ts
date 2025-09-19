@@ -1159,8 +1159,13 @@ export class QuotationsService {
       'ai-helper/document-extract',
       payload,
       API_CONFIG.AI_DOCUMENT_SERVICE
+    ).pipe(
+      retry(1),
+      catchError(this.errorHandl)
     );
   }
+
+
   generateOTP(payload: OtpPayload) {
     return this.api.POST<any>(`v2/otp/generate-and-send`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),

@@ -46,22 +46,27 @@
                 <p-sortIcon field="id"></p-sortIcon>
               </th>
             </tr>
-
             <tr>
-              <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputName($event)">
+              <th>
+                <input type="text" class="form-control" (input)="inputName($event)">
               </th>
-              <th><input type="text" class="form-control" (keyup.enter)="filter($event);" (input)="inputEmail($event)">
+              <th>
+                <input type="text" class="form-control" (input)="inputEmail($event)">
               </th>
-              <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputPhone($event)">
+              <th>
+                <input type="text" class="form-control" (input)="inputPhone($event)">
               </th>
-              <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputId($event)">
+              <th>
+                <input type="text" class="form-control" (input)="inputId($event)">
               </th>
-              <th><input type="text" class="form-control " (keyup.enter)="filter($event);" (input)="inputPin($event)">
+              <th>
+                <input type="text" class="form-control" (input)="inputPin($event)">
               </th>
-              <th><input type="text" class="form-control " (keyup.enter)="filter($event);"
-                  (input)="inputInternalId($event)">
+              <th>
+                <input type="text" class="form-control" (input)="inputInternalId($event)">
               </th>
             </tr>
+
           </ng-template>
 
           <ng-template pTemplate="body" let-clientData>
