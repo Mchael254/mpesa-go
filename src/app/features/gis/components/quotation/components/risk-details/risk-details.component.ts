@@ -66,7 +66,7 @@ export class RiskDetailsComponent {
   @ViewChild('limitTable') limitTable!: Table;
   @ViewChild('addedlimitTable') addedlimitTable!: Table;
   @ViewChild('excessTable') excessTable!: Table;
-   @ViewChild('addExcessTable') addExcessTable!: Table;
+  @ViewChild('addExcessTable') addExcessTable!: Table;
   @ViewChild('riskClauseTable') riskClauseTable!: Table;
   @ViewChild('addRiskModal') addRiskModalRef!: ElementRef;
   @ViewChild('addRiskSection') addRiskSectionRef!: ElementRef;
@@ -2788,9 +2788,9 @@ export class RiskDetailsComponent {
   createRiskSection() {
     log.debug("Risk Code:", this.quotationRiskCode);
 
-  
-  this.selectedSections = this.sectionPremium?.filter(section => section.isChecked) || [];
-  log.debug("Selected Sections from modal:", this.selectedSections);
+
+    this.selectedSections = this.sectionPremium?.filter(section => section.isChecked) || [];
+    log.debug("Selected Sections from modal:", this.selectedSections);
 
     const limitsToSave = this.riskLimitPayload();
     log.debug("Limits to save:", limitsToSave)
@@ -3074,35 +3074,35 @@ export class RiskDetailsComponent {
   }
 
   loadSectionPremium() {
-  const subclasscode = this.selectedSubclassCode || sessionStorage.getItem('selectedSubclassCode');
-  const binderCode = this.selectedBinderCode || this.defaultBinder[0]?.code;
-  const coverTypeCode = this.selectedCoverType?.coverTypeCode;
+    const subclasscode = this.selectedSubclassCode || sessionStorage.getItem('selectedSubclassCode');
+    const binderCode = this.selectedBinderCode || this.defaultBinder[0]?.code;
+    const coverTypeCode = this.selectedCoverType?.coverTypeCode;
 
-  if (subclasscode && binderCode && coverTypeCode) {
-    this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode).subscribe({
-      next: (result: any[]) => {
-        // Apply the same filtering and mapping logic
-        const sectionPremiums = result
-          .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
-          .map(premium => {
-            if (premium.isMandatory === 'Y') {
-              return {
-                ...premium,
-                limitAmount: this.sumInsured
-              };
-            }
-            return premium;
-          });
+    if (subclasscode && binderCode && coverTypeCode) {
+      this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode).subscribe({
+        next: (result: any[]) => {
+          // Apply the same filtering and mapping logic
+          const sectionPremiums = result
+            .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+            .map(premium => {
+              if (premium.isMandatory === 'Y') {
+                return {
+                  ...premium,
+                  limitAmount: this.sumInsured
+                };
+              }
+              return premium;
+            });
 
-        this.sectionPremium = sectionPremiums;
-        log.debug("Section premium reloaded after delete", this.sectionPremium);
-      },
-      error: (error) => {
-        log.debug("Error reloading section premium", error);
-      }
-    });
+          this.sectionPremium = sectionPremiums;
+          log.debug("Section premium reloaded after delete", this.sectionPremium);
+        },
+        error: (error) => {
+          log.debug("Error reloading section premium", error);
+        }
+      });
+    }
   }
-}
 
 
   deleteRiskSection(riskSectionCode: number) {
@@ -3114,8 +3114,8 @@ export class RiskDetailsComponent {
           log.debug("Response after deleting a risk section ", response);
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk section deleted successfully');
 
-          
-     
+
+
           // ✅ filter by code
           this.sectionDetails = this.sectionDetails.filter(
             (section) => section.code !== this.sectionToDelete.code
@@ -5106,7 +5106,77 @@ export class RiskDetailsComponent {
   //     }
   //   })
   // }
+
+  checkComputePremiumRequiredDataDetailed(): { isValid: boolean; missingItems: string[] } {
+    const missingItems: string[] = [];
+
+    // Check schedule details with more detail
+    const hasScheduleData = this.levelDataMap &&
+      Object.keys(this.levelDataMap).some(levelName =>
+        this.levelDataMap[levelName] && this.levelDataMap[levelName].length > 0
+      );
+
+    if (!hasScheduleData) {
+      missingItems.push('Schedule Details');
+    }
+
+    // Check risk details
+    if (!this.riskDetails || this.riskDetails.length === 0) {
+      missingItems.push('Risk Details');
+    }
+
+    // Check section details
+    if (!this.sectionDetails || this.sectionDetails.length === 0) {
+      missingItems.push('Section Details');
+    }
+
+    return {
+      isValid: missingItems.length === 0,
+      missingItems
+    };
+  }
+
+  get premiumValidation() {
+    return this.checkComputePremiumRequiredDataDetailed();
+  }
+
+  get nextButtonDisabled(): boolean {
+    return !this.premiumValidation.isValid;
+  }
+
+  get nextButtonTooltip(): string {
+    const missingItems = this.premiumValidation.missingItems;
+
+    if (missingItems.length === 0) {
+      return '';
+    }
+
+    if (missingItems.length === 1) {
+      return `Add ${missingItems[0].toLowerCase()} to proceed`;
+    }
+
+    if (missingItems.length === 2) {
+      return `Add ${missingItems[0].toLowerCase()} and ${missingItems[1].toLowerCase()} to proceed`;
+    }
+
+    // More than 2 missing
+    const allButLast = missingItems.slice(0, -1).map(i => i.toLowerCase()).join(', ');
+    const last = missingItems[missingItems.length - 1].toLowerCase();
+    return `Add ${allButLast}, and ${last} to proceed`;
+  }
+
+
+
   computePremium() {
+    const validation = this.checkComputePremiumRequiredDataDetailed();
+    if (!validation.isValid) {
+      const missingItemsList = validation.missingItems.join(', ');
+      const errorMessage = `The following required data is missing: ${missingItemsList}. Please ensure all tables contain at least one entry before computing premium.`;
+
+      this.globalMessagingService.displayErrorMessage('Validation Error', errorMessage);
+      return;
+    }
+
     const payload = this.generatePremiumComputationPayload(this.quotationDetails);
 
     this.quotationService.computePremium(payload).pipe(

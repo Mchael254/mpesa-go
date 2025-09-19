@@ -968,7 +968,102 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
    * @method saveQuotationDetails
    * @return {void}
    */
+
+  checkQuationDetailsRequiredFields(): { isValid: boolean; missingItems: string[]; tooltipMessage: string } {
+    const missingItems: string[] = [];
+
+    // Check client 
+    const hasClient = this.selectedClientName && this.selectedClientName.trim() !== '';
+    if (!hasClient) {
+      missingItems.push('client');
+    }
+
+    // Check source 
+    const hasSource = this.quotationForm.get('source')?.value;
+    if (!hasSource) {
+      missingItems.push('source');
+    }
+
+    // Check quotation type 
+    const hasQuotationType = this.quotationForm.get('quotationType')?.value;
+    if (!hasQuotationType) {
+      missingItems.push('quotation type');
+    }
+
+    // Check branch 
+    const hasBranch = this.quotationForm.get('branch')?.value;
+    if (!hasBranch) {
+      missingItems.push('branch');
+    }
+
+    // Check currency 
+    const hasCurrency = this.quotationForm.get('currency')?.value;
+    if (!hasCurrency) {
+      missingItems.push('currency');
+    }
+
+    const knownDateFields = [
+      { name: 'RFQDate', label: 'Request for quote date' },
+      { name: 'expiryDate', label: 'Quotation expiry date' },
+    ];
+
+    knownDateFields.forEach(dateField => {
+      const control = this.quotationForm.get(dateField.name);
+      if (control && (!control.value || control.value === '')) {
+        if (!missingItems.includes(dateField.label)) {
+          missingItems.push(dateField.label);
+        }
+      }
+    });
+
+    // Check multi-user entry
+    const hasMultiUserEntry = this.quotationForm.get('multiUserEntry')?.value;
+    if (!hasMultiUserEntry) {
+      missingItems.push('multi-user entry');
+    }
+
+    // Check products 
+    const hasProducts = this.productDetails && this.productDetails.length > 0;
+    if (!hasProducts) {
+      missingItems.push('products');
+    }
+
+    // dynamic tooltip message
+    let tooltipMessage = '';
+    if (missingItems.length === 0) {
+      tooltipMessage = '';
+    } else if (missingItems.length === 1) {
+      tooltipMessage = `Please select ${missingItems[0]} to continue.`;
+    } else if (missingItems.length === 2) {
+      tooltipMessage = `Please select ${missingItems.join(' and ')} to continue.`;
+    } else {
+      const lastItem = missingItems.pop();
+      tooltipMessage = `Please select ${missingItems.join(', ')} and ${lastItem} to continue.`;
+    }
+
+    return {
+      isValid: missingItems.length === 0,
+      missingItems,
+      tooltipMessage
+    };
+  }
+
+  get validationStatus() {
+    return this.checkQuationDetailsRequiredFields();
+  }
+
   saveQuotationDetails() {
+    const validation = this.checkQuationDetailsRequiredFields();
+
+    if (!validation.isValid) {
+      const missingItemsList = validation.missingItems.join(' and ');
+      this.globalMessagingService.displayErrorMessage(
+        'Missing Required Information',
+        `Please select ${missingItemsList} before proceeding.`
+      );
+      return;
+    }
+
     log.debug("Quotation form details >>>>", this.quotationForm)
     log.debug("Selected agent >>>>", this.agentDetails)
     log.debug("ProductDetails:", this.productDetails)
@@ -1037,6 +1132,17 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   }
   updateQuickQuoteDetails() {
+    const validation = this.checkQuationDetailsRequiredFields();
+
+    if (!validation.isValid) {
+      const missingItemsList = validation.missingItems.join(' and ');
+      this.globalMessagingService.displayErrorMessage(
+        'Missing Required Information',
+        `Please select ${missingItemsList} before proceeding.`
+      );
+      return;
+    }
+
     log.debug('THIS IS CALEED IF IT IS A CONVERSION FROM QUICK QUOTE')
     log.debug("Quotation form details >>>>", this.quotationForm)
     log.debug("Selected agent >>>>", this.agentDetails)
