@@ -248,7 +248,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   shareForm!: FormGroup;
   otpGenerated: boolean = false;
   otpResponse: OtpResponse;
-  changeButtons: boolean = false;
+  changeToPolicyButtons: boolean = false;
   filePath: string = '';
   documentData: any;
   reports: any[] = [];
@@ -264,7 +264,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   dragOffset = { x: 0, y: 0 };
   isNewClientSelected: boolean = false;
   storedQuotationFormDetails: any = null
-
+  zoomLevel = 1;
   constructor(
     public quotationService: QuotationsService,
     private router: Router,
@@ -3169,7 +3169,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
               || new bootstrap.Modal(modalEl);
             modal.hide();
             this.otpGenerated = false
-            this.changeButtons = true
+            this.changeToPolicyButtons = true
+            if (this.changeToPolicyButtons) {
+              this.showViewDocumentsButton = false
+              this.showConfirmButton = false
+            }
           }
         },
         error: (err: any) => {
@@ -3461,6 +3465,30 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       reader.readAsDataURL(blob);
     });
   }
+  isHovering = false;
+  lensX = 0;
+  lensY = 0;
+  pdfImage: string = '';
+
+  onMouseMove(event: MouseEvent) {
+    this.isHovering = true;
+    const container = (event.currentTarget as HTMLElement).getBoundingClientRect();
+
+    // position lens relative to container
+    this.lensX = event.clientX - container.left - 75;
+    this.lensY = event.clientY - container.top - 75;
+
+    // grab the first rendered PDF page as image (canvas snapshot)
+    const canvas = (event.currentTarget as HTMLElement).querySelector('canvas') as HTMLCanvasElement;
+    if (canvas) {
+      this.pdfImage = canvas.toDataURL();
+    }
+  }
+
+  onMouseLeave() {
+    this.isHovering = false;
+  }
+
 
 }
 

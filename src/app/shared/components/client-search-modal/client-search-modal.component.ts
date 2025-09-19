@@ -321,32 +321,43 @@ export class ClientSearchModalComponent implements OnDestroy, OnInit {
   inputName(event) {
     const value = (event.target as HTMLInputElement).value;
     this.filterObject['name'] = value;
+    this.filter({ rows: 10 });
   }
 
 
   inputEmail(event) {
     const value = (event.target as HTMLInputElement).value;
     this.emailValue = value;
+    this.filter({ rows: 10 });
+
   }
 
   inputPhone(event) {
     const value = (event.target as HTMLInputElement).value;
     this.phoneValue = value;
+    this.filter({ rows: 10 });
+
   }
 
   inputInternalId(event) {
     const value = (event.target as HTMLInputElement).value;
     this.internalIdValue = value;
+    this.filter({ rows: 10 });
+
   }
 
   inputPin(event) {
     const value = (event.target as HTMLInputElement).value;
     this.pinValue = value;
+    this.filter({ rows: 10 });
+
   }
 
   inputId(event) {
     const value = (event.target as HTMLInputElement).value;
     this.idValue = value;
+    this.filter({ rows: 10 });
+
   }
   //  fetchClientsAndShow() {
   //   const event = {

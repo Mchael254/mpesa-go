@@ -95,6 +95,15 @@
                 <div class="modal-content" style="max-height: 704px; overflow: hidden;min-height: 250px;">
 
                     <div class="modal-body" style="height: 100%; max-height: 500px; overflow-y: auto;">
+                        <div *ngIf="motorClassAllowed == 'Y'">
+                            <ngx-spinner *ngIf="showModalSpinner" name="modal-spinner" [fullScreen]="false"
+                                bdColor="rgba(255,255,255,0.8)" color="#00529B" type="ball-spin-clockwise" size="medium"
+                                class="modal-overlay-spinner">
+                                <p style="color:#00529B">Scanning logbook...</p>
+                            </ngx-spinner>
+
+                        </div>
+
                         <h5 *ngIf="!isEditMode" class="modal-title mt-3 mb-2 addRiskTitle ">
                             {{ 'gis.quotation.add_risk' | translate }}
                             <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
@@ -106,8 +115,8 @@
                             <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </h5>
-                        <ng-container>
-                            <!-- <div class="mb-4 d-block w-100 p-4 text-center border border-dashed rounded">
+                        <!-- <ng-container>
+                            <div class="mb-4 d-block w-100 p-4 text-center border border-dashed rounded">
                                 <p-fileUpload name="logbook" mode="basic"
                                     chooseLabel="Click this area to upload Log book" [auto]="true"
                                     [maxFileSize]="10485760" (onSelect)="onLogBookSelected($event)"
@@ -115,38 +124,49 @@
                                 </p-fileUpload>
 
 
-                            </div> -->
-                        </ng-container>
-                        <!-- <div class="upload-area mt-4 mt-4" (click)="fileInput.click()" [class.dragover]="isDragging"
-                            (drop)="onDrop($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+                            </div>
+                        </ng-container> -->
+                        <div *ngIf="motorClassAllowed == 'Y'">
+                            <p class="upload-text text-danger" *ngIf="!selectedSubclassCode">
+                                Select a subclass to proceed
+                            </p>
+                            <div class="upload-area mt-4" (click)="!selectedSubclassCode ? null : fileInput.click()"
+                                [class.dragover]="isDragging"
+                                (drop)="selectedSubclassCode ? onDrop($event) : $event.preventDefault()"
+                                (dragover)="selectedSubclassCode ? onDragOver($event) : $event.preventDefault()"
+                                (dragleave)="selectedSubclassCode ? onDragLeave($event) : null"
+                                [class.disabled]="!selectedSubclassCode">
 
-                            <div class="upload-content">
-                                <i class="pi pi-upload upload-icon"></i>
+                                <div class="upload-content">
+                                    <i class="pi pi-upload upload-icon"></i>
 
-                                <p class="upload-text">Click this area to upload Log book</p>
-                                <p class="upload-subtext">Maximum file size 10MB</p>
+                                    <p class="upload-text" *ngIf="selectedSubclassCode">Click this area to upload Log
+                                        book</p>
+                                    <p class="upload-text text-muted" *ngIf="!selectedSubclassCode">
+                                        Select a subclass to proceed
+                                    </p>
+                                    <p class="upload-subtext" *ngIf="selectedSubclassCode">Maximum file size 10MB</p>
+                                </div>
+
+                                <input #fileInput type="file" (change)="onFileSelected($event)"
+                                    accept=".pdf,.doc,.docx,.txt,.log,.jpg,.jpeg,.png" style="display: none;"
+                                    [disabled]="!selectedSubclassCode">
                             </div>
 
-                            <input #fileInput type="file" (change)="onFileSelected($event)"
-                                accept=".pdf,.doc,.docx,.txt,.log,.jpg,.jpeg,.png," style="display: none;">
-                        </div>
-
-                        <div class="selected-file" *ngIf="selectedFile">
-                            <div class="file-info">
-                                <span class="file-name">{{ selectedFile.name }}</span>
-                                <span class="file-size">{{ formatFileSize(selectedFile.size) }}</span>
+                            <!-- Show selected file -->
+                            <div class="selected-file" *ngIf="selectedFile">
+                                <div class="file-info">
+                                    <span class="file-name">{{ selectedFile.name }}</span>
+                                    <span class="file-size">{{ formatFileSize(selectedFile.size) }}</span>
+                                </div>
+                                <button class="remove-btn" (click)="removeFile()">×</button>
                             </div>
-                            <button class="remove-btn" (click)="removeFile()">×</button>
+
+                            <!-- Messages -->
+                            <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+                            <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
                         </div>
 
-                      
-                        <div class="error-message" *ngIf="errorMessage">
-                            {{ errorMessage }}
-                        </div>
-
-                        <div class="success-message" *ngIf="successMessage">
-                            {{ successMessage }}
-                        </div> -->
                         <form [formGroup]="riskDetailsForm">
                             <div class="row ">
                                 <ng-container *ngFor="let field of formData; let i = index">
