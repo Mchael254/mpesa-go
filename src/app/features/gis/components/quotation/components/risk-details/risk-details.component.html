@@ -752,7 +752,7 @@
                                 <button type="button" class="btn btn-outline-primary me-2"
                                     data-bs-dismiss="modal">Cancel</button>
                                 <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal"
-                                    (click)="createRiskSection()">{{'gis.quotation.save_details' |
+                                    (click)="createRiskSection()">{{'gis.quotation.save' |
                                     translate}}</button>
                             </div>
                         </div>
@@ -867,7 +867,7 @@
                                                 <ng-template #readOnlyInput>
                                                     <input type="text" class="form-control form-control-sm mb-1"
                                                         [value]="freeLimitValue|translate" currencyMask
-                                                        [options]="currencyObj" style="width:300px" readonly />
+                                                        [options]="currencyObj" style="width:300px" disabled />
                                                 </ng-template>
                                             </div>
                                         </div>
@@ -2599,8 +2599,7 @@
             </p-table>
 
             <!-- Add tax modal -->
-            <div *ngIf="showTaxModal" class="modal  d-block" tabindex="-1" role="dialog"
-                style="background: transparent !important;">
+            <div *ngIf="showTaxModal" class="modal  d-block" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width:700px" role="document">
                     <div class="modal-content">
                         <!-- Modal Header -->
@@ -2751,8 +2750,7 @@
             </div>
 
             <!-- Edit Tax Modal -->
-            <div *ngIf="showEditTaxModal" class="modal  d-block" tabindex="-1" role="dialog"
-                style="background: transparent !important;">
+            <div *ngIf="showEditTaxModal" class="modal  d-block" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <!-- Modal Header -->

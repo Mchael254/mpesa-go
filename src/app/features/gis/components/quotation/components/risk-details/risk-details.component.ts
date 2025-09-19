@@ -333,7 +333,7 @@ export class RiskDetailsComponent {
   editingPeril: any = null;
   isPerilEditMode: boolean = false;
   perilToDelete: any;
-  taxes: any;
+  taxes: [] = [];
   showEditTaxModal: any;
   selectedTax: any = null;
   transactionTypes: any[] = [];
@@ -437,9 +437,10 @@ export class RiskDetailsComponent {
     this.loadAddedClauses();
     this.getAddedExcesses();
     this.loadExcesses();
-    this.loadPersistedRiskClauses();
     if (this.selectedSubclassCode) {
       this.loadLimitsOfLiability();
+      this.loadPersistedRiskClauses();
+
     }
     if (this.selectedSubclassCode && this.quoteProductCode) {
       this.loadAddedLimitsOfLiability();
@@ -636,7 +637,7 @@ export class RiskDetailsComponent {
 
 
           log.debug("Schedule information specific to the selected product:", this.scheduleList)
-          if (this.scheduleList[0]?.details?.level2) {
+          if (this.scheduleList?.[0]?.details?.level2) {
             this.showOtherSscheduleDetails = true;
           } else {
             this.showOtherSscheduleDetails = false;
@@ -2353,6 +2354,7 @@ export class RiskDetailsComponent {
     const covertypeCode = riskSelectedData.coverTypeCode;
 
     this.selectedSubclassObject = this.allMatchingSubclasses?.find(subclass => subclass.code == subclassCode)
+    log.debug("selected subclass object:", this.selectedSubclassObject)
     const screenCode = this.selectedSubclassObject.underwritingScreenCode
     this.getProductTaxes();
     if (this.selectedRiskCode) {
@@ -2417,7 +2419,7 @@ export class RiskDetailsComponent {
         ];
 
         // Go through each level and extract relevant fields
-        sortedLevels.forEach(level => {
+        sortedLevels?.forEach(level => {
           const levelName = level.levelName;
           const levelNumber = level.levelNumber;
           const levelKey = `level${levelNumber}`; // e.g., level2
@@ -2786,11 +2788,12 @@ export class RiskDetailsComponent {
   }
 
   createRiskSection() {
-    log.debug("Risk Code:", this.quotationRiskCode);
+    log.debug("Risk Code-CREATINF RISK SEDCTION:", this.quotationRiskCode);
+    log.debug("Selected sections", this.selectedSections)
+    log.debug("Selected sectionpremium", this.sectionPremium)
 
-
-    this.selectedSections = this.sectionPremium?.filter(section => section.isChecked) || [];
-    log.debug("Selected Sections from modal:", this.selectedSections);
+    // this.selectedSections = this.sectionPremium?.filter(section => section.isChecked) || [];
+    // log.debug("Selected Sections from modal:", this.selectedSections);
 
     const limitsToSave = this.riskLimitPayload();
     log.debug("Limits to save:", limitsToSave)
@@ -5711,10 +5714,10 @@ export class RiskDetailsComponent {
   }
 
   getProductTaxes() {
-    this.taxes = [];
     log.debug('getProductTaxes has been called ', this.selectedProduct)
+    log.debug('SELECTED RISK', this.selectedRisk)
     const productCode = this.selectedProduct?.productCode
-    const subClassCode = this.selectedProduct?.riskInformation[0]?.subclassCode
+    const subClassCode = this.selectedRisk?.subclassCode
     if (productCode && subClassCode) {
       this.quotationService.getTaxes(productCode, subClassCode).subscribe(res => {
 
@@ -6032,6 +6035,7 @@ export class RiskDetailsComponent {
   handleAddTaxClick() {
     this.openTaxModal(this.selectedTax);
     this.getTransactionTypes();
+    log.debug("selectedProduct", this.selectedProduct)
     if (this.selectedProduct?.code) {
       this.getProductTaxes();
     }

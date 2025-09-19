@@ -858,7 +858,8 @@ textarea {
 
 .btn-zoom-xs {
   padding: 0.15rem 0.35rem;
-  font-size: 0.7rem;
+  font-size: 13px;
   line-height: 1;
   border-radius: 0.2rem;
+  cursor: pointer
 }

@@ -82,53 +82,56 @@
     </div>
 
 
-      <!-- Product Table -->
-      <p-table [value]="productDetails" [sortField]="'productName'" [sortOrder]="1" rowGroupMode="rowspan" [paginator]="productDetails?.length > 10" [rowsPerPageOptions]="[2, 3, 5]"
+    <!-- Product Table -->
+    <p-table [value]="productDetails" [sortField]="'productName'" [sortOrder]="1" rowGroupMode="rowspan"
+      [paginator]="productDetails?.length > 10" [rowsPerPageOptions]="[2, 3, 5]" [rows]="3" groupField="productName"
+      class="mt-4 ui-datatable">
+      <!-- Table Header -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="flexible-header"> {{ 'gis.quotation.product' | translate }}</th>
+          <th class="flexible-header"> {{ 'gis.quotation.risk' | translate }}</th>
+          <th class="flexible-header"> {{ 'gis.quotation.cover_type' | translate }}</th>
+          <th class="flexible-header"> {{ 'gis.quotation.effective_date' | translate }}</th>
+          <th class="flexible-header"> {{ 'gis.quotation.sum_insured' | translate }}</th>
+          <th class="flexible-header"> {{ 'gis.quotation.premium' | translate }}</th>
+        </tr>
+      </ng-template>
 
-       [rows]="3"
-  groupField="productName" class="mt-4 ui-datatable">
-        <!-- Table Header -->
-        <ng-template pTemplate="header">
-          <tr>
-            <th class="flexible-header"> {{ 'gis.quotation.product' | translate }}</th>
-            <th class="flexible-header"> {{ 'gis.quotation.risk' | translate }}</th>
-            <th class="flexible-header"> {{ 'gis.quotation.cover_type' | translate }}</th>
-            <th class="flexible-header"> {{ 'gis.quotation.effective_date' | translate }}</th>
-            <th class="flexible-header"> {{ 'gis.quotation.sum_insured' | translate }}</th>
-            <th class="flexible-header"> {{ 'gis.quotation.premium' | translate }}</th>
-          </tr>
-        </ng-template>
+      <!-- Table Body -->
+      <ng-template pTemplate="body" let-quote let-rowIndex="rowIndex">
+        <tr>
+          <td *ngIf="shouldShowProductName(rowIndex)">
+            {{ quote.productName |sentenceCase }}
+          </td>
+          <td *ngIf="!shouldShowProductName(rowIndex)">
+            <!-- empty cell to align with rowspan -->
+          </td>
+          <td>{{ quote.riskId |sentenceCase }}</td>
+          <td>{{ quote.coverType |sentenceCase }}</td>
+          <td>{{ quote.wef }}</td>
+          <td class="text-end">{{ quote.sumInsured | currency: currencyObj?.prefix :
+            'symbol' : '1.2-2'}}</td>
+          <td class="text-end">{{ quote.premium | currency: currencyObj?.prefix :
+            'symbol' : '1.2-2' }}</td>
 
-        <!-- Table Body -->
-        <ng-template pTemplate="body" let-quote let-rowIndex="rowIndex">
-          <tr>
-            <td *ngIf="shouldShowProductName(rowIndex)">
-              {{ quote.productName |sentenceCase }}
-            </td>
-            <td *ngIf="!shouldShowProductName(rowIndex)">
-              <!-- empty cell to align with rowspan -->
-            </td>
-            <td>{{ quote.riskId |sentenceCase }}</td>
-            <td>{{ quote.coverType |sentenceCase }}</td>
-            <td>{{ quote.wef }}</td>
-            <td>{{ quote.sumInsured | number: '1.0-2' }}</td>
-            <td>{{ quote.premium | number: '1.0-2' }}</td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="footer">
-          <tr>
-            <td colspan="4"></td>
-            <td class="text-right  label">
-              {{ 'gis.quotation.sub_total' | translate }}
-            </td>
-            <td class="text-right  value">
-              {{ totalSumInsured | number: '1.0-2' }}
-            </td>
-          </tr>
-        </ng-template>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <tr>
+          <td colspan="4"></td>
+          <td class="text-end  label">
+            {{ 'gis.quotation.sub_total' | translate }}
+          </td>
+          <td class="text-end  value">
+            {{ totalSumInsured | currency: currencyObj?.prefix :
+            'symbol' : '1.2-2'}}
+          </td>
+        </tr>
+      </ng-template>
 
 
-      </p-table>
+    </p-table>
 
 
   </div>
