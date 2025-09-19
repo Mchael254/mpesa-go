@@ -2781,6 +2781,10 @@ export class RiskDetailsComponent {
   createRiskSection() {
     log.debug("Risk Code:", this.quotationRiskCode);
 
+  
+  this.selectedSections = this.sectionPremium?.filter(section => section.isChecked) || [];
+  log.debug("Selected Sections from modal:", this.selectedSections);
+
     const limitsToSave = this.riskLimitPayload();
     log.debug("Limits to save:", limitsToSave)
     if (this.selectedSections.length === 0) {
@@ -3062,6 +3066,37 @@ export class RiskDetailsComponent {
     }
   }
 
+  loadSectionPremium() {
+  const subclasscode = this.selectedSubclassCode || sessionStorage.getItem('selectedSubclassCode');
+  const binderCode = this.selectedBinderCode || this.defaultBinder[0]?.code;
+  const coverTypeCode = this.selectedCoverType?.coverTypeCode;
+
+  if (subclasscode && binderCode && coverTypeCode) {
+    this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode).subscribe({
+      next: (result: any[]) => {
+        // Apply the same filtering and mapping logic
+        const sectionPremiums = result
+          .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
+          .map(premium => {
+            if (premium.isMandatory === 'Y') {
+              return {
+                ...premium,
+                limitAmount: this.sumInsured
+              };
+            }
+            return premium;
+          });
+
+        this.sectionPremium = sectionPremiums;
+        log.debug("Section premium reloaded after delete", this.sectionPremium);
+      },
+      error: (error) => {
+        log.debug("Error reloading section premium", error);
+      }
+    });
+  }
+}
+
 
   deleteRiskSection(riskSectionCode: number) {
     log.debug("selected risk section code", riskSectionCode);
@@ -3072,10 +3107,14 @@ export class RiskDetailsComponent {
           log.debug("Response after deleting a risk section ", response);
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk section deleted successfully');
 
+          
+     
           // ✅ filter by code
           this.sectionDetails = this.sectionDetails.filter(
             (section) => section.code !== this.sectionToDelete.code
           );
+
+          this.loadSectionPremium();
 
           this.sectionToDelete = null;
         },
