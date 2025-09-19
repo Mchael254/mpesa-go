@@ -616,8 +616,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     ).subscribe(([taxes, coverTypeSections]) => {
       const taxList = taxes._embedded as Tax[];
       this.taxList = taxList;
-      log.debug("CoverTypeSections", coverTypeSections)
-
+      log.debug("CoverTypeSections single subclasss", coverTypeSections)
+      const coverTypeSectionList = coverTypeSections._embedded
+      log.debug("covertypesection list;", coverTypeSectionList)
+      sessionStorage.setItem("covertypeSections", JSON.stringify(coverTypeSectionList))
       group['applicableTaxes'].setValue(taxList);
       log.debug("Tax list", taxList)
 
@@ -1091,11 +1093,14 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       // Determine the limitAmount based on the conditions
       let limitAmount;
 
-      if (description === "sum insured" && (limit?.freeLimit || 0) === 0) {
+      if ((limit?.freeLimit || 0) === 0) {
+        // If freeLimit is 0, use selfDeclaredValue
         limitAmount = risk?.selfDeclaredValue || risk?.value;
       } else {
-        limitAmount = limit?.freeLimit || 0;
+        // Otherwise, use the freeLimit
+        limitAmount = limit?.freeLimit;
       }
+
 
       limitsPayload.push({
         calculationGroup: 1,
@@ -1586,7 +1591,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       untilDestroyed(this)
     ).subscribe(([taxes, coverTypeSections]) => {
       this.taxList = taxes._embedded as Tax[]
-      log.debug("CoverTypeSections", coverTypeSections)
+      log.debug("CoverTypeSections-log", coverTypeSections)
       const coverTypeSectionList = coverTypeSections._embedded
       log.debug("covertypesection list;", coverTypeSectionList)
       sessionStorage.setItem("covertypeSections", JSON.stringify(coverTypeSectionList))

@@ -298,8 +298,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     // this.coverToDate = new Date(this.todaysDate);
     //  this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);
     this.createQuotationProductForm();
-    if (this.productDetails.length > 0) {
+    if (this.productDetails?.length > 0) {
       this.setColumnsFromProductDetails(this.productDetails[0]);
+      this.checkProducts()
     }
 
 
@@ -314,7 +315,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           wet: oneYearLater
         });
 
-        this.updateCoverToDate(today);
+        // this.updateCoverToDate(today);
       }
     });
 
@@ -330,9 +331,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   checkProducts() {
-    // if (this.productDetails && this.productDetails.length > 0) {
-    //   this.isProductClauseOpen = true;
-    // }
+    if (this.productDetails && this.productDetails.length > 0) {
+      this.isProductClauseOpen = true;
+    }
   }
 
   ngAfterViewInit() {
@@ -973,10 +974,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const missingItems: string[] = [];
 
     // Check client 
-    const hasClient = this.selectedClientName && this.selectedClientName.trim() !== '';
+    const hasClient = (this.selectedClientName && this.selectedClientName.trim() !== '')
+      || (this.quotationForm.get('client')?.value && this.quotationForm.get('client')?.value.trim() !== '');
+
     if (!hasClient) {
       missingItems.push('client');
     }
+
 
     // Check source 
     const hasSource = this.quotationForm.get('source')?.value;
@@ -1528,7 +1532,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.info('SELECTED VALUE:', value)
     this.showIntermediaryField = value === 'I';
     if (!this.showIntermediaryField) {
-      this.quotationForm.get('agentCode').reset();
+      this.quotationForm?.get('agentCode').reset();
     }
     this.getAgents()
   }

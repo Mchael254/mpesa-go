@@ -716,765 +716,798 @@
               </div>
 
               <div class="col-12">
-                <div class="d-flex justify-content-between align-items-start w-100">
+                <div class="">
 
                   <ul class="nav nav-tabs me-auto" id="taxTabs" role="tablist">
                     <li class="nav-item" role="presentation" *ngFor="let product of products">
                       <button class="nav-link" [class.active]="activeRiskTab === product.code"
-                        (click)="activeRiskTab = product.code" type="button">
+                        (click)="activeRiskTab = product.code; handleProductClick(product);" type="button">
                         {{ product.productName |sentenceCase }}
                       </button>
                     </li>
                   </ul>
-
-                  <div class="d-flex justify-content-end align-items-center">
-                    <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
-                      [ngClass]="{ 'pi-caret-up': !showRiskColumnModal, 'pi-caret-down': showRiskColumnModal }"
-                      style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                      (click)="toggleRisk(iconRisk)">
-                    </i>
-                  </div>
-
-
-                  <!-- Floating Column Selector for Risk -->
-                  <div *ngIf="showRiskColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                    [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
-                    (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
-                    (document:mouseup)="onDragEnd()">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <strong class="text-primary">Select Risk Columns</strong>
-                      <button class="btn-close btn-sm" (click)="showRiskColumnModal = false"></button>
-                    </div>
-                    <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
-                      <div *ngFor="let col of riskColumns">
-                        <div class="form-check">
-                          <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
-                          <label class="form-check-label" [for]="col.field">
-                            {{ col.header }}
-                          </label>
+                  <div class="tab-content mb-4" id="nav-tabContent">
+                    <div class="tab-pane fade" [class.active]="activeRiskTab === product.code"
+                      [class.show]="activeRiskTab === product.code" *ngFor="let product of products">
+                      <div class="d-flex justify-content-end align-items-center">
+                        <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
+                          [ngClass]="{ 'pi-caret-up': !showRiskColumnModal, 'pi-caret-down': showRiskColumnModal }"
+                          style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                          (click)="toggleRisk(iconRisk)">
+                        </i>
+                      </div>
+                      <!-- Floating Column Selector for Risk -->
+                      <div *ngIf="showRiskColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+                        [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                        (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                        (document:mouseup)="onDragEnd()">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                          <strong class="text-primary">Select Risk Columns</strong>
+                          <button class="btn-close btn-sm" (click)="showRiskColumnModal = false"></button>
+                        </div>
+                        <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+                          <div *ngFor="let col of riskColumns">
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible"
+                                [id]="col.field">
+                              <label class="form-check-label" [for]="col.field">
+                                {{ col.header }}
+                              </label>
+                            </div>
+                          </div>
                         </div>
                       </div>
+                      <p-table [value]="riskDetails" #riskTable [tableStyle]="{ 'min-width': '50rem' }"
+                        [paginator]="riskDetails?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
+                        [scrollable]="true" responsiveLayout="scroll" styleClass="p-datatable-striped">
+
+                        <!-- Table Header -->
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th *ngFor="let col of riskColumns" [hidden]="!col.visible" class="flexible-header"
+                              [pSortableColumn]="col.field">
+                              {{ col.header }}
+                              <p-sortIcon [field]="col.field"></p-sortIcon>
+                            </th>
+                          </tr>
+                        </ng-template>
+
+                        <!-- Table Body -->
+                        <ng-template pTemplate="body" let-risk>
+                          <tr [class.p-highlight]="risk === selectedRisk" [pSelectableRow]="risk" class="point"
+                            (click)="handleRowClick(risk)" [class.disabled]="!risk?.code">
+                            <td *ngFor="let col of riskColumns" [hidden]="!col.visible">
+                              {{ getCellValue(risk, col.field) }}
+                            </td>
+                          </tr>
+                        </ng-template>
+
+                        <!-- Empty Message -->
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td [attr.colspan]="riskColumns.length" class="text-center text-muted py-3">
+                              No risks available for this product.
+                            </td>
+                          </tr>
+                        </ng-template>
+
+                      </p-table>
+
+                      <br />
+                      <ul class="nav nav-underline mt-2 mb-4">
+                        <li class="nav-item">
+                          <a class="nav-link active" [class.active]="activeRiskDetailsTab === 'sections'"
+                            (click)="activeRiskDetailsTab = 'sections'">Sections</a>
+                        </li>
+                        <br />
+                        <li class="nav-item">
+                          <a class="nav-link" [class.active]="activeRiskDetailsTab === 'riskClauses'"
+                            (click)="activeRiskDetailsTab = 'riskClauses'">Clauses</a>
+                        </li>
+                        <br />
+                        <li class="nav-item">
+                          <a class="nav-link" [class.active]="activeRiskDetailsTab === 'schedules'"
+                            (click)="activeRiskDetailsTab = 'schedules'">Schedules</a>
+                        </li>
+                        <br />
+                        <li class="nav-item">
+                          <a class="nav-link" [class.active]="activeRiskDetailsTab === 'peril'"
+                            (click)="activeRiskDetailsTab = 'peril'">Risk
+                            peril</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" [class.active]="activeRiskDetailsTab === 'excesses'"
+                            (click)="activeRiskDetailsTab = 'excesses'">Excess</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link text-muted" [class.active]="activeRiskDetailsTab === 'comments'"
+                            pTooltip="Feature under development" tooltipPosition="top">
+                            Comments
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" [class.active]="activeRiskDetailsTab === 'limits-liability'"
+                            (click)="activeRiskDetailsTab = 'limits-liability'">Limits of liability</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link text-muted" [class.active]="activeRiskDetailsTab === 'commissions'"
+                            pTooltip="Feature under development" tooltipPosition="top">
+                            Commissions
+                          </a>
+                        </li>
+
+                      </ul>
+                      <div class="tab-content mb-4" id="nav-tabContent">
+                        <!-- SECTIONS -->
+                        <div class="tab-pane show active" id="nav-sections" role="tabpanel"
+                          [class.show]="activeRiskDetailsTab === 'sections'"
+                          [class.active]="activeRiskDetailsTab === 'sections'" aria-labelledby="nav-sections"
+                          tabindex="0">
+                          <div class="d-flex justify-content-end align-items-center"
+                            [hidden]="activeRiskDetailsTab !== 'sections'">
+                            <i #iconSection class="pi border border-black p-1 rounded-1 text-black"
+                              [ngClass]="{ 'pi-caret-down': !showSectionColumnModal, 'pi-caret-up': showSectionColumnModal }"
+                              style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                              (click)="toggleSection(iconSection)">
+                            </i>
+                          </div>
+                          <!-- Floating Column Selector for section -->
+                          <div *ngIf="showSectionColumnModal"
+                            class="card shadow rounded p-2 position-absolute bg-white border"
+                            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                            (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                            (document:mouseup)="onDragEnd()">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                              <strong class="text-primary">Select Section Columns</strong>
+                              <button class="btn-close btn-sm" (click)="showSectionColumnModal = false"></button>
+                            </div>
+                            <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+                              <div *ngFor="let col of sectionColumns">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible"
+                                    [id]="col.field">
+                                  <label class="form-check-label" [for]="col.field">
+                                    {{ col.header }}
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+
+                          </div>
+                          <p-table [value]="sections" #sectionsTable *ngIf="sections?.length && sectionColumns?.length"
+                            [tableStyle]="{ 'min-width': '50rem' }" [paginator]="sections?.length > 10"
+                            [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true" responsiveLayout="scroll"
+                            styleClass="p-datatable-striped">
+
+                            <!-- Dynamic Table Header -->
+                            <ng-template pTemplate="header">
+                              <tr>
+                                <th *ngFor="let col of sectionColumns" [hidden]="!col.visible" class="flexible-header"
+                                  [pSortableColumn]="col.field">
+                                  {{ col.header }}
+                                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                                </th>
+                              </tr>
+                            </ng-template>
+
+                            <!-- Dynamic Table Body -->
+                            <ng-template pTemplate="body" let-section>
+                              <tr [pSelectableRow]="section" class="point" [class.disabled]="!section?.sectionCode">
+
+                                <td *ngFor="let col of sectionColumns" [hidden]="!col.visible">
+                                  <ng-container [ngSwitch]="col.field">
+
+                                    <!-- Default branch checks internally -->
+                                    <ng-container *ngSwitchDefault>
+                                      <ng-container *ngIf="col.field === 'limitAmount' || col.field === 'premiumAmount'
+                                                      || col.field === 'freeLimit'; else defaultField">
+                                        <div class="text-end">
+                                          {{ section[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                                        </div>
+                                      </ng-container>
+
+                                      <ng-template #defaultField>
+                                        {{ section[col.field] }}
+                                      </ng-template>
+                                    </ng-container>
+
+                                  </ng-container>
+                                </td>
+
+
+                              </tr>
+                            </ng-template>
+
+                            <!-- Empty Message -->
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td [attr.colspan]="sectionColumns.length" class="text-center text-muted py-3">
+                                  No sections available for this product.
+                                </td>
+                              </tr>
+                            </ng-template>
+
+                          </p-table>
+
+                        </div>
+                        <!-- RISK CLAUSES -->
+                        <div class="tab-pane" id="nav-riskClauses" role="tabpanel"
+                          [class.show]="activeRiskDetailsTab === 'riskClauses'"
+                          [class.active]="activeRiskDetailsTab === 'riskClauses'" aria-labelledby="nav-riskClauses"
+                          tabindex="0">
+                          <div class="d-flex justify-content-end align-items-center">
+                            <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
+                              [ngClass]="{ 'pi-caret-down': !showRiskClauseColumnModal, 'pi-caret-up': showRiskClauseColumnModal }"
+                              style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                              (click)="toggleRiskClauses(iconRisk)">
+                            </i>
+                          </div>
+                          <!-- Floating Column Selector for Risk -->
+                          <div *ngIf="showRiskClauseColumnModal"
+                            class="card shadow rounded p-2 position-absolute bg-white border"
+                            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                            (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                            (document:mouseup)="onDragEnd()">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                              <strong class="text-primary">Select RiskClauses Columns</strong>
+                              <button class="btn-close btn-sm" (click)="showRiskClauseColumnModal = false"></button>
+                            </div>
+                            <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+                              <div *ngFor="let col of riskClausesColumns">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible"
+                                    [id]="col.field">
+                                  <label class="form-check-label" [for]="col.field">
+                                    {{ col.header }}
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <p-table [value]="riskClauses" #riskClausesTable dataKey="code" editMode="row"
+                            [tableStyle]="{ 'width': '100%' }" [paginator]="riskClauses?.length > 10"
+                            [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true" responsiveLayout="scroll"
+                            class="ui-datatable" [autoLayout]="true">
+
+                            <!-- Dynamic Table Header -->
+                            <ng-template pTemplate="header">
+                              <tr>
+                                <th *ngFor="let col of riskClausesColumns" [hidden]="!col.visible"
+                                  [pSortableColumn]="col.field">
+                                  {{ col.header }}
+                                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                                </th>
+                              </tr>
+                            </ng-template>
+
+                            <!-- Body -->
+                            <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+
+                              <!-- Filter Row -->
+                              <tr *ngIf="rowIndex === 0">
+                                <td *ngFor="let col of riskClausesColumns" [hidden]="!col.visible">
+                                  <input type="text" pInputText class="form-control w-100"
+                                    (input)="filterTable($event, col.field, riskClausesTable)" />
+                                </td>
+                              </tr>
+
+                              <!-- Data Rows -->
+                              <tr [pEditableRow]="rowData">
+                                <td *ngFor="let col of riskClausesColumns" [hidden]="!col.visible">
+                                  {{ getCellValue(rowData, col.field)| truncate:5 | sentenceCase }}
+                                </td>
+                              </tr>
+
+                            </ng-template>
+
+                            <!-- Empty Message -->
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td [attr.colspan]="riskClausesColumns.length" class="text-center text-muted py-3">
+                                  No Clauses available for this product.
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+
+
+                        </div>
+                        <!-- SCHEDULES -->
+                        <div class="tab-pane " id="nav-schedules" role="tabpanel" aria-labelledby="nav-schedules"
+                          tabindex="0" [class.show]="activeRiskDetailsTab === 'schedules'"
+                          [class.active]="activeRiskDetailsTab === 'schedules'">
+
+                          <!-- Dynamic Tabs -->
+                          <ul class="nav nav-tabs mb-3">
+                            <li class="nav-item" *ngFor="let tab of availableScheduleLevels">
+                              <button class="nav-link" [ngClass]="{ active: activeScheduleTab === tab }"
+                                (click)="selectScheduleTab(tab)">
+                                {{ tab.replace('level', 'Level ') }}
+                              </button>
+                            </li>
+                          </ul>
+                          <div class="d-flex justify-content-end align-items-center">
+                            <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
+                              [ngClass]="{ 'pi-caret-down': !showScheduleColumnModal, 'pi-caret-up': showScheduleColumnModal }"
+                              style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                              (click)="toggleSchedule(iconRisk)">
+                            </i>
+                          </div>
+                          <!-- Floating Column Selector for Risk -->
+                          <div *ngIf="showScheduleColumnModal"
+                            class="card shadow rounded p-2 position-absolute bg-white border"
+                            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                            (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                            (document:mouseup)="onDragEnd()">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                              <strong class="text-primary">Select Schedules Columns</strong>
+                              <button class="btn-close btn-sm" (click)="showScheduleColumnModal = false"></button>
+                            </div>
+                            <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+                              <div *ngFor="let col of scheduleColumns">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible"
+                                    [id]="col.field">
+                                  <label class="form-check-label" [for]="col.field">
+                                    {{ col.header }}
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <p-table [value]="getCurrentSchedule()" [tableStyle]="{ 'width': '100%' }"
+                            [paginator]="getCurrentSchedule()?.length > 10" [rowsPerPageOptions]="[3, 5, 10]"
+                            [rows]="3">
+                            <!-- Header -->
+                            <ng-template pTemplate="header">
+                              <tr>
+                                <th *ngFor="let col of scheduleColumns" class="flexible-header"
+                                  pSortableColumn="{{ col.field }}" [hidden]="!col.visible">
+                                  {{ col.header }}
+                                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                                </th>
+                              </tr>
+                            </ng-template>
+
+                            <!-- Body -->
+                            <ng-template pTemplate="body" let-rowData>
+                              <tr>
+                                <td *ngFor="let col of scheduleColumns" [hidden]="!col.visible">
+                                  <ng-container [ngSwitch]="col.field">
+
+                                    <!-- Currency fields -->
+                                    <ng-container *ngSwitchDefault>
+                                      <ng-container *ngIf="col.field === 'value'; else defaultField">
+                                        <div class="text-end">
+                                          {{ rowData[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                                        </div>
+                                      </ng-container>
+
+                                      <!-- Default (non-currency fields) -->
+                                      <ng-template #defaultField>
+                                        {{ rowData[col.field] }}
+                                      </ng-template>
+                                    </ng-container>
+
+                                  </ng-container>
+                                </td>
+                              </tr>
+                            </ng-template>
+
+
+                            <!-- Empty message -->
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td [attr.colspan]="scheduleColumns.length" class="text-center text-muted py-3">
+                                  “No schedules for this risk.”
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+
+                        </div>
+
+
+                        <!-- Risk peril-->
+                        <div class="tab-pane fade" id="nav-peril" role="tabpanel"
+                          [class.show]="activeRiskDetailsTab === 'peril'"
+                          [class.active]="activeRiskDetailsTab === 'peril'" aria-labelledby="nav-schedules"
+                          tabindex="0">
+
+
+                          <div class="d-flex justify-content-end align-items-center">
+                            <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
+                              [ngClass]="{ 'pi-caret-down': !showPerilColumnModal, 'pi-caret-up': showPerilColumnModal }"
+                              style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                              (click)="togglePeril(iconRisk)">
+                            </i>
+                          </div>
+                          <!-- Floating Column Selector for peril -->
+                          <div *ngIf="showPerilColumnModal"
+                            class="card shadow rounded p-2 position-absolute bg-white border"
+                            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                            (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                            (document:mouseup)="onDragEnd()">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                              <strong class="text-primary">Select Perils Columns</strong>
+                              <button class="btn-close btn-sm" (click)="showPerilColumnModal = false"></button>
+                            </div>
+                            <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+                              <div *ngFor="let col of perilColumns">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible"
+                                    [id]="col.field">
+                                  <label class="form-check-label" [for]="col.field">
+                                    {{ col.header }}
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+
+                          <!-- Dynamic peril table -->
+                          <p-table [value]="summaryPerils" [tableStyle]="{ 'width': '100%' }"
+                            [paginator]="summaryPerils?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
+                            <!-- Header -->
+                            <ng-template pTemplate="header">
+                              <tr>
+                                <th *ngFor="let col of perilColumns" class="flexible-header"
+                                  pSortableColumn="{{ col.field }}" [hidden]="!col.visible">
+                                  {{ col.header }}
+                                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                                </th>
+                              </tr>
+                            </ng-template>
+
+                            <!-- Body -->
+                            <ng-template pTemplate="body" let-rowData>
+                              <tr>
+                                <td *ngFor="let col of perilColumns" [hidden]="!col.visible">
+                                  {{ getCellValue(rowData,col.field) }}
+                                </td>
+                              </tr>
+                            </ng-template>
+
+                            <!-- Empty message -->
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td [attr.colspan]="perilColumns.length" class="text-center text-muted py-3">
+                                  “No perils for this risk.”
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        </div>
+
+
+                        <!-- Excess-->
+
+                        <div class="tab-pane fade" id="nav-excesses" role="tabpanel"
+                          [class.show]="activeRiskDetailsTab === 'excesses'"
+                          [class.active]="activeRiskDetailsTab === 'excesses'" aria-labelledby="nav-limits"
+                          tabindex="0">
+
+
+                          <div class="d-flex justify-content-end align-items-center">
+                            <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
+                              [ngClass]="{ 'pi-caret-down': !showExcessColumnModal, 'pi-caret-up': showExcessColumnModal }"
+                              style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                              (click)="toggleExcess(iconRisk)">
+                            </i>
+                          </div>
+                          <!-- Floating Column Selector for Risk -->
+                          <div *ngIf="showExcessColumnModal"
+                            class="card shadow rounded p-2 position-absolute bg-white border"
+                            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                            (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                            (document:mouseup)="onDragEnd()">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                              <strong class="text-primary">Select Excess Columns</strong>
+                              <button class="btn-close btn-sm" (click)="showExcessColumnModal = false"></button>
+                            </div>
+                            <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+                              <div *ngFor="let col of excessColumns">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible"
+                                    [id]="col.field">
+                                  <label class="form-check-label" [for]="col.field">
+                                    {{ col.header }}
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- Dynamic Excess Table -->
+                          <p-table [value]="excesses" #excessesTable [tableStyle]="{ 'width': '100%' }"
+                            [paginator]="excesses?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
+                            <!-- Header -->
+                            <ng-template pTemplate="header">
+                              <tr>
+                                <th *ngFor="let col of excessColumns" class="flexible-header"
+                                  pSortableColumn="{{ col.field }}" [hidden]="!col.visible">
+                                  {{ col.header }}
+                                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                                </th>
+                              </tr>
+                            </ng-template>
+
+                            <!-- Body -->
+                            <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                              <!-- Filter Row -->
+                              <tr *ngIf="rowIndex === 0">
+                                <td *ngFor="let col of excessColumns" [hidden]="!col.visible">
+                                  <input *ngIf="col.field === 'description'" type="text" pInputText
+                                    placeholder="Filter {{ col.header }}"
+                                    (input)="filterTable($event, col.field, excessesTable)"
+                                    style="width: 150px; height: 40px;" />
+                                </td>
+                              </tr>
+
+                              <!-- Data Rows -->
+                              <tr>
+                                <td *ngFor="let col of excessColumns" [hidden]="!col.visible">
+                                  <ng-container [ngSwitch]="col.field">
+
+                                    <!-- Currency + numeric fields -->
+                                    <ng-container *ngSwitchDefault>
+                                      <ng-container *ngIf="col.field === 'value'; else defaultField">
+                                        <div class="text-end">
+                                          {{ getCellValue(rowData, col.field) | currency: currencyObj?.prefix : 'symbol'
+                                          : '1.2-2'
+                                          }}
+                                        </div>
+                                      </ng-container>
+
+                                      <!-- Default (non-currency fields) -->
+                                      <ng-template #defaultField>
+                                        {{ getCellValue(rowData, col.field) }}
+                                      </ng-template>
+                                    </ng-container>
+
+                                  </ng-container>
+                                </td>
+
+                              </tr>
+                            </ng-template>
+
+                            <!-- Empty Message -->
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td [attr.colspan]="excessColumns.length" class="text-center text-muted py-3">
+                                  “No excesses available for this risk.”
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        </div>
+
+
+                        <!-- Comments -->
+                        <div class="tab-pane fade" id="nav-comments" role="tabpanel"
+                          [class.show]="activeRiskDetailsTab === 'comments'"
+                          [class.active]="activeRiskDetailsTab === 'comments'" aria-labelledby="nav-riskClauses"
+                          tabindex="0">
+                          <p-table [value]="comments" [tableStyle]="{ 'width': '100%' }" [scrollable]="true"
+                            [paginator]="comments?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
+                            responsiveLayout="scroll" class="ui-datatable" [autoLayout]="true">
+
+                            <!-- HEADER -->
+                            <ng-template pTemplate="header">
+                              <tr>
+                                <th class="flexible-header1" pSortableColumn="description">
+                                  Description <p-sortIcon field="description"></p-sortIcon>
+                                </th>
+                                <th class="flexible-header1" pSortableColumn="details">
+                                  Details <p-sortIcon field="details"></p-sortIcon>
+                                </th>
+
+                                <th></th>
+                                <th></th>
+                              </tr>
+                            </ng-template>
+
+                            <!-- BODY -->
+                            <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
+
+                              <!-- DATA ROWS -->
+                              <tr [pEditableRow]="data">
+                                <td>{{ data.description }}</td>
+                                <td>{{ data.details | sentenceCase }}</td>
+                              </tr>
+
+                            </ng-template>
+
+                            <!-- EMPTY MESSAGE -->
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="4" class="text-center text-muted py-3">
+                                  “No comments available for this risk.”
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                          <div class="d-flex justify-content-end align-items-center">
+                            <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
+                              [ngClass]="{ 'pi-caret-down': !showExcessColumnModal, 'pi-caret-up': showExcessColumnModal }"
+                              style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                              (click)="toggleExcess(iconRisk)">
+                            </i>
+                          </div>
+                          <!-- Floating Column Selector for Risk -->
+                          <div *ngIf="showExcessColumnModal"
+                            class="card shadow rounded p-2 position-absolute bg-white border"
+                            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                            (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                            (document:mouseup)="onDragEnd()">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                              <strong class="text-primary">Select Excess Columns</strong>
+                              <button class="btn-close btn-sm" (click)="showExcessColumnModal = false"></button>
+                            </div>
+                            <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+                              <div *ngFor="let col of excessColumns">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible"
+                                    [id]="col.field">
+                                  <label class="form-check-label" [for]="col.field">
+                                    {{ col.header }}
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <p-table [value]="excesses" #excessesTable *ngIf="excessColumns?.length"
+                            [tableStyle]="{ 'min-width': '50rem' }" [paginator]="excesses?.length > 10"
+                            [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true" responsiveLayout="scroll"
+                            styleClass="p-datatable-striped">
+
+                            <!-- Header -->
+                            <ng-template pTemplate="header">
+                              <tr>
+                                <th *ngFor="let col of excessColumns" [hidden]="!col.visible" class="flexible-header"
+                                  [pSortableColumn]="col.field">
+                                  {{ col.header }}
+                                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                                </th>
+                              </tr>
+                            </ng-template>
+
+                            <!-- Body -->
+                            <ng-template pTemplate="body" let-rowData>
+                              <tr>
+                                <td *ngFor="let col of excessColumns" [hidden]="!col.visible">
+                                  {{ getCellValue(rowData, col.field) }}
+                                </td>
+                              </tr>
+                            </ng-template>
+
+                            <!-- Empty Message -->
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td [attr.colspan]="excessColumns.length" class="text-center text-muted py-3">
+                                  No excesses available for this risk.
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+
+
+                        </div>
+                        <!-- Limits of liablility -->
+                        <div class="tab-pane fade" id="nav-limits-liability" role="tabpanel"
+                          [class.show]="activeRiskDetailsTab === 'limits-liability'"
+                          [class.active]="activeRiskDetailsTab === 'limits-liability'" aria-labelledby="nav-limits"
+                          tabindex="0">
+
+                          <div class="d-flex justify-content-end align-items-center">
+                            <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
+                              [ngClass]="{ 'pi-caret-down': !showLimitsOfLiabilityColumnModal, 'pi-caret-up': showLimitsOfLiabilityColumnModal }"
+                              style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                              (click)="toggleLimitsOfLiability(iconRisk)">
+                            </i>
+                          </div>
+                          <!-- Floating Column Selector for limits -->
+                          <div *ngIf="showLimitsOfLiabilityColumnModal"
+                            class="card shadow rounded p-2 position-absolute bg-white border"
+                            [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                            (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                            (document:mouseup)="onDragEnd()">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                              <strong class="text-primary">Select liability Columns</strong>
+                              <button class="btn-close btn-sm"
+                                (click)="showLimitsOfLiabilityColumnModal = false"></button>
+                            </div>
+                            <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+                              <div *ngFor="let col of limitsColumns">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible"
+                                    [id]="col.field">
+                                  <label class="form-check-label" [for]="col.field">
+                                    {{ col.header }}
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- Dynamic Limits of Liability Table -->
+                          <p-table [value]="limitsRiskofLiability" #limitsRiskofLiabilityTable
+                            [tableStyle]="{ 'width': '100%' }" [paginator]="limitsRiskofLiability?.length > 10"
+                            [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
+
+                            <!-- Header -->
+                            <ng-template pTemplate="header">
+                              <tr>
+                                <th *ngFor="let col of limitsColumns" class="flexible-header"
+                                  pSortableColumn="{{ col.field }}" [hidden]="!col.visible">
+                                  {{ col.header }}
+                                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                                </th>
+                              </tr>
+                            </ng-template>
+
+                            <!-- Body -->
+                            <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                              <!-- Filter Row -->
+                              <tr *ngIf="rowIndex === 0">
+                                <td *ngFor="let col of limitsColumns" [hidden]="!col.visible">
+                                  <input *ngIf="col.field === 'narration'" type="text" pInputText
+                                    placeholder="Filter {{ col.header }}"
+                                    (input)="filterTable($event, col.field, limitsRiskofLiabilityTable)"
+                                    style="width: 150px; height: 40px;" />
+                                </td>
+                              </tr>
+
+                              <!-- Data Rows -->
+                              <tr>
+                                <td *ngFor="let col of limitsColumns" [hidden]="!col.visible">
+                                  <ng-container [ngSwitch]="col.field">
+
+                                    <!-- Currency + numeric fields -->
+                                    <ng-container *ngSwitchDefault>
+                                      <ng-container *ngIf="col.field === 'value'; else defaultField">
+                                        <div class="text-end">
+                                          {{ sanitizeCurrency(getCellValue(rowData, col.field))
+                                          | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                                        </div>
+                                      </ng-container>
+
+                                      <ng-template #defaultField>
+                                        {{ getCellValue(rowData, col.field) }}
+                                      </ng-template>
+                                    </ng-container>
+
+
+                                  </ng-container>
+                                </td>
+                              </tr>
+                            </ng-template>
+
+                            <!-- Empty Message -->
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td [attr.colspan]="limitsColumns.length" class="text-center text-muted py-3">
+                                  “No limit of liability available for this risk.”
+                                </td>
+                              </tr>
+                            </ng-template>
+
+                          </p-table>
+
+                        </div>
+                      </div>
+
                     </div>
                   </div>
+
+
                 </div>
               </div>
             </div>
 
 
 
-            <p-table [value]="riskDetails" #riskTable [tableStyle]="{ 'min-width': '50rem' }"
-              [paginator]="riskDetails?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true"
-              responsiveLayout="scroll" styleClass="p-datatable-striped">
 
-              <!-- Table Header -->
-              <ng-template pTemplate="header">
-                <tr>
-                  <th *ngFor="let col of riskColumns" [hidden]="!col.visible" class="flexible-header"
-                    [pSortableColumn]="col.field">
-                    {{ col.header }}
-                    <p-sortIcon [field]="col.field"></p-sortIcon>
-                  </th>
-                </tr>
-              </ng-template>
-
-              <!-- Table Body -->
-              <ng-template pTemplate="body" let-risk>
-                <tr [class.p-highlight]="risk === selectedRisk" [pSelectableRow]="risk" class="point"
-                  (click)="handleRowClick(risk)" [class.disabled]="!risk?.code">
-                  <td *ngFor="let col of riskColumns" [hidden]="!col.visible">
-                    {{ getCellValue(risk, col.field) }}
-                  </td>
-                </tr>
-              </ng-template>
-
-              <!-- Empty Message -->
-              <ng-template pTemplate="emptymessage">
-                <tr>
-                  <td [attr.colspan]="riskColumns.length" class="text-center text-muted py-3">
-                    No risks available for this product.
-                  </td>
-                </tr>
-              </ng-template>
-
-            </p-table>
-
-            <br />
-            <ul class="nav nav-underline mt-2 mb-4">
-              <li class="nav-item">
-                <a class="nav-link active" [class.active]="activeRiskDetailsTab === 'sections'"
-                  (click)="activeRiskDetailsTab = 'sections'">Sections</a>
-              </li>
-              <br />
-              <li class="nav-item">
-                <a class="nav-link" [class.active]="activeRiskDetailsTab === 'riskClauses'"
-                  (click)="activeRiskDetailsTab = 'riskClauses'">Clauses</a>
-              </li>
-              <br />
-              <li class="nav-item">
-                <a class="nav-link" [class.active]="activeRiskDetailsTab === 'schedules'"
-                  (click)="activeRiskDetailsTab = 'schedules'">Schedules</a>
-              </li>
-              <br />
-              <li class="nav-item">
-                <a class="nav-link" [class.active]="activeRiskDetailsTab === 'peril'"
-                  (click)="activeRiskDetailsTab = 'peril'">Risk
-                  peril</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" [class.active]="activeRiskDetailsTab === 'excesses'"
-                  (click)="activeRiskDetailsTab = 'excesses'">Excess</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link text-muted" [class.active]="activeRiskDetailsTab === 'comments'"
-                  pTooltip="Feature under development" tooltipPosition="top">
-                  Comments
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" [class.active]="activeRiskDetailsTab === 'limits-liability'"
-                  (click)="activeRiskDetailsTab = 'limits-liability'">Limits of liability</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link text-muted" [class.active]="activeRiskDetailsTab === 'commissions'"
-                  pTooltip="Feature under development" tooltipPosition="top">
-                  Commissions
-                </a>
-              </li>
-
-            </ul>
-            <div class="tab-content mb-4" id="nav-tabContent">
-              <!-- SECTIONS -->
-              <div class="tab-pane show active" id="nav-sections" role="tabpanel"
-                [class.show]="activeRiskDetailsTab === 'sections'" [class.active]="activeRiskDetailsTab === 'sections'"
-                aria-labelledby="nav-sections" tabindex="0">
-                <div class="d-flex justify-content-end align-items-center"
-                  [hidden]="activeRiskDetailsTab !== 'sections'">
-                  <i #iconSection class="pi border border-black p-1 rounded-1 text-black"
-                    [ngClass]="{ 'pi-caret-down': !showSectionColumnModal, 'pi-caret-up': showSectionColumnModal }"
-                    style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                    (click)="toggleSection(iconSection)">
-                  </i>
-                </div>
-                <!-- Floating Column Selector for section -->
-                <div *ngIf="showSectionColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
-                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
-                  (document:mouseup)="onDragEnd()">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong class="text-primary">Select Section Columns</strong>
-                    <button class="btn-close btn-sm" (click)="showSectionColumnModal = false"></button>
-                  </div>
-                  <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
-                    <div *ngFor="let col of sectionColumns">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
-                        <label class="form-check-label" [for]="col.field">
-                          {{ col.header }}
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-                <p-table [value]="sections" #sectionsTable *ngIf="sections?.length && sectionColumns?.length"
-                  [tableStyle]="{ 'min-width': '50rem' }" [paginator]="sections?.length > 10"
-                  [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true" responsiveLayout="scroll"
-                  styleClass="p-datatable-striped">
-
-                  <!-- Dynamic Table Header -->
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th *ngFor="let col of sectionColumns" [hidden]="!col.visible" class="flexible-header"
-                        [pSortableColumn]="col.field">
-                        {{ col.header }}
-                        <p-sortIcon [field]="col.field"></p-sortIcon>
-                      </th>
-                    </tr>
-                  </ng-template>
-
-                  <!-- Dynamic Table Body -->
-                  <ng-template pTemplate="body" let-section>
-                    <tr [pSelectableRow]="section" class="point" [class.disabled]="!section?.sectionCode">
-
-                      <td *ngFor="let col of sectionColumns" [hidden]="!col.visible">
-                        <ng-container [ngSwitch]="col.field">
-
-                          <!-- Default branch checks internally -->
-                          <ng-container *ngSwitchDefault>
-                            <ng-container *ngIf="col.field === 'limitAmount' || col.field === 'premiumAmount'
-                              || col.field === 'freeLimit'; else defaultField">
-                              <div class="text-end">
-                                {{ section[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
-                              </div>
-                            </ng-container>
-
-                            <ng-template #defaultField>
-                              {{ section[col.field] }}
-                            </ng-template>
-                          </ng-container>
-
-                        </ng-container>
-                      </td>
-
-
-                    </tr>
-                  </ng-template>
-
-                  <!-- Empty Message -->
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td [attr.colspan]="sectionColumns.length" class="text-center text-muted py-3">
-                        No sections available for this product.
-                      </td>
-                    </tr>
-                  </ng-template>
-
-                </p-table>
-
-              </div>
-              <!-- RISK CLAUSES -->
-              <div class="tab-pane" id="nav-riskClauses" role="tabpanel"
-                [class.show]="activeRiskDetailsTab === 'riskClauses'"
-                [class.active]="activeRiskDetailsTab === 'riskClauses'" aria-labelledby="nav-riskClauses" tabindex="0">
-                <div class="d-flex justify-content-end align-items-center">
-                  <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
-                    [ngClass]="{ 'pi-caret-down': !showRiskClauseColumnModal, 'pi-caret-up': showRiskClauseColumnModal }"
-                    style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                    (click)="toggleRiskClauses(iconRisk)">
-                  </i>
-                </div>
-                <!-- Floating Column Selector for Risk -->
-                <div *ngIf="showRiskClauseColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
-                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
-                  (document:mouseup)="onDragEnd()">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong class="text-primary">Select RiskClauses Columns</strong>
-                    <button class="btn-close btn-sm" (click)="showRiskClauseColumnModal = false"></button>
-                  </div>
-                  <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
-                    <div *ngFor="let col of riskClausesColumns">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
-                        <label class="form-check-label" [for]="col.field">
-                          {{ col.header }}
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <p-table [value]="riskClauses" #riskClausesTable dataKey="code" editMode="row"
-                  [tableStyle]="{ 'width': '100%' }" [paginator]="riskClauses?.length > 10"
-                  [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true" responsiveLayout="scroll"
-                  class="ui-datatable" [autoLayout]="true">
-
-                  <!-- Dynamic Table Header -->
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th *ngFor="let col of riskClausesColumns" [hidden]="!col.visible" [pSortableColumn]="col.field">
-                        {{ col.header }}
-                        <p-sortIcon [field]="col.field"></p-sortIcon>
-                      </th>
-                    </tr>
-                  </ng-template>
-
-                  <!-- Body -->
-                  <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
-
-                    <!-- Filter Row -->
-                    <tr *ngIf="rowIndex === 0">
-                      <td *ngFor="let col of riskClausesColumns" [hidden]="!col.visible">
-                        <input type="text" pInputText class="form-control w-100"
-                          (input)="filterTable($event, col.field, riskClausesTable)" />
-                      </td>
-                    </tr>
-
-                    <!-- Data Rows -->
-                    <tr [pEditableRow]="rowData">
-                      <td *ngFor="let col of riskClausesColumns" [hidden]="!col.visible">
-                        {{ getCellValue(rowData, col.field)| truncate:5 | sentenceCase }}
-                      </td>
-                    </tr>
-
-                  </ng-template>
-
-                  <!-- Empty Message -->
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td [attr.colspan]="riskClausesColumns.length" class="text-center text-muted py-3">
-                        No Clauses available for this product.
-                      </td>
-                    </tr>
-                  </ng-template>
-                </p-table>
-
-
-              </div>
-              <!-- SCHEDULES -->
-              <div class="tab-pane " id="nav-schedules" role="tabpanel" aria-labelledby="nav-schedules" tabindex="0"
-                [class.show]="activeRiskDetailsTab === 'schedules'"
-                [class.active]="activeRiskDetailsTab === 'schedules'">
-
-                <!-- Dynamic Tabs -->
-                <ul class="nav nav-tabs mb-3">
-                  <li class="nav-item" *ngFor="let tab of availableScheduleLevels">
-                    <button class="nav-link" [ngClass]="{ active: activeScheduleTab === tab }"
-                      (click)="selectScheduleTab(tab)">
-                      {{ tab.replace('level', 'Level ') }}
-                    </button>
-                  </li>
-                </ul>
-                <div class="d-flex justify-content-end align-items-center">
-                  <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
-                    [ngClass]="{ 'pi-caret-down': !showScheduleColumnModal, 'pi-caret-up': showScheduleColumnModal }"
-                    style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                    (click)="toggleSchedule(iconRisk)">
-                  </i>
-                </div>
-                <!-- Floating Column Selector for Risk -->
-                <div *ngIf="showScheduleColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
-                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
-                  (document:mouseup)="onDragEnd()">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong class="text-primary">Select Schedules Columns</strong>
-                    <button class="btn-close btn-sm" (click)="showScheduleColumnModal = false"></button>
-                  </div>
-                  <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
-                    <div *ngFor="let col of scheduleColumns">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
-                        <label class="form-check-label" [for]="col.field">
-                          {{ col.header }}
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <p-table [value]="getCurrentSchedule()" [tableStyle]="{ 'width': '100%' }"
-                  [paginator]="getCurrentSchedule()?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
-                  <!-- Header -->
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th *ngFor="let col of scheduleColumns" class="flexible-header" pSortableColumn="{{ col.field }}"
-                        [hidden]="!col.visible">
-                        {{ col.header }}
-                        <p-sortIcon [field]="col.field"></p-sortIcon>
-                      </th>
-                    </tr>
-                  </ng-template>
-
-                  <!-- Body -->
-                  <ng-template pTemplate="body" let-rowData>
-                    <tr>
-                      <td *ngFor="let col of scheduleColumns" [hidden]="!col.visible">
-                        <ng-container [ngSwitch]="col.field">
-
-                          <!-- Currency fields -->
-                          <ng-container *ngSwitchDefault>
-                            <ng-container *ngIf="col.field === 'value'; else defaultField">
-                              <div class="text-end">
-                                {{ rowData[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
-                              </div>
-                            </ng-container>
-
-                            <!-- Default (non-currency fields) -->
-                            <ng-template #defaultField>
-                              {{ rowData[col.field] }}
-                            </ng-template>
-                          </ng-container>
-
-                        </ng-container>
-                      </td>
-                    </tr>
-                  </ng-template>
-
-
-                  <!-- Empty message -->
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td [attr.colspan]="scheduleColumns.length" class="text-center text-muted py-3">
-                        “No schedules for this risk.”
-                      </td>
-                    </tr>
-                  </ng-template>
-                </p-table>
-
-              </div>
-
-
-              <!-- Risk peril-->
-              <div class="tab-pane fade" id="nav-peril" role="tabpanel" [class.show]="activeRiskDetailsTab === 'peril'"
-                [class.active]="activeRiskDetailsTab === 'peril'" aria-labelledby="nav-schedules" tabindex="0">
-
-
-                <div class="d-flex justify-content-end align-items-center">
-                  <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
-                    [ngClass]="{ 'pi-caret-down': !showPerilColumnModal, 'pi-caret-up': showPerilColumnModal }"
-                    style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                    (click)="togglePeril(iconRisk)">
-                  </i>
-                </div>
-                <!-- Floating Column Selector for peril -->
-                <div *ngIf="showPerilColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
-                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
-                  (document:mouseup)="onDragEnd()">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong class="text-primary">Select Perils Columns</strong>
-                    <button class="btn-close btn-sm" (click)="showPerilColumnModal = false"></button>
-                  </div>
-                  <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
-                    <div *ngFor="let col of perilColumns">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
-                        <label class="form-check-label" [for]="col.field">
-                          {{ col.header }}
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-
-                <!-- Dynamic peril table -->
-                <p-table [value]="summaryPerils" [tableStyle]="{ 'width': '100%' }"
-                  [paginator]="summaryPerils?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
-                  <!-- Header -->
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th *ngFor="let col of perilColumns" class="flexible-header" pSortableColumn="{{ col.field }}"
-                        [hidden]="!col.visible">
-                        {{ col.header }}
-                        <p-sortIcon [field]="col.field"></p-sortIcon>
-                      </th>
-                    </tr>
-                  </ng-template>
-
-                  <!-- Body -->
-                  <ng-template pTemplate="body" let-rowData>
-                    <tr>
-                      <td *ngFor="let col of perilColumns" [hidden]="!col.visible">
-                        {{ getCellValue(rowData,col.field) }}
-                      </td>
-                    </tr>
-                  </ng-template>
-
-                  <!-- Empty message -->
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td [attr.colspan]="perilColumns.length" class="text-center text-muted py-3">
-                        “No perils for this risk.”
-                      </td>
-                    </tr>
-                  </ng-template>
-                </p-table>
-              </div>
-
-
-              <!-- Excess-->
-
-              <div class="tab-pane fade" id="nav-excesses" role="tabpanel"
-                [class.show]="activeRiskDetailsTab === 'excesses'" [class.active]="activeRiskDetailsTab === 'excesses'"
-                aria-labelledby="nav-limits" tabindex="0">
-
-
-                <div class="d-flex justify-content-end align-items-center">
-                  <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
-                    [ngClass]="{ 'pi-caret-down': !showExcessColumnModal, 'pi-caret-up': showExcessColumnModal }"
-                    style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                    (click)="toggleExcess(iconRisk)">
-                  </i>
-                </div>
-                <!-- Floating Column Selector for Risk -->
-                <div *ngIf="showExcessColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
-                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
-                  (document:mouseup)="onDragEnd()">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong class="text-primary">Select Excess Columns</strong>
-                    <button class="btn-close btn-sm" (click)="showExcessColumnModal = false"></button>
-                  </div>
-                  <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
-                    <div *ngFor="let col of excessColumns">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
-                        <label class="form-check-label" [for]="col.field">
-                          {{ col.header }}
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- Dynamic Excess Table -->
-                <p-table [value]="excesses" #excessesTable [tableStyle]="{ 'width': '100%' }"
-                  [paginator]="excesses?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
-                  <!-- Header -->
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th *ngFor="let col of excessColumns" class="flexible-header" pSortableColumn="{{ col.field }}"
-                        [hidden]="!col.visible">
-                        {{ col.header }}
-                        <p-sortIcon [field]="col.field"></p-sortIcon>
-                      </th>
-                    </tr>
-                  </ng-template>
-
-                  <!-- Body -->
-                  <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
-                    <!-- Filter Row -->
-                    <tr *ngIf="rowIndex === 0">
-                      <td *ngFor="let col of excessColumns" [hidden]="!col.visible">
-                        <input *ngIf="col.field === 'description'" type="text" pInputText
-                          placeholder="Filter {{ col.header }}" (input)="filterTable($event, col.field, excessesTable)"
-                          style="width: 150px; height: 40px;" />
-                      </td>
-                    </tr>
-
-                    <!-- Data Rows -->
-                    <tr>
-                      <td *ngFor="let col of excessColumns" [hidden]="!col.visible">
-                        <ng-container [ngSwitch]="col.field">
-
-                          <!-- Currency + numeric fields -->
-                          <ng-container *ngSwitchDefault>
-                            <ng-container *ngIf="col.field === 'value'; else defaultField">
-                              <div class="text-end">
-                                {{ getCellValue(rowData, col.field) | currency: currencyObj?.prefix : 'symbol' : '1.2-2'
-                                }}
-                              </div>
-                            </ng-container>
-
-                            <!-- Default (non-currency fields) -->
-                            <ng-template #defaultField>
-                              {{ getCellValue(rowData, col.field) }}
-                            </ng-template>
-                          </ng-container>
-
-                        </ng-container>
-                      </td>
-
-                    </tr>
-                  </ng-template>
-
-                  <!-- Empty Message -->
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td [attr.colspan]="excessColumns.length" class="text-center text-muted py-3">
-                        “No excesses available for this risk.”
-                      </td>
-                    </tr>
-                  </ng-template>
-                </p-table>
-              </div>
-
-
-              <!-- Comments -->
-              <div class="tab-pane fade" id="nav-comments" role="tabpanel"
-                [class.show]="activeRiskDetailsTab === 'comments'" [class.active]="activeRiskDetailsTab === 'comments'"
-                aria-labelledby="nav-riskClauses" tabindex="0">
-                <p-table [value]="comments" [tableStyle]="{ 'width': '100%' }" [scrollable]="true"
-                  [paginator]="comments?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
-                  responsiveLayout="scroll" class="ui-datatable" [autoLayout]="true">
-
-                  <!-- HEADER -->
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th class="flexible-header1" pSortableColumn="description">
-                        Description <p-sortIcon field="description"></p-sortIcon>
-                      </th>
-                      <th class="flexible-header1" pSortableColumn="details">
-                        Details <p-sortIcon field="details"></p-sortIcon>
-                      </th>
-
-                      <th></th>
-                      <th></th>
-                    </tr>
-                  </ng-template>
-
-                  <!-- BODY -->
-                  <ng-template pTemplate="body" let-data let-rowIndex="rowIndex">
-
-                    <!-- DATA ROWS -->
-                    <tr [pEditableRow]="data">
-                      <td>{{ data.description }}</td>
-                      <td>{{ data.details | sentenceCase }}</td>
-                    </tr>
-
-                  </ng-template>
-
-                  <!-- EMPTY MESSAGE -->
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td colspan="4" class="text-center text-muted py-3">
-                        “No comments available for this risk.”
-                      </td>
-                    </tr>
-                  </ng-template>
-                </p-table>
-                <div class="d-flex justify-content-end align-items-center">
-                  <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
-                    [ngClass]="{ 'pi-caret-down': !showExcessColumnModal, 'pi-caret-up': showExcessColumnModal }"
-                    style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                    (click)="toggleExcess(iconRisk)">
-                  </i>
-                </div>
-                <!-- Floating Column Selector for Risk -->
-                <div *ngIf="showExcessColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
-                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
-                  (document:mouseup)="onDragEnd()">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong class="text-primary">Select Excess Columns</strong>
-                    <button class="btn-close btn-sm" (click)="showExcessColumnModal = false"></button>
-                  </div>
-                  <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
-                    <div *ngFor="let col of excessColumns">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
-                        <label class="form-check-label" [for]="col.field">
-                          {{ col.header }}
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <p-table [value]="excesses" #excessesTable *ngIf="excessColumns?.length"
-                  [tableStyle]="{ 'min-width': '50rem' }" [paginator]="excesses?.length > 10"
-                  [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [scrollable]="true" responsiveLayout="scroll"
-                  styleClass="p-datatable-striped">
-
-                  <!-- Header -->
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th *ngFor="let col of excessColumns" [hidden]="!col.visible" class="flexible-header"
-                        [pSortableColumn]="col.field">
-                        {{ col.header }}
-                        <p-sortIcon [field]="col.field"></p-sortIcon>
-                      </th>
-                    </tr>
-                  </ng-template>
-
-                  <!-- Body -->
-                  <ng-template pTemplate="body" let-rowData>
-                    <tr>
-                      <td *ngFor="let col of excessColumns" [hidden]="!col.visible">
-                        {{ getCellValue(rowData, col.field) }}
-                      </td>
-                    </tr>
-                  </ng-template>
-
-                  <!-- Empty Message -->
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td [attr.colspan]="excessColumns.length" class="text-center text-muted py-3">
-                        No excesses available for this risk.
-                      </td>
-                    </tr>
-                  </ng-template>
-                </p-table>
-
-
-              </div>
-              <!-- Limits of liablility -->
-              <div class="tab-pane fade" id="nav-limits-liability" role="tabpanel"
-                [class.show]="activeRiskDetailsTab === 'limits-liability'"
-                [class.active]="activeRiskDetailsTab === 'limits-liability'" aria-labelledby="nav-limits" tabindex="0">
-
-                <div class="d-flex justify-content-end align-items-center">
-                  <i #iconRisk class="pi border border-black p-1 rounded-1 text-black"
-                    [ngClass]="{ 'pi-caret-down': !showLimitsOfLiabilityColumnModal, 'pi-caret-up': showLimitsOfLiabilityColumnModal }"
-                    style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                    (click)="toggleLimitsOfLiability(iconRisk)">
-                  </i>
-                </div>
-                <!-- Floating Column Selector for limits -->
-                <div *ngIf="showLimitsOfLiabilityColumnModal"
-                  class="card shadow rounded p-2 position-absolute bg-white border"
-                  [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
-                  (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
-                  (document:mouseup)="onDragEnd()">
-                  <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong class="text-primary">Select liability Columns</strong>
-                    <button class="btn-close btn-sm" (click)="showLimitsOfLiabilityColumnModal = false"></button>
-                  </div>
-                  <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
-                    <div *ngFor="let col of limitsColumns">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
-                        <label class="form-check-label" [for]="col.field">
-                          {{ col.header }}
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- Dynamic Limits of Liability Table -->
-                <p-table [value]="limitsRiskofLiability" #limitsRiskofLiabilityTable [tableStyle]="{ 'width': '100%' }"
-                  [paginator]="limitsRiskofLiability?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3">
-
-                  <!-- Header -->
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th *ngFor="let col of limitsColumns" class="flexible-header" pSortableColumn="{{ col.field }}"
-                        [hidden]="!col.visible">
-                        {{ col.header }}
-                        <p-sortIcon [field]="col.field"></p-sortIcon>
-                      </th>
-                    </tr>
-                  </ng-template>
-
-                  <!-- Body -->
-                  <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
-                    <!-- Filter Row -->
-                    <tr *ngIf="rowIndex === 0">
-                      <td *ngFor="let col of limitsColumns" [hidden]="!col.visible">
-                        <input *ngIf="col.field === 'narration'" type="text" pInputText
-                          placeholder="Filter {{ col.header }}"
-                          (input)="filterTable($event, col.field, limitsRiskofLiabilityTable)"
-                          style="width: 150px; height: 40px;" />
-                      </td>
-                    </tr>
-
-                    <!-- Data Rows -->
-                    <tr>
-                      <td *ngFor="let col of limitsColumns" [hidden]="!col.visible">
-                        <ng-container [ngSwitch]="col.field">
-
-                          <!-- Currency + numeric fields -->
-                          <ng-container *ngSwitchDefault>
-                            <ng-container *ngIf="col.field === 'value'; else defaultField">
-                              <div class="text-end">
-                                {{ sanitizeCurrency(getCellValue(rowData, col.field))
-                                | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
-                              </div>
-                            </ng-container>
-
-                            <ng-template #defaultField>
-                              {{ getCellValue(rowData, col.field) }}
-                            </ng-template>
-                          </ng-container>
-
-
-                        </ng-container>
-                      </td>
-                    </tr>
-                  </ng-template>
-
-                  <!-- Empty Message -->
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td [attr.colspan]="limitsColumns.length" class="text-center text-muted py-3">
-                        “No limit of liability available for this risk.”
-                      </td>
-                    </tr>
-                  </ng-template>
-
-                </p-table>
-
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -1938,31 +1971,41 @@
                 </label>
 
                 <!-- Download / Print icons -->
-                <i class="pi pi-download ms-3 text-primary cursor-pointer" (click)="downloadReports(selectedReports)"
-                  pTooltip="Download" tooltipPosition="top" style="font-size: 13px;"></i>
+                <i class="pi pi-download ms-3 text-primary" (click)="downloadReports(selectedReports)"
+                  pTooltip="Download" tooltipPosition="top" style="cursor: pointer !important; font-size: 13px;"></i>
 
-                <i class="pi pi-print ms-2 text-primary cursor-pointer" (click)="printReport(report)" pTooltip="Print"
-                  tooltipPosition="top" style="font-size: 13px;"></i>
+                <i class="pi pi-print ms-2 text-primary" (click)=" printReport(report)" pTooltip="Print"
+                  tooltipPosition="top" style="cursor: pointer !important; font-size: 13px;"></i>
               </div>
             </div>
 
             <!-- Right side: preview + nav -->
             <div class="col-8" style="max-height: 300px;">
-              <div class="d-flex justify-content-center gap-2 mt-2">
 
-                <button class="btn btn-sm btn-outline-primary btn-zoom-xs" (click)="zoomLevel = zoomLevel + 0.2"
-                  pTooltip="Zoom In">
-                  <i class="pi pi-search-plus"></i>
-                </button>
+              <div class="d-flex justify-content-center align-items-center gap-3 mt-2 mb-2">
 
-                <button class="btn btn-sm btn-outline-primary btn-zoom-xs" (click)="zoomLevel = zoomLevel - 0.2"
-                  [disabled]="zoomLevel <= 0.4" pTooltip="Zoom Out">
-                  <i class="pi pi-search-minus"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-primary btn-zoom-xs" (click)="zoomLevel = 1">
+                <!-- Zoom In -->
+                <i class="pi pi-plus cursor-pointer" (click)="zoomLevel = zoomLevel + 0.2" pTooltip="Zoom in"
+                  style="cursor: pointer !important; font-size: 16px;">
+                </i>
+
+                <!-- Current Zoom Percentage -->
+                <span class=" px-2 py-1 border rounded" style="color: black;border-color: black;">
+                  {{ (zoomLevel * 100) | number:'1.0-0' }}%
+                </span>
+                <!-- Zoom Out -->
+                <i class="pi pi-minus text-primary" (click)="zoomLevel = zoomLevel - 0.2" pTooltip="Zoom out"
+                  style="cursor: pointer; font-size: 16px;">
+                </i>
+
+                <!-- Reset -->
+                <button class="btn btn-sm btn-primary ms-2" (click)="zoomLevel = 1"
+                  style="cursor: pointer !important; font-size: 16px;">
                   Reset
                 </button>
+
               </div>
+
               <div style="height: 280px; background: #fff; margin: 0; padding: 0; position: relative;">
 
                 <!-- LEFT NAV ICON (centered vertically on left side) -->

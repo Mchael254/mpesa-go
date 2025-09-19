@@ -340,9 +340,19 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
 
     const coverTypeSections = JSON.parse(sessionStorage.getItem('covertypeSections'))
     log.debug('session sorage covers', coverTypeSections)
+    const sessionStorageCover = JSON.parse(sessionStorage.getItem('defaultCover'))
+    let defaultCover
+    if (sessionStorageCover) {
+      defaultCover = sessionStorageCover
+      log.debug('default cover from session storage', defaultCover)
 
-    const defaultCover = coverTypeSections.find(c => c.isDefault === 'Y');
-    log.debug('default cover', defaultCover)
+    } else {
+      defaultCover = coverTypeSections.find(c => c.isDefault === "Y");
+      log.debug('default cover', defaultCover)
+
+      log.debug('default cover == y', defaultCover)
+
+    }
     const riskLevelPremiumCover = this._riskLevelPremium.coverTypeDetails.find(cover => cover.coverTypeCode
       === defaultCover.coverTypeCode)
     log.debug('Risk level premium cover:', riskLevelPremiumCover)
@@ -620,6 +630,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
 
   onCoverTypeSelected(selectedCover: CoverTypeDetail): void {
     log.debug('CoverType selected:', selectedCover, this.riskLevelPremium);
+    sessionStorage.setItem('defaultCover', JSON.stringify(selectedCover))
     this.openPolicy = 'additionalBenefits';
     this.riskLevelPremium.selectCoverType = selectedCover
     this.selectedCover = selectedCover;
