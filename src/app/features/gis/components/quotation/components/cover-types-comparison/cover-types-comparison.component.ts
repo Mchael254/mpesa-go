@@ -78,6 +78,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   @Input()
   set riskLevelPremium(value: RiskLevelPremium) {
     this._riskLevelPremium = value
+    log.debug("Risk level Premium", this._riskLevelPremium)
     if (value.selectCoverType) {
       this.selectedCoverTypeCode = this.riskLevelPremium.selectCoverType.coverTypeCode
       const selectedCoverType = value.coverTypeDetails
@@ -141,12 +142,16 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
     log.debug("Currency object:", this.currencyObj)
   }
 
-  formatCurrency(value: number, prefix: string, delimiter: string): string {
-    // No decimals, just thousands
-    let parts = value.toFixed(0).split('.');
+  formatCurrency(value: number | null | undefined, prefix: string, delimiter: string): string {
+    if (value == null || isNaN(Number(value))) {
+      return `${prefix}0`;
+    }
+
+    let parts = Number(value).toFixed(0).split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
     return `${prefix}${parts.join('')}`;
   }
+
 
   loadAllCurrencies() {
     this.currencyService.getAllCurrencies()
@@ -338,28 +343,76 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
       align: 'left',
     };
 
-    const coverTypeSections = JSON.parse(sessionStorage.getItem('covertypeSections'))
-    log.debug('session sorage covers', coverTypeSections)
-    const sessionStorageCover = JSON.parse(sessionStorage.getItem('defaultCover'))
+    // const coverTypeSections = JSON.parse(sessionStorage.getItem('covertypeSections'))
+    // log.debug('session sorage covers', coverTypeSections)
+    // const sessionStorageCover = JSON.parse(sessionStorage.getItem('defaultCover'))
+    // let defaultCover
+    // if (sessionStorageCover) {
+    //   defaultCover = sessionStorageCover
+    //   log.debug('default cover from session storage', defaultCover)
+
+    // } else {
+    //   defaultCover = coverTypeSections.find(c => c.isDefault === "Y");
+    //   log.debug('default cover', defaultCover)
+
+    //   log.debug('default cover == y', defaultCover)
+
+    // }
+    // const riskLevelPremiumCover = this._riskLevelPremium.coverTypeDetails.find(cover => cover.coverTypeCode
+    //   === defaultCover.coverTypeCode)
+    // log.debug('Risk level premium cover:', riskLevelPremiumCover)
+    // if (riskLevelPremiumCover) {
+    //   this.selectedCoverTypeCode = riskLevelPremiumCover.coverTypeCode;
+    //   this.onCoverTypeSelected(riskLevelPremiumCover)
+    // }
+    // const coverTypeSections = JSON.parse(sessionStorage.getItem('covertypeSections') || '[]');
+    // _riskLevelPremium is an object
+    const sessionStorageCover = JSON.parse(
+      sessionStorage.getItem(`defaultCovers-${this._riskLevelPremium.code}`) || 'null'
+    );
     let defaultCover
     if (sessionStorageCover) {
       defaultCover = sessionStorageCover
-      log.debug('default cover from session storage', defaultCover)
-
+      log.debug("Defaul cover from session storage", defaultCover)
     } else {
-      defaultCover = coverTypeSections.find(c => c.isDefault === "Y");
-      log.debug('default cover', defaultCover)
+      const risk = this._riskLevelPremium;
+      log.debug('risk level premium s', this._riskLevelPremium)
+      // make sure coverTypeDetails exists
+      if (risk.coverTypeDetails && risk.coverTypeDetails.length > 0) {
+        risk.coverTypeDetails.forEach((coverType) => {
+          const subclassCode = coverType.subclassCode;
+          const coverTypeCode = coverType.coverTypeCode;
 
-      log.debug('default cover == y', defaultCover)
 
+          const storedCoverTypeSections = sessionStorage.getItem(`covertypeSections-${subclassCode}`);
+
+
+          if (storedCoverTypeSections) {
+            const parsedSections = JSON.parse(storedCoverTypeSections);
+            // Find the matching coverTypeCode inside the stored list
+            defaultCover = parsedSections.find((c: any) => c.isDefault == 'Y');
+            log.debug("Defaul cover from coveType sessions", defaultCover)
+
+
+          }
+        });
+      }
     }
-    const riskLevelPremiumCover = this._riskLevelPremium.coverTypeDetails.find(cover => cover.coverTypeCode
-      === defaultCover.coverTypeCode)
-    log.debug('Risk level premium cover:', riskLevelPremiumCover)
-    if (riskLevelPremiumCover) {
-      this.selectedCoverTypeCode = riskLevelPremiumCover.coverTypeCode;
-      this.onCoverTypeSelected(riskLevelPremiumCover)
+    if (defaultCover) {
+      const riskLevelPremiumCover = this._riskLevelPremium.coverTypeDetails.find(
+        (cover: any) => cover.coverTypeCode === defaultCover.coverTypeCode
+      );
+
+      log.debug('Risk level premium cover:', riskLevelPremiumCover);
+
+      if (riskLevelPremiumCover) {
+        this.selectedCoverTypeCode = riskLevelPremiumCover.coverTypeCode;
+        this.onCoverTypeSelected(riskLevelPremiumCover);
+      }
     }
+
+
+
   }
 
   ngOnDestroy(): void {
@@ -630,7 +683,11 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
 
   onCoverTypeSelected(selectedCover: CoverTypeDetail): void {
     log.debug('CoverType selected:', selectedCover, this.riskLevelPremium);
-    sessionStorage.setItem('defaultCover', JSON.stringify(selectedCover))
+    // sessionStorage.setItem('defaultCover', JSON.stringify(selectedCover))
+    sessionStorage.setItem(
+      `defaultCovers-${this.riskLevelPremium.code}`,
+      JSON.stringify(selectedCover)
+    );
     this.openPolicy = 'additionalBenefits';
     this.riskLevelPremium.selectCoverType = selectedCover
     this.selectedCover = selectedCover;

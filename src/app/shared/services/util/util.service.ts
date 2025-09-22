@@ -668,6 +668,12 @@ export class UtilService {
     sessionStorage.removeItem('savedProductsState')
     sessionStorage.removeItem('premiumComputationResponse')
     sessionStorage.removeItem('quotationObject')
+    const keysToRemove = [
+      'covertypeSections',
+      ,
+    ];
+
+    keysToRemove.forEach(key => sessionStorage.removeItem(key));
   }
 
   clearNormalQuoteSessionStorage() {
