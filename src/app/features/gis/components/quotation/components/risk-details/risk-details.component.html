@@ -89,10 +89,10 @@
         <!-- Add/edit Risk  Modal -->
         <div class="modal fade" id="addRisk" #addRiskModal tabindex="-1" role="dialog" aria-labelledby="addRiskLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 700px;">
-                <div class="modal-content" style="max-height: 704px; overflow: hidden;min-height: 250px;">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
 
-                    <div class="modal-body" style="height: 100%; max-height: 500px; overflow-y: auto;">
+                    <div class="modal-body">
                         <div *ngIf="motorClassAllowed == 'Y'">
                             <ngx-spinner *ngIf="showModalSpinner" name="modal-spinner" [fullScreen]="false"
                                 bdColor="rgba(255,255,255,0.8)" color="#00529B" type="ball-spin-clockwise" size="medium"
@@ -128,8 +128,8 @@
                             <p class="upload-text text-danger" *ngIf="!selectedSubclassCode">
                                 Select a subclass to proceed
                             </p>
-                            <div class="upload-area mt-4" (click)="!selectedSubclassCode ? null : fileInput.click()"
-                                [class.dragover]="isDragging"
+                            <div class="upload-area mt-4 mb-1"
+                                (click)="!selectedSubclassCode ? null : fileInput.click()" [class.dragover]="isDragging"
                                 (drop)="selectedSubclassCode ? onDrop($event) : $event.preventDefault()"
                                 (dragover)="selectedSubclassCode ? onDragOver($event) : $event.preventDefault()"
                                 (dragleave)="selectedSubclassCode ? onDragLeave($event) : null"
@@ -326,7 +326,7 @@
                         </form>
 
 
-                        <div class="mt-4 d-flex justify-content-end">
+                        <div class="mt-5 d-flex justify-content-end">
                             <button type="button" class="btn btn-outline-primary mx-2" id="saveDetails"
                                 data-bs-dismiss="modal" (click)="clearRiskForm()">{{'gis.policy.cancel' |
                                 translate}}</button>
@@ -653,7 +653,7 @@
 
             <!-- Add Risk Section Modal -->
 
-            <div class="modal fade" #addRiskSection Modal id="addSection" tabindex="-1" role="dialog"
+            <div class="modal fade" #addRiskSection Modal id="addRiskSection" tabindex="-1" role="dialog"
                 aria-labelledby="addSectionLabel">
                 <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
                     <div class="modal-content" id="addSectionModal">
@@ -1001,86 +1001,66 @@
                                             </div>
                                         </div>
                                     </div>
-                                  <div class="col-xl-6">
-  <div class="mb-1">
-    <label class="col-5 col-form-label" id="scheduleLabel">
-      {{ 'gis.quotation.declaration' | translate }}:
-    </label>
-    <div class="col-7 d-flex gap-4">
-      <div class="form-check">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="declaration1"
-          id="declaration1Yes"
-          [checked]="declaration1"
-          (change)="setDeclaration1(true)"
-        />
-        <label class="form-check-label" for="declaration1Yes">
-          {{ 'gis.policy.yes' | translate }}
-        </label>
-      </div>
+                                    <div class="col-xl-6">
+                                        <div class="mb-1">
+                                            <label class="col-5 col-form-label" id="scheduleLabel">
+                                                {{ 'gis.quotation.declaration' | translate }}:
+                                            </label>
+                                            <div class="col-7 d-flex gap-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="declaration1"
+                                                        id="declaration1Yes" [checked]="declaration1"
+                                                        (change)="setDeclaration1(true)" />
+                                                    <label class="form-check-label" for="declaration1Yes">
+                                                        {{ 'gis.policy.yes' | translate }}
+                                                    </label>
+                                                </div>
 
-      <div class="form-check">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="declaration1"
-          id="declaration1No"
-          [checked]="declaration1 === false"
-          (change)="setDeclaration1(false)"
-        />
-        <label class="form-check-label" for="declaration1No">
-          {{ 'gis.policy.no' | translate }}
-        </label>
-      </div>
-    </div>
-  </div>
-</div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="declaration1"
+                                                        id="declaration1No" [checked]="declaration1 === false"
+                                                        (change)="setDeclaration1(false)" />
+                                                    <label class="form-check-label" for="declaration1No">
+                                                        {{ 'gis.policy.no' | translate }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                 </div>
                                 <!-- **ROW 9** -->
-                             <div class="row mb-0" id="scheduleRows">
-  <div class="col-xl-6">
-    <div class="mb-1">
-      <label class="col-5 col-form-label" id="scheduleLabel">
-        {{ 'gis.quotation.compute' | translate }}:
-      </label>
-      <div class="col-7 d-flex gap-4">
-        <!-- YES option -->
-        <div class="form-check">
-          <input
-            class="form-check-input"
-            type="radio"
-            name="declaration2"
-            id="declaration2Yes"
-            [checked]="declaration2"
-            (change)="setDeclaration2(true)"
-          />
-          <label class="form-check-label" for="declaration2Yes">
-            {{ 'gis.policy.yes' | translate }}
-          </label>
-        </div>
+                                <div class="row mb-0" id="scheduleRows">
+                                    <div class="col-xl-6">
+                                        <div class="mb-1">
+                                            <label class="col-5 col-form-label" id="scheduleLabel">
+                                                {{ 'gis.quotation.compute' | translate }}:
+                                            </label>
+                                            <div class="col-7 d-flex gap-4">
+                                                <!-- YES option -->
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="declaration2"
+                                                        id="declaration2Yes" [checked]="declaration2"
+                                                        (change)="setDeclaration2(true)" />
+                                                    <label class="form-check-label" for="declaration2Yes">
+                                                        {{ 'gis.policy.yes' | translate }}
+                                                    </label>
+                                                </div>
 
-        <!-- NO option -->
-        <div class="form-check">
-          <input
-            class="form-check-input"
-            type="radio"
-            name="declaration2"
-            id="declaration2No"
-            [checked]="declaration2 === false"
-            (change)="setDeclaration2(false)"
-          />
-          <label class="form-check-label" for="declaration2No">
-            {{ 'gis.policy.no' | translate }}
-          </label>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-</div>
+                                                <!-- NO option -->
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="declaration2"
+                                                        id="declaration2No" [checked]="declaration2 === false"
+                                                        (change)="setDeclaration2(false)" />
+                                                    <label class="form-check-label" for="declaration2No">
+                                                        {{ 'gis.policy.no' | translate }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
 
 
 
@@ -1118,26 +1098,21 @@
                         <div class="modal-body">
                             <p class="d-flex justify-content-center" id="deleteLabel">
                                 {{'gis.quotation.are_you_sure_you_want_to_delete_section' | translate}}?</p>
-                              <!-- Buttons side-by-side -->
-        <div class="d-flex justify-content-center gap-3">
+                            <!-- Buttons side-by-side -->
+                            <div class="d-flex justify-content-center gap-3">
 
 
-          <button type="button"
-                  class="btn btn-outline-primary"
-                  id="deleteNo"
-                  data-bs-dismiss="modal">
-            {{ 'gis.quotation.cancel' | translate }}
-          </button>
-          
-          <button type="button"
-                  class="btn btn-primary"
-                  id="deleteYes"
-                  (click)="confirmDelete()"
-                  data-bs-dismiss="modal">
-            {{ 'gis.quotation.delete' | translate }}
-          </button>
+                                <button type="button" class="btn btn-outline-primary" id="deleteNo"
+                                    data-bs-dismiss="modal">
+                                    {{ 'gis.quotation.cancel' | translate }}
+                                </button>
 
-        </div>
+                                <button type="button" class="btn btn-primary" id="deleteYes" (click)="confirmDelete()"
+                                    data-bs-dismiss="modal">
+                                    {{ 'gis.quotation.delete' | translate }}
+                                </button>
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1541,21 +1516,26 @@
                                     {{ clause.shortDescription }}
                                 </ng-container>
 
-                                <!-- Heading -->
-                                <ng-container *ngSwitchCase="'heading'">
-                                    {{ clause.heading | truncate:3 | sentenceCase }}
-                                </ng-container>
+
 
                                 <!-- Wording -->
                                 <ng-container *ngSwitchCase="'wording'">
                                     <div class="clause-wrapper">
-                                        {{ clause.wording | truncate:5 | sentenceCase }}
+                                        {{ clause.wording | sentenceCase }}
                                         <div class="hover-card">
                                             {{ clause.wording | sentenceCase }}
                                         </div>
                                     </div>
                                 </ng-container>
-
+                                <!-- Heading -->
+                                <ng-container *ngSwitchCase="'heading'">
+                                    <div class="clause-wrapper" [title]="clause.heading | sentenceCase">
+                                        {{ clause.heading | sentenceCase }}
+                                        <div class="hover-card">
+                                            {{ clause.heading | sentenceCase }}
+                                        </div>
+                                    </div>
+                                </ng-container>
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
                                     <div class="flex justify-start gap-2">
@@ -1850,7 +1830,7 @@
                                 <!-- Narration (with hover card) -->
                                 <ng-container *ngSwitchCase="'narration'">
                                     <div class="clause-wrapper">
-                                        {{ limit.narration | truncate:5 | sentenceCase }}
+                                        {{ limit.narration | sentenceCase }}
                                         <div class="hover-card">
                                             {{ limit.narration | sentenceCase }}
                                         </div>
@@ -1965,7 +1945,7 @@
                                             <td><p-tableCheckbox [value]="limit" /></td>
                                             <td class="position-relative">
                                                 <div class="clause-wrapper">
-                                                    {{ limit.narration | truncate:10 | sentenceCase }}
+                                                    {{ limit.narration | sentenceCase }}
 
                                                     <div class="hover-card">
                                                         {{ limit.narration | sentenceCase }}
@@ -2153,7 +2133,7 @@
                                 <!-- Description (with hover card) -->
                                 <ng-container *ngSwitchCase="'description'">
                                     <div class="clause-wrapper">
-                                        {{ peril.description | truncate:5 | sentenceCase }}
+                                        {{ peril.description | sentenceCase }}
                                         <div class="hover-card">
                                             {{ peril.description | sentenceCase }}
                                         </div>
@@ -2266,7 +2246,7 @@
                                         <tr [pSelectableRow]="peril">
                                             <td class="position-relative">
                                                 <div class="clause-wrapper">
-                                                    {{ peril.description | truncate:10 | sentenceCase }}
+                                                    {{ peril.description | sentenceCase }}
                                                     <div class="hover-card">
                                                         {{ peril.description | sentenceCase }}
                                                     </div>
@@ -2274,7 +2254,7 @@
                                             </td>
                                             <td class="position-relative">
                                                 <div class="clause-wrapper">
-                                                    {{ peril.shortDescription | truncate:10 | sentenceCase }}
+                                                    {{ peril.shortDescription | sentenceCase }}
                                                     <div class="hover-card">
                                                         {{ peril.shortDescription | sentenceCase }}
                                                     </div>
@@ -2889,7 +2869,7 @@
                                 <!-- Narration (with hover card) -->
                                 <ng-container *ngSwitchCase="'narration'">
                                     <div class="clause-wrapper">
-                                        {{ excess.narration | truncate:5 | sentenceCase }}
+                                        {{ excess.narration | sentenceCase }}
                                         <div class="hover-card">
                                             {{ excess.narration | sentenceCase }}
                                         </div>
@@ -3006,7 +2986,7 @@
                                             <td><p-tableCheckbox [value]="excess" /></td>
                                             <td class="position-relative">
                                                 <div class="clause-wrapper">
-                                                    {{ excess.narration | truncate:10 | sentenceCase }}
+                                                    {{ excess.narration | sentenceCase }}
 
                                                     <div class="hover-card">
                                                         {{ excess.narration | sentenceCase }}
@@ -3139,7 +3119,8 @@
 
     <div class="d-inline-block" pTooltip="{{ nextButtonTooltip }}" tooltipPosition="top"
         [tooltipDisabled]="!nextButtonDisabled" style="cursor: pointer">
-        <button class="btn" [ngClass]="{'btn-primary': !nextButtonDisabled, 'btn-secondary': nextButtonDisabled}" [disabled]="nextButtonDisabled" (click)="computePremium()">
+        <button class="btn" [ngClass]="{'btn-primary': !nextButtonDisabled, 'btn-secondary': nextButtonDisabled}"
+            [disabled]="nextButtonDisabled" (click)="computePremium()">
             Next
         </button>
     </div>
