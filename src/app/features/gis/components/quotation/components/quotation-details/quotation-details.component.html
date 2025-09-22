@@ -273,6 +273,7 @@
           </ng-container>
         </div>
       </form>
+<<<<<<< Updated upstream
 
       <p class="more mt-4" (click)="toggleDetails()" style="cursor: pointer">
         {{ show ? 'Less Details' : 'More Details' }}
@@ -281,6 +282,26 @@
             style="font-size: 13px"></i>
         </span>
       </p>
+=======
+<p class="more mt-4" (click)="toggleDetails()" style="cursor: pointer">
+  {{ show ? 'Less Details' : 'More Details' }}
+  <span class="ml-1">
+    <i
+      [ngClass]="{
+        'pi': true,
+        'pi-chevron-up': show,
+        'pi-chevron-down': !show
+      }"
+      style="font-size:13px"
+    ></i>
+  </span>
+</p>
+>>>>>>> Stashed changes
+
+
+
+
+
 
     </div>
   </div>

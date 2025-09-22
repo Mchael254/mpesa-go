@@ -136,6 +136,7 @@
               "src/assets/css/gis-base.scss",
               "src/assets/css/report-base.scss",
               "src/assets/css/setups-base.scss"
+              
             ],
             "scripts": []
           }
