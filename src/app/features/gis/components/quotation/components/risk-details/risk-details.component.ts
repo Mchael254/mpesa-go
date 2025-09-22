@@ -513,21 +513,21 @@ export class RiskDetailsComponent {
 
     this.modals['editSection'] = new bootstrap.Modal(this.editSectionModal.nativeElement);
 
-    // Initialize addRiskModal
-    if (this.addRiskModalRef?.nativeElement) {
-      this.modalInstance = new bootstrap.Modal(this.addRiskModalRef.nativeElement, {
-        backdrop: 'static',
-        keyboard: false
-      });
-    }
+    // // Initialize addRiskModal
+    // if (this.addRiskModalRef?.nativeElement) {
+    //   this.modalInstance = new bootstrap.Modal(this.addRiskModalRef.nativeElement, {
+    //     backdrop: 'static',
+    //     keyboard: false
+    //   });
+    // }
 
-    // Initialize addRiskSection (if treated like another modal)
-    if (this.addRiskSectionRef?.nativeElement) {
-      this.sectionInstance = new bootstrap.Modal(this.addRiskSectionRef.nativeElement, {
-        backdrop: 'static',
-        keyboard: false
-      });
-    }
+    // // Initialize addRiskSection (if treated like another modal)
+    // if (this.addRiskSectionRef?.nativeElement) {
+    //   this.sectionInstance = new bootstrap.Modal(this.addRiskSectionRef.nativeElement, {
+    //     backdrop: 'static',
+    //     keyboard: false
+    //   });
+    // }
   }
 
   private initializePerilDetails() {
@@ -2582,7 +2582,8 @@ export class RiskDetailsComponent {
       // Update checkbox state based on input value
       checkbox.checked = !!(checkbox && inputValue);
       section.typedWord = parseInt(inputValue, 10);
-      section.isChecked = !!inputValue; // True only if input has a value
+      section.isChecked = !!inputValue;
+      log.debug('section passed by checkbox', section)
       if (section.isChecked) {
         // Add section if it's not already included
         if (!this.passedSections.some(s => s.sectionCode === section.sectionCode)) {
@@ -2644,56 +2645,7 @@ export class RiskDetailsComponent {
     }
   }
 
-  /**
- * Creates a new risk section associated with the current risk.
- * Takes section data from the 'sectionDetailsForm', sends it to the server
- * to create a new risk section associated with the current risk, and handles
- * the response data by displaying a success or error message.
- */
 
-  // createRiskSection() {
-  //   log.debug("Risk Code:", this.quotationRiskCode);
-  //   let limitsToSave = this.riskLimitPayload();
-
-  //   if (this.selectedSections.length > 0) {
-  //     const limitsPayLoad = {
-  //       addOrEdit: 'A',
-  //       quotationRiskCode: this.quotationRiskCode,
-  //       riskSections: limitsToSave.map(value => ({
-  //         ...value,
-  //         quotationCode: this.quotationCode,
-  //         quotRiskCode: this.quotationRiskCode
-  //       }))
-  //     };
-
-  //     this.quotationService.createRiskLimits(limitsPayLoad).pipe(
-  //       tap((createResponse) => {
-  //         log.debug('Response from createRiskLimits:', createResponse);
-  //         // You can store it in a local variable if needed
-  //         const riskcreateresponse = createResponse;
-  //       }),
-  //       switchMap(() => this.quotationService.getRiskSection(this.quotationCode))
-  //     ).subscribe({
-  //       next: (data: any) => {
-  //         this.riskSectionList = data._embedded[0];
-  //         this.sectionDetails = this.riskSectionList;
-  //         sessionStorage.setItem('sectionDetails', JSON.stringify(this.sectionDetails));
-
-  //         this.globalMessagingService.displaySuccessMessage('Success', 'Sections Created');
-
-  //         const modal = bootstrap.Modal.getInstance(this.addRiskSectionRef.nativeElement);
-  //         modal?.hide();
-  //       },
-  //       error: (error) => {
-  //         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
-  //         this.sectionDetailsForm.reset();
-  //       }
-  //     });
-  //   } else {
-  //     console.error('Premium list is empty.');
-  //     this.globalMessagingService.displayErrorMessage('Error', 'Premium list is empty');
-  //   }
-  // } 
   makeRiskPayload() {
     if (this.selectedRisk) {
       const limitPayload = this.getRiskLimitPayload()
@@ -2823,6 +2775,8 @@ export class RiskDetailsComponent {
         });
 
         this.globalMessagingService.displaySuccessMessage('Success', 'Sections Created');
+        this.selectedSections = [];
+        this.passedSections = []
 
         // Fetch updated risk sections after successful creation
         this.fetchQuotationDetails(this.quotationCode);
@@ -3076,13 +3030,13 @@ export class RiskDetailsComponent {
     }
   }
 
-  loadSectionPremium() {
-    const subclasscode = this.selectedSubclassCode || sessionStorage.getItem('selectedSubclassCode');
-    const binderCode = this.selectedBinderCode || this.defaultBinder[0]?.code;
-    const coverTypeCode = this.selectedCoverType?.coverTypeCode;
-
-    if (subclasscode && binderCode && coverTypeCode) {
-      this.premiumRateService.getCoverTypePremiums(subclasscode, binderCode, coverTypeCode).subscribe({
+  loadSectionPremium(binderCode: number, subclassCode: number, coverTypeCode: number) {
+    const passedSubclassCode = subclassCode || this.selectedSubclassCode || sessionStorage.getItem('selectedSubclassCode');
+    const passedBinderCode = binderCode || this.selectedBinderCode || this.defaultBinder?.[0]?.code;
+    const passedCoverTypeCode = coverTypeCode || this.selectedCoverType?.coverTypeCode;
+    log.debug({ passedSubclassCode, passedBinderCode, passedCoverTypeCode });
+    if (passedSubclassCode && passedBinderCode && passedCoverTypeCode) {
+      this.premiumRateService.getCoverTypePremiums(passedSubclassCode, passedBinderCode, passedCoverTypeCode).subscribe({
         next: (result: any[]) => {
           // Apply the same filtering and mapping logic
           const sectionPremiums = result
@@ -3116,15 +3070,17 @@ export class RiskDetailsComponent {
         next: (response: any) => {
           log.debug("Response after deleting a risk section ", response);
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk section deleted successfully');
-
-
+          log.debug("SELECTED RISK", this.selectedRisk)
+          const binderCode = this.selectedRisk?.binderCode
+          const subclassCode = this.selectedRisk?.subclassCode
+          const coverTypeCode = this.selectedRisk?.coverTypeCode
 
           // ✅ filter by code
           this.sectionDetails = this.sectionDetails.filter(
             (section) => section.code !== this.sectionToDelete.code
           );
 
-          this.loadSectionPremium();
+          this.loadSectionPremium(binderCode, subclassCode, coverTypeCode);
 
           this.sectionToDelete = null;
         },
@@ -3766,10 +3722,16 @@ export class RiskDetailsComponent {
       return;
     }
 
-    const modal = document.getElementById('addSection');
-    if (modal) {
-      const bootstrapModal = new bootstrap.Modal(modal);
-      bootstrapModal.show();
+    // const modal = document.getElementById('addRiskSection');
+    // if (modal) {
+    //   const bootstrapModal = new bootstrap.Modal(modal);
+    //   bootstrapModal.show();
+    // }
+
+    const modalElement = document.getElementById('addRiskSection');
+    if (modalElement) {
+      const modal = new (window as any).bootstrap.Modal(modalElement);
+      modal.show();
     }
   }
 

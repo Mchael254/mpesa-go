@@ -619,7 +619,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       log.debug("CoverTypeSections single subclasss", coverTypeSections)
       const coverTypeSectionList = coverTypeSections._embedded
       log.debug("covertypesection list;", coverTypeSectionList)
-      sessionStorage.setItem("covertypeSections", JSON.stringify(coverTypeSectionList))
+      // sessionStorage.setItem("covertypeSections", JSON.stringify(coverTypeSectionList))
+      sessionStorage.setItem(
+        `covertypeSections-${subClassCode}`,
+        JSON.stringify(coverTypeSectionList)
+      );
       group['applicableTaxes'].setValue(taxList);
       log.debug("Tax list", taxList)
 
@@ -1595,6 +1599,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       const coverTypeSectionList = coverTypeSections._embedded
       log.debug("covertypesection list;", coverTypeSectionList)
       sessionStorage.setItem("covertypeSections", JSON.stringify(coverTypeSectionList))
+      sessionStorage.setItem(
+        `covertypeSections-${subClassCode}`,
+        JSON.stringify(coverTypeSectionList)
+      );
       riskFormGroup.get('applicableTaxes')?.setValue(taxes._embedded)
       riskFormGroup.get('applicableCoverTypes')?.setValue(coverTypeSections._embedded)
       log.debug("Taxes:::", taxes, this.applicablePremiumRates)
@@ -2125,6 +2133,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   selectCovers(product: ProductPremium, riskDetails: RiskLevelPremium) {
     log.debug("Selected risk >>>", riskDetails);
     this.currentSelectedRisk = riskDetails;
+    log.debug("hasSelectedAllProductCovers before >>>", this.selectedProductCovers)
+
     this.selectedProductCovers = this.selectedProductCovers.filter(value => value.code !== product.code);
     this.selectedProductCovers.push(product);
     this.checkCanMoveToNextScreen()
@@ -2135,8 +2145,13 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     const premiums = this.premiumComputationResponse?.productLevelPremiums ?? [];
     log.debug("current premiums >>>", premiums)
     const hasSelectedAllProductCovers = this.selectedProductCovers && this.selectedProductCovers.length === premiums.length;
+    log.debug("hasSelectedAllProductCovers >>>", this.selectedProductCovers)
+
     const allRisksHaveSelectedCover = premiums
+
       .flatMap(premium => premium.riskLevelPremiums).every(risk => risk.selectCoverType);
+    log.debug("allRisksHaveSelectedCover >>>", hasSelectedAllProductCovers)
+
     this.canMoveToNextScreen = hasSelectedAllProductCovers && allRisksHaveSelectedCover;
 
     sessionStorage.setItem("canMoveToNextScreen", JSON.stringify(this.canMoveToNextScreen));

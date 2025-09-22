@@ -77,12 +77,11 @@
 }
 
 ::ng-deep .p-dropdown {
-  /* height: 53%; */
   width: 100%;
   border: 1px solid rgba(0, 0, 0, 0.20);
   border-radius: 4px;
   height: 35px;
-  margin-left: -8px;
+
 }
 
 ::ng-deep .p-dropdown .p-dropdown-label.p-placeholder {

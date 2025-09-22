@@ -2244,7 +2244,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           if (scheduleType === 'L') {
             this.limitsRiskofLiability = res._embedded;
 
-            this.setColumnsFromLimitsOfLiabilityDetails(this.limitsRiskofLiability[0])
+            if (this.limitsRiskofLiability?.length) {
+              this.setColumnsFromLimitsOfLiabilityDetails(this.limitsRiskofLiability[0]);
+            }
           } else {
             this.excesses = res._embedded;
             this.comments = res._embedded
@@ -3007,7 +3009,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       log.debug("Loaded summary perils:", this.summaryPerils);
 
 
-      if (this.summaryPerils) {
+      if (this.summaryPerils?.length > 0) {
         this.setColumnsFromPerilDetails(this.summaryPerils[0])
       }
     } catch (error) {
