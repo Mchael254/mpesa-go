@@ -198,3 +198,14 @@ tr.ng-star-inserted {
   background-color: #ddedfb !important;
   color: inherit !important;
 }
+
+::ng-deep .ngx-spinner-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  /* replaces top, right, bottom, left */
+  z-index: 2147483647 !important;
+}
+
+::ng-deep .ngx-spinner {
+  z-index: 2147483647 !important;
+}
