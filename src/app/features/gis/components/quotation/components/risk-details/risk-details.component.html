@@ -1690,21 +1690,19 @@
                             </button>
                         </div>
 
-                        <div class="d-flex justify-content-between text-black">
-                            <div class="d-flex flex-column bg-gray-300 w-25">
-                                <label for="id">ID</label>
-                                <input type="text" [value]=" selectedRiskClause.shortDescription" pInputText
-                                    style="background-color:rgb(215, 212, 212); width:18vw" readonly>
+                       <div class="d-flex gap-3 text-black">
+  <div class="flex-fill">
+    <label>ID</label>
+    <input class="form-control" [value]="selectedRiskClause.shortDescription" readonly>
+  </div>
+  <div class="flex-fill">
+    <label>Heading</label>
+    <input class="form-control"
+           [value]="selectedRiskClause.heading | truncate:10"
+           pTooltip="{{selectedRiskClause.heading}}" readonly>
+  </div>
+</div>
 
-                            </div>
-                            <div class="d-flex flex-column w-50 ">
-                                <label for="heading">Heading</label>
-                                <input class="bg-gray-300" pInputText
-                                    [value]=" selectedRiskClause.heading | truncate:10"
-                                    pTooltip="{{  selectedRiskClause.heading }}"
-                                    style="background-color:rgb(215, 212, 212); width:20vw; z-index:auto" readonly>
-                            </div>
-                        </div>
 
                         <div class="d-flex flex-column mt-5">
                             <label class="text-dark mt-0" for="comment">Wording</label>
