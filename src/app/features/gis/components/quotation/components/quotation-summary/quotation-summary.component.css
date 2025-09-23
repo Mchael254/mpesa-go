@@ -864,23 +864,32 @@ textarea {
   cursor: pointer
 }
 
-.wizzard-card {
-  position: absolute;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  background-color: #0d6efd;
-  color: white;
+.wizzard-modal {
+  position: relative;
 }
 
-.wizzard-card::after {
+
+
+.wizzard-modal::after {
   content: "";
   position: absolute;
-  top: 20px;        /* adjust to vertical position of the triangle */
-  left: -10px;      /* place outside the card on the left */
+  top: 50%;
+  transform: translateY(-50%);
+  left: -10px;
   width: 0;
   height: 0;
-  border-top: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-right: 10px solid #0d6efd; /* same color as the card */
+  border-style: solid;
+  border-width: 10px 10px 10px 0;
+  border-color: transparent #0d6efd transparent transparent;
 }
 
+.wizzard-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(0.1px);
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 999;
+}

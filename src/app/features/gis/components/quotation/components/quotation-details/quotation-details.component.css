@@ -177,13 +177,13 @@
   transition: transform 1s ease;
 }
 
-.pi-angle-double-up {
+/* .pi-angle-double-up {
   transform: rotate(180deg);
 }
 
 .pi-angle-double-down {
   transform: rotate(0deg);
-}
+} */
 
 .greyed-out {
   /* background-color: #e0e0e0 !important; */

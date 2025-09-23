@@ -12,11 +12,12 @@
   font-weight: bold;
   text-decoration: underline;
 }
-.nav-item > .nav-link {
+
+.nav-item>.nav-link {
   color: #000000;
 }
 
-.nav-item > .nav-link:hover {
+.nav-item>.nav-link:hover {
   font-weight: 800;
 }
 
@@ -77,22 +78,26 @@
   width: 10rem; */
 }
 
-.sub-card-content{
+.sub-card-content {
   width: 6rem;
   height: 5rem;
 }
 
-.lms-grp-image{
-  background-image: url('src/assets/svg/lms-grp.svg'); /* Replace with the actual path to your SVG file */
+.lms-grp-image {
+  background-image: url('src/assets/svg/lms-grp.svg');
+  /* Replace with the actual path to your SVG file */
 
 }
 
-.lms-ind-image{
-  background-image: url('src/assets/svg/lms-ind.svg'); /* Replace with the actual path to your SVG file */
+.lms-ind-image {
+  background-image: url('src/assets/svg/lms-ind.svg');
+  /* Replace with the actual path to your SVG file */
 
 }
+
 .gis-image {
-  background-image: url('src/assets/svg/gis.svg'); /* Replace with the actual path to your SVG file */
+  background-image: url('src/assets/svg/gis.svg');
+  /* Replace with the actual path to your SVG file */
 
 }
 
@@ -114,7 +119,7 @@
 }
 
 .modal {
-  z-index: 999999 !important;
+  z-index: 1050 !important;
 }
 
 .base-content .content-nav #mobile-nav {
