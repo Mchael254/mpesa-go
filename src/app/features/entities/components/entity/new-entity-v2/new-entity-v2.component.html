@@ -172,7 +172,7 @@
 
           <div [id]="group.groupId" class="collapse-container" [class.expanded]="isCollapsed(group.groupId)">
 
-            <ng-container *ngIf="
+            <!--<ng-container *ngIf="
               group?.subGroup[0]?.subGroupId === 'cnt_corporate_banking_information' ||
               group?.subGroup[0]?.subGroupId=== 'cnt_corporate_company_contacts' ||
               group?.subGroup[1]?.subGroupId === 'cnt_corporate_head_office_address'"
@@ -181,6 +181,11 @@
                 {{ (group?.subGroup[1]?.subGroupId === 'cnt_corporate_head_office_address'
                   ? group?.subGroup[1]?.label?.[language]
                   : group?.subGroup[0]?.label?.[language]) | titlecase }}
+              </h5>
+            </ng-container>-->
+            <ng-container *ngIf="getSubGroupHeader(group) as header">
+              <h5 class="text-dark mb-3 pe-md-5 me-md-4 ms-md-5">
+                {{ header | titlecase }}
               </h5>
             </ng-container>
 
@@ -408,7 +413,7 @@
 
             </div>
 
-            <div *ngIf="group.groupId === 'cnt_corporate_contact_details' && category === 'corporate' && corporateContactDetailsFormField.length > 0">
+            <!--<div *ngIf="group.groupId === 'cnt_corporate_contact_details' && category === 'corporate' && corporateContactDetailsFormField.length > 0">
               <app-dynamic-setup-table
                 [tableTitle]="group.subGroup[1]?.label?.[language]"
                 [addButtonText]="group.subGroup[1]?.addButtonTextLabel?.[language]"
@@ -496,7 +501,37 @@
                 [selectedAddressCountry]="selectedAddressCountry"
                 [isPreviewMode]="isPreviewMode"
               ></app-dynamic-setup-table>
+            </div>-->
+
+            <!--<div *ngIf="tablePayload?.presentationType === 'table_columns'">
+              <app-dynamic-setup-table
+                [tableTitle]="tablePayload?.label?.[language]"
+                [addButtonText]="tablePayload?.addButtonTextLabel?.[language]"
+                [emptyTableMessage]="'No record found!'"
+                [formFields]="trialFields"
+                [subGroupId]="tablePayload?.subGroupId"
+                (saveDetailsData)="fetchSavedDetails($event)"
+                [selectedAddressCountry]="selectedAddressCountry"
+                [isPreviewMode]="isPreviewMode"
+              ></app-dynamic-setup-table>
+
+            </div>-->
+            <div *ngFor="let payload of tablePayloads">
+              {{payload.formGroupingId | json}} {{group.groupId | json}}
+              <div *ngIf="payload.presentationType === 'table_columns' && payload.formGroupingId === group.groupId">
+                <app-dynamic-setup-table
+                  [tableTitle]="payload?.label?.[language]"
+                  [addButtonText]="payload?.addButtonTextLabel?.[language]"
+                  [emptyTableMessage]="'No record found!'"
+                  [formFields]="payload.fields"
+                  [subGroupId]="payload.subGroupId"
+                  (saveDetailsData)="fetchSavedDetails($event)"
+                  [selectedAddressCountry]="selectedAddressCountry"
+                  [isPreviewMode]="isPreviewMode"
+                ></app-dynamic-setup-table>
+              </div>
             </div>
+
 
             <div *ngIf="group.groupId === 'cnt_corporate_privacy_policy' || group.groupId === 'cnt_individual_privacy_policy'">
               <app-privacy-policy

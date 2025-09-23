@@ -146,6 +146,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   dynamicSetupData: DynamicScreenSetupDto;
   initialUploadFormFields!: ConfigFormFieldsDto[];
   originalFormId: string;
+  trialFields: any;
+  tablePayload: any;
+  tablePayloads: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -328,8 +331,10 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       });
 
       this.entityForm.addControl(section.groupId, group);
+      log.info('section fields ',section.groupId,  section.fields);
     });
     log.info('Adding fields to sections', this.entityForm);
+
   }
 
 
@@ -414,8 +419,70 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param formGroupSections
    */
   assignFieldsToGroupByGroupId(fields: ConfigFormFieldsDto[], formGroupSections: any[]): void {
-    const visibleFormFields = this.getFilteredFields(fields);
+    const visibleFormFields = this.getFilteredFields2(fields);
+    // const visibleFormFields = this.getFilteredFields(fields);
+    // check the group from formGroupSections if it has subGroups.length < 0
+    // check if subGroup has presentationType === 'fields'
+    /*if (formGroupSections) {
+      formGroupSections.forEach(section => {
+        if (section.subGroup.length > 0) {
+          section.subGroup.forEach(subGroup => {
+            if (subGroup.presentationType === 'fields') {
+              log.info(`subGroup presentationType >>> `, subGroup.subGroupId, section.groupId);
+              const field = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
+              log.info(`fields for fields`, field)
+            } else {
+              log.info(`this is a table`, subGroup.subGroupId)
+              const trial = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
+              log.info(`fields for table`, trial)
+            }
+          })
+        }
+        else {
+          log.info(`this is when subGroup.length === 0`, section.groupId);
+        //   show fields where formGroupingId === section.groupId
+          const field = fields.filter(field => field.formGroupingId === section.groupId);
+          log.info(`fields for no subgroup`, field)
+        }
+      })
+    }*/
 
+    for (const section of formGroupSections) {
+      const { subGroup = [], groupId } = section;
+
+      if (!subGroup.length) {
+        const sectionFields = fields.filter(f => f.formGroupingId === groupId);
+        log.info("subGroup is empty for groupId:", groupId);
+        log.info("fields for no subgroup", sectionFields);
+        this.createFieldsByPresentationType(groupId, sectionFields)
+        continue;
+      }
+
+      for (const sg of subGroup) {
+        const { subGroupId, presentationType } = sg;
+        const subGroupFields = fields.filter(f => f.formSubGroupingId === subGroupId);
+        // const sectionFields = fields.filter(f => f.formGroupingId === groupId);
+
+        if (presentationType === "fields") {
+          log.info("subGroup presentationType 'fields':", subGroupId, groupId);
+          log.info("fields for fields", subGroupFields);
+          this.createFieldsByPresentationType(subGroupId, subGroupFields)
+        } else {
+          log.info("subGroup presentationType 'table':", subGroupId);
+          log.info("fields for table", subGroupFields);
+          this.trialFields = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
+          this.tablePayload = sg;
+
+          const payload = {
+            ...sg,
+            fields: subGroupFields
+          };
+          this.tablePayloads.push(payload);
+
+          log.info("subgroup info", sg, payload)
+        }
+      }
+    }
     formGroupSections.forEach(section => {
       section.fields = [];
     });
@@ -428,16 +495,17 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     });
 
     this.formGroupSections = formGroupSections;
-    this.addFieldsToSections(formGroupSections);
+    log.info(`form group sections >>> `, this.formGroupSections);
+    // this.addFieldsToSections(formGroupSections);
 
-    this.wealthAmlFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_individual_aml_details');
+    /*this.wealthAmlFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_individual_aml_details');
     this.corporateContactDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_contact_person_details');
     this.corporateAddressDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_branch_details');
     this.corporateFinancialDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_payee_details');
     this.corporateWealthAmlFormFieldsDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_aml_details');
     this.corporateWealthCR12DetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_cr12_details');
     this.corporateWealthOwnershipDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_ownership_details');
-    this.privacyPolicyFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_privacy_policy');
+    this.privacyPolicyFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_privacy_policy');*/
   }
 
   /**
@@ -481,6 +549,46 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     }
 
     return [];
+  }
+
+  private getFilteredFields2(fields: ConfigFormFieldsDto[]): ConfigFormFieldsDto[] {
+    const formValues = this.uploadForm?.getRawValue();
+    const isIndividual = this.isPreviewMode
+      ? this.previewFormFields?.forms?.formId === this.originalFormId
+      : formValues?.role === this.role && formValues?.category === 'individual';
+
+    const isCorporate = this.isPreviewMode
+      ? this.previewFormFields?.forms?.formId === this.originalFormId
+      : formValues?.role === this.role && formValues?.category === 'corporate';
+
+    /*if (isIndividual) {
+      return fields.filter(field =>
+        field.visible &&
+        field.formId === this.originalFormId &&
+        field.formGroupingId !== 'cnt_individual_wealth_aml_details' &&
+        field.formSubGroupingId !== 'cnt_individual_privacy_policy'
+      );
+    }*/
+
+    /*if (isCorporate) {
+      const excludedSubGroups = [
+        'cnt_corporate_contact_person_details',
+        'cnt_corporate_privacy_policy',
+        'cnt_corporate_payee_details',
+        'cnt_corporate_branch_details'
+      ];
+
+      return fields.filter(field =>
+        field.visible &&
+        field.formId === this.originalFormId &&
+        !excludedSubGroups.includes(field.formSubGroupingId) &&
+        field.formGroupingId !== 'cnt_corporate_wealth_aml_details'
+      );
+    }*/
+
+    return fields.filter(field =>
+      field.visible &&
+      field.formId === this.originalFormId);
   }
 
   /**
@@ -1836,4 +1944,54 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         }
       });
   }
+
+  /**
+   * Returns the sub-group label to display (or null if none matches).
+   */
+  getSubGroupHeader(group: { subGroup?: Array<{ subGroupId?: string; label?: Record<string, string> }> }): string | null {
+    const s0 = group?.subGroup?.[0];
+    const s1 = group?.subGroup?.[1];
+
+    // Show header only when one of the targeted subgroups is present
+    const shouldShow =
+      s0?.subGroupId === 'cnt_corporate_banking_information' ||
+      s0?.subGroupId === 'cnt_corporate_company_contacts' ||
+      s1?.subGroupId === 'cnt_corporate_head_office_address';
+
+    if (!shouldShow) return null;
+
+    // Prefer head office address label if present, otherwise fallback to the first subgroup label
+    const chosen = s1?.subGroupId === 'cnt_corporate_head_office_address' ? s1 : s0;
+    return chosen?.label?.[this.language] ?? null;
+  }
+  /*getSubGroupHeader(group: { subGroup?: Array<{ label?: Record<string, string> }> }): string | null {
+    log.info(`group >>> `, group.subGroup);
+    const first = group?.subGroup?.[0];
+    if (!first) return null;
+    return first.label?.[this.language] ?? null;
+  }*/
+  createFieldsByPresentationType(groupId: any, fields: ConfigFormFieldsDto[]) {
+    log.info(`form group id >>> `, groupId);
+    /*formGroupSections.forEach(section => {
+      section.pr
+    })*/
+    // formGroupSection.forEach(section => {
+      const group = this.fb.group({});
+
+      fields.forEach(field => {
+        const control = field.mandatory
+          ? this.fb.control('', Validators.required)
+          : this.fb.control('');
+
+        if (field.type === 'text' && field?.conditions?.length > 0) {
+          this.collateValidations(field.conditions)
+        }
+        group.addControl(field.fieldId, control);
+      });
+
+      this.entityForm.addControl(groupId, group);
+      this.cdr.detectChanges();
+    // });
+  }
+
 }
