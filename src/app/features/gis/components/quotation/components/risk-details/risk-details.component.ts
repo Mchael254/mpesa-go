@@ -513,21 +513,21 @@ export class RiskDetailsComponent {
 
     this.modals['editSection'] = new bootstrap.Modal(this.editSectionModal.nativeElement);
 
-    // // Initialize addRiskModal
-    // if (this.addRiskModalRef?.nativeElement) {
-    //   this.modalInstance = new bootstrap.Modal(this.addRiskModalRef.nativeElement, {
-    //     backdrop: 'static',
-    //     keyboard: false
-    //   });
-    // }
+    // Initialize addRiskModal
+    if (this.addRiskModalRef?.nativeElement) {
+      this.modalInstance = new bootstrap.Modal(this.addRiskModalRef.nativeElement, {
+        backdrop: 'static',
+        keyboard: false
+      });
+    }
 
-    // // Initialize addRiskSection (if treated like another modal)
-    // if (this.addRiskSectionRef?.nativeElement) {
-    //   this.sectionInstance = new bootstrap.Modal(this.addRiskSectionRef.nativeElement, {
-    //     backdrop: 'static',
-    //     keyboard: false
-    //   });
-    // }
+    // Initialize addRiskSection (if treated like another modal)
+    if (this.addRiskSectionRef?.nativeElement) {
+      this.sectionInstance = new bootstrap.Modal(this.addRiskSectionRef.nativeElement, {
+        backdrop: 'static',
+        keyboard: false
+      });
+    }
   }
 
   private initializePerilDetails() {
