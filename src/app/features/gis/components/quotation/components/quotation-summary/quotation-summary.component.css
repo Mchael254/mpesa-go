@@ -863,3 +863,24 @@ textarea {
   border-radius: 0.2rem;
   cursor: pointer
 }
+
+.wizzard-card {
+  position: absolute;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: #0d6efd;
+  color: white;
+}
+
+.wizzard-card::after {
+  content: "";
+  position: absolute;
+  top: 20px;        /* adjust to vertical position of the triangle */
+  left: -10px;      /* place outside the card on the left */
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid #0d6efd; /* same color as the card */
+}
+

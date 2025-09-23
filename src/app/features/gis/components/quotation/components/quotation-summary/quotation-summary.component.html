@@ -5,9 +5,9 @@
   <div class="position-relative">
     <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
 
-    <div *ngIf="showWizzardModal" class="card shadow rounded p-3 position-absolute" [ngStyle]="{ top: wizzardModalPosition.top, left: wizzardModalPosition.left, zIndex: 1000, minWidth: '250px', maxWidth: '300px',
-        backgroundColor: '#0d6efd', color: 'white' 
-       }">
+    <div *ngIf="showWizzardModal" class="wizzard-card shadow rounded p-3 position-absolute" [ngStyle]="{ top: wizzardModalPosition.top, left: wizzardModalPosition.left, zIndex: 1000,
+                    minWidth: '250px', maxWidth: '300px',
+                    backgroundColor: '#0d6efd', color: 'white' }">
 
       <div class="d-flex justify-content-between align-items-center mb-2">
         <h6 class="mb-0 fw-bold">Follow the steps to finish</h6>
@@ -94,7 +94,7 @@
             <div class="col-md-4 d-flex">
               <p class="label w-50">Frequency of Payment</p>
               <p class="content w-50">
-                {{ quotationView?.frequencyOfPayment }}
+                {{ getPaymentFrequencyLabel(quotationView?.frequencyOfPayment) }}
               </p>
             </div>
             <div class="col-md-4 d-flex align-items-center position-relative">
@@ -144,7 +144,7 @@
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Introducer</p>
-              <p class="content w-50">{{ introducer }}</p>
+              <p class="content w-50">{{ introducerName }}</p>
             </div>
           </div>
 
@@ -1840,9 +1840,9 @@
               Authorize quote
             </button>
           </div>
-          <div>
+          <!-- <div>
             <button (click)="openUserInstructionsModal()">checkWizard</button>
-          </div>
+          </div> -->
 
           <div>
             <button class="btn btn-outline-primary me-2" *ngIf="showViewDocumentsButton" (click)="fetchReports()">
@@ -2175,7 +2175,8 @@
 
           <!-- Footer with single button -->
           <div class="modal-footer border-0 d-flex justify-content-end">
-            <button type="button"  class="btn btn-primary px-4" (click)="closeInstructionsModal()">{{ modalButtonLabel || 'Close'
+            <button type="button" class="btn btn-primary px-4" (click)="closeInstructionsModal()">{{ modalButtonLabel ||
+              'Close'
               }}</button>
           </div>
         </div>
