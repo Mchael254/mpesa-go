@@ -250,7 +250,7 @@
     "Quotation Management": "Quotation Management",
     "Dynamic Setup": "Dynamic Setup",
     "isRequired": "is required",
-    "base-fms": {
+    "base-fms":{
       "parameters": "Parameters",
       "defineYrs": "Define Years/Periods",
       "closeYrs": "Close Years / Period",
@@ -3161,7 +3161,7 @@
       "allocatedAmount": "Allocated Amount",
       "commissionAmount": "Commission Amount",
       "includeCommission": "Include Commission",
-      "postFile": "post File",
+      "postFile": "Post File",
       "cancel_receipt": "Cancel Receipt",
       "search_transactions": "Search Transactions",
       "print_confirmation": "Print Confirmation",
@@ -3282,6 +3282,32 @@
       "filter": "Filter",
       "receiptManagement": "Receipt management",
       "pageReport": "Showing {first} to {last} of {totalRecords} entries"
+    },
+    "banking":
+    {
+"bankingProcess":"Banking Process",
+"newBankingProcess":"New Banking Process",
+"slipNumber":"Slip number",
+"date":"Date",
+"amount":"Amount",
+"bankAccount":"Bank account",
+"status":"Status",
+"retrieveReceipts":"Retrieve receipts",
+"fromDate":"From Date",
+"toDate":"To Date",
+"clearFilter":"Clear filters",
+"customer":"Customer",
+"receiptId":"Receipt ID",
+"collectionAcc":"Collection A/C",
+"assignedTo":"Assigned to",
+"retrievedReceipts":"Retrieved receipts",
+"assign":"Assign",
+"goToDashboard":"Go to dashboard",
+"createBatches":"Create batches"
+
+
+
+
     },
     "receipt_authorization": {
       "title": "Receipt Authorization",

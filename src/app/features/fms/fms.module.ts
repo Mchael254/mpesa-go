@@ -25,6 +25,7 @@ import { FmsHorizontalStepperComponent } from './components/shared/fms-horizonta
 import { PreviewReceiptComponent } from './components/preview-receipt/preview-receipt.component';
 import { BankingDashboardComponent } from './components/banking-dashboard/banking-dashboard.component';
 import { NewBankingProcessComponent } from './components/new-banking-process/new-banking-process.component';
+import { ProcessBatchComponent } from './components/process-batch/process-batch.component';
 
 
 
@@ -48,7 +49,8 @@ import { NewBankingProcessComponent } from './components/new-banking-process/new
     FmsHorizontalStepperComponent,
     PreviewReceiptComponent,
     BankingDashboardComponent,
-    NewBankingProcessComponent
+    NewBankingProcessComponent,
+    ProcessBatchComponent
 
    
   ],
