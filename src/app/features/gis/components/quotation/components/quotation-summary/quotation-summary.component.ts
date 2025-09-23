@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 
@@ -11,7 +11,7 @@ import { MenuItem } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
 import { Subject, throwError } from 'rxjs';
-import { catchError, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { catchError, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { IntermediaryService } from "../../../../../entities/services/intermediary/intermediary.service";
 import { ProductService } from "../../../../services/product/product.service";
 import { AuthService } from "../../../../../../shared/services/auth.service";
@@ -47,6 +47,7 @@ import { riskClauses } from '../../../setups/data/gisDTO';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NotificationService } from '../../services/notification/notification.service';
 import { NgxCurrencyConfig } from 'ngx-currency';
+import { Modal } from 'bootstrap';
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
 
@@ -83,8 +84,21 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('riskClausesTable') riskClausesTable: any;
   @ViewChild('consentModal') consentModal!: ElementRef;
   @ViewChild('viewDocumentsModal') viewDocumentsModal!: ElementRef;
+  @ViewChild('userInstructionsModal') userInstructionsModal!: ElementRef;
+
+  @Input() modalTitle: string = 'Action required';
+  @Input() modalSubtitle: string = 'Required details missing.';
+  @Input() modalMessage: string = 'Some details in step 1 and 2 are missing. Please go back and complete to finalize the quote.';
+  @Input() modalButtonLabel: string = 'Close';
+
+
+  showWizzardModal = false;
+  wizzardModalPosition = { top: '0px', left: '420px' };
+  userInstructionsModalInstance: any;
+  hasOpened = false;
 
   private modals: { [key: string]: bootstrap.Modal } = {};
+
 
   steps = quoteStepsData;
   quotationCode: any
@@ -264,6 +278,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   isNewClientSelected: boolean = false;
   storedQuotationFormDetails: any = null
   zoomLevel = 1;
+  quickQuoteConvertedFlag: any;
+
   constructor(
     public quotationService: QuotationsService,
     private router: Router,
@@ -312,7 +328,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     whatsappNumber: '',
     clientName: ''
   };
+
   ngOnInit(): void {
+    this.checkAndOpenQuickQuoteModal();
+    this.quickQuoteConvertedFlag = sessionStorage.getItem('quickQuoteConvertedFlag');
     this.quotationCodeString = sessionStorage.getItem('quotationCode');
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'));
     log.debug("two codes", this.quotationCode, this.quotationCodeString)
@@ -440,6 +459,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.modals['chooseClientReassign'] = new bootstrap.Modal(this.chooseClientReassignModal.nativeElement);
     this.modals['reassignQuotation'] = new bootstrap.Modal(this.reassignQuotationModalElement.nativeElement);
     this.modals['rejectQuotation'] = new bootstrap.Modal(this.rejectQuotationModalElement.nativeElement);
+
   }
 
   openModals(modalName: string) {
@@ -3037,6 +3057,31 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       });
   }
 
+
+
+  hasEmptySchedules(): boolean {
+    const currentSchedule = this.getCurrentSchedule();
+    return !currentSchedule || currentSchedule.length === 0;
+  }
+
+  hasExceptionsData(): boolean {
+    return this.exceptionsData?.length > 0;
+  }
+
+  get authorizeButtonTooltip(): string {
+    if (this.hasExceptionsData()) {
+      return 'Please resolve exceptions';
+    }
+    if (this.hasEmptySchedules()) {
+      return 'No schedules available for this risk';
+    }
+    return '';
+  }
+
+  get authorizeButtonDisabled(): boolean {
+    return this.hasExceptionsData() || this.hasEmptySchedules();
+  }
+
   authorizeQuote() {
     const quotationCode = this.quotationCode;
     const user = this.user;
@@ -3488,6 +3533,36 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.isHovering = false;
   }
 
+  checkAndOpenQuickQuoteModal(): void {
+    const flag = JSON.parse(sessionStorage.getItem('quickQuoteConvertedFlag') || 'false');
+    if (flag) {
+      setTimeout(() => {
+        this.openUserInstructionsModal();
+        sessionStorage.setItem('quickQuoteConvertedFlag', 'false');
+      }, 300);
+    }
+  }
+
+  openUserInstructionsModal(): void {
+    if (this.userInstructionsModal) {
+      this.userInstructionsModalInstance = new bootstrap.Modal(this.userInstructionsModal.nativeElement, {
+        backdrop: 'static',
+        keyboard: false
+      });
+      this.userInstructionsModalInstance.show();
+    }
+  }
+
+  closeInstructionsModal(): void {
+    if (this.userInstructionsModalInstance) {
+      this.userInstructionsModalInstance.hide();
+    }
+    setTimeout(() => this.openWizzard(), 300);
+  }
+
+  openWizzard() {
+    this.showWizzardModal = true;
+  }
 
 }
 
