@@ -22,6 +22,7 @@ import { GlobalMessagingService } from "../../../../../../shared/services/messag
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import {
   GroupedUser,
+  IntroducerDto,
   LimitsOfLiability,
   OtpResponse,
   ProductClauses,
@@ -141,7 +142,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   documentTypes: any;
   riskClauses: any;
   modalHeight: number = 200;
-  introducer: string;
 
 
   files = [];
@@ -279,6 +279,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   storedQuotationFormDetails: any = null
   zoomLevel = 1;
   quickQuoteConvertedFlag: any;
+  paymentFrequencies: any[] = [];
+  introducers: IntroducerDto[] = [];
+  introducerName: string = '';
+  quotationFormDetails: any;
 
   constructor(
     public quotationService: QuotationsService,
@@ -304,7 +308,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.viewQuoteFlag = JSON.parse(sessionStorage.getItem('viewQuoteFlag'));
     log.debug("View Quotation Flag", this.viewQuoteFlag)
     this.revisedQuotationNumber = sessionStorage.getItem('revisedQuotationNo');
-    log.debug("Revised Quotation Number", this.revisedQuotationNumber)
+    log.debug("Revised Quotation Number", this.revisedQuotationNumber);
+    this.paymentFrequencies = [
+      { label: 'Annually', value: 'A' },
+      { label: 'Semi annually', value: 'S' },
+      { label: 'Quarterly', value: 'Q' },
+      { label: 'Monthly', value: 'M' },
+      { label: 'One-off', value: 'O' }
+    ];
   }
 
   public isCollapsibleOpen = false;
@@ -385,14 +396,18 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.quotationDetails = parsedMoreDetails;
     }
 
-
+    // Load quotation details first
+    this.getquotationDetails();
+    
+    // Then load introducers and set the name
+    this.setIntroducerNameFromService();
+    
     this.quotationCode && this.getQuotationDetails(this.quotationCode);
     this.getuser();
     this.getRiskDetails();
 
     this.loadSummaryPerils()
     this.getUsers();
-    this.getquotationDetails();
 
 
     // this.createInsurersForm();
@@ -473,20 +488,63 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   getquotationDetails() {
     const saved = sessionStorage.getItem("quotationFormDetails");
-    const introducerData = sessionStorage.getItem("introducer");
-
-    if (introducerData) {
-      const introducerObj = JSON.parse(introducerData);
-      this.introducer = `${introducerObj.surName} ${introducerObj.otherNames}`;
-    }
 
     if (saved) {
       this.storedQuotationFormDetails = JSON.parse(saved);
+      this.quotationFormDetails = JSON.parse(saved);
+      log.debug("Set quotationFormDetails:", this.quotationFormDetails);
+      
       const branchName = this.storedQuotationFormDetails?.branch?.name;
       if (branchName) {
         this.branch = branchName;
       }
     }
+    
+  }
+
+  setIntroducerNameFromService(): void {
+    log.debug("setIntroducerNameFromService called");
+    
+    const quotationFormDetails = JSON.parse(sessionStorage.getItem("quotationFormDetails") || 'null');
+    const introducerCode = quotationFormDetails?.introducer;
+    
+    if (!introducerCode) {
+      log.debug("No introducer code found in session storage");
+      return;
+    }
+
+    // Fetch introducers from service and find match
+    this.quotationService.getIntroducers().subscribe({
+      next: (introducers: any[]) => {
+        log.debug("Received introducers data:", introducers);
+        
+        if (!introducers || introducers.length === 0) {
+          log.debug("No introducers received from service");
+          return;
+        }
+
+        const matchingIntroducer = introducers.find(i => i.code === introducerCode);
+        // log.debug("Found matching introducer:", matchingIntroducer);
+
+        if (matchingIntroducer) {
+          const firstName = matchingIntroducer.surName?.trim() || '';
+          const lastName = matchingIntroducer.otherNames?.trim() || '';
+          this.introducerName = `${firstName} ${lastName}`.trim();
+          
+          log.debug("Successfully set introducerName to:", this.introducerName);
+        } else {
+          log.debug(`No matching introducer found for code: ${introducerCode}`);
+          this.introducerName = 'Unknown Introducer';
+        }
+        
+        // Store introducers for potential future use
+        this.introducers = introducers;
+      },
+      error: (error) => {
+        log.error("Error fetching introducers from service:", error);
+        this.introducerName = 'Error loading introducer';
+      }
+    });
   }
 
 
@@ -3562,6 +3620,18 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   openWizzard() {
     this.showWizzardModal = true;
+  }
+
+  /**
+   * Gets the full payment frequency label based on the abbreviation
+   * @param frequencyValue - The frequency abbreviation (A, S, Q, M, O)
+   * @returns The full label or the original value if not found
+   */
+  getPaymentFrequencyLabel(frequencyValue: string): string {
+    if (!frequencyValue) return '';
+
+    const frequency = this.paymentFrequencies.find(freq => freq.value === frequencyValue);
+    return frequency ? frequency.label : frequencyValue;
   }
 
 }
