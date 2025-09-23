@@ -313,6 +313,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy(): void {
   }
+  
   convertQuoteToNormalQuote() {
     const quotationCode = this.quotationDetails?.code;
     if (!quotationCode) {
