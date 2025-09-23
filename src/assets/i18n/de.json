@@ -2452,7 +2452,7 @@
       "filename": "Dateiname",
       "policyNumber": "Policennummer",
       "transactionNumber": "Transaktionsnummer",
-      "batchNumber": "Batch Number",
+      "batchNumber": "Chargennummer",
       "allocatedAmount": "Zugewiesener Betrag",
       "Debit Note": "Lastschriftanzeige",
       "commissionAmount": "Provisionsbetrag",
@@ -2583,6 +2583,27 @@
       "filter": "Filter",
       "receiptManagement": "Quittungsverwaltung",
       "pageReport": "Zeige {first} bis {last} von {totalRecords} Einträgen"
+    },
+     "banking": {
+      "bankingProcess": "Bankprozess",
+      "newBankingProcess": "Neuer Bankprozess",
+      "slipNumber": "Beleg-Nummer",
+      "date": "Datum",
+      "amount": "Betrag",
+      "bankAccount": "Bankkonto",
+      "status": "Status",
+      "retrieveReceipts": "Belege abrufen",
+      "fromDate": "Von Datum",
+      "toDate": "Bis Datum",
+      "clearFilter": "Filter löschen",
+      "customer": "Kunde",
+      "receiptId": "Beleg-ID",
+      "collectionAcc": "Einzugs-K/K",
+      "assignedTo": "Zugewiesen an",
+      "retrievedReceipts": "Abgerufene Belege",
+      "assign": "Zuweisen",
+      "goToDashboard": "Zum Dashboard",
+      "createBatches": "Chargen erstellen"
     }
   },
   "campaignMngmt": {

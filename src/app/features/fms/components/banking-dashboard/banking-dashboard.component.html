@@ -24,10 +24,12 @@
 
   <div class="card">
     <div class="card-body">
-      <h6 class="pt-4 pb-1">Banking Process</h6>
+      <h5 class="pt-2 pb-2 text-color">
+        {{ "fms.banking.bankingProcess" | translate }}
+      </h5>
       <div class="d-flex justify-content-end pb-1">
         <button class="btn btn-primary" (click)="navigateToBanking()">
-          New Banking Process
+          {{ "fms.banking.newBankingProcess" | translate }}
         </button>
       </div>
       <div class="card">
@@ -37,55 +39,58 @@
           [scrollable]="true"
           selectionMode="single"
           scrollHeight="500px"
+          sortMode="multiple"
           (onRowSelect)="onRowSelect($event)"
         >
           <ng-template pTemplate="header">
             <tr>
               <th pSortableColumn="batchNo">
                 <div class="flex items-center gap-2">
-                  Batch number
+                  {{ "fms.receipting.batchNumber" | translate }}
                   <p-sortIcon field="batchNo" />
                 </div>
               </th>
               <th pSortableColumn="slipNo">
                 <div class="flex items-center gap-2">
-                  Slip number
+                  {{ "fms.banking.slipNumber" | translate }}
                   <p-sortIcon field="slipNo" />
                 </div>
               </th>
               <th pSortableColumn="date">
                 <div class="flex items-center gap-2">
-                  Date
+                  {{ "fms.banking.date" | translate }}
                   <p-sortIcon field="date" />
                 </div>
               </th>
               <th pSortableColumn="assignee">
                 <div class="flex items-center gap-2">
-                  Assignee
+                  {{ "serviceDesk.assignee" | translate }}
                   <p-sortIcon field="assignee" />
                 </div>
               </th>
 
               <th pSortableColumn="amount">
                 <div class="flex items-center gap-2">
-                  Amount
+                  {{ "fms.receipting.amount" | translate }}
                   <p-sortIcon field="amount" />
                 </div>
               </th>
               <th pSortableColumn="bankAcc">
                 <div class="flex items-center gap-2">
-                  Bank account
+                  {{ "mngt_wrkflw.claimDetails.bankAccount" | translate }}
                   <p-sortIcon field="bankAcc" />
                 </div>
               </th>
               <th pSortableColumn="status">
                 <div class="flex items-center gap-2">
-                  Status
+                  {{ "base.status" | translate }}
                   <p-sortIcon field="status" />
                 </div>
               </th>
               <th>
-                <div class="flex items-center gap-2">Actions</div>
+                <div class="flex items-center gap-2">
+                  {{ "fms.receipting.actions" | translate }}
+                </div>
               </th>
             </tr>
             <tr>
@@ -159,7 +164,7 @@
                   class="btn btn-outline-primary btn-sm"
                   (click)="clearFilter()"
                 >
-                  clear filters
+                  {{ "fms.banking.clearFilter" | translate }}
                 </button>
               </th>
             </tr>

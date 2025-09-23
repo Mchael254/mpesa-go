@@ -2466,7 +2466,7 @@
       "filename": "文件名",
       "policyNumber": "保单号",
       "transactionNumber": "交易编号",
-      "batchNumber": "Batch Number",
+      "batchNumber": "批次号",
       "allocatedAmount": "分配金额",
       "commissionAmount": "佣金额",
       "includeCommission": "包含佣金",
@@ -2565,6 +2565,27 @@
       "filter": "筛选",
       "receiptManagement": "收据管理",
       "pageReport": "显示第 {first} 至 {last} 条，共 {totalRecords} 条"
+    },
+     "banking": {
+      "bankingProcess": "银行流程",
+      "newBankingProcess": "新银行流程",
+      "slipNumber": "凭证号",
+      "date": "日期",
+      "amount": "金额",
+      "bankAccount": "银行账户",
+      "status": "状态",
+      "retrieveReceipts": "检索收据",
+      "fromDate": "起始日期",
+      "toDate": "结束日期",
+      "clearFilter": "清除筛选",
+      "customer": "客户",
+      "receiptId": "收据ID",
+      "collectionAcc": "收款账户",
+      "assignedTo": "分配给",
+      "retrievedReceipts": "已检索收据",
+      "assign": "分配",
+      "goToDashboard": "前往仪表板",
+      "createBatches": "创建批次"
     }
   },
   "campaignMngmt": {

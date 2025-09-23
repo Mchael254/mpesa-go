@@ -3007,7 +3007,7 @@
       "filename": "Nom du fichier",
       "policyNumber": "Numéro de police",
       "transactionNumber": "Numéro de transaction",
-      "batchNumber": "Batch Number",
+      "batchNumber": "Numéro de lot",
       "allocatedAmount": "Montant alloué",
       "commissionAmount": "Montant de la commission",
       "includeCommission": "Inclure la commission",
@@ -3115,6 +3115,27 @@
       "filter": "filtre",
       "receiptManagement": "gestion des reçus",
       "pageReport": "Affichage de {first} à {last} sur {totalRecords} entrées"
+    },
+    "banking": {
+      "bankingProcess": "Processus Bancaire",
+      "newBankingProcess": "Nouveau Processus Bancaire",
+      "slipNumber": "Numéro de bordereau",
+      "date": "Date",
+      "amount": "Montant",
+      "bankAccount": "Compte bancaire",
+      "status": "Statut",
+      "retrieveReceipts": "Récupérer les reçus",
+      "fromDate": "De la Date",
+      "toDate": "À la Date",
+      "clearFilter": "Effacer les filtres",
+      "customer": "Client",
+      "receiptId": "ID de Reçu",
+      "collectionAcc": "C/C d'Encaissement",
+      "assignedTo": "Assigné à",
+      "retrievedReceipts": "Reçus récupérés",
+      "assign": "Assigner",
+      "goToDashboard": "Aller au tableau de bord",
+      "createBatches": "Créer des lots"
     }
   },
   "campaignMngmt": {
