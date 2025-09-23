@@ -1405,6 +1405,35 @@ export interface ReportParams {
   params: ReportParamItem[];
 }
 
+export interface IntroducerDto {
+  code: number;
+  surName: string;
+  otherNames: string;
+  staffNo: number;
+  groupCompany: string | null;
+  postalAddress: string | null;
+  introducerTown: string | null;
+  pin: string | null;
+  idRegistration: string | null;
+  dateOfBirth: string | null; 
+  remarks: string | null;
+  introducerZip: string | null;
+  introducerZipName: string | null;
+  userID: string | null;
+  bruCode: string | null;
+  email: string | null;
+  WEF: string | null; 
+  WET: string | null; 
+  agentCode: string | null;
+  type: string;
+  feeAllowed: string;
+  mobileNumber: string | null;
+  telephoneNumber: string | null;
+  wef: string | null; 
+  wet: string | null; 
+}
+
+
 
 
 
