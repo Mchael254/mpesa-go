@@ -93,7 +93,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   showWizzardModal = false;
-  wizzardModalPosition = { top: '0px', left: '420px' };
+  wizzardModalPosition = { top: '90px', left: '570px' };
   userInstructionsModalInstance: any;
   hasOpened = false;
 
@@ -681,7 +681,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.getLimitsofLiability(subclassCode, quotationProductCode, 'L');
         this.getLimitsofLiability(subclassCode, quotationProductCode, 'E')
         const defaultRiskCode = this.riskDetails.length > 0 ? this.riskDetails[0].code : null;
-        this.getExcesses(subclassCode);
+        // this.getExcesses(subclassCode);
 
         if (defaultRiskCode) {
           this.getSections(defaultRiskCode);
@@ -1197,7 +1197,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     // Call all methods sequentially
     this.getSections(data.code);
-    this.getExcesses(subclassCode);
+    // this.getExcesses(subclassCode);
     this.getRiskClauses(data.code);
 
     //       log.debug('subclassCode: passed for excess', subclassCode);

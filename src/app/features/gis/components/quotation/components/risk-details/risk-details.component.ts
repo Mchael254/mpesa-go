@@ -3160,7 +3160,7 @@ export class RiskDetailsComponent {
     // log.debug("clauseColumns", this.clauseColumns);
   }
 
-  defaultVisibleClauseFields = ['heading', 'shortDescription', 'wording'];
+  defaultVisibleClauseFields = ['shortDescription', 'heading', 'wording'];
 
   loadAddedClauses(): void {
     const riskCode = this.selectedRiskCode;
@@ -6338,6 +6338,7 @@ export class RiskDetailsComponent {
   removeFile(): void {
     this.selectedFile = null;
     this.errorMessage = '';
+    this.riskDetailsForm.reset()
   }
 
   uploadFile(): void {
@@ -6350,10 +6351,10 @@ export class RiskDetailsComponent {
 
     setTimeout(() => {
       this.uploading = false;
-      this.successMessage = 'Log book uploaded successfully!';
+      // this.successMessage = 'Log book uploaded successfully!';
 
       setTimeout(() => {
-        this.selectedFile = null;
+        // this.selectedFile = null;
       }, 2000);
     }, 2000);
   }
@@ -6367,6 +6368,27 @@ export class RiskDetailsComponent {
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
+  getFileIcon(fileName: string): string {
+    const ext = fileName.split('.').pop()?.toLowerCase();
+
+    switch (ext) {
+      case 'pdf':
+        return 'pi pi-file-pdf';
+      case 'doc':
+      case 'docx':
+        return 'pi pi-file-word';
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return 'pi pi-image';
+      case 'txt':
+      case 'log':
+        return 'pi pi-file';
+      default:
+        return 'pi pi-file'; // fallback
+    }
+  }
+
   patchUploadedData(data: any) {
     this.logBookUploaded = true
     let uploadedVehicleModel
@@ -6374,13 +6396,13 @@ export class RiskDetailsComponent {
     log.debug("Vehicle Model List:", this.vehicleModelDetails)
     log.debug("color", this.motorColorsList)
     log.debug("bodytype", this.bodytypesList)
-    const uploadedVehicleMake = this.vehicleMakeList.find(
+    const uploadedVehicleMake = this.vehicleMakeList?.find(
       make => make.name.toLowerCase().includes(data.vehicle_make.toLowerCase())
     );
     log.debug("Vehicle make:", uploadedVehicleMake)
     if (uploadedVehicleMake) {
       this.getVehicleModel(uploadedVehicleMake.code, () => {
-        uploadedVehicleModel = this.vehicleModelDetails.find(
+        uploadedVehicleModel = this.vehicleModelDetails?.find(
           model => data.vehicle_model.toLowerCase().includes(model.name.toLowerCase())
         );
         this.riskDetailsForm.patchValue({ vehicleModel: uploadedVehicleModel.code });

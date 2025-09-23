@@ -149,16 +149,19 @@
                                 <input #fileInput type="file" (change)="onFileSelected($event)"
                                     accept=".pdf,.doc,.docx,.txt,.log,.jpg,.jpeg,.png" style="display: none;"
                                     [disabled]="!selectedSubclassCode">
+                                <div class="selected-file" *ngIf="selectedFile">
+                                    <i [ngClass]="getFileIcon(selectedFile.name)" class="file-icon"></i>
+                                    <span class="file-name">{{ selectedFile.name }}</span>
+
+                                    <button class="remove-btn" (click)="removeFile()" aria-label="Remove">
+                                        <i class="pi pi-trash"></i>
+                                    </button>
+                                </div>
+
+
                             </div>
 
-                            <!-- Show selected file -->
-                            <div class="selected-file" *ngIf="selectedFile">
-                                <div class="file-info">
-                                    <span class="file-name">{{ selectedFile.name }}</span>
-                                    <span class="file-size">{{ formatFileSize(selectedFile.size) }}</span>
-                                </div>
-                                <button class="remove-btn" (click)="removeFile()">×</button>
-                            </div>
+
 
                             <!-- Messages -->
                             <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
@@ -1690,18 +1693,19 @@
                             </button>
                         </div>
 
-                       <div class="d-flex gap-3 text-black">
-  <div class="flex-fill">
-    <label>ID</label>
-    <input class="form-control" [value]="selectedRiskClause.shortDescription" readonly>
-  </div>
-  <div class="flex-fill">
-    <label>Heading</label>
-    <input class="form-control"
-           [value]="selectedRiskClause.heading | truncate:10"
-           pTooltip="{{selectedRiskClause.heading}}" readonly>
-  </div>
-</div>
+                        <div class="d-flex gap-3 text-black">
+                            <div class="flex-fill">
+                                <label>ID</label>
+                                <input class="form-control" [value]="selectedRiskClause.shortDescription" readonly>
+                            </div>
+                            <div class="flex-fill">
+                                <label>Heading</label>
+                                <input class="form-control text-truncate" [value]="selectedRiskClause.heading"
+                                    pTooltip="{{ selectedRiskClause.heading }}" readonly
+                                    style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+
+                            </div>
+                        </div>
 
 
                         <div class="d-flex flex-column mt-5">
