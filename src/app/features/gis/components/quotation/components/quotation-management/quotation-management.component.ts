@@ -22,6 +22,7 @@ const log = new Logger('QuotationConcersionComponent');
 
 export class QuotationManagementComponent {
   @ViewChild('menu') menu: Menu;
+  @ViewChild('moreActionsMenu') moreActionsMenu: Menu;
 
   clientsData: null;
   isSearching: boolean;
@@ -66,6 +67,7 @@ export class QuotationManagementComponent {
   menuItems: MenuItem[];
   viewQuoteFlag: Boolean = false;
   isClientSearchModalVisible = false;
+  remainingMenuItems: MenuItem[] = [];
 
   constructor(
     private menuService: MenuService,
@@ -467,4 +469,87 @@ export class QuotationManagementComponent {
     this.router.navigate([nextPage]).then(r => {
     })
   }
+
+  getAllActions(quotation: any): MenuItem[] {
+    const items = [
+      {
+        label: 'View Quote',
+        command: () => this.viewQuote(quotation)
+      }
+    ];
+
+    // Only add Edit Quote if status is Draft
+    if (quotation.status === 'Draft') {
+      items.push({
+        label: 'Edit Quote',
+        command: () => this.editQuote(quotation)
+      });
+    }
+
+    // Add additional actions
+    items.push(
+      {
+        label: 'Revise Quote',
+        command: () => this.reviseQuote(quotation)
+      },
+      {
+        label: 'Reuse Quote',
+        command: () => this.reuseQuote(quotation)
+      },
+      {
+        label: 'Reassign Quote',
+        command: () => this.reassignQuote(quotation)
+      },
+      {
+        label: 'Process',
+        command: () => this.process(quotation)
+      },
+      {
+        label: 'Print Quote',
+        command: () => this.printQuote(quotation)
+      },
+      {
+        label: 'Delete Quote',
+        command: () => this.deleteQuote(quotation)
+      }
+    );
+
+    return items;
+  }
+
+  getFirstThreeActions(quotation: any): MenuItem[] {
+    const allActions = this.getAllActions(quotation);
+    return allActions.slice(0, 3);
+  }
+
+  hasMoreThanThreeActions(quotation: any): boolean {
+    const allActions = this.getAllActions(quotation);
+    return allActions.length > 3;
+  }
+
+
+  executeAction(action: MenuItem, quotation: any, event?: Event): void {
+    if (action.command) {
+      action.command({ originalEvent: event, item: action });
+    }
+  }
+
+  showMoreActions(event: Event, quotation: any): void {
+    this.selectedQuotation = quotation;
+    const allActions = this.getAllActions(quotation);
+    this.remainingMenuItems = allActions.slice(3);
+    this.moreActionsMenu.toggle(event);
+  }
+
+  reuseQuote(quotation: any): void {
+    console.log('Reuse quote:', quotation);
+  }
+
+  reassignQuote(quotation: any): void {
+    console.log('Reassign quote:', quotation);
+    
+  }
+
+  
 }
+
