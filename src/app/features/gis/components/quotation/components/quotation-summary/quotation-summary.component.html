@@ -1867,9 +1867,9 @@
               Authorize quote
             </button>
           </div>
-          <!-- <div>
+          <div>
             <button (click)="openUserInstructionsModal()">checkWizard</button>
-          </div> -->
+          </div>
 
           <div>
             <button class="btn btn-outline-primary me-2" *ngIf="showViewDocumentsButton" (click)="fetchReports()">
@@ -2186,7 +2186,7 @@
         <div class="modal-content border-0 shadow">
 
           <!-- Header with icon and title -->
-          <div class="d-flex align-items-center px-3 py-2 bg-primary text-white rounded-top">
+          <div class="d-flex align-items-center px-3 py-2 text-white rounded-top" style="background-color: #00529B;">
             <i class="pi pi-exclamation-triangle me-2" style="font-size: 1.2rem;"></i>
             <h6 class="mb-0 fw-bold">{{ modalTitle }}</h6>
             <button type="button" (click)="closeInstructionsModal()" class="btn ms-auto">
@@ -2196,7 +2196,7 @@
 
           <!-- Body -->
           <div class="modal-body px-4 py-3">
-            <p class="fw-bold mb-2">{{ modalSubtitle }}</p>
+            <p class="fw-bold mb-2 text-dark">{{ modalSubtitle }}</p>
             <p class="mb-0 text-muted">{{ modalMessage }}</p>
           </div>
 
