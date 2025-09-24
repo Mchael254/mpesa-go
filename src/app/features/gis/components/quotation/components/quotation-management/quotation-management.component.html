@@ -173,7 +173,7 @@
             <td>{{quotation.toDate}}</td>
             <td>{{quotation.status}}</td>
             <td class="text-end">{{quotation.premium || 0 |number}}</td>
-            <td class="text-end" style="padding-top: 0; padding-bottom: 0;">
+            <!-- <td class="text-end" style="padding-top: 0; padding-bottom: 0;">
               <span class="action-buttons-container">
                 <button type="button" class="btn btn-sm btn-action" (click)="toggleMenu($event, quotation)"
                   style="line-height: 0; padding: 0;">
@@ -181,6 +181,32 @@
                 </button>
                 <p-menu #menu [popup]="true" [model]="menuItems" appendTo="body"
                   [styleClass]="'horizontal-menu'"></p-menu>
+              </span>
+            </td> -->
+            <td class="text-end" style="padding-top: 0; padding-bottom: 0;">
+              <span class="action-buttons-container d-flex align-items-center justify-content-end gap-2">
+                <!-- Display first 3 actions as text links -->
+                <ng-container *ngFor="let item of getFirstThreeActions(quotation); let i = index">
+                  <a href="javascript:void(0)" class="text-decoration-none text-primary small fw-medium"
+                    (click)="executeAction(item, quotation)" [title]="item.label">
+                    {{ item.label }}
+                  </a>
+                  <span *ngIf="i < getFirstThreeActions(quotation).length - 1" class="text-muted">|</span>
+                </ng-container>
+
+                <!-- Show ellipsis if there are more than 3 actions -->
+                <ng-container *ngIf="hasMoreThanThreeActions(quotation)">
+                  <span class="text-muted">|</span>
+                  <button type="button" class="btn btn-sm p-0 text-primary" (click)="showMoreActions($event, quotation)"
+                    style="background: none; border: none; font-size: 0.875rem;">
+                    <i class="pi pi-ellipsis-h"></i>
+                  </button>
+                </ng-container>
+
+                <!-- Popup menu for additional actions -->
+                <p-menu #moreActionsMenu [popup]="true" [model]="remainingMenuItems" appendTo="body"
+                  styleClass="additional-actions-menu">
+                </p-menu>
               </span>
             </td>
           </tr>

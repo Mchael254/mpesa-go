@@ -218,3 +218,30 @@
   height: 38px;
   /* match Bootstrap input height */
 }
+
+.action-buttons-container {
+  white-space: nowrap;
+}
+
+.action-buttons-container a {
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
+}
+
+.action-buttons-container a:hover {
+  color: var(--primary-color-dark) !important;
+  text-decoration: underline !important;
+}
+
+::ng-deep .additional-actions-menu {
+  min-width: 150px !important;
+}
+
+::ng-deep .additional-actions-menu .p-menuitem-link {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+::ng-deep .additional-actions-menu .p-menuitem-link:hover {
+  background-color: var(--surface-hover);
+}
