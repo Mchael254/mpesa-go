@@ -838,7 +838,7 @@
   </div>
 
   <!-- Clauses section -->
-  <div class="card mb-3 " *ngIf="productDetails && productDetails.length > 0">
+  <div class="card mb-3"  *ngIf="productDetails && productDetails.length > 0">
     <div class="card-body my-4 mx-4 ">
 
       <div class="row mb-3">
@@ -904,7 +904,7 @@
           </div>
 
 
-          <div class="collapse mb-4" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
+          <div class=" mb-3" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
             <p-table #productClauseTable [value]="sessionClauses " [paginator]="sessionClauses?.length > 10"
               [rowsPerPageOptions]="[5, 10, 20]" [rows]="5"
               [tableStyle]="{'min-width': '50rem','table-layout': 'fixed'}">
