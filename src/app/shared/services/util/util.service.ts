@@ -653,84 +653,125 @@ export class UtilService {
     return datePipe.transform(date, format);
   }
 
+  // clearSessionStorageData() {
+  //   sessionStorage.removeItem('quickQuoteData')
+  //   sessionStorage.removeItem('mandatorySections')
+  //   sessionStorage.removeItem('passedQuotationDetails')
+  //   sessionStorage.removeItem('passedQuotationNumber')
+  //   sessionStorage.removeItem('premiumComputationRequest')
+  //   sessionStorage.removeItem('quickQuotationCode')
+  //   sessionStorage.removeItem('quotationNumber')
+  //   sessionStorage.removeItem('passedSelectedRiskDetails')
+  //   sessionStorage.removeItem('product')
+  //   sessionStorage.removeItem('quoteAction')
+  //   sessionStorage.removeItem('quickQuotePayload')
+  //   sessionStorage.removeItem('savedProductsState')
+  //   sessionStorage.removeItem('premiumComputationResponse')
+  //   sessionStorage.removeItem('quotationObject')
+  //   const keysToRemove = [
+  //     'covertypeSections',
+  //     ,
+  //   ];
+
+  //   keysToRemove.forEach(key => sessionStorage.removeItem(key));
+  // }
   clearSessionStorageData() {
-    sessionStorage.removeItem('quickQuoteData')
-    sessionStorage.removeItem('mandatorySections')
-    sessionStorage.removeItem('passedQuotationDetails')
-    sessionStorage.removeItem('passedQuotationNumber')
-    sessionStorage.removeItem('premiumComputationRequest')
-    sessionStorage.removeItem('quickQuotationCode')
-    sessionStorage.removeItem('quotationNumber')
-    sessionStorage.removeItem('passedSelectedRiskDetails')
-    sessionStorage.removeItem('product')
-    sessionStorage.removeItem('quoteAction')
-    sessionStorage.removeItem('quickQuotePayload')
-    sessionStorage.removeItem('savedProductsState')
-    sessionStorage.removeItem('premiumComputationResponse')
-    sessionStorage.removeItem('quotationObject')
-    const keysToRemove = [
-      'covertypeSections',
-      ,
+    const keysToKeep = [
+      'REFRESH_TOKEN',
+      'REFRESH_TOKEN_EXPIRY',
+      'SESSION_DOMAIN',
+      'SESSION_IS_HTTPS_SECURED',
+      'SESSION_ORG_CODE',
+      'SESSION_TOKEN',
+      'SESSION_TOKEN_EXPIRES_AT',
+      'account_roles',
+      'organizationDetails',
+      'store_'
     ];
 
-    keysToRemove.forEach(key => sessionStorage.removeItem(key));
+    Object.keys(sessionStorage).forEach(key => {
+      if (!keysToKeep.includes(key)) {
+        sessionStorage.removeItem(key);
+      }
+    });
   }
-
   clearNormalQuoteSessionStorage() {
-    sessionStorage.removeItem('quotationFormDetails')
-    sessionStorage.removeItem('clientPayload')
-    sessionStorage.removeItem('clientCode')
-    sessionStorage.removeItem('quickQuotationCode')
-    sessionStorage.removeItem('quotationNumber')
-    sessionStorage.removeItem('sumInsuredValue')
-    sessionStorage.removeItem('currencyDelimiter')
-    sessionStorage.removeItem('currencySymbol')
-    sessionStorage.removeItem('quotationNum')
-    sessionStorage.removeItem('quotationCode')
-    sessionStorage.removeItem('clientDetails')
-    sessionStorage.removeItem('sectionDetails')
-    sessionStorage.removeItem('scheduleDetails')
-    sessionStorage.removeItem('riskFormDetails')
-    sessionStorage.removeItem('quotationAction')
-    sessionStorage.removeItem('motorClassAllowed')
-    sessionStorage.removeItem('dateFormat')
-    sessionStorage.removeItem('conversionFlag')
-    sessionStorage.removeItem('newClientDetails')
-    sessionStorage.removeItem('limitAmount')
-    sessionStorage.removeItem('premiumRate')
-    sessionStorage.removeItem('sectionType')
-    sessionStorage.removeItem('sectionDescription')
-    sessionStorage.removeItem('rateType')
-    sessionStorage.removeItem('coverFrom')
-    sessionStorage.removeItem('coverTo')
-    sessionStorage.removeItem('normalQuoteTimeStamp')
-    sessionStorage.removeItem('passedQuotationCode')
-    sessionStorage.removeItem('riskFormData')
-    sessionStorage.removeItem('quoteToEditData')
-    const keysToRemove = [
-      'quotation_expiryDate',
-      'quotation_introducer',
-      'quotation_multiUserEntry',
-      'quotation_quotationType',
-      'quotation_rfqDate',
-      'quotation_source',
-      'selectedCoverFromDate', 'limits_of_liability_20242190068',
-      'selectedCoverToDate', 'added_limits_of_liability_undefined',
-      'selectedProductCode', 'added_limits_of_liability_20242190068', 'added_limits_of_liability_undefined',
-      'selectedVehicleModel', 'excesses_460', 'dynamicSubclassFormField', 'availablePerils_460',
-      'vehicleModelList', 'newQuotationProductCode', 'limits_of_liability_undefined',
-      'insuredCode', 'original_limits_of_liability_20242190068', 'original_excesses_460',
-      'binderList', 'selectedSubclasscode', 'selectedClient', 'selectedClientId',
-      'allClausesMap', 'isNewClientSelected', 'selectedSubclassCode',
-      'productFormDetails', 'availableProducts', 'quickQuoteConvertedFlag',
-      'quotation_branch', 'riskClauseMap', 'selectedRiskCode',
-      'quotation_currency', 'sumInsured',
-      'riskFormDetails', 'SelectedClientName', 'quotationForm', 'quotationPayload',
+    // List of keys to keep
+    const keysToKeep = [
+      'REFRESH_TOKEN',
+      'REFRESH_TOKEN_EXPIRY',
+      'SESSION_DOMAIN',
+      'SESSION_IS_HTTPS_SECURED',
+      'SESSION_ORG_CODE',
+      'SESSION_TOKEN',
+      'SESSION_TOKEN_EXPIRES_AT',
+      'account_roles',
+      'organizationDetails',
+      'store_'
     ];
-
-    keysToRemove.forEach(key => sessionStorage.removeItem(key));
-
+    // Remove all keys except the ones in keysToKeep
+    Object.keys(sessionStorage).forEach(key => {
+      if (!keysToKeep.includes(key)) {
+        sessionStorage.removeItem(key);
+      }
+    });
   }
+
+  // clearNormalQuoteSessionStorage() {
+  //   sessionStorage.removeItem('quotationFormDetails')
+  //   sessionStorage.removeItem('clientPayload')
+  //   sessionStorage.removeItem('clientCode')
+  //   sessionStorage.removeItem('quickQuotationCode')
+  //   sessionStorage.removeItem('quotationNumber')
+  //   sessionStorage.removeItem('sumInsuredValue')
+  //   sessionStorage.removeItem('currencyDelimiter')
+  //   sessionStorage.removeItem('currencySymbol')
+  //   sessionStorage.removeItem('quotationNum')
+  //   sessionStorage.removeItem('quotationCode')
+  //   sessionStorage.removeItem('clientDetails')
+  //   sessionStorage.removeItem('sectionDetails')
+  //   sessionStorage.removeItem('scheduleDetails')
+  //   sessionStorage.removeItem('riskFormDetails')
+  //   sessionStorage.removeItem('quotationAction')
+  //   sessionStorage.removeItem('motorClassAllowed')
+  //   sessionStorage.removeItem('dateFormat')
+  //   sessionStorage.removeItem('conversionFlag')
+  //   sessionStorage.removeItem('newClientDetails')
+  //   sessionStorage.removeItem('limitAmount')
+  //   sessionStorage.removeItem('premiumRate')
+  //   sessionStorage.removeItem('sectionType')
+  //   sessionStorage.removeItem('sectionDescription')
+  //   sessionStorage.removeItem('rateType')
+  //   sessionStorage.removeItem('coverFrom')
+  //   sessionStorage.removeItem('coverTo')
+  //   sessionStorage.removeItem('normalQuoteTimeStamp')
+  //   sessionStorage.removeItem('passedQuotationCode')
+  //   sessionStorage.removeItem('riskFormData')
+  //   sessionStorage.removeItem('quoteToEditData')
+  //   const keysToRemove = [
+  //     'quotation_expiryDate',
+  //     'quotation_introducer',
+  //     'quotation_multiUserEntry',
+  //     'quotation_quotationType',
+  //     'quotation_rfqDate',
+  //     'quotation_source',
+  //     'selectedCoverFromDate', 'limits_of_liability_20242190068',
+  //     'selectedCoverToDate', 'added_limits_of_liability_undefined',
+  //     'selectedProductCode', 'added_limits_of_liability_20242190068', 'added_limits_of_liability_undefined',
+  //     'selectedVehicleModel', 'excesses_460', 'dynamicSubclassFormField', 'availablePerils_460',
+  //     'vehicleModelList', 'newQuotationProductCode', 'limits_of_liability_undefined',
+  //     'insuredCode', 'original_limits_of_liability_20242190068', 'original_excesses_460',
+  //     'binderList', 'selectedSubclasscode', 'selectedClient', 'selectedClientId',
+  //     'allClausesMap', 'isNewClientSelected', 'selectedSubclassCode',
+  //     'productFormDetails', 'availableProducts', 'quickQuoteConvertedFlag',
+  //     'quotation_branch', 'riskClauseMap', 'selectedRiskCode',
+  //     'quotation_currency', 'sumInsured',
+  //     'riskFormDetails', 'SelectedClientName', 'quotationForm', 'quotationPayload',
+  //   ];
+
+  //   keysToRemove.forEach(key => sessionStorage.removeItem(key));
+
+  // }
 
   /**
    * Sets the language for translation
