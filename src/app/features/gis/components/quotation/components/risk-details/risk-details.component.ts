@@ -426,6 +426,8 @@ export class RiskDetailsComponent {
     this.fetchQuotationDetails(this.quotationCode);
     this.quoteProductCode = sessionStorage.getItem('newQuotationProductCode');
     const savedSubclass = sessionStorage.getItem('selectedSubclassCode');
+    this.selectedSubclassCode = savedSubclass
+    this.selectedSubclassCode && this.onSubclassSelected(this.selectedSubclassCode)
 
     // if (savedSubclass) {
     //   this.selectedSubclassCode = savedSubclass;
@@ -775,6 +777,12 @@ export class RiskDetailsComponent {
     this.riskDetailsForm.reset({
       insureds: this.riskDetailsForm.get('insureds')?.value
     });
+    if (this.quickQuoteConverted) {
+      log.debug('selected subclass code after converting to normal quote', this.selectedSubclassCode)
+      this.selectedSubclassCode && this.onSubclassSelected(this.selectedSubclassCode)
+      this.riskDetailsForm.patchValue({ subclass: this.selectedSubclassCode });
+
+    }
   }
   openEditRiskModal(risk: RiskInformation) {
     this.isEditMode = true
@@ -924,7 +932,7 @@ export class RiskDetailsComponent {
         // Format clients
         data.content.forEach(client => {
           client.clientTypeName = client.clientType?.clientTypeName;
-          client.clientFullName = client.firstName + ' ' + (client.lastName || '');
+          client.clientFullName = client.firstName || '' + ' ' + (client.lastName || '');
         });
 
         this.clientsData = data.content;
@@ -1320,7 +1328,8 @@ export class RiskDetailsComponent {
   }
 
   async onSubclassSelected(event: any) {
-    this.selectedSubclassCode = event.value || event.code;
+    log.debug("on subclass seelcted has been calleed")
+    this.selectedSubclassCode = event.value || event.code || event;
     log.debug("Selected subclass code:", this.selectedSubclassCode);
 
     this.selectedSubclassObject = this.allMatchingSubclasses.find(subclass => subclass.code == this.selectedSubclassCode)
@@ -1854,9 +1863,9 @@ export class RiskDetailsComponent {
 
   }
   /**
-* This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
-* state of a Schedule section.
-*/
+  * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
+  * state of a Schedule section.
+  */
   toggleSchedule() {
     this.isCollapsibleOpen = !this.isCollapsibleOpen;
   }
@@ -2254,72 +2263,7 @@ export class RiskDetailsComponent {
   }
 
 
-  // handleRowClick(data: any) {
-  //   if (!data?.code) {
-  //     log.debug('Invalid data for row click:', data);
-  //     return;
-  //   }
 
-  //   log.debug('Row clicked with data:', data);
-  //   this.selectedRisk = data;
-
-  //   this.sumInsured = this.selectedRisk.value;
-  //   // this.onRiskEdit(this.selectedRisk)
-  //   const selectedRiskCode = this.selectedRisk?.code
-  //   this.quotationRiskCode = selectedRiskCode
-
-  //   log.debug("Quotation risk code:", this.quotationRiskCode)
-  //   const productDetails = this.quotationDetails.quotationProducts.find(
-  //     product => product.productCode === this.selectedProductCode
-  //   )
-  //   const riskSelectedData = productDetails.riskInformation.find(risk => risk.code === selectedRiskCode)
-  //   this.scheduleList = riskSelectedData.scheduleDetails ? [riskSelectedData.scheduleDetails] : [];
-  //   log.debug("SCHEDULE DETAILS AFTER ROW CLICK:", this.scheduleList)
-
-  //   this.sectionDetails = this.selectedRisk.riskLimits
-  //   log.debug("section DETAILS AFTER ROW CLICK:", this.sectionDetails)
-
-  //   const subclassCode = riskSelectedData.subclassCode;
-  //   const binderCode = riskSelectedData.binderCode;
-  //   const covertypeCode = riskSelectedData.coverTypeCode;
-
-  //   this.premiumRateService.getCoverTypePremiums(subclassCode, binderCode, covertypeCode)
-  //     .subscribe(
-  //       (response) => {
-  //         console.log('Premium rates:', response);
-
-  //         const sectionPremiumList = response;
-
-  //         log.debug("SECTION PREMIUMS-unfiltered:", sectionPremiumList);
-
-  //         const sectionPremiums = sectionPremiumList
-  //           .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
-  //           .map(premium => {
-  //             // Check condition for SumInsured — adjust this condition to your actual use case
-  //             if (premium.isMandatory === 'Y') {
-  //               return {
-  //                 ...premium,
-  //                 limitAmount: this.sumInsured  // Patch with sum insured
-  //               };
-  //             }
-  //             return premium;
-  //           });
-
-  //         this.sectionPremium = sectionPremiums;
-  //         log.debug("SECTION PREMIUMS-filtered & patched:", this.sectionPremium);
-  //       },
-  //       (error) => {
-  //         log.error('Error fetching premium rates:', error);
-  //       }
-  //     );
-
-  //   this.selectedSubclassCode = riskSelectedData.subclassCode;
-  //   this.selectedRiskCode = riskSelectedData.code;
-  //   log.debug("firstRiskCode", this.selectedRiskCode);
-  //   sessionStorage.setItem("selectedRiskCode", this.selectedRiskCode);
-  //   // this.loadSubclassClauses(this.selectedRisk.subclassCode);
-
-  // }
 
   handleRowClick(data: any) {
     if (!data?.code) {
@@ -2355,7 +2299,7 @@ export class RiskDetailsComponent {
 
     this.selectedSubclassObject = this.allMatchingSubclasses?.find(subclass => subclass.code == subclassCode)
     log.debug("selected subclass object:", this.selectedSubclassObject)
-    const screenCode = this.selectedSubclassObject.underwritingScreenCode
+    const screenCode = this.selectedSubclassObject?.underwritingScreenCode
     this.getProductTaxes();
     if (this.selectedRiskCode) {
       this.loadLimitsOfLiability();
@@ -2529,9 +2473,9 @@ export class RiskDetailsComponent {
   }
 
   /**
-* This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
-* state of a Section.
-*/
+  * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
+  * state of a Section.
+  */
   toggleSectionDetails() {
     this.isSectionDetailsOpen = !this.isSectionDetailsOpen;
   }
@@ -2540,10 +2484,10 @@ export class RiskDetailsComponent {
     this.isClausesOpen = !this.isClausesOpen;
   }
   /**
-* Creates and initializes a section details form.
-* Utilizes the 'FormBuilder'to create a form group ('sectionDetailsForm').
-* Defines form controls for various section-related fields, setting initial values as needed.
-*/
+  * Creates and initializes a section details form.
+  * Utilizes the 'FormBuilder'to create a form group ('sectionDetailsForm').
+  * Defines form controls for various section-related fields, setting initial values as needed.
+  */
   createSectionDetailsForm() {
     this.sectionDetailsForm = this.fb.group({
       calcGroup: [''],
@@ -6242,6 +6186,7 @@ export class RiskDetailsComponent {
       this.quotationService.readScannedDocuments(payload).subscribe({
         next: (res) => {
           const data = res.data;
+          this.uploadFile();
           this.patchUploadedData(data);
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully scanned Logbook');
           log.debug("Response after scanning Logbook", res);
@@ -6331,14 +6276,29 @@ export class RiskDetailsComponent {
     }
 
     this.selectedFile = file;
-    this.selectedFile && this.uploadFile();
+    // this.selectedFile && this.uploadFile();
     this.onLogBookSelected(this.selectedFile)
   }
 
+  // removeFile(): void {
+  //   this.selectedFile = null;
+  //   this.errorMessage = '';
+  //   this.riskDetailsForm.reset()
+  // }
   removeFile(): void {
     this.selectedFile = null;
     this.errorMessage = '';
-    this.riskDetailsForm.reset()
+
+    const keepValues = {
+      insureds: this.riskDetailsForm.get('insuredS')?.value,
+      subclass: this.riskDetailsForm.get('subclass')?.value,
+      coverFrom: this.riskDetailsForm.get('coverFrom')?.value,
+      coverTo: this.riskDetailsForm.get('coverTo')?.value
+    };
+
+    this.riskDetailsForm.reset();
+
+    this.riskDetailsForm.patchValue(keepValues);
   }
 
   uploadFile(): void {
@@ -6408,15 +6368,17 @@ export class RiskDetailsComponent {
         this.riskDetailsForm.patchValue({ vehicleModel: uploadedVehicleModel.code });
 
         log.debug("Vehicle Model:", uploadedVehicleModel);
+        this.selectedVehicleModelName = uploadedVehicleModel.name
+        this.selectedVehicleMakeName = uploadedVehicleMake?.name
+        this.vehiclemakeModel = this.selectedVehicleMakeName + ' ' + this.selectedVehicleModelName;
+        log.debug('Selected Vehicle make model', this.vehiclemakeModel);
+        if (this.vehiclemakeModel) {
+          this.riskDetailsForm.patchValue({ riskDescription: this.vehiclemakeModel });
+        }
       });
     }
-    this.selectedVehicleMakeName = uploadedVehicleMake?.name
-    this.selectedVehicleModelName = uploadedVehicleModel?.name
-    this.vehiclemakeModel = this.selectedVehicleMakeName + ' ' + this.selectedVehicleModelName;
-    log.debug('Selected Vehicle make model', this.vehiclemakeModel);
-    if (this.vehiclemakeModel) {
-      this.riskDetailsForm.patchValue({ riskDescription: this.vehiclemakeModel });
-    }
+
+
     const uploadedVehicleColor = this.motorColorsList.find(
       color => data.color.toLowerCase().includes(color.description.toLowerCase())
     );

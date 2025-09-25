@@ -837,6 +837,11 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     })
     log.debug("Current computation payload >>>", this.premiumComputationResponse)
     this.productsFormArray.removeAt(productIndex);
+    if (this.premiumComputationResponse.productLevelPremiums.length > 0) {
+      this.canMoveToNextScreen = true
+    } else {
+      this.premiumComputationResponse = null
+    }
   }
 
   removeProductCoverTypes(code: number) {
