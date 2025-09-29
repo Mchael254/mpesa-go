@@ -206,6 +206,15 @@ export class EntityBasicInfoComponent {
     } else {
       // update client details
       const withEffectToDate = this.wetDateForm.getRawValue().wetDate;
+      const withEffectFromDate = this.clientDetails.withEffectFromDate;
+
+      log.info(withEffectFromDate, withEffectToDate, new Date(withEffectFromDate) > new Date(withEffectToDate));
+
+      if (new Date(withEffectFromDate) > new Date(withEffectToDate)) {
+        this.globalMessagingService.displayErrorMessage('Error', 'WEF date cannot be greater than WET date');
+        return;
+      }
+
       const clientCode = this.clientDetails.clientCode;
 
       this.clientService.updateClientSection(clientCode, { withEffectToDate }).subscribe({
