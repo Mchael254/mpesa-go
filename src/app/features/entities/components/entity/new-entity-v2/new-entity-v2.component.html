@@ -562,14 +562,14 @@
                       <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
                         <div class="mb-3 pe-md-5 me-md-4 ms-md-5">
                           <!-- -- TEXT / EMAIL (common pattern) -- -->
-                          <ng-container *ngIf="field.type === 'text' || field.type === 'email'">
+                          <!--<ng-container *ngIf="field.type === 'text' || field.type === 'email'">
 
                             <label class="form-label" [for]="field.fieldId">
                               {{ getDynamicLabel(field, language) | titlecase }}
                               <span *ngIf="field.mandatory" class="text-danger">*</span>
                             </label>
 
-                            <!-- special handling for idNumber-like fields preserved if present -->
+                            &lt;!&ndash; special handling for idNumber-like fields preserved if present &ndash;&gt;
                             <input
                               [type]="field.type"
                               [formControlName]="field.fieldId"
@@ -580,7 +580,7 @@
                             />
                           </ng-container>
 
-                          <!--TEL-->
+                          &lt;!&ndash;TEL&ndash;&gt;
                           <ng-container *ngIf="field.type === 'tel'">
                             <label class="form-label" [for]="field.fieldId">
                               {{ field.label?.[language] | titlecase }}
@@ -606,7 +606,7 @@
                             </ngx-intl-tel-input>
                           </ng-container>
 
-                          <!-- TEXTAREA -->
+                          &lt;!&ndash; TEXTAREA &ndash;&gt;
                           <ng-container *ngIf="field.type === 'textarea'">
                             <label class="form-label">
                               {{ field.label?.[language] | titlecase }}
@@ -620,7 +620,7 @@
                             </textarea>
                           </ng-container>
 
-                          <!-- DATE -->
+                          &lt;!&ndash; DATE &ndash;&gt;
                           <ng-container *ngIf="field.type === 'date'">
                             <label class="form-label">
                               {{ field.label?.[language] | titlecase }}
@@ -633,7 +633,7 @@
                               [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"/>
                           </ng-container>
 
-                          <!-- NUMBER -->
+                          &lt;!&ndash; NUMBER &ndash;&gt;
                           <ng-container *ngIf="field.type === 'number'">
                             <label class="form-label">
                               {{ field.label?.[language] | titlecase }}
@@ -646,7 +646,7 @@
                               [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"/>
                           </ng-container>
 
-                          <!-- SELECT -->
+                          &lt;!&ndash; SELECT &ndash;&gt;
                           <ng-container *ngIf="field.type === 'select'">
                             <label class="form-label">
                               {{ field.label?.[language] | titlecase }}
@@ -666,7 +666,7 @@
                             </select>
                           </ng-container>
 
-                          <!-- RADIO -->
+                          &lt;!&ndash; RADIO &ndash;&gt;
                           <ng-container *ngIf="field.type === 'radio'">
                             <label class="form-label">
                               {{ field.label?.[language] | titlecase }}
@@ -686,7 +686,7 @@
                             </div>
                           </ng-container>
 
-                          <!-- CHECKBOX -->
+                          &lt;!&ndash; CHECKBOX &ndash;&gt;
                           <ng-container *ngIf="field.type === 'checkbox'">
                             <label class="form-label">{{ field.label?.[language] | titlecase }}
                               <span *ngIf="field.mandatory" class="text-danger">*</span>
@@ -703,16 +703,15 @@
                             </div>
                           </ng-container>
 
-                          <!-- Validation: required -->
+                          &lt;!&ndash; Validation: required &ndash;&gt;
                           <ng-container *ngIf="field.mandatory">
                           <span class="text-danger" *ngIf="getValidationMessage(field, language)">
                             {{ getValidationMessage(field, language) }}
                           </span>
-                          </ng-container>
-                          <!--<ng-container
-                            *ngTemplateOutlet="renderFields; context: {field, group: entityForm.get(group.groupId)}">
-
                           </ng-container>-->
+                          <ng-container
+                            *ngTemplateOutlet="renderFields; context: {field: field, groupId: group.groupId, groupForm: entityForm.get(group.groupId)}">
+                          </ng-container>
                         </div>
                       </div>
                     </ng-container>
@@ -758,14 +757,14 @@
                           <option *ngFor="let opt of field.options" [value]="opt">{{ opt }}</option>
                         </select>-->
                         <!-- -- TEXT / EMAIL (common pattern) -- -->
-                        <ng-container *ngIf="field.type === 'text' || field.type === 'email'">
+                        <!--<ng-container *ngIf="field.type === 'text' || field.type === 'email'">
 
                           <label class="form-label" [for]="field.fieldId">
-                            {{ getDynamicLabel(field, language) | titlecase }}
+                            {{ getDynamicLabel(field, language) | titlecase }}ff
                             <span *ngIf="field.mandatory" class="text-danger">*</span>
                           </label>
 
-                          <!-- special handling for idNumber-like fields preserved if present -->
+                          &lt;!&ndash; special handling for idNumber-like fields preserved if present &ndash;&gt;
                           <input
                             [type]="field.type"
                             [formControlName]="field.fieldId"
@@ -777,7 +776,7 @@
                           />
                         </ng-container>
 
-                        <!--TEL-->
+                        &lt;!&ndash;TEL&ndash;&gt;
                         <ng-container *ngIf="field.type === 'tel'">
                           <label class="form-label" [for]="field.fieldId">
                             {{ field.label?.[language] | titlecase }}
@@ -803,7 +802,7 @@
                           </ngx-intl-tel-input>
                         </ng-container>
 
-                        <!-- TEXTAREA -->
+                        &lt;!&ndash; TEXTAREA &ndash;&gt;
                         <ng-container *ngIf="field.type === 'textarea'">
                           <label class="form-label">
                             {{ field.label?.[language] | titlecase }}
@@ -817,7 +816,7 @@
                             </textarea>
                         </ng-container>
 
-                        <!-- DATE -->
+                        &lt;!&ndash; DATE &ndash;&gt;
                         <ng-container *ngIf="field.type === 'date'">
                           <label class="form-label">
                             {{ field.label?.[language] | titlecase }}
@@ -830,7 +829,7 @@
                             [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"/>
                         </ng-container>
 
-                        <!-- NUMBER -->
+                        &lt;!&ndash; NUMBER &ndash;&gt;
                         <ng-container *ngIf="field.type === 'number'">
                           <label class="form-label">
                             {{ field.label?.[language] | titlecase }}
@@ -843,7 +842,7 @@
                             [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"/>
                         </ng-container>
 
-                        <!-- SELECT -->
+                        &lt;!&ndash; SELECT &ndash;&gt;
                         <ng-container *ngIf="field.type === 'select'">
                           <label class="form-label">
                             {{ field.label?.[language] | titlecase }}
@@ -863,7 +862,7 @@
                           </select>
                         </ng-container>
 
-                        <!-- RADIO -->
+                        &lt;!&ndash; RADIO &ndash;&gt;
                         <ng-container *ngIf="field.type === 'radio'">
                           <label class="form-label">
                             {{ field.label?.[language] | titlecase }}
@@ -883,7 +882,7 @@
                           </div>
                         </ng-container>
 
-                        <!-- CHECKBOX -->
+                        &lt;!&ndash; CHECKBOX &ndash;&gt;
                         <ng-container *ngIf="field.type === 'checkbox'">
                           <label class="form-label">{{ field.label?.[language] | titlecase }}
                             <span *ngIf="field.mandatory" class="text-danger">*</span>
@@ -900,17 +899,15 @@
                           </div>
                         </ng-container>
 
-                        <!-- Validation: required -->
+                        &lt;!&ndash; Validation: required &ndash;&gt;
                         <ng-container *ngIf="field.mandatory">
                           <span class="text-danger" *ngIf="getValidationMessage(field, language)">
                             {{ getValidationMessage(field, language) }}
                           </span>
-                        </ng-container>
-
-                        <!--<ng-container
-                        *ngTemplateOutlet="renderFields; context: {field, group: entityForm.get(group.groupId)}">
-
                         </ng-container>-->
+                        <ng-container
+                          *ngTemplateOutlet="renderFields; context: {field: field, groupId: group.groupId, groupForm: entityForm.get(group.groupId)}">
+                        </ng-container>
                       </div>
                     </div>
                   </ng-container>
@@ -957,153 +954,155 @@
 
 
 </div>
-<!--<ng-template #renderFields let-field="field" let-group="group">
-  <ng-container *ngIf="field.type === 'text' || field.type === 'email'">
+<ng-template #renderFields let-field="field" let-groupId="groupId" let-groupForm="groupForm">
+  <div  [formGroup]="groupForm" *ngIf="groupForm">
+    <ng-container *ngIf="field.type === 'text' || field.type === 'email'">
+      <label class="form-label" [for]="field.fieldId">
+        {{ getDynamicLabel(field, language) | titlecase }}
+        <span *ngIf="field.mandatory" class="text-danger">*</span>
+      </label>
 
-    <label class="form-label" [for]="field.fieldId">
-      {{ getDynamicLabel(field, language) | titlecase }}
-      <span *ngIf="field.mandatory" class="text-danger">*</span>
-    </label>
+      <!-- special handling for idNumber-like fields preserved if present -->
+      <input
+        [type]="field.type"
+        [formControlName]="field.fieldId"
+        [placeholder]="field.placeholder?.[language] || ''"
+        [id]="field.fieldId"
+        class="form-control"
+        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
 
-    &lt;!&ndash; special handling for idNumber-like fields preserved if present &ndash;&gt;
-    <input
-      [type]="field.type"
-      [formControlName]="field.fieldId"
-      [placeholder]="field.placeholder?.[language] || ''"
-      [id]="field.fieldId"
-      class="form-control"
-      [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
+      />
+    </ng-container>
 
-    />
-  </ng-container>
+    <!--TEL-->
+    <ng-container *ngIf="field.type === 'tel'">
+      <label class="form-label" [for]="field.fieldId">
+        {{ field.label?.[language] | titlecase }}
+        <span *ngIf="field.mandatory" class="text-danger">*</span>
+      </label>
+      <ngx-intl-tel-input
+        [cssClass]="'form-control form-control-md mb-1'"
+        [id]="field.fieldId"
+        [preferredCountries]=""
+        [enableAutoCountrySelect]="true"
+        [enablePlaceholder]="true"
+        [customPlaceholder]="field.placeholder[language] || ''"
+        [searchCountryFlag]="true"
+        [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+        [selectFirstCountry]="false"
+        [selectedCountryISO]="CountryISO.Nigeria"
+        [phoneValidation]="true"
+        [separateDialCode]="true"
+        [numberFormat]="PhoneNumberFormat.National"
+        [formControlName]="field.fieldId"
+        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
+        [style]="{ width: '100%' }">
+      </ngx-intl-tel-input>
+    </ng-container>
 
-  &lt;!&ndash;TEL&ndash;&gt;
-  <ng-container *ngIf="field.type === 'tel'">
-    <label class="form-label" [for]="field.fieldId">
-      {{ field.label?.[language] | titlecase }}
-      <span *ngIf="field.mandatory" class="text-danger">*</span>
-    </label>
-    <ngx-intl-tel-input
-      [cssClass]="'form-control form-control-md mb-1'"
-      [id]="field.fieldId"
-      [preferredCountries]=""
-      [enableAutoCountrySelect]="true"
-      [enablePlaceholder]="true"
-      [customPlaceholder]="field.placeholder[language] || ''"
-      [searchCountryFlag]="true"
-      [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-      [selectFirstCountry]="false"
-      [selectedCountryISO]="CountryISO.Nigeria"
-      [phoneValidation]="true"
-      [separateDialCode]="true"
-      [numberFormat]="PhoneNumberFormat.National"
-      [formControlName]="field.fieldId"
-      [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
-      [style]="{ width: '100%' }">
-    </ngx-intl-tel-input>
-  </ng-container>
-
-  &lt;!&ndash; TEXTAREA &ndash;&gt;
-  <ng-container *ngIf="field.type === 'textarea'">
-    <label class="form-label">
-      {{ field.label?.[language] | titlecase }}
-      <span *ngIf="field.mandatory" class="text-danger">*</span>
-    </label>
-    <textarea
-      [formControlName]="field.fieldId"
-      class="form-control"
-      [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
-      [placeholder]="field.placeholder?.[language] || ''">
+    <!-- TEXTAREA -->
+    <ng-container *ngIf="field.type === 'textarea'">
+      <label class="form-label">
+        {{ field.label?.[language] | titlecase }}
+        <span *ngIf="field.mandatory" class="text-danger">*</span>
+      </label>
+      <textarea
+        [formControlName]="field.fieldId"
+        class="form-control"
+        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
+        [placeholder]="field.placeholder?.[language] || ''">
                             </textarea>
-  </ng-container>
+    </ng-container>
 
-  &lt;!&ndash; DATE &ndash;&gt;
-  <ng-container *ngIf="field.type === 'date'">
-    <label class="form-label">
-      {{ field.label?.[language] | titlecase }}
-      <span *ngIf="field.mandatory" class="text-danger">*</span>
-    </label>
-    <input
-      type="date"
-      [formControlName]="field.fieldId"
-      class="form-control"
-      [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"/>
-  </ng-container>
+    <!-- DATE -->
+    <ng-container *ngIf="field.type === 'date'">
+      <label class="form-label">
+        {{ field.label?.[language] | titlecase }}
+        <span *ngIf="field.mandatory" class="text-danger">*</span>
+      </label>
+      <input
+        type="date"
+        [formControlName]="field.fieldId"
+        class="form-control"
+        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"/>
+    </ng-container>
 
-  &lt;!&ndash; NUMBER &ndash;&gt;
-  <ng-container *ngIf="field.type === 'number'">
-    <label class="form-label">
-      {{ field.label?.[language] | titlecase }}
-      <span *ngIf="field.mandatory" class="text-danger">*</span>
-    </label>
-    <input
-      type="number"
-      [formControlName]="field.fieldId"
-      class="form-control"
-      [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"/>
-  </ng-container>
+    <!-- NUMBER -->
+    <ng-container *ngIf="field.type === 'number'">
+      <label class="form-label">
+        {{ field.label?.[language] | titlecase }}
+        <span *ngIf="field.mandatory" class="text-danger">*</span>
+      </label>
+      <input
+        type="number"
+        [formControlName]="field.fieldId"
+        class="form-control"
+        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"/>
+    </ng-container>
 
-  &lt;!&ndash; SELECT &ndash;&gt;
-  <ng-container *ngIf="field.type === 'select'">
-    <label class="form-label">
-      {{ field.label?.[language] | titlecase }}
-      <span *ngIf="field.mandatory" class="text-danger">*</span>
-    </label>
-    <select
-      class="form-select"
-      [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
-      [formControlName]="field.fieldId"
-      (change)="processSelectOption($event, field.fieldId)"
-      (click)="fetchSelectOptions(group.groupId, field.fieldId)"
-    >
-      <option value="">{{ field.placeholder[language] || '' }}</option>
-      <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [value]="option">
-        {{ option }}
-      </option>
-    </select>
-  </ng-container>
-
-  &lt;!&ndash; RADIO &ndash;&gt;
-  <ng-container *ngIf="field.type === 'radio'">
-    <label class="form-label">
-      {{ field.label?.[language] | titlecase }}
-      <span *ngIf="field.mandatory" class="text-danger">*</span>
-    </label>
-    <div class="form-check" [id]="field.fieldId">
-      <div *ngFor="let option of (!isPreviewMode ? field.options : [])">
-        <input
-          class="form-check-input"
-          type="radio"
-          [value]="option"
-          [formControlName]="field.fieldId">
-        <label class="form-check-label">
+    <!-- SELECT -->
+    <ng-container *ngIf="field.type === 'select'">
+      <label class="form-label">
+        {{ field.label?.[language] | titlecase }}
+        <span *ngIf="field.mandatory" class="text-danger">*</span>
+      </label>
+      <select
+        class="form-select"
+        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
+        [formControlName]="field.fieldId"
+        (change)="processSelectOption($event, field.fieldId)"
+        (click)="fetchSelectOptions(groupId, field.fieldId)"
+      >
+        <option value="">{{ field.placeholder[language] || '' }}</option>
+        <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [value]="option">
           {{ option }}
-        </label>
-      </div>
-    </div>
-  </ng-container>
+        </option>
+      </select>
+    </ng-container>
 
-  &lt;!&ndash; CHECKBOX &ndash;&gt;
-  <ng-container *ngIf="field.type === 'checkbox'">
-    <label class="form-label">{{ field.label?.[language] | titlecase }}
-      <span *ngIf="field.mandatory" class="text-danger">*</span>
-    </label>
-    <div class="form-check">
-      <div *ngFor="let option of (!isPreviewMode ? field.options : [])">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          [formControlName]="field.fieldId"
-          id="{{field.fieldId}}">
-        <label class="form-check-label">{{ option }}</label>
+    <!-- RADIO -->
+    <ng-container *ngIf="field.type === 'radio'">
+      <label class="form-label">
+        {{ field.label?.[language] | titlecase }}
+        <span *ngIf="field.mandatory" class="text-danger">*</span>
+      </label>
+      <div class="form-check" [id]="field.fieldId">
+        <div *ngFor="let option of (!isPreviewMode ? field.options : [])">
+          <input
+            class="form-check-input"
+            type="radio"
+            [value]="option"
+            [formControlName]="field.fieldId">
+          <label class="form-check-label">
+            {{ option }}
+          </label>
+        </div>
       </div>
-    </div>
-  </ng-container>
+    </ng-container>
 
-  &lt;!&ndash; Validation: required &ndash;&gt;
-  <ng-container *ngIf="field.mandatory">
-                          <span class="text-danger" *ngIf="getValidationMessage(field, language)">
-                            {{ getValidationMessage(field, language) }}
-                          </span>
-  </ng-container>
-</ng-template>-->
+    <!-- CHECKBOX -->
+    <ng-container *ngIf="field.type === 'checkbox'">
+      <label class="form-label">{{ field.label?.[language] | titlecase }}
+        <span *ngIf="field.mandatory" class="text-danger">*</span>
+      </label>
+      <div class="form-check">
+        <div *ngFor="let option of (!isPreviewMode ? field.options : [])">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [formControlName]="field.fieldId"
+            id="{{field.fieldId}}">
+          <label class="form-check-label">{{ option }}</label>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Validation: required -->
+    <ng-container *ngIf="field.mandatory">
+      <span class="text-danger" *ngIf="getValidationMessage(field, language)">
+        {{ getValidationMessage(field, language) }}
+      </span>
+    </ng-container>
+  </div>
+
+</ng-template>

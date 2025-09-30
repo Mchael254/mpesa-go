@@ -282,7 +282,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           );
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.globalMessagingService.displayErrorMessage('Error', err.error);
         }
       });
   }
@@ -302,7 +302,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           this.addUploadFormFields();
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.globalMessagingService.displayErrorMessage('Error', err.error);
         }
       });
   }
@@ -512,11 +512,13 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     // Filter fields according to preview / upload form logic
     const visibleFormFields = this.getFilteredFields2(fields || []);
 
-    // ensure arrays exist on groups/subGroups
+    // set fields arrays to empty on groups/subGroups
     formGroupSections.forEach(section => {
-      section.fields = section.fields || [];
+      section.fields = [];
       if (section.subGroup) {
-        section.subGroup.forEach((sg: any) => (sg.fields = sg.fields || []));
+        section.subGroup.forEach((sg: any) => {
+          sg.fields = [];
+        });
       }
     });
 
@@ -571,7 +573,10 @@ export class NewEntityV2Component implements OnInit, OnChanges {
             // add subGroup fields as controls directly under groupForm
             (subGroup.fields || []).forEach((field: any) => {
               if (!groupForm.contains(field.fieldId)) {
-                const control = field.mandatory ? this.fb.control('', Validators.required) : this.fb.control('');
+                // const control = field.mandatory ? this.fb.control('', Validators.required) : this.fb.control('');
+                const control = field.mandatory
+                  ? this.fb.control({value: '', disabled: field.disabled || false}, Validators.required)
+                  : this.fb.control({value: '', disabled: field.disabled || false});
                 groupForm.addControl(field.fieldId, control);
 
                 // Apply dynamic validators if field has conditions
@@ -603,7 +608,10 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         if (gType === PresentationType.fields) {
           (group.fields || []).forEach((field: any) => {
             if (!groupForm.contains(field.fieldId)) {
-              const control = field.mandatory ? this.fb.control('', Validators.required) : this.fb.control('');
+              // const control = field.mandatory ? this.fb.control('', Validators.required) : this.fb.control('');
+              const control = field.mandatory
+                ? this.fb.control({value: '', disabled: field.disabled || false}, Validators.required)
+                : this.fb.control({value: '', disabled: field.disabled || false});
               groupForm.addControl(field.fieldId, control);
 
               // Apply dynamic validators if field has conditions
@@ -1094,7 +1102,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param groupId
    * @param fieldId
    */
-  fetchSelectOptions(groupId: string, fieldId: string): void {
+  /*fetchSelectOptions(groupId: string, fieldId: string): void {
     if (this.isPreviewMode === true) {
       return;
     }
@@ -1155,6 +1163,107 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         break;
       default:
         log.info(`no fieldId found`)
+    }
+  }*/
+
+  /**
+   * fetch dropdown options from API
+   * check fieldId to determine which API to call
+   * @param groupId
+   * @param fieldId
+   */
+  fetchSelectOptions(groupId: any, fieldId: string): void {
+    if (this.isPreviewMode) {
+      return;
+    }
+
+    log.info(`field to populate >>> `, fieldId, groupId);
+
+    let sectionIndex: number = -1;
+    let fieldIndex: number = -1;
+    let subGroupIndex: number = -1;
+    let targetField: ConfigFormFieldsDto;
+
+    if (this.formGroupSections) {
+      // Find the section
+      sectionIndex = this.formGroupSections.findIndex(section => section.groupId === groupId);
+
+      if (sectionIndex !== -1) {
+        const section = this.formGroupSections[sectionIndex];
+
+        // First check in main fields
+        fieldIndex = section.fields?.findIndex(field => field.fieldId === fieldId) ?? -1;
+        if (fieldIndex !== -1) {
+          targetField = section.fields[fieldIndex];
+        } else {
+          // If not found in main fields, check in subGroups
+          if (section.subGroup?.length) {
+            for (let i = 0; i < section.subGroup.length; i++) {
+              const subGroup = section.subGroup[i];
+              fieldIndex = subGroup.fields?.findIndex(field => field.fieldId === fieldId) ?? -1;
+              if (fieldIndex !== -1) {
+                targetField = subGroup.fields[fieldIndex];
+                subGroupIndex = i;
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Skip if options already loaded (except for bankId and bankBranchCode which might need refresh)
+    if (targetField?.options?.length > 0 && !['bankId', 'bankBranchCode'].includes(fieldId)) {
+      return;
+    }
+
+    // Call the appropriate method based on fieldId
+    switch (fieldId) {
+      case 'maritalStatus':
+        this.fetchMaritalStatuses(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'paymentMethod':
+        this.fetchPaymentModes(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'bankId':
+        this.fetchBanks(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'bankBranchCode':
+        this.fetchBankBranches(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'countryId':
+      case 'citizenshipCountryId':
+        this.fetchCountries(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'countyState':
+        this.fetchStatesByCountryCode(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'cityTown':
+      case 'city_town':
+        this.fetchTownsByStateCode(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'postalCode':
+        this.fetchPostalCodeByTownCode(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'organizationType':
+      case 'clientType':
+        this.fetchOrganizationTypes();
+        break;
+      case 'role':
+        this.fetchSystemRoles()
+        break;
+      case 'titleId':
+        this.fetchClientTitles(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'modeOfIdentityId':
+        this.fetchIdTypes(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'currencyId':
+        this.fetchCurrencies(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+
+      default:
+        log.warn(`No handler for field: ${fieldId}`);
     }
   }
 
@@ -1239,13 +1348,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * get the index of the selected field using fieldId
    * create an array of strings from marital object and assign to options of the marital status formField
    */
-  fetchMaritalStatuses(sectionIndex:number, fieldIndex: number): void {
+  fetchMaritalStatuses(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.maritalStatuses.length > 0)) {
       this.maritalStatusService.getMaritalStatus().subscribe({
         next: (data: MaritalStatus[]) => {
           this.maritalStatuses = data
           const maritalStatusStringArr: string[] = data.map((status: MaritalStatus) => status.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = maritalStatusStringArr
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = maritalStatusStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, maritalStatusStringArr);
           log.info(`maritalStatus: `, maritalStatusStringArr);
         },
         error: err => {
@@ -1262,13 +1372,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * get the index of the selected field using fieldId
    * create an array of strings from paymentModes object and assign to options of the paymentModes formField
    */
-  fetchPaymentModes(sectionIndex:number, fieldIndex: number): void {
+  fetchPaymentModes(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.paymentModes.length > 0)) {
       this.paymentModesService.getPaymentModes().subscribe({
         next: (data: PaymentModesDto[]) => {
           this.paymentModes = data
           const paymentModesStringArr: string[] = data.map((paymentMode: PaymentModesDto) => paymentMode.description);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = paymentModesStringArr
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = paymentModesStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, paymentModesStringArr);
           log.info(`payment Modes: `, paymentModesStringArr);
         },
         error: err => {
@@ -1284,14 +1395,15 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * get the index of the selected field using fieldId
    * create an array of strings from banks object and assign to options of the banks formField
    */
-  fetchBanks(sectionIndex:number, fieldIndex: number): void {
+  fetchBanks(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if(!(this.banks.length > 0)) {
       const countryId: number = this.selectedAddressCountry?.id;
       this.bankService.getBanks(countryId).subscribe({
         next: (data: BankDTO[]) => {
           this.banks = data
           const bankStringArr: string[] = data.map((bank: BankDTO) => bank.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankStringArr
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, bankStringArr);
           log.info(`banks: `, bankStringArr);
         },
         error: err => {
@@ -1300,6 +1412,10 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           this.globalMessagingService.displayErrorMessage('Error', 'You have not selected a country!');
         }
       })
+    } else {
+      const bankStringArr: string[] = this.banks.map((bank: BankDTO) => bank.name);
+      // this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+      this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, bankStringArr);
     }
   }
 
@@ -1309,7 +1425,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchBankBranches(sectionIndex:number, fieldIndex: number): void {
+  fetchBankBranches(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if(!(this.bankBranches.length > 0)) {
       const bankId: number = this.selectedBank?.id;
       this.bankBranches = [];
@@ -1318,7 +1434,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         next: (data: BankBranchDTO[]) => {
           this.bankBranches = data;
           const bankBranchStringArr: string[] = data.map((branch: BankBranchDTO) => branch.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankBranchStringArr
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankBranchStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, bankBranchStringArr);
           log.info(`bank branches: `, bankBranchStringArr);
         },
         error: err => {
@@ -1327,6 +1444,10 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           this.globalMessagingService.displayErrorMessage('Error', 'You have not selected a bank!');
         }
       })
+    } else {
+      const bankBranchStringArr: string[] = this.bankBranches.map((branch: BankBranchDTO) => branch.name);
+      // this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+      this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, bankBranchStringArr);
     }
   }
 
@@ -1336,13 +1457,15 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchCountries(sectionIndex:number, fieldIndex: number): void {
+  fetchCountries(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
+    log.info(`fetchCountries >>> `, sectionIndex, fieldIndex, this.formGroupSections);
     if(!(this.countries.length > 0)) {
       this.countryService.getCountries().subscribe({
         next: (data: CountryDto[]) => {
           this.countries = data;
           const countryStringArr: string[] = data.map((country: CountryDto) => country.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, countryStringArr);
           log.info(`countryStringArr >>> `, countryStringArr);
         },
         error: err => {
@@ -1351,7 +1474,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       })
     } else {
       const countryStringArr: string[] = this.countries.map((country: CountryDto) => country.name);
-      this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+      // this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+      this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, countryStringArr);
     }
   }
 
@@ -1360,13 +1484,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchStatesByCountryCode(sectionIndex:number, fieldIndex: number): void {
+  fetchStatesByCountryCode(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (this.selectedAddressCountry) {
       this.countryService.getMainCityStatesByCountry(this.selectedAddressCountry?.id).subscribe({
         next: (data: StateDto[]) => {
           this.states = data;
           const stateStringArr: string[] = data.map((state: StateDto) => state.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = stateStringArr
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = stateStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, stateStringArr);
           log.info(`countryStringArr >>> `, stateStringArr);
         },
         error: err => {
@@ -1384,13 +1509,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchTownsByStateCode(sectionIndex:number, fieldIndex: number): void {
+  fetchTownsByStateCode(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (this.selectedState) {
       this.countryService.getTownsByMainCityState(this.selectedState?.id).subscribe({
         next: (data: TownDto[]) => {
           this.towns = data;
           const townStringArr: string[] = data.map((state: TownDto) => state.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = townStringArr
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = townStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, townStringArr);
           log.info(`townStringArr >>> `, townStringArr);
         },
         error: err => {
@@ -1408,13 +1534,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchPostalCodeByTownCode(sectionIndex:number, fieldIndex: number): void {
+  fetchPostalCodeByTownCode(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (this.selectedTown) {
       this.countryService.getPostalCodes(this.selectedTown?.id).subscribe({
         next: (data: PostalCodesDTO[]) => {
           this.postalCodes = data;
           const postalCodeNumArr: number[] = data.map((postalCode: PostalCodesDTO) => postalCode.zipCode);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = postalCodeNumArr
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = postalCodeNumArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, postalCodeNumArr);
           log.info(`postalCodeNumArr >>> `, postalCodeNumArr);
         },
         error: err => {
@@ -1432,13 +1559,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchIdTypes(sectionIndex:number, fieldIndex: number): void {
+  fetchIdTypes(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.idTypes.length > 0)) {
       this.entityService.getIdentityType().subscribe({
         next: (data: IdentityModeDTO[]) => {
           this.idTypes = data;
           const idTypeStringArr: string[] = data.map((id: IdentityModeDTO) => id.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = idTypeStringArr;
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = idTypeStringArr;
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, idTypeStringArr);
           log.info(`identity types >>> `, idTypeStringArr)
         },
         error: err => {
@@ -1454,13 +1582,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchCurrencies(sectionIndex:number, fieldIndex: number): void {
+  fetchCurrencies(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.currencies.length > 0)) {
       this.currencyService.getCurrencies().subscribe({
         next: (data: CurrencyDTO[]) => {
           this.currencies = data;
           const currencyStringArr: string[] = data.map((id: CurrencyDTO) => id.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = currencyStringArr;
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = currencyStringArr;
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, currencyStringArr);
           log.info(`currencyStringArr >>> `, currencyStringArr)
         },
         error: err => {
@@ -1475,13 +1604,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchClientTitles(sectionIndex:number, fieldIndex: number): void {
+  fetchClientTitles(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if(!(this.clientTitles.length > 0)) {
       this.clientService.getClientTitles().subscribe({
         next: (data: ClientTitlesDto[]) => {
           this.clientTitles = data;
           const titleStringArr: string[] = data.map((title: ClientTitlesDto) => title.description);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = titleStringArr;
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = titleStringArr;
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, titleStringArr);
           log.info(`client titles >>> `, titleStringArr)
         },
         error: err => {
@@ -2050,7 +2180,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           log.info("sub modules>>", data);
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.globalMessagingService.displayErrorMessage('Error', err.error);
         }
       });
   }
@@ -2183,5 +2313,51 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         this.collapsedGroups.add(group.groupId);
       }
     });
+  }
+
+  /**
+   * Updates the options of a field in either the main section or a subgroup
+   * @param sectionIndex Index of the section
+   * @param fieldIndex Index of the field within the section
+   * @param subGroupIndex Index of the subgroup (if applicable, -1 for main section)
+   * @param options Array of options to set
+   */
+  private updateFieldOptions(
+    sectionIndex: number,
+    fieldIndex: number,
+    subGroupIndex: number,
+    options: any[]
+  ): void {
+    if (sectionIndex === -1 || fieldIndex === -1) {
+      log.warn('Invalid section or field index', { sectionIndex, fieldIndex });
+      return;
+    }
+
+    const section = this.formGroupSections?.[sectionIndex];
+    if (!section) {
+      log.warn('Section not found', { sectionIndex });
+      return;
+    }
+
+    // Update options in subgroup if subGroupIndex is valid
+    if (subGroupIndex >= 0) {
+      const subGroup = section.subGroup?.[subGroupIndex];
+      if (subGroup?.fields?.[fieldIndex]) {
+        subGroup.fields[fieldIndex].options = [...options];
+        return;
+      }
+    }
+
+    // Fall back to main section fields
+    if (section.fields?.[fieldIndex]) {
+      section.fields[fieldIndex].options = [...options];
+    } else {
+      log.warn('Field not found in section or subgroup', {
+        sectionIndex,
+        fieldIndex,
+        subGroupIndex,
+        hasSubGroups: !!section.subGroup?.length
+      });
+    }
   }
 }
