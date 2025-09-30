@@ -38,7 +38,7 @@ import {
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto, SubModulesDto
+  FormGroupsDto, PresentationType, SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('NewEntityV2Component');
@@ -70,7 +70,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   uploadGroupSections: any/*{ selects: FieldModel[], buttons: FieldModel[] }*/;
   entityForm!: FormGroup;
   uploadForm!: FormGroup;
-  language: string = 'en'
+  language: string = 'en';
   category: string = '';
   role: string = '';
   idType: string = 'NATIONAL_ID'
@@ -146,9 +146,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   dynamicSetupData: DynamicScreenSetupDto;
   initialUploadFormFields!: ConfigFormFieldsDto[];
   originalFormId: string;
-  trialFields: any;
-  tablePayload: any;
-  tablePayloads: any[] = [];
+  protected readonly PresentationType = PresentationType;
 
   constructor(
     private fb: FormBuilder,
@@ -173,13 +171,11 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     });
 
     this.createEntityForm();
-    this.collapsedGroups.add('cnt_individual_prime_identity');
-    this.collapsedGroups.add('cnt_corporate_prime_identity');
   }
 
-  get fields(): FormArray {
+  /*get fields(): FormArray {
     return this.entityForm.get('fields') as FormArray;
-  }
+  }*/
 
   ngOnInit(): void {
     this.fetchSubModules();
@@ -256,7 +252,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   fetchFormFields(category: string, role: string): void {
     const selectedRole = this.roles.find(partyTypeShtDesc => partyTypeShtDesc.partyTypeName.toLowerCase() === role);
 
-    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(null, null, null, this.subModules[0].subModuleId, selectedRole.partyTypeShtDesc)
+    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(null, null, null, this.subModules[0]?.subModuleId, selectedRole?.partyTypeShtDesc)
       .subscribe({
         next: (data) => {
           this.clientSetupData = data;
@@ -315,7 +311,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * add fields to the entity form
    * @param formGroupSection
    */
-  addFieldsToSections(formGroupSection: any[]): void {
+  /*addFieldsToSections(formGroupSection: any[]): void {
     formGroupSection.forEach(section => {
       const group = this.fb.group({});
 
@@ -335,7 +331,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     });
     log.info('Adding fields to sections', this.entityForm);
 
-  }
+  }*/
 
 
   /**
@@ -418,12 +414,12 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param fields
    * @param formGroupSections
    */
-  assignFieldsToGroupByGroupId(fields: ConfigFormFieldsDto[], formGroupSections: any[]): void {
+ /* assignFieldsToGroupByGroupId(fields: ConfigFormFieldsDto[], formGroupSections: any[]): void {
     const visibleFormFields = this.getFilteredFields2(fields);
     // const visibleFormFields = this.getFilteredFields(fields);
     // check the group from formGroupSections if it has subGroups.length < 0
     // check if subGroup has presentationType === 'fields'
-    /*if (formGroupSections) {
+    /!*if (formGroupSections) {
       formGroupSections.forEach(section => {
         if (section.subGroup.length > 0) {
           section.subGroup.forEach(subGroup => {
@@ -445,15 +441,19 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           log.info(`fields for no subgroup`, field)
         }
       })
-    }*/
+    }*!/
 
     for (const section of formGroupSections) {
       const { subGroup = [], groupId } = section;
+      formGroupSections.forEach(section => {
+        section.fields = [];
+      });
 
       if (!subGroup.length) {
         const sectionFields = fields.filter(f => f.formGroupingId === groupId);
         log.info("subGroup is empty for groupId:", groupId);
         log.info("fields for no subgroup", sectionFields);
+        section.fields.push(sectionFields);
         this.createFieldsByPresentationType(groupId, sectionFields)
         continue;
       }
@@ -461,11 +461,11 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       for (const sg of subGroup) {
         const { subGroupId, presentationType } = sg;
         const subGroupFields = fields.filter(f => f.formSubGroupingId === subGroupId);
-        // const sectionFields = fields.filter(f => f.formGroupingId === groupId);
 
         if (presentationType === "fields") {
           log.info("subGroup presentationType 'fields':", subGroupId, groupId);
           log.info("fields for fields", subGroupFields);
+          section.fields.push(subGroupFields);
           this.createFieldsByPresentationType(subGroupId, subGroupFields)
         } else {
           log.info("subGroup presentationType 'table':", subGroupId);
@@ -479,7 +479,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           };
           this.tablePayloads.push(payload);
 
-          log.info("subgroup info", sg, payload)
+            log.info("subgroup info", sg, payload)
         }
       }
     }
@@ -498,22 +498,157 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     log.info(`form group sections >>> `, this.formGroupSections);
     // this.addFieldsToSections(formGroupSections);
 
-    /*this.wealthAmlFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_individual_aml_details');
+    /!*this.wealthAmlFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_individual_aml_details');
     this.corporateContactDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_contact_person_details');
     this.corporateAddressDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_branch_details');
     this.corporateFinancialDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_payee_details');
     this.corporateWealthAmlFormFieldsDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_aml_details');
     this.corporateWealthCR12DetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_cr12_details');
     this.corporateWealthOwnershipDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_ownership_details');
-    this.privacyPolicyFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_privacy_policy');*/
+    this.privacyPolicyFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_privacy_policy');*!/
+  }*/
+
+  assignFieldsToGroupByGroupId(fields: ConfigFormFieldsDto[], formGroupSections: any[]): void {
+    // Filter fields according to preview / upload form logic
+    const visibleFormFields = this.getFilteredFields2(fields || []);
+
+    // ensure arrays exist on groups/subGroups
+    formGroupSections.forEach(section => {
+      section.fields = section.fields || [];
+      if (section.subGroup) {
+        section.subGroup.forEach((sg: any) => (sg.fields = sg.fields || []));
+      }
+    });
+
+    // distribute fields into the group/subGroup structures
+    visibleFormFields.forEach(field => {
+      const group = formGroupSections.find(s => s.groupId === field.formGroupingId);
+      if (!group) return;
+
+      group.subGroup.sort((a: any, b: any) => a.order - b.order);
+      if (group.subGroup && group.subGroup.length > 0) {
+        const subGroup = group.subGroup.find((sg: any) => sg.subGroupId === field.formSubGroupingId);
+        if (subGroup) {
+          subGroup.fields.push(field);
+        } else {
+          // if the field doesn't match any subGroup, attach directly to the group
+          group.fields.push(field);
+        }
+      } else {
+        // group has no subGroups -> attach directly to group
+        group.fields.push(field);
+      }
+    });
+
+    // assign to component state so template sees it
+    this.formGroupSections = formGroupSections;
+
+    // create a presentation type just for privacy policy cases
+    this.formGroupSections = this.formGroupSections.map(group => {
+      if (group.groupId?.includes('privacy_policy')) {
+        return {
+          ...group,
+          presentationType: 'privacy_policy'
+        };
+      }
+      return group;
+    });
+
+    // Build / ensure FormGroups & FormControls exist
+    formGroupSections.forEach(group => {
+      // ensure group FormGroup exists on entityForm
+      if (!this.entityForm.contains(group.groupId)) {
+        this.entityForm.addControl(group.groupId, this.fb.group({}));
+      }
+      const groupForm = this.entityForm.get(group.groupId) as FormGroup;
+
+      // If group has subGroups, iterate them
+      if (group.subGroup && group.subGroup.length > 0) {
+        group.subGroup.forEach((subGroup: any) => {
+          const pType = subGroup.presentationType || group.presentationType || 'fields';
+
+          if (pType === PresentationType.fields) {
+            // add subGroup fields as controls directly under groupForm
+            (subGroup.fields || []).forEach((field: any) => {
+              if (!groupForm.contains(field.fieldId)) {
+                const control = field.mandatory ? this.fb.control('', Validators.required) : this.fb.control('');
+                groupForm.addControl(field.fieldId, control);
+
+                // Apply dynamic validators if field has conditions
+                if (field.conditions) {
+                  const controllingFieldId = field.conditions[0].field;
+                  const controllingControl = groupForm.get(controllingFieldId);
+
+                  if (controllingControl) {
+                    controllingControl.valueChanges.subscribe(() => {
+                      this.applyDynamicValidators(field, groupForm);
+                    });
+
+                    // also apply once initially
+                    this.applyDynamicValidators(field, groupForm);
+                  }
+                }
+              }
+            });
+          } else if (pType === PresentationType.fields_and_table_columns) {
+            // create placeholder FormGroup so child components binding to formGroupName won't break
+            if (!groupForm.contains(subGroup.subGroupId)) {
+              groupForm.addControl(subGroup.subGroupId, this.fb.group({}));
+            }
+          }
+        });
+      } else {
+        // no subGroups -> respect group.presentationType
+        const gType = group.presentationType || 'fields';
+        if (gType === PresentationType.fields) {
+          (group.fields || []).forEach((field: any) => {
+            if (!groupForm.contains(field.fieldId)) {
+              const control = field.mandatory ? this.fb.control('', Validators.required) : this.fb.control('');
+              groupForm.addControl(field.fieldId, control);
+
+              // Apply dynamic validators if field has conditions
+              if (field.conditions) {
+                const controllingFieldId = field.conditions[0].field;
+                const controllingControl = groupForm.get(controllingFieldId);
+
+                if (controllingControl) {
+                  controllingControl.valueChanges.subscribe(() => {
+                    this.applyDynamicValidators(field, groupForm);
+                  });
+
+                  // also apply once initially
+                  this.applyDynamicValidators(field, groupForm);
+                }
+              }
+            }
+          });
+        } else if (gType === PresentationType.fields_and_table_columns) {
+          // If you want a placeholder for group-level table binding, you can create one,
+          // but most table components manage their own internal form state.
+          // We'll still create a safe placeholder so templates/components that expect a nested
+          // group won't crash (non-destructive):
+          const placeholderName = `${group.groupId}_table`;
+          if (!groupForm.contains(placeholderName)) {
+            groupForm.addControl(placeholderName, this.fb.group({}));
+
+            // attach dynamic label/validation handling
+            // this.applyDynamicConditions(field, groupForm);
+          }
+        }
+      }
+    });
+    this.addGroupToCollapsedGroups();
+    log.info('Entity form after assigning fields', this.entityForm);
   }
+
+
 
   /**
    * Filters form fields based on preview mode and form type
    * @param fields Array of form fields to filter
    * @returns Filtered array of form fields
    */
-  private getFilteredFields(fields: ConfigFormFieldsDto[]): ConfigFormFieldsDto[] {
+  /*private getFilteredFields(fields: ConfigFormFieldsDto[]): ConfigFormFieldsDto[] {
     const formValues = this.uploadForm?.getRawValue();
     const isIndividual = this.isPreviewMode
       ? this.previewFormFields?.forms?.formId === this.originalFormId
@@ -549,43 +684,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     }
 
     return [];
-  }
+  }*/
 
   private getFilteredFields2(fields: ConfigFormFieldsDto[]): ConfigFormFieldsDto[] {
-    const formValues = this.uploadForm?.getRawValue();
-    const isIndividual = this.isPreviewMode
-      ? this.previewFormFields?.forms?.formId === this.originalFormId
-      : formValues?.role === this.role && formValues?.category === 'individual';
-
-    const isCorporate = this.isPreviewMode
-      ? this.previewFormFields?.forms?.formId === this.originalFormId
-      : formValues?.role === this.role && formValues?.category === 'corporate';
-
-    /*if (isIndividual) {
-      return fields.filter(field =>
-        field.visible &&
-        field.formId === this.originalFormId &&
-        field.formGroupingId !== 'cnt_individual_wealth_aml_details' &&
-        field.formSubGroupingId !== 'cnt_individual_privacy_policy'
-      );
-    }*/
-
-    /*if (isCorporate) {
-      const excludedSubGroups = [
-        'cnt_corporate_contact_person_details',
-        'cnt_corporate_privacy_policy',
-        'cnt_corporate_payee_details',
-        'cnt_corporate_branch_details'
-      ];
-
-      return fields.filter(field =>
-        field.visible &&
-        field.formId === this.originalFormId &&
-        !excludedSubGroups.includes(field.formSubGroupingId) &&
-        field.formGroupingId !== 'cnt_corporate_wealth_aml_details'
-      );
-    }*/
-
     return fields.filter(field =>
       field.visible &&
       field.formId === this.originalFormId);
@@ -620,7 +721,16 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     log.info(`entity form >>>`, this.getInvalidControls(this.entityForm))
 
     if (this.entityForm.valid) {
-      this.saveToDatabase(formValues, upperDetails);
+      switch (this.role) {
+        case 'client':
+          this.saveClient(formValues, upperDetails);
+          break;
+
+        case 'agent':
+          log.info(`agent form values >>>`, formValues);
+          break;
+      }
+
     } else {
       this.entityForm.markAllAsTouched(); // show validation errors
     }
@@ -659,7 +769,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param formValues
    * @param upperDetails
    */
-  saveToDatabase(formValues, upperDetails): void { // todo: define model for formValues & upperDetails
+  saveClient(formValues, upperDetails): void { // todo: define model for formValues & upperDetails
     const payloadObject = {
       ...formValues.cnt_individual_prime_identity,
       ...formValues.cnt_individual_contact_details,
@@ -1054,7 +1164,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param field
    * @param groupId
    */
-  validateRegex(field: ConfigFormFieldsDto, groupId: string): void {
+  /*validateRegex(field: ConfigFormFieldsDto, groupId: string): void {
 
     const fieldId = field.fieldId;
     let pattern: RegExp;
@@ -1089,7 +1199,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     }
 
     log.info(`regex to use`, this.regexErrorMessages, groupId);
-  }
+  }*/
 
   /**
    * generate error messages for regex
@@ -1098,7 +1208,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param errorMessage
    * @param fieldId
    */
-  generateRegexErrorMessage(pattern: RegExp, input: string, errorMessage: string, fieldId: string): void {
+  /*generateRegexErrorMessage(pattern: RegExp, input: string, errorMessage: string, fieldId: string): void {
     if (pattern.test(input)) {
       this.regexErrorMessages[fieldId] = {
         showErrorMessage: false,
@@ -1110,7 +1220,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         errorMessage: errorMessage
       }
     }
-  }
+  }*/
 
 
   /**
@@ -1118,9 +1228,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param groupId
    * @param fieldId
    */
-  getFieldControl(groupId: string, fieldId: string) {
+  /*getFieldControl(groupId: string, fieldId: string) {
     return this.entityForm.get(`${groupId}.${fieldId}`);
-  }
+  }*/
 
 
   /**
@@ -1945,53 +2055,133 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       });
   }
 
-  /**
-   * Returns the sub-group label to display (or null if none matches).
-   */
-  getSubGroupHeader(group: { subGroup?: Array<{ subGroupId?: string; label?: Record<string, string> }> }): string | null {
-    const s0 = group?.subGroup?.[0];
-    const s1 = group?.subGroup?.[1];
+  getDynamicLabel(field: any, language: string): string {
+    const groupForm = this.entityForm.get(field.formGroupingId) as FormGroup;
+    const activeCondition = this.getActiveCondition(field, groupForm);
 
-    // Show header only when one of the targeted subgroups is present
-    const shouldShow =
-      s0?.subGroupId === 'cnt_corporate_banking_information' ||
-      s0?.subGroupId === 'cnt_corporate_company_contacts' ||
-      s1?.subGroupId === 'cnt_corporate_head_office_address';
+    // If dynamicLabel is defined, override from mapping
+    if (field.dynamicLabel && groupForm) {
+      const controllingValue = groupForm?.get(field.dynamicLabel.field)?.value;
+      const mapped = field.dynamicLabel.mapping[controllingValue];
+      if (mapped) {
+        return mapped[language];
+      }
+    }
 
-    if (!shouldShow) return null;
+    // else, check if condition-specific label should override
+    if (activeCondition?.config?.label) {
+      return activeCondition.config.label[language];
+    }
 
-    // Prefer head office address label if present, otherwise fallback to the first subgroup label
-    const chosen = s1?.subGroupId === 'cnt_corporate_head_office_address' ? s1 : s0;
-    return chosen?.label?.[this.language] ?? null;
-  }
-  /*getSubGroupHeader(group: { subGroup?: Array<{ label?: Record<string, string> }> }): string | null {
-    log.info(`group >>> `, group.subGroup);
-    const first = group?.subGroup?.[0];
-    if (!first) return null;
-    return first.label?.[this.language] ?? null;
-  }*/
-  createFieldsByPresentationType(groupId: any, fields: ConfigFormFieldsDto[]) {
-    log.info(`form group id >>> `, groupId);
-    /*formGroupSections.forEach(section => {
-      section.pr
-    })*/
-    // formGroupSection.forEach(section => {
-      const group = this.fb.group({});
-
-      fields.forEach(field => {
-        const control = field.mandatory
-          ? this.fb.control('', Validators.required)
-          : this.fb.control('');
-
-        if (field.type === 'text' && field?.conditions?.length > 0) {
-          this.collateValidations(field.conditions)
-        }
-        group.addControl(field.fieldId, control);
-      });
-
-      this.entityForm.addControl(groupId, group);
-      this.cdr.detectChanges();
-    // });
+    return field.label?.[language];
   }
 
+  getValidationMessage(field: any, language: string): string | null {
+    const groupForm = this.entityForm.get(field.formGroupingId) as FormGroup;
+    const control = groupForm?.get(field.fieldId);
+
+    if (!control || !control.errors) return null;
+
+    if (!(control.touched || control.dirty)) {
+      return null;
+    }
+
+    const activeCondition = this.getActiveCondition(field, groupForm);
+    const validations = activeCondition?.config?.validations || field.validations || [];
+
+    if (control.errors['pattern']) {
+      const patternValidation = validations.find(v => v.type === 'pattern');
+      if (patternValidation?.message) {
+        return patternValidation.message[language] || patternValidation.message['en'];
+      }
+    }
+
+    if (control.errors['required']) {
+      return `${this.getDynamicLabel(field, language)} is required.`;
+    }
+
+    return null;
+  }
+
+  private getActiveCondition(field: any, groupForm: FormGroup): any | null {
+    if (!field.conditions || !groupForm) return;
+
+    for (const cond of field.conditions) {
+      const controllingValue = groupForm.get(cond.field)?.value;
+      if (controllingValue === cond.value) {
+        return cond;
+      }
+    }
+    return null;
+  }
+
+  private applyDynamicValidators(field: any, groupForm: FormGroup): void {
+    const control = groupForm.get(field.fieldId);
+    if (!control) return;
+
+    const activeCondition = this.getActiveCondition(field, groupForm);
+
+    // Choose correct validations
+    const validations = activeCondition?.config?.validations || field.validations || [];
+
+    const angularValidators = validations.map((v: any) => {
+      if (v.type === 'pattern') return Validators.pattern(v.value);
+      if (v.type === 'required') return Validators.required;
+      return null;
+    }).filter(Boolean);
+
+    control.setValidators(angularValidators);
+    control.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private evaluateFieldVisibility(field: any, groupForm: FormGroup | null): boolean {
+    if (field.visible === false) return false;
+
+    const activeCondition = this.getActiveCondition(field, groupForm);
+
+    log.info("active condition", activeCondition);
+    if (!field.conditions || !groupForm) {
+      return field.visible !== false;
+    }
+
+    for (const cond of field.conditions) {
+      const control = groupForm.get(cond.field);
+      if (control && control.value === cond.value) {
+        return cond.visible !== false;
+      }
+    }
+
+    return field.visible !== false;
+  }
+
+  private refreshVisibility(): void {
+    this.formGroupSections.forEach(group => {
+      const groupForm = this.entityForm.get(group.groupId) as FormGroup | null;
+
+      if (group.fields) {
+        group.fields = group.fields.filter(field =>
+          this.evaluateFieldVisibility(field, groupForm)
+        );
+      }
+
+      if (group.subGroup) {
+        group.subGroup = group.subGroup.map(sub => {
+          if (sub.fields) {
+            sub.fields = sub.fields.filter(field =>
+              this.evaluateFieldVisibility(field, groupForm)
+            );
+          }
+          return sub;
+        });
+      }
+    });
+  }
+
+  addGroupToCollapsedGroups(): void {
+    this.formGroupSections.forEach(group => {
+      if (group.groupId?.includes('prime_identity')) {
+        this.collapsedGroups.add(group.groupId);
+      }
+    });
+  }
 }
