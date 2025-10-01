@@ -191,12 +191,12 @@
                     (click)="executeAction(item, quotation)" [title]="item.label">
                     {{ item.label }}
                   </a>
-                  <span *ngIf="i < getFirstThreeActions(quotation).length - 1" class="text-muted">|</span>
+                  <span *ngIf="i < getFirstThreeActions(quotation).length - 1" class="text-muted"></span>
                 </ng-container>
 
                 <!-- Show ellipsis if there are more than 3 actions -->
                 <ng-container *ngIf="hasMoreThanThreeActions(quotation)">
-                  <span class="text-muted">|</span>
+                  <span class="text-muted"></span>
                   <button type="button" class="btn btn-sm p-0 text-primary" (click)="showMoreActions($event, quotation)"
                     style="background: none; border: none; font-size: 0.875rem;">
                     <i class="pi pi-ellipsis-h"></i>

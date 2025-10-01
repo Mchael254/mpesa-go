@@ -1433,6 +1433,16 @@ export interface IntroducerDto {
   wet: string | null; 
 }
 
+export interface CreateRiskCommission {
+  quotationRiskCode: number;
+  quotationCode: number;
+  agentCode: number;
+  transCode: string;
+  accountCode: number;
+  trntCode: string;
+  group: string;
+}
+
 
 
 
