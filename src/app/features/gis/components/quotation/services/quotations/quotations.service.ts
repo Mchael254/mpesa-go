@@ -3,6 +3,7 @@ import { AppConfigService } from '../../../../../../core/config/app-config-servi
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
 import {
   CreateLimitsOfLiability,
+  CreateRiskCommission,
   EditRisk,
   OtpPayload,
   premiumPayloadData,
@@ -1206,5 +1207,26 @@ export class QuotationsService {
       catchError(this.errorHandl)
     );
   }
+
+  //risk commissions
+  getCommissions(subclassCode: number, accountCode: number, binderCode: number): Observable<any> {
+    const paramsObj: { [param: string]: string } = {
+      sclCode: subclassCode.toString(),
+      actCode: accountCode.toString(),
+      bindCode: binderCode.toString()
+    };
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET<any>(`api/v1/applicable-commission`, API_CONFIG.GIS_SETUPS_BASE_URL, params);
+  }
+
+  addRiskCommission(commissionPayload: CreateRiskCommission): Observable<any> {
+    return this.api.POST<any>('v2/risk-commission', JSON.stringify(commissionPayload), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
+
+
+
 }
 
