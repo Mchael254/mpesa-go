@@ -609,6 +609,7 @@
 
     </div>
 </div>
+
 <!-- SECTION DETAILS CARD -->
 <div class="card mb-3">
     <div class="card-body mx-4">
@@ -1297,6 +1298,7 @@
         </div>
     </div>
 </div>
+
 <!-- OTHER RISK DETAILS CARD -->
 <div class="card mb-4">
     <div class="card-body mx-4 ">
@@ -1320,6 +1322,7 @@
 
             <!-- tab buttons -->
             <div class="d-flex justify-content-between align-items-end m-0">
+
                 <div class="d-flex justify-content-between px-1" style="width:75%">
                     <div>
                         <button class="btn btn-sm"
@@ -1419,7 +1422,6 @@
 
                             {{'gis.quotation.add_risk_excess' | translate}}
                         </button>
-
                         <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
                             [ngClass]="{ 'pi-caret-up': showExcesses, 'pi-caret-down': !showExcesses }"
                             style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
@@ -1452,20 +1454,23 @@
 
                     <!-- commissions action tabs -->
                     <div *ngIf="riskActiveTab === 'commissions'">
+                        <button class="btn btn-outline-primary btn-sm mb-1 me-2">
+                            {{'gis.quotation.save_changes' | translate}}
+                        </button>
                         <button class="btn btn-primary btn-sm mb-1" (click)="openCommissionsModal()">
                             {{'gis.quotation.add_commission' | translate}}
                         </button>
                         <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
-                            [ngClass]="{ 'pi-caret-up': showLimitsOfLiability, 'pi-caret-down': !showLimitsOfLiability }"
+                            [ngClass]="{ 'pi-caret-up': showCommissions, 'pi-caret-down': !showCommissions }"
                             style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                            (click)="toggleLimitsOfLiabilityColumns(iconTrigger)">
+                            (click)="toggleCommissionsColumns(iconTrigger)">
                         </i>
+
                     </div>
 
                 </div>
             </div>
         </div>
-
 
 
         <!-- RISK CLAUSES -->
@@ -1495,6 +1500,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- risk clause table -->
             <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="sessionClauses?.length > 4"
                 [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
@@ -2473,21 +2479,21 @@
         <!-- COMMISSIONS -->
         <div *ngIf="riskActiveTab === 'commissions'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
             class="mt-0 w-100">
+
             <!-- Floating Column Selector For Limits of Liability -->
-            <div *ngIf="showLimitsOfLiabilityColumnModal"
-                class="card shadow rounded p-2 position-absolute bg-white border"
+            <div *ngIf="showCommissionsColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
                 [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
                 (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
                 (document:mouseup)="onDragEnd()">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="text-primary">Select Columns</strong>
-                    <button class="btn-close btn-sm" (click)="showLimitsOfLiabilityColumnModal = false"></button>
+                    <button class="btn-close btn-sm" (click)="showCommissionsColumnModal = false"></button>
                 </div>
                 <div style="max-height: 250px; overflow-y: auto;">
-                    <div *ngFor="let col of limitsOfLiabilityColumns">
+                    <div *ngFor="let col of commissionsColumns">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" style="color: #00529B;"
-                                [(ngModel)]="col.visible" (change)="toggleLimitsColumnVisibility(col.field)"
+                                [(ngModel)]="col.visible" (change)="toggleCommissionsColumnVisibility(col.field)"
                                 [id]="col.field">
                             <label class="form-check-label" [for]="col.field">
                                 {{ col.header }}
@@ -2497,16 +2503,16 @@
                 </div>
             </div>
 
-            <!-- limits table -->
-            <p-table #addedlimitTable [value]="addedLimitsOfLiability" dataKey="code"
-                [paginator]="addedLimitsOfLiability?.length > 10" [rowsPerPageOptions]="[2, 3, 5]" [rows]="3"
-                [globalFilterFields]="['narration', 'value']" [scrollable]="true" scrollDirection="horizontal"
-                responsiveLayout="scroll" class="mt-3">
+            <!-- commissions table -->
+            <p-table #commissionsTable [value]="addedCommissions" dataKey="code"
+                [paginator]="addedCommissions?.length > 10" [rowsPerPageOptions]="[5, 10, 20]" [rows]="10"
+                [globalFilterFields]="['']" [scrollable]="true" scrollDirection="horizontal" responsiveLayout="scroll"
+                class="mt-3">
                 <!-- Table Header -->
 
                 <ng-template pTemplate="header">
                     <tr>
-                        <th *ngFor="let col of limitsOfLiabilityColumns" [hidden]="!col.visible" class="px-3 mb-2"
+                        <th *ngFor="let col of commissionsColumns" [hidden]="!col.visible" class="px-3 mb-2"
                             [pSortableColumn]="col.field">
                             <div class="d-flex align-items-center gap-1 flex-nowrap">
                                 <span class="text-truncate">{{ col.header }}</span>
@@ -2515,44 +2521,27 @@
                         </th>
                     </tr>
 
-                    <tr class="filter-row ">
-                        <td *ngFor="let col of limitsOfLiabilityColumns" [hidden]="!col.visible">
-                            <input *ngIf="col.field !== 'actions'" type="text" pInputText class="form-control w-100"
-                                (input)="addedlimitTable.filter($event.target['value'], col.field, 'contains')" />
+                    <tr class="filter-row">
+                        <td *ngFor="let col of commissionsColumns" [hidden]="!col.visible">
+                            <input *ngIf="col.field !== 'actions'" type="text" pInputText class="form-control ms-2" style="width:95%"
+                                (input)="commissionsTable.filter($event.target['value'], col.field, 'contains')" />
                         </td>
                     </tr>
+
                 </ng-template>
                 <!-- Table Body -->
-                <ng-template pTemplate="body" let-limit>
+                <ng-template pTemplate="body" let-commission>
                     <tr>
-                        <td *ngFor="let col of limitsOfLiabilityColumns" [hidden]="!col.visible">
+                        <td *ngFor="let col of commissionsColumns" [hidden]="!col.visible">
                             <ng-container [ngSwitch]="col.field">
-
-                                <!-- Narration (with hover card) -->
-                                <ng-container *ngSwitchCase="'narration'">
-                                    <div class="clause-wrapper">
-                                        {{ limit.narration | sentenceCase }}
-                                        <div class="hover-card">
-                                            {{ limit.narration | sentenceCase }}
-                                        </div>
-                                    </div>
-                                </ng-container>
 
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
                                     <div class="d-flex gap-1 flex-nowrap">
-                                        <!-- Edit -->
-                                        <span class="p-button-label fw-bold text-primary"
-                                            style="cursor: pointer; display: inline-block; width: 60px; white-space: nowrap;"
-                                            data-bs-toggle="modal" data-bs-target="#editLimit"
-                                            (click)="populateEditLimitModal(limit)">
-                                            {{ 'gis.quotation.edit' | translate }}
-                                        </span>
-
                                         <!-- Delete -->
                                         <span class="p-button-label fw-bold text-primary"
                                             style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
-                                            data-bs-target="#deleteLimit" (click)="prepareDeleteLimit(limit)">
+                                            data-bs-target="#deleteLimit" (click)="prepareDeleteLimit(commission)">
                                             {{ 'gis.quotation.delete' | translate }}
                                         </span>
 
@@ -2562,13 +2551,14 @@
                                 <!-- Default columns added dynamically) -->
                                 <ng-container *ngSwitchDefault>
                                     <ng-container *ngIf="col.field === 'value'; else defaultField">
-                                        <div class="text-end">
-                                            {{ sanitizeCurrency(limit[col.field]) | currency: currencyObj?.prefix :
-                                            'symbol' : '1.2-2' }}
-                                        </div>
+                                        <input type="number" class="form-control w-100 text-end"
+                                            [(ngModel)]="commission[col.field]" [ngModelOptions]="{standalone: true}"
+                                            (blur)="commission[col.field] = sanitizeCurrency(commission[col.field])" />
                                     </ng-container>
+
                                     <ng-template #defaultField>
-                                        {{ limit[col.field] }}
+                                        <input type="text" class="form-control w-100"
+                                            [(ngModel)]="commission[col.field]" [ngModelOptions]="{standalone: true}" />
                                     </ng-template>
                                 </ng-container>
 
@@ -2579,14 +2569,13 @@
 
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td [attr.colspan]="limitsOfLiabilityColumns.length" class="text-center p-4 text-muted">
-                            <ng-container *ngIf="addedLimitsOfLiability?.length > 0; else noClauses">
+                        <td [attr.colspan]="commissionsColumns.length" class="text-center p-4 text-muted">
+                            <ng-container *ngIf="addedCommissions?.length > 0; else noClauses">
                                 <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                <p>No matching limits of liability found.</p>
+                                <p>No matching commissions found.</p>
                             </ng-container>
                             <ng-template #noClauses>
-                                <p><strong>No limits of liability available.</strong> There are currently no
-                                    limits of liability to add.</p>
+                                <p><strong>No commissions available.</strong></p>
                             </ng-template>
                         </td>
                     </tr>
@@ -2609,9 +2598,10 @@
                             <ng-container>
                                 <p-table #addedCommissionTable [value]="commissions" dataKey="code"
                                     [paginator]="commissions?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
-                                    [globalFilterFields]="['transactionCode','orderType', 'commActCode', 'transTypeCode']" [scrollable]="true"
-                                    scrollDirection="horizontal" responsiveLayout="scroll" class="mt-3"
-                                    [(selection)]="selectedCommission" styleClass="p-datatable-striped" selectionMode="single">
+                                    [globalFilterFields]="['transactionCode','orderType', 'commActCode', 'transTypeCode']"
+                                    [scrollable]="true" scrollDirection="horizontal" responsiveLayout="scroll"
+                                    class="mt-3" [(selection)]="selectedCommission" styleClass="p-datatable-striped"
+                                    selectionMode="single">
                                     <!-- Table Header -->
                                     <ng-template pTemplate="header">
                                         <tr>
@@ -2630,26 +2620,26 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <input class="form-control form-control-sm" pInputText #transactionCodeFilter
-                                                    type="text"
+                                                <input class="form-control form-control-sm" pInputText
+                                                    #transactionCodeFilter type="text"
                                                     (input)="addedCommissionTable.filterGlobal(transactionCodeFilter.value, 'contains')"
                                                     style="width: 90%" />
                                             </td>
                                             <td>
-                                                <input class="form-control form-control-sm" pInputText
-                                                    #orderTypeFilter type="text"
+                                                <input class="form-control form-control-sm" pInputText #orderTypeFilter
+                                                    type="text"
                                                     (input)="addedCommissionTable.filterGlobal(orderTypeFilter.value, 'contains')"
                                                     style="width: 90%" />
                                             </td>
                                             <td>
-                                                <input class="form-control form-control-sm" pInputText #commActCodeFilter
-                                                    type="text"
+                                                <input class="form-control form-control-sm" pInputText
+                                                    #commActCodeFilter type="text"
                                                     (input)="addedCommissionTable.filterGlobal(commActCodeFilter.value, 'contains')"
                                                     style="width: 90%" />
                                             </td>
                                             <td>
-                                                <input class="form-control form-control-sm" pInputText #transTypeCodeFilter
-                                                    type="text"
+                                                <input class="form-control form-control-sm" pInputText
+                                                    #transTypeCodeFilter type="text"
                                                     (input)="addedCommissionTable.filterGlobal(transTypeCodeFilter.value, 'contains')"
                                                     style="width: 90%" />
                                             </td>

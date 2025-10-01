@@ -76,6 +76,8 @@ export class RiskDetailsComponent {
   @ViewChild('taxTable') taxTable!: Table;
   @ViewChild('addotherScheduleModal') addotherScheduleModalRef!: ElementRef;
   @ViewChild('addedCommissionTable') addedCommissionTable!: Table;
+  @ViewChild('commissionTable') commissionTable!: Table;
+
 
 
   private modals: { [key: string]: bootstrap.Modal } = {};
@@ -362,8 +364,12 @@ export class RiskDetailsComponent {
   showModalSpinner = false;
 
   commissions: any[] = [];
+  originalCommissions: any;
   showCommissionsModal: boolean = false;
+  showCommissionsColumnModal = false;
   selectedCommission: any;
+  showCommissions: boolean = true;
+  commissionsColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
 
   constructor(
     public subclassService: SubclassesService,
@@ -454,7 +460,7 @@ export class RiskDetailsComponent {
     if (this.selectedSubclassCode && this.quoteProductCode) {
       this.loadAddedLimitsOfLiability();
     }
-
+    this.loadAddedCommissions();
     this.createTaxForm();
 
     this.riskDetailsForm = new FormGroup({
@@ -2598,6 +2604,9 @@ export class RiskDetailsComponent {
     if (this.addedCommissionTable) {
       this.addedCommissionTable.filterGlobal(filterValue, 'contains');
     }
+    if (this.commissionTable) {
+      this.commissionTable.filterGlobal(filterValue, 'contains');
+    }
   }
 
 
@@ -3953,6 +3962,7 @@ export class RiskDetailsComponent {
 
     this.showLimitsOfLiabilityColumnModal = true;
   }
+
   setLimitsOfLiabilityColumns(limits: any) {
     const excludedFields = [];
     this.limitsOfLiabilityColumns = Object.keys(limits)
@@ -4985,15 +4995,81 @@ export class RiskDetailsComponent {
 
   //commissions
   agentCode: number;
-  loadCommission(): void {
+  accountCode: number;
+  addedCommissions: any[] = [];
+
+
+  saveCommissionsColumnsToSession(): void {
+    if (this.commissionsColumns) {
+      const visibility = this.commissionsColumns.map(col => ({
+        field: col.field,
+        visible: col.visible
+      }));
+      sessionStorage.setItem('commissionsColumns', JSON.stringify(visibility));
+    }
+  }
+
+  toggleCommissionsColumnVisibility(field: string) {
+    this.saveCommissionsColumnsToSession();
+  }
+
+  toggleCommissionsColumns(iconElement: HTMLElement): void {
+    this.showCommissions = true;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showCommissionsColumnModal = true;
+  }
+
+  setCommissionsColumns(commissions: any) {
+    const excludedFields = ['actions', 'code', 'quotationRiskCode', 'quotationCode', 'transCode', 'accountCode', 'trntCode', 'discRate',
+      'discType', 'amount', 'whTaxRate', 'whTaxAmount', 'discAmount', 'overrideCommission'
+    ];
+
+    this.commissionsColumns = Object.keys(commissions)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: this.defaultVisibleCommissionsFields.includes(key),
+        filterable: true,
+        sortable: true
+      }));
+
+    this.commissionsColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false });
+
+    // Restore from sessionStorage 
+    const saved = sessionStorage.getItem('commissionsColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.commissionsColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
+
+    log.debug("commissionsColumns", this.commissionsColumns);
+  }
+
+  defaultVisibleCommissionsFields = ['group', 'setupRate', 'usedRate'];
+
+  loadCommissions(): void {
     const subclassCode = this.selectedSubclassCode;
     const quotationDetailsRaw = sessionStorage.getItem('quotationFormDetails');
     const quotationDetails = quotationDetailsRaw ? JSON.parse(quotationDetailsRaw) : null;
 
-    const accountCode = quotationDetails?.agent?.accountTypeId || 0;
-    this.agentCode = accountCode
+    this.accountCode = quotationDetails?.agent?.accountTypeId || 0;
+    this.agentCode = quotationDetails?.agent?.id || 0;
 
-    if (!accountCode) {
+    if (!this.accountCode) {
       this.globalMessagingService.displayErrorMessage('Error', 'Select agent first');
       return;
     }
@@ -5002,15 +5078,39 @@ export class RiskDetailsComponent {
     const riskFormDetails = riskFormDetailsRaw ? JSON.parse(riskFormDetailsRaw) : null;
     const binderCode = riskFormDetails?.premiumBand || 0;
 
-    this.quotationService.getCommissions(subclassCode, accountCode, binderCode)
+    const cacheKey = `commissions_${this.selectedSubclassCode}_${this.accountCode}_${binderCode}`;
+    const originalCacheKey = `original_commissions_${this.selectedSubclassCode}_${this.accountCode}_${binderCode}`;
+
+    // Try loading from cache
+    const cachedData = sessionStorage.getItem(cacheKey);
+    const cachedOriginal = sessionStorage.getItem(originalCacheKey);
+
+    if (cachedData && cachedOriginal) {
+      this.commissions = JSON.parse(cachedData);
+      this.originalCommissions = JSON.parse(cachedOriginal);
+
+      log.debug(`Loaded commissions for subclass ${this.selectedSubclassCode} from sessionStorage`);
+      return;
+    }
+
+    // Fetch fresh from API if no cache
+    this.quotationService.getCommissions(subclassCode, this.accountCode, binderCode)
       .subscribe({
         next: (response) => {
-          this.commissions = response?._embedded || [];
-          log.debug('Commissions loaded:', this.commissions);
+          const commissions = response?._embedded || [];
+
+          this.originalCommissions = [...commissions];
+          sessionStorage.setItem(originalCacheKey, JSON.stringify(this.originalCommissions));
+
+          this.commissions = [...commissions];
+          sessionStorage.setItem(cacheKey, JSON.stringify(this.commissions));
+
+          log.debug(`Fetched and stored commissions for subclass ${this.selectedSubclassCode}`);
         },
         error: (err) => {
-          log.debug('Error fetching commission:', err);
+          log.debug('Error fetching commissions:', err);
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch commissions');
+          this.commissions = [];
         }
       });
   }
@@ -5022,22 +5122,23 @@ export class RiskDetailsComponent {
     }
 
     this.showCommissionsModal = true;
-    this.loadCommission();
-
 
     const modalElement = document.getElementById('addCommission');
     if (modalElement) {
       const modal = new (window as any).bootstrap.Modal(modalElement);
       modal.show();
     }
+
+    this.loadCommissions();
+    this.loadAddedCommissions();
   }
 
-  addCommission() {
-    if (this.selectedCommission) {
-      log.debug('Selected commission:', this.selectedCommission);
-    } else {
+  addCommission(): void {
+    if (!this.selectedCommission) {
       this.globalMessagingService.displayErrorMessage('Error', 'No commission selected');
+      return;
     }
+
     const storedRiskCode = sessionStorage.getItem("selectedRiskCode");
     const QuotationCode = sessionStorage.getItem('quotationCode');
 
@@ -5046,25 +5147,110 @@ export class RiskDetailsComponent {
       quotationCode: Number(QuotationCode || 0),
       agentCode: this.agentCode,
       transCode: this.selectedCommission.transactionCode,
-      accountCode: this.selectedCommission.commActCode || 0,
+      accountCode: this.accountCode,
       trntCode: this.selectedCommission.transTypeCode,
-      group: 'default'
+      group: this.selectedCommission.orderType,
+      usedRate: null
     };
 
-    log.debug('commissionPayload',commissionPayload)
+    log.debug('commissionPayload', commissionPayload);
 
-    // this.quotationService.addRiskCommission(commissionPayload).subscribe({
-    //   next: (res) => {
-    //     log.debug('Commission successfully added:', res);
-    //     this.globalMessagingService.displaySuccessMessage('Success', 'Commission added successfully');
-    //   },
-    //   error: (err) => {
-    //     log.debug('Error adding commission:', err);
-    //     this.globalMessagingService.displayErrorMessage('Error', 'Failed to add commission');
-    //   }
-    // });
+    this.quotationService.addRiskCommission(commissionPayload).subscribe({
+      next: (res) => {
+        const embedded = res?._embedded || null;
+        const newCommission = embedded ? embedded : null;
 
+        if (newCommission) {
+          // ---- Update added_commissions cache ----
+          const addedCacheKey = `added_commissions_${QuotationCode}`;
+          const cachedAdded = sessionStorage.getItem(addedCacheKey);
+          let addedCommissions = cachedAdded ? JSON.parse(cachedAdded) : [];
+
+          addedCommissions = [...addedCommissions, newCommission];
+          sessionStorage.setItem(addedCacheKey, JSON.stringify(addedCommissions));
+          this.addedCommissions = [...addedCommissions];
+
+          // ---- Remove from commissions cache ----
+          const subclassCode = this.selectedSubclassCode;
+          const riskFormDetailsRaw = sessionStorage.getItem('riskFormDetails');
+          const riskFormDetails = riskFormDetailsRaw ? JSON.parse(riskFormDetailsRaw) : null;
+          const binderCode = riskFormDetails?.premiumBand || 0;
+
+          const commissionsCacheKey = `commissions_${subclassCode}_${this.accountCode}_${binderCode}`;
+          const originalCommissionsCacheKey = `original_commissions_${subclassCode}_${this.accountCode}_${binderCode}`;
+
+          const cachedCommissions = sessionStorage.getItem(commissionsCacheKey);
+          if (cachedCommissions) {
+            let commissions = JSON.parse(cachedCommissions);
+            commissions = commissions.filter(
+              (c: any) => c.transactionCode !== this.selectedCommission.transactionCode
+            );
+            sessionStorage.setItem(commissionsCacheKey, JSON.stringify(commissions));
+            this.commissions = [...commissions];
+          }
+
+          this.originalCommissions = JSON.parse(sessionStorage.getItem(originalCommissionsCacheKey) || '[]');
+
+          if (this.addedCommissions.length > 0) {
+            this.setCommissionsColumns(this.addedCommissions[0]);
+          }
+        }
+
+        this.globalMessagingService.displaySuccessMessage('Success', 'Commission added successfully');
+        log.debug('Commission successfully added & caches updated:', {
+          available: this.commissions,
+          added: this.addedCommissions
+        });
+      },
+      error: (err) => {
+        log.debug('Error adding commission:', err);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add commission');
+      }
+    });
   }
+
+
+  loadAddedCommissions(): void {
+    if (!this.quotationCode) {
+      log.debug("No quotationCode found, cannot load added commissions");
+      return;
+    }
+
+    const addedCacheKey = `added_commissions_${this.quotationCode}`;
+    const cachedAddedData = sessionStorage.getItem(addedCacheKey);
+
+    if (cachedAddedData) {
+      try {
+        this.addedCommissions = JSON.parse(cachedAddedData);
+        log.debug(`Added commissions loaded from cache for quotation ${this.quotationCode}`);
+        if (this.addedCommissions.length > 0) {
+          this.setCommissionsColumns(this.addedCommissions[0]);
+        }
+        return;
+      } catch (error) {
+        log.debug('Error parsing cached added commissions, fetching fresh data:', error);
+        sessionStorage.removeItem(addedCacheKey);
+      }
+    }
+
+    this.fetchAddedCommissions();
+  }
+
+  fetchAddedCommissions(): void {
+    this.quotationService.getAddedCommissions(this.quotationCode).subscribe({
+      next: (res: any) => {
+        this.addedCommissions = res?._embedded || [];
+        sessionStorage.setItem(`added_commissions_${this.quotationCode}`, JSON.stringify(this.addedCommissions));
+        log.debug('Fetched and cached added commissions:', this.addedCommissions);
+
+        if (this.addedCommissions.length > 0) {
+          this.setCommissionsColumns(this.addedCommissions[0]);
+        }
+      },
+      error: (err) => log.debug('Error fetching added commissions', err),
+    });
+  }
+
 
   onAddOtherSchedule(tab: any): void {
     log.debug("DYNAMIC SUBCLASS FORM FIELDS", this.dynamicSubclassFormFields)
