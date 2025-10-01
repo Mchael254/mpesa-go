@@ -75,6 +75,8 @@ export class RiskDetailsComponent {
   @ViewChild('choosePerilsModal') choosePerilsModal!: ElementRef;
   @ViewChild('taxTable') taxTable!: Table;
   @ViewChild('addotherScheduleModal') addotherScheduleModalRef!: ElementRef;
+  @ViewChild('addedCommissionTable') addedCommissionTable!: Table;
+
 
   private modals: { [key: string]: bootstrap.Modal } = {};
 
@@ -358,6 +360,11 @@ export class RiskDetailsComponent {
   isNewClientSelected: boolean = false;
   quickQuoteConverted: boolean = false;
   showModalSpinner = false;
+
+  commissions: any[] = [];
+  showCommissionsModal: boolean = false;
+  selectedCommission: any;
+
   constructor(
     public subclassService: SubclassesService,
     private subclassCoverTypesService: SubClassCoverTypesService,
@@ -2564,6 +2571,7 @@ export class RiskDetailsComponent {
       // this.loadAllPremiums();
     }, 500); // Trigger after 500ms of no typing
   }
+
   applyGlobalFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     if (this.sectionTable) {
@@ -2586,6 +2594,9 @@ export class RiskDetailsComponent {
     }
     if (this.riskClauseTable) {
       this.riskClauseTable.filterGlobal(filterValue, 'contains');
+    }
+    if (this.addedCommissionTable) {
+      this.addedCommissionTable.filterGlobal(filterValue, 'contains');
     }
   }
 
@@ -4307,6 +4318,7 @@ export class RiskDetailsComponent {
 
     this.showExcessesColumnModal = true;
   }
+
   setExcessesColumns(excess: Excesses) {
     const excludedFields = ['actions'];
 
@@ -4563,7 +4575,6 @@ export class RiskDetailsComponent {
     this.savePerilColumnsToSession();
   }
 
-
   togglePerilColumns(iconElement: HTMLElement): void {
     this.showPerils = true;
 
@@ -4579,6 +4590,7 @@ export class RiskDetailsComponent {
 
     this.showPerilColumnModal = true;
   }
+
   setPerilColumns(excess: Excesses) {
     const excludedFields = [
     ];
@@ -4608,7 +4620,6 @@ export class RiskDetailsComponent {
   }
 
   defaultVisiblePerilFields = ['description', 'excess', 'excessMin', 'excessMax', 'personLimit', 'claimLimit']
-
 
   loadQuotationPerils(): void {
     const riskCode = this.quotationRiskCode;
@@ -4969,6 +4980,90 @@ export class RiskDetailsComponent {
   initializePerils(): void {
     this.loadPerils();
     this.loadQuotationPerils();
+  }
+
+
+  //commissions
+  agentCode: number;
+  loadCommission(): void {
+    const subclassCode = this.selectedSubclassCode;
+    const quotationDetailsRaw = sessionStorage.getItem('quotationFormDetails');
+    const quotationDetails = quotationDetailsRaw ? JSON.parse(quotationDetailsRaw) : null;
+
+    const accountCode = quotationDetails?.agent?.accountTypeId || 0;
+    this.agentCode = accountCode
+
+    if (!accountCode) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Select agent first');
+      return;
+    }
+
+    const riskFormDetailsRaw = sessionStorage.getItem('riskFormDetails');
+    const riskFormDetails = riskFormDetailsRaw ? JSON.parse(riskFormDetailsRaw) : null;
+    const binderCode = riskFormDetails?.premiumBand || 0;
+
+    this.quotationService.getCommissions(subclassCode, accountCode, binderCode)
+      .subscribe({
+        next: (response) => {
+          this.commissions = response?._embedded || [];
+          log.debug('Commissions loaded:', this.commissions);
+        },
+        error: (err) => {
+          log.debug('Error fetching commission:', err);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch commissions');
+        }
+      });
+  }
+
+  openCommissionsModal(): void {
+    if (!this.selectedSubclassCode) {
+      log.debug('Subclass code is required to load excesses');
+      return;
+    }
+
+    this.showCommissionsModal = true;
+    this.loadCommission();
+
+
+    const modalElement = document.getElementById('addCommission');
+    if (modalElement) {
+      const modal = new (window as any).bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  addCommission() {
+    if (this.selectedCommission) {
+      log.debug('Selected commission:', this.selectedCommission);
+    } else {
+      this.globalMessagingService.displayErrorMessage('Error', 'No commission selected');
+    }
+    const storedRiskCode = sessionStorage.getItem("selectedRiskCode");
+    const QuotationCode = sessionStorage.getItem('quotationCode');
+
+    const commissionPayload = {
+      quotationRiskCode: Number(storedRiskCode || 0),
+      quotationCode: Number(QuotationCode || 0),
+      agentCode: this.agentCode,
+      transCode: this.selectedCommission.transactionCode,
+      accountCode: this.selectedCommission.commActCode || 0,
+      trntCode: this.selectedCommission.transTypeCode,
+      group: 'default'
+    };
+
+    log.debug('commissionPayload',commissionPayload)
+
+    // this.quotationService.addRiskCommission(commissionPayload).subscribe({
+    //   next: (res) => {
+    //     log.debug('Commission successfully added:', res);
+    //     this.globalMessagingService.displaySuccessMessage('Success', 'Commission added successfully');
+    //   },
+    //   error: (err) => {
+    //     log.debug('Error adding commission:', err);
+    //     this.globalMessagingService.displayErrorMessage('Error', 'Failed to add commission');
+    //   }
+    // });
+
   }
 
   onAddOtherSchedule(tab: any): void {
@@ -5559,6 +5654,7 @@ export class RiskDetailsComponent {
 
     this.showTaxesColumnModal = true;
   }
+
   setTaxesColumns(tax: any) {
     const excludedFields = [];
     const defaultVisibleTaxesFields = ['rateDescription', 'rate', 'taxAmount', 'rateType',
@@ -5598,8 +5694,6 @@ export class RiskDetailsComponent {
 
     log.debug("taxes Columns", this.taxesColumns);
   }
-
-
 
   openEditTaxModal() {
     if (!this.selectedProduct) {
