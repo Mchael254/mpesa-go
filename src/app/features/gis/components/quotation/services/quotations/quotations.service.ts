@@ -1225,6 +1225,13 @@ export class QuotationsService {
     return this.api.POST<any>('v2/risk-commission', JSON.stringify(commissionPayload), API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
+  getAddedCommissions(quoteCode: number) {
+    return this.api.GET( `v2/risk-commission?quoteCode=${quoteCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+      retry(1), catchError(this.errorHandl)
+    );
+  }
+
+
 
 
 
