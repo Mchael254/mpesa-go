@@ -904,7 +904,8 @@
           </div>
 
 
-          <div class=" mb-3" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
+          <div class="collapse mb-4" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
+            <!-- clause table -->
             <p-table #productClauseTable [value]="sessionClauses " [paginator]="sessionClauses?.length > 10"
               [rowsPerPageOptions]="[5, 10, 20]" [rows]="5"
               [tableStyle]="{'min-width': '50rem','table-layout': 'fixed'}">
