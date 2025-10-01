@@ -68,6 +68,7 @@ interface FileItem {
 export class QuotationSummaryComponent implements OnInit, OnDestroy {
   quotationAuthorized: boolean;
   fileUrl: SafeResourceUrl;
+  showWizardModal: boolean;
 
 
   viewClientProfile() {
@@ -398,10 +399,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     // Load quotation details first
     this.getquotationDetails();
-    
+
     // Then load introducers and set the name
     this.setIntroducerNameFromService();
-    
+
     this.quotationCode && this.getQuotationDetails(this.quotationCode);
     this.getuser();
     this.getRiskDetails();
@@ -493,21 +494,21 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.storedQuotationFormDetails = JSON.parse(saved);
       this.quotationFormDetails = JSON.parse(saved);
       log.debug("Set quotationFormDetails:", this.quotationFormDetails);
-      
+
       const branchName = this.storedQuotationFormDetails?.branch?.name;
       if (branchName) {
         this.branch = branchName;
       }
     }
-    
+
   }
 
   setIntroducerNameFromService(): void {
     log.debug("setIntroducerNameFromService called");
-    
+
     const quotationFormDetails = JSON.parse(sessionStorage.getItem("quotationFormDetails") || 'null');
     const introducerCode = quotationFormDetails?.introducer;
-    
+
     if (!introducerCode) {
       log.debug("No introducer code found in session storage");
       return;
@@ -517,7 +518,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.quotationService.getIntroducers().subscribe({
       next: (introducers: any[]) => {
         log.debug("Received introducers data:", introducers);
-        
+
         if (!introducers || introducers.length === 0) {
           log.debug("No introducers received from service");
           return;
@@ -530,13 +531,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           const firstName = matchingIntroducer.surName?.trim() || '';
           const lastName = matchingIntroducer.otherNames?.trim() || '';
           this.introducerName = `${firstName} ${lastName}`.trim();
-          
+
           log.debug("Successfully set introducerName to:", this.introducerName);
         } else {
           log.debug(`No matching introducer found for code: ${introducerCode}`);
           this.introducerName = 'Unknown Introducer';
         }
-        
+
         // Store introducers for potential future use
         this.introducers = introducers;
       },
@@ -3592,11 +3593,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   checkAndOpenQuickQuoteModal(): void {
-    const flag = JSON.parse(sessionStorage.getItem('quickQuoteConvertedFlag') || 'false');
+    const flag = JSON.parse(sessionStorage.getItem('quickQuoteConvertedFlag'));
     if (flag) {
+      this.showWizardModal = true
       setTimeout(() => {
         this.openUserInstructionsModal();
-        sessionStorage.setItem('quickQuoteConvertedFlag', 'false');
+        this.showWizardModal = false
       }, 300);
     }
   }

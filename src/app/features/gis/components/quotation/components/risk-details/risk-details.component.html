@@ -93,14 +93,14 @@
                 <div class="modal-content">
 
                     <div class="modal-body">
-                        <div *ngIf="motorClassAllowed == 'Y'">
+                        <!-- <div *ngIf="motorClassAllowed == 'Y'">
                             <ngx-spinner *ngIf="showModalSpinner" name="modal-spinner" [fullScreen]="false"
                                 bdColor="rgba(255,255,255,0.8)" color="#00529B" type="ball-spin-clockwise" size="medium"
                                 class="modal-overlay-spinner">
                                 <p style="color:#00529B">Scanning logbook...</p>
                             </ngx-spinner>
 
-                        </div>
+                        </div> -->
 
                         <h5 *ngIf="!isEditMode" class="modal-title mt-3 mb-2 addRiskTitle ">
                             {{ 'gis.quotation.add_risk' | translate }}
@@ -1298,8 +1298,8 @@
     </div>
 </div>
 <!-- OTHER RISK DETAILS CARD -->
-<div class="card mb-1">
-    <div class="card-body mx-4">
+<div class="card mb-4">
+    <div class="card-body mx-4 ">
 
         <div class="row mb-2">
             <div class="col-4 clause-title">
@@ -1457,7 +1457,7 @@
 
         <!-- RISK CLAUSES -->
         <div *ngIf="riskActiveTab === 'riskClauses'" [@slideInOut]="isClausesOpen ? 'open' : 'closed'"
-            class="mt-0 w-100">
+            class="mt-0 w-100 pb-5">
             <!-- Floating Column Selector For Risk Clauses -->
             <div *ngIf="showClauseColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
                 [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
@@ -1483,7 +1483,7 @@
                 </div>
             </div>
             <!-- risk clause table -->
-            <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="sessionClauses?.length > 10"
+            <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="sessionClauses?.length > 4"
                 [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
                 [globalFilterFields]="['shortDescription', 'wording', 'heading']" [scrollable]="true"
                 responsiveLayout="scroll" class="mt-3">
