@@ -2033,20 +2033,20 @@
 
               <div class="d-flex justify-content-center align-items-center gap-3 mt-2 mb-2">
 
-                <!-- Zoom In -->
-                <i class="pi pi-plus cursor-pointer" (click)="zoomLevel = zoomLevel + 0.2" pTooltip="Zoom in"
-                  style="cursor: pointer !important; font-size: 16px;">
+                <!-- Zoom Out -->
+
+                <i class="pi pi-minus text-primary" (click)="zoomLevel = zoomLevel - 0.2" pTooltip="Zoom out"
+                  style="cursor: pointer; font-size: 16px;">
                 </i>
 
                 <!-- Current Zoom Percentage -->
                 <span class=" px-2 py-1 border rounded" style="color: black;border-color: black;">
                   {{ (zoomLevel * 100) | number:'1.0-0' }}%
                 </span>
-                <!-- Zoom Out -->
-                <i class="pi pi-minus text-primary" (click)="zoomLevel = zoomLevel - 0.2" pTooltip="Zoom out"
-                  style="cursor: pointer; font-size: 16px;">
+                <!-- Zoom In -->
+                <i class="pi pi-plus cursor-pointer" (click)="zoomLevel = zoomLevel + 0.2" pTooltip="Zoom in"
+                  style="cursor: pointer !important; font-size: 16px;">
                 </i>
-
                 <!-- Reset -->
                 <button class="btn btn-sm btn-primary ms-2" (click)="zoomLevel = 1"
                   style="cursor: pointer !important; font-size: 16px;">
