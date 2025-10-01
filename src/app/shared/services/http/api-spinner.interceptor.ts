@@ -5,17 +5,39 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs/operators';
 
 @Injectable()
+// export class ApiSpinnerInterceptor implements HttpInterceptor {
+
+//   constructor(private spinner: NgxSpinnerService) {}
+
+//   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+//     // Show the spinner when the request starts
+//     this.spinner.show('download_view');
+
+//     return next.handle(req).pipe(
+//       // Hide the spinner when the request completes
+//       finalize(() => this.spinner.hide('download_view'))
+//     );
+//   }
+// }
 export class ApiSpinnerInterceptor implements HttpInterceptor {
 
-  constructor(private spinner: NgxSpinnerService) {}
+  constructor(private spinner: NgxSpinnerService) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Show the spinner when the request starts
-    this.spinner.show('download_view');
+    const skipSpinnerFor = 'aireader/ai-helper/document-extract';
+
+    const shouldSkip = req.url.includes(skipSpinnerFor);
+
+    if (!shouldSkip) {
+      this.spinner.show('download_view');
+    }
 
     return next.handle(req).pipe(
-      // Hide the spinner when the request completes
-      finalize(() => this.spinner.hide('download_view'))
+      finalize(() => {
+        if (!shouldSkip) {
+          this.spinner.hide('download_view');
+        }
+      })
     );
   }
 }

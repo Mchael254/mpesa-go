@@ -128,7 +128,7 @@
                             <p class="upload-text text-danger" *ngIf="!selectedSubclassCode">
                                 Select a subclass to proceed
                             </p>
-                            <div class="upload-area mt-4 mb-1"
+                            <div class="upload-area mt-2 mb-1"
                                 (click)="!selectedSubclassCode ? null : fileInput.click()" [class.dragover]="isDragging"
                                 (drop)="selectedSubclassCode ? onDrop($event) : $event.preventDefault()"
                                 (dragover)="selectedSubclassCode ? onDragOver($event) : $event.preventDefault()"
@@ -160,12 +160,12 @@
 
 
                             </div>
-
-
-
                             <!-- Messages -->
                             <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
                             <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
+                            <app-ai-import-progress-modal [visible]="showAiImportModal" [progress]="uploadProgress">
+                            </app-ai-import-progress-modal>
+
                         </div>
 
                         <form [formGroup]="riskDetailsForm">
@@ -244,21 +244,48 @@
 
                                 <!-- dynamic subclass fields -->
                                 <ng-container *ngFor="let field of subclassFormData; let j = index">
-                                    <div class="col-sm-6 col-6 mb-4">
+                                    <div *ngIf="field.name !== 'ncdLevel' || ncdStatusSelected"
+                                        class="col-sm-6 col-6 mb-4">
                                         <div class="form-group form-group-sm">
-                                            <label *ngIf="field.name" [attr.for]="j + field.name" id="quote-label"
+                                            <!-- <label *ngIf="field.name" [attr.for]="j + field.name" id="quote-label"
+                                                [ngClass]="{ required: field.isMandatory === 'Y' }">
+                                                {{ field.label | translate }}
+                                            </label> -->
+                                            <label *ngIf="field.name !== 'ncdLevel' || ncdStatusSelected"
+                                                [attr.for]="j + field.name" id="quote-label"
                                                 [ngClass]="{ required: field.isMandatory === 'Y' }">
                                                 {{ field.label | translate }}
                                             </label>
 
+
                                             <!-- text input fields -->
                                             <ng-container
-                                                *ngIf="field.name !== 'registrationNumber' && field.name !== 'riskDescription' && riskDetailsForm && riskDetailsForm.contains(field.name)">
-                                                <input *ngIf="field.type === 'text'" type="text" class="form-control"
-                                                    [formControlName]="field.name"
-                                                    [attr.placeholder]="field.label | translate" />
-                                            </ng-container>
+                                                *ngIf="field.name !== 'registrationNumber' && field.name !== 'riskDescription' && field.name !== 'ncdStatus' && riskDetailsForm && riskDetailsForm.contains(field.name)">
 
+                                                <input *ngIf="field.type === 'text'" type="text" class="form-control"
+                                                    [formControlName]="field.name" />
+                                            </ng-container>
+                                            <ng-container *ngIf="field.name === 'ncdStatus'">
+                                                <div *ngIf="field.name === 'ncdStatus'">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio"
+                                                            formControlName="ncdStatus" id="ncdStatusYes" value="Y"
+                                                            (change)="onNcdStatusChange($event)">
+                                                        <label class="form-check-label quote-label" for="ncdStatusYes">
+                                                            {{ 'gis.quotation.yes' |
+                                                            translate }}</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline ms-4">
+                                                        <input class="form-check-input" type="radio"
+                                                            formControlName="ncdStatus" id="ncdStatusNo" value="N"
+                                                            (change)="onNcdStatusChange($event)">
+                                                        <label class="form-check-label quote-label" for="ncdStatusNo">
+                                                            {{
+                                                            'gis.quotation.no' |
+                                                            translate }}</label>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
                                             <ng-container *ngIf="field.name === 'registrationNumber'">
                                                 <input type="text" id="quote-input"
                                                     class="form-control form-control-sm mb-1"
@@ -266,17 +293,29 @@
                                                     (input)="riskIdPassed($event); transformToUpperCase($event)"
                                                     placeholder="KAA 123X">
                                             </ng-container>
-                                            <ng-container *ngIf="field.name === 'riskDescription'">
+                                            <ng-container
+                                                *ngIf="motorClassAllowed =='Y' && field.name === 'riskDescription'">
                                                 <input type="text" id="quote-input"
                                                     class="form-control form-control-sm mb-1 bg-light text-muted"
                                                     formControlName="riskDescription" [readonly]="true"
                                                     [value]="vehiclemakeModel">
 
                                             </ng-container>
-
-                                            <!-- select fields -->
                                             <ng-container
-                                                *ngIf="field.name !== 'yearOfManufacture' && riskDetailsForm && riskDetailsForm.contains(field.name)">
+                                                *ngIf="motorClassAllowed =='N' && field.name === 'riskDescription'">
+                                                <input type="text" id="quote-input"
+                                                    class="form-control form-control-sm mb-1 "
+                                                    formControlName="riskDescription">
+
+                                            </ng-container>
+                                            <!-- select fields -->
+                                            <ng-container *ngIf="field.name !== 'yearOfManufacture' 
+                                                         && field.name !== 'periodRates'
+                                                         && field.name !== 'conveyanceType'
+                                                          && field.name !== 'territory'
+                                                           && field.name !== 'ncdLevel'
+                                                        && riskDetailsForm 
+                                                        && riskDetailsForm.contains(field.name)">
                                                 <p-dropdown *ngIf="field.type === 'select'"
                                                     [formControlName]="field.name" [options]="field.selectOptions"
                                                     optionLabel="label" optionValue="value" [filter]="true"
@@ -291,7 +330,32 @@
                                                 </p-dropdown>
 
                                             </ng-container>
-
+                                            <!-- MARINE AND FIRE FIELDS -->
+                                            <!-- PERIOD RATES -->
+                                            <ng-container *ngIf="field.name === 'periodRates'">
+                                                <p-dropdown formControlName="periodRates" [options]="periodRates"
+                                                    placeholder="" [filter]="true" optionLabel="label">
+                                                </p-dropdown>
+                                            </ng-container>
+                                            <!-- CONVEYANCE TYPE -->
+                                            <ng-container *ngIf="field.name === 'conveyanceType'">
+                                                <p-dropdown formControlName="conveyanceType"
+                                                    [options]="conveyannceTypes" placeholder="" [filter]="true"
+                                                    optionLabel="label">
+                                                </p-dropdown>
+                                            </ng-container>
+                                            <!-- NCD Level -->
+                                            <ng-container *ngIf="ncdStatusSelected && field.name === 'ncdLevel'">
+                                                <p-dropdown formControlName="ncdLevel" [options]="ncdLevels"
+                                                    placeholder="" [filter]="true" optionLabel="label">
+                                                </p-dropdown>
+                                            </ng-container>
+                                            <!-- TERRITORIES -->
+                                            <ng-container *ngIf="field.name === 'territory'">
+                                                <p-dropdown formControlName="territory" [options]="territories"
+                                                    placeholder="" [filter]="true" optionLabel="description">
+                                                </p-dropdown>
+                                            </ng-container>
                                             <!-- DATE -->
                                             <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
                                                 dateFormat="yy-mm-dd" [showIcon]="true"

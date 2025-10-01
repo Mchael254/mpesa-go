@@ -258,7 +258,7 @@
                     <textarea *ngIf="field.name === 'internalComments'" rows="3" class="form-control"
                       [formControlName]="field.name"
                       style="overflow-y:auto; overflow-x:hidden; white-space:pre-wrap; word-wrap:break-word;">
-
+                      </textarea>
                     <textarea *ngIf="field.name === 'externalComments'" rows="3" class="form-control"
                       [formControlName]="field.name"
                       style="overflow-y:auto; overflow-x:hidden; white-space:pre-wrap; word-wrap:break-word;">
@@ -838,7 +838,7 @@
   </div>
 
   <!-- Clauses section -->
-  <div class="card mb-3"  *ngIf="productDetails && productDetails.length > 0">
+  <div class="card mb-3" *ngIf="productDetails && productDetails.length > 0">
     <div class="card-body my-4 mx-4 ">
 
       <div class="row mb-3">
@@ -1046,9 +1046,10 @@
                     </div>
 
                     <p-table *ngIf="nonMandatoryProductClause && nonMandatoryProductClause.length > 0"
-                      #addProductClausesTable [value]="nonMandatoryProductClause" [rows]="5" [paginator]="true"
-                      selectionMode="multiple" [(selection)]="selectedClauses" stripedRows
-                      styleClass="p-datatable-striped" [rowsPerPageOptions]="[5, 10, 20]">
+                      #addProductClausesTable [value]="nonMandatoryProductClause" [rows]="5"
+                      [paginator]="nonMandatoryProductClause?.length > 10" selectionMode="multiple"
+                      [(selection)]="selectedClauses" stripedRows styleClass="p-datatable-striped"
+                      [rowsPerPageOptions]="[5, 10, 20]">
 
                       <ng-template pTemplate="header">
                         <tr>
