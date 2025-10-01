@@ -202,7 +202,6 @@ tr.ng-star-inserted {
 ::ng-deep .ngx-spinner-overlay {
   position: fixed !important;
   inset: 0 !important;
-  /* replaces top, right, bottom, left */
   z-index: 2147483647 !important;
 }
 
