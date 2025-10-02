@@ -371,6 +371,7 @@ export class RiskDetailsComponent {
   showCommissions: boolean = true;
   commissionsColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
 
+
   constructor(
     public subclassService: SubclassesService,
     private subclassCoverTypesService: SubClassCoverTypesService,
@@ -605,6 +606,12 @@ export class RiskDetailsComponent {
         next: (res: any) => {
           this.quotationDetails = res;
           log.debug("Quotation details-risk details", this.quotationDetails);
+
+          // Reset commissions tab if currently active but agent source is not selected
+          if (this.riskActiveTab === 'commissions' && this.isCommissionsButtonDisabled) {
+            this.riskActiveTab = 'riskClauses'; // Reset to default tab
+          }
+
           this.quoteProductCode = this.quotationDetails.quotationProducts?.[0].code;
           sessionStorage.setItem('newQuotationProductCode', this.quoteProductCode);
           this.selectedSubclassCode = this.quotationDetails?.quotationProducts?.[0].riskInformation?.[0]?.subclassCode;
@@ -3926,6 +3933,11 @@ export class RiskDetailsComponent {
     return levelNumber === 2 ? 'Motor Details' : 'Other Details';
   }
   setRiskTab(tab: string): void {
+    // Prevent switching to commissions tab if agent source is not selected
+    if (tab === 'commissions' && this.isCommissionsButtonDisabled) {
+      return;
+    }
+
     this.riskActiveTab = tab;
   }
 
@@ -5116,6 +5128,11 @@ export class RiskDetailsComponent {
   }
 
   openCommissionsModal(): void {
+    if (this.isCommissionsButtonDisabled) {
+      log.debug('Agent source must be selected to access commissions');
+      return;
+    }
+
     if (!this.selectedSubclassCode) {
       log.debug('Subclass code is required to load excesses');
       return;
@@ -5251,6 +5268,47 @@ export class RiskDetailsComponent {
     });
   }
 
+  //guard commissions if agent not selected
+  isAgentSourceSelected(): boolean {
+    if (!this.quotationDetails?.source?.description) {
+      return false;
+    }
+
+    const sourceDescription = this.quotationDetails.source.description;
+    return sourceDescription === 'Agent' ||
+      sourceDescription === 'Agent/b' ||
+      sourceDescription === 'Broker/agent';
+  }
+
+  get isCommissionsButtonDisabled(): boolean {
+    return !this.isAgentSourceSelected();
+  }
+
+  /**
+   * Checks if a commission field should be read-only (non-editable)
+   * @param fieldName The name of the field to check
+   * @returns boolean indicating if the field should be read-only
+   */
+  isCommissionFieldReadOnly(fieldName: string): boolean {
+    const readOnlyFields = [
+      'agentName',
+      'agent_name', 
+      'accountType',
+      'account_type',
+      'setupRate',
+      'setup_rate',
+      'witholdingRate',
+      'witholding_rate',
+      'witholdingTaxType',
+      'witholding_tax_type',
+      'transactionType',
+      'transaction_type',
+      'discAmount',
+      'disc_amount'
+    ];
+    
+    return readOnlyFields.includes(fieldName);
+  }
 
   onAddOtherSchedule(tab: any): void {
     log.debug("DYNAMIC SUBCLASS FORM FIELDS", this.dynamicSubclassFormFields)
