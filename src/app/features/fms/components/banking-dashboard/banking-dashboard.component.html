@@ -24,33 +24,59 @@
 
   <div class="card">
     <div class="card-body">
-      <h5 class="pt-2 pb-2 text-color">
+      <h5 class="pt-2 pb-2 text-primary">
         {{ "fms.banking.bankingProcess" | translate }}
       </h5>
       <div class="d-flex justify-content-end pb-1">
         <button class="btn btn-primary" (click)="navigateToBanking()">
           {{ "fms.banking.newBankingProcess" | translate }}
         </button>
+        <span class="pt-2" (click)="showColumnsDialogs()">
+          <i class="fa-regular fa-square-caret-down"></i>
+        </span>
       </div>
+      <!-- PrimeNG Dialog for Column Selection -->
+
+      <!-- PrimeNG Dialog for column selection -->
+
+      <p-dialog
+        header="Select Columns"
+        [(visible)]="displayColumnDialog"
+        [modal]="true"
+        [style]="{ width: '400px' }"
+      >
+        <div class="p-fluid">
+          <div *ngFor="let col of cols" class="flex items-center gap-2 mb-2">
+            <p-checkbox
+              name="col"
+              [value]="col"
+              [(ngModel)]="selectedColumns"
+              [label]="col.header"
+            ></p-checkbox>
+          </div>
+        </div>
+      </p-dialog>
+
       <div class="card">
         <p-table
           [value]="filteredReceipts"
           [resizableColumns]="true"
           [scrollable]="true"
-          selectionMode="single"
+          selectionMode="multiple"
           scrollHeight="500px"
           sortMode="multiple"
-          (onRowSelect)="onRowSelect($event)"
+          [(selection)]="selectedrct"
         >
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="batchNo">
+              <th *ngFor="let col of selectedColumns" pSortableColumn="batchNo">
                 <div class="flex items-center gap-2">
-                  {{ "fms.receipting.batchNumber" | translate }}
-                  <p-sortIcon field="batchNo" />
+                  {{ col.header | translate }}
+                  <!-- <p-sortIcon[field] ="col.field" /> -->
+                  <p-sortIcon [field]="col.field"></p-sortIcon>
                 </div>
               </th>
-              <th pSortableColumn="slipNo">
+              <!-- <th pSortableColumn="slipNo">
                 <div class="flex items-center gap-2">
                   {{ "fms.banking.slipNumber" | translate }}
                   <p-sortIcon field="slipNo" />
@@ -91,11 +117,11 @@
                 <div class="flex items-center gap-2">
                   {{ "fms.receipting.actions" | translate }}
                 </div>
-              </th>
+              </th> -->
             </tr>
             <tr>
               <!-- Filter row -->
-              <th>
+              <!-- <th>
                 <input
                   type="text"
                   class="form-control form-control-sm"
@@ -166,19 +192,51 @@
                 >
                   {{ "fms.banking.clearFilter" | translate }}
                 </button>
+              </th> -->
+              <th *ngFor="let col of selectedColumns">
+                <input
+                  *ngIf="col.field !== 'actions'"
+                  type="text"
+                  class="form-control form-control-sm"
+                  (keyup.enter)="filter($event, col.field)"
+                  (input)="filter($event, col.field)"
+                  placeholder="{{ 'fms.receipting.filter' | translate }}"
+                />
+
+                <button
+                  *ngIf="col.field === 'actions'"
+                  class="btn btn-outline-primary btn-sm"
+                  (click)="clearFilter()"
+                >
+                  {{ "fms.banking.clearFilter" | translate }}
+                </button>
               </th>
             </tr>
           </ng-template>
+
           <ng-template pTemplate="body" let-receipt>
-            <tr [pSelectableRow]="receipt">
-              <td>{{ receipt.batchNo }}</td>
-              <td>{{ receipt.slipNo }}</td>
+            <tr [pSelectableRow]="receipt" (click)="onRow()">
+              <td *ngFor="let col of selectedColumns">
+                <!-- Use ngSwitch to handle special cases -->
+                <ng-container [ngSwitch]="col.field">
+                  <ng-container *ngSwitchCase="'date'">
+                    {{ receipt[col.field] | date : "yyyy-MM-dd" }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'actions'">
+                    <a class="btn">deposit</a>
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    {{ receipt[col.field] }}
+                  </ng-container>
+                </ng-container>
+              </td>
+              <!-- <td>{{ receipt.slipNo }}</td>
               <td>{{ receipt.date | date : "yyyy-MM-dd" }}</td>
               <td>{{ receipt.assignee }}</td>
               <td>{{ receipt.amount }}</td>
               <td>{{ receipt.bankAcc }}</td>
               <td>{{ receipt.status }}</td>
-              <td><a class="btn">deposit</a></td>
+              <td><a class="btn">deposit</a></td> -->
             </tr>
           </ng-template>
         </p-table>
