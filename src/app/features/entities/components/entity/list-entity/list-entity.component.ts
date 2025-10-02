@@ -220,10 +220,10 @@ export class ListEntityComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
   }
 
-  viewDetailsWithId(rowId: number) {
+  viewDetailsWithId(rowId: number, category?: string): void {
     // let partyId: number;
 
-    this.router.navigate([ `/home/entity/view/${rowId}`]);
+    this.router.navigate([ `/home/entity/view/${rowId}`], { queryParams: { category } });
     // fetch account details to fetch party id before routing to 360 view
     /*this.accountService
       .getAccountDetailsByAccountCode(rowId)
