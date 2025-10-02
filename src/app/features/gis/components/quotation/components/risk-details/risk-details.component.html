@@ -1407,10 +1407,19 @@
                         </button>
                     </div>
                     <!-- under development -->
-                    <div>
+                    <div pTooltip="{{ isCommissionsButtonDisabled ? ('gis.quotation.agent_source_required_for_commissions' | translate) : '' }}" 
+                         tooltipPosition="top" 
+                         class="d-inline-block"
+                         style="cursor: pointer">
                         <button class="btn btn-sm"
-                            [ngClass]="{'no-border-bottom': riskActiveTab === 'commissions', 'text-primary border-0': riskActiveTab !== 'commissions'}"
-                            (click)="setRiskTab('commissions')"> {{ 'gis.quotation.commissions' | translate }}
+                            [ngClass]="{
+                                'no-border-bottom': riskActiveTab === 'commissions' && !isCommissionsButtonDisabled, 
+                                'text-primary border-0': riskActiveTab !== 'commissions' && !isCommissionsButtonDisabled,
+                                'text-muted': isCommissionsButtonDisabled
+                            }"
+                            [disabled]="isCommissionsButtonDisabled"
+                            (click)="!isCommissionsButtonDisabled && setRiskTab('commissions')"> 
+                            {{ 'gis.quotation.commissions' | translate }}
                         </button>
                     </div>
 
@@ -1518,16 +1527,27 @@
 
                     <!-- commissions action tabs -->
                     <div *ngIf="riskActiveTab === 'commissions'">
-                        <button class="btn btn-outline-primary btn-sm mb-1 me-2">
+                        <button class="btn btn-outline-primary btn-sm mb-1 me-2"
+                                [disabled]="isCommissionsButtonDisabled"
+                                [ngClass]="{'btn-outline-secondary': isCommissionsButtonDisabled}">
                             {{'gis.quotation.save_changes' | translate}}
                         </button>
-                        <button class="btn btn-primary btn-sm mb-1" (click)="openCommissionsModal()">
+                        <button class="btn btn-primary btn-sm mb-1" 
+                                [disabled]="isCommissionsButtonDisabled"
+                                [ngClass]="{'btn-secondary': isCommissionsButtonDisabled}"
+                                (click)="!isCommissionsButtonDisabled && openCommissionsModal()">
                             {{'gis.quotation.add_commission' | translate}}
                         </button>
-                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
-                            [ngClass]="{ 'pi-caret-up': showCommissions, 'pi-caret-down': !showCommissions }"
-                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                            (click)="toggleCommissionsColumns(iconTrigger)">
+                        <i #iconTrigger class="pi border rounded-1 p-1"
+                            [ngClass]="{ 
+                                'pi-caret-up': showCommissions, 
+                                'pi-caret-down': !showCommissions,
+                                'border-black text-black': !isCommissionsButtonDisabled,
+                                'border-secondary text-muted': isCommissionsButtonDisabled
+                            }"
+                            [style.cursor]="isCommissionsButtonDisabled ? 'not-allowed' : 'pointer'"
+                            style="font-size: 15px; margin-left: 8px; padding: 4px 6px;"
+                            (click)="!isCommissionsButtonDisabled && toggleCommissionsColumns(iconTrigger)">
                         </i>
 
                     </div>
@@ -2614,15 +2634,23 @@
 
                                 <!-- Default columns added dynamically) -->
                                 <ng-container *ngSwitchDefault>
-                                    <ng-container *ngIf="col.field === 'value'; else defaultField">
-                                        <input type="number" class="form-control w-100 text-end"
-                                            [(ngModel)]="commission[col.field]" [ngModelOptions]="{standalone: true}"
-                                            (blur)="commission[col.field] = sanitizeCurrency(commission[col.field])" />
+                                    <!-- Non-editable fields - display as read-only text -->
+                                    <ng-container *ngIf="isCommissionFieldReadOnly(col.field); else editableField">
+                                        <span class="form-control-plaintext commission-readonly px-2">{{ commission[col.field] || '-' }}</span>
                                     </ng-container>
 
-                                    <ng-template #defaultField>
-                                        <input type="text" class="form-control w-100"
-                                            [(ngModel)]="commission[col.field]" [ngModelOptions]="{standalone: true}" />
+                                    <!-- Editable fields -->
+                                    <ng-template #editableField>
+                                        <ng-container *ngIf="col.field === 'value'; else defaultField">
+                                            <input type="number" class="form-control w-100 text-end"
+                                                [(ngModel)]="commission[col.field]" [ngModelOptions]="{standalone: true}"
+                                                (blur)="commission[col.field] = sanitizeCurrency(commission[col.field])" />
+                                        </ng-container>
+
+                                        <ng-template #defaultField>
+                                            <input type="text" class="form-control w-100"
+                                                [(ngModel)]="commission[col.field]" [ngModelOptions]="{standalone: true}" />
+                                        </ng-template>
                                     </ng-template>
                                 </ng-container>
 
