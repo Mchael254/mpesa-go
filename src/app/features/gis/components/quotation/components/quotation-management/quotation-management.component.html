@@ -45,7 +45,8 @@
       <p-table [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true"
         scrollDirection="horizontal" [showCurrentPageReport]="true" [tableStyle]="{'max-width': '150rem'}"
         currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
-        [resizableColumns]="true" [reorderableColumns]="true">
+        [resizableColumns]="true" [reorderableColumns]="true" [rowsPerPageOptions]="[5, 10, 20]"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
         <ng-template pTemplate="header">
           <tr>
             <th style="background-color: #f0f0f0;" pSortableColumn="quotation_number" class="flexible-header">

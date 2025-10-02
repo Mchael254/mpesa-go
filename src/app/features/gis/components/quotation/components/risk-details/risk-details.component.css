@@ -533,3 +533,35 @@ h2 {
   /* greyed out */
   cursor: not-allowed;
 }
+
+/* Disabled commissions button styling */
+.btn:disabled.text-muted {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #f8f9fa;
+}
+
+.btn:disabled.text-muted:hover {
+  color: #6c757d !important;
+  background-color: #f8f9fa !important;
+  border-color: #dee2e6 !important;
+}
+
+/* Read-only commission fields styling */
+.form-control-plaintext {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  color: #6c757d;
+  font-size: 0.875rem;
+  min-height: 31px;
+  display: flex;
+  align-items: center;
+}
+
+/* Ensure consistent styling in commission table */
+.commission-readonly {
+  background-color: #f8f9fa !important;
+  color: #6c757d !important;
+  cursor: not-allowed;
+  border: 1px solid #e9ecef !important;
+}
