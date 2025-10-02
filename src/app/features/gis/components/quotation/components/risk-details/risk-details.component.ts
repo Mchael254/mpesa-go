@@ -18,7 +18,7 @@ import { QuotationsService } from '../../services/quotations/quotations.service'
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Clause, CreateLimitsOfLiability, DynamicRiskField, Excesses, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab, TaxInformation, TaxPayload } from '../../data/quotationsDTO';
-import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
+import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, territories, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, firstValueFrom, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
 import { Table } from 'primeng/table';
@@ -28,6 +28,7 @@ import * as bootstrap from 'bootstrap';
 import { riskClause, riskPeril } from 'src/app/features/gis/data/quotations-dto';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { TerritoriesService } from '../../../setups/services/perils-territories/territories/territories.service';
 
 
 const log = new Logger('RiskDetailsComponent');
@@ -56,7 +57,7 @@ const log = new Logger('RiskDetailsComponent');
 })
 
 export class RiskDetailsComponent {
-  logBookUploaded: boolean;
+
 
   getFreeLimitLabel(arg0: any) {
     throw new Error('Method not implemented.');
@@ -370,6 +371,31 @@ export class RiskDetailsComponent {
   selectedCommission: any;
   showCommissions: boolean = true;
   commissionsColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
+  periodRates = [
+    { label: 'Prorata', value: 'P' },
+    { label: 'Short period rates', value: 'S' },
+    { label: 'Full', value: 'F' },
+  ]
+  conveyannceTypes = [
+    { label: 'By sea', value: 'SEA' },
+    { label: 'By air', value: 'AIR' },
+    { label: 'By sea-rail-road', value: 'SEA-RAIL-ROAD' },
+    { label: 'By sea-road', value: 'SEA-ROAD' },
+    { label: 'By air-road', value: 'AIR-ROAD' },
+
+  ]
+  ncdLevels = [
+    { label: '1', value: 1 },
+    { label: '2', value: 2 },
+    { label: '3', value: 3 },
+    { label: '4', value: 4 },
+    { label: '5', value: 5 },
+  ]
+  logBookUploaded: boolean;
+  showAiImportModal: boolean;
+  uploadProgress: number;
+  ncdStatusSelected: boolean;
+  territories: territories[] = [];
 
 
   constructor(
@@ -393,7 +419,8 @@ export class RiskDetailsComponent {
     public cdr: ChangeDetectorRef,
     private renderer: Renderer2,
     private router: Router,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    public territoryService: TerritoriesService
 
   ) {
     this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteConvertedFlag'))
@@ -441,7 +468,6 @@ export class RiskDetailsComponent {
     this.quoteProductCode = sessionStorage.getItem('newQuotationProductCode');
     const savedSubclass = sessionStorage.getItem('selectedSubclassCode');
     this.selectedSubclassCode = savedSubclass
-    this.selectedSubclassCode && this.onSubclassSelected(this.selectedSubclassCode)
 
     // if (savedSubclass) {
     //   this.selectedSubclassCode = savedSubclass;
@@ -799,8 +825,7 @@ export class RiskDetailsComponent {
     });
     if (this.quickQuoteConverted) {
       log.debug('selected subclass code after converting to normal quote', this.selectedSubclassCode)
-      this.selectedSubclassCode && this.onSubclassSelected(this.selectedSubclassCode)
-      this.riskDetailsForm.patchValue({ subclass: this.selectedSubclassCode });
+      this.selectedSubclassCode = null
 
     }
   }
@@ -842,10 +867,13 @@ export class RiskDetailsComponent {
           this.riskDetailsForm.addControl(field.name, control);
           log.debug(`Added new dynamicSubclass control: ${field.name}`);
         }
+        let defaultValue = '';
+        if (field.name === 'ncdStatus') {
+          defaultValue = 'N';
+        }
       });
 
       this.fetchRegexPattern();
-      this.fetchScheduleRelatedData();
 
       if (this.isEditMode) {
         this.patchEditValues();
@@ -1206,32 +1234,34 @@ export class RiskDetailsComponent {
   }
 
 
-  getVehicleModel(code: number, callback?: () => void) {
-    this.vehicleModelService.getAllVehicleModel(code).subscribe(data => {
-      this.vehicleModelList = data;
-      this.vehicleModelDetails = this.vehicleModelList._embedded.vehicle_model_dto_list.map((value) => ({
-        ...value,
-        name: value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase()
-      }));
+  getVehicleModel(code: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.vehicleModelService.getAllVehicleModel(code).subscribe({
+        next: (data) => {
+          this.vehicleModelList = data;
+          this.vehicleModelDetails = this.vehicleModelList._embedded.vehicle_model_dto_list.map((value) => ({
+            ...value,
+            name: value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase()
+          }));
 
-      log.debug("Vehicle Model Details", this.vehicleModelDetails);
-      sessionStorage.setItem('vehicleModelList', JSON.stringify(this.vehicleModelDetails));
-      // populate 
-      this.safePopulateSelectOptions(this.subclassFormData, 'vehicleModel', this.vehicleModelDetails, 'name', 'code');
+          log.debug("Vehicle Model Details", this.vehicleModelDetails);
+          sessionStorage.setItem('vehicleModelList', JSON.stringify(this.vehicleModelDetails));
 
+          this.safePopulateSelectOptions(this.subclassFormData, 'vehicleModel', this.vehicleModelDetails, 'name', 'code');
 
-      // existing logic...
-      if (this.storedRiskFormDetails) {
-        const selectedVehicleModel = this.vehicleModelDetails.find(
-          model => model.code === this.storedRiskFormDetails?.vehicleModel
-        );
-        if (selectedVehicleModel) {
-          this.riskDetailsForm.patchValue({ vehicleModel: selectedVehicleModel.code });
-        }
-      }
+          if (this.storedRiskFormDetails) {
+            const selectedVehicleModel = this.vehicleModelDetails.find(
+              model => model.code === this.storedRiskFormDetails?.vehicleModel
+            );
+            if (selectedVehicleModel) {
+              this.riskDetailsForm.patchValue({ vehicleModel: selectedVehicleModel.code });
+            }
+          }
 
-      // ✅ notify caller
-      if (callback) callback();
+          resolve(); // ✅ promise resolved here
+        },
+        error: (err) => reject(err) // ✅ handle errors too
+      });
     });
   }
 
@@ -1361,8 +1391,13 @@ export class RiskDetailsComponent {
         this.fetchTaxes();
         this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
         this.loadAllBinders();
+        this.fetchTerritories()
         this.loadSubclassClauses(this.selectedSubclassCode);
-        this.getVehicleMake();
+        log.debug('Motor class allowed:', this.motorClassAllowed)
+        if (this.motorClassAllowed == 'Y') {
+          this.getVehicleMake();
+          this.fetchScheduleRelatedData();
+        }
         selectedVehicleMake && this.getVehicleModel(selectedVehicleMake);
 
         this.fetchYearOfManufacture();
@@ -1598,7 +1633,7 @@ export class RiskDetailsComponent {
           log.debug("Quotation full details:", quoteDetails);
           log.debug("Matched product from quotation:", selectedProduct);
           const matchedRisk: RiskInformation = selectedProduct?.riskInformation?.find(risk =>
-            risk.propertyId === this.riskDetailsForm.value.registrationNumber
+            risk.propertyId === this.riskDetailsForm.value.registrationNumber || this.riskDetailsForm.value.riskId
           );
           log.debug("Matched risk from quotation:", matchedRisk);
           this.selectedRisk = matchedRisk
@@ -1834,7 +1869,7 @@ export class RiskDetailsComponent {
       itemDesc: this.riskDetailsForm.value.riskDescription,
       wef: FormCoverFrom,
       wet: FormCoverTo,
-      propertyId: this.riskDetailsForm.value.registrationNumber,
+      propertyId: this.riskDetailsForm.value.registrationNumber || this.riskDetailsForm.value.riskId,
       annualPremium: null,
       sectionsDetails: null,
       action: action,
@@ -6519,33 +6554,76 @@ export class RiskDetailsComponent {
           files: [base64String]   // 👈 send BASE64 here instead of URL
         }
       }
-      this.spinner.show('modal-spinner');
-      this.showModalSpinner = true;
+
+      this.showAiImportModal = true;
+      this.uploadProgress = 10;
+      setTimeout(() => this.uploadProgress = 30, 500);
+      // this.quotationService.readScannedDocuments(payload).subscribe({
+      //   next: (res) => {
+      //     this.uploadProgress = 60;
+      //     const data = res.data;
+      //     this.uploadFile();
+      //     this.patchUploadedData(data);
+      //     this.uploadProgress = 90;
+      //     log.debug("Response after scanning Logbook", res);
+      //     setTimeout(() => {
+      //       this.uploadProgress = 100;
+      //       this.globalMessagingService.displaySuccessMessage(
+      //         'Success',
+      //         'Successfully scanned Logbook'
+      //       );
+
+      //       // hide modal after short delay
+      //       setTimeout(() => this.showAiImportModal = false, 500);
+      //     }, 500);
+      //   },
+      //   error: (err) => {
+      //     log.error('[RiskDetailsComponent] Log book upload failed:', err);
+      //     log.error('Error fetched log: ', err);
+
+      //     log.debug('Full error object for investigation:', err);
+
+      //     this.globalMessagingService.displayErrorMessage(
+      //       'Upload Failed',
+      //       err?.error?.message || 'An error occurred while uploading logbook'
+      //     );
+
+      //     this.showAiImportModal = false;
+      //   }
+
+      // });
       this.quotationService.readScannedDocuments(payload).subscribe({
         next: (res) => {
+          this.uploadProgress = 60;
+
           const data = res.data;
-          this.uploadFile();
-          this.patchUploadedData(data);
-          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully scanned Logbook');
-          log.debug("Response after scanning Logbook", res);
-          this.spinner.hide('modal-spinner');
-          this.showModalSpinner = false;
+
+          this.uploadFile()
+            .then(() => {
+              this.uploadProgress = 75;
+              return this.patchUploadedData(data);
+            })
+            .then(() => {
+              this.uploadProgress = 90;
+
+              setTimeout(() => {
+                this.uploadProgress = 100;
+                // this.globalMessagingService.displaySuccessMessage(
+                //   'Success',
+                //   'Successfully scanned Logbook'
+                // );
+
+                setTimeout(() => this.showAiImportModal = false, 500);
+              }, 500);
+            });
         },
         error: (err) => {
-          log.error('[RiskDetailsComponent] Log book upload failed:', err);
-          log.error('Error fetched log: ', err);
-
-          log.debug('Full error object for investigation:', err);
-
           this.globalMessagingService.displayErrorMessage(
             'Upload Failed',
             err?.error?.message || 'An error occurred while uploading logbook'
           );
-
-          this.spinner.hide('modal-spinner');
-          this.showModalSpinner = false;
+          this.showAiImportModal = false;
         }
-
       });
 
 
@@ -6639,23 +6717,43 @@ export class RiskDetailsComponent {
     this.riskDetailsForm.patchValue(keepValues);
   }
 
-  uploadFile(): void {
-    if (!this.selectedFile) return;
+  // uploadFile(): void {
+  //   if (!this.selectedFile) return;
+
+  //   this.uploading = true;
+  //   this.errorMessage = '';
+  //   this.successMessage = '';
+
+
+  //   setTimeout(() => {
+  //     this.uploading = false;
+  //     // this.successMessage = 'Log book uploaded successfully!';
+
+  //     setTimeout(() => {
+  //       // this.selectedFile = null;
+  //     }, 2000);
+  //   }, 2000);
+  // }
+  uploadFile(): Promise<void> {
+    if (!this.selectedFile) return Promise.resolve();
 
     this.uploading = true;
     this.errorMessage = '';
     this.successMessage = '';
 
-
-    setTimeout(() => {
-      this.uploading = false;
-      // this.successMessage = 'Log book uploaded successfully!';
-
-      setTimeout(() => {
-        // this.selectedFile = null;
-      }, 2000);
-    }, 2000);
+    return new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (this.uploadProgress < 90) {   // stop at 90 until API confirms
+          this.uploadProgress += 5;
+        } else {
+          clearInterval(interval);
+          this.uploading = false;
+          resolve();
+        }
+      }, 300);
+    });
   }
+
 
   formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
@@ -6687,63 +6785,127 @@ export class RiskDetailsComponent {
     }
   }
 
-  patchUploadedData(data: any) {
-    this.logBookUploaded = true
-    let uploadedVehicleModel
-    log.debug("VehicleMake List:", this.vehicleMakeList)
-    log.debug("Vehicle Model List:", this.vehicleModelDetails)
-    log.debug("color", this.motorColorsList)
-    log.debug("bodytype", this.bodytypesList)
-    const uploadedVehicleMake = this.vehicleMakeList?.find(
-      make => make.name.toLowerCase().includes(data.vehicle_make.toLowerCase())
-    );
-    log.debug("Vehicle make:", uploadedVehicleMake)
-    if (uploadedVehicleMake) {
-      this.getVehicleModel(uploadedVehicleMake.code, () => {
-        uploadedVehicleModel = this.vehicleModelDetails?.find(
-          model => data.vehicle_model.toLowerCase().includes(model.name.toLowerCase())
-        );
-        this.riskDetailsForm.patchValue({ vehicleModel: uploadedVehicleModel.code });
+  // patchUploadedData(data: any) {
+  //   this.logBookUploaded = true
+  //   let uploadedVehicleModel
+  //   log.debug("VehicleMake List:", this.vehicleMakeList)
+  //   log.debug("Vehicle Model List:", this.vehicleModelDetails)
+  //   log.debug("color", this.motorColorsList)
+  //   log.debug("bodytype", this.bodytypesList)
+  //   const uploadedVehicleMake = this.vehicleMakeList?.find(
+  //     make => make.name.toLowerCase().includes(data.vehicle_make.toLowerCase())
+  //   );
+  //   log.debug("Vehicle make:", uploadedVehicleMake)
+  //   if (uploadedVehicleMake) {
+  //     this.getVehicleModel(uploadedVehicleMake.code, () => {
+  //       uploadedVehicleModel = this.vehicleModelDetails?.find(
+  //         model => data.vehicle_model.toLowerCase().includes(model.name.toLowerCase())
+  //       );
+  //       this.riskDetailsForm.patchValue({ vehicleModel: uploadedVehicleModel.code });
 
-        log.debug("Vehicle Model:", uploadedVehicleModel);
-        this.selectedVehicleModelName = uploadedVehicleModel.name
-        this.selectedVehicleMakeName = uploadedVehicleMake?.name
-        this.vehiclemakeModel = this.selectedVehicleMakeName + ' ' + this.selectedVehicleModelName;
-        log.debug('Selected Vehicle make model', this.vehiclemakeModel);
-        if (this.vehiclemakeModel) {
-          this.riskDetailsForm.patchValue({ riskDescription: this.vehiclemakeModel });
-        }
-      });
-    }
+  //       log.debug("Vehicle Model:", uploadedVehicleModel);
+  //       this.selectedVehicleModelName = uploadedVehicleModel.name
+  //       this.selectedVehicleMakeName = uploadedVehicleMake?.name
+  //       this.vehiclemakeModel = this.selectedVehicleMakeName + ' ' + this.selectedVehicleModelName;
+  //       log.debug('Selected Vehicle make model', this.vehiclemakeModel);
+  //       if (this.vehiclemakeModel) {
+  //         this.riskDetailsForm.patchValue({ riskDescription: this.vehiclemakeModel });
+  //       }
+  //     });
+  //   }
 
 
+  //   const uploadedVehicleColor = this.motorColorsList.find(
+  //     color => data.color.toLowerCase().includes(color.description.toLowerCase())
+  //   );
+  //   let uploadedBodyType = this.bodytypesList.find(
+  //     bodyType => data.body_type.toLowerCase().includes(bodyType.description.toLowerCase())
+  //   );
+
+  //   if (!uploadedBodyType) {
+  //     // fallback: normalize and compare
+  //     const normalize = (str: string) =>
+  //       str.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  //     uploadedBodyType = this.bodytypesList.find(
+  //       bodyType => normalize(data.body_type).includes(normalize(bodyType.description))
+  //     );
+  //   }
+
+  //   log.debug("body type:", uploadedBodyType);
+
+  //   this.riskDetailsForm.patchValue({
+  //     registrationNumber: data?.reg_number,
+  //     // riskDescription: this.selectedRisk.itemDesc,
+  //     // coverType: this.selectedRisk.coverTypeCode,
+  //     // premiumBand: this.selectedRisk.binderCode,
+  //     value: data?.vehicle_value,
+  //     vehicleMake: uploadedVehicleMake?.code,
+  //     // vehicleModel: uploadedVehicleModel?.code,
+  //     yearOfManufacture: data?.year_of_manufacture,
+  //     cubicCapacity: data?.cubic_capacity,
+  //     seatingCapacity: data?.seating_capacity,
+  //     bodyType: uploadedBodyType?.description,
+  //     color: uploadedVehicleColor?.code,
+  //     chasisNumber: data?.chassis_number,
+  //     engineNumber: data?.engine_number
+  //   });
+  // }
+  patchUploadedData(data: any): Promise<void> {
+    return new Promise((resolve) => {
+      this.logBookUploaded = true;
+
+      const uploadedVehicleMake = this.vehicleMakeList?.find(
+        make => make.name.toLowerCase().includes(data.vehicle_make.toLowerCase())
+      );
+
+      if (uploadedVehicleMake) {
+        this.getVehicleModel(uploadedVehicleMake.code).then(() => {
+          const uploadedVehicleModel = this.vehicleModelDetails?.find(
+            model => data.vehicle_model.toLowerCase().includes(model.name.toLowerCase())
+          );
+
+          this.riskDetailsForm.patchValue({ vehicleModel: uploadedVehicleModel?.code });
+          this.riskDetailsForm.patchValue({ vehicleMake: uploadedVehicleMake?.code });
+
+          this.selectedVehicleModelName = uploadedVehicleModel?.name;
+          this.selectedVehicleMakeName = uploadedVehicleMake?.name;
+          this.vehiclemakeModel = this.selectedVehicleMakeName + ' ' + this.selectedVehicleModelName;
+
+          if (this.vehiclemakeModel) {
+            this.riskDetailsForm.patchValue({ riskDescription: this.vehiclemakeModel });
+          }
+
+          this.finishPatching(data);
+          resolve(); // ✅ guaranteed to fire after vehicle model is loaded
+        });
+      } else {
+        this.finishPatching(data);
+        resolve(); // ✅ still resolve if no make match
+      }
+    });
+  }
+
+
+  private finishPatching(data: any) {
     const uploadedVehicleColor = this.motorColorsList.find(
       color => data.color.toLowerCase().includes(color.description.toLowerCase())
     );
+
     let uploadedBodyType = this.bodytypesList.find(
       bodyType => data.body_type.toLowerCase().includes(bodyType.description.toLowerCase())
     );
 
     if (!uploadedBodyType) {
-      // fallback: normalize and compare
-      const normalize = (str: string) =>
-        str.toLowerCase().replace(/[^a-z0-9]/g, '');
-
+      const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
       uploadedBodyType = this.bodytypesList.find(
         bodyType => normalize(data.body_type).includes(normalize(bodyType.description))
       );
     }
 
-    log.debug("body type:", uploadedBodyType);
-
     this.riskDetailsForm.patchValue({
       registrationNumber: data?.reg_number,
-      // riskDescription: this.selectedRisk.itemDesc,
-      // coverType: this.selectedRisk.coverTypeCode,
-      // premiumBand: this.selectedRisk.binderCode,
       value: data?.vehicle_value,
-      vehicleMake: uploadedVehicleMake?.code,
-      // vehicleModel: uploadedVehicleModel?.code,
       yearOfManufacture: data?.year_of_manufacture,
       cubicCapacity: data?.cubic_capacity,
       seatingCapacity: data?.seating_capacity,
@@ -6754,4 +6916,21 @@ export class RiskDetailsComponent {
     });
   }
 
+  onNcdStatusChange(event: any): void {
+    const value = event.target.value;
+    this.ncdStatusSelected = value === 'Y';
+    log.debug('NCD Status selected:', value, ' -> ncdStatusSelected:', this.ncdStatusSelected);
+  }
+  fetchTerritories() {
+    this.territoryService.getAllTerritories().subscribe({
+      next: (res) => {
+        this.territories = res
+
+
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error:', 'Fetching territories failed')
+      }
+    });
+  }
 }
