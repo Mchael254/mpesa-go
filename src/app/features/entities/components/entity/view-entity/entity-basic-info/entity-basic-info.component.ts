@@ -19,6 +19,10 @@ import {ClientService} from "../../../../services/client/client.service";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {EntityService} from "../../../../services/entity/entity.service";
+import {
+  DynamicScreensSetupService
+} from "../../../../../../shared/services/setups/dynamic-screen-config/dynamic-screens-setup.service";
+import {ConfigFormFieldsDto} from "../../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('EntityBasicInfoComponent');
 
@@ -51,6 +55,8 @@ export class EntityBasicInfoComponent {
   applicableStatuses: StatusDTO[] = [];
   actionableStatuses: StatusDTO[] = [];
 
+  @Input() overviewFormFields: ConfigFormFieldsDto[];
+
   isEditingWefWet: boolean = false;
   wetDateForm:FormGroup;
   photoPreviewUrl: string = '../../../../../../../assets/images/profile_picture_placeholder.png';
@@ -62,6 +68,7 @@ export class EntityBasicInfoComponent {
     private globalMessagingService: GlobalMessagingService,
     private fb: FormBuilder,
     private entityService: EntityService,
+    private dynamicScreenSetupService: DynamicScreensSetupService,
   ) {
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
@@ -77,8 +84,10 @@ export class EntityBasicInfoComponent {
       log.info('client details for basic info >>> ', this.clientDetails);
       // this.photoPreviewUrl =
     }, 1000);
+  }
 
-
+  getFieldLabel(fieldName: string): ConfigFormFieldsDto {
+    return this.overviewFormFields.filter(el => el.originalLabel.toLowerCase() === fieldName.toLowerCase())[0]
   }
 
 
