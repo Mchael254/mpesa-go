@@ -1,0 +1,38 @@
+<div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="visible">
+    <div class="modal-dialog modal-dialog-centered custom-modal-width" role="document">
+        <div class="modal-content p-4 text-center shadow-lg">
+            <h5 class="mb-4 fw-bold text-primary text-start">AI importing details</h5>
+
+
+            <div class="circle-sticks-spinner mt-4">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+
+            <!-- Step message -->
+            <!-- Step message and percentage -->
+            <div class="d-flex justify-content-between mb-1 mt-3">
+                <p class="mb-0">{{ currentStepMessage }}</p>
+                <p class="mb-0">{{ progress }}%</p>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="progress" style="height: 10px;">
+                <div class="progress-bar  progress-bar-animated " style="background-color: #00529B;" role="progressbar"
+                    [style.width.%]="progress">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
