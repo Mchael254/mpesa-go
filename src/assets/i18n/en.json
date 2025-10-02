@@ -1176,6 +1176,7 @@
       "comments": "Comments",
       "commission": "Commission",
       "commissions": "Commissions",
+      "agent_source_required_for_commissions": "Agent source must be selected to access commissions",
       "compute": "Compute",
       "confirm_conversion": "Confirm conversion",
       "contact_information": "Contact information",
