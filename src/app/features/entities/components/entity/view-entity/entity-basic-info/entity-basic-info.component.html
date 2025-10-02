@@ -1,8 +1,12 @@
 
 <!--{{ overviewConfig | json }}-->
 <!--{{ partyAccountDetails.status | json }}-->
+<!--<ng-container *ngFor="let field of overviewFormFields">
+  <p>{{ field | json }}</p>
+</ng-container>-->
 
-<div class="row g-3 align-items-center">
+
+<div class="row g-3 align-items-center" *ngIf="overviewFormFields">
   <!-- Profile Section -->
   <div class="col-sm-5">
     <div class="row profile g-2">
@@ -50,10 +54,11 @@
       data-bs-toggle="modal"
       data-bs-target="#assignRole"
     >
-      <!--{{ "entities.assign_role" | translate }}-->
-      {{ basicInfo?.assignRole[language] | titlecase }}
+      {{ this.getFieldLabel('Assign Role')?.label[language] }}
     </button>
-    <button class="btn btn-primary btn-sm" (click)="initiateReassignStatus('reassign')">Reassign task</button>
+    <button class="btn btn-primary btn-sm" (click)="initiateReassignStatus('reassign')">
+      {{ this.getFieldLabel('Reassign Task')?.label[language] }}
+    </button>
   </div>
 
   <!-- Status -->
@@ -62,7 +67,7 @@
     <div *ngIf="partyAccountDetails?.status" class="row text-end">
       <div class="col-sm-8">
         <label for="status" class="col-form-label">
-          {{ basicInfo?.status[language] | titlecase }}
+          {{ this.getFieldLabel('status')?.label[language] }}
         </label>
       </div>
       <div class="col-sm-4">
@@ -99,11 +104,11 @@
         <ng-template #wefWetFields>
           <div class="col-sm-auto flex-grow-1 d-flex flex-wrapfloat-end">
             <p class="me-5">
-              {{ basicInfo?.wef[language] | uppercase }}
+              {{ this.getFieldLabel('WEF')?.label[language] }}
               <span class="ms-1 fw-bold">{{ clientDetails?.withEffectFromDate | date }}</span>
             </p>
             <p *ngIf="!isEditingWefWet">
-              {{ basicInfo?.wet[language] | uppercase }}
+              {{ this.getFieldLabel('WET')?.label[language] }}
               <span class="ms-1 fw-bold">{{ clientDetails?.withEffectToDate | date }}</span>
             </p>
             <form [formGroup]="wetDateForm" *ngIf="isEditingWefWet">
