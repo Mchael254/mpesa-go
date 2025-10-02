@@ -29,6 +29,7 @@ export class PrimeIdentityComponent implements OnInit {
   @Input() partyAccountDetails: PartyAccountsDetails;
   @Input() entityPartyIdDetails: ReqPartyById;
   @Input() primeDetailsConfig: any
+  @Input() formGroupsAndFieldConfig: any
   @Input() formFieldsConfig: any;
   @Input() clientDetails: any;
   @Input() selectOptions: {
@@ -71,7 +72,8 @@ export class PrimeIdentityComponent implements OnInit {
     setTimeout(() => {
       this.primaryDetailsConfig = this.primeDetailsConfig.primary_details;
       this.createEditForm(this.formFieldsConfig.fields)
-      this.primeDetails = {
+
+      /*this.primeDetails = {
         modeOfIdentityNumber: this.clientDetails.idNumber,
         partyType: this.partyAccountDetails.partyType,
         modeOfIdentity: this.clientDetails.modeOfIdentity,
@@ -81,7 +83,31 @@ export class PrimeIdentityComponent implements OnInit {
         maritalStatus: this.clientDetails.maritalStatus,
         citizenshipCountryName: this.clientDetails.citizenshipCountryName,
         citizenshipCountryId: this.clientDetails.citizenshipCountryId,
+      }*/
+
+      this.primeDetails = {
+        overview_business_reg_no: this.clientDetails.idNumber,
+        overview_pin_number: this.clientDetails.pinNumber,
+        overview_date_of_incorporation: this.clientDetails.dateOfBirth,
+        overview_client_type: this.clientDetails.clientTyeName,
+        overview_primary_id_type: this.clientDetails.modeOfIdentity,
+        overview_id_number: this.clientDetails.idNumber,
+        overview_date_of_birth: this.clientDetails.dateOfBirth,
+        overview_citizenship: this.clientDetails.citizenshipCountryName,
+        overview_gender: this.clientDetails.gender,
+        overview_marital_status: this.clientDetails.maritalStatus,
+      };
+
+      const fields = this.formGroupsAndFieldConfig.fields.filter(field => field.formGroupingId.includes('prime_identity'));
+
+      for (const field of fields) {
+        field.dataValue = this.primeDetails[field.fieldId] ?? null;
+        log.info(' mapped fields with data value >>> ', field, this.primeDetails[field.fieldId]);
       }
+      log.info('fields to display >>> ', fields);
+
+
+
     }, 1000);
   }
 
@@ -220,7 +246,5 @@ export class PrimeIdentityComponent implements OnInit {
     });
     this.closeButton.nativeElement.click();
   }
-
-
 
 }
