@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-
+import * as bootstrap from 'bootstrap';
 @Component({
   selector: 'app-banking-dashboard',
   templateUrl: './banking-dashboard.component.html',
@@ -47,13 +47,40 @@ export class BankingDashboardComponent {
     },
   ];
   filteredReceipts: receipt[] = this.receipts; // start as full list
+  selectedrct:receipt;
+  
+  cols: any[]=[];
+  selectedColumns: any[]=[];
+  displayColumnDialog: boolean = false;
+
   constructor(public translate: TranslateService, private router: Router) {}
-  ngOnInit() {}
-  navigateToBanking(): void {
-    this.router.navigate(['/home/fms/new-banking-process']);
+  ngOnInit() {
+    this.cols=[
+        { field: 'batchNo', header: 'Batch Number' },
+      { field: 'slipNo', header: 'Slip Number' },
+      { field: 'date', header: 'Date' },
+      { field: 'assignee', header: 'Assignee' },
+      { field: 'amount', header: 'Amount' },
+      { field: 'bankAcc', header: 'Bank Account' },
+      { field: 'status', header: 'Status' },
+      { field: 'actions', header: 'Actions' }
+
+    ];
+    this.selectedColumns=[...this.cols];
   }
-  onRowSelect(event: any) {}
-  filter(event: Event, fieldName: string): any {
+ 
+ 
+
+ navigateToBanking(): void {
+    this.router.navigate(['/home/fms/new-banking-process']);
+    
+  }
+  
+ 
+showColumnsDialogs(){
+  this.displayColumnDialog=true;
+}
+  filter(event: any, fieldName: string): any {
     let inputValue = (event.target as HTMLInputElement).value.toLowerCase();
 
     this.filteredReceipts = this.receipts.filter((rctobj) => {
@@ -63,7 +90,7 @@ export class BankingDashboardComponent {
         fieldValue = fieldValue.toISOString().split('T')[0];
       } else if (typeof fieldValue == 'number') {
         fieldValue = fieldValue.toString();
-      } else {
+      } else if(typeof fieldValue == 'string'){
         fieldValue = fieldValue.toString();
       }
       return fieldValue.includes(inputValue);
@@ -72,6 +99,18 @@ export class BankingDashboardComponent {
   clearFilter(): void {
     this.filteredReceipts = this.receipts;
   }
+  
+  onRow(){
+    console.log('selected receipt',this.selectedrct);
+  }
+showColumns(){
+ const element = document.getElementById("colModal");
+ const modal = new bootstrap.Modal(element);
+ if(element){
+
+ modal.show();
+ } 
+}
 }
 export interface receipt {
   batchNo: string;

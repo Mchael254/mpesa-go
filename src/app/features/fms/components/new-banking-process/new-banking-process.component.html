@@ -23,7 +23,7 @@
   </div>
   <div class="card">
     <div class="card-body">
-      <h5 class="pt-2 pb-2 text-color">
+      <h5 class="pt-2 pb-2 text-primary">
         {{ "fms.banking.retrieveReceipts" | translate }}
       </h5>
 
@@ -41,6 +41,18 @@
                 formControlName="startDate"
                 id="sdate"
               />
+              <div
+                class="text-danger mt-1"
+                *ngIf="
+                  bankingForm.get('startDate')?.invalid &&
+                  (bankingForm.get('startDate')?.dirty ||
+                    bankingForm.get('startDate')?.touched)
+                "
+              >
+                <div *ngIf="bankingForm.get('startDate')?.errors?.['required']">
+                  Date From is required
+                </div>
+              </div>
             </div>
             <div class="col col-4">
               <label for="edate">{{ "fms.banking.toDate" | translate }}</label>
@@ -51,6 +63,18 @@
                 formControlName="endDate"
                 id="edate"
               />
+              <div
+                class="text-danger mt-1"
+                *ngIf="
+                  bankingForm.get('endDate')?.invalid &&
+                  (bankingForm.get('endDate')?.dirty ||
+                    bankingForm.get('endDate')?.touched)
+                "
+              >
+                <div *ngIf="bankingForm.get('endDate')?.errors?.['required']">
+                  Date to is required
+                </div>
+              </div>
             </div>
             <div class="col col-4">
               <label for="paymentMode">{{
@@ -69,25 +93,43 @@
                   {{ paymentMode }}
                 </option>
               </select>
+              <div
+                class="text-danger mt-1"
+                *ngIf="
+                  bankingForm.get('paymentMethod')?.invalid &&
+                  (bankingForm.get('paymentMethod')?.dirty ||
+                    bankingForm.get('paymentMethod')?.touched)
+                "
+              >
+                <div
+                  *ngIf="bankingForm.get('paymentMethod')?.errors?.['required']"
+                >
+                  Payment Method is required
+                </div>
+              </div>
             </div>
           </div>
         </form>
       </div>
       <div class="d-flex justify-content-end pb-1">
-        <button class="btn btn-primary">
+        <button class="btn btn-primary" (click)="onClickRetrieveRcts()">
           {{ "fms.banking.retrieveReceipts" | translate }}
         </button>
       </div>
       <p-table
         [value]="receiptData"
-        [(selection)]="selectedReceipt"
         dataKey="receiptId"
+        selectionMode="single"
+        [(selection)]="selectedReceipt"
         [tableStyle]="{ 'min-width': '50rem' }"
         sortMode="multiple"
+        (onRowSelect)="onRowSelected($event)"
+        [resizableColumns]="true"
+        [scrollable]="true"
       >
         <ng-template pTemplate="caption">
           <div
-            class="d-flex align-items-center justify-content-between custom-caption"
+            class="d-flex align-items-center justify-content-between bg-white"
           >
             <div class="div">
               <h5 class="text">
