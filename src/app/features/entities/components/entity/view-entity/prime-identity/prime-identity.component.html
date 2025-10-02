@@ -1,4 +1,30 @@
-<!--{{ primeDetails | json }}-->
+<!--
+<div *ngIf="formGroupsAndFieldConfig">
+  <p *ngFor="let field of formGroupsAndFieldConfig.fields">
+    <span *ngIf="field.formGroupingId?.includes('prime_identity')">
+      {{ field.fieldId | json }}
+    </span>
+  </p>
+</div>-->
+
+
+
+<div class="row">
+  <ng-container *ngFor="let item of primeDetails | keyvalue">
+    <div class="col-sm-4" *ngIf="item.value">
+      <div class="row my-2">
+        <div class="col-sm-4 text-dark">
+          {{ item.key }}
+        </div>
+        <div class="col-sm-8 text-dark fw-bold">
+          {{ item.value }}
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<hr>
 
 <table class="table table-borderless">
   <tbody>
