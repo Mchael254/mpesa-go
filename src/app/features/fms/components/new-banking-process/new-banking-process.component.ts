@@ -1,8 +1,11 @@
 import { GlobalMessagingService } from './../../../../shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from './../../../../shared/services/messaging/global-messaging.service';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { Logger } from 'src/app/shared/services';
+ const log = new Logger('NewBankingProcessComponent');
 import { Logger } from 'src/app/shared/services';
  const log = new Logger('NewBankingProcessComponent');
 @Component({
@@ -12,6 +15,7 @@ import { Logger } from 'src/app/shared/services';
 })
 export class NewBankingProcessComponent {
   bankingForm: FormGroup;
+  
   
   paymentMethods = ['mpesa', 'cash', 'bank'];
   receiptData: ReceiptDto[] = [
@@ -42,6 +46,12 @@ export class NewBankingProcessComponent {
   ) {
    
   }
+    private router: Router,
+    private globalMessagingService:GlobalMessagingService,
+    
+  ) {
+   
+  }
   ngOnInit() {
     this.createBankingForm();
   }
@@ -49,6 +59,7 @@ export class NewBankingProcessComponent {
     this.bankingForm = this.fb.group({
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
+      paymentMethod: ['mpesa', Validators.required],
       paymentMethod: ['mpesa', Validators.required],
     });
   }
@@ -60,7 +71,16 @@ this.bankingForm.markAllAsTouched();
     return;
   }
 }
+onClickRetrieveRcts(){
+  //  Mark all fields as touched to show any validation errors in the UI
+this.bankingForm.markAllAsTouched();
+  if (!this.bankingForm.valid){
+    this.globalMessagingService.displayErrorMessage("","please fill the required fields");
+    return;
+  }
+}
   navigateToBatch(): void {
+//console.log("the record is",this.selectedReceipt);
 //console.log("the record is",this.selectedReceipt);
     this.router.navigate(['/home/fms/process-batch']);
     
