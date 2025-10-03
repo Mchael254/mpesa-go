@@ -152,11 +152,15 @@ export class DynamicScreensSetupService {
 
   fetchDynamicSetupByScreen(
     screenCode?: number,
-    screenId?: string
+    screenId?: string,
+    subModuleId?: string,
+    targetEntityShortDescription?: string
   ): Observable<DynamicScreenSetupDto> {
     const params = new HttpParams()
       .set('screenCode', `${screenCode}`)
-      .set('screenId', `${screenId}`);
+      .set('screenId', `${screenId}`)
+      .set('subModuleId', `${subModuleId}`)
+      .set('targetEntityShortDescription', `${targetEntityShortDescription}`);
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
 
     return this.api.GET<DynamicScreenSetupDto>(

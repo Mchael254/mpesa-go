@@ -57,6 +57,7 @@ export interface ClientDTO {
   shortDescription: string,
   status: string,
   withEffectFromDate: string,
+  withEffectToDate: string,
   clientTypeName: string
   clientFullName: string
   code:number, //added

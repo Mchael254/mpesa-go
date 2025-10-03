@@ -54,6 +54,7 @@ export interface FormGroupsDto {
   subModuleId?: string,
   formId?: string,
   presentationType?: PresentationType,
+  fields?: ConfigFormFieldsDto[],
 }
 
 export interface FormSubGroupsDto {
@@ -105,6 +106,7 @@ export interface ConfigFormFieldsDto {
   formSubGroupingId?: string,
   screenId?: string,
   subModuleId?: string,
+  dataValue?: any
 }
 
 export interface MultilingualText {
