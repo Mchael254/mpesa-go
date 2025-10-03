@@ -2632,6 +2632,13 @@
                                     </div>
                                 </ng-container>
 
+                                <!-- Agent DTO - Display agent name -->
+                                <ng-container *ngSwitchCase="'agentDto'">
+                                    <span class="form-control-plaintext commission-readonly px-2">
+                                        {{ commission.agentDto?.name || '-' }}
+                                    </span>
+                                </ng-container>
+
                                 <!-- Default columns added dynamically) -->
                                 <ng-container *ngSwitchDefault>
                                     <!-- Non-editable fields - display as read-only text -->

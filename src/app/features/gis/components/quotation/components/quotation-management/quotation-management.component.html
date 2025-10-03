@@ -42,16 +42,17 @@
           </div>
         </div>
       </div>
-      <p-table [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true"
+      <p-table #quotationTable [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true"
         scrollDirection="horizontal" [showCurrentPageReport]="true" [tableStyle]="{'max-width': '150rem'}"
         currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
-        [resizableColumns]="true" [reorderableColumns]="true" [rowsPerPageOptions]="[5, 10, 20]"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+        [reorderableColumns]="true" [rowsPerPageOptions]="[5, 10, 20]"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [globalFilterFields]="['quotationNumber','clientName', 'premium','agentShortDescription']">
         <ng-template pTemplate="header">
           <tr>
-            <th style="background-color: #f0f0f0;" pSortableColumn="quotation_number" class="flexible-header">
+            <th style="background-color: #f0f0f0;" pSortableColumn="quotationNumber" class="flexible-header">
               {{ 'gis.quotation.quotation_number' | translate }}
-              <p-sortIcon field="quotation_number"></p-sortIcon>
+              <p-sortIcon field="quotationNumber"></p-sortIcon>
             </th>
             <th style="background-color: #f0f0f0;" pSortableColumn="client" class="flexible-header">
               {{ 'gis.quotation.client' | translate }}
@@ -61,13 +62,13 @@
               {{ 'gis.quotation.agent' | translate }}
               <p-sortIcon field="agent"></p-sortIcon>
             </th>
-            <th style="background-color: #f0f0f0;" pSortableColumn="cover_from" class="flexible-header">
+            <th style="background-color: #f0f0f0;" pSortableColumn="fromDate" class="flexible-header">
               {{ 'gis.quotation.cover_from' | translate }}
-              <p-sortIcon field="cover_from"></p-sortIcon>
+              <p-sortIcon field="fromDate"></p-sortIcon>
             </th>
-            <th style="background-color: #f0f0f0;" pSortableColumn="cover_to" class="flexible-header">
+            <th style="background-color: #f0f0f0;" pSortableColumn="toDate" class="flexible-header">
               {{ 'gis.quotation.cover_to' | translate }}
-              <p-sortIcon field="cover_to"></p-sortIcon>
+              <p-sortIcon field="toDate"></p-sortIcon>
             </th>
             <th style="background-color: #f0f0f0;" pSortableColumn="status" class="flexible-header">
               {{ 'gis.quotation.status' | translate }}
@@ -85,8 +86,11 @@
           <tr class=" filter-row mb-5 mt-5">
             <td class="me-1" style="background-color: #ffffff;">
               <input type="text" class="form-control" style="width: 100%;" (keyup.enter)="fetchGISQuotations();"
-                (input)="inputQuotationNo($event)">
+                #quotationNumberTypeFilter (input)="inputQuotationNo($event)"
+                (input)="quotationTable.filterGlobal(quotationNumberTypeFilter.value, 'contains')">
             </td>
+
+            <!-- client search -->
             <td class="me-1" style="background-color: #ffffff;">
               <div class="position-relative">
                 <input type="text" id="quote-input" class="form-select form-control custom-select" style="width: 100%;"
@@ -108,11 +112,13 @@
                 </app-client-search-modal>
               </div>
             </td>
+
+            <!-- agent filter -->
             <td style="background-color: #ffffff;">
               <div class="position-relative">
                 <input type="text" id="quote-input" class="form-select form-control custom-select" style="width: 100%;"
                   [value]="displayAgentName" data-bs-toggle="modal" data-bs-target="#agentSearchModal" readonly
-                  (keyup.enter)="fetchGISQuotations();" />
+                  (keyup.enter)="fetchGISQuotations();" (click)="openAgentSearchModal()" />
 
                 <!-- Clear button with X icon - only shows when there's a value -->
                 <button *ngIf="displayAgentName" class="btn btn-sm position-absolute clear-btn"
@@ -125,30 +131,25 @@
                 <app-agent-search-modal (agentSelected)="onAgentSelected($event)"></app-agent-search-modal>
               </div>
             </td>
+
+            <!-- date filters -->
             <td style="background-color: #ffffff;">
-              <!-- <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
-                [showIcon]="true" [showButtonBar]="true" [minDate]="minDate" (onSelect)="onDateFromInputChange($event)"
-                (onClear)="clearDateFilters()" appendTo="body" (keyup.enter)="fetchGISQuotations();"
-                [style]="{'width': '100%'}">
-              </p-calendar> -->
               <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
                 [showIcon]="true" [showButtonBar]="true" [minDate]="minDate" (onSelect)="onDateFromInputChange($event)"
-                (onClear)="clearDateFilters()" appendTo="body" (keyup.enter)="fetchGISQuotations()"
+                (onClear)="onDateFromInputChange(null)" appendTo="body" (keyup.enter)="fetchGISQuotations()"
                 styleClass="calendar-input w-100">
               </p-calendar>
 
             </td>
             <td style="background-color: #ffffff;">
-              <!-- <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat" [showIcon]="true"
-                [showButtonBar]="true" [minDate]="minToDate" appendTo="body" (onSelect)="onDateToInputChange($event)"
-                (onClear)="clearDateFilters()" (keyup.enter)="fetchGISQuotations();" [style]="{'width': '100%'}">
-              </p-calendar> -->
               <p-calendar name="withEffectiveToDate" [(ngModel)]="toDate" [dateFormat]="dateFormat" [showIcon]="true"
                 [showButtonBar]="true" [minDate]="minToDate" (onSelect)="onDateToInputChange($event)"
-                (onClear)="clearDateFilters()" appendTo="body" (keyup.enter)="fetchGISQuotations()"
+                (onClear)="onDateToInputChange(null)" appendTo="body" (keyup.enter)="fetchGISQuotations()"
                 styleClass="calendar-input w-100">
               </p-calendar>
             </td>
+
+            <!-- status filter -->
             <td style="background-color: #ffffff;">
               <p-dropdown [options]="status" optionLabel="status" optionValue="status" [filter]="true" filterBy="status"
                 [(ngModel)]="selectedStatus" appendTo="body" [style]="{ 'width': '100%', 'height': '35px' }"
@@ -156,7 +157,15 @@
                 styleClass="custom-dropdown">
               </p-dropdown>
             </td>
-            <td></td>
+
+            <!-- premium filter -->
+            <td class="me-1" style="background-color: #ffffff;">
+              <input type="text" class="form-control" style="width: 100%;" (keyup.enter)="fetchGISQuotations();"
+                #premiumTypeFilter (input)="inputQuotationNo($event)"
+                (input)="quotationTable.filterGlobal(premiumTypeFilter.value, 'contains')">
+            </td>
+
+            <!-- clear -->
             <td style="background-color: #ffffff;" class="text-end">
               <button type="button" class="btn btn-sm  btn-outline-primary" (click)="clearFilters();">{{
                 'gis.quotation.clear' | translate }}</button>
@@ -174,16 +183,6 @@
             <td>{{quotation.toDate}}</td>
             <td>{{quotation.status}}</td>
             <td class="text-end">{{quotation.premium || 0 |number}}</td>
-            <!-- <td class="text-end" style="padding-top: 0; padding-bottom: 0;">
-              <span class="action-buttons-container">
-                <button type="button" class="btn btn-sm btn-action" (click)="toggleMenu($event, quotation)"
-                  style="line-height: 0; padding: 0;">
-                  <i class="pi pi-ellipsis-h"></i>
-                </button>
-                <p-menu #menu [popup]="true" [model]="menuItems" appendTo="body"
-                  [styleClass]="'horizontal-menu'"></p-menu>
-              </span>
-            </td> -->
             <td class="text-end" style="padding-top: 0; padding-bottom: 0;">
               <span class="action-buttons-container d-flex align-items-center justify-content-end gap-2">
                 <!-- Display first 3 actions as text links -->
@@ -215,15 +214,10 @@
         <!-- Empty Message -->
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td [attr.colspan]="gisQuotationList.length" class="text-center p-4 text-muted">
+            <td colspan="8" class="text-center p-4 text-muted">
               <ng-container>
-
-                No quotations found
+                {{'gis.quotation.no_matching_quotation' | translate}}
               </ng-container>
-              <!-- <ng-container *ngIf="riskClauseTable.filteredValue?.length === 0 && sessionClauses?.length > 0">
-        
-                {{'gis.quotation.no_matching_clauses_found' | translate}}
-              </ng-container> -->
             </td>
           </tr>
         </ng-template>
