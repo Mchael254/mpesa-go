@@ -5077,8 +5077,8 @@ export class RiskDetailsComponent {
   }
 
   setCommissionsColumns(commissions: any) {
-    const excludedFields = ['actions', 'code', 'quotationRiskCode', 'quotationCode', 'transCode', 'accountCode', 'trntCode', 'discRate',
-      'discType', 'amount', 'whTaxRate', 'whTaxAmount', 'discAmount', 'overrideCommission', 'agentCode'
+    const excludedFields = ['actions', 'code', 'quotationRiskCode', 'quotationCode', 'transCode', 'accountCode', 'trntCode', 
+       'amount',  'discAmount', 'overrideCommission', 'agentCode'
     ];
 
     this.commissionsColumns = Object.keys(commissions)
@@ -5106,7 +5106,7 @@ export class RiskDetailsComponent {
     log.debug("commissionsColumns", this.commissionsColumns);
   }
 
-  defaultVisibleCommissionsFields = ['agentDto', 'group', 'setupRate', 'usedRate'];
+  defaultVisibleCommissionsFields = ['group', 'agentDto', 'setupRate', 'usedRate','discType','discRate', ];
 
   loadCommissions(): void {
     const subclassCode = this.selectedSubclassCode;
@@ -5328,11 +5328,9 @@ export class RiskDetailsComponent {
   isCommissionFieldReadOnly(fieldName: string): boolean {
     const readOnlyFields = [
       'agentName',
-      'agent_name',
       'accountType',
       'account_type',
       'setupRate',
-      'setup_rate',
       'witholdingRate',
       'witholding_rate',
       'witholdingTaxType',

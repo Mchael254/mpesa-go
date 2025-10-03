@@ -868,19 +868,17 @@ textarea {
   position: relative;
 }
 
-
-
 .wizzard-modal::after {
   content: "";
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%); 
   left: -10px;
   width: 0;
   height: 0;
   border-style: solid;
   border-width: 10px 10px 10px 0;
-  border-color: transparent #0d6efd transparent transparent;
+  border-color: transparent #0d6efd transparent transparent; 
 }
 
 .wizzard-overlay {
