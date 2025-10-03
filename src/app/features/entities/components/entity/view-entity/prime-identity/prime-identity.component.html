@@ -1,256 +1,20 @@
-<!--
-<div *ngIf="formGroupsAndFieldConfig">
-  <p *ngFor="let field of formGroupsAndFieldConfig.fields">
-    <span *ngIf="field.formGroupingId?.includes('prime_identity')">
-      {{ field.fieldId | json }}
-    </span>
-  </p>
-</div>-->
 
-
-
-<div class="row">
-  <ng-container *ngFor="let item of primeDetails | keyvalue">
-    <div class="col-sm-4" *ngIf="item.value">
-      <div class="row my-2">
-        <div class="col-sm-4 text-dark">
-          {{ item.key }}
-        </div>
-        <div class="col-sm-8 text-dark fw-bold">
-          {{ item.value }}
-        </div>
-      </div>
-    </div>
-  </ng-container>
-</div>
-
-<hr>
-
-<table class="table table-borderless">
-  <tbody>
-  <tr>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ primaryDetailsConfig?.party_type[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ primeDetails?.partyType?.partyTypeName }}
+<ng-container *ngIf="group?.subGroup.length === 0">
+  <div class="row">
+    <ng-container *ngFor="let field of this.fields">
+      <div class="col-sm-4">
+        <div class="row my-2">
+          <div class="col-sm-4 text-dark">
+            {{ field.label[language] }}
+          </div>
+          <div class="col-sm-8 text-dark fw-bold">
+            {{ field.dataValue }}
+          </div>
         </div>
       </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ primaryDetailsConfig?.id_type[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ primeDetails?.modeOfIdentity?.name }}
-        </div>
-      </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ primaryDetailsConfig?.id_number[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ primeDetails?.modeOfIdentityNumber }}
-        </div>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ primaryDetailsConfig?.pin_number[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ primeDetails?.pinNumber }}
-        </div>
-      </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ primaryDetailsConfig?.dob[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ primeDetails?.dateOfBirth | date }}
-        </div>
-      </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ primaryDetailsConfig?.citizenship[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ primeDetails?.citizenshipCountryName }}
-        </div>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ primaryDetailsConfig?.gender[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ primeDetails?.gender | titlecase }}
-        </div>
-      </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ primaryDetailsConfig?.marital_status[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ primeDetails?.maritalStatus }}
-        </div>
-      </div>
-    </td>
-    <td>
-
-    </td>
-  </tr>
-  </tbody>
-</table>
-
-
-<!--
-<div class="row">
-  <div class="col-sm-4">
-    <table class="table table-borderless">
-      <tbody>
-        <tr>
-          <td>
-            &lt;!&ndash;{{ "entities.party_type" | translate }}&ndash;&gt;
-            {{ primaryDetailsConfig?.party_type[language] | titlecase }}
-          </td>
-          <th>
-            <span *ngIf="partyAccountDetails?.clientDto?.clientType?.category">
-              {{ partyAccountDetails?.clientDto?.clientType?.category }}
-            </span>
-            <span *ngIf="partyAccountDetails?.agentDto?.category">
-              {{ partyAccountDetails?.agentDto?.category }}
-            </span>
-            <span *ngIf="partyAccountDetails?.serviceProviderDto?.category">
-              {{ partyAccountDetails?.serviceProviderDto?.category }}
-            </span>
-            <span *ngIf="partyAccountDetails?.leadDto">
-              {{ partyAccountDetails?.category }}
-            </span>
-            <span *ngIf="partyAccountDetails?.prospectDto">
-              {{ partyAccountDetails?.category }}
-            </span>
-          </th>
-        </tr>
-        <tr>
-          <td>
-            &lt;!&ndash;{{ "entities.primary_id_type" | translate }}&ndash;&gt;
-            {{ primaryDetailsConfig?.id_type[language] | titlecase }}
-          </td>
-          <th>{{ entityPartyIdDetails?.modeOfIdentity?.name }}</th>
-        </tr>
-        <tr>
-          <td *ngIf="partyAccountDetails?.clientDto?.passportNumber">
-            &lt;!&ndash;{{ "entities.passport_number" | translate }}&ndash;&gt;
-            {{ primaryDetailsConfig?.id_number[language] | titlecase }}
-          </td>
-          <th>{{ partyAccountDetails?.clientDto?.passportNumber }}</th>
-        </tr>
-        <tr *ngIf="partyAccountDetails?.clientDto?.occupation?.name">
-          <td>{{ "entities.occupation" | translate }}</td>
-          <th>{{ partyAccountDetails?.clientDto?.occupation?.name }}</th>
-        </tr>
-      </tbody>
-    </table>
+    </ng-container>
   </div>
-  <div class="col-sm-4">
-    <table class="table table-borderless">
-      <tbody>
-        &lt;!&ndash;<tr>
-          <td>
-            {{
-              partyAccountDetails?.partyType?.partyTypeName === "Agent"
-                ? "Account"
-                : partyAccountDetails?.partyType?.partyTypeName
-            }}
-            Type
-          </td>
-          <th>
-            <span
-              *ngIf="partyAccountDetails?.clientDto?.clientType?.clientTypeName"
-            >
-              {{ partyAccountDetails?.clientDto?.clientType?.clientTypeName }}
-            </span>
-            <span *ngIf="partyAccountDetails?.agentDto?.accountType">
-              {{ partyAccountDetails?.agentDto?.accountType }}
-            </span>
-            <span
-              *ngIf="
-                partyAccountDetails?.serviceProviderDto?.providerType?.name
-              "
-            >
-              {{ partyAccountDetails?.serviceProviderDto?.providerType?.name }}
-            </span>
-            <span *ngIf="partyAccountDetails?.leadDto">
-              {{ partyAccountDetails?.category }}
-            </span>
-            <span *ngIf="partyAccountDetails?.prospectDto">
-              {{ partyAccountDetails?.category }}
-            </span>
-          </th>
-        </tr>&ndash;&gt;
-        <tr *ngIf="partyAccountDetails?.userDto?.username">
-          <td>{{ "entities.username" | translate }}</td>
-          <th>{{ partyAccountDetails?.userDto?.username }}</th>
-        </tr>
-
-        <tr>
-          <td>
-            &lt;!&ndash;{{ "entities.id_number" | translate }}&ndash;&gt;
-            {{ primaryDetailsConfig?.id_number[language] | titlecase }}
-          </td>
-          <th>{{ entityPartyIdDetails?.identityNumber }}</th>
-        </tr>
-        <tr *ngIf="partyAccountDetails?.clientDto?.clientTitle">
-          <td>{{ "entities.title" | translate }}</td>
-          <th>
-            &lt;!&ndash; {{ partyAccountDetails?.contactDetails?.title?.shortDescription }} &ndash;&gt;
-            {{ partyAccountDetails?.clientDto?.clientTitle }}
-          </th>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="col-sm-4">
-    <table class="table table-borderless">
-      <tbody>
-        <tr>
-          <td>
-            &lt;!&ndash;{{ "entities.dob" | translate }}&ndash;&gt;
-            {{ primaryDetailsConfig?.dob[language] | titlecase }}
-          </td>
-          <th>{{ partyAccountDetails?.dateOfBirth | date }}</th>
-        </tr>
-
-        <tr>
-          <td>
-            &lt;!&ndash;{{ "entities.pin_number" | translate }}&ndash;&gt;
-            {{ primaryDetailsConfig?.pin_number[language] | titlecase }}
-          </td>
-          <th>{{ partyAccountDetails?.pinNumber }}</th>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
--->
+</ng-container>
 
 
 <!--edit prime details modal-->
@@ -264,7 +28,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-4 text-primary" id="editPrimeIdentityModalLabel">
-          {{ formFieldsConfig?.label[language] | titlecase }}
+<!--          {{ formFieldsConfig?.label[language] | titlecase }}-->
         </h1>
         <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -274,12 +38,12 @@
         >
           <form [formGroup]="editForm">
             <div class="row g-3">
-              <ng-container *ngFor="let field of formFieldsConfig.fields">
+              <ng-container *ngFor="let field of fields">
                 <div class="col-md-6">
                   <label [for]="field.fieldId" class="form-label">
                     {{ field.label[language] | titlecase }}
                   </label>
-                  <!-- Text input -->
+                  <!--Text input-->
                   <input
                     *ngIf="field.type === 'text'"
                     [formControlName]="field.fieldId"
@@ -326,30 +90,14 @@
           </div>
         </ng-template>
       </div>
-      <div class="modal-footer">
+      <!--<div class="modal-footer">
         <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-          {{ formFieldsConfig.buttons.cancel.label[language] | sentenceCase }}
+          {{ formFieldsConfig?.buttons?.cancel?.label[language] | sentenceCase }}
         </button>
         <button type="button" class="btn btn-primary" (click)="editPrimeDetails()">
-          {{ formFieldsConfig.buttons.save.label[language] | sentenceCase }}
+          {{ formFieldsConfig?.buttons?.save?.label[language] | sentenceCase }}
         </button>
-      </div>
+      </div>-->
     </div>
   </div>
 </div>
-
-
-<!--<div class="row">
-  <div class="col-sm-4">
-    <h5>Party Account Details</h5>
-    <pre>{{ partyAccountDetails | json }}</pre>
-  </div>
-  <div class="col-sm-4">
-    <h5>Entity Party Id Details</h5>
-    <pre>{{ entityPartyIdDetails | json }}</pre>
-  </div>
-  <div class="col-sm-4">
-    <h5>Form configuration</h5>
-    <pre>{{ primaryDetailsConfig | json }}</pre>
-  </div>
-</div>-->
