@@ -43,7 +43,7 @@
         </div>
       </div>
       <p-table #quotationTable [value]="gisQuotationList" [paginator]="true" [rows]="10" [scrollable]="true"
-        scrollDirection="horizontal" [showCurrentPageReport]="true" [tableStyle]="{'max-width': '150rem'}"
+        scrollDirection="horizontal" [showCurrentPageReport]="true" [tableStyle]="{'min-width': '100rem'}"
         currentPageReportTemplate=" {first} - {last} of {totalRecords}" [responsiveLayout]="'scroll'"
         [reorderableColumns]="true" [rowsPerPageOptions]="[5, 10, 20]"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
@@ -158,7 +158,7 @@
               </p-dropdown>
             </td>
 
-            <!-- premium filter -->
+             <!-- premium filter -->
             <td class="me-1" style="background-color: #ffffff;">
               <input type="text" class="form-control" style="width: 100%;" (keyup.enter)="fetchGISQuotations();"
                 #premiumTypeFilter (input)="inputQuotationNo($event)"
