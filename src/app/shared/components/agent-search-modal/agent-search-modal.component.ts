@@ -1,16 +1,15 @@
 import { ChangeDetectorRef, Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { Logger } from '../../services';
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
-import { Pagination } from '../../data/common/pagination';
 import { Router } from '@angular/router';
 import { QuotationsService } from '../../../features/gis/components/quotation/services/quotations/quotations.service';
 import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { untilDestroyed } from '../../shared.module';
-import { tap } from 'rxjs';
-import { LazyLoadEvent } from 'primeng/api';
-import { TableLazyLoadEvent } from 'primeng/table';
+import { Table } from 'primeng/table';
 import { IntermediaryService } from '../../../features/entities/services/intermediary/intermediary.service';
+import { AgentDto, AgentResponseDto } from 'src/app/features/gis/data/quotations-dto';
+
 
 const log = new Logger('agentSearchComponent');
 
@@ -22,27 +21,22 @@ const log = new Logger('agentSearchComponent');
 })
 
 export class AgentSearchModalComponent {
-
+  @ViewChild('agentTable') agentTable!: Table;
   @ViewChild('closebutton') closebutton;
   @Output() agentSelected = new EventEmitter<{ agentName: string; agentId: number }>();
 
-  tableDetails: any = {
-    rows: [], // Initially empty array for rows
-    totalElements: 0 // Default total count
-  };
-  pageSize: number = 19;
-  isSearching = false;
-  searchTerm = '';
-  public agentsData: Pagination<AgentDTO> = <Pagination<AgentDTO>>{};
-  filterObject: {
-    name: string, id: string, shortDesc: string
-  } = {
-    name: '', id: '', shortDesc: ''
-  };
-  agentDetails: AgentDTO;
-  globalFilterFields = ['id', 'name', 'shortDesc'];
   agentName: string;
   agentId: number;
+  agents: AgentDto[] = [];
+  agentResponse: AgentResponseDto;
+  selectedAgent: AgentDto | null = null;
+  searchTerm: string = '';
+  searchIdTerm: string = '';
+  originalAgents: AgentDto[] = [];
+
+  // Client-side pagination properties
+  rows: number = 10;
+
 
   constructor(
     private router: Router,
@@ -51,120 +45,199 @@ export class AgentSearchModalComponent {
     public cdr: ChangeDetectorRef,
     private intermediaryService: IntermediaryService,
     private spinner: NgxSpinnerService,
-  ) {}
+  ) { }
+
 
   ngOnDestroy(): void { }
 
-  // SEARCHING AGENTS USING ID, NAME, AND SHORT DESCRIPTION
-  getAgents(pageIndex: number,
-      pageSize: number,
-      sortField: any = 'createdDate',
-      sortOrder: string = 'desc') {
-      return this.intermediaryService
+  onModalOpen(): void {
+    this.selectedAgent = null;
+    this.searchTerm = '';
+    this.searchIdTerm = '';
+    
+    if (this.agents.length === 0) {
+      this.loadAgents(0, 100);
+    } else {
+      // Reset to original agents if we have them
+      this.agents = [...this.originalAgents];
+      // Clear any existing filters
+      if (this.agentTable) {
+        this.agentTable.clear();
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
+  inputAgentName(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm = value;
+    
+    if (!value || value.trim().length === 0) {
+      if (this.originalAgents.length > 0) {
+        this.agents = [...this.originalAgents];
+        this.cdr.detectChanges();
+      }
+ 
+      if (this.agentTable) {
+        this.agentTable.clear();
+      }
+      return;
+    }
+    
+    if (this.agentTable) {
+      this.agentTable.filterGlobal(value, 'contains');
+    }
+  }
+
+  onAgentNameEnter(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm = value;
+    
+    if (value && value.trim().length > 0) {
+      // Perform database search when user hits Enter
+      this.searchAgentsFromDatabase('name', value.trim());
+    } else {
+      // If search term is empty, reload original agents
+      this.agents = [...this.originalAgents];
+      this.cdr.detectChanges();
+    }
+  }
+
+  inputAgentId(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchIdTerm = value;
+    
+    if (!value || value.trim().length === 0) {
+      if (this.originalAgents.length > 0) {
+        this.agents = [...this.originalAgents];
+        this.cdr.detectChanges();
+      }
+ 
+      if (this.agentTable) {
+        this.agentTable.clear();
+      }
+      return;
+    }
+    
+    if (this.agentTable) {
+      this.agentTable.filterGlobal(value, 'contains');
+    }
+  }
+
+  onAgentIdEnter(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchIdTerm = value;
+    
+    if (value && value.trim().length > 0) {
+      // Perform database search when user hits Enter
+      this.searchAgentsFromDatabase('id', value.trim());
+    } else {
+      // If search term is empty, reload original agents
+      this.agents = [...this.originalAgents];
+      this.cdr.detectChanges();
+    }
+  }
+
+  searchAgentsFromDatabase(searchField: string, searchTerm: string): void {
+    this.spinner.show();
+    this.intermediaryService
+      .searchAgent(0, 100, searchField, searchTerm)
+      .pipe(
+        untilDestroyed(this)
+      )
+      .subscribe({
+        next: (response: any) => {
+          log.debug('Search agents response:', response);
+          
+          if (response && response.content) {
+            this.agents = response.content.map(agent => ({
+              id: agent.id,
+              name: agent.name,
+              shortDesc: agent.shortDesc,
+              businessUnit: agent.businessUnit,
+              primaryType: agent.primaryType,
+              accountType: agent.accountType,
+              ...agent
+            }));
+          } else {
+            this.agents = [];
+          }
+          
+          log.debug('Searched agents:', this.agents);
+          this.spinner.hide();
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error searching agents:', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to search agents. Please try again.');
+          this.agents = [];
+          this.spinner.hide();
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+  loadAgents(
+    pageIndex: number = 0,
+    pageSize: number = 100,
+    sortField: string = 'createdDate',
+    sortOrder: string = 'desc'
+  ): void {
+    this.spinner.show();
+    this.intermediaryService
       .getAgents(pageIndex, pageSize, sortField, sortOrder)
       .pipe(
-      untilDestroyed(this),
-    );
-  }
+        untilDestroyed(this)
+      )
+      .subscribe({
+        next: (response: AgentResponseDto) => {
+          log.debug('Agents response:', response);
 
-  lazyLoadAgents(event: LazyLoadEvent | TableLazyLoadEvent) {
-    const pageIndex = event.first / event.rows;
-    const sortField = event.sortField;
-    const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
-    const pageSize = event.rows;
-
-    if (this.isSearching) {
-      const searchEvent = {
-        target: { value: this.searchTerm }
-      };
-      this.filter(searchEvent, pageIndex, pageSize);
-    }
-    else {
-      this.getAgents(pageIndex, pageSize, sortField, sortOrder)
-        .pipe(
-          untilDestroyed(this),
-          tap((data) => log.info(`Fetching Agents>>>`, data))
-        )
-        .subscribe(
-          (data: Pagination<AgentDTO>) => {
-            this.agentsData = data;
-            this.tableDetails.rows = this.agentsData?.content;
-            this.tableDetails.totalElements = this.agentsData?.totalElements;
-            this.cdr.detectChanges();
-            this.spinner.hide();
-          },
-          error => {
-            this.spinner.hide();
+          this.agentResponse = response;
+          this.agents = response.content || [];
+          
+          // Store original agents list for hybrid search
+          if (this.originalAgents.length === 0) {
+            this.originalAgents = [...this.agents];
           }
-        );
-    }
+
+          log.debug('Loaded agents:', this.agents);
+          this.spinner.hide();
+        },
+        error: (error) => {
+          console.error('Error loading agents:', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to load agents. Please try again.');
+          this.agents = [];
+          this.spinner.hide();
+        }
+      });
   }
 
-  filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
-    this.agentsData = null; // Initialize with an empty array or appropriate structure
-    let columnName;
-    let columnValue;
 
-    if (this.filterObject.id) {
-      columnName = "id";
-      columnValue = this.filterObject.id;
-    } else if (this.filterObject.name) {
-      columnName = "name";
-      columnValue = this.filterObject.name;
-    } else if (this.filterObject.shortDesc) {
-      columnName = "shortDesc";
-      columnValue = this.filterObject.shortDesc;
-    }
-
-    this.isSearching = true;
-    this.spinner.show();
-    this.intermediaryService.searchAgent(
-      pageIndex, pageSize,
-      columnName, columnValue
-    ).subscribe((data) => {
-      this.agentsData = data;
-      this.spinner.hide();
-    },
-      error => {
-        this.spinner.hide();
-      }
-    );
-  }
-
-  loadAgentDetails(id) {
-    this.intermediaryService.getAgentById(id).subscribe((data) => {
-      this.agentDetails = data;
-      log.debug('Selected Agent Details:', this.agentDetails);
-      const agentDetailsString = JSON.stringify(this.agentDetails);
-      sessionStorage.setItem('agentDetails', agentDetailsString);
-      this.saveAgent();
-      this.closebutton.nativeElement.click();
-    });
-  }
-
-  saveAgent() {
-    this.agentId = Number(this.agentDetails.id);
-    this.agentName = this.agentDetails.name;
+  saveSelectedAgent() {
+    this.agentId = Number(this.selectedAgent.id);
+    this.agentName = this.selectedAgent.name;
     sessionStorage.setItem('agentId', JSON.stringify(this.agentId));
 
     this.agentSelected.emit({
       agentName: this.agentName,
       agentId: this.agentId,
     });
+    this.closebutton.nativeElement.click();
   }
 
-  inputId(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['id'] = value;
+  cancel() {
+    this.selectedAgent = null;
+
   }
 
-  inputName(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['name'] = value;
+
+  applyGlobalFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    if (this.agentTable) {
+      this.agentTable.filterGlobal(filterValue, 'contains');
+    }
   }
 
-  inputShortDesc(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['shortDesc'] = value;
-  }
+
 }
