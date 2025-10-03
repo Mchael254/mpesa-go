@@ -260,3 +260,53 @@ export interface UpdatePremiumDto {
   riskLevelPremiums: RiskLevelPremiumDto[];
   taxes: TaxDto[];
 }
+
+export interface AgentDto {
+  id: number;
+  name: string;
+  emailAddress?: string;
+  phoneNumber?: string;
+  businessUnit: string;
+  primaryType: string;
+  countryCode: number;
+  gender: string;
+  status: string;
+  accountTypeId: number;
+  accountType: string;
+  is_credit_allowed?: string;
+  creditLimit?: number;
+  category: string;
+  shortDesc: string;
+}
+
+export interface SortDto {
+  direction: string;
+  property: string;
+  ignoreCase: boolean;
+  nullHandling: string;
+  ascending: boolean;
+  descending: boolean;
+}
+
+export interface PageableDto {
+  pageNumber: number;
+  pageSize: number;
+  sort: SortDto[];
+  offset: number;
+  paged: boolean;
+  unpaged: boolean;
+}
+
+export interface AgentResponseDto {
+  content: AgentDto[];
+  pageable: PageableDto;
+  last: boolean;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  size: number;
+  number: number;
+  sort: SortDto[];
+  numberOfElements: number;
+  empty: boolean;
+}

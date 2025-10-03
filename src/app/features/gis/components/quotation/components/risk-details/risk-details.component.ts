@@ -5078,14 +5078,14 @@ export class RiskDetailsComponent {
 
   setCommissionsColumns(commissions: any) {
     const excludedFields = ['actions', 'code', 'quotationRiskCode', 'quotationCode', 'transCode', 'accountCode', 'trntCode', 'discRate',
-      'discType', 'amount', 'whTaxRate', 'whTaxAmount', 'discAmount', 'overrideCommission'
+      'discType', 'amount', 'whTaxRate', 'whTaxAmount', 'discAmount', 'overrideCommission', 'agentCode'
     ];
 
     this.commissionsColumns = Object.keys(commissions)
       .filter((key) => !excludedFields.includes(key))
       .map((key) => ({
         field: key,
-        header: this.sentenceCase(key),
+        header: key === 'agentDto' ? 'Agent Name' : this.sentenceCase(key),
         visible: this.defaultVisibleCommissionsFields.includes(key),
         filterable: true,
         sortable: true
@@ -5106,7 +5106,7 @@ export class RiskDetailsComponent {
     log.debug("commissionsColumns", this.commissionsColumns);
   }
 
-  defaultVisibleCommissionsFields = ['group', 'setupRate', 'usedRate'];
+  defaultVisibleCommissionsFields = ['agentDto', 'group', 'setupRate', 'usedRate'];
 
   loadCommissions(): void {
     const subclassCode = this.selectedSubclassCode;
@@ -5242,6 +5242,7 @@ export class RiskDetailsComponent {
           }
 
           this.originalCommissions = JSON.parse(sessionStorage.getItem(originalCommissionsCacheKey) || '[]');
+          this.fetchAddedCommissions();
 
           if (this.addedCommissions.length > 0) {
             this.setCommissionsColumns(this.addedCommissions[0]);
@@ -5327,7 +5328,7 @@ export class RiskDetailsComponent {
   isCommissionFieldReadOnly(fieldName: string): boolean {
     const readOnlyFields = [
       'agentName',
-      'agent_name', 
+      'agent_name',
       'accountType',
       'account_type',
       'setupRate',
@@ -5341,7 +5342,7 @@ export class RiskDetailsComponent {
       'discAmount',
       'disc_amount'
     ];
-    
+
     return readOnlyFields.includes(fieldName);
   }
 

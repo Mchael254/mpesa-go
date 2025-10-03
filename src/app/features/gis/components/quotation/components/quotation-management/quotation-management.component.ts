@@ -9,7 +9,7 @@ import { QuotationsService } from '../../services/quotations/quotations.service'
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
-import { ClientSearchModalComponent } from 'src/app/shared/components/client-search-modal/client-search-modal.component';
+import { Table } from 'primeng/table';
 
 const log = new Logger('QuotationConcersionComponent');
 
@@ -23,6 +23,7 @@ const log = new Logger('QuotationConcersionComponent');
 export class QuotationManagementComponent {
   @ViewChild('menu') menu: Menu;
   @ViewChild('moreActionsMenu') moreActionsMenu: Menu;
+  @ViewChild('quotationTable') quotationTable!: Table;
 
   clientsData: null;
   isSearching: boolean;
@@ -68,6 +69,8 @@ export class QuotationManagementComponent {
   viewQuoteFlag: Boolean = false;
   isClientSearchModalVisible = false;
   remainingMenuItems: MenuItem[] = [];
+
+
 
   constructor(
     private menuService: MenuService,
@@ -235,13 +238,14 @@ export class QuotationManagementComponent {
     const dateFrom = this.selectedDateFrom || null
     const dateTo = this.selectedDateTo || null
     const source = this.selectedSource
-    const clientName = this.clientName
+    const clientName = (this.clientName && this.clientName.trim() !== '') ? this.clientName.trim() : null;
 
     log.debug("clientCode", clientCode);
     log.debug("productCode", productCode);
     log.debug("agentCode", agentCode);
     log.debug("status", status);
     log.debug("quote", quotationNumber);
+    log.debug("clientName", clientName);
 
     log.debug("Selected Date from:", this.selectedDateFrom)
     log.debug("Selected Date to:", this.selectedDateTo)
@@ -288,11 +292,22 @@ export class QuotationManagementComponent {
   }
 
   onClientSelected(event: any) {
-    this.clientName = event.clientFullName;
+    let cleanClientName = event.clientFullName;
+    if (cleanClientName) {
+      cleanClientName = cleanClientName.replace(/\bnull\b/gi, '').trim();
+      cleanClientName = cleanClientName === '' ? null : cleanClientName;
+    }
+    
+    this.clientName = cleanClientName;
     this.clientCode = event.id;
+
+    // Close the modal after selection
+    this.isClientSearchModalVisible = false;
+    this.cdr.detectChanges();
 
     // Optional: Log for debugging
     log.debug('Selected Client-quote management:', event);
+    log.debug('Cleaned client name:', cleanClientName);
     this.fetchGISQuotations();
   }
 
@@ -300,10 +315,17 @@ export class QuotationManagementComponent {
     this.agentName = event.agentName;
     this.agentId = event.agentId;
 
+    // Trigger p-table filtering when agent is selected
+    if (this.quotationTable && this.agentName) {
+      this.quotationTable.filterGlobal(this.agentName, 'contains');
+    }
+
     // Optional: Log for debugging
     log.debug('Selected Agent:', event);
     log.debug("AgentId", this.agentId);
-
+    
+    // Also fetch quotations for backend filtering
+    this.fetchGISQuotations();
   }
 
   formatDate(date: Date): string {
@@ -321,8 +343,15 @@ export class QuotationManagementComponent {
       const SelectedFormatedDate = this.formatDate(selectedDateFrom)
       this.selectedDateFrom = SelectedFormatedDate
       log.debug(" SELECTED FORMATTED DATE from:", this.selectedDateFrom)
-      // this.fetchGISQuotations();
+    } else {
+      this.selectedDateFrom = null;
+      log.debug("Date from cleared");
+      // If both dates are cleared, reset to original list
+      if (!this.selectedDateTo) {
+        this.gisQuotationList = [...this.originalQuotationList];
+      }
     }
+    this.fetchGISQuotations();
   }
 
   onDateToInputChange(date: any) {
@@ -332,8 +361,15 @@ export class QuotationManagementComponent {
       const SelectedFormatedDateTo = this.formatDate(selectedDateTo)
       this.selectedDateTo = SelectedFormatedDateTo
       log.debug(" SELECTED FORMATTED DATE to:", this.selectedDateTo)
-      // this.fetchGISQuotations();
+    } else {
+      this.selectedDateTo = null;
+      log.debug("Date to cleared");
+      // If both dates are cleared, reset to original list
+      if (!this.selectedDateFrom) {
+        this.gisQuotationList = [...this.originalQuotationList];
+      }
     }
+    this.fetchGISQuotations();
   }
 
   get displayAgentName(): string {
@@ -353,14 +389,13 @@ export class QuotationManagementComponent {
     this.toDate = null;
     this.minToDate = null;
     this.expiryDate = null;
-
-    // Reset to original data
-    this.gisQuotationList = [...this.originalQuotationList];
-    this.tableDetails = {
-      rows: this.gisQuotationList,
-      totalElements: this.gisQuotationList.length
-    };
-    this.cdr.detectChanges();
+    this.selectedDateFrom = null;
+    this.selectedDateTo = null;
+    
+    // Reset to original list when date filters are cleared
+    if (this.originalQuotationList.length > 0) {
+      this.gisQuotationList = [...this.originalQuotationList];
+    }
   }
   reviseQuote(selectedQuotation: any) {
     log.debug("Selected Quote to be revised:", selectedQuotation)
@@ -406,6 +441,12 @@ export class QuotationManagementComponent {
   clearAgentName(): void {
     this.agentName = '';
     this.agentId = null;
+    
+    // Clear p-table filtering when agent is cleared
+    if (this.quotationTable) {
+      this.quotationTable.filterGlobal('', 'contains');
+    }
+    
     this.fetchGISQuotations();
     this.cdr.detectChanges();
   }
@@ -437,7 +478,7 @@ export class QuotationManagementComponent {
     this.selectedSource = null;
 
     // Clear dates
-    this.clearDateFilters()
+    this.clearDateFilters();
 
     // Clear quotation number
     this.quotationNumber = '';
@@ -446,6 +487,14 @@ export class QuotationManagementComponent {
     // Clear status to null
     this.selectedStatus = null;
 
+    // Clear p-table global filtering
+    if (this.quotationTable) {
+      this.quotationTable.clear();
+    }
+
+    // Fetch quotations with cleared filters
+    this.fetchGISQuotations();
+
     // Restore the original quotation list
     this.gisQuotationList = [...this.originalQuotationList];
 
@@ -453,7 +502,18 @@ export class QuotationManagementComponent {
     this.cdr.detectChanges();
   }
   openClientSearchModal() {
-    this.isClientSearchModalVisible = true;
+    // Reset modal state to ensure it works consistently
+    this.isClientSearchModalVisible = false;
+    this.cdr.detectChanges();
+    // Set to true after change detection to ensure proper modal state
+    setTimeout(() => {
+      this.isClientSearchModalVisible = true;
+      this.cdr.detectChanges();
+    }, 0);
+  }
+
+  openAgentSearchModal() {
+    log.debug('Agent input clicked - modal will open and trigger agent loading...');
   }
 
 
@@ -547,9 +607,16 @@ export class QuotationManagementComponent {
 
   reassignQuote(quotation: any): void {
     console.log('Reassign quote:', quotation);
-    
+
   }
 
-  
+  applyGlobalFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    if (this.quotationTable) {
+      this.quotationTable.filterGlobal(filterValue, 'contains');
+    }
+  }
+
+
 }
 
