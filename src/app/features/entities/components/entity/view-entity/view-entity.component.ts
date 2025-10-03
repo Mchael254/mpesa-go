@@ -47,7 +47,7 @@ import {
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto
+  FormGroupsDto, SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('ViewEntityComponent');
@@ -119,8 +119,8 @@ export class ViewEntityComponent implements OnInit {
   bankBranchDetails: BankBranchDTO;
 
   partyTypes: PartyTypeDto[];
-  selectedTab: string = 'overview';
-  selectedSubTab: string = 'prime_identity';
+  selectedTab: string = '360 overview';
+  selectedSubTab: string = 'Prime Identity';
 
   primaryTabs: string[] = [];
   secondaryTabs: string[] = [];
@@ -143,6 +143,10 @@ export class ViewEntityComponent implements OnInit {
 
   clientDetails: ClientDTO;
   formGroupsAndFieldConfig: any;
+  subModuleId: string = '360_overview';
+  moduleId: string = 'account_management';
+  subModules: SubModulesDto[];
+
 
   constructor(
     private fb: FormBuilder,
@@ -168,9 +172,9 @@ export class ViewEntityComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.fetchSelectOptions();
-    this.fetchDynamicDisplayConfig()
-    this.edit360ViewFormsConfig();
+    this.fetchSubModules();
+    // this.fetchDynamicDisplayConfig();
+    // this.edit360ViewFormsConfig();
     this.createEntitySummaryForm();
     this.createSelectRoleForm();
     this.entityId = this.activatedRoute.snapshot.params['id'];
@@ -181,17 +185,34 @@ export class ViewEntityComponent implements OnInit {
   }
 
   /**
+   * Fetch submodules for upper screen display
+   */
+  fetchSubModules(): void {
+    this.dynamicScreenSetupService.fetchSubModules(null, this.moduleId).subscribe({
+      next: data => {
+        this.subModules = data.filter(el => el.subModuleId.includes('360'));
+        this.primaryTabs = this.subModules.map(item => item.originalLabel);
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error.message)
+      },
+    })
+  }
+
+  /**
    * This method fetches the setup configuration for Entity360 screen
    */
   fetchDynamicScreenSetup(): void {
-    // const screenCode = 1;
-    const subModuleId: string = '360_overview';
     const targetEntityShortDescription: string = this.entityAccountIdDetails[0].partyType.partyTypeShtDesc;
-    log.info('dynamic screen setup >>> ', this.entityAccountIdDetails);
 
-    this.dynamicScreenSetupService.fetchDynamicSetupByScreen(null, null, subModuleId, targetEntityShortDescription).subscribe({
-      next: (result: DynamicScreenSetupDto) => {
-        this.filterGroupsAndFieldsByCategory(result)
+    this.dynamicScreenSetupService.fetchDynamicSetupByScreen(
+      null,
+      null,
+      this.subModuleId,
+      targetEntityShortDescription
+    ).subscribe({
+      next: (res: DynamicScreenSetupDto) => {
+        this.filterGroupsAndFieldsByCategory(res)
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage('Error', err.error.message)
@@ -204,8 +225,11 @@ export class ViewEntityComponent implements OnInit {
    * @param dynamicScreenSetupDto
    */
   filterGroupsAndFieldsByCategory(dynamicScreenSetupDto: DynamicScreenSetupDto): void {
-    const category: string = (this.activatedRoute.snapshot.queryParams['category']).toLowerCase();
+    const category: string = (this.activatedRoute.snapshot.queryParams['category'])?.toLowerCase();
     const partyTypeShtDesc: string = this.entityAccountIdDetails[0].partyType.partyTypeShtDesc;
+
+    log.info('dynamic screen setup result', dynamicScreenSetupDto);
+
 
     let groups: FormGroupsDto[];
     let fields: ConfigFormFieldsDto[];
@@ -225,6 +249,8 @@ export class ViewEntityComponent implements OnInit {
       default:
       //
     }
+
+    this.secondaryTabs = groups.map(item => item.originalLabel)
 
 
     // map entity details with fields setup
@@ -247,87 +273,7 @@ export class ViewEntityComponent implements OnInit {
     log.info('sorted groups with fields >>> ', groups);
   }
 
-  /**
-   * Fetch overview form details
-   */
-  fetchOverviewFormFields(): void {
-    const subModuleCode = 41;
-    this.dynamicScreenSetupService.fetchFormFields(subModuleCode).subscribe({
-      next: (result: ConfigFormFieldsDto[]) => {
-        this.overviewFormFields = result;
-      },
-      error: err => {
-        this.globalMessagingService.displayErrorMessage('Error', err.error.message)
-      }
-    })
-  }
-
-  /**
-   * This method fetches the setup configuration for Entity360 screen
-   */
-  fetchDynamicScreenSetup(): void {
-    // const screenCode = 1;
-    const subModuleId: string = '360_overview';
-    const targetEntityShortDescription: string = this.entityAccountIdDetails[0].partyType.partyTypeShtDesc;
-
-    this.dynamicScreenSetupService.fetchDynamicSetupByScreen(null, null, subModuleId, targetEntityShortDescription).subscribe({
-      next: (result: DynamicScreenSetupDto) => {
-        this.filterGroupsAndFieldsByCategory(result)
-      },
-      error: (err) => {
-        this.globalMessagingService.displayErrorMessage('Error', err.error.message)
-      },
-    })
-  }
-
-  /**
-   * Filter the screen setup groups and field by category (corporate | individual)
-   * @param dynamicScreenSetupDto
-   */
-  filterGroupsAndFieldsByCategory(dynamicScreenSetupDto: DynamicScreenSetupDto): void {
-    const category: string = (this.activatedRoute.snapshot.queryParams['category']).toLowerCase();
-    const partyTypeShtDesc: string = this.entityAccountIdDetails[0].partyType.partyTypeShtDesc;
-
-    let groups: FormGroupsDto[];
-    let fields: ConfigFormFieldsDto[];
-
-    const originalFormId = dynamicScreenSetupDto?.forms.find(form => form.originalLabel.toLowerCase() === category);
-    const formId = originalFormId?.formId;
-
-    switch (category) {
-      case 'corporate':
-        groups = dynamicScreenSetupDto.groups.filter((group: FormGroupsDto) => group.formId === formId);
-        fields = dynamicScreenSetupDto.fields.filter((group: ConfigFormFieldsDto) => group.formId === formId);
-        break;
-      case 'individual':
-        groups = dynamicScreenSetupDto.groups.filter((group: FormGroupsDto) => group.formId === formId);
-        fields = dynamicScreenSetupDto.fields.filter((group: ConfigFormFieldsDto) => group.formId === formId);
-        break;
-      default:
-      //
-    }
-
-
-    // map entity details with fields setup
-    switch (partyTypeShtDesc) {
-      case 'C':
-        this.mapClientDetailsWithFieldSetup(this.clientDetails, fields);
-        break;
-    }
-
-    log.info('setup groups >>> ', groups);
-    log.info ('setup fields >>> ', fields);
-
-    for (const group of groups) {
-      group.fields = fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === group.groupId);
-      this.secondaryTabs2.push(group.groupId);
-    }
-    this.dynamicScreenFormGroupSetup = groups;
-    this.selectedSubTab = groups[0].groupId;
-    log.info('sorted groups with fields >>> ', groups);
-  }
-
-  fetchDynamicDisplayConfig(): void {
+  /*fetchDynamicDisplayConfig(): void {
     this.http.get<any>( 'assets/data/dynamicDisplay360View.json').subscribe({
       next: (data: any) => {
         this.dynamicDisplay = data;
@@ -352,10 +298,10 @@ export class ViewEntityComponent implements OnInit {
         log.error(err);
       }
     });
-  }
+  }*/
 
 
-  edit360ViewFormsConfig(): void {
+  /*edit360ViewFormsConfig(): void {
     this.http.get<any>( 'assets/data/edit360ViewForms.json').subscribe({
       next: (data: any) => {
         this.editPrimeDetailsFormConfig = data.prime_identity;
@@ -368,7 +314,7 @@ export class ViewEntityComponent implements OnInit {
         log.error(err);
       }
     });
-  }
+  }*/
 
   getCountries() {
     this.countryService
@@ -778,22 +724,22 @@ export class ViewEntityComponent implements OnInit {
 
 
   selectTab(tab: any): void {
-    this.selectedTab = this.primaryTabs.includes(tab.title) ? tab.title : this.selectedTab;
-    this.selectedSubTab = this.secondaryTabs.includes(tab.title) ? tab.title : this.selectedSubTab;
+    this.selectedTab = this.primaryTabs.includes(tab.originalLabel) ? tab.originalLabel : this.selectedTab;
+    this.selectedSubTab = this.secondaryTabs.includes(tab.originalLabel) ? tab.originalLabel : this.selectedSubTab;
   }
 
   openEditModal(tabTitle: string): void {
-    switch (tabTitle) {
-      case 'prime_identity':
+    switch (tabTitle.toLowerCase()) {
+      case 'prime identity':
         this.primeIdentityComponent.openEditPrimeIdentityDialog();
         break;
-      case 'contact':
+      case 'contact details':
         this.contactComponent.openEditContactDialog();
         break;
-      case 'address':
+      case 'address details':
         this.addressComponent.openEditAddressDialog();
         break;
-      case 'financial':
+      case 'financial details':
         this.financialComponent.openEditFinancialDialog();
         break;
       case 'wealth_aml':

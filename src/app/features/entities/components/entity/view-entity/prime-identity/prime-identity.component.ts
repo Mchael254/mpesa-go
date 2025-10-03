@@ -13,6 +13,11 @@ import {ClientService} from "../../../../services/client/client.service";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import {group} from "@angular/animations";
 import {ClientDTO} from "../../../../data/ClientDTO";
+import {
+  ConfigFormFieldsDto,
+  DynamicScreenSetupDto,
+  FormGroupsDto
+} from "../../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('PrimeIdentityComponent');
 
@@ -28,11 +33,10 @@ export class PrimeIdentityComponent implements OnInit {
 
   @Input() partyAccountDetails: PartyAccountsDetails;
   @Input() entityPartyIdDetails: ReqPartyById;
-  @Input() primeDetailsConfig: any
-  @Input() formGroupsAndFieldConfig: any
-  @Input() formFieldsConfig: any;
+  @Input() primeDetailsConfig: any;
+  @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() clientDetails: any;
-  @Input() selectOptions: {
+  selectOptions: {
     idTypes: IdentityModeDTO[],
     countries: CountryDto[],
     maritalStatuses: MaritalStatus[]
@@ -51,6 +55,8 @@ export class PrimeIdentityComponent implements OnInit {
   ]
 
   primeDetails: any;
+  fields: ConfigFormFieldsDto[];
+  group: FormGroupsDto;
 
   constructor(
     private utilService: UtilService,
@@ -71,19 +77,7 @@ export class PrimeIdentityComponent implements OnInit {
     this.fetchSelectOptions();
     setTimeout(() => {
       this.primaryDetailsConfig = this.primeDetailsConfig.primary_details;
-      this.createEditForm(this.formFieldsConfig.fields)
-
-      /*this.primeDetails = {
-        modeOfIdentityNumber: this.clientDetails.idNumber,
-        partyType: this.partyAccountDetails.partyType,
-        modeOfIdentity: this.clientDetails.modeOfIdentity,
-        pinNumber: this.clientDetails.pinNumber,
-        dateOfBirth: this.clientDetails.dateOfBirth,
-        gender: this.clientDetails?.gender == 'M' ? 'male' : 'female',
-        maritalStatus: this.clientDetails.maritalStatus,
-        citizenshipCountryName: this.clientDetails.citizenshipCountryName,
-        citizenshipCountryId: this.clientDetails.citizenshipCountryId,
-      }*/
+      this.createEditForm(this.formGroupsAndFieldConfig?.fields)
 
       this.primeDetails = {
         overview_business_reg_no: this.clientDetails.idNumber,
@@ -98,16 +92,15 @@ export class PrimeIdentityComponent implements OnInit {
         overview_marital_status: this.clientDetails.maritalStatus,
       };
 
-      const fields = this.formGroupsAndFieldConfig.fields.filter(field => field.formGroupingId.includes('prime_identity'));
+      this.fields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId.includes('prime_identity'));
+      this.group = this.formGroupsAndFieldConfig.groups.find((group: FormGroupsDto) => group.groupId.includes('prime_identity'));
 
-      for (const field of fields) {
+      for (const field of this.fields) {
         field.dataValue = this.primeDetails[field.fieldId] ?? null;
-        log.info(' mapped fields with data value >>> ', field, this.primeDetails[field.fieldId]);
       }
-      log.info('fields to display >>> ', fields);
 
-
-
+      // sort fields in ascending order
+      this.fields.sort((a, b) => a.order - b.order);
     }, 1000);
   }
 
@@ -137,7 +130,7 @@ export class PrimeIdentityComponent implements OnInit {
     countries: CountryDto[],
     maritalStatuses: MaritalStatus[]
   ): void {
-    this.formFieldsConfig.fields.forEach((field) => {
+    this.formGroupsAndFieldConfig.fields.forEach((field) => {
       switch (field.fieldId) {
         case 'id_type':
           field.options = idTypes;
@@ -175,7 +168,7 @@ export class PrimeIdentityComponent implements OnInit {
     const dob = this.clientDetails?.dateOfBirth; // from api >>> "2007-04-10T00:00:00.000+00:00"
     // const gender = (this.primeDetails?.gender[0]).toUpperCase() === 'M' ? 'male' : 'female';
     const genderIndex =
-      this.genders.findIndex(gender => gender.shtDesc === this.primeDetails.gender[0].toLowerCase());
+      this.genders.findIndex(gender => gender.shtDesc === this.primeDetails.overview_gender.toLowerCase());
 
     const patchData = {
       id_type: this.primeDetails?.modeOfIdentity,
@@ -192,7 +185,7 @@ export class PrimeIdentityComponent implements OnInit {
 
 
   openEditPrimeIdentityDialog(): void {
-    log.info(`openEditPrimeIdentityDialog >>> `, this.idTypes, this.countries, this.maritalStatuses);
+    // log.info(`openEditPrimeIdentityDialog >>> `, this.idTypes, this.countries, this.maritalStatuses);
     this.editButton.nativeElement.click();
     this.patchFormValues();
   }
