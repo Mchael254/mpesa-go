@@ -86,6 +86,7 @@ import { OrganizationDTO } from "../../../../../crm/data/organization-dto";
 
 import { OrganizationService } from "../../../../../crm/services/organization.service";
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import * as bootstrap from 'bootstrap';
 
 const log = new Logger('QuickQuoteFormComponent');
 
@@ -98,6 +99,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   @ViewChild('calendar', { static: true }) calendar: Calendar;
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
+  @ViewChild('shareQuoteModal') shareQuoteModal!: ElementRef;
+  @ViewChild(ShareQuotesComponent) shareQuotes!: ShareQuotesComponent;
 
 
   breadCrumbItems: BreadCrumbItem[] = [
@@ -2278,8 +2281,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.isShareModalOpen = false;
   }
 
-  @ViewChild('shareQuoteModal') shareQuoteModal?: ElementRef;
-  @ViewChild(ShareQuotesComponent) shareQuotes!: ShareQuotesComponent;
 
   notificationPayload(): QuotationReportDto {
     log.debug("SELECTED COVERS", this.premiumComputationPayloadToShare)
@@ -2476,6 +2477,15 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         next: (response) => {
           if (response) {
             this.globalMessagingService.displaySuccessMessage('success', 'Email sent successfully')
+            log.debug("Response after sending email:", response)
+            log.debug("Email sent:", response.sent)
+            const emailSent = response.sent
+            // if (emailSent == false) {
+            //   this.globalMessagingService.displayErrorMessage('Error', 'This email adrress does not exist')
+            // } else {
+            //   const modal = bootstrap.Modal.getInstance(this.shareQuoteModal.nativeElement);
+            //   modal.hide();
+            // }
           }
         },
         error: (error) => {
