@@ -95,7 +95,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   showWizzardModal = false;
-  wizzardModalPosition = { top: '90px', left: '570px' };
+  wizzardModalPosition = { top: '-40px', left: '430px' };
   userInstructionsModalInstance: any;
   hasOpened = false;
 
@@ -3617,6 +3617,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     if (this.userInstructionsModalInstance) {
       this.userInstructionsModalInstance.hide();
     }
+    sessionStorage.setItem('quickQuoteConvertedFlag', 'false');
     setTimeout(() => this.openWizzard(), 300);
   }
 

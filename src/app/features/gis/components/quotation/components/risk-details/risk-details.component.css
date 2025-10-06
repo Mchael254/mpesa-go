@@ -559,9 +559,3 @@ h2 {
 }
 
 /* Ensure consistent styling in commission table */
-.commission-readonly {
-  background-color: #f8f9fa !important;
-  color: #6c757d !important;
-  cursor: not-allowed;
-  border: 1px solid #e9ecef !important;
-}
