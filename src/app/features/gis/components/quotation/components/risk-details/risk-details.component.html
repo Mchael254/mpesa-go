@@ -707,7 +707,7 @@
                    'pi-caret-down': !showSections
                  }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i> -->
                     <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
-                        [ngClass]="{ 'pi-caret-up': showSections, 'pi-caret-down': !showSections }"
+                        [ngClass]="{ 'pi-caret-down': showSections, 'pi-caret-up': !showSections }"
                         style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
                         (click)="toggleSections(iconTrigger)">
                     </i>
@@ -1274,90 +1274,7 @@
 
             </p-table>
 
-            <!-- <p-table [value]="sectionDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single"
-                [(selection)]="selectedSection" dataKey="code" editMode="row" [paginator]="true" [rows]="2"
-                [rowsPerPageOptions]="[2, 4, 6]">
-                <ng-template pTemplate="header">
-                    <tr>
 
-
-                        <th class="flexible-header" pSortableColumn="rowNum">
-                            {{ 'gis.quotation.row_num' | translate }}
-                            <p-sortIcon field="rowNum" />
-                        </th>
-                        <th class="flexible-header" pSortableColumn="group">
-                            {{ 'gis.quotation.group' | translate }}
-                            <p-sortIcon field="group" />
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="shortDescription">
-                            {{ 'gis.quotation.code' | translate }}
-                            <p-sortIcon field="code" />
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="description">
-                            {{ 'gis.quotation.benefit' | translate }}
-                            <p-sortIcon field="benefit" />
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="limitAmount">
-                            {{ 'gis.quotation.limit_amount' | translate }}
-                            <p-sortIcon field="limitAmount" />
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="premiumRate">
-                            {{ 'gis.quotation.premium_rate' | translate }}
-                            <p-sortIcon field="premiumRate" />
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="rateType">
-                            {{ 'gis.quotation.rate_type' | translate }}
-                            <p-sortIcon field="rateType" />
-                        </th>
-                        <th class="flexible-header" pSortableColumn="actions">
-                            {{ 'gis.quotation.actions' | translate }}
-                            <p-sortIcon field="actions" />
-                        </th>
-
-
-                    </tr>
-                </ng-template>
-
-                <ng-template pTemplate="body" let-sectionArray let-editing="editing" let-ri="rowIndex">
-                    <tr (click)="onSelectSection(sectionArray)" [pEditableRow]="sectionArray">
-                        <td class="flexible-header">{{sectionArray.rowNumber}}</td>
-                        <td class="flexible-header">{{sectionArray.calcGroup}}</td>
-                        <td class="flexible-header">{{sectionArray.sectionCode}}</td>
-                        <td class="flexible-header">{{sectionArray.sectionShortDescription |sentenceCase}}</td>
-                        <td class="flexible-header">{{sectionArray.limitAmount}}</td>
-                        <td class="flexible-header">{{sectionArray.premiumRate}}</td>
-                        <td class="flexible-header">{{sectionArray.rateType}}</td>
-
-                        <td class="flexible-header">
-
-                            <button pButton pRipple type="button" pInitEditableRow
-                                class="p-button-rounded p-button-text custom-button " pTooltip="" tooltipPosition="top"
-                                (click)="onOpenEditSectionModal(sectionArray)">
-                                Edit
-                            </button>
-
-
-                            <button pButton pRipple type="button" class="p-button-rounded p-button-text custom-button  "
-                                data-bs-toggle="modal" data-bs-target="#deleteSection"
-                                (click)="setSectionToDelete(sectionArray)">
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="emptymessage">
-                    <tr>
-                        <td colspan="8" style="padding: 20px; text-align:center" id="empty">
-                            No section Click on + icon to add section</td>
-                    </tr>
-                </ng-template>
-
-            </p-table> -->
 
         </div>
     </div>
@@ -1407,18 +1324,14 @@
                         </button>
                     </div>
                     <!-- under development -->
-                    <div pTooltip="{{ isCommissionsButtonDisabled ? ('gis.quotation.agent_source_required_for_commissions' | translate) : '' }}" 
-                         tooltipPosition="top" 
-                         class="d-inline-block"
-                         style="cursor: pointer">
-                        <button class="btn btn-sm"
-                            [ngClass]="{
+                    <div pTooltip="{{ isCommissionsButtonDisabled ? ('gis.quotation.agent_source_required_for_commissions' | translate) : '' }}"
+                        tooltipPosition="top" class="d-inline-block" style="cursor: pointer">
+                        <button class="btn btn-sm" [ngClass]="{
                                 'no-border-bottom': riskActiveTab === 'commissions' && !isCommissionsButtonDisabled, 
                                 'text-primary border-0': riskActiveTab !== 'commissions' && !isCommissionsButtonDisabled,
                                 'text-muted': isCommissionsButtonDisabled
-                            }"
-                            [disabled]="isCommissionsButtonDisabled"
-                            (click)="!isCommissionsButtonDisabled && setRiskTab('commissions')"> 
+                            }" [disabled]="isCommissionsButtonDisabled"
+                            (click)="!isCommissionsButtonDisabled && setRiskTab('commissions')">
                             {{ 'gis.quotation.commissions' | translate }}
                         </button>
                     </div>
@@ -1528,24 +1441,21 @@
                     <!-- commissions action tabs -->
                     <div *ngIf="riskActiveTab === 'commissions'">
                         <button class="btn btn-outline-primary btn-sm mb-1 me-2"
-                                [disabled]="isCommissionsButtonDisabled"
-                                [ngClass]="{'btn-outline-secondary': isCommissionsButtonDisabled}">
+                            [disabled]="isCommissionsButtonDisabled"
+                            [ngClass]="{'btn-outline-secondary': isCommissionsButtonDisabled}">
                             {{'gis.quotation.save_changes' | translate}}
                         </button>
-                        <button class="btn btn-primary btn-sm mb-1" 
-                                [disabled]="isCommissionsButtonDisabled"
-                                [ngClass]="{'btn-secondary': isCommissionsButtonDisabled}"
-                                (click)="!isCommissionsButtonDisabled && openCommissionsModal()">
+                        <button class="btn btn-primary btn-sm mb-1" [disabled]="isCommissionsButtonDisabled"
+                            [ngClass]="{'btn-secondary': isCommissionsButtonDisabled}"
+                            (click)="!isCommissionsButtonDisabled && openCommissionsModal()">
                             {{'gis.quotation.add_commission' | translate}}
                         </button>
-                        <i #iconTrigger class="pi border rounded-1 p-1"
-                            [ngClass]="{ 
+                        <i #iconTrigger class="pi border rounded-1 p-1" [ngClass]="{ 
                                 'pi-caret-up': showCommissions, 
                                 'pi-caret-down': !showCommissions,
                                 'border-black text-black': !isCommissionsButtonDisabled,
                                 'border-secondary text-muted': isCommissionsButtonDisabled
-                            }"
-                            [style.cursor]="isCommissionsButtonDisabled ? 'not-allowed' : 'pointer'"
+                            }" [style.cursor]="isCommissionsButtonDisabled ? 'not-allowed' : 'pointer'"
                             style="font-size: 15px; margin-left: 8px; padding: 4px 6px;"
                             (click)="!isCommissionsButtonDisabled && toggleCommissionsColumns(iconTrigger)">
                         </i>
@@ -2607,7 +2517,8 @@
 
                     <tr class="filter-row">
                         <td *ngFor="let col of commissionsColumns" [hidden]="!col.visible">
-                            <input *ngIf="col.field !== 'actions'" type="text" pInputText class="form-control ms-2" style="width:95%"
+                            <input *ngIf="col.field !== 'actions'" type="text" pInputText class="form-control ms-2"
+                                style="width:95%"
                                 (input)="commissionsTable.filter($event.target['value'], col.field, 'contains')" />
                         </td>
                     </tr>
@@ -2650,13 +2561,15 @@
                                     <ng-template #editableField>
                                         <ng-container *ngIf="col.field === 'value'; else defaultField">
                                             <input type="number" class="form-control w-100 text-end"
-                                                [(ngModel)]="commission[col.field]" [ngModelOptions]="{standalone: true}"
+                                                [(ngModel)]="commission[col.field]"
+                                                [ngModelOptions]="{standalone: true}"
                                                 (blur)="commission[col.field] = sanitizeCurrency(commission[col.field])" />
                                         </ng-container>
 
                                         <ng-template #defaultField>
                                             <input type="text" class="form-control w-100"
-                                                [(ngModel)]="commission[col.field]" [ngModelOptions]="{standalone: true}" />
+                                                [(ngModel)]="commission[col.field]"
+                                                [ngModelOptions]="{standalone: true}" />
                                         </ng-template>
                                     </ng-template>
                                 </ng-container>

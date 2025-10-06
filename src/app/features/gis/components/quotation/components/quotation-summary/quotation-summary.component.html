@@ -1842,7 +1842,11 @@
 
         <div class="action-buttons">
 
-          <!-- Right-side Authorize button with tooltip -->
+          <button class="btn btn-outline-primary me-2" *ngIf="isNewClientSelected" data-bs-toggle="modal"
+            data-bs-target="#createClientModal">
+            Create Client
+          </button>
+
           <div class="d-inline-block" pTooltip="{{ authorizeButtonTooltip }}" tooltipPosition="top"
             [tooltipDisabled]="!authorizeButtonDisabled" style="cursor: pointer;">
             <button *ngIf="showAuthorizeButton" type="button" class="btn"
@@ -1878,7 +1882,34 @@
 
         </div>
       </div>
+      <!-- CREATE CLIENT CRM MODAL -->
+      <div class="modal fade" id="createClientModal" #createClientModal tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:1028px;">
+          <div class="modal-content ps-4 pt-2 pe-4">
+            <div class="d-flex justify-content-between align-items-center rounded-3 mb-1">
+              <button type="button" class="btn p-1 text-danger fw-bold ms-auto" data-bs-dismiss="modal"
+                style="border: none;">
+                X
+              </button>
+            </div>
+            <app-new-entity-v2></app-new-entity-v2>
 
+
+            <!-- <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
+              <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary" style="text-decoration: none;">{{
+                'gis.quotation.cancel' | translate
+                }}
+              </button>
+              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+                (click)="rejectQuotation(quotationDetails.code)">{{
+                'gis.quotation.save_changes' |
+                translate
+                }}
+              </button>
+            </div> -->
+          </div>
+        </div>
+      </div>
 
 
     </div>

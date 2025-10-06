@@ -3138,7 +3138,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   get authorizeButtonDisabled(): boolean {
-    return this.hasExceptionsData() || this.hasEmptySchedules();
+    return this.hasExceptionsData() || this.hasEmptySchedules() || this.isNewClientSelected;
   }
 
   authorizeQuote() {
