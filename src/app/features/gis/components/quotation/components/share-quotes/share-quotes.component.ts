@@ -27,7 +27,7 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
   }
 
   display = true;
-  @Output() downloadRequested = new EventEmitter<void>();
+  @Output() downloadRequested = new EventEmitter<{ print?: boolean }>();
   @Output() previewRequested = new EventEmitter<void>();
   @Output() sendEvent = new EventEmitter<{ mode: ShareQuoteDTO }>();
   @Input() previewVisible!: boolean;
@@ -121,5 +121,10 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
     this.previewRequested.emit();
 
   }
+
+  onPrint() {
+  this.downloadRequested.emit({ print: true });
+}
+
 
 }
