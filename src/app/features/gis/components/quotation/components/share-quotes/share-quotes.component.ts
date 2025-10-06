@@ -98,6 +98,8 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
     log.debug("Email payload", payload)
     this.notificationService.sendEmail(payload).subscribe({
       next: (response) => {
+        log.debug("Response after sending email:", response)
+        log.debug("Email sent:", response.sent)
 
         this.closeButton.nativeElement.click();
 

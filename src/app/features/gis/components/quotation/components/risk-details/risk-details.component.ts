@@ -753,8 +753,8 @@ export class RiskDetailsComponent {
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop; // align vertically with icon
-    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
+    const top = iconElement.offsetTop - 50;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -2133,7 +2133,7 @@ export class RiskDetailsComponent {
 
     schedule.riskCode = this.quotationRiskCode;
     schedule.transactionType = "Q";
-    schedule.version = this.selectedRisk?.scheduleDetails?.[0] || 0;
+    schedule.version = this.selectedRisk?.scheduleDetails?.[0].version || 0;
 
     // Remove unnecessary fields
     const removeFields = [
@@ -2484,8 +2484,8 @@ export class RiskDetailsComponent {
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop; // align vertically with icon
-    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
+    const top = iconElement.offsetTop + 30;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
