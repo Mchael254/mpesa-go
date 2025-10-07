@@ -1,5 +1,31 @@
-<!--<ng-container *ngIf="editForm && countries && states && towns; else loadingContent">-->
-<!--{{ addressDetails | json }}-->
+<!--<div>
+  <p *ngFor="let field of fields">
+    {{ field.fieldId | json }}
+  </p>
+</div>-->
+
+<!--{{ group | json }}-->
+
+
+<ng-container>
+  <div class="row">
+    <ng-container *ngFor="let field of fields">
+      <div class="col-sm-4">
+        <div class="row my-2">
+          <div class="col-sm-4 text-dark">
+            {{ field.label[language] }}
+          </div>
+          <div class="col-sm-8 text-dark fw-bold">
+            {{ field.dataValue }}
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</ng-container>
+
+<!--
+
   <table class="table table-borderless">
     <tbody>
     <tr>
@@ -100,6 +126,7 @@
     </tr>
     </tbody>
   </table>
+-->
 
 
 
@@ -114,7 +141,7 @@
       <div class="modal-content">
         <div class="modal-header border-0">
           <h1 class="modal-title fs-4 text-primary" id="editAddressModalLabel">
-            {{ formFieldsConfig.label[language] | titlecase }}
+<!--            {{ formFieldsConfig.label[language] | titlecase }}-->
           </h1>
           <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -168,14 +195,14 @@
             </div>
           </ng-template>
         </div>
-        <div class="modal-footer border-0">
+        <!--<div class="modal-footer border-0">
           <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
             {{ formFieldsConfig.buttons.cancel.label[language] | titlecase }}
           </button>
           <button type="button" class="btn btn-primary" (click)="editAddressDetails()">
             {{ formFieldsConfig.buttons.save.label[language] | titlecase }}
           </button>
-        </div>
+        </div>-->
       </div>
     </div>
   </div>
