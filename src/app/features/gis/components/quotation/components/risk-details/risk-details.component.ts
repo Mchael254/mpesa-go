@@ -17,7 +17,7 @@ import { VehicleModelService } from '../../../setups/services/vehicle-model/vehi
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, CreateLimitsOfLiability, DynamicRiskField, Excesses, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab, TaxInformation, TaxPayload } from '../../data/quotationsDTO';
+import { Clause, CreateLimitsOfLiability, DynamicRiskField, Excesses, QuotationDetails, quotationRisk, RiskCommissionDto, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab, TaxInformation, TaxPayload } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, territories, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, firstValueFrom, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
@@ -396,6 +396,8 @@ export class RiskDetailsComponent {
   uploadProgress: number;
   ncdStatusSelected: boolean;
   territories: territories[] = [];
+  commissionToDelete: any = null;
+  editingRowCode: number | null = null;
 
 
   constructor(
@@ -6932,4 +6934,86 @@ export class RiskDetailsComponent {
       }
     });
   }
+
+  markCommissionDirty(commission: any): void {
+  commission._dirty = true;
+}
+hasCommissionChanges(): boolean {
+  return this.addedCommissions?.some(c => c._dirty) ?? false;
+}
+
+startEditing(commission: any): void {
+  this.editingRowCode = commission.code;
+}
+
+resetEditing(): void {
+  this.editingRowCode = null;
+}
+
+
+updateRiskCommissions(): void {
+  const modified = this.addedCommissions.filter(c => c._dirty);
+
+  modified.forEach(comm => {
+    const payload: RiskCommissionDto = {
+      code: comm.code,
+      quotationRiskCode: comm.quotationRiskCode,
+      quotationCode: comm.quotationCode,
+      agentCode: comm.agentCode,
+      transCode: comm.transCode,
+      accountCode: comm.accountCode,
+      trntCode: comm.trntCode,
+      group: comm.group
+    };
+
+    this.quotationService.updateRiskCommission(payload).subscribe({
+      next: (res) => {
+        log.debug('Update success:', res);
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Commission updated successfully'
+        );
+        comm._dirty = false; 
+        this.resetEditing();
+      },
+      error: (err) => {
+        log.error('Update error:', err);
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Failed to update commission'
+        );
+      }
+    });
+  });
+}
+  prepareDeleteCommission(commission: any): void {
+  this.commissionToDelete = commission; 
+}
+
+deleteRiskCommission(codeToDelete: number): void {
+  this.quotationService.deleteRiskCommission(codeToDelete).subscribe({
+    next: (res) => {
+  
+      this.addedCommissions = this.addedCommissions.filter(
+        (c) => c.code !== codeToDelete
+      );
+
+      
+      this.globalMessagingService.displaySuccessMessage(
+        'Success:',
+        'Commission deleted successfully'
+      );
+    },
+    error: (err) => {
+      log.error('Delete error:', err);
+
+      this.globalMessagingService.displayErrorMessage(
+        'Error:',
+        'Failed to delete commission'
+      );
+    }
+  });
+}
+
+
 }
