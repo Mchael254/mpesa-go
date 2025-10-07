@@ -161,10 +161,13 @@
 
                             </div>
                             <!-- Messages -->
-                            <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-                            <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
-                            <app-ai-import-progress-modal [visible]="showAiImportModal" [progress]="uploadProgress">
+
+                            <app-ai-import-progress-modal [visible]="showAiImportModal" [progress]="uploadProgress"
+                                [errorMessage]="aiErrorMessage" (dismiss)="onDismissModal()">
                             </app-ai-import-progress-modal>
+
+
+
 
                         </div>
 
@@ -216,10 +219,14 @@
                                             </ng-container> -->
 
                                             <!-- date -->
-                                            <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
-                                                dateFormat="yy-mm-dd" [showIcon]="true"
-                                                [attr.placeholder]="field.label | translate">
-                                            </p-calendar>
+                                            <ng-container
+                                                *ngIf="field.name !== 'coverFrom' && field.name !== 'coverTo' && riskDetailsForm && riskDetailsForm.contains(field.name)">
+                                                <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
+                                                    [dateFormat]="dateFormat" [showIcon]="true"
+                                                    [attr.placeholder]="field.label | translate">
+                                                </p-calendar>
+                                            </ng-container>
+
 
                                             <!-- number -->
                                             <input *ngIf="field.type === 'number'" type="text" class="form-control"
@@ -357,10 +364,27 @@
                                                 </p-dropdown>
                                             </ng-container>
                                             <!-- DATE -->
-                                            <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
-                                                dateFormat="yy-mm-dd" [showIcon]="true"
-                                                [attr.placeholder]="field.label | translate">
+                                            <ng-container
+                                                *ngIf="field.name !== 'coverFrom' && field.name !== 'coverTo' && riskDetailsForm && riskDetailsForm.contains(field.name)">
+                                                <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
+                                                    [dateFormat]="dateFormat" [showIcon]="true"
+                                                    [attr.placeholder]="field.label | translate">
+                                                </p-calendar>
+                                            </ng-container>
+                                            <!-- Cover From -->
+                                            <p-calendar *ngIf="field.name === 'coverFrom'"
+                                                [formControlName]="field.name" [dateFormat]="dateFormat"
+                                                [showIcon]="true" [attr.placeholder]="field.label | translate"
+                                                (onSelect)="onDateChange()">
                                             </p-calendar>
+
+                                            <!-- Cover To -->
+                                            <p-calendar *ngIf="field.name === 'coverTo'" [formControlName]="field.name"
+                                                [dateFormat]="dateFormat" [showIcon]="true"
+                                                [attr.placeholder]="field.label | translate"
+                                                (onSelect)="onDateChange()">
+                                            </p-calendar>
+
 
                                             <!-- number -->
                                             <input *ngIf="field.type === 'number'" type="text" class="form-control"
@@ -598,7 +622,7 @@
 
                                             <!-- Date -->
                                             <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
-                                                dateFormat="yy-mm-dd" [showIcon]="true">
+                                                [dateFormat]="dateFormat" [showIcon]="true">
                                             </p-calendar>
 
                                             <!-- Number -->
