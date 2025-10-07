@@ -360,6 +360,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   toggleCoverType(productIndex: number, riskIndex: number): void {
     const current = this.expandedCoverTypeIndexes[productIndex];
     this.expandedCoverTypeIndexes[productIndex] = current === riskIndex ? null : riskIndex;
+    log.debug('expandedCoverTypeIndexes', this.expandedCoverTypeIndexes)
   }
 
   ngOnInit(): void {
@@ -834,7 +835,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.removeProductCoverTypes(product.value.code)
     // Remove from selectedProducts
     this.selectedProducts = this.selectedProducts.filter(p => p.code !== deletedCode);
-
+    this.selectedProductCovers = this.selectedProductCovers.filter(p => p.code !== deletedCode);
     this.quickQuoteForm.patchValue({
       product: this.previousSelected
     })
@@ -2170,28 +2171,87 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-  removeBenefit(benefitDto: { risk: RiskLevelPremium, premiumItems: Premiums }) {
-    const sectionToRemove = benefitDto.premiumItems.sectCode
-    const dtoToProcess: { risk: RiskLevelPremium, premiumItems: Premiums[] } = {
-      risk: benefitDto.risk,
-      premiumItems: []
+  // removeBenefit(benefitDto: { risk: RiskLevelPremium, premiumItems: Premiums }) {
+  //   const sectionToRemove = benefitDto.premiumItems.sectCode
+  //   const dtoToProcess: { risk: RiskLevelPremium, premiumItems: Premiums[] } = {
+  //     risk: benefitDto.risk,
+  //     premiumItems: []
+  //   }
+  //   log.debug("About to remove >>>>", benefitDto, dtoToProcess, sectionToRemove)
+  //   const updatedPayload = this.modifyPremiumPayload(dtoToProcess, sectionToRemove)
+  //   setTimeout(() => {
+  //     this.performComputation(updatedPayload);
+  //     document.body.style.overflow = 'auto';
+  //   }, 100);
+  // }
+
+  // listenToBenefitsAddition(benefitDto: { risk: RiskLevelPremium, premiumItems: Premiums[] }) {
+  //   let updatedPayload = this.modifyPremiumPayload(benefitDto);
+  //   log.debug("Modified Premium Computation Payload:", updatedPayload);
+  //   setTimeout(() => {
+  //     this.performComputation(updatedPayload);
+  //     document.body.style.overflow = 'auto';
+  //   }, 100);
+  // }
+  listenToBenefitsAddition(
+    benefitDto: { risk: RiskLevelPremium; premiumItems: Premiums[] },
+    productIndex?: number,
+    coverIndex?: number
+  ) {
+    log.debug("product index:", productIndex)
+    log.debug("cover index:", coverIndex)
+    // Save which section was expanded
+    const previousExpandedIndexes = [...this.expandedCoverTypeIndexes];
+    if (productIndex !== undefined && coverIndex !== undefined) {
+      previousExpandedIndexes[productIndex] = coverIndex;
     }
-    log.debug("About to remove >>>>", benefitDto, dtoToProcess, sectionToRemove)
-    const updatedPayload = this.modifyPremiumPayload(dtoToProcess, sectionToRemove)
+    log.debug("CURRENT EXPANDED:", previousExpandedIndexes)
+    log.debug("CURRENT EXPANDED:", previousExpandedIndexes)
+
+    const updatedPayload = this.modifyPremiumPayload(benefitDto);
+    log.debug("Modified Premium Computation Payload:", updatedPayload);
+
     setTimeout(() => {
       this.performComputation(updatedPayload);
-      document.body.style.overflow = 'auto';
+
+      // Wait a bit for computation to finish and UI to reload
+      setTimeout(() => {
+        this.expandedCoverTypeIndexes = previousExpandedIndexes;
+        document.body.style.overflow = 'auto';
+      }, 300); // Adjust delay if needed based on recomputation time
     }, 100);
   }
 
-  listenToBenefitsAddition(benefitDto: { risk: RiskLevelPremium, premiumItems: Premiums[] }) {
-    let updatedPayload = this.modifyPremiumPayload(benefitDto);
-    log.debug("Modified Premium Computation Payload:", updatedPayload);
+  removeBenefit(
+    benefitDto: { risk: RiskLevelPremium; premiumItems: Premiums },
+    productIndex?: number,
+    coverIndex?: number
+  ) {
+    const previousExpandedIndexes = [...this.expandedCoverTypeIndexes];
+    if (productIndex !== undefined && coverIndex !== undefined) {
+      previousExpandedIndexes[productIndex] = coverIndex;
+    }
+
+    const sectionToRemove = benefitDto.premiumItems.sectCode;
+    const dtoToProcess = {
+      risk: benefitDto.risk,
+      premiumItems: []
+    };
+
+    log.debug("About to remove >>>>", benefitDto, dtoToProcess, sectionToRemove);
+    const updatedPayload = this.modifyPremiumPayload(dtoToProcess, sectionToRemove);
+
     setTimeout(() => {
       this.performComputation(updatedPayload);
-      document.body.style.overflow = 'auto';
+
+      // Restore expanded section after refresh
+      setTimeout(() => {
+        this.expandedCoverTypeIndexes = previousExpandedIndexes;
+        document.body.style.overflow = 'auto';
+      }, 300);
     }, 100);
   }
+
 
   modifyPremiumPayload(benefitsDto: {
     risk: RiskLevelPremium,
@@ -2386,36 +2446,36 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-onDownloadRequested(event?: { print?: boolean }) {
-  const payload = this.notificationPayload();
+  onDownloadRequested(event?: { print?: boolean }) {
+    const payload = this.notificationPayload();
 
-  this.quotationService.generateQuotationReport(payload).pipe(
-    untilDestroyed(this)
-  ).subscribe((response) => {
-    if (event?.print) {
-      // Convert Base64 to Blob for printing
-      const byteCharacters = atob(response.base64);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: 'application/pdf' });
-      const pdfUrl = URL.createObjectURL(blob);
+    this.quotationService.generateQuotationReport(payload).pipe(
+      untilDestroyed(this)
+    ).subscribe((response) => {
+      if (event?.print) {
+        // Convert Base64 to Blob for printing
+        const byteCharacters = atob(response.base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        const pdfUrl = URL.createObjectURL(blob);
 
-      // Open new tab & print
-      const printWindow = window.open(pdfUrl, '_blank');
-      if (printWindow) {
-        printWindow.addEventListener('load', () => {
-          printWindow.print();
-        });
+        // Open new tab & print
+        const printWindow = window.open(pdfUrl, '_blank');
+        if (printWindow) {
+          printWindow.addEventListener('load', () => {
+            printWindow.print();
+          });
+        }
+      } else {
+        // Normal download
+        this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf");
       }
-    } else {
-      // Normal download
-      this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf");
-    }
-  });
-}
+    });
+  }
 
 
 
