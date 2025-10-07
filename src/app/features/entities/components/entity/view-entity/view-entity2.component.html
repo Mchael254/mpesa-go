@@ -71,7 +71,7 @@
             (click)="openEditModal(tab.originalLabel)"
           >
             <i class="fa fa-pencil"></i>
-            </span>
+          </span>
         </ng-template>
 
         <ng-container *ngIf="
@@ -82,11 +82,52 @@
             #primeIdentityRef
             [partyAccountDetails]="partyAccountDetails"
             [clientDetails]="clientDetails"
-            [primeDetailsConfig]="tab"
+            [group]="tab"
             [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
           >
           </app-prime-identity>
         </ng-container>
+
+        <ng-container *ngIf="
+            clientDetails &&
+            tab.originalLabel==='Contact Details'"
+        >
+          <app-contact
+            #contactRef
+            [clientDetails]="clientDetails"
+            [accountCode]="clientDetails.clientCode"
+            [group]="tab"
+            [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
+          ></app-contact>
+        </ng-container>
+
+        <ng-container *ngIf="
+            clientDetails &&
+            tab.originalLabel==='Address Details';"
+        >
+          <app-address
+            #addressRef
+            [addressDetails]="clientDetails.address"
+            [accountCode]="clientDetails.clientCode"
+            [group]="tab"
+            [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
+          ></app-address>
+        </ng-container>
+
+        <!--<ng-container *ngIf="
+            clientDetails &&
+            tab.originalLabel==='Financial Details'"
+        >
+          <app-financial
+            #financialRef
+            [financialDetails]="clientDetails.paymentDetails"
+            [accountCode]="clientDetails.clientCode"
+            [financialDetailsConfig]="tab"
+            [formFieldsConfig]="editFinancialFormConfig"
+            [countryId]="clientDetails?.address?.countryId"
+          >
+          </app-financial>
+        </ng-container>-->
 
       </p-tabPanel>
     </ng-container>

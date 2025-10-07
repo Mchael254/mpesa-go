@@ -13,6 +13,13 @@ import {OrganizationBranchDto} from "../../../../../../shared/data/common/organi
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import {AccountService} from "../../../../services/account/account.service";
 import {AccountsEnum} from "../../../../data/enums/accounts-enum";
+import {
+  ConfigFormFieldsDto,
+  DynamicScreenSetupDto,
+  FormGroupsDto, FormSubGroupsDto, MultilingualText
+} from "../../../../../../shared/data/common/dynamic-screens-dto";
+import {Group} from "../../../../data/form-config.model";
+import {ClientDTO, ContactDetails, ContactPerson} from "../../../../data/ClientDTO";
 
 const log = new Logger('ContactComponent');
 
@@ -26,15 +33,17 @@ export class ContactComponent implements OnInit {
   @ViewChild('editButton') editButton!: ElementRef<HTMLButtonElement>;
   @ViewChild('closeButton') closeButton!: ElementRef<HTMLButtonElement>;
 
-  @Input() contactDetailsConfig: any
-  @Input() formFieldsConfig: any;
-  @Input() contactDetails: any;
+  @Input() clientDetails: ClientDTO;
   @Input() accountCode: number;
+  @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
+  @Input() group: FormGroupsDto;
+
+  contactDetails: ContactDetails;
+  contactPersons: ContactPerson[];
 
   clientTitles$: Observable<ClientTitleDTO[]>;
   branches$: Observable<OrganizationBranchDto[]>;
 
-  // contactDetailsConfig: any;
   language: string = 'en';
   editForm: FormGroup;
   clientTitle: ClientTitleDTO;
@@ -47,28 +56,121 @@ export class ContactComponent implements OnInit {
   protected readonly SearchCountryField = SearchCountryField;
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
 
+  fields: ConfigFormFieldsDto[];
+  tableHeaders: ConfigFormFieldsDto[];
+  table: { cols: any[], data: any[] } = { cols: [], data: [] };
+
+
   constructor(
     private utilService: UtilService,
     private clientService: ClientService,
     private branchService: BranchService,
-    private accountService: AccountService,
+    // private accountService: AccountService,
     private globalMessagingService: GlobalMessagingService,
     private fb: FormBuilder,
     ) {
-    this.utilService?.currentLanguage.subscribe(lang => {
-      this.language = lang;
-    });
-    // log.info('form fields config >>> ', this.formFieldsConfig);
+    this.utilService?.currentLanguage.subscribe(lang => {this.language = lang;});
   }
 
   ngOnInit(): void {
-    this.fetchSelectOptions();
+    // this.fetchSelectOptions();
+
+    setTimeout(() => {
+      this.contactDetails = this.clientDetails.contactDetails;
+      this.contactPersons = this.clientDetails.contactPersons;
+
+      const displayContactDetails  = {
+        overview_title: this.contactDetails?.title?.description,
+        overview_contact_person_full_name: this.contactDetails?.principalContactName,
+        overview_contact_details_email: this.contactDetails?.emailAddress,
+        overview_contact_person_doc_id_no: null,
+        overview_website_url: this.contactDetails?.websiteUrl,
+        overview_tel_no: this.contactDetails?.phoneNumber,
+        overview_contact_person_email: this.contactDetails?.emailAddress,
+        overview_pref_contact_channel: this.contactDetails?.contactChannel,
+        overview_social_media: this.contactDetails?.socialMediaUrl,
+        overview_contact_person_mobile_no: this.contactDetails?.phoneNumber,
+        overview_wef: null,
+        overview_wet: null,
+        overview_branch: this.contactDetails?.branchName,
+        overview_sms_number: this.contactDetails?.smsNumber,
+        overview_telephone_number: this.contactDetails?.telephoneNumber,
+        overview_email: this.contactDetails?.email,
+      }
+
+      if (this.group.subGroup.length === 0) {
+        this.prepareGroupDetails(displayContactDetails);
+      } else {
+        this.prepareSubGroupDetails(displayContactDetails);
+      }
+    }, 1000);
 
     this.clientTitles$ = this.clientService.getClientTitles();
     this.branches$ = this.branchService.getAllBranches();
     this.initData();
+  }
 
-    if (this.formFieldsConfig.fields.length > 0) this.createEditForm(this.formFieldsConfig.fields);
+
+  prepareGroupDetails(displayContactDetails): void {
+    if (this.group.presentationType === 'fields') {
+      this.fields = this.createFieldDisplay(displayContactDetails);
+    } else {
+      this.createTableDisplay();
+    }
+  }
+
+  /**
+   * create field display using the labelled fields
+   * @param displayFields
+   */
+  createFieldDisplay(displayFields): ConfigFormFieldsDto[] {
+    const fields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === this.group.groupId);
+
+    if (fields.length > 0) this.createEditForm(fields);
+
+    for (const field of fields) {
+      field.dataValue = displayFields[field.fieldId] ?? null;
+    }
+
+    fields.sort((a, b) => a.order - b.order);
+
+    return fields;
+  }
+
+
+  createTableDisplay(subGroup?: FormSubGroupsDto) {
+    const headerFields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formSubGroupingId === subGroup.subGroupId);
+    headerFields.sort((a, b) => a.order - b.order);
+    this.tableHeaders = headerFields;
+
+    const tableData = [];
+    this.contactPersons.forEach(person => {
+      const p = {
+        overview_title: person.clientTitle,
+        overview_contact_person_full_name: person.name,
+        overview_contact_person_doc_id_no: person.idNumber,
+        overview_contact_person_email: person.email,
+        overview_contact_person_mobile_no: person.mobileNumber,
+        overview_wef: person.wef,
+        overview_wet: person.wet,
+      };
+      tableData.push(p);
+    });
+
+    this.table = {
+      cols: this.tableHeaders,
+      data: tableData
+    };
+  }
+
+  prepareSubGroupDetails(displayContactDetails): void {
+    this.group?.subGroup?.forEach((subGroup) => {
+      if (subGroup.presentationType === 'fields') {
+        subGroup.fields = this.createFieldDisplay(displayContactDetails);
+      } else {
+        this.createTableDisplay(subGroup);
+      }
+    });
   }
 
 
@@ -85,7 +187,7 @@ export class ContactComponent implements OnInit {
     });
   }
 
-  fetchSelectOptions(): void {
+  /*fetchSelectOptions(): void {
     forkJoin({
       branches: this.branchService.getAllBranches(),
       contactChannels: this.accountService.getCommunicationChannels(),
@@ -104,13 +206,13 @@ export class ContactComponent implements OnInit {
         log.error(`could not fetch: `, err);
       }
     });
-  }
+  }*/
 
   setSelectOptions(
     branches: OrganizationBranchDto[],
     contactChannels: AccountsEnum[],
   ): void {
-    this.formFieldsConfig.fields.forEach(field => {
+    this.fields.forEach(field => {
       switch (field.fieldId) {
         case 'title':
           field.options = this.clientTitles;

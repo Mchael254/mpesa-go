@@ -1,77 +1,68 @@
-<!--{{ contactDetails | json }}-->
 
-<ng-container *ngIf="contactDetails">
-  <table class="table table-borderless">
-    <tbody>
-    <tr>
-      <td>
-        <div class="row">
-          <div class="col-sm-5">
-            {{ contactDetailsConfig?.contact_details?.branch[language] || '---' | titlecase }}
+<ng-container *ngIf="group.subGroup?.length === 0">
+  <div class="row">
+    <ng-container *ngFor="let field of fields">
+      <div class="col-sm-4">
+        <div class="row my-2">
+          <div class="col-sm-4 text-dark">
+            {{ field.label[language] }}
           </div>
-          <div class="col-sm-7 fw-bold">
-            {{ contactDetails?.branchName }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row" *ngIf="clientTitle?.description">
-          <div class="col-sm-4">
-            {{ contactDetailsConfig?.contact_details?.title[language] || '---' | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ clientTitle?.description }}
+          <div class="col-sm-8 text-dark fw-bold">
+            {{ field.dataValue }}
           </div>
         </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-5">
-            {{ contactDetailsConfig?.contact_details?.sms_number[language] || '---' | titlecase }}
-          </div>
-          <div class="col-sm-7 fw-bold">
-            {{ contactDetails?.smsNumber }}
-          </div>
-        </div>
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        <div class="row">
-          <div class="col-sm-5">
-            {{ contactDetailsConfig?.contact_details?.tel_number[language] || '---' | titlecase }}
-          </div>
-          <div class="col-sm-7 fw-bold">
-            {{ contactDetails?.phoneNumber }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ contactDetailsConfig?.contact_details?.email[language] || '---' | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ contactDetails?.emailAddress | lowercase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-5">
-            {{ contactDetailsConfig?.contact_details?.preferred_contact_channel[language] || '---' | titlecase }}
-          </div>
-          <div class="col-sm-7 fw-bold">
-            {{ contactDetails?.contactChannel | uppercase }}
-          </div>
-        </div>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+      </div>
+    </ng-container>
+  </div>
 </ng-container>
 
+
+
+<ng-container *ngIf="group.subGroup?.length > 0">
+  <ng-container *ngFor="let subGroup of group.subGroup">
+
+    <ng-container *ngIf="subGroup.presentationType==='fields'">
+      <div class="row my-3">
+        <div class="col-sm-8">
+          <span class="text-primary lead">
+            {{ subGroup.label[language] | titlecase }}
+          </span>
+              <span
+                *ngIf="subGroup.presentationType==='fields'"
+                id="edit-tab-btn"
+                class="m-2 text-primary"
+              >
+            <i class="fa fa-pencil"></i>
+          </span>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <ng-container *ngFor="let field of subGroup.fields">
+          <div class="col-sm-4">
+            <div class="row my-2">
+              <div class="col-sm-4 text-dark">
+                {{ field.label[language] }}
+              </div>
+              <div class="col-sm-8 text-dark fw-bold">
+                {{ field.dataValue }}
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="subGroup.presentationType !== 'fields'">
+      <app-overview-table
+        [subGroup]="subGroup"
+        [table]="table"
+        [language]="language"
+      >
+      </app-overview-table>
+    </ng-container>
+
+  </ng-container>
+</ng-container>
 
 <!--edit prime details modal-->
 <button #editButton type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editContactModal" hidden>
@@ -83,16 +74,16 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-4 text-primary" id="editContactModalLabel">
-          {{ formFieldsConfig?.label[language] || '---' | titlecase }}
-        </h1>
+        <!--<h1 class="modal-title fs-4 text-primary" id="editContactModalLabel">
+          {{ formFieldsConfig?.label[language] || '-&#45;&#45;' | titlecase }}
+        </h1>-->
         <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <ng-container *ngIf=" editForm; else loadingForm">
           <form [formGroup]="editForm">
             <div class="row g-3">
-              <ng-container *ngFor="let field of formFieldsConfig.fields">
+              <ng-container *ngFor="let field of fields">
                 <div class="col-md-6">
                   <label [for]="field.fieldId" class="form-label">
                     {{ field?.label[language] || '---' | titlecase }}
@@ -152,14 +143,14 @@
           </div>
         </ng-template>
       </div>
-      <div class="modal-footer">
+     <!-- <div class="modal-footer">
         <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-          {{ formFieldsConfig?.buttons?.cancel?.label[language] || '---' | titlecase }}
+          {{ formFieldsConfig?.buttons?.cancel?.label[language] || '-&#45;&#45;' | titlecase }}
         </button>
         <button type="button" class="btn btn-primary" (click)="editContactDetails()">
-          {{ formFieldsConfig?.buttons?.save?.label[language] || '---' | titlecase }}
+          {{ formFieldsConfig?.buttons?.save?.label[language] || '-&#45;&#45;' | titlecase }}
         </button>
-      </div>
+      </div>-->
     </div>
   </div>
 </div>

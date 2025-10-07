@@ -6,6 +6,11 @@ import {CountryDto, PostalCodesDTO, StateDto, TownDto} from "../../../../../../s
 import {CountryService} from "../../../../../../shared/services/setups/country/country.service";
 import {ClientService} from "../../../../services/client/client.service";
 import {Observable} from "rxjs";
+import {
+  ConfigFormFieldsDto,
+  DynamicScreenSetupDto,
+  FormGroupsDto
+} from "../../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('AddressComponent');
 
@@ -23,6 +28,9 @@ export class AddressComponent implements OnInit {
   @Input() formFieldsConfig: any;
   @Input() addressDetails: any;
   @Input() accountCode: number;
+  @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
+  @Input() group: FormGroupsDto;
+
 
   countries: CountryDto[];
   clientCountry: CountryDto;
@@ -43,6 +51,10 @@ export class AddressComponent implements OnInit {
   language: string = 'en';
   editForm: FormGroup;
 
+  displayAddressDetails;
+  fields: ConfigFormFieldsDto[];
+
+
   constructor(
     private fb: FormBuilder,
     private utilService: UtilService,
@@ -55,9 +67,52 @@ export class AddressComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.countries$ = this.countryService.getCountries();
-    this.fetchCountries();
-    this.createEditForm(this.formFieldsConfig.fields);
+    // this.countries$ = this.countryService.getCountries();
+    // this.fetchCountries();
+    // this.createEditForm(this.fields);
+
+    setTimeout(() => {
+
+      if (this.group.subGroup.length === 0) {
+        // this.prepareGroupDetails();
+      } else {
+        // this.prepareSubGroupDetails();
+      }
+
+      this.displayAddressDetails  = {
+        overview_branch_Id: null,
+        overview_head_office_address: null,
+        overview_branch_details_name: null,
+        overview_head_office_country: this.addressDetails.countryName,
+        overview_head_office_county: null,
+        overview_country: this.addressDetails.countryName,
+        overview_head_office_city: null,
+        overview_county: this.addressDetails.stateName,
+        overview_head_office_physical_address: this.addressDetails.physicalAddress,
+        overview_city: this.addressDetails.townName,
+        overview_head_office_postal_address: null,
+        overview_physical_address: this.addressDetails.physicalAddress,
+        overview_head_office_postal_code: null,
+        overview_postal_address: this.addressDetails.residentialAddress,
+        overview_postal_code: this.addressDetails.postalCode,
+        overview_branch_email: null,
+        overview_landline_number: this.addressDetails.phoneNumber,
+        overview_branch_mobile_no: this.addressDetails.phoneNumber,
+        overview_address: null,
+        overview_road: this.addressDetails.road,
+        overview_house_name_no: this.addressDetails.houseNumber,
+      }
+
+      this.fields = this.formGroupsAndFieldConfig?.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === this.group.groupId);
+
+      for (const field of this.fields) {
+        field.dataValue = this.displayAddressDetails[field.fieldId] ?? null;
+      }
+
+      // sort fields in ascending order
+      this.fields.sort((a, b) => a.order - b.order)
+
+    }, 1000);
   }
 
 
