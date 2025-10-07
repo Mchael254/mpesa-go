@@ -234,8 +234,15 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.25rem;
+  gap: 0.5rem;
 }
+
+.dialog-header-column > .actions {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
 
 
 ::ng-deep .custom-pdf-modal .p-dialog-header-icon {
@@ -271,3 +278,4 @@
 iframe {
   background: white !important;
 } 
+

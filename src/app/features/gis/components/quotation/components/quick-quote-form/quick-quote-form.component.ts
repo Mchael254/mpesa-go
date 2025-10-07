@@ -2386,14 +2386,37 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-  onDownloadRequested() {
-    const payload = this.notificationPayload();
-    this.quotationService.generateQuotationReport(payload).pipe(
-      untilDestroyed(this)
-    ).subscribe((response) => {
-      this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf")
-    });
-  }
+onDownloadRequested(event?: { print?: boolean }) {
+  const payload = this.notificationPayload();
+
+  this.quotationService.generateQuotationReport(payload).pipe(
+    untilDestroyed(this)
+  ).subscribe((response) => {
+    if (event?.print) {
+      // Convert Base64 to Blob for printing
+      const byteCharacters = atob(response.base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const pdfUrl = URL.createObjectURL(blob);
+
+      // Open new tab & print
+      const printWindow = window.open(pdfUrl, '_blank');
+      if (printWindow) {
+        printWindow.addEventListener('load', () => {
+          printWindow.print();
+        });
+      }
+    } else {
+      // Normal download
+      this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf");
+    }
+  });
+}
+
 
 
 

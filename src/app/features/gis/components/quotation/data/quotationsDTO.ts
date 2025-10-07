@@ -1444,6 +1444,18 @@ export interface CreateRiskCommission {
 }
 
 
+export interface RiskCommissionDto{
+  code:number;
+  quotationRiskCode:number;
+  quotationCode:number;
+  agentCode:number;
+  transCode:string;
+  accountCode:number;
+  trntCode: string;
+  group: string;
+}
+
+
 
 
 

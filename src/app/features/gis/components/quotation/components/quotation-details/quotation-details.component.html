@@ -906,9 +906,14 @@
 
           <div class="collapse mb-4" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
             <!-- clause table -->
-            <p-table #productClauseTable [value]="sessionClauses " [paginator]="sessionClauses?.length > 10"
+            <p-table #productClauseTable [value]="sessionClauses " [paginator]="sessionClauses?.length > 5"
               [rowsPerPageOptions]="[5, 10, 20]" [rows]="5"
-              [tableStyle]="{'min-width': '50rem','table-layout': 'fixed'}">
+              [scrollable]="true"
+              scrollHeight="500px"
+              [tableStyle]="{'min-width': '50rem'}"
+              [paginatorPosition]="'bottom'"
+  [paginatorDropdownAppendTo]="'body'"
+  >
 
 
               <!-- Table Header -->
