@@ -9,8 +9,9 @@ import {Observable} from "rxjs";
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto
+  FormGroupsDto, FormSubGroupsDto
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
+import {AddressModel, Branch, ClientDTO} from "../../../../data/ClientDTO";
 
 const log = new Logger('AddressComponent');
 
@@ -24,9 +25,11 @@ export class AddressComponent implements OnInit {
   @ViewChild('editButton') editButton!: ElementRef<HTMLButtonElement>;
   @ViewChild('closeButton') closeButton!: ElementRef<HTMLButtonElement>;
 
+  @Input() clientDetails: ClientDTO;
   @Input() addressDetailsConfig: any
   @Input() formFieldsConfig: any;
-  @Input() addressDetails: any;
+  addressDetails: AddressModel;
+  branchDetails: any[];
   @Input() accountCode: number;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() group: FormGroupsDto;
@@ -53,6 +56,8 @@ export class AddressComponent implements OnInit {
 
   displayAddressDetails;
   fields: ConfigFormFieldsDto[];
+  tableHeaders: ConfigFormFieldsDto[];
+  table: { cols: any[], data: any[] } = { cols: [], data: [] };
 
 
   constructor(
@@ -72,14 +77,9 @@ export class AddressComponent implements OnInit {
     // this.createEditForm(this.fields);
 
     setTimeout(() => {
+      this.addressDetails = this.clientDetails.address;
 
-      if (this.group.subGroup.length === 0) {
-        // this.prepareGroupDetails();
-      } else {
-        // this.prepareSubGroupDetails();
-      }
-
-      this.displayAddressDetails  = {
+      const displayAddressDetails  = {
         overview_branch_Id: null,
         overview_head_office_address: null,
         overview_branch_details_name: null,
@@ -103,6 +103,12 @@ export class AddressComponent implements OnInit {
         overview_house_name_no: this.addressDetails.houseNumber,
       }
 
+      if (this.group.subGroup.length === 0) {
+        this.prepareGroupDetails(displayAddressDetails);
+      } else {
+        this.prepareSubGroupDetails(displayAddressDetails);
+      }
+
       this.fields = this.formGroupsAndFieldConfig?.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === this.group.groupId);
 
       for (const field of this.fields) {
@@ -115,6 +121,78 @@ export class AddressComponent implements OnInit {
     }, 1000);
   }
 
+  /**
+   * prepares fields and table details for display when address details has no subgroup
+   * @param displayContactDetails
+   */
+  prepareGroupDetails(displayContactDetails): void {
+    if (this.group.presentationType === 'fields') {
+      this.fields = this.createFieldDisplay(displayContactDetails);
+    } else {
+      this.createTableDisplay();
+    }
+  }
+
+
+  /**
+   * create field display using the labelled fields
+   * @param displayFields
+   */
+  createFieldDisplay(displayFields): ConfigFormFieldsDto[] {
+    const fields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === this.group.groupId);
+
+    if (fields.length > 0) this.createEditForm(fields);
+
+    for (const field of fields) {
+      field.dataValue = displayFields[field.fieldId] ?? null;
+    }
+
+    fields.sort((a, b) => a.order - b.order);
+
+    return fields;
+  }
+
+
+  createTableDisplay(subGroup?: FormSubGroupsDto) {
+    const headerFields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formSubGroupingId === subGroup.subGroupId);
+    headerFields.sort((a, b) => a.order - b.order);
+    this.tableHeaders = headerFields;
+
+    this.branchDetails = this.clientDetails.branches;
+
+    const tableData = [];
+    this.branchDetails.forEach((br: Branch) => {
+      const branch = {
+        overview_branch_Id: br.code,
+        overview_branch_details_name: br.branchName,
+        overview_country: br.countryName,
+        overview_county: br.stateName,
+        overview_city: br.stateName,
+        overview_physical_address: br.physicalAddress,
+        overview_postal_address: br.postalAddress,
+        overview_postal_code: br.code,
+        overview_branch_email: br.email,
+        overview_landline_number: br.landlineNumber,
+        overview_branch_mobile_no: br.mobileNumber
+      };
+      tableData.push(branch);
+    });
+
+    this.table = {
+      cols: this.tableHeaders,
+      data: tableData
+    };
+  }
+
+  prepareSubGroupDetails(displayContactDetails): void {
+    this.group?.subGroup?.forEach((subGroup) => {
+      if (subGroup.presentationType === 'fields') {
+        subGroup.fields = this.createFieldDisplay(displayContactDetails);
+      } else {
+        this.createTableDisplay(subGroup);
+      }
+    });
+  }
 
   createEditForm(fields: any[]): void {
     const group: { [key: string]: any } = {};

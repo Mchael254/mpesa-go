@@ -1,3 +1,8 @@
+
+<!--<p *ngFor="let col of table.cols">-->
+<!--  {{ col.visible | json }}-->
+<!--</p>-->
+
 <div class="row my-3">
   <div class="col-sm-8">
           <span class="text-primary lead">
@@ -34,7 +39,7 @@
     <tr>
       <ng-container *ngFor="let col of table?.cols">
         <th *ngIf="col.visible" [pSortableColumn]="col.field">
-          {{ col?.label[language] }}
+          {{ col?.label[language] | titlecase }}
           <p-sortIcon [field]="col.field"></p-sortIcon>
         </th>
       </ng-container>
