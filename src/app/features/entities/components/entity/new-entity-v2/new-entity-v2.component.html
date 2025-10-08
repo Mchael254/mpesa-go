@@ -1011,7 +1011,7 @@
         class="form-control"
         [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
         [placeholder]="field.placeholder?.[language] || ''">
-                            </textarea>
+      </textarea>
     </ng-container>
 
     <!-- DATE -->
@@ -1053,9 +1053,9 @@
         (change)="processSelectOption($event, field.fieldId)"
         (click)="fetchSelectOptions(groupId, field.fieldId)"
       >
-        <option value="">{{ field.placeholder[language] || '' }}</option>
-        <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [value]="option">
-          {{ option }}
+        <option [ngValue]="null">{{ field.placeholder[language] || '' }}</option>
+        <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [ngValue]="option">
+          {{ option.label ? option.label : option | titlecase }}
         </option>
       </select>
     </ng-container>
