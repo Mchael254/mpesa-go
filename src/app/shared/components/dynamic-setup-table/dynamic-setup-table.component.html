@@ -237,7 +237,7 @@
                       >
                         <option [ngValue]="null"></option>
                         <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [ngValue]="option">
-                          {{ option.label | titlecase }}
+                          {{ option.label ? option.label : option | titlecase }}
                         </option>
                       </select>
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">
