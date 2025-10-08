@@ -111,6 +111,10 @@ export class ContactComponent implements OnInit {
   }
 
 
+  /**
+   * prepares fields and table details for display when address details has no subgroup
+   * @param displayContactDetails
+   */
   prepareGroupDetails(displayContactDetails): void {
     if (this.group.presentationType === 'fields') {
       this.fields = this.createFieldDisplay(displayContactDetails);

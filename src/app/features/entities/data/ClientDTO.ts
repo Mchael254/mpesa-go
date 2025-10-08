@@ -23,6 +23,9 @@ export interface AddressModel {
   createdDate: string | null;
   modifiedBy: string | null;
   modifiedDate: string | null;
+  countryName?: string;
+  stateName?: string;
+  townName?: string;
 }
 
 export interface ContactPerson {
@@ -72,6 +75,26 @@ export interface ContactDetails {
   email?: string;
 }
 
+export interface Branch {
+  code: number;
+  clientCode: number;
+  shortDesc: string;
+  countryId: number;
+  stateId: number;
+  townId: number;
+  physicalAddress: string;
+  postalAddress: string;
+  postalCode: string;
+  email: string;
+  landlineNumber: string;
+  mobileNumber: string;
+  countryName: string;
+  townName: string;
+  stateName: string;
+  branchName: string;
+}
+
+
 
 export interface ClientDTO {
   branchCode: number,
@@ -109,6 +132,7 @@ export interface ClientDTO {
   clientFullName: string
   code:number, //added
   address?: AddressModel,
+  branches?: Branch[],
   contactDetails?: ContactDetails,
   contactPersons?: ContactPerson[],
   paymentDetails?: any,
