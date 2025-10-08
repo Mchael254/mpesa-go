@@ -60,6 +60,7 @@ import { ContactComponent } from './components/entity/view-entity/contact/contac
 import { AddressComponent } from './components/entity/view-entity/address/address.component';
 import { FinancialComponent } from './components/entity/view-entity/financial/financial.component';
 import { WealthAmlComponent } from './components/entity/view-entity/wealth-aml/wealth-aml.component';
+import { OverviewTableComponent } from './components/entity/view-entity/overview-table/overview-table.component';
 
 @NgModule({
   declarations: [
@@ -108,6 +109,7 @@ import { WealthAmlComponent } from './components/entity/view-entity/wealth-aml/w
     AddressComponent,
     FinancialComponent,
     WealthAmlComponent,
+    OverviewTableComponent,
   ],
   imports: [
     CommonModule,

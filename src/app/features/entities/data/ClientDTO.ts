@@ -1,5 +1,5 @@
 import {ContactDetailsDTO} from "./AgentDTO";
-import {ContactDetails} from "./accountDTO";
+
 
 export interface AddressModel {
   id: number;
@@ -23,7 +23,77 @@ export interface AddressModel {
   createdDate: string | null;
   modifiedBy: string | null;
   modifiedDate: string | null;
+  countryName?: string;
+  stateName?: string;
+  townName?: string;
 }
+
+export interface ContactPerson {
+  code: number;
+  clientCode: number;
+  clientTitleCode: number;
+  clientTitle: string | null;
+  name: string;
+  idNumber: string;
+  email: string;
+  mobileNumber: string;
+  wef: string; // ISO date string
+  wet: string; // ISO date string
+  postalAddress: string;
+  physicalAddress: string;
+  sectorCode: number;
+}
+
+export interface ContactPersonsResponse {
+  contactPersons: ContactPerson[];
+}
+
+export interface ContactDetails {
+  id: number;
+  title: ClientTitlesDto;
+  titleId: number | null;
+  principalContactName: string;
+  receivedDocuments: string;
+  emailAddress: string;
+  smsNumber: string;
+  phoneNumber: string;
+  accountId: number;
+  socialMediaUrl: string;
+  websiteUrl: string;
+  contactChannel: string;
+  whatsappNumber: string;
+  createdDate: string | null;
+  modifiedDate: string | null;
+  createdBy: string | null;
+  modifiedBy: string | null;
+  faxNumber: string;
+  emailVerified: string;
+  phoneVerified: string;
+  branchName?: string;
+  branchId?: number;
+  telephoneNumber?: string;
+  email?: string;
+}
+
+export interface Branch {
+  code: number;
+  clientCode: number;
+  shortDesc: string;
+  countryId: number;
+  stateId: number;
+  townId: number;
+  physicalAddress: string;
+  postalAddress: string;
+  postalCode: string;
+  email: string;
+  landlineNumber: string;
+  mobileNumber: string;
+  countryName: string;
+  townName: string;
+  stateName: string;
+  branchName: string;
+}
+
 
 
 export interface ClientDTO {
@@ -62,7 +132,9 @@ export interface ClientDTO {
   clientFullName: string
   code:number, //added
   address?: AddressModel,
-  contactDetails?: any,
+  branches?: Branch[],
+  contactDetails?: ContactDetails,
+  contactPersons?: ContactPerson[],
   paymentDetails?: any,
   wealthAmlDetails?: any,
   clientCode?: number,
@@ -72,6 +144,7 @@ export interface ClientDTO {
   citizenshipCountryId?: string,
   maritalStatus?: string,
 }
+
 export interface ClientTypeDTO {
   category: string,
   clientTypeName: string,
@@ -81,6 +154,7 @@ export interface ClientTypeDTO {
   person: string,
   type: string
 }
+
 export interface ClientBranchesDto {
   id: number,
   shortDescription: string,
