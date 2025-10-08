@@ -38,8 +38,20 @@ import {
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto, SubModulesDto
+  FormGroupsDto, PresentationType, SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
+import {IntermediaryService} from "../../../services/intermediary/intermediary.service";
+import {AccountsEnum} from "../../../data/enums/accounts-enum";
+import {AccountService} from "../../../services/account/account.service";
+import {
+  AccountTypeDTO,
+  AddressV2DTO,
+  AgentV2DTO,
+  ContactDetailsV2DTO,
+  IntermediaryRefereeDTO,
+  PaymentDetailsDTO, WealthAmlDetailsDTO
+} from "../../../data/AgentDTO";
+import {AuthService} from "../../../../../shared/services/auth.service";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -70,8 +82,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   uploadGroupSections: any/*{ selects: FieldModel[], buttons: FieldModel[] }*/;
   entityForm!: FormGroup;
   uploadForm!: FormGroup;
-  language: string = 'en'
+  language: string = 'en';
   category: string = '';
+  role: string = '';
   idType: string = 'NATIONAL_ID'
   validationObject = {} // todo: add type to this
 
@@ -143,6 +156,16 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   subModules: SubModulesDto[] = [];
   isPreviewMode: boolean = false;
   dynamicSetupData: DynamicScreenSetupDto;
+  initialUploadFormFields!: ConfigFormFieldsDto[];
+  originalFormId: string;
+  protected readonly PresentationType = PresentationType;
+  premiumFrequenciesData: AccountsEnum[] = [];
+  communicationChannelsData: AccountsEnum[] = [];
+  accountTypeData: AccountTypeDTO[] = [];
+  dynamicTableData: { [key: string]: any } = {};
+  assignee: any;
+  entityName: string;
+  entityCode: number;
 
   constructor(
     private fb: FormBuilder,
@@ -160,6 +183,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     private dmsService: DmsService,
     private dynamicScreensSetupService: DynamicScreensSetupService,
     private cdr: ChangeDetectorRef,
+    private intermediaryService: IntermediaryService,
+    private accountService: AccountService,
+    private authService: AuthService,
   ) {
 
     this.uploadForm = this.fb.group({
@@ -167,13 +193,11 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     });
 
     this.createEntityForm();
-    this.collapsedGroups.add('cnt_individual_prime_identity');
-    this.collapsedGroups.add('cnt_corporate_prime_identity');
   }
 
-  get fields(): FormArray {
+  /*get fields(): FormArray {
     return this.entityForm.get('fields') as FormArray;
-  }
+  }*/
 
   ngOnInit(): void {
     this.fetchSubModules();
@@ -184,6 +208,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     if (!this.previewFormFields) {
       this.fetchUploadFormFields();
     }
+    this.assignee = this.authService.getCurrentUserName();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -192,7 +217,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
 
       if (curr) {
         this.isPreviewMode = true;
-        this.category = curr.forms?.formId === 'cnt_individual' ? 'individual' : 'corporate';
+        this.originalFormId = this.previewFormFields?.forms?.formId;
+        this.category = curr.forms?.originalLabel?.toLowerCase();
         this.isCategorySelected = !!curr.forms?.formId;
 
         this.updateFormFields();
@@ -202,15 +228,15 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   }
 
   updateFormFields() {
-    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(1, null)
+    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(null, this.previewFormFields?.screens?.screenId)
       .subscribe({
         next: (data) => {
           this.dynamicSetupData = data;
-          log.info("client setup>>", data);
+          log.info("dynamic setup>>", data);
 
           this.uploadFormFields = data.fields.filter(field => field.screenCode === null);
           this.addUploadFormFields();
-          this.updateOrganizationLabel(this.category);
+          this.shouldUploadProfilePhoto = true;
 
           this.dynamicSetupData.fields = this.dynamicSetupData.fields.map(field => {
             const matchedField = this.previewFormFields.fields.find(formField => formField.code === field.code);
@@ -225,11 +251,10 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           );
 
           const groups: FormGroupsDto[] = this.dynamicSetupData?.groups;
-
-
           const fields: ConfigFormFieldsDto[] = this.dynamicSetupData?.fields;
+
           this.orderFormGroup(groups, fields);
-          log.info('Updated form fields22', this.dynamicSetupData.fields, groups, fields);
+          log.info('Updated form fields', this.dynamicSetupData.fields, groups, fields);
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);
@@ -247,23 +272,40 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * fetches all form categories based on category (individual | corporate)
    * @param category
    */
-  fetchFormFields(category: string): void {
-    const formId = category == 'individual' ? 'cnt_individual' : 'cnt_corporate';
-    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(1, null)
+  fetchFormFields(category: string, role: string): void {
+    const selectedRole = this.roles.find(partyTypeShtDesc => partyTypeShtDesc.partyTypeName.toLowerCase() === role);
+
+    this.dynamicScreensSetupService.fetchDynamicSetupByScreen(null, null, null, this.subModules[0]?.subModuleId, selectedRole?.partyTypeShtDesc)
       .subscribe({
         next: (data) => {
           this.clientSetupData = data;
           log.info("client setup>>", data);
 
+          const originalFormId = data?.forms.find(form => form.originalLabel.toLowerCase() === category);
+          this.originalFormId = originalFormId?.formId;
+
           const groups: FormGroupsDto[] = data?.groups.filter(
-            group => group.formId === formId
+            group => group.formId === originalFormId?.formId
           );
 
           const fields: ConfigFormFieldsDto[] = data?.fields;
           this.orderFormGroup(groups, fields);
+
+          const upload = data.fields.filter(field => field.formGroupingId === null && field.formId === originalFormId?.formId);
+          this.uploadFormFields = [...this.initialUploadFormFields];
+          this.uploadFormFields.push(...upload);
+
+          this.addUploadFormFields();
+
+          this.uploadForm.controls['role'].setValue(
+            this.role
+          );
+          this.uploadForm.controls['category'].setValue(
+            this.category
+          );
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.globalMessagingService.displayErrorMessage('Error', err.error);
         }
       });
   }
@@ -278,12 +320,12 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       .subscribe({
         next: (data) => {
           this.uploadFormFields = data;
-          log.info("client setup>>", data);
+          this.initialUploadFormFields = data;
           // this.uploadFormFields = data.fields.filter(field => field.screenCode === null);
           this.addUploadFormFields();
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.globalMessagingService.displayErrorMessage('Error', err.error);
         }
       });
   }
@@ -292,7 +334,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * add fields to the entity form
    * @param formGroupSection
    */
-  addFieldsToSections(formGroupSection: any[]): void {
+  /*addFieldsToSections(formGroupSection: any[]): void {
     formGroupSection.forEach(section => {
       const group = this.fb.group({});
 
@@ -308,9 +350,11 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       });
 
       this.entityForm.addControl(section.groupId, group);
+      log.info('section fields ',section.groupId,  section.fields);
     });
     log.info('Adding fields to sections', this.entityForm);
-  }
+
+  }*/
 
 
   /**
@@ -393,9 +437,75 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param fields
    * @param formGroupSections
    */
-  assignFieldsToGroupByGroupId(fields: ConfigFormFieldsDto[], formGroupSections: any[]): void {
-    const visibleFormFields = this.getFilteredFields(fields);
+ /* assignFieldsToGroupByGroupId(fields: ConfigFormFieldsDto[], formGroupSections: any[]): void {
+    const visibleFormFields = this.getFilteredFields2(fields);
+    // const visibleFormFields = this.getFilteredFields(fields);
+    // check the group from formGroupSections if it has subGroups.length < 0
+    // check if subGroup has presentationType === 'fields'
+    /!*if (formGroupSections) {
+      formGroupSections.forEach(section => {
+        if (section.subGroup.length > 0) {
+          section.subGroup.forEach(subGroup => {
+            if (subGroup.presentationType === 'fields') {
+              log.info(`subGroup presentationType >>> `, subGroup.subGroupId, section.groupId);
+              const field = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
+              log.info(`fields for fields`, field)
+            } else {
+              log.info(`this is a table`, subGroup.subGroupId)
+              const trial = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
+              log.info(`fields for table`, trial)
+            }
+          })
+        }
+        else {
+          log.info(`this is when subGroup.length === 0`, section.groupId);
+        //   show fields where formGroupingId === section.groupId
+          const field = fields.filter(field => field.formGroupingId === section.groupId);
+          log.info(`fields for no subgroup`, field)
+        }
+      })
+    }*!/
 
+    for (const section of formGroupSections) {
+      const { subGroup = [], groupId } = section;
+      formGroupSections.forEach(section => {
+        section.fields = [];
+      });
+
+      if (!subGroup.length) {
+        const sectionFields = fields.filter(f => f.formGroupingId === groupId);
+        log.info("subGroup is empty for groupId:", groupId);
+        log.info("fields for no subgroup", sectionFields);
+        section.fields.push(sectionFields);
+        this.createFieldsByPresentationType(groupId, sectionFields)
+        continue;
+      }
+
+      for (const sg of subGroup) {
+        const { subGroupId, presentationType } = sg;
+        const subGroupFields = fields.filter(f => f.formSubGroupingId === subGroupId);
+
+        if (presentationType === "fields") {
+          log.info("subGroup presentationType 'fields':", subGroupId, groupId);
+          log.info("fields for fields", subGroupFields);
+          section.fields.push(subGroupFields);
+          this.createFieldsByPresentationType(subGroupId, subGroupFields)
+        } else {
+          log.info("subGroup presentationType 'table':", subGroupId);
+          log.info("fields for table", subGroupFields);
+          this.trialFields = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
+          this.tablePayload = sg;
+
+          const payload = {
+            ...sg,
+            fields: subGroupFields
+          };
+          this.tablePayloads.push(payload);
+
+            log.info("subgroup info", sg, payload)
+        }
+      }
+    }
     formGroupSections.forEach(section => {
       section.fields = [];
     });
@@ -408,37 +518,181 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     });
 
     this.formGroupSections = formGroupSections;
-    this.addFieldsToSections(formGroupSections);
+    log.info(`form group sections >>> `, this.formGroupSections);
+    // this.addFieldsToSections(formGroupSections);
 
-    this.wealthAmlFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_individual_aml_details');
+    /!*this.wealthAmlFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_individual_aml_details');
     this.corporateContactDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_contact_person_details');
     this.corporateAddressDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_branch_details');
     this.corporateFinancialDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_payee_details');
     this.corporateWealthAmlFormFieldsDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_aml_details');
     this.corporateWealthCR12DetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_cr12_details');
     this.corporateWealthOwnershipDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_ownership_details');
-    this.privacyPolicyFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_privacy_policy');
+    this.privacyPolicyFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_privacy_policy');*!/
+  }*/
+
+  assignFieldsToGroupByGroupId(fields: ConfigFormFieldsDto[], formGroupSections: any[]): void {
+    // Filter fields according to preview / upload form logic
+    const visibleFormFields = this.getFilteredFields2(fields || []);
+
+    // set fields arrays to empty on groups/subGroups
+    formGroupSections.forEach(section => {
+      section.fields = [];
+      if (section.subGroup) {
+        section.subGroup.forEach((sg: any) => {
+          sg.fields = [];
+        });
+      }
+    });
+
+    // distribute fields into the group/subGroup structures
+    visibleFormFields.forEach(field => {
+      const group = formGroupSections.find(s => s.groupId === field.formGroupingId);
+      if (!group) return;
+
+      group.subGroup.sort((a: any, b: any) => a.order - b.order);
+      if (group.subGroup && group.subGroup.length > 0) {
+        const subGroup = group.subGroup.find((sg: any) => sg.subGroupId === field.formSubGroupingId);
+        if (subGroup) {
+          subGroup.fields.push(field);
+        } else {
+          // if the field doesn't match any subGroup, attach directly to the group
+          group.fields.push(field);
+        }
+      } else {
+        // group has no subGroups -> attach directly to group
+        group.fields.push(field);
+      }
+    });
+
+    // assign to component state so template sees it
+    this.formGroupSections = formGroupSections;
+
+    // create a presentation type just for privacy policy cases
+    this.formGroupSections = this.formGroupSections.map(group => {
+      if (group.groupId?.includes('privacy_policy')) {
+        return {
+          ...group,
+          presentationType: 'privacy_policy'
+        };
+      }
+      return group;
+    });
+
+    // Build / ensure FormGroups & FormControls exist
+    formGroupSections.forEach(group => {
+      // ensure group FormGroup exists on entityForm
+      if (!this.entityForm.contains(group.groupId)) {
+        this.entityForm.addControl(group.groupId, this.fb.group({}));
+      }
+      const groupForm = this.entityForm.get(group.groupId) as FormGroup;
+
+      // If group has subGroups, iterate them
+      if (group.subGroup && group.subGroup.length > 0) {
+        group.subGroup.forEach((subGroup: any) => {
+          const pType = subGroup.presentationType || group.presentationType || 'fields';
+
+          if (pType === PresentationType.fields) {
+            // add subGroup fields as controls directly under groupForm
+            (subGroup.fields || []).forEach((field: any) => {
+              if (!groupForm.contains(field.fieldId)) {
+                // const control = field.mandatory ? this.fb.control('', Validators.required) : this.fb.control('');
+                const control = field.mandatory
+                  ? this.fb.control({value: '', disabled: field.disabled || false}, Validators.required)
+                  : this.fb.control({value: '', disabled: field.disabled || false});
+                groupForm.addControl(field.fieldId, control);
+
+                // Apply dynamic validators if field has conditions
+                if (field.conditions) {
+                  const controllingFieldId = field.conditions[0].field;
+                  const controllingControl = groupForm.get(controllingFieldId);
+
+                  if (controllingControl) {
+                    controllingControl.valueChanges.subscribe(() => {
+                      this.applyDynamicValidators(field, groupForm);
+                    });
+
+                    // also apply once initially
+                    this.applyDynamicValidators(field, groupForm);
+                  }
+                }
+              }
+            });
+          } else if (pType === PresentationType.fields_and_table_columns) {
+            // create placeholder FormGroup so child components binding to formGroupName won't break
+            if (!groupForm.contains(subGroup.subGroupId)) {
+              groupForm.addControl(subGroup.subGroupId, this.fb.group({}));
+            }
+          }
+        });
+      } else {
+        // no subGroups -> respect group.presentationType
+        const gType = group.presentationType || 'fields';
+        if (gType === PresentationType.fields) {
+          (group.fields || []).forEach((field: any) => {
+            if (!groupForm.contains(field.fieldId)) {
+              // const control = field.mandatory ? this.fb.control('', Validators.required) : this.fb.control('');
+              const control = field.mandatory
+                ? this.fb.control({value: '', disabled: field.disabled || false}, Validators.required)
+                : this.fb.control({value: '', disabled: field.disabled || false});
+              groupForm.addControl(field.fieldId, control);
+
+              // Apply dynamic validators if field has conditions
+              if (field.conditions) {
+                const controllingFieldId = field.conditions[0].field;
+                const controllingControl = groupForm.get(controllingFieldId);
+
+                if (controllingControl) {
+                  controllingControl.valueChanges.subscribe(() => {
+                    this.applyDynamicValidators(field, groupForm);
+                  });
+
+                  // also apply once initially
+                  this.applyDynamicValidators(field, groupForm);
+                }
+              }
+            }
+          });
+        } else if (gType === PresentationType.fields_and_table_columns) {
+          // If you want a placeholder for group-level table binding, you can create one,
+          // but most table components manage their own internal form state.
+          // We'll still create a safe placeholder so templates/components that expect a nested
+          // group won't crash (non-destructive):
+          const placeholderName = `${group.groupId}_table`;
+          if (!groupForm.contains(placeholderName)) {
+            groupForm.addControl(placeholderName, this.fb.group({}));
+
+            // attach dynamic label/validation handling
+            // this.applyDynamicConditions(field, groupForm);
+          }
+        }
+      }
+    });
+    this.addGroupToCollapsedGroups();
+    log.info('Entity form after assigning fields', this.entityForm);
   }
+
+
 
   /**
    * Filters form fields based on preview mode and form type
    * @param fields Array of form fields to filter
    * @returns Filtered array of form fields
    */
-  private getFilteredFields(fields: ConfigFormFieldsDto[]): ConfigFormFieldsDto[] {
+  /*private getFilteredFields(fields: ConfigFormFieldsDto[]): ConfigFormFieldsDto[] {
     const formValues = this.uploadForm?.getRawValue();
     const isIndividual = this.isPreviewMode
-      ? this.previewFormFields?.forms?.formId === 'cnt_individual'
-      : formValues?.role === 'client' && formValues?.category === 'individual';
+      ? this.previewFormFields?.forms?.formId === this.originalFormId
+      : formValues?.role === this.role && formValues?.category === 'individual';
 
     const isCorporate = this.isPreviewMode
-      ? this.previewFormFields?.forms?.formId === 'cnt_corporate'
-      : formValues?.role === 'client' && formValues?.category === 'corporate';
+      ? this.previewFormFields?.forms?.formId === this.originalFormId
+      : formValues?.role === this.role && formValues?.category === 'corporate';
 
     if (isIndividual) {
       return fields.filter(field =>
         field.visible &&
-        field.formId === 'cnt_individual' &&
+        field.formId === this.originalFormId &&
         field.formGroupingId !== 'cnt_individual_wealth_aml_details' &&
         field.formSubGroupingId !== 'cnt_individual_privacy_policy'
       );
@@ -454,13 +708,19 @@ export class NewEntityV2Component implements OnInit, OnChanges {
 
       return fields.filter(field =>
         field.visible &&
-        field.formId === 'cnt_corporate' &&
+        field.formId === this.originalFormId &&
         !excludedSubGroups.includes(field.formSubGroupingId) &&
         field.formGroupingId !== 'cnt_corporate_wealth_aml_details'
       );
     }
 
     return [];
+  }*/
+
+  private getFilteredFields2(fields: ConfigFormFieldsDto[]): ConfigFormFieldsDto[] {
+    return fields.filter(field =>
+      field.visible &&
+      field.formId === this.originalFormId);
   }
 
   /**
@@ -492,7 +752,18 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     log.info(`entity form >>>`, this.getInvalidControls(this.entityForm))
 
     if (this.entityForm.valid) {
-      this.saveToDatabase(formValues, upperDetails);
+      switch (this.role) {
+        case 'client':
+          this.saveClient(formValues, upperDetails);
+          break;
+
+        case 'agent':
+          this.saveAgentDetails(formValues, upperDetails);
+          break;
+
+        default:
+          log.info("no role found during save");
+      }
     } else {
       this.entityForm.markAllAsTouched(); // show validation errors
     }
@@ -531,7 +802,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param formValues
    * @param upperDetails
    */
-  saveToDatabase(formValues, upperDetails): void { // todo: define model for formValues & upperDetails
+  saveClient(formValues, upperDetails): void { // todo: define model for formValues & upperDetails
     const payloadObject = {
       ...formValues.cnt_individual_prime_identity,
       ...formValues.cnt_individual_contact_details,
@@ -699,11 +970,126 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     })
   }
 
+  saveAgentDetails(formValues, upperDetails): void {
+    const payloadObject = {
+      ...upperDetails,
+      ...formValues.int_individual_prime_identity,
+      ...formValues.int_individual_contact_details,
+      ...formValues.int_individual_address_details,
+      ...formValues.int_individual_financial_details,
+      ...formValues.int_individual_wealth_aml_details,
+      ...formValues.int_individual_agency_referee_details,
+      ...formValues.int_individual_privacy_policy
+    }
+    log.info(`agent payloadObject >>> `, payloadObject, formValues);
+
+    const contactData = this.getDataByPattern('cont_details');
+
+    const contactDetails: ContactDetailsV2DTO[] = contactData.length > 0
+      ? contactData.map(item => ({
+        titleId: item?.title?.id,
+        emailAddress: item?.email,
+        smsNumber: item?.smsNo,
+        phoneNumber: item?.primaryContactNo,
+        contactChannel: item?.prefContactChannel?.id,
+        whatsappNumber: item?.whatsAppNo,
+      }))
+      : [];
+    log.info(`contactDetails >>> `, contactDetails);
+
+    const wealthAmlData = this.getDataByPattern('aml_details');
+
+    const wealthAmlDetails: WealthAmlDetailsDTO[] = wealthAmlData.length > 0
+      ? wealthAmlData.map(item => ({
+        nationalityCountryId: item.nationality?.id,
+        fundsSource: item.sourceOfFunds?.label,
+        modeOfIdentity: item.docIdType?.id,
+        idNumber: item.wealthDocIdNumber,
+      }))
+      : [];
+    log.info(`wealthAmlDetails >>> `, wealthAmlDetails);
+
+    const refereeData = this.getDataByPattern('ref_details');
+
+    const refereeDetails: IntermediaryRefereeDTO[] = refereeData.length > 0
+      ? refereeData.map(item => ({
+        name: item?.name,
+        physicalAddress: item?.refPhysicalAddress,
+        postalAddress: item?.refPostalAddress,
+        emailAddress: item?.refEmailAddress,
+        telephone: item?.refTelNo,
+        idNumber: item?.refDocIdNo,
+        preferredCommunicationChannel: item?.communicationChannel?.id,
+        status: item?.refStatus,
+      }))
+      : [];
+
+    log.info(`refereeDetails >>> `, refereeDetails);
+
+    const address: AddressV2DTO = {
+      countryId: payloadObject.country?.id,
+      physicalAddress: payloadObject.physicalAddress,
+      postalCode: payloadObject.postalCode?.id,
+      stateId: payloadObject.countyState?.id,
+      townId: payloadObject.cityTown?.id,
+    }
+
+    const paymentDetails: PaymentDetailsDTO = {
+      accountNumber: payloadObject.accountNo,
+      bankBranchId: payloadObject.branchName?.id,
+      commissionAllowed: payloadObject.commissionAllowed.toUpperCase(),
+      commissionEffectiveDate: payloadObject.commissionStatusEffectiveDate,
+      commissionStatusDate: payloadObject.commissionStatusDate,
+      creditLimit: payloadObject.creditLimit,
+      glAccountNumber: payloadObject.glAccount,
+      paymentFrequency: payloadObject.freqOfPayment?.id,
+      paymentTerms: payloadObject.paymentTerms,
+      taxAuthorityCode: payloadObject.taxAuthorityCode,
+      vatApplicable: payloadObject.vatApplicability.toUpperCase(),
+    // paymentMode not there
+    }
+
+    const agent: AgentV2DTO = {
+      accountTypeId: this.accountTypeData.find(accType => accType.accountType === payloadObject.accountTypeIndividual.toUpperCase())?.id,
+      address: address,
+      category: payloadObject?.category,
+      contactDetails: contactDetails,
+      countryId: payloadObject.citizenship?.id,
+      dateOfBirth: payloadObject?.dateOfBirth,
+      gender: payloadObject?.gender,
+      idNumber: payloadObject?.docIdNumber,
+      licenceNumber: payloadObject?.iraLicenseNo,
+      maritalStatus: payloadObject?.maritalStatus?.label,
+      name: payloadObject?.fullName,
+      paymentDetails: paymentDetails,
+      pinNumber: payloadObject?.taxPinNumber,
+      referees: refereeDetails,
+      wealthAmlDetails: wealthAmlDetails,
+      withEffectFromDate: payloadObject?.wef,
+      withEffectToDate: payloadObject?.wet
+
+    }
+    log.info(`agentDto >>> `, agent );
+    this.intermediaryService.saveAgentDetailsV2(agent).subscribe({
+      next: (response) => {
+        log.info(`agent saved >>> `, response);
+        this.uploadImage(this.profilePicture, response.partyId)
+        this.entityName = response.name;
+        this.entityCode = response.intermediaryCode;
+        this.uploadDocumentToDms();
+      },
+      error: (err) => {
+        log.info(`could not save`, err);
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    })
+  }
 
   /**
    * Upload documents to DMS after saving client and uploading profileImage/logo
    */
-  uploadDocumentToDms(): void {
+  /*uploadDocumentToDms(): void {
     log.info(` client files to upload >>> `, this.filesToUpload)
     this.dmsService.saveClientDocs(this.filesToUpload).subscribe({
       next: (res: any) => {
@@ -713,6 +1099,55 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         log.info(`upload failed!`)
       }
     });
+  }*/
+
+  uploadDocumentToDms(): void {
+    log.info(` client files to upload >>> `, this.filesToUpload)
+
+    // Add entity name and code to each document payload
+    const documentsWithEntityInfo = this.filesToUpload.map(doc => {
+      const updatedDoc = {...doc};
+
+      switch (this.role) {
+        case 'agent':
+          updatedDoc.agentName = this.entityName;
+          updatedDoc.agentCode = this.entityCode?.toString();
+          break;
+        case 'client':
+          updatedDoc.clientName = this.entityName;
+          updatedDoc.clientCode = this.entityCode?.toString();
+          break;
+      }
+
+      return updatedDoc;
+    });
+
+    log.info(`Documents with entity info >>> `, documentsWithEntityInfo);
+
+    switch (this.role) {
+      case 'client':
+        this.dmsService.saveClientDocs(documentsWithEntityInfo).subscribe({
+          next: (res: any) => {
+            log.info(`document uploaded successfully!`, res);
+          },
+          error: (err) => {
+            log.info(`upload failed!`, err)
+          }
+        });
+        break;
+      case 'agent':
+        this.dmsService.saveAgentDocs(documentsWithEntityInfo).subscribe({
+          next: (res: any) => {
+            log.info(`document uploaded successfully!`, res);
+          },
+          error: (err) => {
+            log.info(`upload failed!`, err)
+          }
+        });
+        break;
+      default:
+        break;
+    }
   }
 
   /**
@@ -724,63 +1159,104 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     if (this.isPreviewMode === true) {
       return;
     }
-    const selectedOption = event.target.value;
+    // const selectedOption = event.target.value;
     const formValues = this.uploadForm.getRawValue();
-    log.info(`processSelectOptions >>> `, selectedOption, fieldId);
+    /*const controlVal = this.entityForm.get(fieldId)?.value;
+    const selected = (controlVal && typeof controlVal === 'object') ? controlVal : { id: controlVal, label: controlVal };
+    log.info(`processSelectOptions >>> `, selected, fieldId, controlVal);*/
+
+    const formValue = this.entityForm.getRawValue();
+    // Helper function to find a control by fieldId in a form group
+    const findControlInGroup = (group: any, id: string): any => {
+      for (const key in group) {
+        if (key === id) {
+          return { value: group[key], group: group };
+        }
+        if (typeof group[key] === 'object' && group[key] !== null) {
+          const found = findControlInGroup(group[key], id);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    // Find the control in the form
+    const found = findControlInGroup(formValue, fieldId);
+
+    // Log the found control for debugging
+    log.info(`Found control for ${fieldId}:`, found);
+
+    const controlVal = found ? found.value : undefined;
+    const selected = (controlVal && typeof controlVal === 'object')
+      ? controlVal
+      : { id: controlVal, label: controlVal };
+
+    log.info(`processSelectOptions >>> `, selected, fieldId, controlVal);
 
     switch (fieldId) {
       case 'modeOfIdentityId':
-        this.selectedIdType = this.idTypes.find((type) => type.name === selectedOption);
-        this.idType = selectedOption;
+        this.selectedIdType = this.idTypes.find((type) => type.id === selected.id || type.name === selected.label);
+        this.idType = selected.name;
         break;
       case 'language':
-        this.language = selectedOption;
+        this.language = selected;
         break;
       case 'maritalStatus':
-        this.selectedMaritalStatus = this.maritalStatuses.find((m: MaritalStatus) => m.name === selectedOption);
+        this.selectedMaritalStatus = this.maritalStatuses.find((m: MaritalStatus) => m.name === selected.id || m.value === selected.label);
         break;
       case 'bankId':
-        this.selectedBank = this.banks.find((b: BankDTO) => b.name === selectedOption);
+      case 'bankName':
+      case 'financialBankName':
+        this.selectedBank = this.banks.find((b: BankDTO) => b.id === selected.id || b.name === selected.label);
         break;
       case 'countryId':
-        this.selectedAddressCountry = this.countries.find((c: CountryDto) => c.name === selectedOption);
+      case 'country':
+      case 'addressCountry':
+        this.selectedAddressCountry = this.countries.find((c: CountryDto) => c.id === selected.id || c.name === selected.label);
         break;
       case 'citizenshipCountryId':
-        this.selectedCitizenshipCountry = this.countries.find((c: CountryDto) => c.name === selectedOption);
+        this.selectedCitizenshipCountry = this.countries.find((c: CountryDto) => c.id === selected.id || c.name === selected.label);
         break;
       case 'countyState':
-        this.selectedState = this.states.find((state: StateDto) => state.name === selectedOption);
+      case 'addressCounty':
+        this.selectedState = this.states.find((state: StateDto) => state.id === selected.id || state.name === selected.label);
         break;
       case 'cityTown':
       case 'city_town':
-        this.selectedTown = this.towns.find((town: TownDto) => town.name === selectedOption);
+      case 'addressCity':
+        this.selectedTown = this.towns.find((town: TownDto) => town.id === selected.id || town.name === selected.label);
         break;
       case 'postalCode':
-        this.selectedPostalCode = this.postalCodes.find((postalCode: PostalCodesDTO) => postalCode.zipCode === selectedOption);
+        this.selectedPostalCode = this.postalCodes.find((postalCode: PostalCodesDTO) => postalCode.id === selected.id || postalCode.zipCode === selected.label);
         break;
       case 'titleId':
-        this.selectedClientTitle = this.clientTitles.find((t: ClientTitlesDto) => t.description === selectedOption);
-        log.info(`selectedClientTitle >>> `, selectedOption, this.selectedClientTitle);
+        this.selectedClientTitle = this.clientTitles.find((t: ClientTitlesDto) => t.id === selected.id || t.description === selected.label);
+        log.info(`selectedClientTitle >>> `, selected, this.selectedClientTitle);
         break;
       case 'currencyId':
-        this.selectedCurrency = this.currencies.find((c: CurrencyDTO) => c.name === selectedOption);
-        log.info(`selectedCurrency >>> `, selectedOption, this.selectedClientTitle);
+        this.selectedCurrency = this.currencies.find((c: CurrencyDTO) => c.id === selected.id || c.name === selected.label);
+        log.info(`selectedCurrency >>> `, selected, this.selectedClientTitle);
         break;
       case 'category':
       case 'role':
         this.createEntityForm();
         this.category = formValues.category;
-        if (formValues.category && formValues.role) this.fetchFormFields(formValues.category);
+        this.role = formValues.role;
+        if (formValues.category && formValues.role) this.fetchFormFields(formValues.category, formValues.role);
+
         this.idType = this.category ==='corporate' ? 'CERT_OF_INCOP_NUMBER' : 'NATIONAL_ID';
         this.isCategorySelected = formValues.category ? true : false;
-        this.updateOrganizationLabel(formValues.category);
+        this.shouldUploadProfilePhoto = true;
         break;
       case 'organizationType':
+      case 'clientType':
+      case 'accountTypeIndividual':
         this.fetchRequiredDocuments(formValues);
         break;
       case 'bankBranchCode':
-        this.selectedBankBranch = this.bankBranches.find((b: BankBranchDTO) => b.name === selectedOption);
-        log.info(`selectedbank branch >>> `, selectedOption, this.selectedBankBranch);
+      case 'financialBranchName':
+        this.selectedBankBranch = this.bankBranches.find((b: BankBranchDTO) => b.id === selected.id || b.name === selected.label);
+        log.info(`selectedbank branch >>> `, selected, this.selectedBankBranch);
         break;
       default:
           log.info(`no fieldId found`)
@@ -793,26 +1269,57 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param formValues
    */
   fetchRequiredDocuments(formValues) : void {
-    if (formValues.category && formValues.role && formValues.organizationType) {
+    const selectedOrgOrClientOrAccType = formValues.organizationType || formValues.clientType || formValues.accountTypeIndividual;
+    if (formValues.category && formValues.role && selectedOrgOrClientOrAccType && this.isCategorySelected) {
       const accountType: PartyTypeDto = this.roles.filter(
         (r:PartyTypeDto) => r.partyTypeName.toLowerCase() === formValues.role.toLowerCase())[0];
 
       const category: string = formValues.category;
-      const accountSubType: ClientTypeDTO = this.clientTypes.filter(
-        (c: ClientTypeDTO) => c.clientTypeName.toLowerCase() === formValues.organizationType.toLowerCase())[0];
-      log.info(`accountSubType >>> `, accountSubType, this.clientTypes);
 
-      this.requiredDocumentsService.getAccountTypeRequiredDocument(accountType.partyTypeShtDesc, category, accountSubType.code, null).subscribe({
-        next: (data: RequiredDocumentDTO[]) => {
-          this.requiredDocuments = data;
-          log.info(`requiredDocuments >>> `, data);
-          this.uploadGroupSections.docs = data
-        },
-        error: (err) => {
-          log.error(`could not fetch >>> `, err)
-        }
-      });
+      const accountSubType = this.getSubTypeCode(this.role, selectedOrgOrClientOrAccType);
+      /*const accountSubType: ClientTypeDTO = this.clientTypes.filter(
+        (c: ClientTypeDTO) => c.clientTypeName.toLowerCase() === selectedOrgOrClientType.toLowerCase())[0];
+      log.info(`accountSubType >>> `, accountSubType, this.clientTypes);*/
 
+      switch (formValues.role) {
+        case 'agent':
+          this.requiredDocumentsService.getAccountTypeRequiredDocument(accountType.partyTypeShtDesc, null, accountSubType, null).subscribe({
+            next: (data: RequiredDocumentDTO[]) => {
+              this.requiredDocuments = data;
+              log.info(`requiredDocuments >>> `, data);
+              this.uploadGroupSections.docs = data
+            },
+            error: (err) => {
+              log.error(`could not fetch >>> `, err)
+            }
+          });
+          break;
+        default:
+          this.requiredDocumentsService.getAccountTypeRequiredDocument(accountType.partyTypeShtDesc, category, accountSubType, null).subscribe({
+            next: (data: RequiredDocumentDTO[]) => {
+              this.requiredDocuments = data;
+              log.info(`requiredDocuments >>> `, data);
+              this.uploadGroupSections.docs = data
+            },
+            error: (err) => {
+              log.error(`could not fetch >>> `, err)
+            }
+          });
+          break;
+      }
+    }
+  }
+
+  getSubTypeCode(role: string, selectedOrgOrClientOrAccType: string) {
+    switch (role) {
+      case 'client':
+        return this.clientTypes.find((c: ClientTypeDTO) =>
+          c.clientTypeName.toLowerCase() === selectedOrgOrClientOrAccType.toLowerCase())?.code;
+      case 'agent':
+        return this.accountTypeData.find((d: AccountTypeDTO) =>
+          d.accountType.toLowerCase() === selectedOrgOrClientOrAccType.toLowerCase())?.id;
+      default:
+        break;
     }
   }
 
@@ -821,7 +1328,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * if category == individual, label = "client type" ELSE label = "organization type"
    * @param category
    */
-  updateOrganizationLabel(category: string) : void {
+  /*updateOrganizationLabel(category: string) : void {
     this.shouldUploadProfilePhoto = true;
     const index: number = this.uploadFormFields.findIndex(field => field.fieldId === "organizationType");
     if (category === 'corporate') {
@@ -843,7 +1350,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         ke: ''
       }
     }
-  }
+  }*/
 
 
   /**
@@ -852,7 +1359,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param groupId
    * @param fieldId
    */
-  fetchSelectOptions(groupId: string, fieldId: string): void {
+  /*fetchSelectOptions(groupId: string, fieldId: string): void {
     if (this.isPreviewMode === true) {
       return;
     }
@@ -896,6 +1403,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         this.fetchPostalCodeByTownCode(sectionIndex, fieldIndex);
         break;
       case 'organizationType':
+      case 'clientType':
         this.fetchOrganizationTypes();
         break;
       case 'role':
@@ -913,6 +1421,129 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       default:
         log.info(`no fieldId found`)
     }
+  }*/
+
+  /**
+   * fetch dropdown options from API
+   * check fieldId to determine which API to call
+   * @param groupId
+   * @param fieldId
+   */
+  fetchSelectOptions(groupId: any, fieldId: string): void {
+    if (this.isPreviewMode) {
+      return;
+    }
+
+    log.info(`field to populate >>> `, fieldId, groupId);
+
+    let sectionIndex: number = -1;
+    let fieldIndex: number = -1;
+    let subGroupIndex: number = -1;
+    let targetField: ConfigFormFieldsDto;
+
+    if (this.formGroupSections) {
+      // Find the section
+      sectionIndex = this.formGroupSections.findIndex(section => section.groupId === groupId);
+
+      if (sectionIndex !== -1) {
+        const section = this.formGroupSections[sectionIndex];
+
+        // First check in main fields
+        fieldIndex = section.fields?.findIndex(field => field.fieldId === fieldId) ?? -1;
+        if (fieldIndex !== -1) {
+          targetField = section.fields[fieldIndex];
+        } else {
+          // If not found in main fields, check in subGroups
+          if (section.subGroup?.length) {
+            for (let i = 0; i < section.subGroup.length; i++) {
+              const subGroup = section.subGroup[i];
+              fieldIndex = subGroup.fields?.findIndex(field => field.fieldId === fieldId) ?? -1;
+              if (fieldIndex !== -1) {
+                targetField = subGroup.fields[fieldIndex];
+                subGroupIndex = i;
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Skip if options already loaded (except for bankId and bankBranchCode which might need refresh)
+    if (targetField?.options?.length > 0 && !['bankId', 'bankBranchCode'].includes(fieldId)) {
+      return;
+    }
+
+    // Call the appropriate method based on fieldId
+    switch (fieldId) {
+      case 'maritalStatus':
+        this.fetchMaritalStatuses(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'paymentMethod':
+      case 'paymentMode':
+      case 'financialPaymentMode':
+        this.fetchPaymentModes(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'bankId':
+      case 'bankName':
+      case 'financialBankName':
+        this.fetchBanks(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'bankBranchCode':
+      case 'branchName':
+      case 'financialBranchName':
+        this.fetchBankBranches(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'countryId':
+      case 'citizenshipCountryId':
+      case 'citizenship':
+      case 'country':
+      case 'addressCountry':
+        this.fetchCountries(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'countyState':
+      case 'addressCounty':
+        this.fetchStatesByCountryCode(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'cityTown':
+      case 'city_town':
+      case 'addressCity':
+        this.fetchTownsByStateCode(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'postalCode':
+      case 'addressPostalCode':
+        this.fetchPostalCodeByTownCode(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'organizationType':
+      case 'clientType':
+        this.fetchOrganizationTypes();
+        break;
+      case 'role':
+        this.fetchSystemRoles()
+        break;
+      case 'titleId':
+        this.fetchClientTitles(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'modeOfIdentityId':
+        this.fetchIdTypes(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'currencyId':
+        this.fetchCurrencies(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'freqOfPayment':
+      case 'financialPaymentFrequency':
+        this.fetchPremiumFrequencies(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'businessSources':
+        this.fetchPreferredCommunicationChannels(sectionIndex, fieldIndex, subGroupIndex);
+        break;
+      case 'accountTypeIndividual':
+        this.fetchAccountTypes();
+        break;
+
+      default:
+        log.warn(`No handler for field: ${fieldId}`);
+    }
   }
 
 
@@ -921,7 +1552,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param field
    * @param groupId
    */
-  validateRegex(field: ConfigFormFieldsDto, groupId: string): void {
+  /*validateRegex(field: ConfigFormFieldsDto, groupId: string): void {
 
     const fieldId = field.fieldId;
     let pattern: RegExp;
@@ -956,7 +1587,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     }
 
     log.info(`regex to use`, this.regexErrorMessages, groupId);
-  }
+  }*/
 
   /**
    * generate error messages for regex
@@ -965,7 +1596,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param errorMessage
    * @param fieldId
    */
-  generateRegexErrorMessage(pattern: RegExp, input: string, errorMessage: string, fieldId: string): void {
+  /*generateRegexErrorMessage(pattern: RegExp, input: string, errorMessage: string, fieldId: string): void {
     if (pattern.test(input)) {
       this.regexErrorMessages[fieldId] = {
         showErrorMessage: false,
@@ -977,7 +1608,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         errorMessage: errorMessage
       }
     }
-  }
+  }*/
 
 
   /**
@@ -985,9 +1616,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param groupId
    * @param fieldId
    */
-  getFieldControl(groupId: string, fieldId: string) {
+  /*getFieldControl(groupId: string, fieldId: string) {
     return this.entityForm.get(`${groupId}.${fieldId}`);
-  }
+  }*/
 
 
   /**
@@ -996,13 +1627,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * get the index of the selected field using fieldId
    * create an array of strings from marital object and assign to options of the marital status formField
    */
-  fetchMaritalStatuses(sectionIndex:number, fieldIndex: number): void {
+  fetchMaritalStatuses(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.maritalStatuses.length > 0)) {
       this.maritalStatusService.getMaritalStatus().subscribe({
         next: (data: MaritalStatus[]) => {
           this.maritalStatuses = data
-          const maritalStatusStringArr: string[] = data.map((status: MaritalStatus) => status.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = maritalStatusStringArr
+          const maritalStatusStringArr = data.map((status: MaritalStatus) => this.utilService.normalizeOption(status));
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = maritalStatusStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, maritalStatusStringArr);
           log.info(`maritalStatus: `, maritalStatusStringArr);
         },
         error: err => {
@@ -1019,13 +1651,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * get the index of the selected field using fieldId
    * create an array of strings from paymentModes object and assign to options of the paymentModes formField
    */
-  fetchPaymentModes(sectionIndex:number, fieldIndex: number): void {
+  fetchPaymentModes(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.paymentModes.length > 0)) {
       this.paymentModesService.getPaymentModes().subscribe({
         next: (data: PaymentModesDto[]) => {
           this.paymentModes = data
-          const paymentModesStringArr: string[] = data.map((paymentMode: PaymentModesDto) => paymentMode.description);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = paymentModesStringArr
+          const paymentModesStringArr = data.map((paymentMode: PaymentModesDto) => this.utilService.normalizeOption(paymentMode));
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = paymentModesStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, paymentModesStringArr);
           log.info(`payment Modes: `, paymentModesStringArr);
         },
         error: err => {
@@ -1041,14 +1674,15 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * get the index of the selected field using fieldId
    * create an array of strings from banks object and assign to options of the banks formField
    */
-  fetchBanks(sectionIndex:number, fieldIndex: number): void {
+  fetchBanks(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if(!(this.banks.length > 0)) {
       const countryId: number = this.selectedAddressCountry?.id;
       this.bankService.getBanks(countryId).subscribe({
         next: (data: BankDTO[]) => {
           this.banks = data
-          const bankStringArr: string[] = data.map((bank: BankDTO) => bank.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankStringArr
+          const bankStringArr = data.map((bank: BankDTO) => this.utilService.normalizeOption(bank));
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, bankStringArr);
           log.info(`banks: `, bankStringArr);
         },
         error: err => {
@@ -1066,7 +1700,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchBankBranches(sectionIndex:number, fieldIndex: number): void {
+  fetchBankBranches(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if(!(this.bankBranches.length > 0)) {
       const bankId: number = this.selectedBank?.id;
       this.bankBranches = [];
@@ -1074,8 +1708,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       this.bankService.getBankBranchesByBankId(bankId).subscribe({
         next: (data: BankBranchDTO[]) => {
           this.bankBranches = data;
-          const bankBranchStringArr: string[] = data.map((branch: BankBranchDTO) => branch.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankBranchStringArr
+          const bankBranchStringArr = data.map((branch: BankBranchDTO) => this.utilService.normalizeOption(branch));
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = bankBranchStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, bankBranchStringArr);
           log.info(`bank branches: `, bankBranchStringArr);
         },
         error: err => {
@@ -1093,13 +1728,15 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchCountries(sectionIndex:number, fieldIndex: number): void {
+  fetchCountries(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
+    log.info(`fetchCountries >>> `, sectionIndex, fieldIndex, this.formGroupSections);
     if(!(this.countries.length > 0)) {
       this.countryService.getCountries().subscribe({
         next: (data: CountryDto[]) => {
           this.countries = data;
-          const countryStringArr: string[] = data.map((country: CountryDto) => country.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+          const countryStringArr = data.map((country: CountryDto) => this.utilService.normalizeOption(country));
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, countryStringArr);
           log.info(`countryStringArr >>> `, countryStringArr);
         },
         error: err => {
@@ -1107,8 +1744,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         }
       })
     } else {
-      const countryStringArr: string[] = this.countries.map((country: CountryDto) => country.name);
-      this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+      const countryStringArr = this.countries.map((country: CountryDto) => this.utilService.normalizeOption(country));
+      // this.formGroupSections[sectionIndex].fields[fieldIndex].options = countryStringArr
+      this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, countryStringArr);
     }
   }
 
@@ -1117,13 +1755,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchStatesByCountryCode(sectionIndex:number, fieldIndex: number): void {
+  fetchStatesByCountryCode(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (this.selectedAddressCountry) {
       this.countryService.getMainCityStatesByCountry(this.selectedAddressCountry?.id).subscribe({
         next: (data: StateDto[]) => {
           this.states = data;
-          const stateStringArr: string[] = data.map((state: StateDto) => state.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = stateStringArr
+          const stateStringArr = data.map((state: StateDto) => this.utilService.normalizeOption(state));
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = stateStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, stateStringArr);
           log.info(`countryStringArr >>> `, stateStringArr);
         },
         error: err => {
@@ -1141,13 +1780,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchTownsByStateCode(sectionIndex:number, fieldIndex: number): void {
+  fetchTownsByStateCode(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (this.selectedState) {
       this.countryService.getTownsByMainCityState(this.selectedState?.id).subscribe({
         next: (data: TownDto[]) => {
           this.towns = data;
-          const townStringArr: string[] = data.map((state: TownDto) => state.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = townStringArr
+          const townStringArr = data.map((state: TownDto) => this.utilService.normalizeOption(state));
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = townStringArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, townStringArr);
           log.info(`townStringArr >>> `, townStringArr);
         },
         error: err => {
@@ -1165,13 +1805,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchPostalCodeByTownCode(sectionIndex:number, fieldIndex: number): void {
+  fetchPostalCodeByTownCode(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (this.selectedTown) {
       this.countryService.getPostalCodes(this.selectedTown?.id).subscribe({
         next: (data: PostalCodesDTO[]) => {
           this.postalCodes = data;
-          const postalCodeNumArr: number[] = data.map((postalCode: PostalCodesDTO) => postalCode.zipCode);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = postalCodeNumArr
+          const postalCodeNumArr = data.map((postalCode: PostalCodesDTO) => this.utilService.normalizeOption(postalCode));
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = postalCodeNumArr
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, postalCodeNumArr);
           log.info(`postalCodeNumArr >>> `, postalCodeNumArr);
         },
         error: err => {
@@ -1189,13 +1830,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchIdTypes(sectionIndex:number, fieldIndex: number): void {
+  fetchIdTypes(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.idTypes.length > 0)) {
       this.entityService.getIdentityType().subscribe({
         next: (data: IdentityModeDTO[]) => {
           this.idTypes = data;
-          const idTypeStringArr: string[] = data.map((id: IdentityModeDTO) => id.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = idTypeStringArr;
+          const idTypeStringArr = data.map((id: IdentityModeDTO) => this.utilService.normalizeOption(id));
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = idTypeStringArr;
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, idTypeStringArr);
           log.info(`identity types >>> `, idTypeStringArr)
         },
         error: err => {
@@ -1211,13 +1853,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchCurrencies(sectionIndex:number, fieldIndex: number): void {
+  fetchCurrencies(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.currencies.length > 0)) {
       this.currencyService.getCurrencies().subscribe({
         next: (data: CurrencyDTO[]) => {
           this.currencies = data;
-          const currencyStringArr: string[] = data.map((id: CurrencyDTO) => id.name);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = currencyStringArr;
+          const currencyStringArr = data.map((id: CurrencyDTO) => this.utilService.normalizeOption(id));
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = currencyStringArr;
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, currencyStringArr);
           log.info(`currencyStringArr >>> `, currencyStringArr)
         },
         error: err => {
@@ -1232,13 +1875,14 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param sectionIndex
    * @param fieldIndex
    */
-  fetchClientTitles(sectionIndex:number, fieldIndex: number): void {
+  fetchClientTitles(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if(!(this.clientTitles.length > 0)) {
       this.clientService.getClientTitles().subscribe({
         next: (data: ClientTitlesDto[]) => {
           this.clientTitles = data;
-          const titleStringArr: string[] = data.map((title: ClientTitlesDto) => title.description);
-          this.formGroupSections[sectionIndex].fields[fieldIndex].options = titleStringArr;
+          const titleStringArr = data.map((title: ClientTitlesDto) => this.utilService.normalizeOption(title));
+          // this.formGroupSections[sectionIndex].fields[fieldIndex].options = titleStringArr;
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, titleStringArr);
           log.info(`client titles >>> `, titleStringArr)
         },
         error: err => {
@@ -1273,7 +1917,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * Fetch saved details from dynamic table component
    * @param eventData
    */
-  fetchSavedDetails(eventData:any) {
+  /*fetchSavedDetails(eventData:any) {
     log.debug('Save details modal data:', eventData);
     const subgroup = eventData.subGroupId;
     const dataToSave = eventData.data;
@@ -1301,6 +1945,20 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       default:
         //do nothing; Ownership Structure Cr12 Details
     }
+  }*/
+
+  fetchSavedDetails(eventData: any) {
+    log.debug('Save details modal data:', eventData);
+    const { subGroupId, data } = eventData;
+
+    if (!subGroupId || !data) {
+      log.warn('Invalid event data');
+      return;
+    }
+
+    this.dynamicTableData[subGroupId] = data;
+    log.debug(`Stored data for ${subGroupId}:`, data);
+    log.info(`dynamicTableData >>> `, this.dynamicTableData);
   }
 
 
@@ -1325,22 +1983,72 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * Fetch client types
    */
   fetchClientTypes(): void {
-    if(!(this.clientTypes.length > 0)) {
+    // if(!(this.clientTypes.length > 0)) {
       this.clientTypeService.getClientTypes().subscribe({
         next: (data: ClientTypeDTO[]) => {
           this.clientTypes = data;
           const clientTypesArr: string[] = data.map((clientType: ClientTypeDTO) => clientType.clientTypeName);
           log.info(`clientTypesArr>>> `, clientTypesArr);
-          const index: number = this.uploadGroupSections.selects.findIndex(field => field.fieldId === "organizationType");
+          const index: number = this.uploadGroupSections.selects.findIndex(field => field.fieldId === "organizationType" || field.fieldId === "clientType");
           this.uploadGroupSections.selects[index].options = clientTypesArr;
         },
         error: err => {
           log.error(`could not fetch `, err);
         }
       });
-    }
+    // }
   }
 
+  fetchPremiumFrequencies(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1) {
+    this.accountService.getPremiumFrequencies().subscribe({
+      next: (data: AccountsEnum[]) => {
+        this.premiumFrequenciesData = data;
+        const premiumFrequenciesStringArr = data.map(frequency => this.utilService.normalizeOption(frequency));
+        // this.formFields[fieldIndex].options = premiumFrequenciesStringArr
+        this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, premiumFrequenciesStringArr);
+        log.info(`premium frequencies: `, premiumFrequenciesStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    })
+  }
+
+  fetchPreferredCommunicationChannels(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1) {
+    this.accountService.getPreferredCommunicationChannels().subscribe({
+      next: (data: AccountsEnum[]) => {
+        this.communicationChannelsData = data;
+        const communicationChannelsStringArr = data.map(commChannel => this.utilService.normalizeOption(commChannel));
+        this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, communicationChannelsStringArr);
+        log.info(`communication channels: `, communicationChannelsStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    })
+  }
+
+  fetchAccountTypes(): void {
+    if (!(this.accountTypeData.length > 0)) {
+      this.accountService.getAccountType().subscribe({
+        next: (data: AccountTypeDTO[]) => {
+          this.accountTypeData = data;
+          const accTypeStringArr: string[] = data.map((accType: AccountTypeDTO) => accType.accountType.toLowerCase());
+          const index: number = this.uploadGroupSections.selects.findIndex((field: ConfigFormFieldsDto) => field.fieldId === "accountTypeIndividual");
+          this.uploadGroupSections.selects[index].options = accTypeStringArr;
+          log.info(`acc Types: `, accTypeStringArr);
+        },
+        error: (err) => {
+          let errorMessage = err?.error?.message ?? err.message;
+          this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        },
+      });
+    }
+  }
 
   /**
    * process file selection
@@ -1392,11 +2100,10 @@ export class NewEntityV2Component implements OnInit, OnChanges {
 
         let payload: DmsDocument = {
           actualName: file.name,
-          userName: 'test',
+          userName: this.assignee,
           docType: file.type,
           docData: base64String,
-          originalFileName: file.name,
-          clientName: 'test'
+          originalFileName: file.name
         }
         this.filesToUpload.push(payload)
       };
@@ -1803,12 +2510,238 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     this.dynamicScreensSetupService.fetchSubModules(null, "account_management")
       .subscribe({
         next: (data) => {
-          this.subModules = data.sort((a, b) => a.order - b.order);
+          this.subModules = data;
           log.info("sub modules>>", data);
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.globalMessagingService.displayErrorMessage('Error', err.error);
         }
       });
+  }
+
+  getDynamicLabel(field: any, language: string): string {
+    const groupForm = this.entityForm.get(field.formGroupingId) as FormGroup;
+    const activeCondition = this.getActiveCondition(field, groupForm);
+
+    // If dynamicLabel is defined, override from mapping
+    if (field.dynamicLabel && groupForm) {
+      const controllingValue = groupForm?.get(field.dynamicLabel.field)?.value?.label;
+      const mapped = field.dynamicLabel.mapping[controllingValue];
+      if (mapped) {
+        return mapped[language];
+      }
+    }
+
+    // else, check if condition-specific label should override
+    if (activeCondition?.config?.label) {
+      return activeCondition.config.label[language];
+    }
+
+    return field.label?.[language];
+  }
+
+  /*getValidationMessage(field: any, language: string): string | null {
+    const groupForm = this.entityForm.get(field.formGroupingId) as FormGroup;
+    const control = groupForm?.get(field.fieldId);
+
+    if (!control || !control.errors) return null;
+
+    if (!(control.touched || control.dirty)) {
+      return null;
+    }
+
+    const activeCondition = this.getActiveCondition(field, groupForm);
+    const validations = activeCondition?.config?.validations || field.validations || [];
+
+    if (control.errors['pattern']) {
+      const patternValidation = validations.find(v => v.type === 'pattern');
+      if (patternValidation?.message) {
+        return patternValidation.message[language] || patternValidation.message['en'];
+      }
+    }
+
+    if (control.errors['required']) {
+      return `${this.getDynamicLabel(field, language)} is required.`;
+    }
+
+    return null;
+  }*/
+
+  getValidationMessage(field: any, language: string): string | null {
+    // log.info("validation", field, language);
+    const groupForm = this.entityForm.get(field.formGroupingId) as FormGroup;
+    const control = groupForm?.get(field.fieldId);
+
+    if (!control || !control.errors || !(control.touched || control.dirty)) {
+      return null;
+    }
+
+    const activeCondition = this.getActiveCondition(field, groupForm);
+    const validations = activeCondition?.config?.validations || field.validations || [];
+
+    // Find the first validation that matches the current error
+    const errorType = Object.keys(control.errors)[0];
+    const validation = validations.find(v => v.type === errorType)
+    // log.info("validation", validation, errorType, validations);
+
+    if (validation?.message) {
+      return validation.message[language] || validation.message['en'];
+    }
+
+    // Default validation messages
+    switch (errorType) {
+      case 'required':
+        return `${this.getDynamicLabel(field, language)} is required.`;
+      case 'min':
+        return `${this.getDynamicLabel(field, language)} must be at least ${control.errors['min'].min}.`;
+      case 'max':
+        return `${this.getDynamicLabel(field, language)} cannot be more than ${control.errors['max'].max}.`;
+      case 'minlength':
+        return `${this.getDynamicLabel(field, language)} must be at least ${control.errors['minlength'].requiredLength} characters.`;
+      case 'maxlength':
+        return `${this.getDynamicLabel(field, language)} cannot be more than ${control.errors['maxlength'].requiredLength} characters.`;
+      case 'email':
+        return 'Please enter a valid email address.';
+      case 'pattern':
+        return 'Please enter a valid value.';
+      default:
+        return null;
+    }
+  }
+
+  private getActiveCondition(field: any, groupForm: FormGroup): any | null {
+    if (!field.conditions || !groupForm) return;
+
+    for (const cond of field.conditions) {
+      const controllingValue = groupForm.get(cond.field)?.value?.label;
+      if (controllingValue === cond.value) {
+        return cond;
+      }
+    }
+    return null;
+  }
+
+  private applyDynamicValidators(field: any, groupForm: FormGroup): void {
+    const control = groupForm.get(field.fieldId);
+    if (!control) return;
+
+    const activeCondition = this.getActiveCondition(field, groupForm);
+
+    // Choose correct validations
+    const validations = activeCondition?.config?.validations || field.validations || [];
+
+    const angularValidators = validations.map((v: any) => {
+      if (v.type === 'pattern') return Validators.pattern(v.value);
+      if (v.type === 'required') return Validators.required;
+      return null;
+    }).filter(Boolean);
+
+    control.setValidators(angularValidators);
+    control.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private evaluateFieldVisibility(field: any, groupForm: FormGroup | null): boolean {
+    if (field.visible === false) return false;
+
+    const activeCondition = this.getActiveCondition(field, groupForm);
+
+    log.info("active condition", activeCondition);
+    if (!field.conditions || !groupForm) {
+      return field.visible !== false;
+    }
+
+    for (const cond of field.conditions) {
+      const control = groupForm.get(cond.field);
+      if (control && control.value === cond.value) {
+        return cond.visible !== false;
+      }
+    }
+
+    return field.visible !== false;
+  }
+
+  private refreshVisibility(): void {
+    this.formGroupSections.forEach(group => {
+      const groupForm = this.entityForm.get(group.groupId) as FormGroup | null;
+
+      if (group.fields) {
+        group.fields = group.fields.filter(field =>
+          this.evaluateFieldVisibility(field, groupForm)
+        );
+      }
+
+      if (group.subGroup) {
+        group.subGroup = group.subGroup.map(sub => {
+          if (sub.fields) {
+            sub.fields = sub.fields.filter(field =>
+              this.evaluateFieldVisibility(field, groupForm)
+            );
+          }
+          return sub;
+        });
+      }
+    });
+  }
+
+  addGroupToCollapsedGroups(): void {
+    this.formGroupSections.forEach(group => {
+      if (group.groupId?.includes('prime_identity')) {
+        this.collapsedGroups.add(group.groupId);
+      }
+    });
+  }
+
+  /**
+   * Updates the options of a field in either the main section or a subgroup
+   * @param sectionIndex Index of the section
+   * @param fieldIndex Index of the field within the section
+   * @param subGroupIndex Index of the subgroup (if applicable, -1 for main section)
+   * @param options Array of options to set
+   */
+  private updateFieldOptions(
+    sectionIndex: number,
+    fieldIndex: number,
+    subGroupIndex: number,
+    options: any[]
+  ): void {
+    if (sectionIndex === -1 || fieldIndex === -1) {
+      log.warn('Invalid section or field index', { sectionIndex, fieldIndex });
+      return;
+    }
+
+    const section = this.formGroupSections?.[sectionIndex];
+    if (!section) {
+      log.warn('Section not found', { sectionIndex });
+      return;
+    }
+
+    // Update options in subgroup if subGroupIndex is valid
+    if (subGroupIndex >= 0) {
+      const subGroup = section.subGroup?.[subGroupIndex];
+      if (subGroup?.fields?.[fieldIndex]) {
+        subGroup.fields[fieldIndex].options = [...options];
+        return;
+      }
+    }
+
+    // Fall back to main section fields
+    if (section.fields?.[fieldIndex]) {
+      section.fields[fieldIndex].options = [...options];
+    } else {
+      log.warn('Field not found in section or subgroup', {
+        sectionIndex,
+        fieldIndex,
+        subGroupIndex,
+        hasSubGroups: !!section.subGroup?.length
+      });
+    }
+  }
+
+  private getDataByPattern(pattern: string): any[] {
+    // Get all data for subgroups matching a pattern
+    return Object.keys(this.dynamicTableData)
+      .filter(key => key.includes(pattern))
+      .map(key => this.dynamicTableData[key])
+      .flat();
   }
 }
