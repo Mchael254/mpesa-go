@@ -1,0 +1,63 @@
+
+<!--<p *ngFor="let col of table.cols">-->
+<!--  {{ col.visible | json }}-->
+<!--</p>-->
+
+<div class="row my-3">
+  <div class="col-sm-8">
+          <span class="text-primary lead">
+          {{ subGroup.label[language] | titlecase }}
+        </span>
+  </div>
+  <div class="col-sm-4 text-end">
+    <button class="btn btn-primary btn-sm">
+      {{ subGroup.addButtonTextLabel[language] | titlecase }}
+    </button>
+    <span class="p-1 mx-2 caret border" (click)="columnDialogVisible = true">
+      <i class="fa fa-caret-down text-primary"></i>
+    </span>
+  </div>
+</div>
+
+<p-dialog [header]="subGroup.label[language]" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '330px'}">
+  <div *ngFor="let col of table?.cols">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="checkChecked" [checked]="col.visible" [(ngModel)]="col.visible">
+      <label class="form-check-label" for="checkChecked">
+        {{ col?.label[language] | titlecase }}
+      </label>
+    </div>
+  </div>
+</p-dialog>
+
+
+<p-table
+  [totalRecords]="table?.data.length"
+  [value]="table?.data"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <ng-container *ngFor="let col of table?.cols">
+        <th *ngIf="col.visible" [pSortableColumn]="col.field">
+          {{ col?.label[language] | titlecase }}
+          <p-sortIcon [field]="col.field"></p-sortIcon>
+        </th>
+      </ng-container>
+      <th></th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-rowData>
+    <tr>
+      <ng-container *ngFor="let col of table.cols" >
+        <td *ngIf="col.visible" class="py-3">
+          <span *ngIf="col.fieldId !=='overview_wef' && col.fieldId !=='overview_wet'">{{ rowData[col.fieldId]  }}</span>
+          <span *ngIf="col.fieldId === 'overview_wef' || col.fieldId === 'overview_wet'">{{ rowData[col.fieldId] | date }}</span>
+        </td>
+      </ng-container>
+      <td class="text-primary">
+        Edit  Delete
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

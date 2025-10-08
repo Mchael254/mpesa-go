@@ -6,6 +6,12 @@ import {CountryDto, PostalCodesDTO, StateDto, TownDto} from "../../../../../../s
 import {CountryService} from "../../../../../../shared/services/setups/country/country.service";
 import {ClientService} from "../../../../services/client/client.service";
 import {Observable} from "rxjs";
+import {
+  ConfigFormFieldsDto,
+  DynamicScreenSetupDto,
+  FormGroupsDto, FormSubGroupsDto
+} from "../../../../../../shared/data/common/dynamic-screens-dto";
+import {AddressModel, Branch, ClientDTO} from "../../../../data/ClientDTO";
 
 const log = new Logger('AddressComponent');
 
@@ -19,10 +25,15 @@ export class AddressComponent implements OnInit {
   @ViewChild('editButton') editButton!: ElementRef<HTMLButtonElement>;
   @ViewChild('closeButton') closeButton!: ElementRef<HTMLButtonElement>;
 
+  @Input() clientDetails: ClientDTO;
   @Input() addressDetailsConfig: any
   @Input() formFieldsConfig: any;
-  @Input() addressDetails: any;
+  addressDetails: AddressModel;
+  branchDetails: any[];
   @Input() accountCode: number;
+  @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
+  @Input() group: FormGroupsDto;
+
 
   countries: CountryDto[];
   clientCountry: CountryDto;
@@ -43,6 +54,12 @@ export class AddressComponent implements OnInit {
   language: string = 'en';
   editForm: FormGroup;
 
+  displayAddressDetails;
+  fields: ConfigFormFieldsDto[];
+  tableHeaders: ConfigFormFieldsDto[];
+  table: { cols: any[], data: any[] } = { cols: [], data: [] };
+
+
   constructor(
     private fb: FormBuilder,
     private utilService: UtilService,
@@ -55,11 +72,127 @@ export class AddressComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.countries$ = this.countryService.getCountries();
-    this.fetchCountries();
-    this.createEditForm(this.formFieldsConfig.fields);
+    // this.countries$ = this.countryService.getCountries();
+    // this.fetchCountries();
+    // this.createEditForm(this.fields);
+
+    setTimeout(() => {
+      this.addressDetails = this.clientDetails.address;
+
+      const displayAddressDetails  = {
+        overview_branch_Id: null,
+        overview_head_office_address: null,
+        overview_branch_details_name: null,
+        overview_head_office_country: this.addressDetails.countryName,
+        overview_head_office_county: null,
+        overview_country: this.addressDetails.countryName,
+        overview_head_office_city: null,
+        overview_county: this.addressDetails.stateName,
+        overview_head_office_physical_address: this.addressDetails.physicalAddress,
+        overview_city: this.addressDetails.townName,
+        overview_head_office_postal_address: null,
+        overview_physical_address: this.addressDetails.physicalAddress,
+        overview_head_office_postal_code: null,
+        overview_postal_address: this.addressDetails.residentialAddress,
+        overview_postal_code: this.addressDetails.postalCode,
+        overview_branch_email: null,
+        overview_landline_number: this.addressDetails.phoneNumber,
+        overview_branch_mobile_no: this.addressDetails.phoneNumber,
+        overview_address: null,
+        overview_road: this.addressDetails.road,
+        overview_house_name_no: this.addressDetails.houseNumber,
+      }
+
+      if (this.group.subGroup.length === 0) {
+        this.prepareGroupDetails(displayAddressDetails);
+      } else {
+        this.prepareSubGroupDetails(displayAddressDetails);
+      }
+
+      this.fields = this.formGroupsAndFieldConfig?.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === this.group.groupId);
+
+      for (const field of this.fields) {
+        field.dataValue = this.displayAddressDetails[field.fieldId] ?? null;
+      }
+
+      // sort fields in ascending order
+      this.fields.sort((a, b) => a.order - b.order)
+
+    }, 1000);
   }
 
+  /**
+   * prepares fields and table details for display when address details has no subgroup
+   * @param displayContactDetails
+   */
+  prepareGroupDetails(displayContactDetails): void {
+    if (this.group.presentationType === 'fields') {
+      this.fields = this.createFieldDisplay(displayContactDetails);
+    } else {
+      this.createTableDisplay();
+    }
+  }
+
+
+  /**
+   * create field display using the labelled fields
+   * @param displayFields
+   */
+  createFieldDisplay(displayFields): ConfigFormFieldsDto[] {
+    const fields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === this.group.groupId);
+
+    if (fields.length > 0) this.createEditForm(fields);
+
+    for (const field of fields) {
+      field.dataValue = displayFields[field.fieldId] ?? null;
+    }
+
+    fields.sort((a, b) => a.order - b.order);
+
+    return fields;
+  }
+
+
+  createTableDisplay(subGroup?: FormSubGroupsDto) {
+    const headerFields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formSubGroupingId === subGroup.subGroupId);
+    headerFields.sort((a, b) => a.order - b.order);
+    this.tableHeaders = headerFields;
+
+    this.branchDetails = this.clientDetails.branches;
+
+    const tableData = [];
+    this.branchDetails.forEach((br: Branch) => {
+      const branch = {
+        overview_branch_Id: br.code,
+        overview_branch_details_name: br.branchName,
+        overview_country: br.countryName,
+        overview_county: br.stateName,
+        overview_city: br.stateName,
+        overview_physical_address: br.physicalAddress,
+        overview_postal_address: br.postalAddress,
+        overview_postal_code: br.code,
+        overview_branch_email: br.email,
+        overview_landline_number: br.landlineNumber,
+        overview_branch_mobile_no: br.mobileNumber
+      };
+      tableData.push(branch);
+    });
+
+    this.table = {
+      cols: this.tableHeaders,
+      data: tableData
+    };
+  }
+
+  prepareSubGroupDetails(displayContactDetails): void {
+    this.group?.subGroup?.forEach((subGroup) => {
+      if (subGroup.presentationType === 'fields') {
+        subGroup.fields = this.createFieldDisplay(displayContactDetails);
+      } else {
+        this.createTableDisplay(subGroup);
+      }
+    });
+  }
 
   createEditForm(fields: any[]): void {
     const group: { [key: string]: any } = {};

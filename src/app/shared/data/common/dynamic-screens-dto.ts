@@ -69,6 +69,7 @@ export interface FormSubGroupsDto {
   hasFields: boolean;
   formGroupingId: string,
   presentationType?: PresentationType,
+  fields?: ConfigFormFieldsDto[],
 }
 
 export interface ConfigFormFieldsDto {

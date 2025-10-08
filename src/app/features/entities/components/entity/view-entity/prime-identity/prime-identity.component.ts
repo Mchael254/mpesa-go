@@ -33,7 +33,7 @@ export class PrimeIdentityComponent implements OnInit {
 
   @Input() partyAccountDetails: PartyAccountsDetails;
   @Input() entityPartyIdDetails: ReqPartyById;
-  @Input() primeDetailsConfig: any;
+  // @Input() primeDetailsConfig: any;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() clientDetails: any;
   selectOptions: {
@@ -56,7 +56,7 @@ export class PrimeIdentityComponent implements OnInit {
 
   primeDetails: any;
   fields: ConfigFormFieldsDto[];
-  group: FormGroupsDto;
+  @Input() group: FormGroupsDto;
 
   constructor(
     private utilService: UtilService,
@@ -76,7 +76,7 @@ export class PrimeIdentityComponent implements OnInit {
   ngOnInit(): void {
     this.fetchSelectOptions();
     setTimeout(() => {
-      this.primaryDetailsConfig = this.primeDetailsConfig.primary_details;
+      // this.primaryDetailsConfig = this.primeDetailsConfig.primary_details;
       this.createEditForm(this.formGroupsAndFieldConfig?.fields)
 
       this.primeDetails = {
@@ -92,8 +92,7 @@ export class PrimeIdentityComponent implements OnInit {
         overview_marital_status: this.clientDetails.maritalStatus,
       };
 
-      this.fields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId.includes('prime_identity'));
-      this.group = this.formGroupsAndFieldConfig.groups.find((group: FormGroupsDto) => group.groupId.includes('prime_identity'));
+      this.fields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === this.group.groupId);
 
       for (const field of this.fields) {
         field.dataValue = this.primeDetails[field.fieldId] ?? null;
