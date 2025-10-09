@@ -1,5 +1,79 @@
-<!--<ng-container *ngIf="editForm && countries && states && towns; else loadingContent">-->
-<!--{{ addressDetails | json }}-->
+<!--<div>
+  <p *ngFor="let field of tableHeaders">
+    {{ field.fieldId | json }}
+  </p>
+</div>-->
+
+<!--{{ group | json }}-->
+
+
+<ng-container *ngIf="group.subGroup?.length === 0">
+  <div class="row">
+    <ng-container *ngFor="let field of fields">
+      <div class="col-sm-4">
+        <div class="row my-2">
+          <div class="col-sm-4 text-dark">
+            {{ field.label[language] }}
+          </div>
+          <div class="col-sm-8 text-dark fw-bold">
+            {{ field.dataValue }}
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</ng-container>
+
+
+<ng-container *ngIf="group.subGroup?.length > 0">
+  <ng-container *ngFor="let subGroup of group.subGroup">
+
+    <ng-container *ngIf="subGroup.presentationType==='fields'">
+      <div class="row my-3">
+        <div class="col-sm-8">
+          <span class="text-primary lead">
+            {{ subGroup.label[language] | titlecase }}
+          </span>
+          <span
+            *ngIf="subGroup.presentationType==='fields'"
+            id="edit-tab-btn"
+            class="m-2 text-primary"
+          >
+            <i class="fa fa-pencil"></i>
+          </span>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <ng-container *ngFor="let field of subGroup.fields">
+          <div class="col-sm-4">
+            <div class="row my-2">
+              <div class="col-sm-4 text-dark">
+                {{ field.label[language] }}
+              </div>
+              <div class="col-sm-8 text-dark fw-bold">
+                {{ field.dataValue }}
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="subGroup.presentationType !== 'fields'">
+      <app-overview-table
+        [subGroup]="subGroup"
+        [table]="table"
+        [language]="language"
+      >
+      </app-overview-table>
+    </ng-container>
+
+  </ng-container>
+</ng-container>
+
+
+<!--
+
   <table class="table table-borderless">
     <tbody>
     <tr>
@@ -100,6 +174,7 @@
     </tr>
     </tbody>
   </table>
+-->
 
 
 
@@ -114,7 +189,7 @@
       <div class="modal-content">
         <div class="modal-header border-0">
           <h1 class="modal-title fs-4 text-primary" id="editAddressModalLabel">
-            {{ formFieldsConfig.label[language] | titlecase }}
+<!--            {{ formFieldsConfig.label[language] | titlecase }}-->
           </h1>
           <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -168,14 +243,14 @@
             </div>
           </ng-template>
         </div>
-        <div class="modal-footer border-0">
+        <!--<div class="modal-footer border-0">
           <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
             {{ formFieldsConfig.buttons.cancel.label[language] | titlecase }}
           </button>
           <button type="button" class="btn btn-primary" (click)="editAddressDetails()">
             {{ formFieldsConfig.buttons.save.label[language] | titlecase }}
           </button>
-        </div>
+        </div>-->
       </div>
     </div>
   </div>

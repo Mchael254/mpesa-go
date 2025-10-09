@@ -388,11 +388,18 @@
           {{ risk?.propertyId }} {{ risk?.sumInsured | currency: selectedCurrencySymbol || '' : 'symbol' }}
         </p>
 
-        <app-cover-types-comparison [isExpanded]="expandedCoverTypeIndexes[i] === j"
+        <!-- <app-cover-types-comparison [isExpanded]="expandedCoverTypeIndexes[i] === j"
           (additionalBenefitsEvent)="listenToBenefitsAddition($event)"
           (additionalBenefitsRemovedEvent)="removeBenefit($event)" (selectedCoverEvent)="selectCovers(product, $event)"
           [riskLevelPremium]="risk">
+        </app-cover-types-comparison> -->
+
+        <app-cover-types-comparison [isExpanded]="expandedCoverTypeIndexes[i] === j"
+          (additionalBenefitsEvent)="listenToBenefitsAddition($event, i, j)"
+          (additionalBenefitsRemovedEvent)="removeBenefit($event, i, j)"
+          (selectedCoverEvent)="selectCovers(product, $event)" [riskLevelPremium]="risk">
         </app-cover-types-comparison>
+
       </div>
     </div>
   </div>
@@ -415,7 +422,7 @@
               aria-label="Close"></button>
 
           </div>
-          <app-share-quotes (sendEvent)="listenToSendEvent($event)" (downloadRequested)="onDownloadRequested()"
+          <app-share-quotes (sendEvent)="listenToSendEvent($event)" (downloadRequested)="onDownloadRequested($event)"
             (previewRequested)="onPreviewRequested()" [previewVisible]="previewVisible" [pdfSrc]="pdfSrc">
 
           </app-share-quotes>

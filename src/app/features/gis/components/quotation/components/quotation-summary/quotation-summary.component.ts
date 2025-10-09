@@ -49,6 +49,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NotificationService } from '../../services/notification/notification.service';
 import { NgxCurrencyConfig } from 'ngx-currency';
 import { Modal } from 'bootstrap';
+import { left } from '@popperjs/core';
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
 
@@ -66,10 +67,6 @@ interface FileItem {
   styleUrls: ['./quotation-summary.component.css']
 })
 export class QuotationSummaryComponent implements OnInit, OnDestroy {
-  quotationAuthorized: boolean;
-  fileUrl: SafeResourceUrl;
-  showWizardModal: boolean;
-
 
   viewClientProfile() {
     throw new Error('Method not implemented.');
@@ -95,7 +92,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   showWizzardModal = false;
+  showClientWizzardModal = false;
   wizzardModalPosition = { top: '-40px', left: '430px' };
+  wizzardClientModalPosition = { top: '-140px', left: '-70px' };
   userInstructionsModalInstance: any;
   hasOpened = false;
 
@@ -293,6 +292,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   introducers: IntroducerDto[] = [];
   introducerName: string = '';
   quotationFormDetails: any;
+  quotationAuthorized: boolean;
+  fileUrl: SafeResourceUrl;
+  showWizardModal: boolean;
+  quickQuoteQuotation: boolean;
+  showCreateClientTip = false;
+
 
   constructor(
     public quotationService: QuotationsService,
@@ -358,6 +363,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
     this.checkAndOpenQuickQuoteModal();
     this.quickQuoteConvertedFlag = sessionStorage.getItem('quickQuoteConvertedFlag');
+    if (this.quickQuoteConvertedFlag) {
+      this.quickQuoteQuotation = true
+      sessionStorage.setItem('quickQuoteQuotation', JSON.stringify(this.quickQuoteQuotation))
+
+    }
     this.quotationCodeString = sessionStorage.getItem('quotationCode');
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'));
     log.debug("two codes", this.quotationCode, this.quotationCodeString)
@@ -365,6 +375,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     log.debug('quotationCode', this.quotationCodeString)
     log.debug("quick Quotation number", this.quotationNumber);
     this.isNewClientSelected = JSON.parse(sessionStorage.getItem('isNewClientSelected'))
+    if (this.isNewClientSelected) {
+      setTimeout(() => this.openClientWizzard(), 300);
+
+    }
     this.storedQuotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
     log.debug("QUOTATION FORM DETAILS", this.storedQuotationFormDetails)
     this.conversionFlagString = sessionStorage.getItem("conversionFlag");
@@ -489,9 +503,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.modals['chooseClientReassign'] = new bootstrap.Modal(this.chooseClientReassignModal.nativeElement);
     this.modals['reassignQuotation'] = new bootstrap.Modal(this.reassignQuotationModalElement.nativeElement);
     this.modals['rejectQuotation'] = new bootstrap.Modal(this.rejectQuotationModalElement.nativeElement);
+    if (this.isNewClientSelected) {
+      setTimeout(() => this.openClientWizzard(), 300);
 
+    }
   }
 
+  hideCreateClientTip() {
+    this.showCreateClientTip = false;
+  }
   openModals(modalName: string) {
     this.modals[modalName]?.show();
   }
@@ -3093,7 +3113,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   get authorizeButtonDisabled(): boolean {
-    return this.hasExceptionsData() || this.hasEmptySchedules();
+    return this.hasExceptionsData() || this.hasEmptySchedules() || this.isNewClientSelected;
   }
 
   authorizeQuote() {
@@ -3580,6 +3600,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.showWizzardModal = true;
   }
 
+  openClientWizzard() {
+    log.debug("openClientWizzard called")
+    this.showClientWizzardModal = true;
+  }
   /**
    * Gets the full payment frequency label based on the abbreviation
    * @param frequencyValue - The frequency abbreviation (A, S, Q, M, O)

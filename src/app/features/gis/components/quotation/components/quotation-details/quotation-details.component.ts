@@ -228,7 +228,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private cd: ChangeDetectorRef
   ) {
-    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteConvertedFlag'))
+    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
     this.quotationAction = sessionStorage.getItem('quotationAction')
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
     this.quotationCode && this.fetchQuotationDetails(this.quotationCode);

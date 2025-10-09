@@ -221,23 +221,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
   }
 
   viewDetailsWithId(rowId: number, category?: string): void {
-    // let partyId: number;
-
     this.router.navigate([ `/home/entity/view/${rowId}`], { queryParams: { category } });
-    // fetch account details to fetch party id before routing to 360 view
-    /*this.accountService
-      .getAccountDetailsByAccountCode(rowId)
-      .pipe(
-        map((data: PartyAccountsDetails) => {
-            this.accountService.setCurrentAccounts(data); // set this current as current account.
-            return data?.partyId;
-          },
-          untilDestroyed(this)
-        ))
-      .subscribe( (_x) => {
-        partyId = _x;
-        this.router.navigate([ `/home/entity/view/${partyId}`]);
-      });*/
   }
 
   filter(event, pageIndex: number = 0, pageSize: number = event.rows, keyData: string) {
