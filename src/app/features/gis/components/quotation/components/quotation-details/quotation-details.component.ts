@@ -91,8 +91,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   productClauseColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
 
 
-
-
   quotationNum: string;
   introducers: Introducer[] = [];
   selectedIntroducer: Introducer | null = null;
@@ -292,7 +290,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       paymentFrequency: [this.paymentFrequencies[0].value, Validators.required]
     });
     this.loadDetailedQuotationFields();
-
     this.minDate = new Date();
     // this.todaysDate = new Date();
     // this.coverToDate = new Date(this.todaysDate);
@@ -636,7 +633,51 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         clausesModified: false
       };
       sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+
+      // Send mandatory product clauses to database if quotationCode exists and there are mandatory clauses
+      if (this.quotationCode && this.mandatoryProductClause.length > 0) {
+        this.sendMandatoryClausesToDatabase(productCode, this.mandatoryProductClause);
+      }
     });
+  }
+
+  private sendMandatoryClausesToDatabase(productCode: number, mandatoryClauses: any[]) {
+    // Transform mandatory clauses to match the expected payload structure
+    const transformedClauses = mandatoryClauses.map((clause: any) => ({
+      clauseWording: clause.wording || '',
+      clauseHeading: clause.heading || '',
+      clauseCode: clause.code || 0,
+      clauseType: clause.type || '',
+      clauseEditable: clause.isEditable || 'N',
+      clauseShortDescription: clause.shortDescription || ''
+    }));
+
+    const productClausePayload = {
+      quotationCode: this.quotationCode,
+      productCode: productCode,
+      productClauses: transformedClauses
+    };
+
+    log.debug(`Sending mandatory clauses to database for product ${productCode}:`, productClausePayload);
+
+    // Send mandatory clauses to database using createQuotationProductClauses service
+    this.quotationService.createQuotationProductClauses([productClausePayload])
+      .subscribe({
+        next: (response) => {
+          log.debug(`Successfully saved mandatory clauses for product ${productCode}:`, response);
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            'Mandatory product clauses saved successfully'
+          );
+        },
+        error: (err) => {
+          log.error(`Error saving mandatory clauses for product ${productCode}:`, err);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Failed to save mandatory clauses to database. Please try again.'
+          );
+        }
+      });
   }
 
   private loadPersistedClauses() {
@@ -691,6 +732,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       this.globalMessagingService.displayErrorMessage('warning', 'You need to select a product first');
     }
   }
+  
   closeClauseModal() {
     this.showClauseModal = false;
   }

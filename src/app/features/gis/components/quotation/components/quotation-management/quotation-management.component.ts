@@ -10,6 +10,7 @@ import { GlobalMessagingService } from '../../../../../../shared/services/messag
 import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { Table } from 'primeng/table';
+import { NgxCurrencyConfig } from 'ngx-currency';
 
 const log = new Logger('QuotationConcersionComponent');
 
@@ -69,6 +70,7 @@ export class QuotationManagementComponent {
   viewQuoteFlag: Boolean = false;
   isClientSearchModalVisible = false;
   remainingMenuItems: MenuItem[] = [];
+  public currencyObj: NgxCurrencyConfig;
 
 
 
@@ -88,8 +90,27 @@ export class QuotationManagementComponent {
   ngOnInit(): void {
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
     this.dynamicSideBarMenu(this.quotationSubMenuList[6]);
+    this.initializeCurrency();
     this.fetchGISQuotations();
 
+  }
+
+  private initializeCurrency(): void {
+    const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
+    const currencySymbol = sessionStorage.getItem('currencySymbol');
+    log.debug("currency Object:", currencySymbol);
+    log.debug("currency Delimeter:", currencyDelimiter);
+    this.currencyObj = {
+      prefix: currencySymbol + ' ',
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
   }
 
   ngOnDestroy(): void { }
