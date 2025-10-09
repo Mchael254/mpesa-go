@@ -609,50 +609,48 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
-
-onDownloadRequested(event?: { print?: boolean }) {
+onDownloadRequested() {
   const payload = this.notificationPayload();
 
-  this.quotationService.generateQuotationReport(payload).pipe(
-    untilDestroyed(this)
-  ).subscribe((response) => {
-    // 🔹 Convert Base64 to Blob once
-    const byteCharacters = atob(response.base64);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: 'application/pdf' });
-    const pdfUrl = URL.createObjectURL(blob);
-
-    if (event?.print) {
-    
-      const printWindow = window.open('', '_blank');
-      if (printWindow) {
-        printWindow.document.write(`
-          <html>
-            <head><title>Print PDF</title></head>
-            <body style="margin:0">
-              <iframe src="${pdfUrl}" 
-                      style="border:none;width:100%;height:100%;" 
-                      id="printFrame"></iframe>
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-
-        printWindow.onload = () => {
-          const iframe = printWindow.document.getElementById("printFrame") as HTMLIFrameElement;
-          iframe?.contentWindow?.print();
-        };
-      }
-    } else {
-      // ✅ Normal download
+  this.quotationService.generateQuotationReport(payload)
+    .pipe(untilDestroyed(this))
+    .subscribe((response) => {
+      // Normal download using utilService
       this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf");
-    }
-  });
+    });
 }
+
+
+onPrintRequested() {
+  const payload = this.notificationPayload();
+
+  this.quotationService.generateQuotationReport(payload)
+    .pipe(untilDestroyed(this))
+    .subscribe((response) => {
+      const byteCharacters = atob(response.base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const pdfUrl = URL.createObjectURL(blob);
+
+      // Create hidden iframe for printing
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = pdfUrl;
+      document.body.appendChild(iframe);
+
+      iframe.onload = () => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+       
+      };
+    });
+}
+
+
 
 
   listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
