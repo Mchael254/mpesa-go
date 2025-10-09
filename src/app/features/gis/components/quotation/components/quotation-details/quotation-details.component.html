@@ -284,11 +284,6 @@
         </span>
       </p>
 
-
-
-
-
-
     </div>
   </div>
 
@@ -910,17 +905,16 @@
               [rowsPerPageOptions]="[5, 10, 20]" [rows]="5"
               [tableStyle]="{'min-width': '50rem','table-layout': 'fixed'}">
 
-
               <!-- Table Header -->
               <ng-template pTemplate="header">
                 <tr>
-
                   <th *ngFor="let col of productClauseColumns" [hidden]="!col.visible" class="flexible-header1"
                     [ngClass]="{'actions-column': col.field === 'actions'}" [pSortableColumn]="col.field">
                     {{ col.header }}
                     <p-sortIcon [field]="col.field"></p-sortIcon>
                   </th>
                 </tr>
+
                 <tr class="filter-row mt-1">
                   <td *ngFor="let col of productClauseColumns" [hidden]="!col.visible">
                     <input *ngIf="col.filterable !== false" class="form-control form-control-sm" pInputText type="text"
@@ -940,20 +934,14 @@
                       </ng-container>
                       <!-- Wording (with hover card) -->
                       <ng-container *ngSwitchCase="'wording'">
-                        <!-- <div class="clause-wrapper">
-                        {{ productClause.wording | truncate:3 | sentenceCase }}
-                        <div class="hover-card">
-                          {{ productClause.wording | sentenceCase }}
-                        </div>
-                      </div> -->
                         <div class="clause-wrapper">
                           {{ productClause.wording | sentenceCase }}
                           <div class="hover-card">
                             {{ productClause.wording | sentenceCase }}
                           </div>
                         </div>
-
                       </ng-container>
+                      
                       <ng-container *ngSwitchCase="'heading'">
                         <div class="clause-wrapper" [title]="productClause.heading | sentenceCase">
                           {{ productClause.heading | sentenceCase }}
@@ -1163,7 +1151,6 @@
                 </div>
               </div>
             </div>
-
 
             <!-- delete clause modal -->
             <div class="modal fade" id="deleteClause">

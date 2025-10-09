@@ -62,6 +62,10 @@
               {{ 'gis.quotation.agent' | translate }}
               <p-sortIcon field="agent"></p-sortIcon>
             </th>
+            <th style="background-color: #f0f0f0;" pSortableColumn="premium" class="flexible-header text-end">
+              {{ 'gis.quotation.premium' | translate }}
+              <p-sortIcon field="premium"></p-sortIcon>
+            </th>
             <th style="background-color: #f0f0f0;" pSortableColumn="fromDate" class="flexible-header">
               {{ 'gis.quotation.cover_from' | translate }}
               <p-sortIcon field="fromDate"></p-sortIcon>
@@ -69,14 +73,6 @@
             <th style="background-color: #f0f0f0;" pSortableColumn="toDate" class="flexible-header">
               {{ 'gis.quotation.cover_to' | translate }}
               <p-sortIcon field="toDate"></p-sortIcon>
-            </th>
-            <th style="background-color: #f0f0f0;" pSortableColumn="status" class="flexible-header">
-              {{ 'gis.quotation.status' | translate }}
-              <p-sortIcon field="status"></p-sortIcon>
-            </th>
-            <th style="background-color: #f0f0f0;" pSortableColumn="premium" class="flexible-header text-end">
-              {{ 'gis.quotation.premium' | translate }}
-              <p-sortIcon field="premium"></p-sortIcon>
             </th>
             <th style="background-color: #f0f0f0;" class="flexible-header text-end">
               Actions
@@ -132,6 +128,13 @@
               </div>
             </td>
 
+            <!-- premium filter -->
+            <td class="me-1" style="background-color: #ffffff;">
+              <input type="text" class="form-control" style="width: 100%;" (keyup.enter)="fetchGISQuotations();"
+                #premiumTypeFilter (input)="inputQuotationNo($event)"
+                (input)="quotationTable.filterGlobal(premiumTypeFilter.value, 'contains')">
+            </td>
+
             <!-- date filters -->
             <td style="background-color: #ffffff;">
               <p-calendar name="withEffectiveFromDate" [(ngModel)]="fromDate" [dateFormat]="dateFormat"
@@ -149,22 +152,6 @@
               </p-calendar>
             </td>
 
-            <!-- status filter -->
-            <td style="background-color: #ffffff;">
-              <p-dropdown [options]="status" optionLabel="status" optionValue="status" [filter]="true" filterBy="status"
-                [(ngModel)]="selectedStatus" appendTo="body" [style]="{ 'width': '100%', 'height': '35px' }"
-                (onChange)="onStatusSelected($event.value)" (keyup.enter)="fetchGISQuotations();" [showClear]="true"
-                styleClass="custom-dropdown">
-              </p-dropdown>
-            </td>
-
-             <!-- premium filter -->
-            <td class="me-1" style="background-color: #ffffff;">
-              <input type="text" class="form-control" style="width: 100%;" (keyup.enter)="fetchGISQuotations();"
-                #premiumTypeFilter (input)="inputQuotationNo($event)"
-                (input)="quotationTable.filterGlobal(premiumTypeFilter.value, 'contains')">
-            </td>
-
             <!-- clear -->
             <td style="background-color: #ffffff;" class="text-end">
               <button type="button" class="btn btn-sm  btn-outline-primary" (click)="clearFilters();">{{
@@ -179,10 +166,10 @@
               {{quotation.clientName |sentenceCase}}</td>
             <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">
               {{quotation.agentShortDescription |sentenceCase}}</td>
+            <td class="text-end">{{quotation.currency}} {{quotation.premium || 0}}</td>
             <td>{{quotation.fromDate}}</td>
             <td>{{quotation.toDate}}</td>
-            <td>{{quotation.status}}</td>
-            <td class="text-end">{{quotation.premium || 0 |number}}</td>
+
             <td class="text-end" style="padding-top: 0; padding-bottom: 0;">
               <span class="action-buttons-container d-flex align-items-center justify-content-end gap-2">
                 <!-- Display first 3 actions as text links -->
