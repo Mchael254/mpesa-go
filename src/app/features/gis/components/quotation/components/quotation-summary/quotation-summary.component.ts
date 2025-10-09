@@ -406,6 +406,21 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         }
       });
 
+                      // Retrieve authorization flag specific to this quotation
+const authorizedFlag = sessionStorage.getItem(`quotationAuthorized_${this.quotationCode}`);
+this.quotationAuthorized = authorizedFlag === 'true';
+
+if (this.quotationAuthorized) {
+  this.showAuthorizeButton = false;
+  this.showViewDocumentsButton = true;
+  this.showConfirmButton = true;
+} else {
+  this.showAuthorizeButton = true;
+  this.showViewDocumentsButton = false;
+  this.showConfirmButton = false;
+}
+
+
 
     this.clientDetails = JSON.parse(
       sessionStorage.getItem('clientFormData') ||
@@ -3138,6 +3153,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             res?.message || 'Quotation authorized successfully.'
           );
 
+          sessionStorage.setItem(`quotationAuthorized_${quotationCode}`, 'true');
+
+
           // Step 2: Update Status
           const newStatus = 'Pending';
           const reason = '';
@@ -3185,7 +3203,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             'This quotation is already authorized.'
           );
           this.quotationAuthorized = true;
-          sessionStorage.setItem('quotationHasBeenAuthorzed', JSON.stringify(this.quotationAuthorized))
+          sessionStorage.setItem(`quotationAuthorized_${quotationCode}`, 'true');
           this.showAuthorizeButton = false;
           this.showViewDocumentsButton = true;
           this.showConfirmButton = true;
