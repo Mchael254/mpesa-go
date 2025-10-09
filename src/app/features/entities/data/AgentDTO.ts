@@ -158,3 +158,178 @@ export interface AddressDTO {
   town_id: string;
   zip: string;
 }
+
+export interface AgentV2DTO {
+  intermediaryCode?: number,
+  partyId?: number,
+  category: string,
+  dateOfBirth: string,
+  withEffectFromDate: string,
+  withEffectToDate: string,
+  name: string,
+  shortDescription?: string,
+  accountManagerCode?: number,
+  businessChannelCode?: number,
+  licenced?: string,
+  licenceNumber: string,
+  countryId: number,
+  idNumber: string,
+  pinNumber: string,
+  modeOfIdentityId?: number,
+  organizationId?: string,
+  accountTypeId: number,
+  gender: string,
+  branchId?: number,
+  address: AddressV2DTO,
+  contactDetails: ContactDetailsV2DTO[],
+  paymentDetails: PaymentDetailsDTO,
+  wealthAmlDetails: WealthAmlDetailsDTO[],
+  ownershipDetails?: OwnershipDTO[],
+  referees: IntermediaryRefereeDTO[],
+  status?: StatusEnum,
+  maritalStatus: string,
+}
+
+export interface AddressV2DTO {
+  id?: number,
+  boxNumber?: string,
+  postalCode: string,
+  townId: number,
+  stateId: number,
+  countryId: number,
+  physicalAddress: string,
+  residentialAddress?: string,
+  road?: string,
+  estate?: string,
+  houseNumber?: string,
+  isUtilityAddress?: string,
+  utilityAddressProof?: string,
+  fax?: string,
+  zip?: string,
+  phoneNumber?: string,
+  accountId?: number
+}
+
+export interface ContactDetailsV2DTO {
+  id?: number,
+  titleId: number,
+  principalContactName?: string,
+  receivedDocuments?: string,
+  emailAddress: string,
+  smsNumber: string,
+  phoneNumber: string,
+  accountId?: number,
+  socialMediaUrl?: string,
+  websiteUrl?: string,
+  contactChannel: string,
+  whatsappNumber: string,
+  faxNumber?: string,
+  emailVerified?: string,
+  phoneVerified?: string
+}
+
+export interface PaymentDetailsDTO {
+  id?: number,
+  bankBranchId: number,
+  currencyId?: number,
+  accountNumber: string,
+  effectiveFromDate?: string,
+  effectiveToDate?: string,
+  isDefaultChannel?: string,
+  partyAccountId?: number,
+  preferredChannel?: string,
+  swiftCode?: string,
+  vatApplicable: string,
+  commissionAllowed: string,
+  creditAllowed?: string,
+  commissionStatusDate: string,
+  commissionEffectiveDate: string,
+  creditLimit: number,
+  taxAuthorityCode: string,
+  paymentTerms: string,
+  paymentFrequency: string,
+  glAccountNumber: string,
+  withholdingTax?: number,
+  withholdingTaxApplicable?: string,
+  mpayno?: string,
+  iban?: string
+}
+
+export interface IntermediaryRefereeDTO {
+  id?: number,
+  name: string,
+  physicalAddress: string,
+  postalAddress: string,
+  townCode?: number,
+  countryCode?: number,
+  emailAddress: string,
+  telephone: string,
+  idNumber: string,
+  agencyCode?: number,
+  preferredCommunicationChannel: number,
+  status: string,
+}
+
+export enum StatusEnum {
+  Active = 'ACTIVE',
+  Draft = 'DRAFT',
+  Ready = 'READY',
+  Inactive = 'INACTIVE',
+  Suspended = 'SUSPENDED',
+}
+
+export interface WealthAmlDetailsDTO {
+  id?: number,
+  nationalityCountryId: number,
+  citizenshipCountryId?: number,
+  fundsSource: string,
+  employmentStatus?: string,
+  maritalStatus?: string,
+  occupationId?: number,
+  sectorId?: number,
+  tradingName?: string,
+  registeredName?: string,
+  certificateRegistrationNumber?: string,
+  certificateYearOfRegistration?: string,
+  sourceOfWealthId?: number,
+  parentCountryId?: number,
+  operatingCountryId?: number,
+  crFormRequired?: string,
+  crFormYear?: number,
+  partyAccountId?: number,
+  insurancePurpose?: string,
+  premiumFrequency?: string,
+  distributeChannel?: string,
+  parentCompany?: string,
+  category?: string,
+  modeOfIdentity: number,
+  idNumber: string,
+  cr12Details?: Cr12DetailsDTO[],
+}
+
+export interface Cr12DetailsDTO {
+  directorName: string,
+  directorIdRegNo: string,
+  directorDob: string,
+  directorTitle: string,
+  cr12Code: number,
+  clientCode: number,
+  amlCode: number,
+  wealthDetailsCode: number,
+  certificateReferenceNo: string,
+  certificateRegistrationYear: string,
+  createdBy: string,
+  createdDate: string,
+  certificateName: string,
+  address: string,
+  category: string
+}
+
+export interface OwnershipDTO {
+  code: number,
+  accountCode: number,
+  idNumber: string,
+  name: string,
+  contactPersonPhone: string,
+  percentOwnership: number,
+}

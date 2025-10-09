@@ -29,6 +29,12 @@ export interface FullName {
   clntOtherNames: string;
 }
 
+export interface DynamicNormalizedOption {
+  id: string | number;
+  label: string;
+  original?: any;
+}
+
 const log = new Logger('UtilService');
 
 /**
@@ -881,5 +887,21 @@ export class UtilService {
     }
 
     return validators;
+  }
+
+  /** normalize any backend option shape into { id, label, original } */
+  normalizeOption(item: any) {
+    if (item === null || item === undefined) return { id: item, label: '', original: item };
+    if (typeof item === 'string' || typeof item === 'number') {
+      return { id: item, label: String(item), original: item };
+    }
+
+    const id = item.id ?? item.code ?? item.key ?? item.iso ?? item.short_description ?? item.value ??
+      item.name ?? item.description ?? Object.values(item)[0];
+    const label = item.name ?? item.description ?? item.value ?? item.label ?? item.description ??
+      item.zipCode ?? item.clientTypeName ?? String(id);
+    // log.info("item", item, id, label);
+
+    return { id, label, original: item };
   }
 }

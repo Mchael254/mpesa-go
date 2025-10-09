@@ -22,6 +22,7 @@ export interface ScreensDto {
   hasFields: boolean;
   subModuleId?: string,
   presentationType?: PresentationType,
+  targetEntityShortDescription?: string,
 }
 
 export interface ScreenFormsDto {
@@ -161,5 +162,6 @@ export interface DynamicScreenSetupDto {
 
 export enum PresentationType {
   fields = "fields",
-  table_columns = "table_columns"
+  table_columns = "table_columns",
+  fields_and_table_columns = "fields_and_table_columns",
 }
