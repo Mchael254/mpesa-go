@@ -208,6 +208,7 @@ export class ViewEntityComponent implements OnInit {
     this.dynamicScreenSetupService.fetchDynamicSetupByScreen(
       null,
       null,
+      null,
       this.subModuleId,
       targetEntityShortDescription
     ).subscribe({

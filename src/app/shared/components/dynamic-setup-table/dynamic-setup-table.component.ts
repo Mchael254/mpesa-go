@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {Logger, UtilService} from "../../services";
+import {DynamicNormalizedOption, Logger, UtilService} from "../../services";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {GlobalMessagingService} from "../../services/messaging/global-messaging.service";
 import {SessionStorageService} from "../../services/session-storage/session-storage.service";
@@ -20,6 +20,8 @@ import {CountryDto, PostalCodesDTO, StateDto, TownDto} from "../../data/common/c
 import {BankBranchDTO, BankDTO, FundSourceDTO} from "../../data/common/bank-dto";
 import {AccountsEnum} from "../../../features/entities/data/enums/accounts-enum";
 import {ConfigFormFieldsDto} from "../../data/common/dynamic-screens-dto";
+import {IdentityModeDTO} from "../../../features/entities/data/entityDto";
+import {EntityService} from "../../../features/entities/services/entity/entity.service";
 
 const log = new Logger("DynamicSetupTableComponent");
 @Component({
@@ -88,6 +90,7 @@ export class DynamicSetupTableComponent implements OnInit {
   employmentTypesData: AccountsEnum[] = [];
   communicationChannelsData: AccountsEnum[] = [];
   insurancePurposeData: any[] = [];
+  idTypes: IdentityModeDTO[] = [];
 
   uniqueId: string = `modal_${Math.random().toString(36).substr(2, 9)}`;
 
@@ -102,6 +105,7 @@ export class DynamicSetupTableComponent implements OnInit {
     private accountService: AccountService,
     private countryService: CountryService,
     private bankService: BankService,
+    private entityService: EntityService,
   ) {
     this.form = this.fb.group({});
     this.dynamicModalForm = this.fb.group({});
@@ -297,7 +301,7 @@ export class DynamicSetupTableComponent implements OnInit {
 
       // Handle normalized select options
       if (fieldValue && typeof fieldValue === 'object' && 'id' in fieldValue && 'label' in fieldValue) {
-        const opt = fieldValue as NormalizedOption;
+        const opt = fieldValue as DynamicNormalizedOption;
         displayRecord[field.fieldId] = { id: opt.id, label: opt.label };
         return;
       }
@@ -306,6 +310,7 @@ export class DynamicSetupTableComponent implements OnInit {
       displayRecord[field.fieldId] = fieldValue;
     });
 
+    log.info('record', displayRecord);
     if (!Array.isArray(this.tableData)) {
       this.tableData = [];
     }
@@ -492,6 +497,7 @@ export class DynamicSetupTableComponent implements OnInit {
         this.selectedCity = this.citiesData?.find((b: StateDto) => b.id === selected.id || b.name === selected.label);
         break;
       case 'town':
+      case 'addressCity':
         this.selectedTown = this.townData?.find((b: TownDto) => b.id === selected.id || b.name === selected.label);
         break;
       case 'bankName':
@@ -576,27 +582,35 @@ export class DynamicSetupTableComponent implements OnInit {
     switch (fieldId) {
       case 'source_of_fund':
       case 'sourceOfFundAml':
+      case 'sourceOfFunds':
         this.fetchFundSource(fieldIndex)
         break;
       case 'economicSector':
       case 'economicSectorAml':
+      case 'sectorAml':
         this.fetchSectors(fieldIndex);
         break;
       case 'occupation':
         this.fetchOccupations(fieldIndex);
         break
       case 'titleId':
+      case 'title':
+      case 'contactTitle':
         this.fetchClientTitles(fieldIndex);
         break
       case 'country':
       case 'parentCountry':
       case 'operatingCountry':
+      case 'nationality':
+      case 'addressCountry':
         this.fetchCountries(fieldIndex);
         break
       case 'county':
+      case 'addressCounty':
         this.fetchMainCityStates(fieldIndex);
         break;
       case 'town':
+      case 'addressCity':
         this.fetchTowns(fieldIndex);
         break;
       case 'cnt_corporate_branch_details_postalCode':
@@ -618,7 +632,13 @@ export class DynamicSetupTableComponent implements OnInit {
         this.fetchPremiumFrequencies(fieldIndex);
         break;
       case 'distributionChannel':
+      case 'prefContactChannel':
+      case 'communicationChannel':
+      case 'contactPrefContactChannel':
         this.fetchPreferredCommunicationChannels(fieldIndex);
+        break;
+      case 'docIdType':
+        this.fetchIdTypes(fieldIndex);
         break;
       default:
         log.info(`no fieldId found`)
@@ -633,7 +653,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.bankService.getFundSource().subscribe({
       next: (data: FundSourceDTO[]) => {
         this.fundSource = data;
-        const fundSourceStringArr = data.map(d => this.normalizeOption(d));
+        const fundSourceStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = fundSourceStringArr
         log.info(`funds source: `, fundSourceStringArr);
       },
@@ -653,7 +673,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.sectorService.getSectors().subscribe({
       next: (data: SectorDTO[]) => {
         this.sectorData = data;
-        const sectorStringArr = data.map(d => this.normalizeOption(d));
+        const sectorStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = sectorStringArr
         log.info(`sector: `, sectorStringArr);
       },
@@ -673,7 +693,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.occupationService.getOccupations().subscribe({
       next: (data: OccupationDTO[]) => {
         this.occupationData = data;
-        const occupationStringArr = data.map(d => this.normalizeOption(d));
+        const occupationStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = occupationStringArr
         log.info(`occupation: `, occupationStringArr);
       },
@@ -693,7 +713,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.accountService.getClientTitles().subscribe({
       next: (data: ClientTitleDTO[]) => {
         this.clientTitlesData = data;
-        const titleStringArr = data.map(d => this.normalizeOption(d));
+        const titleStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = titleStringArr
         log.info(`title: `, titleStringArr);
       },
@@ -713,7 +733,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.countryService.getCountries().subscribe({
       next: (data: CountryDto[]) => {
         this.countryData = data;
-        const countryStringArr = data.map(d => this.normalizeOption(d));
+        const countryStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = countryStringArr
         log.info(`country: `, countryStringArr);
       },
@@ -733,7 +753,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.countryService.getMainCityStatesByCountry(this.selectedCountry?.id).subscribe({
       next: (data: StateDto[]) => {
         this.citiesData = data;
-        const statesStringArr = data.map(d => this.normalizeOption(d));
+        const statesStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = statesStringArr
         log.info(`state: `, statesStringArr);
       },
@@ -753,7 +773,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.countryService.getTownsByMainCityState(this.selectedCity?.id).subscribe({
       next: (data: TownDto[]) => {
         this.townData = data;
-        const townsStringArr = data.map(d => this.normalizeOption(d));
+        const townsStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = townsStringArr
         log.info(`town: `, townsStringArr);
       },
@@ -773,7 +793,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.countryService.getPostalCodes(this.selectedTown?.id).subscribe({
       next: (data: PostalCodesDTO[]) => {
         this.postalCodeData = data;
-        const postalCodesStringArr = data.map(d => this.normalizeOption(d));
+        const postalCodesStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = postalCodesStringArr
         log.info(`postal codes: `, postalCodesStringArr);
       },
@@ -793,7 +813,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.bankService.getBanks(this.selectedAddressCountry?.id).subscribe({
       next: (data: BankDTO[]) => {
         this.banksData = data;
-        const bankStringArr = data.map(d => this.normalizeOption(d));
+        const bankStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = bankStringArr
         log.info(`banks: `, bankStringArr);
       },
@@ -813,7 +833,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.bankService.getBankBranchesByBankId(this.selectedBank?.id).subscribe({
       next: (data: BankBranchDTO[]) => {
         this.bankBranchData = data;
-        const bankBranchStringArr = data.map(d => this.normalizeOption(d));
+        const bankBranchStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = bankBranchStringArr
         log.info(`bank branches: `, bankBranchStringArr);
       },
@@ -833,7 +853,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.accountService.getPremiumFrequencies().subscribe({
       next: (data: AccountsEnum[]) => {
         this.premiumFrequenciesData = data;
-        const premiumFrequenciesStringArr = data.map(d => this.normalizeOption(d));
+        const premiumFrequenciesStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = premiumFrequenciesStringArr
         log.info(`premium frequencies: `, premiumFrequenciesStringArr);
       },
@@ -853,7 +873,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.accountService.getEmploymentTypes().subscribe({
       next: (data: AccountsEnum[]) => {
         this.employmentTypesData = data;
-        const employmentTypesStringArr = data.map(d => this.normalizeOption(d));
+        const employmentTypesStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = employmentTypesStringArr
         log.info(`employment types: `, employmentTypesStringArr);
       },
@@ -873,7 +893,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.accountService.getPreferredCommunicationChannels().subscribe({
       next: (data: AccountsEnum[]) => {
         this.communicationChannelsData = data;
-        const communicationChannelsStringArr = data.map(d => this.normalizeOption(d));
+        const communicationChannelsStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = communicationChannelsStringArr
         log.info(`communication channels: `, communicationChannelsStringArr);
       },
@@ -893,7 +913,7 @@ export class DynamicSetupTableComponent implements OnInit {
     this.accountService.getInsurancePurpose().subscribe({
       next: (data: any[]) => {
         this.insurancePurposeData = data;
-        const insurancePurposeStringArr = data.map(d => this.normalizeOption(d));
+        const insurancePurposeStringArr = data.map(d => this.utilService.normalizeOption(d));
         this.formFields[fieldIndex].options = insurancePurposeStringArr
         log.info(`insurance purposes: `, insurancePurposeStringArr);
       },
@@ -905,22 +925,19 @@ export class DynamicSetupTableComponent implements OnInit {
     })
   }
 
-  /** normalize any backend option shape into { id, label, original } */
-  private normalizeOption(item: any) {
-    if (item === null || item === undefined) return { id: item, label: '', original: item };
-    if (typeof item === 'string' || typeof item === 'number') {
-      return { id: item, label: String(item), original: item };
-    }
-
-    const id = item.id ?? item.code ?? item.key ?? item.iso ?? item.short_description ?? item.value ?? item.name ?? item.description ?? Object.values(item)[0];
-    const label = item.name ?? item.description ?? item.value ?? item.label ?? item.description ?? String(id);
-
-    return { id, label, original: item };
+  fetchIdTypes(fieldIndex: number): void {
+    this.entityService.getIdentityType().subscribe({
+      next: (data: IdentityModeDTO[]) => {
+        this.idTypes = data;
+        const idTypeStringArr = data.map((id: IdentityModeDTO) => this.utilService.normalizeOption(id));
+        // this.formGroupSections[sectionIndex].fields[fieldIndex].options = idTypeStringArr;
+        this.formFields[fieldIndex].options = idTypeStringArr;
+        log.info(`identity types >>> `, idTypeStringArr)
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+      }
+    });
   }
 }
 
-interface NormalizedOption {
-  id: string | number;
-  label: string;
-  original?: any;
-}
