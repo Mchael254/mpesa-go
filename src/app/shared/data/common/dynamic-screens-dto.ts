@@ -69,6 +69,7 @@ export interface FormSubGroupsDto {
   hasFields: boolean;
   formGroupingId: string,
   presentationType?: PresentationType,
+  fields?: ConfigFormFieldsDto[],
 }
 
 export interface ConfigFormFieldsDto {
@@ -106,7 +107,7 @@ export interface ConfigFormFieldsDto {
   formSubGroupingId?: string,
   screenId?: string,
   subModuleId?: string,
-  dataValue?: any
+  dataValue?: string | number | object | null | undefined;
 }
 
 export interface MultilingualText {

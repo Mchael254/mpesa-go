@@ -13,6 +13,7 @@ import {
   QuotationUpdate,
   RegexPattern,
   ReportPayload,
+  RiskCommissionDto,
   riskSection, RiskValidationDto,
   scheduleDetails,
   Sources,
@@ -1244,6 +1245,22 @@ export class QuotationsService {
 
 
 
+  updateRiskCommission(payload: RiskCommissionDto): Observable<any> {
+  return this.api.POST(
+    'v2/risk-commission',
+    payload,
+    API_CONFIG.GIS_QUOTATION_BASE_URL
+  ).pipe(retry(1),catchError(this.errorHandl));
+}
+deleteRiskCommission(code: number): Observable<any> {
+  return this.api.DELETE<any>(
+    `v2/risk-commission?code=${code}`,
+    API_CONFIG.GIS_QUOTATION_BASE_URL
+  ).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  );
+}
 
 
 }

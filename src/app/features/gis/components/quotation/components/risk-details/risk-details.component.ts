@@ -17,7 +17,7 @@ import { VehicleModelService } from '../../../setups/services/vehicle-model/vehi
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Clause, CreateLimitsOfLiability, DynamicRiskField, Excesses, QuotationDetails, quotationRisk, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab, TaxInformation, TaxPayload } from '../../data/quotationsDTO';
+import { Clause, CreateLimitsOfLiability, DynamicRiskField, Excesses, QuotationDetails, quotationRisk, RiskCommissionDto, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab, TaxInformation, TaxPayload } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, territories, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { debounceTime, distinctUntilChanged, firstValueFrom, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
@@ -396,7 +396,10 @@ export class RiskDetailsComponent {
   uploadProgress: number;
   ncdStatusSelected: boolean;
   territories: territories[] = [];
+  commissionToDelete: any = null;
+  editingRowCode: number | null = null;
 
+  aiErrorMessage: string | null = null;
 
   constructor(
     public subclassService: SubclassesService,
@@ -423,7 +426,7 @@ export class RiskDetailsComponent {
     public territoryService: TerritoriesService
 
   ) {
-    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteConvertedFlag'))
+    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
 
     this.quotationCode = sessionStorage.getItem('quotationCode');
     this.quotationNumber = sessionStorage.getItem('quotationNum');
@@ -753,8 +756,8 @@ export class RiskDetailsComponent {
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop; // align vertically with icon
-    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
+    const top = iconElement.offsetTop - 50;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -872,6 +875,29 @@ export class RiskDetailsComponent {
           defaultValue = 'N';
         }
       });
+      log.debug(" risk details Value:", this.riskDetailsForm.value)
+
+      const coverFromStr = this.quotationDetails.coverFrom;
+      const coverToStr = this.quotationDetails.coverTo;
+
+      const coverFrom = new Date(coverFromStr + 'T00:00:00');
+      const coverTo = new Date(coverToStr + 'T00:00:00');
+
+      this.riskDetailsForm.patchValue({
+        coverFrom: coverFrom,
+        coverTo: coverTo
+      });
+
+      log.debug('Risk Details Value after patching:', this.riskDetailsForm.value);
+
+      if (this.riskDetailsForm.contains('coverDays')) {
+        const coverDays = this.getCoverDays(coverFrom, coverTo);
+        log.debug('Cover days:', coverDays);
+
+        this.riskDetailsForm.patchValue({ coverDays });
+      }
+
+
 
       this.fetchRegexPattern();
 
@@ -1051,22 +1077,19 @@ export class RiskDetailsComponent {
     const coverFromDate = date;
     const formattedCoverFromDate = this.formatDate(coverFromDate);
     log.debug('FORMATTED cover from DATE:', formattedCoverFromDate);
-    // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
-    //   this.productDetails = res
-    //   log.debug(this.productDetails)
-    // if(this.productDetails.expires === 'Y'){
+
     this.producSetupService.getCoverToDate(formattedCoverFromDate, this.selectedProductCode)
       .subscribe({
         next: (res) => {
           this.midnightexpiry = res;
           log.debug("midnightexpirydate", this.midnightexpiry);
           log.debug(this.midnightexpiry)
-          const coverFrom = this.midnightexpiry._embedded[0].coverToDate
-          const coverFromDate = new Date(coverFrom)
+          const coverTo = this.midnightexpiry._embedded[0].coverToDate
+          const coverToDate = new Date(coverTo)
           // Extract the day, month, and year
-          const day = coverFromDate.getDate();
-          const month = coverFromDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
-          const year = coverFromDate.getFullYear();
+          const day = coverToDate.getDate();
+          const month = coverToDate.toLocaleString('default', { month: 'long' }); // 'long' gives the full month name
+          const year = coverToDate.getFullYear();
 
           // Format the date in 'dd-Month-yyyy' format
           const formattedDate = `${day}-${month}-${year}`;
@@ -1074,8 +1097,9 @@ export class RiskDetailsComponent {
           this.coverToDate = formattedDate;
           log.debug('Cover to  Date', this.coverToDate);
           // this.riskDetailsForm.controls['wet'].setValue(this.coverToDate)
-          this.riskDetailsForm.patchValue({ wet: this.coverToDate });
-
+          this.riskDetailsForm.patchValue({ coverTo: this.coverToDate });
+          const coverDays = this.getCoverDays(formattedCoverFromDate, coverTo);
+          this.riskDetailsForm.patchValue({ coverDays: coverDays });
 
         },
         error: (error: HttpErrorResponse) => {
@@ -2133,7 +2157,7 @@ export class RiskDetailsComponent {
 
     schedule.riskCode = this.quotationRiskCode;
     schedule.transactionType = "Q";
-    schedule.version = this.selectedRisk?.scheduleDetails?.[0] || 0;
+    schedule.version = this.selectedRisk?.scheduleDetails?.[0].version || 0;
 
     // Remove unnecessary fields
     const removeFields = [
@@ -2484,8 +2508,8 @@ export class RiskDetailsComponent {
 
     const parentOffset = iconElement.offsetParent as HTMLElement;
 
-    const top = iconElement.offsetTop; // align vertically with icon
-    const left = iconElement.offsetLeft - 260; // shift left by modal width (~250px)
+    const top = iconElement.offsetTop + 30;
+    const left = iconElement.offsetLeft - 260;
 
     this.columnModalPosition = {
       top: `${top}px`,
@@ -5077,8 +5101,8 @@ export class RiskDetailsComponent {
   }
 
   setCommissionsColumns(commissions: any) {
-    const excludedFields = ['actions', 'code', 'quotationRiskCode', 'quotationCode', 'transCode', 'accountCode', 'trntCode', 
-       'amount',  'discAmount', 'overrideCommission', 'agentCode'
+    const excludedFields = ['actions', 'code', 'quotationRiskCode', 'quotationCode', 'transCode', 'accountCode', 'trntCode',
+      'amount', 'discAmount', 'overrideCommission', 'agentCode'
     ];
 
     this.commissionsColumns = Object.keys(commissions)
@@ -5106,7 +5130,7 @@ export class RiskDetailsComponent {
     log.debug("commissionsColumns", this.commissionsColumns);
   }
 
-  defaultVisibleCommissionsFields = ['group', 'agentDto', 'setupRate', 'usedRate','discType','discRate', ];
+  defaultVisibleCommissionsFields = ['group', 'agentDto', 'setupRate', 'usedRate', 'discType', 'discRate',];
 
   loadCommissions(): void {
     const subclassCode = this.selectedSubclassCode;
@@ -6557,42 +6581,50 @@ export class RiskDetailsComponent {
       this.showAiImportModal = true;
       this.uploadProgress = 10;
       setTimeout(() => this.uploadProgress = 30, 500);
+
       // this.quotationService.readScannedDocuments(payload).subscribe({
       //   next: (res) => {
       //     this.uploadProgress = 60;
-      //     const data = res.data;
-      //     this.uploadFile();
-      //     this.patchUploadedData(data);
-      //     this.uploadProgress = 90;
-      //     log.debug("Response after scanning Logbook", res);
-      //     setTimeout(() => {
-      //       this.uploadProgress = 100;
-      //       this.globalMessagingService.displaySuccessMessage(
-      //         'Success',
-      //         'Successfully scanned Logbook'
-      //       );
 
-      //       // hide modal after short delay
-      //       setTimeout(() => this.showAiImportModal = false, 500);
-      //     }, 500);
+      //     const data = res.data;
+
+      //     this.uploadFile()
+      //       .then(() => {
+      //         this.uploadProgress = 75;
+      //         return this.patchUploadedData(data);
+      //       })
+      //       .then(() => {
+      //         this.uploadProgress = 90;
+
+      //         setTimeout(() => {
+      //           this.uploadProgress = 100;
+      //           // this.globalMessagingService.displaySuccessMessage(
+      //           //   'Success',
+      //           //   'Successfully scanned Logbook'
+      //           // );
+
+      //           setTimeout(() => this.showAiImportModal = false, 500);
+      //         }, 500);
+      //       });
       //   },
       //   error: (err) => {
-      //     log.error('[RiskDetailsComponent] Log book upload failed:', err);
-      //     log.error('Error fetched log: ', err);
-
-      //     log.debug('Full error object for investigation:', err);
-
       //     this.globalMessagingService.displayErrorMessage(
       //       'Upload Failed',
       //       err?.error?.message || 'An error occurred while uploading logbook'
       //     );
-
       //     this.showAiImportModal = false;
       //   }
-
       // });
+
       this.quotationService.readScannedDocuments(payload).subscribe({
         next: (res) => {
+          if (res?.__error__) {
+            this.uploadProgress = 0;
+            this.aiErrorMessage = "File doesn't match the required format. Please upload a logbook to continue.";
+            this.selectedFile = null;
+            return;
+          }
+
           this.uploadProgress = 60;
 
           const data = res.data;
@@ -6617,20 +6649,24 @@ export class RiskDetailsComponent {
             });
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage(
-            'Upload Failed',
-            err?.error?.message || 'An error occurred while uploading logbook'
-          );
+          this.aiErrorMessage =
+            err?.error?.message || "An unexpected error occurred while uploading logbook.";
+          this.uploadProgress = 0;
           this.showAiImportModal = false;
         }
       });
+
 
 
     };
 
     reader.readAsDataURL(file);
   }
-
+  onDismissModal() {
+    this.showAiImportModal = false;
+    this.aiErrorMessage = null;
+    this.uploadProgress = 0;
+  }
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     this.validateAndSetFile(file);
@@ -6708,7 +6744,8 @@ export class RiskDetailsComponent {
       insureds: this.riskDetailsForm.get('insuredS')?.value,
       subclass: this.riskDetailsForm.get('subclass')?.value,
       coverFrom: this.riskDetailsForm.get('coverFrom')?.value,
-      coverTo: this.riskDetailsForm.get('coverTo')?.value
+      coverTo: this.riskDetailsForm.get('coverTo')?.value,
+      premiumBand: this.riskDetailsForm.get('premiumBand')?.value
     };
 
     this.riskDetailsForm.reset();
@@ -6932,4 +6969,112 @@ export class RiskDetailsComponent {
       }
     });
   }
+
+  markCommissionDirty(commission: any): void {
+    commission._dirty = true;
+  }
+  hasCommissionChanges(): boolean {
+    return this.addedCommissions?.some(c => c._dirty) ?? false;
+  }
+
+  startEditing(commission: any): void {
+    this.editingRowCode = commission.code;
+  }
+
+  resetEditing(): void {
+    this.editingRowCode = null;
+  }
+
+
+  updateRiskCommissions(): void {
+    const modified = this.addedCommissions.filter(c => c._dirty);
+
+    modified.forEach(comm => {
+      const payload: RiskCommissionDto = {
+        code: comm.code,
+        quotationRiskCode: comm.quotationRiskCode,
+        quotationCode: comm.quotationCode,
+        agentCode: comm.agentCode,
+        transCode: comm.transCode,
+        accountCode: comm.accountCode,
+        trntCode: comm.trntCode,
+        group: comm.group
+      };
+
+      this.quotationService.updateRiskCommission(payload).subscribe({
+        next: (res) => {
+          log.debug('Update success:', res);
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            'Commission updated successfully'
+          );
+          comm._dirty = false;
+          this.resetEditing();
+        },
+        error: (err) => {
+          log.error('Update error:', err);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Failed to update commission'
+          );
+        }
+      });
+    });
+  }
+  prepareDeleteCommission(commission: any): void {
+    this.commissionToDelete = commission;
+  }
+
+  deleteRiskCommission(codeToDelete: number): void {
+    this.quotationService.deleteRiskCommission(codeToDelete).subscribe({
+      next: (res) => {
+
+        this.addedCommissions = this.addedCommissions.filter(
+          (c) => c.code !== codeToDelete
+        );
+
+
+        this.globalMessagingService.displaySuccessMessage(
+          'Success:',
+          'Commission deleted successfully'
+        );
+      },
+      error: (err) => {
+        log.error('Delete error:', err);
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error:',
+          'Failed to delete commission'
+        );
+      }
+    });
+  }
+
+  onDateChange(): void {
+    log.debug('on date change called')
+    const coverFrom = this.riskDetailsForm.get('coverFrom')?.value;
+    this.updateCoverToDate(coverFrom)
+    const coverTo = this.riskDetailsForm.get('coverTo')?.value;
+
+    if (coverFrom && coverTo) {
+      const coverDays = this.getCoverDays(coverFrom, coverTo);
+
+      if (this.riskDetailsForm.contains('coverDays')) {
+        this.riskDetailsForm.patchValue({ coverDays });
+      }
+    }
+  }
+  getCoverDays(coverFrom: string | Date, coverTo: string | Date): number {
+    const fromDate = new Date(coverFrom);
+    const toDate = new Date(coverTo);
+    log.debug("Cover from:", fromDate)
+    log.debug("Cover to:", toDate)
+
+    const diffInMs = toDate.getTime() - fromDate.getTime();
+
+    const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+    return diffInDays;
+  }
+
 }
