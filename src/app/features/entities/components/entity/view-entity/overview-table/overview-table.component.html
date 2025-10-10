@@ -1,8 +1,4 @@
 
-<!--<p *ngFor="let col of table.cols">-->
-<!--  {{ col.visible | json }}-->
-<!--</p>-->
-
 <div class="row my-3">
   <div class="col-sm-8">
           <span class="text-primary lead">
@@ -48,7 +44,7 @@
   </ng-template>
 
   <ng-template pTemplate="body" let-rowData>
-    <tr>
+    <tr (click)="onRowClick(rowData)">
       <ng-container *ngFor="let col of table.cols" >
         <td *ngIf="col.visible" class="py-3">
           <span *ngIf="col.fieldId !=='overview_wef' && col.fieldId !=='overview_wet'">{{ rowData[col.fieldId]  }}</span>
@@ -56,7 +52,8 @@
         </td>
       </ng-container>
       <td class="text-primary">
-        Edit  Delete
+        <button class="btn btn-link text-primary">Edit</button>
+        <button class="btn btn-link text-primary">Delete</button>
       </td>
     </tr>
   </ng-template>
