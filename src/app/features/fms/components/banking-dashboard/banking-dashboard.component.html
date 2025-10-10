@@ -56,16 +56,42 @@
           </div>
         </div>
       </p-dialog>
-
+      <!-- <div class="mb-3">
+        <p-button
+          type="button"
+          icon="pi pi-chevron-left"
+          styleClass="p-button-text"
+        />
+        <p-button
+          type="button"
+          icon="pi pi-refresh"
+          styleClass="p-button-text"
+        />
+        <p-button
+          type="button"
+          icon="pi pi-chevron-right"
+          (click)="next()"
+          styleClass="p-button-text"
+        />
+      </div> -->
       <div class="card">
         <p-table
           [value]="filteredReceipts"
           [resizableColumns]="true"
           [scrollable]="true"
-          selectionMode="multiple"
+          selectionMode="single"
+          dataKey="batchNo"
           scrollHeight="500px"
           sortMode="multiple"
           [(selection)]="selectedrct"
+          [paginator]="true"
+          [first]="first"
+          [rows]="5"
+          [rowsPerPageOptions]="[10, 20, 40]"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {{ first }} to {last} of {{
+            totalRecords
+          }} entries"
         >
           <ng-template pTemplate="header">
             <tr>
