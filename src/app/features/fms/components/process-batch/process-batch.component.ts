@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-
+import fmsStepsData from '../../data/fms-step.json';
 @Component({
   selector: 'app-process-batch',
   templateUrl: './process-batch.component.html',
   styleUrls: ['./process-batch.component.css'],
 })
 export class ProcessBatchComponent {
+  steps=fmsStepsData.bankingSteps;
   selectedBatch!:batch;
     batches: batch[] = [
       {

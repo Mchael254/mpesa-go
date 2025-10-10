@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { GlobalMessagingService } from './../../../../shared/services/messaging/global-messaging.service';
 import { Logger } from 'src/app/shared/services';
-
+import fmsStepsData from '../../data/fms-step.json';
 const log = new Logger('NewBankingProcessComponent');
 
 @Component({
@@ -14,10 +14,10 @@ const log = new Logger('NewBankingProcessComponent');
 })
 export class NewBankingProcessComponent implements OnInit {
   bankingForm!: FormGroup;
-
+steps = fmsStepsData.bankingSteps;
   paymentMethods = ['mpesa', 'cash', 'bank'];
 
-  receiptData: ReceiptDto[] = [
+  receiptData: receiptDto[] = [
     {
       receiptId: 'RO1',
       customer: 'frankline',
@@ -36,7 +36,7 @@ export class NewBankingProcessComponent implements OnInit {
     },
   ];
 
-  selectedReceipt!: ReceiptDto;
+  selectedReceipt!: receiptDto;
 
   constructor(
     public translate: TranslateService,
@@ -75,6 +75,14 @@ export class NewBankingProcessComponent implements OnInit {
 
   onRowSelected(event: any): void {
     const s = (event.target as HTMLInputElement).value;
-    console.log('event', s);
+    //console.log('event', s);
   }
+}
+export interface receiptDto{
+   receiptId:string;
+      customer: string;
+      amount: number;
+      collectionAcc:string;
+      assignedTo:string;
+      date:  Date
 }
