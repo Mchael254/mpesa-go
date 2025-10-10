@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import * as bootstrap from 'bootstrap';
+import * as bootstrap  from 'bootstrap';
 @Component({
   selector: 'app-banking-dashboard',
   templateUrl: './banking-dashboard.component.html',
   styleUrls: ['./banking-dashboard.component.css'],
 })
 export class BankingDashboardComponent {
+
   receipts: receipt[] = [
     {
       batchNo: 'BL11',
@@ -19,7 +20,7 @@ export class BankingDashboardComponent {
       date: new Date('2000-02-20'),
     },
     {
-      batchNo: 'BL34',
+      batchNo: 'BL11',
       slipNo: 'SL20',
       bankAcc: '2034',
       amount: 3400,
@@ -45,6 +46,42 @@ export class BankingDashboardComponent {
       assignee: 'frank',
       date: new Date('2000-02-20'),
     },
+    {
+      batchNo: 'ML221',
+      slipNo: 'WL670',
+      bankAcc: '7911X',
+      amount: 8889,
+      status: 'processed',
+      assignee: 'frank',
+      date: new Date('2000-02-20'),
+    },
+    {
+      batchNo: 'OL221',
+      slipNo: 'FL670',
+      bankAcc: '7911X',
+      amount: 8889,
+      status: 'processed',
+      assignee: 'frank',
+      date: new Date('2000-02-20'),
+    },
+    {
+      batchNo: 'LL221',
+      slipNo: 'ML670',
+      bankAcc: '7911X',
+      amount: 8889,
+      status: 'processed',
+      assignee: 'frank',
+      date: new Date('2000-02-20'),
+    },
+    {
+      batchNo: 'cL221',
+      slipNo: 'xL670',
+      bankAcc: '7911X',
+      amount: 8889,
+      status: 'processed',
+      assignee: 'frank',
+      date: new Date('2000-02-20'),
+    },
   ];
   filteredReceipts: receipt[] = this.receipts; // start as full list
   selectedrct:receipt;
@@ -52,7 +89,9 @@ export class BankingDashboardComponent {
   cols: any[]=[];
   selectedColumns: any[]=[];
   displayColumnDialog: boolean = false;
-
+first:number=0;
+totalRecords:number=this.filteredReceipts.length;
+rows:number=10;
   constructor(public translate: TranslateService, private router: Router) {}
   ngOnInit() {
     this.cols=[
@@ -70,17 +109,21 @@ export class BankingDashboardComponent {
   }
  
  
+ next() {
+        this.first = this.first + this.rows;
+    }
+ 
 
  navigateToBanking(): void {
     this.router.navigate(['/home/fms/new-banking-process']);
     
   }
   
- 
+
 showColumnsDialogs(){
   this.displayColumnDialog=true;
 }
-  filter(event: any, fieldName: string): any {
+  filter(event: any, fieldName: any): any {
     let inputValue = (event.target as HTMLInputElement).value.toLowerCase();
 
     this.filteredReceipts = this.receipts.filter((rctobj) => {
@@ -89,7 +132,7 @@ showColumnsDialogs(){
         // Format the date consistently for comparison
         fieldValue = fieldValue.toISOString().split('T')[0];
       } else if (typeof fieldValue == 'number') {
-        fieldValue = fieldValue.toString();
+        fieldValue = Number(fieldValue);
       } else if(typeof fieldValue == 'string'){
         fieldValue = fieldValue.toString();
       }
