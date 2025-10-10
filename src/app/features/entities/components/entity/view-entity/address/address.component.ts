@@ -28,11 +28,11 @@ export class AddressComponent implements OnInit {
   @Input() clientDetails: ClientDTO;
   @Input() addressDetailsConfig: any
   @Input() formFieldsConfig: any;
-  addressDetails: AddressModel;
-  branchDetails: any[];
   @Input() accountCode: number;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() group: FormGroupsDto;
+  addressDetails: AddressModel;
+  branchDetails: Branch[];
 
 
   countries: CountryDto[];
@@ -112,7 +112,7 @@ export class AddressComponent implements OnInit {
       this.fields = this.formGroupsAndFieldConfig?.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === this.group.groupId);
 
       for (const field of this.fields) {
-        field.dataValue = this.displayAddressDetails[field.fieldId] ?? null;
+        field.dataValue = displayAddressDetails[field.fieldId] ?? null;
       }
 
       // sort fields in ascending order
@@ -144,7 +144,7 @@ export class AddressComponent implements OnInit {
     if (fields.length > 0) this.createEditForm(fields);
 
     for (const field of fields) {
-      field.dataValue = displayFields[field.fieldId] ?? null;
+       field.dataValue = displayFields[field.fieldId] ?? null;
     }
 
     fields.sort((a, b) => a.order - b.order);
