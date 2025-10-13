@@ -1,5 +1,4 @@
-<!--{{ formGroupsAndFieldConfig.groups | json }}-->
-<!--<p *ngFor="let sub of secondaryTabs">{{ sub | json }}</p>-->
+
 
 <div *ngIf="subModules" class="entity-container">
   <p-tabView>
@@ -114,20 +113,34 @@
           ></app-address>
         </ng-container>
 
-        <!--<ng-container *ngIf="
+        <ng-container *ngIf="
             clientDetails &&
             tab.originalLabel==='Financial Details'"
         >
           <app-financial
             #financialRef
-            [financialDetails]="clientDetails.paymentDetails"
+            [clientDetails]="clientDetails"
             [accountCode]="clientDetails.clientCode"
-            [financialDetailsConfig]="tab"
-            [formFieldsConfig]="editFinancialFormConfig"
+            [group]="tab"
+            [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
             [countryId]="clientDetails?.address?.countryId"
           >
           </app-financial>
-        </ng-container>-->
+        </ng-container>
+
+        <ng-container *ngIf="
+            clientDetails &&
+            tab.originalLabel==='Wealth And Anti-money Laundering Details'"
+        >
+          <app-wealth-aml
+            #wealthAmlRef
+            [clientDetails]="clientDetails"
+            [accountCode]="clientDetails.clientCode"
+            [group]="tab"
+            [formFieldsConfig]="editWealthAmlFormConfig"
+            [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
+          ></app-wealth-aml>
+        </ng-container>
 
       </p-tabPanel>
     </ng-container>

@@ -95,6 +95,137 @@ export interface Branch {
 }
 
 
+export interface Payment {
+  id: number;
+  bankBranchId: number;
+  currencyId: number;
+  accountNumber: string;
+  effectiveFromDate: string;
+  effectiveToDate: string;
+  isDefaultChannel: string;
+  partyAccountId: number;
+  preferredChannel: string;
+  swiftCode: string;
+  vatApplicable: string | null;
+  commissionAllowed: string | null;
+  creditAllowed: string | null;
+  commissionStatusDate: string | null;
+  commissionEffectiveDate: string | null;
+  creditLimit: number;
+  taxAuthorityCode: string;
+  paymentTerms: string;
+  paymentFrequency: string;
+  glAccountNumber: string | null;
+  withholdingTax: string | null;
+  withholdingTaxApplicable: string | null;
+  createdDate: string;
+  modifiedDate: string;
+  createdBy: string;
+  modifiedBy: string;
+  currencyName: string;
+  bankBranchName: string;
+  bankId: string;
+  bankName: string;
+  iban: string;
+  mpayno: string;
+}
+
+
+export interface Payee {
+  code: number;
+  idNo: string;
+  address: string;
+  mobileNo: string;
+  email: string;
+  type: string;
+  zip: string;
+  town: string;
+  countryCode: number;
+  name: string;
+  createdBy: string | null;
+  createdDate: string | null;
+  modifiedBy: string | null;
+  modifiedDate: string | null;
+  clientCode: number;
+  serviceProviderCode: string | null;
+  agentCode: string | null;
+  bankBranchCode: number;
+  accountNumber: string;
+  countryName: string;
+  bankBranchName: string;
+  bankName: string;
+}
+
+export interface OwnershipDetails {
+  code: number;
+  accountCode: number;
+  idNumber: string;
+  name: string;
+  contactPersonPhone: string;
+  percentOwnership: number;
+  createdBy: string;
+  createdDate: string;
+  modifiedBy: string;
+  modifiedDate: string;
+}
+
+export interface Cr12Detail {
+  directorName: string;
+  directorIdRegNo: string;
+  directorDob: string;
+  directorTitle: string;
+  cr12Code: number;
+  clientCode: number;
+  amlCode: number;
+  wealthDetailsCode: number;
+  certificateReferenceNo: string;
+  certificateRegistrationYear: string;
+  createdBy: string;
+  createdDate: string;
+  certificateName: string;
+  address: string;
+  category: string;
+}
+
+export interface WealthAmlDetails {
+  id: number;
+  nationalityCountryId: number;
+  citizenshipCountryId: number;
+  fundsSource: string;
+  employmentStatus: string;
+  maritalStatus: string | null;
+  occupationId: number;
+  occupation: string | null;
+  sectorId: number;
+  sector: string | null;
+  tradingName: string;
+  registeredName: string;
+  certificateRegistrationNumber: string;
+  certificateYearOfRegistration: string;
+  sourceOfWealthId: number;
+  parentCountryId: number;
+  operatingCountryId: number;
+  crFormRequired: string;
+  crFormYear: number;
+  partyAccountId: number;
+  insurancePurpose: string;
+  premiumFrequency: string;
+  distributeChannel: string;
+  parentCompany: string;
+  category: string;
+  modeOfIdentity: number;
+  idNumber: string;
+  cr12Details: Cr12Detail[];
+  createdBy: string | null;
+  createdDate: string | null;
+  modifiedBy: string | null;
+  modifiedDate: string | null;
+  operatingCountry: string;
+  nationalityCountry: string;
+  citizenshipCountry: string;
+  parentCountry: string;
+}
+
 
 export interface ClientDTO {
   branchCode: number,
@@ -135,14 +266,16 @@ export interface ClientDTO {
   branches?: Branch[],
   contactDetails?: ContactDetails,
   contactPersons?: ContactPerson[],
-  paymentDetails?: any,
-  wealthAmlDetails?: any,
+  paymentDetails?: Payment,
+  payee?: Payee[],
+  wealthAmlDetails?: WealthAmlDetails[],
   clientCode?: number,
   organizationBranchId?: number,
   organizationBranchName?: string,
   citizenshipCountryName?: string,
   citizenshipCountryId?: string,
   maritalStatus?: string,
+  ownershipDetails?: OwnershipDetails[],
 }
 
 export interface ClientTypeDTO {
@@ -213,3 +346,5 @@ export interface ClientTitlesDto {
   gender: string,
   organizationId: number
 }
+
+
