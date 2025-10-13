@@ -247,7 +247,7 @@ export class ContactComponent implements OnInit {
       ];
     });
     this.editForm = this.fb.group(group);
-    log.info('edit form  >>> ', this.editForm);
+    // log.info('edit form  >>> ', this.editForm);
   }
 
   patchFormValues(): void {
