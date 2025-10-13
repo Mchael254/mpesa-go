@@ -1863,7 +1863,7 @@
               View documents
             </button>
             <button class="btn btn-primary" *ngIf="showConfirmButton" data-bs-toggle="modal"
-              data-bs-target="#consentModal">
+              data-bs-target="#clientConsentModal">
               Confirm
             </button>
           </div>
@@ -1913,7 +1913,7 @@
 
     </div>
     <!-- Consent Modal -->
-    <div class="modal fade" id="consentModal" #consentModal tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="clientConsentModal" #clientConsentModal tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-sm" style="min-width:609px">
         <div class="modal-content px-4 pt-2 pb-4 ">
 
@@ -2000,8 +2000,7 @@
           </div>
           <div *ngIf="otpGenerated" class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
             <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary fw-bold">Cancel</button>
-            <button type="button" class="btn" style="background-color: #00529B;color:white;"
-              (click)="verifyOTP()">Verify</button>
+            <button type="button" class="btn btn-primary fw-bold" (click)="verifyOTP()">Verify</button>
           </div>
 
         </div>
