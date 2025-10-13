@@ -1528,7 +1528,8 @@
             <!-- risk clause table -->
             <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="sessionClauses?.length > 4"
                 [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
-                [globalFilterFields]="['shortDescription', 'wording', 'heading']" [scrollable]="true"
+                [globalFilterFields]="['shortDescription', 'wording', 'heading']" [scrollable]="true" [paginatorPosition]="'bottom'"
+  [paginatorDropdownAppendTo]="'body'"
                 responsiveLayout="scroll" class="mt-3">
 
 

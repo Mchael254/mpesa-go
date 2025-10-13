@@ -3,7 +3,7 @@
 
   <!-- <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper> -->
   <div class="position-relative">
-    <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+    <app-stepper [currentStep]="3" [stepperData]="steps" [disabled]="viewQuoteFlag"></app-stepper>
 
     <div *ngIf="showWizzardModal" class="card shadow rounded p-3 position-absolute wizzard-modal" [ngStyle]="{ 
              top: wizzardModalPosition.top, 
@@ -1678,7 +1678,7 @@
             </small>
 
             <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
-              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;" 
                 (click)="reassignQuotation()">{{
                 'gis.quotation.reassign' | translate }}
               </button>
@@ -1794,18 +1794,19 @@
         <!-- Left-side buttons -->
         <div class="d-flex gap-2 flex-wrap">
           <button
-            style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"
-            (click)="navigateToRiskCenter()">
+            style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"  
+            (click)="navigateToRiskCenter()"
+            [disabled]="viewQuoteFlag">
             {{ 'gis.quotation.back' | translate }}
           </button>
 
           <button type="button" class="btn btn-outline-primary" (click)="openReassignQuotationModal()"
-            [disabled]="afterRejectQuote">
+            [disabled]="afterRejectQuote||viewQuoteFlag">
             {{ "gis.quotation.reassign" | translate }}
           </button>
 
           <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
-            [disabled]="afterRejectQuote">
+            [disabled]="afterRejectQuote||viewQuoteFlag">
             {{ 'gis.quotation.reject' | translate }}
           </button>
         </div>
@@ -1814,7 +1815,7 @@
         <div class="action-buttons">
           <div class="position-relative">
             <button class="btn btn-outline-primary me-2" *ngIf="isNewClientSelected" data-bs-toggle="modal"
-              data-bs-target="#createClientModal">
+              data-bs-target="#createClientModal"  [disabled]="viewQuoteFlag">
               Create Client
             </button>
             <div *ngIf="showClientWizzardModal" class="card shadow rounded p-3 position-absolute client-wizzard-modal"
@@ -1850,8 +1851,8 @@
             [tooltipDisabled]="!authorizeButtonDisabled" style="cursor: pointer;">
             <button *ngIf="showAuthorizeButton" type="button" class="btn"
               [ngClass]="{'btn-outline-primary': !authorizeButtonDisabled, 'btn-secondary': authorizeButtonDisabled}"
-              [disabled]="authorizeButtonDisabled" (click)="authorizeQuote()">
-              Authorize quote
+              [disabled]="authorizeButtonDisabled||viewQuoteFlag" (click)="authorizeQuote()">
+              Authorize quote 
             </button>
           </div>
           <!-- <div>
