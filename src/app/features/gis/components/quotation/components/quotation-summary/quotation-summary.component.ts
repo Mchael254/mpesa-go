@@ -81,7 +81,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
   @ViewChild('productClauseTable') productClauseTable: any;
   @ViewChild('riskClausesTable') riskClausesTable: any;
-  @ViewChild('consentModal') consentModal!: ElementRef;
+  @ViewChild('clientConsentModal') clientConsentModalElement!: ElementRef;
   @ViewChild('viewDocumentsModal') viewDocumentsModal!: ElementRef;
   @ViewChild('userInstructionsModal') userInstructionsModal!: ElementRef;
 
@@ -517,6 +517,7 @@ if (this.quotationAuthorized) {
   ngAfterViewInit() {
     this.modals['chooseClientReassign'] = new bootstrap.Modal(this.chooseClientReassignModal.nativeElement);
     this.modals['reassignQuotation'] = new bootstrap.Modal(this.reassignQuotationModalElement.nativeElement);
+    this.modals['clientConsentModal'] = new bootstrap.Modal(this.clientConsentModalElement.nativeElement);
     this.modals['rejectQuotation'] = new bootstrap.Modal(this.rejectQuotationModalElement.nativeElement);
     if (this.isNewClientSelected) {
       setTimeout(() => this.openClientWizzard(), 300);
@@ -3251,19 +3252,66 @@ if (this.quotationAuthorized) {
     });
   }
 
+  // verifyOTP() {
+  //   const userIdentifier = this.otpResponse.userIdentifier
+  //   const otp = this.shareForm.value.otp
+  //   this.quotationService.verifyOTP(userIdentifier, otp)
+  //     .subscribe({
+  //       next: (res: any[]) => {
+  //         if (res) {
+  //           this.globalMessagingService.displaySuccessMessage("Succes", "Successfully verified OTP")
+
+  //           const modal = bootstrap.Modal.getInstance(this.consentModal.nativeElement);
+  //           modal.hide();
+  //           this.otpGenerated = false
+  //           this.changeToPolicyButtons = true
+  //           if (this.changeToPolicyButtons) {
+  //             this.showViewDocumentsButton = false
+  //             this.showConfirmButton = false
+  //           }
+  //         }
+  //       },
+  //       error: (err: any) => {
+  //         const backendMsg = err.error?.message || err.message || 'An unexpected error occurred'; console.error("OTP Verification Error:", backendMsg);
+
+  //         // 🔔 Show in global error handler
+  //         this.globalMessagingService.displayErrorMessage("Error", backendMsg);
+  //       }
+  //     });
+  // }
+  closeConsentModal() {
+
+    this.closeModals('clientConsentModal');
+  }
   verifyOTP() {
+
     const userIdentifier = this.otpResponse.userIdentifier
     const otp = this.shareForm.value.otp
     this.quotationService.verifyOTP(userIdentifier, otp)
       .subscribe({
         next: (res: any[]) => {
-          this.globalMessagingService.displaySuccessMessage("Succes", "Successfully verified OTP")
           if (res) {
-            // Close modal only on success
-            const modalEl: any = this.consentModal.nativeElement;
-            const modal = bootstrap.Modal.getInstance(modalEl)
-              || new bootstrap.Modal(modalEl);
-            modal.hide();
+            this.globalMessagingService.displaySuccessMessage("Succes", "Successfully verified OTP");
+
+            (document.activeElement as HTMLElement)?.blur();
+
+            const modalEl = this.clientConsentModalElement.nativeElement;
+            const modal = bootstrap.Modal.getInstance(modalEl);
+
+            if (modal) {
+              // Add event listener for when modal is fully hidden
+              modalEl.addEventListener(
+                'hidden.bs.modal',
+                () => {
+                  document.body.classList.remove('modal-open');
+                  document.body.style.overflow = '';
+                  document.body.style.paddingRight = '';
+                },
+                { once: true } // remove listener automatically
+              );
+
+              modal.hide();
+            }
             this.otpGenerated = false
             this.changeToPolicyButtons = true
             if (this.changeToPolicyButtons) {
@@ -3280,6 +3328,8 @@ if (this.quotationAuthorized) {
         }
       });
   }
+
+
   fetchReports() {
     const system = 37;
     const applicationLevel = "QUOTE"
