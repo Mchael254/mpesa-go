@@ -1144,9 +1144,18 @@ export class RiskDetailsComponent {
     return date as string;
   }
 
-  sanitizeCurrency(raw: string): number {
-    const cleaned = raw.replace(/[^0-9]/g, '');
-    return Number(cleaned);
+  // sanitizeCurrency(raw: string): number {
+  //   const cleaned = raw.replace(/[^0-9]/g, '');
+  //   return Number(cleaned);
+  // }
+  sanitizeCurrency(raw: any): number | null {
+    if (raw == null) return null; // handles null and undefined
+
+    const str = String(raw); // ensure it's a string
+    const cleaned = str.replace(/[^0-9.-]/g, ''); // allow negative & decimal
+    const parsed = Number(cleaned);
+
+    return isNaN(parsed) ? null : parsed;
   }
 
   onBinderSelected(event: any) {
