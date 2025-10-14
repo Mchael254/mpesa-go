@@ -447,7 +447,7 @@
                     <strong class="text-primary">Select Clauses Columns</strong>
                     <button class="btn-close btn-sm" (click)="showClausesColumnModal = false"></button>
                   </div>
-                 
+
                   <div style="max-height: 250px; overflow-y: auto;">
                     <div *ngFor="let col of productClauseColumns">
                       <div class="form-check">
@@ -822,12 +822,12 @@
                           <a class="nav-link" [class.active]="activeRiskDetailsTab === 'excesses'"
                             (click)="activeRiskDetailsTab = 'excesses'">Excess</a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                           <a class="nav-link text-muted" [class.active]="activeRiskDetailsTab === 'comments'"
                             pTooltip="Feature under development" tooltipPosition="top">
                             Comments
                           </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                           <a class="nav-link" [class.active]="activeRiskDetailsTab === 'limits-liability'"
                             (click)="activeRiskDetailsTab = 'limits-liability'">Limits of liability</a>

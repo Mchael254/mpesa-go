@@ -822,6 +822,7 @@ export class RiskDetailsComponent {
     this.modalInstance?.show();
     this.isEditMode = false
     this.isAddMode = true
+    this.selectedSubclassCode = null
     this.clearRiskForm()
     this.riskDetailsForm.reset({
       insureds: this.riskDetailsForm.get('insureds')?.value
@@ -1639,7 +1640,8 @@ export class RiskDetailsComponent {
           this.quotationCode = quotationCode
           const quotationNo = data._embedded.quotationNo
           this.addProductClauses();
-
+          this.selectedFile = null;
+          this.selectedSubclassCode = null;
 
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
@@ -3774,26 +3776,49 @@ export class RiskDetailsComponent {
     }
   }
 
+  // fetchYearOfManufacture() {
+  //   this.productService.getYearOfManufacture()
+  //     .subscribe({
+  //       next: (modelYear) => {
+  //         const model = modelYear._embedded
+  //         this.yearList = model[0]["List of cover years"]
+  //         log.debug("YEAR LIST", this.yearList)
+
+  //       },
+  //       error: (error: HttpErrorResponse) => {
+  //         log.debug("Error log", error.error.message);
+
+  //         this.globalMessagingService.displayErrorMessage(
+  //           'Error',
+  //           error.error.message
+  //         );
+  //       },
+
+  //     })
+
+  // }
   fetchYearOfManufacture() {
-    this.productService.getYearOfManufacture()
-      .subscribe({
-        next: (modelYear) => {
-          const model = modelYear._embedded
-          this.yearList = model[0]["List of cover years"]
-          log.debug("YEAR LIST", this.yearList)
+    this.productService.getYearOfManufacture().subscribe({
+      next: (modelYear) => {
+        const model = modelYear._embedded;
+        const rawYears = model[0]["List of cover years"];
 
-        },
-        error: (error: HttpErrorResponse) => {
-          log.debug("Error log", error.error.message);
+        // ✅ Map raw numbers to label/value objects for p-dropdown filtering
+        this.yearList = rawYears.map((year: number) => ({
+          label: year.toString(),
+          value: year
+        }));
 
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
-        },
-
-      })
-
+        log.debug("YEAR LIST", this.yearList);
+      },
+      error: (error: HttpErrorResponse) => {
+        log.debug("Error log", error.error.message);
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          error.error.message
+        );
+      },
+    });
   }
 
   handleSelectChange(fieldName: string, event: any): void {
@@ -6750,7 +6775,7 @@ export class RiskDetailsComponent {
     this.errorMessage = '';
 
     const keepValues = {
-      insureds: this.riskDetailsForm.get('insuredS')?.value,
+      insureds: this.riskDetailsForm.get('insureds')?.value,
       subclass: this.riskDetailsForm.get('subclass')?.value,
       coverFrom: this.riskDetailsForm.get('coverFrom')?.value,
       coverTo: this.riskDetailsForm.get('coverTo')?.value,
