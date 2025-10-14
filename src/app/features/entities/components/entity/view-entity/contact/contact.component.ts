@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Logger, UtilService} from "../../../../../../shared/services";
 import {ClientService} from "../../../../services/client/client.service";
 import {ClientTitleDTO} from "../../../../../../shared/data/common/client-title-dto";
@@ -16,9 +16,9 @@ import {AccountsEnum} from "../../../../data/enums/accounts-enum";
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto, FormSubGroupsDto, MultilingualText
+  FormGroupsDto, FormSubGroupsDto, MultilingualText, PresentationType
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
-import {Group} from "../../../../data/form-config.model";
+// import {Group} from "../../../../data/form-config.model";
 import {ClientDTO, ContactDetails, ContactPerson} from "../../../../data/ClientDTO";
 
 const log = new Logger('ContactComponent');
@@ -34,9 +34,11 @@ export class ContactComponent implements OnInit {
   @ViewChild('closeButton') closeButton!: ElementRef<HTMLButtonElement>;
 
   @Input() clientDetails: ClientDTO;
-  @Input() accountCode: number;
+  // @Input() accountCode: number;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() group: FormGroupsDto;
+
+  @Output() fetchClientDetails = new EventEmitter<number>();
 
   contactDetails: ContactDetails;
   contactPersons: ContactPerson[];
@@ -59,6 +61,8 @@ export class ContactComponent implements OnInit {
   fields: ConfigFormFieldsDto[];
   tableHeaders: ConfigFormFieldsDto[];
   table: { cols: any[], data: any[] } = { cols: [], data: [] };
+
+  PRESENTATION_TYPE = PresentationType;
 
 
   constructor(
@@ -115,8 +119,8 @@ export class ContactComponent implements OnInit {
    * prepares fields and table details for display when address details has no subgroup
    * @param displayContactDetails
    */
-  prepareGroupDetails(displayContactDetails): void {
-    if (this.group.presentationType === 'fields') {
+  prepareGroupDetails(displayContactDetails: any): void {
+    if (this.group.presentationType === this.PRESENTATION_TYPE.fields) {
       this.fields = this.createFieldDisplay(displayContactDetails);
     } else {
       this.createTableDisplay();
@@ -142,6 +146,10 @@ export class ContactComponent implements OnInit {
   }
 
 
+  /**
+   * create the structured info (column headings and row data) for displaying table
+   * @param subGroup
+   */
   createTableDisplay(subGroup?: FormSubGroupsDto) {
     const headerFields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formSubGroupingId === subGroup.subGroupId);
     headerFields.sort((a, b) => a.order - b.order);
@@ -150,6 +158,7 @@ export class ContactComponent implements OnInit {
     const tableData = [];
     this.contactPersons.forEach(person => {
       const p = {
+        contactPersonId: person.code,
         overview_title: person.clientTitle,
         overview_contact_person_full_name: person.name,
         overview_contact_person_doc_id_no: person.idNumber,
@@ -167,12 +176,34 @@ export class ContactComponent implements OnInit {
     };
   }
 
-  prepareSubGroupDetails(displayContactDetails): void {
+  /**
+   * Where exists, prepare the details of the subgroup
+   * Call method to create either field display or table display
+   * @param displayContactDetails
+   */
+  prepareSubGroupDetails(displayContactDetails: any): void {
     this.group?.subGroup?.forEach((subGroup) => {
-      if (subGroup.presentationType === 'fields') {
+      if (subGroup.presentationType === this.PRESENTATION_TYPE.fields) {
         subGroup.fields = this.createFieldDisplay(displayContactDetails);
       } else {
         this.createTableDisplay(subGroup);
+      }
+    });
+  }
+
+  /**
+   * Delete contact person and refresh data for display
+   * @param row
+   */
+  handleContactPersonDelete(row: any): void {
+    log.info('handleContactPersonDelete ... ');
+    this.clientService.deleteContactPerson(row.contactPersonId).subscribe({
+      next: () => {
+        this.table.data = this.table.data.filter(person => person.contactPersonId != row.contactPersonId);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted contact person');
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err?.error?.message);
       }
     });
   }
@@ -189,6 +220,7 @@ export class ContactComponent implements OnInit {
         this.globalMessagingService.displayErrorMessage('Error', err?.error?.message);
       }
     });
+    this.editContactDetails();
   }
 
   /*fetchSelectOptions(): void {
@@ -274,10 +306,10 @@ export class ContactComponent implements OnInit {
         contactChannel: formValues.contactChannel,
       },
       organizationBranchId: formValues.branch,
-      organizationBranchName: ''
+      organizationBranchName: '',
     }
 
-    this.clientService.updateClientSection(this.accountCode, { ...updatePayload }).subscribe({
+    this.clientService.updateClientSection(this.clientDetails.clientCode, { ...updatePayload }).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
         this.contactDetails = data.contactDetails;
@@ -293,5 +325,36 @@ export class ContactComponent implements OnInit {
     });
     this.closeButton.nativeElement.click();
   }
+
+  /*addContactPerson(): void {
+    const contactPerson = { // demo da
+      // code: 2950,
+      clientCode: this.clientDetails.clientCode,
+      clientTitleCode: 25,
+      clientTitle: null,
+      name: "Reuben James Zavier",
+      idNumber: "43655334",
+      email: "",
+      mobileNumber: "+254742444542",
+      wef: "2025-10-06T10:10:03.000+00:00",
+      wet: "2025-12-06T10:10:03.000+00:00",
+      postalAddress: "14",
+      physicalAddress: "kimilili",
+      sectorCode: 468
+    };
+
+    const client = {
+      clientCode: this.clientDetails.clientCode,
+      partyAccountCode: this.clientDetails.partyAccountCode,
+      partyId: this.clientDetails.partyId,
+      contactPersons: [contactPerson]
+    }
+
+    this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
+      next: data => {
+        log.info('addContactPerson', data);
+      }
+    })
+  }*/
 
 }

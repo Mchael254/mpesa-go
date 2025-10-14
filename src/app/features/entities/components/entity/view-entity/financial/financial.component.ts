@@ -14,7 +14,7 @@ import {ClientDTO, Payee, Payment} from "../../../../data/ClientDTO";
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto, FormSubGroupsDto
+  FormGroupsDto, FormSubGroupsDto, PresentationType
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('FinancialComponent');
@@ -58,6 +58,8 @@ export class FinancialComponent implements OnInit {
   fields: ConfigFormFieldsDto[];
   tableHeaders: ConfigFormFieldsDto[];
   table: { cols: any[], data: any[] } = { cols: [], data: [] };
+
+  PRESENTATION_TYPE = PresentationType;
 
   constructor(
     private fb: FormBuilder,
@@ -148,6 +150,10 @@ export class FinancialComponent implements OnInit {
   }
 
 
+  /**
+   * create the structured info (column headings and row data) for displaying table
+   * @param subGroup
+   */
   createTableDisplay(subGroup?: FormSubGroupsDto) {
     const headerFields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formSubGroupingId === subGroup.subGroupId);
     headerFields.sort((a, b) => a.order - b.order);
@@ -175,6 +181,11 @@ export class FinancialComponent implements OnInit {
     };
   }
 
+  /**
+   * Where exists, prepare the details of the subgroup
+   * Call method to create either field display or table display
+   * @param displayContactDetails
+   */
   prepareSubGroupDetails(displayContactDetails): void {
     this.group?.subGroup?.forEach((subGroup) => {
       if (subGroup.presentationType === 'fields') {
@@ -183,6 +194,15 @@ export class FinancialComponent implements OnInit {
         this.createTableDisplay(subGroup);
       }
     });
+  }
+
+  /**
+   * delete the payee by ID
+   * Refresh payee data after delete
+   * @param row
+   */
+  handlePayeeDelete(row: any): void {
+    log.info('handlePayeeDelete...' );
   }
 
 

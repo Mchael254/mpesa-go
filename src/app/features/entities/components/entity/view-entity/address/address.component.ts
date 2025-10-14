@@ -9,7 +9,7 @@ import {Observable} from "rxjs";
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto, FormSubGroupsDto
+  FormGroupsDto, FormSubGroupsDto, PresentationType
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {AddressModel, Branch, ClientDTO} from "../../../../data/ClientDTO";
 
@@ -28,7 +28,7 @@ export class AddressComponent implements OnInit {
   @Input() clientDetails: ClientDTO;
   @Input() addressDetailsConfig: any
   @Input() formFieldsConfig: any;
-  @Input() accountCode: number;
+  // @Input() accountCode: number;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() group: FormGroupsDto;
   addressDetails: AddressModel;
@@ -58,6 +58,8 @@ export class AddressComponent implements OnInit {
   fields: ConfigFormFieldsDto[];
   tableHeaders: ConfigFormFieldsDto[];
   table: { cols: any[], data: any[] } = { cols: [], data: [] };
+
+  PRESENTATION_TYPE = PresentationType;
 
 
   constructor(
@@ -153,6 +155,10 @@ export class AddressComponent implements OnInit {
   }
 
 
+  /**
+   * create the structured info (column headings and row data) for displaying table
+   * @param subGroup
+   */
   createTableDisplay(subGroup?: FormSubGroupsDto) {
     const headerFields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formSubGroupingId === subGroup.subGroupId);
     headerFields.sort((a, b) => a.order - b.order);
@@ -163,6 +169,7 @@ export class AddressComponent implements OnInit {
     const tableData = [];
     this.branchDetails.forEach((br: Branch) => {
       const branch = {
+        branchAddressId: br.code,
         overview_branch_Id: br.code,
         overview_branch_details_name: br.branchName,
         overview_country: br.countryName,
@@ -184,12 +191,34 @@ export class AddressComponent implements OnInit {
     };
   }
 
+  /**
+   * Where exists, prepare the details of the subgroup
+   * Call method to create either field display or table display
+   * @param displayContactDetails
+   */
   prepareSubGroupDetails(displayContactDetails): void {
     this.group?.subGroup?.forEach((subGroup) => {
       if (subGroup.presentationType === 'fields') {
         subGroup.fields = this.createFieldDisplay(displayContactDetails);
       } else {
         this.createTableDisplay(subGroup);
+      }
+    });
+  }
+
+  /**
+   * Delete branch and refresh data for display
+   * @param row
+   */
+  handleBranchDelete(row: any): void {
+    log.info('handleBranchDelete ... ', row);
+    this.clientService.deleteClientBranch(row.branchAddressId).subscribe({
+      next: () => {
+        this.table.data = this.table.data.filter(person => person.branchAddressId != row.branchAddressId);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted contact person');
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err?.error?.message);
       }
     });
   }
@@ -297,7 +326,7 @@ export class AddressComponent implements OnInit {
       houseNumber: formValues.houseNumber,
     }
 
-    this.clientService.updateClientSection(this.accountCode, {address: addressDetails}).subscribe({
+    this.clientService.updateClientSection(this.clientDetails.clientCode, {address: addressDetails}).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
         this.addressDetails = data.address;
@@ -378,5 +407,37 @@ export class AddressComponent implements OnInit {
         break;
     }
   }
+
+  /*addBranch(): void {
+    const branch = {
+      // code: 0,
+      clientCode: this.clientDetails.clientCode,
+      shortDesc: "Test Br",
+      countryId: 165,
+      stateId: 24,
+      townId: 532,
+      physicalAddress: "Test Main Street, Nairobi",
+      postalAddress: "P.O. Box 4567",
+      postalCode: "00100",
+      email: "contact@branch.com",
+      landlineNumber: "+254204567890",
+      mobileNumber: "+254712345678",
+      branchName: "Test Branch"
+    };
+
+
+    const client = {
+      clientCode: this.clientDetails.clientCode,
+      partyAccountCode: this.clientDetails.partyAccountCode,
+      partyId: this.clientDetails.partyId,
+      branches: [branch]
+    }
+
+    this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
+      next: data => {
+        log.info('add branch ', data);
+      }
+    })
+  }*/
 
 }
