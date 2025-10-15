@@ -1,4 +1,5 @@
 
+
 <div class="row my-3">
   <div class="col-sm-8">
           <span class="text-primary lead">
@@ -53,8 +54,40 @@
       </ng-container>
       <td class="text-primary">
         <button class="btn btn-link text-primary">Edit</button>
-        <button class="btn btn-link text-primary">Delete</button>
+        <button
+          class="btn btn-link text-primary"
+          (click)="triggerDeleteConfirmation(rowData); $event.stopPropagation()"
+        >Delete
+        </button>
       </td>
     </tr>
   </ng-template>
 </p-table>
+
+
+<!-- Modal -->
+<!--<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h1 class="modal-title fs-5 text-center text-danger" id="deleteModalLabel">Confirm delete!</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-center">Are you sure?</p>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" (click)="onDeleteButtonClick()">Confirm delete</button>
+      </div>
+    </div>
+  </div>
+</div>-->
+
+<p-dialog header="Confirm Delete?" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }" [blockScroll]="false" (onHide)="onDialogHide()">
+  <span class="p-text-danger block mb-8">Are you sure?</span>
+  <div class="text-end">
+    <button class="btn btn-outline-secondary me-2" (click)="visible=false">Cancel</button>
+    <button class="btn btn-danger" (click)="onDeleteButtonClick()">Confirm</button>
+  </div>
+</p-dialog>
