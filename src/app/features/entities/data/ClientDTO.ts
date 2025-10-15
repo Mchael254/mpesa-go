@@ -276,6 +276,9 @@ export interface ClientDTO {
   citizenshipCountryId?: string,
   maritalStatus?: string,
   ownershipDetails?: OwnershipDetails[],
+  accountCode?: number,
+  partyId?: number,
+  partyAccountCode?: number,
 }
 
 export interface ClientTypeDTO {

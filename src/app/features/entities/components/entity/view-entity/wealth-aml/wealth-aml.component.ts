@@ -35,15 +35,17 @@ export class WealthAmlComponent implements OnInit {
 
   @Input() clientDetails: ClientDTO;
   @Input() wealthAmlDetailsConfig: any
-  @Input() formFieldsConfig: any;
+  // @Input() formFieldsConfig: any;
   @Input() wealthAmlDetails: any;
   @Input() accountCode: number;
   @Input() group: FormGroupsDto;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
 
-  cr12Details: any; // todo: add model
+  subGroups: FormSubGroupsDto[];
+
   ownershipDetails: OwnershipDetails[];
   shouldShowCr12Details: boolean = false;
+  cr12SearchSubString: string = 'cr12';
 
 
   language: string = 'en';
@@ -90,32 +92,28 @@ export class WealthAmlComponent implements OnInit {
     private accountService: AccountService,
     private clientService: ClientService,
   ) {
-
+    this.utilService.currentLanguage.subscribe(lang => this.language = lang);
   }
 
 
   ngOnInit(): void {
     setTimeout(() => {
       this.ownershipDetails = this.clientDetails.ownershipDetails;
-      const subgroups = this.group.subGroup;
       const fields = this.formGroupsAndFieldConfig.fields;
-
-      // let dataRecord: WealthAmlDetails[] | OwnershipDetails[] | Cr12Detail[];
-      let tableData;
 
       this.group.subGroup.forEach(sub => {
         sub.fields = fields.filter(field => field.formSubGroupingId === sub.subGroupId);
-        tableData = this.createTableDisplay(sub);
+        const tableData = this.createTableDisplay(sub);
         sub.table = {
           cols: sub.fields,
           data: tableData
         };
-        // log.info('table data >>> ', sub)
       });
+
+      this.subGroups = this.group.subGroup;
 
     }, 1000);
 
-    this.utilService.currentLanguage.subscribe(lang => this.language = lang);
     this.sourcesOfFunds$ = this.bankService.getFundSource();
     this.sectors$ = this.sectorService.getSectors();
     this.occupations$ = this.occupationService.getOccupations();
@@ -126,10 +124,15 @@ export class WealthAmlComponent implements OnInit {
     // this.initData();
 
     // this.createEditForm(this.formFieldsConfig.fields);
-    // this.prepareTableDetails();
   }
 
-  createTableDisplay(subgroup: FormSubGroupsDto) {
+  /**
+   * create table display
+   * check subgroupId and create table data based on identified id
+   * @param subgroup
+   * @return tableData
+   */
+  createTableDisplay(subgroup: FormSubGroupsDto): any[] {
 
     const subgroupId = subgroup.subGroupId;
     const tableData = [];
@@ -154,6 +157,7 @@ export class WealthAmlComponent implements OnInit {
           dataRecord = this.clientDetails.wealthAmlDetails;
           dataRecord.forEach(record => {
             const amlDetails = {
+              amlIdCorporate: record.id,
               overview_trading_name: record.tradingName,
               overview_registered_name: record.registeredName,
               overview_cert_reg_no: record.certificateRegistrationNumber,
@@ -171,10 +175,11 @@ export class WealthAmlComponent implements OnInit {
         dataRecord = this.clientDetails.wealthAmlDetails;
         dataRecord.forEach(record => {
           const amlDetails = {
+            amlIdIndividual: record.id,
             overview_source_of_funds: record.fundsSource,
             overview_employment_type: record.employmentStatus,
-            overview_economic_sector: record.sector,
-            overview_occupation: record.occupation,
+            overview_economic_sector: record.sector.sectorName,
+            overview_occupation: record.occupation.occupationName,
             overview_insurance_purpose: record.insurancePurpose,
             overview_premium_frequency: record.premiumFrequency,
             overview_distribution_channel: record.distributeChannel
@@ -188,18 +193,23 @@ export class WealthAmlComponent implements OnInit {
     return tableData;
   }
 
+  /**
+   * prepare and display cr12 details based on selected AML record
+   * @param row
+   */
   handleCr12Display(row: any) {
     this.shouldShowCr12Details = false;
 
     const amlDetails = this.clientDetails.wealthAmlDetails.find(item => item.registeredName === row.overview_registered_name);
     const cr12Details = amlDetails?.cr12Details;
-    const subGroup = this.group.subGroup.find(subGroup => subGroup.subGroupId.includes('cr12'));
+    const subGroup = this.group.subGroup.find(subGroup => subGroup.subGroupId.includes(this.cr12SearchSubString));
 
     let tableData = [];
 
     if (cr12Details && cr12Details.length > 0) {
       cr12Details.forEach(record => {
         const cr12Details = {
+          cr12CorporateId: record.cr12Code,
           overview_name: record.directorName,
           overview_company_reg_no: record.directorIdRegNo,
           overview_address: null,
@@ -213,6 +223,44 @@ export class WealthAmlComponent implements OnInit {
       this.shouldShowCr12Details = true;
       log.info('wealth aml details selected >>> ', cr12Details, subGroup);
     }
+  }
+
+  /**
+   * handle delete wealth AML record
+   * @param row
+   */
+  handleWealthAmlDelete(row: any, subGroup: FormSubGroupsDto) {
+    log.info('handling wealth aml delete...', row, subGroup);
+    const amlId = row.amlIdIndividual ? row.amlIdIndividual : row.amlIdCorporate;
+
+    this.clientService.deleteAmlRecord(amlId).subscribe({
+      next: () => {
+        const foundSubgroup = this.subGroups.find(sub => sub.subGroupId === subGroup.subGroupId);
+        foundSubgroup.table.data = subGroup.table.data.filter(aml => (aml.amlIdIndividual || aml.amlIdIndividual) != amlId);
+        this.shouldShowCr12Details = false;
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted AML record');
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error?.errors[0]);
+      }
+    });
+  }
+
+  /**
+   * handle delete wealth cr12 record
+   * @param row
+   */
+  handleCr12Delete(row: any, subGroup: FormSubGroupsDto) {
+    this.clientService.deleteCr12Record(row.cr12CorporateId).subscribe({
+      next: () => {
+        subGroup.table.data = subGroup.table.data.filter(cr12 => cr12.cr12CorporateId !== row.cr12CorporateId);
+        if (subGroup.table.data?.length === 0) { this.shouldShowCr12Details = false; }
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted AML record');
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error?.errors[0]);
+      }
+    });
   }
 
   initData(): void {
@@ -416,6 +464,63 @@ export class WealthAmlComponent implements OnInit {
       }
     });
   }
+
+
+/*
+  addWealthAml(): void {
+    const wealthAmlDetail = {
+      nationalityCountryId: 165,
+      citizenshipCountryId: 165,
+      fundsSource: "Trading",
+      employmentStatus: "SELF_EMPLOYED",
+      occupationId: 470,
+      sectorId: 201,
+      tradingName: "TERMINUS Y",
+      registeredName: "TERMINUS BAKERS",
+      certificateRegistrationNumber: "43003434",
+      certificateYearOfRegistration: "2025",
+      sourceOfWealthId: 1,
+      parentCountryId: 165,
+      operatingCountryId: 165,
+      crFormRequired: "YES",
+      crFormYear: 2025,
+      insurancePurpose: "Fire",
+      premiumFrequency: "Monthly",
+      distributeChannel: "string",
+      parentCompany: "TERMINUS",
+      category: "Corporate",
+      modeOfIdentity: 6,
+      idNumber: "12002/10890",
+      cr12Details: [
+        {
+          directorName: "John AMBURIy",
+          directorIdRegNo: "3400432",
+          directorDob: "2000-10-06T10:10:03.650Z",
+          directorTitle: "CEO",
+          certificateReferenceNo: "34302346",
+          certificateRegistrationYear: "2025",
+          certificateName: "BINDING",
+          address: "TERMINUS",
+          category: "Individual"
+        }
+      ]
+    };
+
+
+    const client = {
+      clientCode: this.clientDetails.clientCode,
+      partyAccountCode: this.clientDetails.partyAccountCode,
+      partyId: this.clientDetails.partyId,
+      wealthAmlDetails: [wealthAmlDetail]
+    }
+
+    this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
+      next: data => {
+        log.info('add wealth aml', data);
+      }
+    })
+  }
+*/
 
 
 }

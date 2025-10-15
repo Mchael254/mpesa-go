@@ -94,7 +94,6 @@
           <app-contact
             #contactRef
             [clientDetails]="clientDetails"
-            [accountCode]="clientDetails.clientCode"
             [group]="tab"
             [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
           ></app-contact>
@@ -107,7 +106,6 @@
           <app-address
             #addressRef
             [clientDetails]="clientDetails"
-            [accountCode]="clientDetails.clientCode"
             [group]="tab"
             [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
           ></app-address>
@@ -137,7 +135,6 @@
             [clientDetails]="clientDetails"
             [accountCode]="clientDetails.clientCode"
             [group]="tab"
-            [formFieldsConfig]="editWealthAmlFormConfig"
             [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
           ></app-wealth-aml>
         </ng-container>
