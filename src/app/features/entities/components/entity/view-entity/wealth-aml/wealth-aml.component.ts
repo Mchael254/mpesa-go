@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Logger, UtilService} from "../../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
@@ -35,7 +35,6 @@ export class WealthAmlComponent implements OnInit {
 
   @Input() clientDetails: ClientDTO;
   @Input() wealthAmlDetailsConfig: any
-  // @Input() formFieldsConfig: any;
   @Input() wealthAmlDetails: any;
   @Input() accountCode: number;
   @Input() group: FormGroupsDto;
@@ -91,12 +90,30 @@ export class WealthAmlComponent implements OnInit {
     private occupationService: OccupationService,
     private accountService: AccountService,
     private clientService: ClientService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.utilService.currentLanguage.subscribe(lang => this.language = lang);
   }
 
 
   ngOnInit(): void {
+
+    this.prepareSubgroupTables();
+
+    this.sourcesOfFunds$ = this.bankService.getFundSource();
+    this.sectors$ = this.sectorService.getSectors();
+    this.occupations$ = this.occupationService.getOccupations();
+    this.communicationChannels$ = this.accountService.getCommunicationChannels();
+    this.premiumFrequencies$ = this.accountService.getPremiumFrequencies();
+    this.employmentTypes$ = this.accountService.getEmploymentTypes();
+    this.insurancePurposes$ = this.accountService.getInsurancePurpose();
+    // this.initData();
+
+    // this.createEditForm(this.formFieldsConfig.fields);
+  }
+
+
+  prepareSubgroupTables(): void {
     setTimeout(() => {
       this.ownershipDetails = this.clientDetails.ownershipDetails;
       const fields = this.formGroupsAndFieldConfig.fields;
@@ -111,19 +128,9 @@ export class WealthAmlComponent implements OnInit {
       });
 
       this.subGroups = this.group.subGroup;
+      this.cdr.detectChanges();
 
     }, 1000);
-
-    this.sourcesOfFunds$ = this.bankService.getFundSource();
-    this.sectors$ = this.sectorService.getSectors();
-    this.occupations$ = this.occupationService.getOccupations();
-    this.communicationChannels$ = this.accountService.getCommunicationChannels();
-    this.premiumFrequencies$ = this.accountService.getPremiumFrequencies();
-    this.employmentTypes$ = this.accountService.getEmploymentTypes();
-    this.insurancePurposes$ = this.accountService.getInsurancePurpose();
-    // this.initData();
-
-    // this.createEditForm(this.formFieldsConfig.fields);
   }
 
   /**
@@ -144,6 +151,7 @@ export class WealthAmlComponent implements OnInit {
         dataRecord = this.clientDetails.ownershipDetails;
         dataRecord.forEach(record => {
           const ownershipDetails = {
+            ownershipIdCorporate: record.code,
             overview_stakeholder_name: record.name,
             overview_stakeholder_doc_id_no: record.idNumber,
             overview_stakeholder_mobile_no: record.contactPersonPhone,
@@ -231,14 +239,37 @@ export class WealthAmlComponent implements OnInit {
    */
   handleWealthAmlDelete(row: any, subGroup: FormSubGroupsDto) {
     log.info('handling wealth aml delete...', row, subGroup);
-    const amlId = row.amlIdIndividual ? row.amlIdIndividual : row.amlIdCorporate;
+    if (subGroup.subGroupId.includes('ownership')) {
+      this.deleteOwnershipRecord(row, subGroup);
+    } else {
+      this.deleteWealthAmlRecord(row, subGroup);
+    }
+  }
 
+  deleteOwnershipRecord(row: any, subGroup: FormSubGroupsDto): void {
+    const ownershipId = row.ownershipIdCorporate
+    this.clientService.deleteOwnershipRecord(ownershipId).subscribe({
+      next: () => {
+        const foundSubgroup = this.subGroups.find(sub => sub.subGroupId === subGroup.subGroupId);
+        foundSubgroup.table.data = subGroup.table.data.filter(owner => (owner.ownershipIdCorporate || owner.ownershipIdCorporate) != ownershipId);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully ownership record');
+        this.getClientDetails(this.clientDetails.clientCode);
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error?.errors[0]);
+      }
+    });
+  }
+
+  deleteWealthAmlRecord(row: any, subGroup: FormSubGroupsDto): void {
+    const amlId = row.amlIdIndividual ? row.amlIdIndividual : row.amlIdCorporate;
     this.clientService.deleteAmlRecord(amlId).subscribe({
       next: () => {
         const foundSubgroup = this.subGroups.find(sub => sub.subGroupId === subGroup.subGroupId);
         foundSubgroup.table.data = subGroup.table.data.filter(aml => (aml.amlIdIndividual || aml.amlIdIndividual) != amlId);
         this.shouldShowCr12Details = false;
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted AML record');
+        this.getClientDetails(this.clientDetails.clientCode);
       },
       error: err => {
         this.globalMessagingService.displayErrorMessage('Error', err.error?.errors[0]);
@@ -254,13 +285,27 @@ export class WealthAmlComponent implements OnInit {
     this.clientService.deleteCr12Record(row.cr12CorporateId).subscribe({
       next: () => {
         subGroup.table.data = subGroup.table.data.filter(cr12 => cr12.cr12CorporateId !== row.cr12CorporateId);
-        if (subGroup.table.data?.length === 0) { this.shouldShowCr12Details = false; }
+        this.shouldShowCr12Details = false;
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted AML record');
+        this.getClientDetails(this.clientDetails.clientCode);
+        this.cdr.detectChanges();
       },
       error: err => {
         this.globalMessagingService.displayErrorMessage('Error', err.error?.errors[0]);
       }
     });
+  }
+
+  getClientDetails(clientCode: number) {
+    this.clientService.getClientDetailsByClientCode(clientCode).subscribe({
+      next: (res) => {
+        this.clientDetails = res;
+        this.prepareSubgroupTables();
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', 'Could not fetch client details');
+      },
+    })
   }
 
   initData(): void {
@@ -464,63 +509,5 @@ export class WealthAmlComponent implements OnInit {
       }
     });
   }
-
-
-/*
-  addWealthAml(): void {
-    const wealthAmlDetail = {
-      nationalityCountryId: 165,
-      citizenshipCountryId: 165,
-      fundsSource: "Trading",
-      employmentStatus: "SELF_EMPLOYED",
-      occupationId: 470,
-      sectorId: 201,
-      tradingName: "TERMINUS Y",
-      registeredName: "TERMINUS BAKERS",
-      certificateRegistrationNumber: "43003434",
-      certificateYearOfRegistration: "2025",
-      sourceOfWealthId: 1,
-      parentCountryId: 165,
-      operatingCountryId: 165,
-      crFormRequired: "YES",
-      crFormYear: 2025,
-      insurancePurpose: "Fire",
-      premiumFrequency: "Monthly",
-      distributeChannel: "string",
-      parentCompany: "TERMINUS",
-      category: "Corporate",
-      modeOfIdentity: 6,
-      idNumber: "12002/10890",
-      cr12Details: [
-        {
-          directorName: "John AMBURIy",
-          directorIdRegNo: "3400432",
-          directorDob: "2000-10-06T10:10:03.650Z",
-          directorTitle: "CEO",
-          certificateReferenceNo: "34302346",
-          certificateRegistrationYear: "2025",
-          certificateName: "BINDING",
-          address: "TERMINUS",
-          category: "Individual"
-        }
-      ]
-    };
-
-
-    const client = {
-      clientCode: this.clientDetails.clientCode,
-      partyAccountCode: this.clientDetails.partyAccountCode,
-      partyId: this.clientDetails.partyId,
-      wealthAmlDetails: [wealthAmlDetail]
-    }
-
-    this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
-      next: data => {
-        log.info('add wealth aml', data);
-      }
-    })
-  }
-*/
-
 
 }
