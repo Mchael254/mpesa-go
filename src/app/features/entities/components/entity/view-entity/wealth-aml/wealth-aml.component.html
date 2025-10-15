@@ -1,27 +1,29 @@
 
-
-<ng-container *ngIf="group.subGroup?.length > 0">
-  <ng-container *ngFor="let subGroup of group.subGroup">
+<ng-container *ngIf="subGroups?.length > 0">
+  <ng-container *ngFor="let subGroup of subGroups">
     <div class="my-5">
-      <ng-container *ngIf="!(subGroup.subGroupId.includes('cr12'))">
+      <ng-container *ngIf="!(subGroup.subGroupId.includes(cr12SearchSubString))">
         <app-overview-table
           [subGroup]="subGroup"
           [table]="subGroup.table"
           [language]="language"
           (rowClicked)="handleCr12Display($event)"
+          (deleteBtnClicked)="handleWealthAmlDelete($event, subGroup)"
         >
         </app-overview-table>
       </ng-container>
-      <ng-container *ngIf="(subGroup.subGroupId.includes('cr12')) && shouldShowCr12Details">
+      <ng-container *ngIf="(subGroup.subGroupId.includes(cr12SearchSubString)) && shouldShowCr12Details">
         <app-overview-table
           [subGroup]="subGroup"
           [table]="subGroup.table"
           [language]="language"
+          (deleteBtnClicked)="handleCr12Delete($event, subGroup)"
         >
         </app-overview-table>
       </ng-container>
   </div>
-</ng-container>
+<!--    <button class="btn btn-danger" (click)="addWealthAml()">Add AML</button>-->
+  </ng-container>
 
 
 
@@ -148,7 +150,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-4 text-primary" id="editWealthAmlModalLabel">
-          {{ formFieldsConfig?.label[language] || '---' | titlecase }}
+<!--          {{ formFieldsConfig?.label[language] || '-&#45;&#45;' | titlecase }}-->
         </h1>
         <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -157,7 +159,7 @@
           <ng-container *ngIf=" editForm; else loadingForm">
             <form [formGroup]="editForm">
               <div class="row g-3">
-                <ng-container *ngFor="let field of formFieldsConfig.fields">
+                <ng-container *ngFor="let field of formGroupsAndFieldConfig.fields">
                   <div class="col-md-6">
                     <label [for]="field.fieldId" class="form-label">
                       {{ field?.label[language] || '---' | titlecase }}
@@ -197,12 +199,12 @@
           </ng-template>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-            {{ formFieldsConfig?.buttons?.cancel?.label[language] || '---' | titlecase }}
+          <!--<button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+            {{ formGroupsAndFieldConfig?.buttons?.cancel?.label[language] || '-&#45;&#45;' | titlecase }}
           </button>
           <button type="button" class="btn btn-primary" (click)="editWealthAmlDetails()">
-            {{ formFieldsConfig?.buttons?.save?.label[language] || '---' | titlecase }}
-          </button>
+            {{ formFieldsConfig?.buttons?.save?.label[language] || '-&#45;&#45;' | titlecase }}
+          </button>-->
         </div>
       </ng-container>
       <ng-template #showMessage>
