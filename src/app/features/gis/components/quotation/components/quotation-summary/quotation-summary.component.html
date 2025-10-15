@@ -29,7 +29,6 @@
 
     </div>
 
-
   </div>
 
 
@@ -113,15 +112,8 @@
               <div class="d-flex align-items-center w-50">
                 <p class="content mb-0 me-2">
                   {{
-                  quotationView?.comments
-                  ? quotationView.comments
-                  .split(" ")
-                  .slice(0, 3)
-                  .join(" ") +
-                  (quotationView.comments.split(" ").length > 3
-                  ? "..."
-                  : "")
-                  : ""
+                  quotationView?.comments? quotationView.comments.split(" ").slice(0, 3).join(" ") +
+                  (quotationView.comments.split(" ").length > 3? "...": ""): ""
                   }}
                 </p>
 
@@ -145,9 +137,6 @@
                 <!-- {{ storedQuotationFormDetails?.client | sentenceCase }} -->
                 {{ storedQuotationFormDetails?.client ? (storedQuotationFormDetails.client | sentenceCase) : '' }}
               </span>
-
-
-
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Proposer</p>
@@ -447,7 +436,7 @@
                     <strong class="text-primary">Select Clauses Columns</strong>
                     <button class="btn-close btn-sm" (click)="showClausesColumnModal = false"></button>
                   </div>
-                 
+
                   <div style="max-height: 250px; overflow-y: auto;">
                     <div *ngFor="let col of productClauseColumns">
                       <div class="form-check">
