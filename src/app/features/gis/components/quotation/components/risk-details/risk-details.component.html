@@ -128,8 +128,8 @@
                             <p class="upload-text text-danger" *ngIf="!selectedSubclassCode">
                                 Select a subclass to proceed
                             </p>
-                            <div class="upload-area mt-2 mb-1"
-                                (click)="!selectedSubclassCode ? null : fileInput.click()" [class.dragover]="isDragging"
+                            <div class="upload-area mt-2 mb-1" (click)="!selectedFile ? null : fileInput.click()"
+                                [class.dragover]="isDragging"
                                 (drop)="selectedSubclassCode ? onDrop($event) : $event.preventDefault()"
                                 (dragover)="selectedSubclassCode ? onDragOver($event) : $event.preventDefault()"
                                 (dragleave)="selectedSubclassCode ? onDragLeave($event) : null"
@@ -337,10 +337,13 @@
                                             </ng-container>
                                             <!-- YEAR OF MANUFACTURE -->
                                             <ng-container *ngIf="field.name === 'yearOfManufacture'">
+                                                <!-- <p-dropdown formControlName="yearOfManufacture" [options]="yearList"
+                                                    placeholder="" [filter]="true" filterBy="label">
+                                                </p-dropdown> -->
                                                 <p-dropdown formControlName="yearOfManufacture" [options]="yearList"
-                                                    placeholder="" [filter]="true">
+                                                    optionLabel="label" optionValue="value" [filter]="true"
+                                                    filterBy="label" [showClear]="true">
                                                 </p-dropdown>
-
                                             </ng-container>
                                             <!-- MARINE AND FIRE FIELDS -->
                                             <!-- PERIOD RATES -->
@@ -1918,16 +1921,16 @@
                                 <!-- Default columns added dynamically) -->
                                 <ng-container *ngSwitchDefault>
                                     <ng-container *ngIf="col.field === 'value'; else defaultField">
-                                        <!-- <div class="text-end">
+                                        <div class="text-end">
                                             {{ sanitizeCurrency(limit[col.field]) | currency: currencyObj?.prefix :
                                             'symbol' : '1.2-2' }}
-                                        </div> -->
-                                        <div class="text-end">
+                                        </div>
+                                        <!-- <div class="text-end">
                                             {{ sanitizeCurrency(limit[col.field]) != null
                                             ? (sanitizeCurrency(limit[col.field]) | currency: currencyObj?.prefix :
                                             'symbol' : '1.2-2')
                                             : '-' }}
-                                        </div>
+                                        </div> -->
 
                                     </ng-container>
                                     <ng-template #defaultField>
