@@ -11,6 +11,9 @@ import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from 'ngx-currency';
+import { CurrencyDTO } from 'src/app/shared/data/common/currency-dto';
+import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 const log = new Logger('QuotationConcersionComponent');
 
@@ -71,6 +74,13 @@ export class QuotationManagementComponent {
   isClientSearchModalVisible = false;
   remainingMenuItems: MenuItem[] = [];
   public currencyObj: NgxCurrencyConfig;
+  currencyDelimiter:any;
+  defaultCurrencyName: string;
+  defaultCurrencySymbol: string;
+  defaultCurrency: CurrencyDTO;
+  user:any;
+  userDetails:any;
+  currency: CurrencyDTO[]
 
 
 
@@ -81,6 +91,9 @@ export class QuotationManagementComponent {
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
     private utilService: UtilService,
+    public authService: AuthService,
+    public bankService: BankService,
+
 
   ) {
 
@@ -92,6 +105,11 @@ export class QuotationManagementComponent {
     this.dynamicSideBarMenu(this.quotationSubMenuList[6]);
     this.initializeCurrency();
     this.fetchGISQuotations();
+    this.getuser();
+    this.fetchCurrencies();
+
+
+
 
   }
 
@@ -136,10 +154,10 @@ export class QuotationManagementComponent {
 
     // Add the rest of the items
     items.push(
-      // {
-      //   label: 'Revise Quote',
-      //   command: () => this.printQuote(quotation)
-      // },
+      //  {
+      //    label: 'Revise Quote',
+      // command: () => this.reviseQuote(quotation)
+      //  },
       // {
       //   label: 'Reuse Quote',
       //   command: () => this.deleteQuote(quotation)
@@ -418,31 +436,86 @@ export class QuotationManagementComponent {
       this.gisQuotationList = [...this.originalQuotationList];
     }
   }
-  reviseQuote(selectedQuotation: any) {
-    log.debug("Selected Quote to be revised:", selectedQuotation)
-    const quotationCode = selectedQuotation.quotationCode
-    if (quotationCode) {
-      this.quotationService
-        .reviseQuotation(quotationCode)
-        .pipe(untilDestroyed(this))
-        .subscribe({
-          next: (response: any) => {
-            const revisedQuoteNumber = response._embedded.quotationNumber
-            log.debug("Revised Quotation number ", revisedQuoteNumber);
-            sessionStorage.setItem('revisedQuotationNo', revisedQuoteNumber);
-            if (revisedQuoteNumber) {
+  // reviseQuote(selectedQuotation: any) {
+  //   log.debug("Selected Quote to be revised:", selectedQuotation)
+  //   const quotationCode = selectedQuotation.quotationCode
+  //   if (quotationCode) {
+  //     this.quotationService
+  //       .reviseQuote(quotationCode)
+  //       .pipe(untilDestroyed(this))
+  //       .subscribe({
+  //         next: (response: any) => {
+  //           const revisedQuoteNumber = response._embedded.quotationNumber
+  //           log.debug("Revised Quotation number ", revisedQuoteNumber);
+  //           sessionStorage.setItem('revisedQuotationNo', revisedQuoteNumber);
+  //           if (revisedQuoteNumber) {
 
-              this.router.navigate(['/home/gis/quotation/quotation-summary']);
-            }
+  //             this.router.navigate(['/home/gis/quotation/quotation-summary']);
+  //           }
 
-          },
-          error: (error) => {
-            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-          }
-        });
-    }
+  //         },
+  //         error: (error) => {
+  //           this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+  //         }
+  //       });
+  //   }
 
+  // }
+
+
+  reviseQuotation(selectedQuotation: any, createNew: 'Y' | 'N' = 'N') {
+  log.debug("Selected Quote to be revised:", selectedQuotation);
+
+  const quotationCode = selectedQuotation?.quotationCode;
+  if (!quotationCode) {
+    console.warn("Invalid quotation data:", selectedQuotation);
+    return;
   }
+
+  this.quotationService
+    .reviseQuote(quotationCode, createNew)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        log.debug("Response for revise",response)
+        
+          sessionStorage.setItem('revisedQuotation', JSON.stringify(response));
+          // Navigate to quotation summary
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        
+      },
+      error: (error) => {
+        log.error("Error revising quotation:", error);
+        this.globalMessagingService.displayErrorMessage('Error', error.error?.message || 'Failed to revise quotation');
+      }
+    });
+}
+  
+reuseQuotation(selectedQuotation: any) {
+  const quotationCode = selectedQuotation?.quotationCode;
+  if (!quotationCode) {
+    console.warn("Invalid quotation data:", selectedQuotation);
+    return;
+  }
+
+  this.quotationService
+    .reviseQuote(quotationCode, 'Y') 
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+       sessionStorage.setItem('reusedQuotation', JSON.stringify(response));    
+       this.router.navigate(['/home/gis/quotation/quotation-details']);
+        
+      },
+      error: (error) => {
+        log.error("Error revising quotation:", error);
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          error.error?.message || 'Failed to revise quotation'
+        );
+      }
+    });
+}
 
 
   clearQuotationNo(): void {
@@ -570,12 +643,12 @@ export class QuotationManagementComponent {
     // Add additional actions
     items.push(
       {
-        label: 'Revise',
-        command: () => this.reviseQuote(quotation)
+        label: 'Revise Quote',
+        command: () => this.reviseQuotation(quotation)
       },
       {
-        label: 'Reuse',
-        command: () => this.reuseQuote(quotation)
+        label: 'Reuse Quote',
+        command: () => this.reuseQuotation(quotation)
       },
       {
         label: 'Reassign',
@@ -636,6 +709,46 @@ export class QuotationManagementComponent {
     if (this.quotationTable) {
       this.quotationTable.filterGlobal(filterValue, 'contains');
     }
+  }
+
+   getuser(): void {
+    this.user = this.authService.getCurrentUserName();
+    this.userDetails = this.authService.getCurrentUser();
+    log.info('Login UserDetails', this.userDetails);
+    this.currencyDelimiter = this.userDetails?.currencyDelimiter;
+    log.debug('Organization currency delimiter', this.currencyDelimiter);
+    sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
+  }
+
+
+   fetchCurrencies() {
+    this.bankService.getCurrencies()
+      .subscribe({
+        next: (currencies: any[]) => {
+          // CURRENCIES
+          this.currency = currencies.map((value) => {
+            let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+            return { ...value, name: capitalizedDescription };
+          });
+
+          log.info(this.currency, 'this is a currency list');
+
+          const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
+          if (defaultCurrency) {
+            log.debug('DEFAULT CURRENCY', defaultCurrency);
+            this.defaultCurrency = defaultCurrency;
+            this.defaultCurrencyName = defaultCurrency.name;
+            this.defaultCurrencySymbol = defaultCurrency.symbol;
+            sessionStorage.setItem('currencySymbol', this.defaultCurrencySymbol);
+
+            log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+            log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+        }
+      },
+        error: (error) => {
+          console.error("Error fetching group users", error);
+        }
+      });
   }
 
 
