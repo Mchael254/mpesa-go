@@ -184,15 +184,15 @@
                     <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
                       <div class="position-relative" style="cursor: pointer;">
                         <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
-                          [value]="selectedAgentName" readonly (click)="showAgentSearchModal = true"
-                          style="cursor: pointer;" formControlName="agents" />
+                          [value]="displayAgentName || ''" readonly (click)="showAgentSearchModal = true"
+                          style="cursor: pointer;" />
                         <i class="pi pi-search position-absolute"
                           style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
                       </div>
                       <button *ngIf="showAgentSearchModal" data-bs-toggle="modal" data-bs-target="#searchAgent"
                         style="display: none;"></button>
                       <div
-                        *ngIf="quotationForm.get('agents')?.hasError('required') && quotationForm.get('agents')?.touched"
+                        *ngIf="quotationForm.get('agent')?.hasError('required') && quotationForm.get('agent')?.touched"
                         class="form-text text-danger">
                         {{ 'gis.quotation.agent_is_required' | translate }}
                       </div>
@@ -238,9 +238,9 @@
                     <!-- Marketer field -->
                     <ng-container *ngIf="field.name === 'marketer'">
                       <div class="position-relative" style="cursor: pointer;">
-                        <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
-                          [value]="selectedMarketerName" readonly (click)="showMarketerSearchModal = true"
-                          style="cursor: pointer;" formControlName="marketer" />
+                        <input type="text" class="form-control form-control-sm pe-5" id="quote-input" readonly
+                          (click)="showMarketerSearchModal = true" style="cursor: pointer;"
+                          [value]="displayMarketerName" />
                         <i class="pi pi-search position-absolute"
                           style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
                       </div>
@@ -902,13 +902,8 @@
           <div class="collapse mb-4" [ngClass]="{'show': showClauses}" id="collapseProductClauses">
             <!-- clause table -->
             <p-table #productClauseTable [value]="sessionClauses " [paginator]="sessionClauses?.length > 5"
-              [rowsPerPageOptions]="[5, 10, 20]" [rows]="5"
-              [scrollable]="true"
-              scrollHeight="500px"
-              [tableStyle]="{'min-width': '50rem'}"
-              [paginatorPosition]="'bottom'"
-  [paginatorDropdownAppendTo]="'body'"
-  >
+              [rowsPerPageOptions]="[5, 10, 20]" [rows]="5" [scrollable]="true" scrollHeight="500px"
+              [tableStyle]="{'min-width': '50rem'}" [paginatorPosition]="'bottom'" [paginatorDropdownAppendTo]="'body'">
 
               <!-- Table Header -->
               <ng-template pTemplate="header">
@@ -946,7 +941,7 @@
                           </div>
                         </div>
                       </ng-container>
-                      
+
                       <ng-container *ngSwitchCase="'heading'">
                         <div class="clause-wrapper" [title]="productClause.heading | sentenceCase">
                           {{ productClause.heading | sentenceCase }}
