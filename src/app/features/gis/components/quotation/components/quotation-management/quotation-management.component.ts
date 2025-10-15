@@ -121,7 +121,7 @@ export class QuotationManagementComponent {
     // Create base menu items
     const items = [
       {
-        label: 'View Quote',
+        label: 'View',
         command: () => this.viewQuote(quotation)
       }
     ];
@@ -231,15 +231,13 @@ export class QuotationManagementComponent {
 
   }
 
-  printQuote(quotation: any) {
-    // Implement print quote functionality
-    log.debug('Print quote:', quotation);
-  }
+  // printQuote(quotation: any) {
+  //   log.debug('Print quote:', quotation);
+  // }
 
-  deleteQuote(quotation: any) {
-    // Implement delete quote functionality
-    log.debug('Delete quote:', quotation);
-  }
+  // deleteQuote(quotation: any) {
+  //   log.debug('Delete quote:', quotation);
+  // }
 
   dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
     if (sidebarMenu.link.length > 0) {
@@ -554,7 +552,7 @@ export class QuotationManagementComponent {
   getAllActions(quotation: any): MenuItem[] {
     const items = [
       {
-        label: 'View Quote',
+        label: 'View',
         command: () => this.viewQuote(quotation)
       }
     ];
@@ -562,7 +560,7 @@ export class QuotationManagementComponent {
     // Only add Edit Quote if status is Draft
     if (quotation.status === 'Draft') {
       items.push({
-        label: 'Edit Quote',
+        label: 'Edit',
         command: () => this.editQuote(quotation)
       });
     }
@@ -570,29 +568,29 @@ export class QuotationManagementComponent {
     // Add additional actions
     items.push(
       {
-        label: 'Revise Quote',
+        label: 'Revise',
         command: () => this.reviseQuote(quotation)
       },
       {
-        label: 'Reuse Quote',
+        label: 'Reuse',
         command: () => this.reuseQuote(quotation)
       },
       {
-        label: 'Reassign Quote',
+        label: 'Reassign',
         command: () => this.reassignQuote(quotation)
       },
       {
-        label: 'Process',
+        label: 'Edit',
         command: () => this.process(quotation)
-      },
-      {
-        label: 'Print Quote',
-        command: () => this.printQuote(quotation)
-      },
-      {
-        label: 'Delete Quote',
-        command: () => this.deleteQuote(quotation)
       }
+      // {
+      //   label: 'Print',
+      //   command: () => this.printQuote(quotation)
+      // },
+      // {
+      //   label: 'Delete',
+      //   command: () => this.deleteQuote(quotation)
+      // }
     );
 
     return items;

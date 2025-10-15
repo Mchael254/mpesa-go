@@ -3314,7 +3314,7 @@ export class RiskDetailsComponent {
         modal.show();
       }
     } else {
-      this.globalMessagingService.displayErrorMessage('warning', 'You need to select a risk first');
+      this.globalMessagingService.displayErrorMessage('warning', 'Select a risk to proceed');
     }
   }
 
@@ -4114,7 +4114,7 @@ export class RiskDetailsComponent {
 
   openLimitModal(): void {
     if (!this.selectedSubclassCode || !this.selectedRiskCode) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk to proceed');
       log.debug("selectedSubclassCode does not exist", this.selectedSubclassCode)
       return;
     }
@@ -4473,7 +4473,7 @@ export class RiskDetailsComponent {
 
   openExcessModal(): void {
     if (!this.selectedSubclassCode || !this.selectedRiskCode) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk to proceed');
       return;
     }
 
@@ -4798,7 +4798,7 @@ export class RiskDetailsComponent {
 
   openPerilsModal(): void {
     if (!this.selectedSubclassCode || !this.selectedRiskCode) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk to proceed');
       return;
     }
     this.closeChoosePerilsModal();
@@ -4815,7 +4815,7 @@ export class RiskDetailsComponent {
 
   openChoosePerilsModal(): void {
     if (!this.selectedSubclassCode || !this.selectedRiskCode) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk to proceed');
       return;
     }
 
@@ -5130,7 +5130,28 @@ export class RiskDetailsComponent {
     log.debug("commissionsColumns", this.commissionsColumns);
   }
 
-  defaultVisibleCommissionsFields = ['group', 'agentDto', 'setupRate', 'usedRate', 'discType', 'discRate',];
+  defaultVisibleCommissionsFields = ['group', 'agentDto', 'accountType', 'setupRate', 'usedRate', 'commissionAmount', 'withHoldingRate',
+    'withHoldingTax', 'discType', 'discRate'];
+
+  /**
+  * Checks if a commission field should be read-only (non-editable)
+  * @param fieldName The name of the field to check
+  * @returns boolean indicating if the field should be read-only
+  */
+  isCommissionFieldReadOnly(fieldName: string): boolean {
+    const readOnlyFields = [
+      'agentName',
+      'accountType',
+      'setupRate',
+      'withHoldingRate',
+      'withHoldingTax',
+      'transactionType',
+      'discAmount',
+    ];
+
+    return readOnlyFields.includes(fieldName);
+  }
+
 
   loadCommissions(): void {
     const subclassCode = this.selectedSubclassCode;
@@ -5141,7 +5162,7 @@ export class RiskDetailsComponent {
     this.agentCode = quotationDetails?.agent?.id || 0;
 
     if (!this.accountCode) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Select agent first');
+      this.globalMessagingService.displayErrorMessage('Error', 'Select an agent to proceed');
       return;
     }
 
@@ -5335,6 +5356,7 @@ export class RiskDetailsComponent {
     }
 
     const sourceDescription = this.quotationDetails.source.description;
+    log.debug('sourceDescription', sourceDescription)
     return sourceDescription === 'Agent' ||
       sourceDescription === 'Agent/b' ||
       sourceDescription === 'Broker/agent';
@@ -5344,29 +5366,6 @@ export class RiskDetailsComponent {
     return !this.isAgentSourceSelected();
   }
 
-  /**
-   * Checks if a commission field should be read-only (non-editable)
-   * @param fieldName The name of the field to check
-   * @returns boolean indicating if the field should be read-only
-   */
-  isCommissionFieldReadOnly(fieldName: string): boolean {
-    const readOnlyFields = [
-      'agentName',
-      'accountType',
-      'account_type',
-      'setupRate',
-      'witholdingRate',
-      'witholding_rate',
-      'witholdingTaxType',
-      'witholding_tax_type',
-      'transactionType',
-      'transaction_type',
-      'discAmount',
-      'disc_amount'
-    ];
-
-    return readOnlyFields.includes(fieldName);
-  }
 
   onAddOtherSchedule(tab: any): void {
     log.debug("DYNAMIC SUBCLASS FORM FIELDS", this.dynamicSubclassFormFields)
