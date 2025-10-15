@@ -1529,11 +1529,11 @@
             </div>
 
             <!-- risk clause table -->
-            <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="sessionClauses?.length > 4"
+            <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="sessionClauses?.length > 10"
                 [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
-                [globalFilterFields]="['shortDescription', 'wording', 'heading']" [scrollable]="true" [paginatorPosition]="'bottom'"
-  [paginatorDropdownAppendTo]="'body'"
-                responsiveLayout="scroll" class="mt-3">
+                [globalFilterFields]="['shortDescription', 'wording', 'heading']" [scrollable]="true"
+                [paginatorPosition]="'bottom'" [paginatorDropdownAppendTo]="'body'" responsiveLayout="scroll"
+                class="mt-3">
 
 
                 <ng-template pTemplate="header">

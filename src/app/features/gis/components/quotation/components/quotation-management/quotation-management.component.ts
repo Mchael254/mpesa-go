@@ -198,6 +198,8 @@ export class QuotationManagementComponent {
     if (quotationNumber && quotationNumber.trim() !== '') {
       sessionStorage.setItem('quotationNum', quotationNumber);
       sessionStorage.setItem('quotationCode', JSON.stringify(quotationCode));
+      this.viewQuoteFlag = false;
+      sessionStorage.setItem('viewQuoteFlag', JSON.stringify(this.viewQuoteFlag));
 
 
 
@@ -318,7 +320,7 @@ export class QuotationManagementComponent {
       cleanClientName = cleanClientName.replace(/\bnull\b/gi, '').trim();
       cleanClientName = cleanClientName === '' ? null : cleanClientName;
     }
-    
+
     this.clientName = cleanClientName;
     this.clientCode = event.id;
 
@@ -344,7 +346,7 @@ export class QuotationManagementComponent {
     // Optional: Log for debugging
     log.debug('Selected Agent:', event);
     log.debug("AgentId", this.agentId);
-    
+
     // Also fetch quotations for backend filtering
     this.fetchGISQuotations();
   }
@@ -412,7 +414,7 @@ export class QuotationManagementComponent {
     this.expiryDate = null;
     this.selectedDateFrom = null;
     this.selectedDateTo = null;
-    
+
     // Reset to original list when date filters are cleared
     if (this.originalQuotationList.length > 0) {
       this.gisQuotationList = [...this.originalQuotationList];
@@ -462,12 +464,12 @@ export class QuotationManagementComponent {
   clearAgentName(): void {
     this.agentName = '';
     this.agentId = null;
-    
+
     // Clear p-table filtering when agent is cleared
     if (this.quotationTable) {
       this.quotationTable.filterGlobal('', 'contains');
     }
-    
+
     this.fetchGISQuotations();
     this.cdr.detectChanges();
   }
