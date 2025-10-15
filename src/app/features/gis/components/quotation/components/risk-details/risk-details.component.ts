@@ -735,21 +735,6 @@ export class RiskDetailsComponent {
     this.saveRiskDetailsColumnsToSession();
   }
 
-  // toggleRiskDetailsColumns(iconElement: HTMLElement): void {
-  //   this.showRiskDetails = !this.showRiskDetails;
-
-  //   const rect = iconElement.getBoundingClientRect();
-
-  //   const top = rect.top + rect.height + window.scrollY + 4;
-  //   const left = rect.left + window.scrollX;
-
-  //   this.columnModalPosition = {
-  //     top: `${top}px`,
-  //     left: `${left}px`
-  //   };
-
-  //   this.showRiskDetailsColumnModal = true;
-  // }
 
   toggleRiskDetailsColumns(iconElement: HTMLElement): void {
     this.showRiskDetails = true;

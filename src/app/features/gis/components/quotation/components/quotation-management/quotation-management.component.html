@@ -1,5 +1,5 @@
 <p class="titleMain mt-3 ms-4">{{ 'gis.quotation.quotation_management' | translate }}</p>
-<div class=" mx-4 mt-n1">
+<div class=" mx-4 mt-n1" (click)="immediateHideTooltip()">
   <div class="card mb-3" style=" position: relative;">
     <div class="card-body">
       <div class="row mb-2">
@@ -160,7 +160,7 @@
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-quotation>
-          <tr style="cursor: pointer">
+          <tr>
             <td>{{quotation.quotationNumber}}</td>
             <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">
               {{quotation.clientName |sentenceCase}}</td>
@@ -171,11 +171,16 @@
             <td>{{quotation.toDate}}</td>
 
             <td class="text-end" style="padding-top: 0; padding-bottom: 0;">
-              <span class="action-buttons-container d-flex align-items-center justify-content-end gap-2">
+              <div class="action-buttons-container d-flex align-items-center justify-content-end gap-2"
+                   (mouseleave)="hideTooltip()">
                 <!-- Display first 3 actions as text links -->
                 <ng-container *ngFor="let item of getFirstThreeActions(quotation); let i = index">
-                  <a href="javascript:void(0)" class="text-decoration-none text-primary small fw-medium"
-                    (click)="executeAction(item, quotation)" [title]="item.label">
+                  <a href="javascript:void(0)" 
+                     class="text-decoration-none text-primary small fw-medium action-link"
+                     (click)="executeAction(item, quotation); immediateHideTooltip()" 
+                     (mouseenter)="showTooltip(item.label, $event)"
+                     (mouseleave)="hideTooltip()"
+                     (mousemove)="updateTooltipPosition($event)">
                     {{ item.label }}
                   </a>
                   <span *ngIf="i < getFirstThreeActions(quotation).length - 1" class="text-muted"></span>
@@ -193,8 +198,18 @@
                 <!-- Popup menu for additional actions -->
                 <p-menu #moreActionsMenu [popup]="true" [model]="remainingMenuItems" appendTo="body"
                   styleClass="additional-actions-menu">
+                  <ng-template pTemplate="item" let-item>
+                    <a class="p-menuitem-link d-flex align-items-center text-decoration-none"
+                       (click)="executeAction(item, selectedQuotation, $event); immediateHideTooltip()"
+                       (mouseenter)="showMenuTooltip(item.label, $event)"
+                       (mouseleave)="hideMenuTooltip()"
+                       (mousemove)="updateTooltipPosition($event)"
+                       style="padding: 0.5rem 1rem; color: #495057;">
+                      <span>{{ item.label }}</span>
+                    </a>
+                  </ng-template>
                 </p-menu>
-              </span>
+              </div>
             </td>
           </tr>
         </ng-template>
@@ -210,6 +225,16 @@
         </ng-template>
       </p-table>
     </div>
+  </div>
+
+  <!-- Custom Tooltip -->
+  <div *ngIf="hoveredAction" 
+       class="custom-tooltip"
+       [class.show]="hoveredAction"
+       [style.left.px]="tooltipPosition.x"
+       [style.top.px]="tooltipPosition.y">
+    <i [class]="getActionIcon(hoveredAction)" class="tooltip-icon"></i>
+    <span class="tooltip-text">{{ getTooltipDescription(hoveredAction) }}</span>
   </div>
 
   <br>

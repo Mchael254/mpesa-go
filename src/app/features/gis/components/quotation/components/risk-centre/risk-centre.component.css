@@ -88,3 +88,13 @@
     background-color: #666;
   }
 }
+
+.btn-greyed-out {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none; 
+}
+
+.btn-greyed-out[disabled] {
+  pointer-events: auto; 
+}
