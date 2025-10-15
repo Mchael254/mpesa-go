@@ -128,8 +128,8 @@
                             <p class="upload-text text-danger" *ngIf="!selectedSubclassCode">
                                 Select a subclass to proceed
                             </p>
-                            <div class="upload-area mt-2 mb-1" (click)="!selectedFile ? null : fileInput.click()"
-                                [class.dragover]="isDragging"
+                            <div class="upload-area mt-2 mb-1"
+                                (click)="!selectedSubclassCode ? null : fileInput.click()" [class.dragover]="isDragging"
                                 (drop)="selectedSubclassCode ? onDrop($event) : $event.preventDefault()"
                                 (dragover)="selectedSubclassCode ? onDragOver($event) : $event.preventDefault()"
                                 (dragleave)="selectedSubclassCode ? onDragLeave($event) : null"
