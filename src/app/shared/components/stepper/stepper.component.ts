@@ -15,6 +15,7 @@ export class StepperComponent {
   @Input() dbStep: number = 1;
   @Input() stepType: string = 'link';
   @Input() orientation: string = 'HORIZONTAL'
+  @Input() disabled: boolean = false;
   @Output() stepChange = new EventEmitter<number>();  // EventEmitter to re-emit step changes
 
 
@@ -23,6 +24,7 @@ export class StepperComponent {
 
 
   onStepChange(step: number) {
+    if (this.disabled) return;
     this.stepChange.emit(step);  // Re-emit the step number
   }
 
