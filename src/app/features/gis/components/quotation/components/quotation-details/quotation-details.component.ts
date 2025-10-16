@@ -2674,7 +2674,7 @@ patchReusedQuotationData() {
       client: data.clientName || '',
       email: data.emailAddress || '',
       phone: data.phoneNumber || '',
-      source: data.source.description || '',
+      source: data.source || '',
       quotationType: data.quotationType || '',
       branch: data.branchCode || '',
       currency: data.currency || '',
@@ -2683,7 +2683,7 @@ patchReusedQuotationData() {
       marketer: data.marketerName || '',
       multiUserEntry: data.multiUser || 'N',
       campaign: data.sourceCampaign || '',
-      internalComments: data.internalComments || 'KES',
+      internalComments: data.internalComments || '',
       externalComments: data.externalComments || ''
     });
   }
