@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild, OnDestroy } from '@angular/core';
 import { QuotationList, Status, StatusEnum } from '../../data/quotationsDTO';
 import { Logger, UtilService } from '../../../../../../shared/services';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
@@ -21,7 +21,7 @@ const log = new Logger('QuotationConcersionComponent');
 })
 
 
-export class QuotationManagementComponent {
+export class QuotationManagementComponent implements OnDestroy {
   @ViewChild('menu') menu: Menu;
   @ViewChild('moreActionsMenu') moreActionsMenu: Menu;
   @ViewChild('quotationTable') quotationTable!: Table;
@@ -71,6 +71,29 @@ export class QuotationManagementComponent {
   isClientSearchModalVisible = false;
   remainingMenuItems: MenuItem[] = [];
   public currencyObj: NgxCurrencyConfig;
+  
+  // Tooltip descriptions for actions
+  actionDescriptions: { [key: string]: string } = {
+    'Edit': 'Change client details and process the quote',
+    'Revise': 'Create another version of this quote',
+    'Reuse': 'Use the existing quote details to create a new quote',
+    'View': 'Have a look at the quote details, without making any changes',
+    'Reassign': 'Assign to another user'
+  };
+
+  // Action icons mapping
+  actionIcons: { [key: string]: string } = {
+    'Edit': 'pi pi-pencil',
+    'Revise': 'pi pi-sync',
+    'Reuse': 'pi pi-replay',
+    'View': 'pi pi-eye',
+    'Reassign': 'pi pi-user-edit'
+  };
+
+  // Tooltip state management
+  hoveredAction: string | null = null;
+  tooltipPosition = { x: 0, y: 0 };
+  private tooltipTimer: any;
 
 
 
@@ -113,12 +136,24 @@ export class QuotationManagementComponent {
     };
   }
 
-  ngOnDestroy(): void { }
+  // hide tooltip
+  immediateHideTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    this.hoveredAction = null;
+  }
+
+  ngOnDestroy(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+  }
 
   toggleMenu(event: Event, quotation: any) {
     this.selectedQuotation = quotation;
 
-    // Create base menu items
     const items = [
       {
         label: 'View',
@@ -126,7 +161,6 @@ export class QuotationManagementComponent {
       }
     ];
 
-    // Only add Edit Quote if status is Draft
     if (quotation.status === 'Draft') {
       items.push({
         label: 'Edit Quote',
@@ -555,6 +589,8 @@ export class QuotationManagementComponent {
     const items = [
       {
         label: 'View',
+        icon: 'pi pi-eye',
+        title: this.actionDescriptions['View'],
         command: () => this.viewQuote(quotation)
       }
     ];
@@ -563,6 +599,8 @@ export class QuotationManagementComponent {
     if (quotation.status === 'Draft') {
       items.push({
         label: 'Edit',
+        icon: 'pi pi-pencil',
+        title: this.actionDescriptions['Edit'],
         command: () => this.editQuote(quotation)
       });
     }
@@ -571,18 +609,26 @@ export class QuotationManagementComponent {
     items.push(
       {
         label: 'Revise',
+        icon: 'pi pi-refresh',
+        title: this.actionDescriptions['Revise'],
         command: () => this.reviseQuote(quotation)
       },
       {
         label: 'Reuse',
+        icon: 'pi pi-copy',
+        title: this.actionDescriptions['Reuse'],
         command: () => this.reuseQuote(quotation)
       },
       {
         label: 'Reassign',
+        icon: 'pi pi-user-edit',
+        title: this.actionDescriptions['Reassign'],
         command: () => this.reassignQuote(quotation)
       },
       {
         label: 'Edit',
+        icon: 'pi pi-pencil',
+        title: this.actionDescriptions['Edit'],
         command: () => this.process(quotation)
       }
       // {
@@ -636,6 +682,70 @@ export class QuotationManagementComponent {
     if (this.quotationTable) {
       this.quotationTable.filterGlobal(filterValue, 'contains');
     }
+  }
+
+    // Tooltip methods
+  showTooltip(actionLabel: string, event: MouseEvent): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    
+    this.hoveredAction = actionLabel;
+    this.updateTooltipPosition(event);
+  }
+
+  hideTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+    
+    this.tooltipTimer = setTimeout(() => {
+      this.hoveredAction = null;
+      this.tooltipTimer = null;
+    }, 5);
+  }
+
+  updateTooltipPosition(event: MouseEvent): void {
+    const tooltipWidth = 300; 
+    const tooltipHeight = 60; 
+    const offset = 15;
+    
+    let x = event.clientX - (tooltipWidth / 2);
+    let y = event.clientY - tooltipHeight - offset;
+    
+    if (x < 10) x = 10;
+    if (x + tooltipWidth > window.innerWidth - 10) x = window.innerWidth - tooltipWidth - 10;
+    if (y < 10) y = event.clientY + offset; 
+    
+    this.tooltipPosition = { x, y };
+  }
+
+  getTooltipDescription(actionLabel: string): string {
+    return this.actionDescriptions[actionLabel] || '';
+  }
+
+  getActionIcon(actionLabel: string): string {
+    return this.actionIcons[actionLabel] || 'pi pi-info-circle';
+  }
+
+  showMenuTooltip(actionLabel: string, event: MouseEvent): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    
+    this.hoveredAction = actionLabel;
+    this.updateTooltipPosition(event);
+  }
+
+  hideMenuTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+    
+    this.hoveredAction = null;
+    this.tooltipTimer = null;
   }
 
 
