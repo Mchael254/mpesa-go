@@ -32,7 +32,6 @@ export class FinancialComponent implements OnInit {
   @Input() clientDetails: ClientDTO;
   @Input() financialDetailsConfig: any
   @Input() formFieldsConfig: any;
-  @Input() accountCode: number;
   @Input() countryId: number;
   @Input() group: FormGroupsDto;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
@@ -164,6 +163,7 @@ export class FinancialComponent implements OnInit {
     const tableData = [];
     this.payeeDetails.forEach((pay: Payee) => {
       const payee = {
+        businessPersonIdCorporate: pay.code,
         overview_full_name: pay.name,
         overview_doc_id_no: null,
         overview_mobile_no: pay.mobileNo,
@@ -203,6 +203,15 @@ export class FinancialComponent implements OnInit {
    */
   handlePayeeDelete(row: any): void {
     log.info('handlePayeeDelete...' );
+    this.clientService.deletePayee(row.businessPersonIdCorporate).subscribe({
+      next: () => {
+        this.table.data = this.table.data.filter(person => person.businessPersonIdCorporate != row.businessPersonIdCorporate);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted payee');
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err?.error?.errors[0]);
+      }
+    });
   }
 
 

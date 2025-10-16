@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild, OnDestroy } from '@angular/core';
 import { QuotationList, Status, StatusEnum } from '../../data/quotationsDTO';
 import { Logger, UtilService } from '../../../../../../shared/services';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
@@ -24,7 +24,7 @@ const log = new Logger('QuotationConcersionComponent');
 })
 
 
-export class QuotationManagementComponent {
+export class QuotationManagementComponent implements OnDestroy {
   @ViewChild('menu') menu: Menu;
   @ViewChild('moreActionsMenu') moreActionsMenu: Menu;
   @ViewChild('quotationTable') quotationTable!: Table;
@@ -164,12 +164,15 @@ export class QuotationManagementComponent {
     this.hoveredAction = null;
   }
 
-  ngOnDestroy(): void { }
+  ngOnDestroy(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+  }
 
   toggleMenu(event: Event, quotation: any) {
     this.selectedQuotation = quotation;
 
-    // Create base menu items
     const items = [
       {
         label: 'View',
@@ -177,7 +180,6 @@ export class QuotationManagementComponent {
       }
     ];
 
-    // Only add Edit Quote if status is Draft
     if (quotation.status === 'Draft') {
       items.push({
         label: 'Edit Quote',
@@ -661,6 +663,8 @@ reuseQuotation(selectedQuotation: any) {
     const items = [
       {
         label: 'View',
+        icon: 'pi pi-eye',
+        title: this.actionDescriptions['View'],
         command: () => this.viewQuote(quotation)
       }
     ];
@@ -669,6 +673,8 @@ reuseQuotation(selectedQuotation: any) {
     if (quotation.status === 'Draft') {
       items.push({
         label: 'Edit',
+        icon: 'pi pi-pencil',
+        title: this.actionDescriptions['Edit'],
         command: () => this.editQuote(quotation)
       });
     }
@@ -685,10 +691,14 @@ reuseQuotation(selectedQuotation: any) {
       },
       {
         label: 'Reassign',
+        icon: 'pi pi-user-edit',
+        title: this.actionDescriptions['Reassign'],
         command: () => this.reassignQuote(quotation)
       },
       {
         label: 'Edit',
+        icon: 'pi pi-pencil',
+        title: this.actionDescriptions['Edit'],
         command: () => this.process(quotation)
       }
       // {

@@ -104,8 +104,6 @@ export class EntityBasicInfoComponent {
 
   setCurrentStatus(statuses: StatusDTO[]): void {
     const activeStatus = (this.partyAccountDetails?.status)?.toUpperCase();
-    // const activeStatus = 'D'.toUpperCase();
-    // this.partyAccountDetails.status = 'D'
 
     switch (activeStatus) {
       case 'A':
