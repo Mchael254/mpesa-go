@@ -14,7 +14,6 @@ export class OverviewTableComponent {
   @Input() subGroup: FormSubGroupsDto;
   @Input() table;
   @Input() language: string;
-
   @Output() rowClicked = new EventEmitter<any>();
   @Output() deleteBtnClicked = new EventEmitter<any>();
 
@@ -22,10 +21,6 @@ export class OverviewTableComponent {
   selectedRow: any;
 
   visible: boolean = false;
-
-  showDialog() {
-    this.visible = true;
-  }
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -43,7 +38,6 @@ export class OverviewTableComponent {
   }
 
   triggerDeleteConfirmation(rowData: any) {
-    log.info('delete button clicked', rowData);
     this.visible = true;
     this.selectedRow = rowData;
   }

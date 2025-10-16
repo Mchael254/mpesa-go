@@ -189,6 +189,13 @@ export class ClientService {
     );
   }
 
+  deleteOwnershipRecord(id: number): Observable<{message: string}> {
+    return this.api.DELETE<{message: string}>(
+      `account-ownership/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
   deleteCr12Record(id: number): Observable<{message: string}> {
     return this.api.DELETE<{message: string}>(
       `cr12/${id}`,
@@ -199,6 +206,13 @@ export class ClientService {
   deleteContactPerson(id: number): Observable<{message: string}> {
     return this.api.DELETE<{message: string}>(
       `contact-persons/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    )
+  }
+
+  deletePayee(id: number): Observable<{message: string}> {
+    return this.api.DELETE<{message: string}>(
+      `business-persons/${id}`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     )
   }

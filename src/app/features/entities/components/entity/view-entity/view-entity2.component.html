@@ -14,15 +14,8 @@
             >
               {{ tab.label[language] | titlecase }}
             </span>
-          <span
-            id="edit-tab-btn"
-            *ngIf="(tab.originalLabel === selectedTab || tab.originalLabel === selectedSubTab)"
-            class="m-2"
-            (click)="openEditModal(tab.subModuleId)"
-          >
-            <i class="fa fa-pencil"></i>
-            </span>
         </ng-template>
+        
         <ng-container
           *ngIf="
           entityPartyIdDetails &&
@@ -118,7 +111,6 @@
           <app-financial
             #financialRef
             [clientDetails]="clientDetails"
-            [accountCode]="clientDetails.clientCode"
             [group]="tab"
             [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
             [countryId]="clientDetails?.address?.countryId"
@@ -143,126 +135,3 @@
     </ng-container>
   </p-tabView>
 </div>
-
-<!--
-<div *ngIf="dynamicDisplay" class="entity-container">
-  <ng-container *ngFor="let display of dynamicDisplay">
-    <p-tabView>
-      <ng-container *ngFor="let tab of display?.tabs">
-        <p-tabPanel>
-          <ng-template pTemplate="header" >
-            <span
-              class="m-2 tab-title" (click)="selectTab(tab)"
-              [ngClass]="{
-                'text-primary': tab.title === selectedTab || tab.title === selectedSubTab,
-                'text-dark': tab.title !== selectedTab || tab.title !== selectedSubTab
-                }"
-            >
-              {{ tab.label[language] | titlecase }}
-            </span>
-            <span
-              id="edit-tab-btn"
-              *ngIf="(tab.title === selectedTab || tab.title === selectedSubTab) && tab.title !== 'wealth_aml'"
-              class="m-2"
-              (click)="openEditModal(tab.title)"
-            >
-              <i class="fa fa-pencil"></i>
-            </span>
-          </ng-template>
-          <ng-container
-            *ngIf="
-            entityPartyIdDetails &&
-            entityAccountIdDetails &&
-            clientDetails &&
-            unAssignedPartyTypes &&
-            clientDetails &&
-            tab.title === 'overview'
-          "
-          >
-            <app-entity-basic-info
-              [unAssignedPartyTypes]="unAssignedPartyTypes"
-              [partyAccountDetails]="partyAccountDetails"
-              [entityAccountIdDetails]="entityAccountIdDetails"
-              [entityPartyIdDetails]="entityPartyIdDetails"
-              [clientDetails]="clientDetails"
-              (assignRole)="onAssignRole($event)"
-              (partyTypeRole)="selectPartyTypeRole($event)"
-              [overviewConfig]="tab"
-            ></app-entity-basic-info>
-          </ng-container>
-
-          <ng-container *ngIf="
-            clientDetails &&
-            tab.title==='prime_identity';"
-          >
-            <app-prime-identity
-              #primeIdentityRef
-              [partyAccountDetails]="partyAccountDetails"
-              [clientDetails]="clientDetails"
-              [primeDetailsConfig]="tab"
-              [formFieldsConfig]="editPrimeDetailsFormConfig"
-              [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
-            >
-            </app-prime-identity>
-          </ng-container>
-          <ng-container *ngIf="
-            clientDetails &&
-            editContactFormConfig?.fields.length > 0 &&
-            tab.title==='contact'"
-          >
-            <app-contact
-              #contactRef
-              [contactDetails]="clientDetails?.contactDetails"
-              [accountCode]="clientDetails.clientCode"
-              [contactDetailsConfig]="tab"
-              [formFieldsConfig]="editContactFormConfig"
-            ></app-contact>
-          </ng-container>
-
-          <ng-container *ngIf="
-            clientDetails &&
-            tab.title==='address';"
-          >
-            <app-address
-              #addressRef
-              [addressDetails]="clientDetails.address"
-              [accountCode]="clientDetails.clientCode"
-              [addressDetailsConfig]="tab"
-              [formFieldsConfig]="editAddressFormConfig"
-            ></app-address>
-          </ng-container>
-
-          <ng-container *ngIf="
-            clientDetails &&
-            tab.title==='financial'"
-          >
-            <app-financial
-              #financialRef
-              [financialDetails]="clientDetails.paymentDetails"
-              [accountCode]="clientDetails.clientCode"
-              [financialDetailsConfig]="tab"
-              [formFieldsConfig]="editFinancialFormConfig"
-              [countryId]="clientDetails?.address?.countryId"
-            >
-            </app-financial>
-          </ng-container>
-
-          <ng-container *ngIf="
-            clientDetails &&
-            tab.title==='wealth_aml'"
-          >
-            <app-wealth-aml
-              #wealthAmlRef
-              [wealthAmlDetails]="clientDetails.wealthAmlDetails"
-              [accountCode]="clientDetails.clientCode"
-              [wealthAmlDetailsConfig]="tab"
-              [formFieldsConfig]="editWealthAmlFormConfig"
-            ></app-wealth-aml>
-          </ng-container>
-
-        </p-tabPanel>
-      </ng-container>
-    </p-tabView>
-  </ng-container>
-</div>
--->

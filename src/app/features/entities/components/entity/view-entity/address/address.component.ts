@@ -28,7 +28,6 @@ export class AddressComponent implements OnInit {
   @Input() clientDetails: ClientDTO;
   @Input() addressDetailsConfig: any
   @Input() formFieldsConfig: any;
-  // @Input() accountCode: number;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() group: FormGroupsDto;
   addressDetails: AddressModel;
@@ -54,7 +53,6 @@ export class AddressComponent implements OnInit {
   language: string = 'en';
   editForm: FormGroup;
 
-  displayAddressDetails;
   fields: ConfigFormFieldsDto[];
   tableHeaders: ConfigFormFieldsDto[];
   table: { cols: any[], data: any[] } = { cols: [], data: [] };
@@ -68,7 +66,6 @@ export class AddressComponent implements OnInit {
     private countryService: CountryService,
     private globalMessagingService: GlobalMessagingService,
     private clientService: ClientService,
-    private cdr: ChangeDetectorRef,
   ) {
     this.utilService.currentLanguage.subscribe(lang => this.language = lang);
   }
@@ -407,37 +404,5 @@ export class AddressComponent implements OnInit {
         break;
     }
   }
-
-  /*addBranch(): void {
-    const branch = {
-      // code: 0,
-      clientCode: this.clientDetails.clientCode,
-      shortDesc: "Test Br",
-      countryId: 165,
-      stateId: 24,
-      townId: 532,
-      physicalAddress: "Test Main Street, Nairobi",
-      postalAddress: "P.O. Box 4567",
-      postalCode: "00100",
-      email: "contact@branch.com",
-      landlineNumber: "+254204567890",
-      mobileNumber: "+254712345678",
-      branchName: "Test Branch"
-    };
-
-
-    const client = {
-      clientCode: this.clientDetails.clientCode,
-      partyAccountCode: this.clientDetails.partyAccountCode,
-      partyId: this.clientDetails.partyId,
-      branches: [branch]
-    }
-
-    this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
-      next: data => {
-        log.info('add branch ', data);
-      }
-    })
-  }*/
 
 }
