@@ -18,7 +18,6 @@ import {
   DynamicScreenSetupDto,
   FormGroupsDto, FormSubGroupsDto, MultilingualText, PresentationType
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
-// import {Group} from "../../../../data/form-config.model";
 import {ClientDTO, ContactDetails, ContactPerson} from "../../../../data/ClientDTO";
 
 const log = new Logger('ContactComponent');
@@ -34,7 +33,6 @@ export class ContactComponent implements OnInit {
   @ViewChild('closeButton') closeButton!: ElementRef<HTMLButtonElement>;
 
   @Input() clientDetails: ClientDTO;
-  // @Input() accountCode: number;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() group: FormGroupsDto;
 
@@ -325,36 +323,5 @@ export class ContactComponent implements OnInit {
     });
     this.closeButton.nativeElement.click();
   }
-
-  /*addContactPerson(): void {
-    const contactPerson = { // demo da
-      // code: 2950,
-      clientCode: this.clientDetails.clientCode,
-      clientTitleCode: 25,
-      clientTitle: null,
-      name: "Reuben James Zavier",
-      idNumber: "43655334",
-      email: "",
-      mobileNumber: "+254742444542",
-      wef: "2025-10-06T10:10:03.000+00:00",
-      wet: "2025-12-06T10:10:03.000+00:00",
-      postalAddress: "14",
-      physicalAddress: "kimilili",
-      sectorCode: 468
-    };
-
-    const client = {
-      clientCode: this.clientDetails.clientCode,
-      partyAccountCode: this.clientDetails.partyAccountCode,
-      partyId: this.clientDetails.partyId,
-      contactPersons: [contactPerson]
-    }
-
-    this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
-      next: data => {
-        log.info('addContactPerson', data);
-      }
-    })
-  }*/
 
 }
