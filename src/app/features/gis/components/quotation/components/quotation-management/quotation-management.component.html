@@ -1,35 +1,11 @@
+
 <p class="titleMain mt-3 ms-4">{{ 'gis.quotation.quotation_management' | translate }}</p>
-<div class=" mx-4 mt-n1">
+<div class=" mx-4 mt-n1" (click)="immediateHideTooltip()">
   <div class="card mb-3" style=" position: relative;">
     <div class="card-body">
       <div class="row mb-2">
         <div class="col-7">
-          <!-- <div>
-                  <div class="row">
-                    <div class="col-8">
-                      <div class="input-group mb-3" style="font-size: 15px">
-                        <span class="input-group-text" id="basic-addon1">
-                          <i class="fa-solid fa-magnifying-glass"></i>
-                        </span>
-                        <input style="font-size: 12px !important" type="text" class="form-control" placeholder="Search"
-                          aria-label="Username" aria-describedby="basic-addon1" />
-                      </div>
-                    </div>
-                    <div class="col-4">
-                      <div class="input-group mb-3">
-                        <label class="input-group-text" for="inputGroupSelect01" style="font-size: 11px !important">Sort
-                          by:</label>
-                        <select style="font-size: 11px;" class="form-select" id="inputGroupSelect01">
-                          <option selected>
-                            Status
-                          </option>
-                          <option></option>
-        
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div> -->
+         
         </div>
 
         <div class="col-5">
@@ -160,7 +136,7 @@
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-quotation>
-          <tr style="cursor: pointer">
+          <tr>
             <td>{{quotation.quotationNumber}}</td>
             <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">
               {{quotation.clientName |sentenceCase}}</td>
@@ -171,30 +147,57 @@
             <td>{{quotation.toDate}}</td>
 
             <td class="text-end" style="padding-top: 0; padding-bottom: 0;">
-              <span class="action-buttons-container d-flex align-items-center justify-content-end gap-2">
-                <!-- Display first 3 actions as text links -->
-                <ng-container *ngFor="let item of getFirstThreeActions(quotation); let i = index">
-                  <a href="javascript:void(0)" class="text-decoration-none text-primary small fw-medium"
-                    (click)="executeAction(item, quotation)" [title]="item.label">
-                    {{ item.label }}
-                  </a>
-                  <span *ngIf="i < getFirstThreeActions(quotation).length - 1" class="text-muted"></span>
-                </ng-container>
+              <!-- DEBUG: Direct test button (remove after testing) -->
+              <!-- <button class="btn btn-xs btn-outline-success me-2" (click)="viewQuote(quotation)" style="font-size: 10px; padding: 2px 4px;">DEBUG VIEW</button> -->
 
-                <!-- Show ellipsis if there are more than 3 actions -->
-                <ng-container *ngIf="hasMoreThanThreeActions(quotation)">
-                  <span class="text-muted"></span>
-                  <button type="button" class="btn btn-sm p-0 text-primary" (click)="showMoreActions($event, quotation)"
-                    style="background: none; border: none; font-size: 0.875rem;">
-                    <i class="pi pi-ellipsis-h"></i>
-                  </button>
-                </ng-container>
+              <div class="action-buttons-container d-flex align-items-center justify-content-end gap-1"
+                (mouseleave)="hideTooltip()">
+                <!-- Display first 3 actions as text links -->
+                <!-- View Action -->
+                <button type="button"
+                  class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1"
+                  (click)="immediateHideTooltip(); viewQuote(quotation)" (mouseenter)="showTooltip('View', $event)"
+                  (mouseleave)="hideTooltip()" (mousemove)="updateTooltipPosition($event)">
+                  View
+                </button>
+          
+                <!-- Revise Action -->
+                <button type="button"
+                  class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1"
+                  (click)="immediateHideTooltip(); reviseQuotation(quotation)" (mouseenter)="showTooltip('Revise', $event)"
+                  (mouseleave)="hideTooltip()" (mousemove)="updateTooltipPosition($event)">
+                  Revise
+                </button>
+
+                <!-- Reuse Action -->
+                <button type="button"
+                  class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1"
+                  (click)="immediateHideTooltip(); reuseQuotation(quotation)" (mouseenter)="showTooltip('Reuse', $event)"
+                  (mouseleave)="hideTooltip()" (mousemove)="updateTooltipPosition($event)">
+                  Reuse
+                </button>
+
+                <!-- Show ellipsis for more actions -->
+                <span class="text-muted mx-2" style="font-size: 0.75rem;"></span>
+                <a href="javascript:void(0)" class="text-primary action-link"
+                  (click)="showMoreActions($event, quotation)"
+                  style="font-size: 0.875rem; text-decoration: none; padding: 2px 4px;">
+                  <i class="pi pi-ellipsis-h"></i>
+                </a>
 
                 <!-- Popup menu for additional actions -->
                 <p-menu #moreActionsMenu [popup]="true" [model]="remainingMenuItems" appendTo="body"
                   styleClass="additional-actions-menu">
+                  <ng-template pTemplate="item" let-item>
+                    <a class="p-menuitem-link d-flex align-items-center text-decoration-none"
+                      (click)="immediateHideTooltip(); item.command(); moreActionsMenu.hide()"
+                      (mouseenter)="showMenuTooltip(item.label, $event)" (mouseleave)="hideMenuTooltip()"
+                      (mousemove)="updateTooltipPosition($event)" style="padding: 0.5rem 1rem; color: #495057;">
+                      <span>{{ item.label }}</span>
+                    </a>
+                  </ng-template>
                 </p-menu>
-              </span>
+              </div>
             </td>
           </tr>
         </ng-template>
@@ -210,6 +213,13 @@
         </ng-template>
       </p-table>
     </div>
+  </div>
+
+  <!-- Custom Tooltip -->
+  <div *ngIf="hoveredAction" class="custom-tooltip" [class.show]="hoveredAction" [style.left.px]="tooltipPosition.x"
+    [style.top.px]="tooltipPosition.y">
+    <i [class]="getActionIcon(hoveredAction)" class="tooltip-icon"></i>
+    <span class="tooltip-text">{{ getTooltipDescription(hoveredAction) }}</span>
   </div>
 
   <br>

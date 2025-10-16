@@ -7,7 +7,7 @@ import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
 import { MenuService } from '../../../../../base/services/menu.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
-import { MenuItem } from 'primeng/api';
+import { MenuItem,MenuItemCommandEvent } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from 'ngx-currency';
@@ -74,6 +74,29 @@ export class QuotationManagementComponent {
   isClientSearchModalVisible = false;
   remainingMenuItems: MenuItem[] = [];
   public currencyObj: NgxCurrencyConfig;
+  
+  // Tooltip descriptions for actions
+  actionDescriptions: { [key: string]: string } = {
+    'Edit': 'Change client details and process the quote',
+    'Revise': 'Create another version of this quote',
+    'Reuse': 'Use the existing quote details to create a new quote',
+    'View': 'Have a look at the quote details, without making any changes',
+    'Reassign': 'Assign to another user'
+  };
+
+  // Action icons mapping
+  actionIcons: { [key: string]: string } = {
+    'Edit': 'pi pi-pencil',
+    'Revise': 'pi pi-sync',
+    'Reuse': 'pi pi-replay',
+    'View': 'pi pi-eye',
+    'Reassign': 'pi pi-user-edit'
+  };
+
+  // Tooltip state management
+  hoveredAction: string | null = null;
+  tooltipPosition = { x: 0, y: 0 };
+  private tooltipTimer: any;
   currencyDelimiter:any;
   defaultCurrencyName: string;
   defaultCurrencySymbol: string;
@@ -129,6 +152,16 @@ export class QuotationManagementComponent {
       nullable: true,
       align: 'left',
     };
+  }
+
+
+  // hide tooltip
+  immediateHideTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    this.hoveredAction = null;
   }
 
   ngOnDestroy(): void { }
@@ -671,6 +704,21 @@ reuseQuotation(selectedQuotation: any) {
     return items;
   }
 
+   updateTooltipPosition(event: MouseEvent): void {
+    const tooltipWidth = 300; 
+    const tooltipHeight = 60; 
+    const offset = 15;
+    
+    let x = event.clientX - (tooltipWidth / 2);
+    let y = event.clientY - tooltipHeight - offset;
+    
+    if (x < 10) x = 10;
+    if (x + tooltipWidth > window.innerWidth - 10) x = window.innerWidth - tooltipWidth - 10;
+    if (y < 10) y = event.clientY + offset; 
+    
+    this.tooltipPosition = { x, y };
+  }
+
   getFirstThreeActions(quotation: any): MenuItem[] {
     const allActions = this.getAllActions(quotation);
     return allActions.slice(0, 3);
@@ -711,6 +759,42 @@ reuseQuotation(selectedQuotation: any) {
     }
   }
 
+  //  getuser(): void {
+  //   this.user = this.authService.getCurrentUserName();
+  //   this.userDetails = this.authService.getCurrentUser();
+  //   log.info('Login UserDetails', this.userDetails);
+  //   this.currencyDelimiter = this.userDetails?.currencyDelimiter;
+  //   log.debug('Organization currency delimiter', this.currencyDelimiter);
+  //   sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
+  // }
+
+
+  getActionIcon(actionLabel: string): string {
+    return this.actionIcons[actionLabel] || 'pi pi-info-circle';
+  }
+
+  
+
+  showMenuTooltip(actionLabel: string, event: MouseEvent): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    
+    this.hoveredAction = actionLabel;
+    this.updateTooltipPosition(event);
+  }
+
+  hideMenuTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+    
+    this.hoveredAction = null;
+    this.tooltipTimer = null;
+
+  }
+  
    getuser(): void {
     this.user = this.authService.getCurrentUserName();
     this.userDetails = this.authService.getCurrentUser();
@@ -750,6 +834,38 @@ reuseQuotation(selectedQuotation: any) {
         }
       });
   }
+
+  hideTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+    
+    this.tooltipTimer = setTimeout(() => {
+      this.hoveredAction = null;
+      this.tooltipTimer = null;
+    }, 5);
+  }
+
+
+  getTooltipDescription(actionLabel: string): string {
+    return this.actionDescriptions[actionLabel] || '';
+  }
+
+ 
+
+ // Tooltip methods
+  showTooltip(actionLabel: string, event: MouseEvent): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    
+    this.hoveredAction = actionLabel;
+    this.updateTooltipPosition(event);
+  }
+
+
+
 
 
 }
