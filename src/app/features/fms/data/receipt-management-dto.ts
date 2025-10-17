@@ -202,3 +202,8 @@ export interface shareReceiptDTO{
   receiptNumber:string;
   orgCode:string;
 }
+
+export interface GLAccountDTO {
+  account_number: string;
+  account_name: string;
+}

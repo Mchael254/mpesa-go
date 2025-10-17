@@ -165,3 +165,22 @@ export enum PresentationType {
   table_columns = "table_columns",
   fields_and_table_columns = "fields_and_table_columns",
 }
+
+export enum FieldType {
+  text = "text",
+  number = "number",
+  email = "email",
+  password = "password",
+  date = "date",
+  datetime = "datetime",
+  select = "select",
+  multi_select = "multi_select",
+  checkbox = "checkbox",
+  radio = "radio",
+  textarea = "textarea",
+  file = "file",
+  hidden = "hidden",
+  tel = "tel",
+  button = "button",
+  table_select = "table_select",
+}
