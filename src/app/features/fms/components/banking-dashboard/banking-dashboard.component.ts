@@ -25,8 +25,8 @@ export class BankingDashboardComponent {
       bankAcc: '2034',
       amount: 3400,
       status: 'processed',
-      assignee: 'frank',
-      date: new Date('2000-02-20'),
+      assignee: 'jerry',
+      date: new Date('2000-12-30'),
     },
     {
       batchNo: 'BL34',
@@ -34,8 +34,8 @@ export class BankingDashboardComponent {
       bankAcc: '8684',
       amount: 1000,
       status: 'pending',
-      assignee: 'frank',
-      date: new Date('2000-02-20'),
+      assignee: 'tom',
+      date: new Date('2000-11-10'),
     },
     {
       batchNo: 'BL221',
@@ -43,8 +43,8 @@ export class BankingDashboardComponent {
       bankAcc: '7911X',
       amount: 8889,
       status: 'processed',
-      assignee: 'frank',
-      date: new Date('2000-02-20'),
+      assignee: 'assignee1',
+      date: new Date('2017-12-12'),
     },
     {
       batchNo: 'ML221',
@@ -52,8 +52,8 @@ export class BankingDashboardComponent {
       bankAcc: '7911X',
       amount: 8889,
       status: 'processed',
-      assignee: 'frank',
-      date: new Date('2000-02-20'),
+      assignee: 'assignee2',
+      date: new Date('2023-01-03'),
     },
     {
       batchNo: 'OL221',
@@ -61,8 +61,8 @@ export class BankingDashboardComponent {
       bankAcc: '7911X',
       amount: 8889,
       status: 'processed',
-      assignee: 'frank',
-      date: new Date('2000-02-20'),
+      assignee: 'erick',
+      date: new Date('2019-02-20'),
     },
     {
       batchNo: 'LL221',
@@ -70,8 +70,8 @@ export class BankingDashboardComponent {
       bankAcc: '7911X',
       amount: 8889,
       status: 'processed',
-      assignee: 'frank',
-      date: new Date('2000-02-20'),
+      assignee: 'user2',
+      date: new Date('2020-05-26'),
     },
     {
       batchNo: 'cL221',
@@ -79,8 +79,8 @@ export class BankingDashboardComponent {
       bankAcc: '7911X',
       amount: 8889,
       status: 'processed',
-      assignee: 'frank',
-      date: new Date('2000-02-20'),
+      assignee: 'user3',
+      date: new Date('2025-05-21'),
     },
   ];
   filteredReceipts: receipt[] = this.receipts; // start as full list
@@ -89,54 +89,53 @@ export class BankingDashboardComponent {
   cols: any[]=[];
   selectedColumns: any[]=[];
   displayColumnDialog: boolean = false;
-first:number=0;
-totalRecords:number=this.filteredReceipts.length;
-rows:number=10;
+
+
   constructor(public translate: TranslateService, private router: Router) {}
   ngOnInit() {
     this.cols=[
-        { field: 'batchNo', header: 'Batch Number' },
-      { field: 'slipNo', header: 'Slip Number' },
-      { field: 'date', header: 'Date' },
-      { field: 'assignee', header: 'Assignee' },
-      { field: 'amount', header: 'Amount' },
-      { field: 'bankAcc', header: 'Bank Account' },
-      { field: 'status', header: 'Status' },
-      { field: 'actions', header: 'Actions' }
+        { field: 'batchNo', header: 'fms.receipting.batchNumber'},
+      { field: 'slipNo', header: 'fms.banking.slipNumber' },
+      { field: 'date', header: 'fms.banking.date' },
+      { field: 'assignee', header: 'serviceDesk.assignee' },
+      { field: 'amount', header: 'fms.receipting.amount' },
+      { field: 'bankAcc', header: 'fms.banking.bankAccount' },
+      { field: 'status', header: 'base.status' },
+      { field: 'actions', header: 'fms.receipting.actions' }
 
     ];
     this.selectedColumns=[...this.cols];
   }
  
- 
- next() {
-        this.first = this.first + this.rows;
-    }
- 
 
- navigateToBanking(): void {
-    this.router.navigate(['/home/fms/new-banking-process']);
-    
-  }
+ 
+get currentPageReportTemplate():string{
+  return this.translate.instant("fms.receipt-management.pageReport");
+}
+
   
 
 showColumnsDialogs(){
   this.displayColumnDialog=true;
 }
   filter(event: any, fieldName: any): any {
-    let inputValue = (event.target as HTMLInputElement).value.toLowerCase();
+    let inputValue = (event.target as HTMLInputElement).value;
 
     this.filteredReceipts = this.receipts.filter((rctobj) => {
       let fieldValue = rctobj[fieldName];
       if (fieldValue instanceof Date) {
         // Format the date consistently for comparison
-        fieldValue = fieldValue.toISOString().split('T')[0];
-      } else if (typeof fieldValue == 'number') {
-        fieldValue = Number(fieldValue);
-      } else if(typeof fieldValue == 'string'){
+        const formatted = fieldValue.toISOString().split('T')[0];
+        return formatted.includes(inputValue);
+      } else if (typeof fieldValue === 'number') {
+       
+        const inputNumber = String(inputValue);
+         return fieldValue.toString().includes(inputNumber);
+      } else if(typeof fieldValue === 'string'){
         fieldValue = fieldValue.toString();
+         return fieldValue.toLowerCase().includes(inputValue.toLowerCase());
       }
-      return fieldValue.includes(inputValue);
+     return false;
     });
   }
   clearFilter(): void {
@@ -144,7 +143,7 @@ showColumnsDialogs(){
   }
   
   onRow(){
-    console.log('selected receipt',this.selectedrct);
+    //console.log('selected receipt',this.selectedrct);
   }
 showColumns(){
  const element = document.getElementById("colModal");
@@ -154,6 +153,10 @@ showColumns(){
  modal.show();
  } 
 }
+ navigateToBanking(): void {
+    this.router.navigate(['/home/fms/new-banking-process']);
+    
+  }
 }
 export interface receipt {
   batchNo: string;

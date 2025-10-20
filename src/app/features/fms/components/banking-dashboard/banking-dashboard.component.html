@@ -56,24 +56,7 @@
           </div>
         </div>
       </p-dialog>
-      <!-- <div class="mb-3">
-        <p-button
-          type="button"
-          icon="pi pi-chevron-left"
-          styleClass="p-button-text"
-        />
-        <p-button
-          type="button"
-          icon="pi pi-refresh"
-          styleClass="p-button-text"
-        />
-        <p-button
-          type="button"
-          icon="pi pi-chevron-right"
-          (click)="next()"
-          styleClass="p-button-text"
-        />
-      </div> -->
+
       <div class="card">
         <p-table
           [value]="filteredReceipts"
@@ -85,165 +68,48 @@
           sortMode="multiple"
           [(selection)]="selectedrct"
           [paginator]="true"
-          [first]="first"
           [rows]="5"
-          [rowsPerPageOptions]="[10, 20, 40]"
+          [rowsPerPageOptions]="[10, 25, 50]"
           [showCurrentPageReport]="true"
-          currentPageReportTemplate="Showing {{ first }} to {last} of {{
-            totalRecords
-          }} entries"
+          [currentPageReportTemplate]="currentPageReportTemplate"
         >
           <ng-template pTemplate="header">
             <tr>
-              <th *ngFor="let col of selectedColumns" pSortableColumn="batchNo">
-                <div class="flex items-center gap-2">
-                  {{ col.header | translate }}
-                  <!-- <p-sortIcon[field] ="col.field" /> -->
-                  <p-sortIcon [field]="col.field"></p-sortIcon>
-                </div>
-              </th>
-              <!-- <th pSortableColumn="slipNo">
-                <div class="flex items-center gap-2">
-                  {{ "fms.banking.slipNumber" | translate }}
-                  <p-sortIcon field="slipNo" />
-                </div>
-              </th>
-              <th pSortableColumn="date">
-                <div class="flex items-center gap-2">
-                  {{ "fms.banking.date" | translate }}
-                  <p-sortIcon field="date" />
-                </div>
-              </th>
-              <th pSortableColumn="assignee">
-                <div class="flex items-center gap-2">
-                  {{ "serviceDesk.assignee" | translate }}
-                  <p-sortIcon field="assignee" />
-                </div>
-              </th>
-
-              <th pSortableColumn="amount">
-                <div class="flex items-center gap-2">
-                  {{ "fms.receipting.amount" | translate }}
-                  <p-sortIcon field="amount" />
-                </div>
-              </th>
-              <th pSortableColumn="bankAcc">
-                <div class="flex items-center gap-2">
-                  {{ "mngt_wrkflw.claimDetails.bankAccount" | translate }}
-                  <p-sortIcon field="bankAcc" />
-                </div>
-              </th>
-              <th pSortableColumn="status">
-                <div class="flex items-center gap-2">
-                  {{ "base.status" | translate }}
-                  <p-sortIcon field="status" />
-                </div>
-              </th>
-              <th>
-                <div class="flex items-center gap-2">
-                  {{ "fms.receipting.actions" | translate }}
-                </div>
-              </th> -->
-            </tr>
-            <tr>
-              <!-- Filter row -->
-              <!-- <th>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'batchNo')"
-                  (input)="filter($event, 'batchNo')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
-                />
-              </th>
-
-              <th>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'slipNo')"
-                  (input)="filter($event, 'slipNo')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
-                />
-              </th>
-              <th>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'date')"
-                  (input)="filter($event, 'date')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
-                />
-              </th>
-              <th>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'assignee')"
-                  (input)="filter($event, 'assignee')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
-                />
-              </th>
-              <th>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'amount')"
-                  (input)="filter($event, 'amount')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
-                />
-              </th>
-              <th>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'bankAcc')"
-                  (input)="filter($event, 'bankAcc')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
-                />
-              </th>
-              <th>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'status')"
-                  (input)="filter($event, 'status')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
-                />
-              </th>
-              <th>
-                <button
-                  class="btn btn-outline-primary btn-sm"
-                  (click)="clearFilter()"
+              <th *ngFor="let col of selectedColumns">
+                <div
+                  class="flex items-center gap-2"
+                  [pSortableColumn]="col.field"
                 >
-                  {{ "fms.banking.clearFilter" | translate }}
-                </button>
-              </th> -->
+                  {{ col.header | translate }}
+                  <p-sortIcon
+                    *ngIf="col.field !== 'actions'"
+                    [field]="col.field"
+                  ></p-sortIcon>
+                </div>
+              </th>
+            </tr>
+            <!-- filter row -->
+            <tr>
               <th *ngFor="let col of selectedColumns">
                 <input
+                  [type]="col.field === 'amount' ? 'number' : 'text'"
                   *ngIf="col.field !== 'actions'"
-                  type="text"
                   class="form-control form-control-sm"
                   (keyup.enter)="filter($event, col.field)"
                   (input)="filter($event, col.field)"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
                 />
-
-                <button
-                  *ngIf="col.field === 'actions'"
-                  class="btn btn-outline-primary btn-sm"
-                  (click)="clearFilter()"
-                >
-                  {{ "fms.banking.clearFilter" | translate }}
-                </button>
+                <input
+                  *ngIf="col.field == 'actions'"
+                  class="form-control form-control-sm"
+                  disabled
+                />
               </th>
             </tr>
           </ng-template>
-
+          <!-- Use ngSwitch to handle special cases -->
           <ng-template pTemplate="body" let-receipt>
             <tr [pSelectableRow]="receipt" (click)="onRow()">
               <td *ngFor="let col of selectedColumns">
-                <!-- Use ngSwitch to handle special cases -->
                 <ng-container [ngSwitch]="col.field">
                   <ng-container *ngSwitchCase="'date'">
                     {{ receipt[col.field] | date : "yyyy-MM-dd" }}
@@ -256,13 +122,6 @@
                   </ng-container>
                 </ng-container>
               </td>
-              <!-- <td>{{ receipt.slipNo }}</td>
-              <td>{{ receipt.date | date : "yyyy-MM-dd" }}</td>
-              <td>{{ receipt.assignee }}</td>
-              <td>{{ receipt.amount }}</td>
-              <td>{{ receipt.bankAcc }}</td>
-              <td>{{ receipt.status }}</td>
-              <td><a class="btn">deposit</a></td> -->
             </tr>
           </ng-template>
         </p-table>

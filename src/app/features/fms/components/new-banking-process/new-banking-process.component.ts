@@ -17,6 +17,7 @@ export class NewBankingProcessComponent implements OnInit {
 steps = fmsStepsData.bankingSteps;
   paymentMethods = ['mpesa', 'cash', 'bank'];
 
+filteredReceipts:receiptDto[]=[];
   receiptData: receiptDto[] = [
     {
       receiptId: 'RO1',
@@ -35,9 +36,10 @@ steps = fmsStepsData.bankingSteps;
       date: new Date('2000/02/24'),
     },
   ];
+totalRecord:number= this.receiptData.length;
 
   selectedReceipt!: receiptDto;
-
+columns:any[];
   constructor(
     public translate: TranslateService,
     private fb: FormBuilder,
@@ -47,6 +49,17 @@ steps = fmsStepsData.bankingSteps;
 
   ngOnInit() {
     this.createBankingForm();
+   
+   
+    this.columns=[
+      {field:"receiptId",header:"fms.banking.receiptId"},
+      {field:"customer",header:"fms.banking.customer"},
+      {field:"amount",header:"fms.receipting.amount"},
+      {field:"collectionAcc",header:"fms.banking.collectionAcc"},
+      {field:"assignedTo",header:"fms.banking.assignedTo"},
+      {field:"date",header:"fms.date"},
+      {field:"actions",header:"fms.receipting.actions"}
+    ]
   }
 
   createBankingForm(): void {
@@ -56,7 +69,10 @@ steps = fmsStepsData.bankingSteps;
       paymentMethod: ['mpesa', Validators.required],
     });
   }
-
+get currentReportTemplate():string{
+  return this.translate.instant('fms.receipt-management.pageReport');
+  
+}
   onClickRetrieveRcts() {
     this.bankingForm.markAllAsTouched();
     if (!this.bankingForm.valid) {
@@ -72,10 +88,14 @@ steps = fmsStepsData.bankingSteps;
   navigateToBatch(): void {
     this.router.navigate(['/home/fms/process-batch']);
   }
+  showColumnsDialogs(){}
 
   onRowSelected(event: any): void {
     const s = (event.target as HTMLInputElement).value;
     //console.log('event', s);
+  }
+  back():void{
+    this.router.navigate(['/home/fms/banking-dashboard']);
   }
 }
 export interface receiptDto{

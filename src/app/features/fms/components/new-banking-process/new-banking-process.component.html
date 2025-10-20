@@ -27,7 +27,7 @@
       <h5 class="pt-2 pb-2 text-primary">
         {{ "fms.banking.retrieveReceipts" | translate }}
       </h5>
-
+      <button class="btn btn-primary" (click)="back()">back</button>
       <div class="mb-3">
         <form [formGroup]="bankingForm">
           <div class="row">
@@ -116,6 +116,9 @@
         <button class="btn btn-primary" (click)="onClickRetrieveRcts()">
           {{ "fms.banking.retrieveReceipts" | translate }}
         </button>
+        <span class="pt-2" (click)="showColumnsDialogs()">
+          <i class="fa-regular fa-square-caret-down"></i>
+        </span>
       </div>
       <p-table
         [value]="receiptData"
@@ -127,6 +130,11 @@
         (onRowSelect)="onRowSelected($event)"
         [resizableColumns]="true"
         [scrollable]="true"
+        [paginator]="true"
+        [rows]="5"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [currentPageReportTemplate]="currentReportTemplate"
       >
         <ng-template pTemplate="caption">
           <div
@@ -138,8 +146,8 @@
               </h5>
 
               <p class="text text-body-secondary">
-                Found {{ receiptData.length }} records.Please select record to
-                assign and create batches
+                Found {{ totalRecord }} records.Please select record to assign
+                and create batches
               </p>
             </div>
 
@@ -154,13 +162,7 @@
         <ng-template pTemplate="header">
           <tr>
             <th><p-tableHeaderCheckbox /></th>
-            <th>{{ "fms.banking.receiptId" | translate }}</th>
-            <th>{{ "fms.banking.date" | translate }}</th>
-            <th>{{ "fms.banking.customer" | translate }}</th>
-            <th>{{ "fms.receipting.amount" | translate }}</th>
-            <th>{{ "fms.banking.collectionAcc" | translate }}</th>
-            <th>{{ "entities.assigned_to" | translate }}</th>
-            <th>{{ "fms.receipting.actions" | translate }}</th>
+            <th *ngFor="let col of columns">{{ col.header | translate }}</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-receipt>
@@ -169,11 +171,11 @@
               <p-tableCheckbox [value]="receipt" />
             </td>
             <td>{{ receipt.receiptId }}</td>
-            <td>{{ receipt.date | date : "dd/MM/yyyy" }}</td>
             <td>{{ receipt.customer }}</td>
             <td>{{ receipt.amount }}</td>
             <td>{{ receipt.collectionAcc }}</td>
             <td>{{ receipt.assignedTo }}</td>
+            <td>{{ receipt.date | date : "dd/MM/yyyy" }}</td>
             <td>assign</td>
           </tr>
         </ng-template>
