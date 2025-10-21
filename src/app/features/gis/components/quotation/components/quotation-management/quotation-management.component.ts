@@ -7,7 +7,7 @@ import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
 import { MenuService } from '../../../../../base/services/menu.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
-import { MenuItem,MenuItemCommandEvent } from 'primeng/api';
+import { MenuItem, MenuItemCommandEvent } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from 'ngx-currency';
@@ -74,7 +74,7 @@ export class QuotationManagementComponent implements OnDestroy {
   isClientSearchModalVisible = false;
   remainingMenuItems: MenuItem[] = [];
   public currencyObj: NgxCurrencyConfig;
-  
+
   // Tooltip descriptions for actions
   actionDescriptions: { [key: string]: string } = {
     'Edit': 'Change client details and process the quote',
@@ -97,12 +97,12 @@ export class QuotationManagementComponent implements OnDestroy {
   hoveredAction: string | null = null;
   tooltipPosition = { x: 0, y: 0 };
   private tooltipTimer: any;
-  currencyDelimiter:any;
+  currencyDelimiter: any;
   defaultCurrencyName: string;
   defaultCurrencySymbol: string;
   defaultCurrency: CurrencyDTO;
-  user:any;
-  userDetails:any;
+  user: any;
+  userDetails: any;
   currency: CurrencyDTO[]
 
 
@@ -499,58 +499,58 @@ export class QuotationManagementComponent implements OnDestroy {
 
 
   reviseQuotation(selectedQuotation: any, createNew: 'Y' | 'N' = 'N') {
-  log.debug("Selected Quote to be revised:", selectedQuotation);
+    log.debug("Selected Quote to be revised:", selectedQuotation);
 
-  const quotationCode = selectedQuotation?.quotationCode;
-  if (!quotationCode) {
-    console.warn("Invalid quotation data:", selectedQuotation);
-    return;
-  }
+    const quotationCode = selectedQuotation?.quotationCode;
+    if (!quotationCode) {
+      console.warn("Invalid quotation data:", selectedQuotation);
+      return;
+    }
 
-  this.quotationService
-    .reviseQuote(quotationCode, createNew)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        log.debug("Response for revise",response)
-        
+    this.quotationService
+      .reviseQuote(quotationCode, createNew)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          log.debug("Response for revise", response)
+
           sessionStorage.setItem('revisedQuotation', JSON.stringify(response));
           // Navigate to quotation summary
           this.router.navigate(['/home/gis/quotation/quotation-summary']);
-        
-      },
-      error: (error) => {
-        log.error("Error revising quotation:", error);
-        this.globalMessagingService.displayErrorMessage('Error', error.error?.message || 'Failed to revise quotation');
-      }
-    });
-}
-  
-reuseQuotation(selectedQuotation: any) {
-  const quotationCode = selectedQuotation?.quotationCode;
-  if (!quotationCode) {
-    console.warn("Invalid quotation data:", selectedQuotation);
-    return;
+
+        },
+        error: (error) => {
+          log.error("Error revising quotation:", error);
+          this.globalMessagingService.displayErrorMessage('Error', error.error?.message || 'Failed to revise quotation');
+        }
+      });
   }
 
-  this.quotationService
-    .reviseQuote(quotationCode, 'Y') 
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-       sessionStorage.setItem('reusedQuotation', JSON.stringify(response));    
-       this.router.navigate(['/home/gis/quotation/quotation-details']);
-        
-      },
-      error: (error) => {
-        log.error("Error revising quotation:", error);
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          error.error?.message || 'Failed to revise quotation'
-        );
-      }
-    });
-}
+  reuseQuotation(selectedQuotation: any) {
+    const quotationCode = selectedQuotation?.quotationCode;
+    if (!quotationCode) {
+      console.warn("Invalid quotation data:", selectedQuotation);
+      return;
+    }
+
+    this.quotationService
+      .reviseQuote(quotationCode, 'Y')
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          sessionStorage.setItem('reusedQuotation', JSON.stringify(response));
+          this.router.navigate(['/home/gis/quotation/quotation-details']);
+
+        },
+        error: (error) => {
+          log.error("Error revising quotation:", error);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error?.message || 'Failed to revise quotation'
+          );
+        }
+      });
+  }
 
 
   clearQuotationNo(): void {
@@ -682,11 +682,17 @@ reuseQuotation(selectedQuotation: any) {
     // Add additional actions
     items.push(
       {
-        label: 'Revise Quote',
+        label: 'Revise',
+        icon: 'pi pi-refresh',
+        title: this.actionDescriptions['Revise'],
         command: () => this.reviseQuotation(quotation)
+
       },
       {
-        label: 'Reuse Quote',
+
+        label: 'Reuse',
+        icon: 'pi pi-copy',
+        title: this.actionDescriptions['Reuse'],
         command: () => this.reuseQuotation(quotation)
       },
       {
@@ -714,18 +720,18 @@ reuseQuotation(selectedQuotation: any) {
     return items;
   }
 
-   updateTooltipPosition(event: MouseEvent): void {
-    const tooltipWidth = 300; 
-    const tooltipHeight = 60; 
+  updateTooltipPosition(event: MouseEvent): void {
+    const tooltipWidth = 300;
+    const tooltipHeight = 60;
     const offset = 15;
-    
+
     let x = event.clientX - (tooltipWidth / 2);
     let y = event.clientY - tooltipHeight - offset;
-    
+
     if (x < 10) x = 10;
     if (x + tooltipWidth > window.innerWidth - 10) x = window.innerWidth - tooltipWidth - 10;
-    if (y < 10) y = event.clientY + offset; 
-    
+    if (y < 10) y = event.clientY + offset;
+
     this.tooltipPosition = { x, y };
   }
 
@@ -783,14 +789,14 @@ reuseQuotation(selectedQuotation: any) {
     return this.actionIcons[actionLabel] || 'pi pi-info-circle';
   }
 
-  
+
 
   showMenuTooltip(actionLabel: string, event: MouseEvent): void {
     if (this.tooltipTimer) {
       clearTimeout(this.tooltipTimer);
       this.tooltipTimer = null;
     }
-    
+
     this.hoveredAction = actionLabel;
     this.updateTooltipPosition(event);
   }
@@ -799,13 +805,13 @@ reuseQuotation(selectedQuotation: any) {
     if (this.tooltipTimer) {
       clearTimeout(this.tooltipTimer);
     }
-    
+
     this.hoveredAction = null;
     this.tooltipTimer = null;
 
   }
-  
-   getuser(): void {
+
+  getuser(): void {
     this.user = this.authService.getCurrentUserName();
     this.userDetails = this.authService.getCurrentUser();
     log.info('Login UserDetails', this.userDetails);
@@ -815,7 +821,7 @@ reuseQuotation(selectedQuotation: any) {
   }
 
 
-   fetchCurrencies() {
+  fetchCurrencies() {
     this.bankService.getCurrencies()
       .subscribe({
         next: (currencies: any[]) => {
@@ -837,8 +843,8 @@ reuseQuotation(selectedQuotation: any) {
 
             log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
             log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
-        }
-      },
+          }
+        },
         error: (error) => {
           console.error("Error fetching group users", error);
         }
@@ -849,7 +855,7 @@ reuseQuotation(selectedQuotation: any) {
     if (this.tooltipTimer) {
       clearTimeout(this.tooltipTimer);
     }
-    
+
     this.tooltipTimer = setTimeout(() => {
       this.hoveredAction = null;
       this.tooltipTimer = null;
@@ -861,15 +867,15 @@ reuseQuotation(selectedQuotation: any) {
     return this.actionDescriptions[actionLabel] || '';
   }
 
- 
 
- // Tooltip methods
+
+  // Tooltip methods
   showTooltip(actionLabel: string, event: MouseEvent): void {
     if (this.tooltipTimer) {
       clearTimeout(this.tooltipTimer);
       this.tooltipTimer = null;
     }
-    
+
     this.hoveredAction = actionLabel;
     this.updateTooltipPosition(event);
   }
