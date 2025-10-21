@@ -2153,53 +2153,116 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   productToDelete: any = null;
 
 
+  // deleteProduct() {
+  //   if (!this.productToDelete) return;
+
+
+  //   this.productDetails = this.productDetails.filter(
+  //     p => p.productCode.code !== this.productToDelete.productCode.code
+  //   );
+
+  //   sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+
+  //   //remove related clauses from allClausesMap
+  //   const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+  //   delete allClausesMap[this.productToDelete.productCode.code];
+  //   sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+
+
+  //   // Restore deleted product to dropdown
+  //   this.ProductDescriptionArray.push({
+  //     code: this.productToDelete.productCode.code,
+  //     description: this.productToDelete.productCode.description
+  //   });
+
+  //   // Persist the updated dropdown list again
+  //   sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+
+
+  //   if (this.productCode === this.productToDelete.productCode.code) {
+  //     const nextProduct = this.productDetails[0];
+  //     if (nextProduct) {
+  //       this.getProductClause({ code: nextProduct.productCode.code });
+  //       this.productCode = nextProduct.productCode.code;
+  //     } else {
+  //       this.productCode = null;
+  //       this.sessionClauses = [];
+  //       this.productClause = [];
+  //       this.nonMandatoryProductClause = [];
+  //       this.clausesModified = false;
+  //     }
+  //   }
+  //   if (!this.productDetails.length) {
+  //     this.columns = [];
+  //   }
+
+  //   this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
+
+  //   this.productToDelete = null;
+  // }
+
   deleteProduct() {
-    if (!this.productToDelete) return;
+  if (!this.productToDelete) return;
 
+  const quotationCodeStr = sessionStorage.getItem('quotationCode'); 
+  const quotationCode = quotationCodeStr ? Number(quotationCodeStr) : 0;
+  const quotationProductCode = this.productToDelete.productCode.code;
 
-    this.productDetails = this.productDetails.filter(
-      p => p.productCode.code !== this.productToDelete.productCode.code
-    );
+  // Call delete API before making local updates
+  this.quotationService.deleteQuotationProduct(quotationCode, quotationProductCode)
+    .subscribe({
+      next: (response) => {
+        // Proceed only if delete was successful
+        this.productDetails = this.productDetails.filter(
+          p => p.productCode.code !== this.productToDelete.productCode.code
+        );
 
-    sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+        sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
 
-    //remove related clauses from allClausesMap
-    const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
-    delete allClausesMap[this.productToDelete.productCode.code];
-    sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+        // Remove related clauses from allClausesMap
+        const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+        delete allClausesMap[this.productToDelete.productCode.code];
+        sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
 
+        // Restore deleted product to dropdown
+        this.ProductDescriptionArray.push({
+          code: this.productToDelete.productCode.code,
+          description: this.productToDelete.productCode.description
+        });
 
-    // Restore deleted product to dropdown
-    this.ProductDescriptionArray.push({
-      code: this.productToDelete.productCode.code,
-      description: this.productToDelete.productCode.description
-    });
+        // Persist updated dropdown list again
+        sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
 
-    // Persist the updated dropdown list again
-    sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+        // Handle active product switching
+        if (this.productCode === this.productToDelete.productCode.code) {
+          const nextProduct = this.productDetails[0];
+          if (nextProduct) {
+            this.getProductClause({ code: nextProduct.productCode.code });
+            this.productCode = nextProduct.productCode.code;
+          } else {
+            this.productCode = null;
+            this.sessionClauses = [];
+            this.productClause = [];
+            this.nonMandatoryProductClause = [];
+            this.clausesModified = false;
+          }
+        }
 
+        if (!this.productDetails.length) {
+          this.columns = [];
+        }
 
-    if (this.productCode === this.productToDelete.productCode.code) {
-      const nextProduct = this.productDetails[0];
-      if (nextProduct) {
-        this.getProductClause({ code: nextProduct.productCode.code });
-        this.productCode = nextProduct.productCode.code;
-      } else {
-        this.productCode = null;
-        this.sessionClauses = [];
-        this.productClause = [];
-        this.nonMandatoryProductClause = [];
-        this.clausesModified = false;
+        this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
+        this.productToDelete = null;
+      },
+      error: (err) => {
+        console.error('Error deleting product:', err);
+        this.globalMessagingService.displayErrorMessage('error', 'Failed to delete product. Please try again.');
       }
-    }
-    if (!this.productDetails.length) {
-      this.columns = [];
-    }
+    });
+}
 
-    this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
 
-    this.productToDelete = null;
-  }
 
   updateCoverTo(product: any) {
     if (product.coverFrom) {
