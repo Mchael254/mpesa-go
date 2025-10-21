@@ -1626,7 +1626,6 @@ export class RiskDetailsComponent {
           const quotationNo = data._embedded.quotationNo
           this.addProductClauses();
           this.selectedFile = null;
-          this.selectedSubclassCode = null;
 
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
@@ -1692,6 +1691,8 @@ export class RiskDetailsComponent {
           sessionStorage.setItem("selectedRiskCode", String(currentQuotationRiskCode));
           this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
           this.loadPersistedRiskClauses();
+          this.selectedSubclassCode = null;
+
 
         },
         // error: () => this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
