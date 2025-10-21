@@ -7,10 +7,13 @@ import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
 import { MenuService } from '../../../../../base/services/menu.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
-import { MenuItem } from 'primeng/api';
+import { MenuItem,MenuItemCommandEvent } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from 'ngx-currency';
+import { CurrencyDTO } from 'src/app/shared/data/common/currency-dto';
+import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 const log = new Logger('QuotationConcersionComponent');
 
@@ -96,6 +99,13 @@ export class QuotationManagementComponent implements OnDestroy {
   hoveredAction: string | null = null;
   tooltipPosition = { x: 0, y: 0 };
   private tooltipTimer: any;
+  currencyDelimiter:any;
+  defaultCurrencyName: string;
+  defaultCurrencySymbol: string;
+  defaultCurrency: CurrencyDTO;
+  user:any;
+  userDetails:any;
+  currency: CurrencyDTO[]
 
   // Actions cache to prevent infinite loops
   private actionsCache = new Map<string, MenuItem[]>();
@@ -109,6 +119,9 @@ export class QuotationManagementComponent implements OnDestroy {
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
     private utilService: UtilService,
+    public authService: AuthService,
+    public bankService: BankService,
+
 
   ) {
 
@@ -120,6 +133,11 @@ export class QuotationManagementComponent implements OnDestroy {
     this.dynamicSideBarMenu(this.quotationSubMenuList[6]);
     this.initializeCurrency();
     this.fetchGISQuotations();
+    this.getuser();
+    this.fetchCurrencies();
+
+
+
 
   }
 
@@ -140,6 +158,7 @@ export class QuotationManagementComponent implements OnDestroy {
       align: 'left',
     };
   }
+
 
   // hide tooltip
   immediateHideTooltip(): void {
@@ -175,10 +194,10 @@ export class QuotationManagementComponent implements OnDestroy {
 
     // Add the rest of the items
     items.push(
-      // {
-      //   label: 'Revise Quote',
-      //   command: () => this.printQuote(quotation)
-      // },
+      //  {
+      //    label: 'Revise Quote',
+      // command: () => this.reviseQuote(quotation)
+      //  },
       // {
       //   label: 'Reuse Quote',
       //   command: () => this.deleteQuote(quotation)
@@ -479,31 +498,86 @@ export class QuotationManagementComponent implements OnDestroy {
       this.gisQuotationList = [...this.originalQuotationList];
     }
   }
-  reviseQuote(selectedQuotation: any) {
-    log.debug("Selected Quote to be revised:", selectedQuotation)
-    const quotationCode = selectedQuotation.quotationCode
-    if (quotationCode) {
-      this.quotationService
-        .reviseQuotation(quotationCode)
-        .pipe(untilDestroyed(this))
-        .subscribe({
-          next: (response: any) => {
-            const revisedQuoteNumber = response._embedded.quotationNumber
-            log.debug("Revised Quotation number ", revisedQuoteNumber);
-            sessionStorage.setItem('revisedQuotationNo', revisedQuoteNumber);
-            if (revisedQuoteNumber) {
+  // reviseQuote(selectedQuotation: any) {
+  //   log.debug("Selected Quote to be revised:", selectedQuotation)
+  //   const quotationCode = selectedQuotation.quotationCode
+  //   if (quotationCode) {
+  //     this.quotationService
+  //       .reviseQuote(quotationCode)
+  //       .pipe(untilDestroyed(this))
+  //       .subscribe({
+  //         next: (response: any) => {
+  //           const revisedQuoteNumber = response._embedded.quotationNumber
+  //           log.debug("Revised Quotation number ", revisedQuoteNumber);
+  //           sessionStorage.setItem('revisedQuotationNo', revisedQuoteNumber);
+  //           if (revisedQuoteNumber) {
 
-              this.router.navigate(['/home/gis/quotation/quotation-summary']);
-            }
+  //             this.router.navigate(['/home/gis/quotation/quotation-summary']);
+  //           }
 
-          },
-          error: (error) => {
-            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-          }
-        });
-    }
+  //         },
+  //         error: (error) => {
+  //           this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+  //         }
+  //       });
+  //   }
 
+  // }
+
+
+  reviseQuotation(selectedQuotation: any, createNew: 'Y' | 'N' = 'N') {
+  log.debug("Selected Quote to be revised:", selectedQuotation);
+
+  const quotationCode = selectedQuotation?.quotationCode;
+  if (!quotationCode) {
+    console.warn("Invalid quotation data:", selectedQuotation);
+    return;
   }
+
+  this.quotationService
+    .reviseQuote(quotationCode, createNew)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+        log.debug("Response for revise",response)
+        
+          sessionStorage.setItem('revisedQuotation', JSON.stringify(response));
+          // Navigate to quotation summary
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        
+      },
+      error: (error) => {
+        log.error("Error revising quotation:", error);
+        this.globalMessagingService.displayErrorMessage('Error', error.error?.message || 'Failed to revise quotation');
+      }
+    });
+}
+  
+reuseQuotation(selectedQuotation: any) {
+  const quotationCode = selectedQuotation?.quotationCode;
+  if (!quotationCode) {
+    console.warn("Invalid quotation data:", selectedQuotation);
+    return;
+  }
+
+  this.quotationService
+    .reviseQuote(quotationCode, 'Y') 
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response: any) => {
+       sessionStorage.setItem('reusedQuotation', JSON.stringify(response));    
+       this.router.navigate(['/home/gis/quotation/quotation-details']);
+        
+      },
+      error: (error) => {
+        log.error("Error revising quotation:", error);
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          error.error?.message || 'Failed to revise quotation'
+        );
+      }
+    });
+}
 
 
   clearQuotationNo(): void {
@@ -644,16 +718,12 @@ export class QuotationManagementComponent implements OnDestroy {
     // Add additional actions
     items.push(
       {
-        label: 'Revise',
-        icon: 'pi pi-refresh',
-        title: this.actionDescriptions['Revise'],
-        command: () => this.reviseQuote(quotation)
+        label: 'Revise Quote',
+        command: () => this.reviseQuotation(quotation)
       },
       {
-        label: 'Reuse',
-        icon: 'pi pi-copy',
-        title: this.actionDescriptions['Reuse'],
-        command: () => this.reuseQuote(quotation)
+        label: 'Reuse Quote',
+        command: () => this.reuseQuotation(quotation)
       },
       {
         label: 'Reassign',
@@ -675,6 +745,33 @@ export class QuotationManagementComponent implements OnDestroy {
     return items;
   }
 
+<<<<<<< HEAD
+=======
+   updateTooltipPosition(event: MouseEvent): void {
+    const tooltipWidth = 300; 
+    const tooltipHeight = 60; 
+    const offset = 15;
+    
+    let x = event.clientX - (tooltipWidth / 2);
+    let y = event.clientY - tooltipHeight - offset;
+    
+    if (x < 10) x = 10;
+    if (x + tooltipWidth > window.innerWidth - 10) x = window.innerWidth - tooltipWidth - 10;
+    if (y < 10) y = event.clientY + offset; 
+    
+    this.tooltipPosition = { x, y };
+  }
+
+  getFirstThreeActions(quotation: any): MenuItem[] {
+    const allActions = this.getAllActions(quotation);
+    return allActions.slice(0, 3);
+  }
+
+  hasMoreThanThreeActions(quotation: any): boolean {
+    const allActions = this.getAllActions(quotation);
+    return allActions.length > 3;
+  }
+>>>>>>> origin/develop
 
 
 
@@ -740,50 +837,21 @@ export class QuotationManagementComponent implements OnDestroy {
     }
   }
 
-    // Tooltip methods
-  showTooltip(actionLabel: string, event: MouseEvent): void {
-    if (this.tooltipTimer) {
-      clearTimeout(this.tooltipTimer);
-      this.tooltipTimer = null;
-    }
-    
-    this.hoveredAction = actionLabel;
-    this.updateTooltipPosition(event);
-  }
+  //  getuser(): void {
+  //   this.user = this.authService.getCurrentUserName();
+  //   this.userDetails = this.authService.getCurrentUser();
+  //   log.info('Login UserDetails', this.userDetails);
+  //   this.currencyDelimiter = this.userDetails?.currencyDelimiter;
+  //   log.debug('Organization currency delimiter', this.currencyDelimiter);
+  //   sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
+  // }
 
-  hideTooltip(): void {
-    if (this.tooltipTimer) {
-      clearTimeout(this.tooltipTimer);
-    }
-    
-    this.tooltipTimer = setTimeout(() => {
-      this.hoveredAction = null;
-      this.tooltipTimer = null;
-    }, 5);
-  }
-
-  updateTooltipPosition(event: MouseEvent): void {
-    const tooltipWidth = 300; 
-    const tooltipHeight = 60; 
-    const offset = 15;
-    
-    let x = event.clientX - (tooltipWidth / 2);
-    let y = event.clientY - tooltipHeight - offset;
-    
-    if (x < 10) x = 10;
-    if (x + tooltipWidth > window.innerWidth - 10) x = window.innerWidth - tooltipWidth - 10;
-    if (y < 10) y = event.clientY + offset; 
-    
-    this.tooltipPosition = { x, y };
-  }
-
-  getTooltipDescription(actionLabel: string): string {
-    return this.actionDescriptions[actionLabel] || '';
-  }
 
   getActionIcon(actionLabel: string): string {
     return this.actionIcons[actionLabel] || 'pi pi-info-circle';
   }
+
+  
 
   showMenuTooltip(actionLabel: string, event: MouseEvent): void {
     if (this.tooltipTimer) {
@@ -802,7 +870,80 @@ export class QuotationManagementComponent implements OnDestroy {
     
     this.hoveredAction = null;
     this.tooltipTimer = null;
+
   }
+  
+   getuser(): void {
+    this.user = this.authService.getCurrentUserName();
+    this.userDetails = this.authService.getCurrentUser();
+    log.info('Login UserDetails', this.userDetails);
+    this.currencyDelimiter = this.userDetails?.currencyDelimiter;
+    log.debug('Organization currency delimiter', this.currencyDelimiter);
+    sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
+  }
+
+
+   fetchCurrencies() {
+    this.bankService.getCurrencies()
+      .subscribe({
+        next: (currencies: any[]) => {
+          // CURRENCIES
+          this.currency = currencies.map((value) => {
+            let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+            return { ...value, name: capitalizedDescription };
+          });
+
+          log.info(this.currency, 'this is a currency list');
+
+          const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
+          if (defaultCurrency) {
+            log.debug('DEFAULT CURRENCY', defaultCurrency);
+            this.defaultCurrency = defaultCurrency;
+            this.defaultCurrencyName = defaultCurrency.name;
+            this.defaultCurrencySymbol = defaultCurrency.symbol;
+            sessionStorage.setItem('currencySymbol', this.defaultCurrencySymbol);
+
+            log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+            log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+        }
+      },
+        error: (error) => {
+          console.error("Error fetching group users", error);
+        }
+      });
+  }
+
+  hideTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+    
+    this.tooltipTimer = setTimeout(() => {
+      this.hoveredAction = null;
+      this.tooltipTimer = null;
+    }, 5);
+  }
+
+
+  getTooltipDescription(actionLabel: string): string {
+    return this.actionDescriptions[actionLabel] || '';
+  }
+
+ 
+
+ // Tooltip methods
+  showTooltip(actionLabel: string, event: MouseEvent): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    
+    this.hoveredAction = actionLabel;
+    this.updateTooltipPosition(event);
+  }
+
+
+
 
 
 }
