@@ -393,6 +393,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.moreDetails = sessionStorage.getItem('quotationFormDetails');
 
+
+ 
+
+    // 1️⃣ Patch immediate UI from session (for instant rendering)
+    this.patchQuotationData();
+
+    
+
     if (this.quotationCodeString) {
       this.quotationCode = Number(this.quotationCodeString);
       log.debug("second code", this.quotationCode)
@@ -800,6 +808,141 @@ if (this.quotationAuthorized) {
 
 
   }
+
+
+  patchQuotationData() {
+  const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+  if (!revisedQuotation) {
+    log.debug('[QuotationSummaryComponent] No revisedQuotation found in session storage');
+    return;
+  }
+
+  const data = JSON.parse(revisedQuotation);
+  log.debug('[QuotationSummaryComponent] Patching from revisedQuotation session data:', data);
+
+  // ---Quotation Details ---
+  this.quotationView = data;
+  this.quotationDetails = data;
+  this.fetchedQuoteNum = data.quotationNo;
+  this.quotationCode = data.code;
+  this.coverFrom = this.convertDate(data.coverFrom);
+  this.coverTo = this.convertDate(data.coverTo);
+  this.expiryDate = this.convertDate(data.expiryDate);
+  this.source = data.source?.description || '';
+  this.sumInsured = data.sumInsured ?? 0;
+  this.user = data.preparedBy;
+  this.marketerCommissionAmount = data.marketerCommissionAmount ?? 0;
+  const currencySymbol = data.currency;
+
+
+this.currencyObj = {
+  prefix: currencySymbol + ' ',
+  suffix: '',
+  thousands: ',',
+  decimal: '.',
+  align: 'left',
+  allowNegative: false,
+  allowZero: true,
+  nullable: true,
+  precision: 0
+};
+
+log.debug("Currency Prefix Set To:", this.currencyObj.prefix);
+
+
+
+  
+  this.premiumAmount = data.premium ?? 0;
+
+  
+  this.quotationProducts = data.quotationProducts || [];
+  this.products = this.quotationProducts;
+  this.productDetails = this.quotationProducts;
+  log.debug('Patched quotationProducts:', this.quotationProducts);
+
+  if (this.products.length > 0) {
+    this.activeRiskTab = this.products[0].code;
+    const firstProduct = this.products[0];
+
+    // --- Patch Risk Information ---
+    this.riskDetails = firstProduct.riskInformation || [];
+    log.debug('Patched riskDetails:', this.riskDetails);
+
+    if (this.riskDetails.length > 0) {
+      this.setColumnsFromRiskDetails(this.riskDetails[0]);
+      const firstRisk = this.riskDetails[0];
+
+      // --- Patch Sections ---
+      this.sections = firstRisk.sectionsDetails || [];
+      log.debug('Patched sections:', this.sections);
+
+      // --- Patch Schedules ---
+      const scheduleArray = firstRisk.scheduleDetails || [];
+      const firstSchedule = scheduleArray[0] || {};
+      const details = firstSchedule.details || {};
+
+      this.availableScheduleLevels = Object.keys(details);
+      this.schedulesData = {};
+      this.availableScheduleLevels.forEach(level => {
+        const levelData = details[level];
+        this.schedulesData[level] = levelData ? [levelData] : [];
+      });
+
+      this.activeScheduleTab = this.availableScheduleLevels[0] || '';
+      log.debug('Patched schedule data:', this.schedulesData);
+
+      // --- Store Section Info in Session ---
+      const sectionDetails = this.sections?.[0] || {};
+      sessionStorage.setItem('premiumRate', sectionDetails.rate?.toString() || '');
+      sessionStorage.setItem('sectionDescription', sectionDetails.sectionShortDescription || '');
+      sessionStorage.setItem('sectionType', sectionDetails.sectionType || '');
+      sessionStorage.setItem('rateType', sectionDetails.rateType || '');
+    }
+
+    // --- Patch Tax and Product Clauses ---
+    this.taxDetails = (firstProduct.taxInformation || []).map(tax => ({
+      ...tax,
+      taxAmount: tax.taxAmount ?? 0,
+      rate: tax.rate ?? 0
+    }));
+
+    this.productClauses = firstProduct.productClauses || [];
+    log.debug('Patched taxDetails:', this.taxDetails);
+    log.debug('Patched productClauses:', this.productClauses);
+
+    // --- Patch Limits of Liability ---
+    const firstRisk = this.riskDetails?.[0];
+    const subclassCode = firstRisk?.subclassCode;
+    const quotationProductCode = firstRisk?.quotationProductCode;
+    if (subclassCode && quotationProductCode) {
+      this.getLimitsofLiability(subclassCode, quotationProductCode, 'L');
+      this.getLimitsofLiability(subclassCode, quotationProductCode, 'E');
+    }
+  }
+
+  // --- Handle Client Info ---
+  this.clientCode = data.clientCode;
+  if (this.clientCode) {
+    this.loadClientDetails(this.clientCode);
+  }
+
+  // --- Final Logging ---
+  log.debug('[QuotationSummaryComponent] Final patched quotation data:', {
+    quotationNo: this.fetchedQuoteNum,
+    quotationCode: this.quotationCode,
+    coverFrom: this.coverFrom,
+    coverTo: this.coverTo,
+    expiryDate: this.expiryDate,
+    source: this.source,
+    clientCode: this.clientCode,
+    premiumAmount: this.premiumAmount,
+    taxDetails: this.taxDetails,
+    products: this.products,
+    risks: this.riskDetails,
+    sections: this.sections
+  });
+}
+
   getRiskDetails() {
     const currentProduct = this.products.find(p => p.code === this.activeRiskTab);
     const riskDetails = currentProduct?.riskInformation || [];

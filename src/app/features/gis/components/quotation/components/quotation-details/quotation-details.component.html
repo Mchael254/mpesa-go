@@ -995,7 +995,8 @@
               <ng-template pTemplate="emptymessage">
                 <tr>
                   <td [attr.colspan]="productClauseColumns.length">
-                    <div style="color: #6c757d; font-size: 15px;">
+                    <div  class="d-flex align-items-center justify-content-center"
+                    style="color: #6c757d; font-size: 15px; text-align:centre;">
                       <ng-container *ngIf="productClause.length === 0">
 
                         {{'gis.quotation.no_clause_available_click_on_add' | translate}}
