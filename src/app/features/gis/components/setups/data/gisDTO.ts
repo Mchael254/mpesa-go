@@ -174,6 +174,9 @@ export interface productDocument {
 }
 
 export interface Products {
+  productClauses: any;
+  productName: string;
+  productCode: string;
   code: number;
   shortDescription: string;
   description: string;

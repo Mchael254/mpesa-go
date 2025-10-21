@@ -1,3 +1,4 @@
+
 <p class="titleMain mt-3 ms-4">{{ 'gis.quotation.quotation_management' | translate }}</p>
 <div class=" mx-4 mt-n1" (click)="immediateHideTooltip()">
   <div class="card mb-3" style=" position: relative;">
@@ -163,7 +164,11 @@
                 <!-- Revise Action -->
                 <button type="button"
                   class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1"
+<<<<<<< HEAD
                   (click)="immediateHideTooltip(); reviseQuote(quotation)" (mouseenter)="showTooltip('Revise', $event)"
+=======
+                  (click)="immediateHideTooltip(); reviseQuotation(quotation)" (mouseenter)="showTooltip('Revise', $event)"
+>>>>>>> origin/develop
                   (mouseleave)="hideTooltip()" (mousemove)="updateTooltipPosition($event)">
                   Revise
                 </button>
@@ -171,7 +176,11 @@
                 <!-- Reuse Action -->
                 <button type="button"
                   class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1"
+<<<<<<< HEAD
                   (click)="immediateHideTooltip(); reuseQuote(quotation)" (mouseenter)="showTooltip('Reuse', $event)"
+=======
+                  (click)="immediateHideTooltip(); reuseQuotation(quotation)" (mouseenter)="showTooltip('Reuse', $event)"
+>>>>>>> origin/develop
                   (mouseleave)="hideTooltip()" (mousemove)="updateTooltipPosition($event)">
                   Reuse
                 </button>
