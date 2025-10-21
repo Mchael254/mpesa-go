@@ -1,5 +1,8 @@
-import {Component, Input} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormSubGroupsDto} from "../../../../../../shared/data/common/dynamic-screens-dto";
+import {Logger} from "../../../../../../shared/services";
+
+const log = new Logger('OverViewTableComponent');
 
 @Component({
   selector: 'app-overview-table',
@@ -11,7 +14,36 @@ export class OverviewTableComponent {
   @Input() subGroup: FormSubGroupsDto;
   @Input() table;
   @Input() language: string;
+  @Output() rowClicked = new EventEmitter<any>();
+  @Output() deleteBtnClicked = new EventEmitter<any>();
 
   columnDialogVisible: boolean = false;
+  selectedRow: any;
+
+  visible: boolean = false;
+
+  constructor(
+    private cdr: ChangeDetectorRef,
+  ) {
+  }
+
+  onRowClick(row: any) {
+    this.rowClicked.emit(row);
+  }
+
+  onDeleteButtonClick() {
+    this.deleteBtnClicked.emit(this.selectedRow);
+    this.visible = false;
+    this.cdr.detectChanges();
+  }
+
+  triggerDeleteConfirmation(rowData: any) {
+    this.visible = true;
+    this.selectedRow = rowData;
+  }
+
+  onDialogHide(): void {
+    document.body.style.overflowY = 'auto';
+  }
 
 }

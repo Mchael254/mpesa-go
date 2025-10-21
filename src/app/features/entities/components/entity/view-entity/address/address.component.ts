@@ -9,7 +9,7 @@ import {Observable} from "rxjs";
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto, FormSubGroupsDto
+  FormGroupsDto, FormSubGroupsDto, PresentationType
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {AddressModel, Branch, ClientDTO} from "../../../../data/ClientDTO";
 
@@ -28,11 +28,10 @@ export class AddressComponent implements OnInit {
   @Input() clientDetails: ClientDTO;
   @Input() addressDetailsConfig: any
   @Input() formFieldsConfig: any;
-  addressDetails: AddressModel;
-  branchDetails: any[];
-  @Input() accountCode: number;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() group: FormGroupsDto;
+  addressDetails: AddressModel;
+  branchDetails: Branch[];
 
 
   countries: CountryDto[];
@@ -54,10 +53,11 @@ export class AddressComponent implements OnInit {
   language: string = 'en';
   editForm: FormGroup;
 
-  displayAddressDetails;
   fields: ConfigFormFieldsDto[];
   tableHeaders: ConfigFormFieldsDto[];
   table: { cols: any[], data: any[] } = { cols: [], data: [] };
+
+  PRESENTATION_TYPE = PresentationType;
 
 
   constructor(
@@ -66,7 +66,6 @@ export class AddressComponent implements OnInit {
     private countryService: CountryService,
     private globalMessagingService: GlobalMessagingService,
     private clientService: ClientService,
-    private cdr: ChangeDetectorRef,
   ) {
     this.utilService.currentLanguage.subscribe(lang => this.language = lang);
   }
@@ -112,7 +111,7 @@ export class AddressComponent implements OnInit {
       this.fields = this.formGroupsAndFieldConfig?.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === this.group.groupId);
 
       for (const field of this.fields) {
-        field.dataValue = this.displayAddressDetails[field.fieldId] ?? null;
+        field.dataValue = displayAddressDetails[field.fieldId] ?? null;
       }
 
       // sort fields in ascending order
@@ -144,7 +143,7 @@ export class AddressComponent implements OnInit {
     if (fields.length > 0) this.createEditForm(fields);
 
     for (const field of fields) {
-      field.dataValue = displayFields[field.fieldId] ?? null;
+       field.dataValue = displayFields[field.fieldId] ?? null;
     }
 
     fields.sort((a, b) => a.order - b.order);
@@ -153,6 +152,10 @@ export class AddressComponent implements OnInit {
   }
 
 
+  /**
+   * create the structured info (column headings and row data) for displaying table
+   * @param subGroup
+   */
   createTableDisplay(subGroup?: FormSubGroupsDto) {
     const headerFields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formSubGroupingId === subGroup.subGroupId);
     headerFields.sort((a, b) => a.order - b.order);
@@ -163,6 +166,7 @@ export class AddressComponent implements OnInit {
     const tableData = [];
     this.branchDetails.forEach((br: Branch) => {
       const branch = {
+        branchAddressId: br.code,
         overview_branch_Id: br.code,
         overview_branch_details_name: br.branchName,
         overview_country: br.countryName,
@@ -184,12 +188,34 @@ export class AddressComponent implements OnInit {
     };
   }
 
+  /**
+   * Where exists, prepare the details of the subgroup
+   * Call method to create either field display or table display
+   * @param displayContactDetails
+   */
   prepareSubGroupDetails(displayContactDetails): void {
     this.group?.subGroup?.forEach((subGroup) => {
       if (subGroup.presentationType === 'fields') {
         subGroup.fields = this.createFieldDisplay(displayContactDetails);
       } else {
         this.createTableDisplay(subGroup);
+      }
+    });
+  }
+
+  /**
+   * Delete branch and refresh data for display
+   * @param row
+   */
+  handleBranchDelete(row: any): void {
+    log.info('handleBranchDelete ... ', row);
+    this.clientService.deleteClientBranch(row.branchAddressId).subscribe({
+      next: () => {
+        this.table.data = this.table.data.filter(person => person.branchAddressId != row.branchAddressId);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted contact person');
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err?.error?.message);
       }
     });
   }
@@ -297,7 +323,7 @@ export class AddressComponent implements OnInit {
       houseNumber: formValues.houseNumber,
     }
 
-    this.clientService.updateClientSection(this.accountCode, {address: addressDetails}).subscribe({
+    this.clientService.updateClientSection(this.clientDetails.clientCode, {address: addressDetails}).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
         this.addressDetails = data.address;

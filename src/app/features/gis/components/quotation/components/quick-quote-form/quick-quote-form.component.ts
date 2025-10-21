@@ -904,37 +904,101 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-  performComputation(computationPayload: PremiumComputationRequest) {
-    this.quotationService.premiumComputationEngine(computationPayload).pipe(
-      untilDestroyed(this)
-    ).subscribe({
-      next: (response) => {
-        const riskLevelPremiums = this.selectedProductCovers.flatMap(value => value.riskLevelPremiums);
-        this.premiumComputationResponse = response;
-        log.debug("Premium computation response:", this.premiumComputationResponse)
-        const productLevelPremiums = response.productLevelPremiums;
-        this.expandedComparisonStates = productLevelPremiums.map(() => true);
-        this.expandedCoverTypeIndexes = productLevelPremiums.map(product =>
-          product.riskLevelPremiums.length > 0 ? 0 : null
-        );
-        riskLevelPremiums?.forEach(selected => {
-          this.premiumComputationResponse.productLevelPremiums.forEach(premium => {
-            const match = premium.riskLevelPremiums.find(risk => risk.code === selected.code);
-            if (match) {
-              match.selectCoverType = selected.selectCoverType;
-            }
-          });
-        });
-        this.canMoveToNextScreen = false
-        this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully');
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        this.globalMessagingService.displayErrorMessage('Error', 'Error during computation');
-      }
-    });
-  }
+  // performComputation(computationPayload: PremiumComputationRequest) {
+  //   this.quotationService.premiumComputationEngine(computationPayload).pipe(
+  //     untilDestroyed(this)
+  //   ).subscribe({
+  //     next: (response) => {
+  //       const riskLevelPremiums = this.selectedProductCovers.flatMap(value => value.riskLevelPremiums);
+  //       this.premiumComputationResponse = response;
+  //       log.debug("Premium computation response:", this.premiumComputationResponse)
+  //       const productLevelPremiums = response.productLevelPremiums;
+  //       this.expandedComparisonStates = productLevelPremiums.map(() => true);
+  //       this.expandedCoverTypeIndexes = productLevelPremiums.map(product =>
+  //         product.riskLevelPremiums.length > 0 ? 0 : null
+  //       );
+  //       riskLevelPremiums?.forEach(selected => {
+  //         this.premiumComputationResponse.productLevelPremiums.forEach(premium => {
+  //           const match = premium.riskLevelPremiums.find(risk => risk.code === selected.code);
+  //           if (match) {
+  //             match.selectCoverType = selected.selectCoverType;
+  //           }
+  //         });
+  //       });
+  //       this.canMoveToNextScreen = false
+  //       this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully');
+  //       this.cdr.markForCheck();
+  //     },
+  //     error: () => {
+  //       this.globalMessagingService.displayErrorMessage('Error', 'Error during computation');
+  //     }
+  //   });
+  // }
 
+  /**
+   * Performs premium computation using the provided payload.
+   * - Calls the computation service and merges new results with existing data.
+   * - Updates or adds product risks as needed.
+   * - Expands updated products in the UI and displays status messages.
+   *
+   * @method performComputation
+   * @param {PremiumComputationRequest} computationPayload - Payload used for premium computation.
+   * @returns {void}
+   */
+
+  performComputation(computationPayload: PremiumComputationRequest) {
+    this.quotationService.premiumComputationEngine(computationPayload)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response) => {
+          const newProducts = response.productLevelPremiums;
+
+          if (!this.premiumComputationResponse) {
+            // First computation
+            this.premiumComputationResponse = response;
+          } else {
+            const existingProducts = this.premiumComputationResponse.productLevelPremiums || [];
+
+            newProducts.forEach(newProduct => {
+              const existingIndex = existingProducts.findIndex(p => p.code === newProduct.code);
+              if (existingIndex !== -1) {
+                const existingProduct = existingProducts[existingIndex];
+
+                // Merge risks within the same product
+                const existingRisks = existingProduct.riskLevelPremiums || [];
+                const newRisks = newProduct.riskLevelPremiums || [];
+
+                newRisks.forEach(newRisk => {
+                  const riskIndex = existingRisks.findIndex(r => r.code === newRisk.code);
+                  if (riskIndex !== -1) {
+                    existingRisks[riskIndex] = newRisk; // Update existing risk
+                  } else {
+                    existingRisks.push(newRisk); // Add new risk
+                  }
+                });
+
+                existingProduct.riskLevelPremiums = existingRisks;
+                existingProducts[existingIndex] = existingProduct;
+              } else {
+                existingProducts.push(newProduct);
+              }
+            });
+
+
+            this.premiumComputationResponse.productLevelPremiums = existingProducts;
+          }
+
+          // Optional: expand only new/updated products in UI
+          this.expandedComparisonStates = this.premiumComputationResponse.productLevelPremiums.map(() => true);
+
+          this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully');
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.globalMessagingService.displayErrorMessage('Error', 'Error during computation');
+        }
+      });
+  }
 
   toggleQuoteExpand(index: number) {
     // Collapse if clicking the already expanded item
@@ -959,11 +1023,163 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.expandedComparisonStates[productIndex] = !this.expandedComparisonStates[productIndex];
   }
 
+  // computationPayload(): PremiumComputationRequest {
+  //   const formValues = this.quickQuoteForm.getRawValue();
+  //   log.debug("QUICK QUOTE FORM VALUES B4VCOMP", formValues)
+  //   const withEffectFrom = new Date(formValues.effectiveDate);
+  //   let payload = {
+  //     transactionStatus: "NB",
+  //     quotationStatus: "Draft",
+  //     frequencyOfPayment: "A",
+  //     interfaceType: null,
+  //     entityUniqueCode: null,
+  //     coinsurancePercentage: null,
+  //     coinsuranceLeader: null,
+  //     age: null,
+  //     underwritingYear: withEffectFrom.getFullYear(),
+  //     dateWithEffectTo: this.formatDate(new Date()),
+  //     dateWithEffectFrom: this.formatDate(withEffectFrom),
+  //     products: this.getProductPayload(formValues),
+  //     currency: {
+  //       rate: this.exchangeRate
+  //     }
+  //   };
+  //   this.currentComputationPayload = payload
+  //   return payload;
+  // }
+  // computationPayload(): PremiumComputationRequest {
+  //   const formValues = this.quickQuoteForm.getRawValue();
+  //   const withEffectFrom = new Date(formValues.effectiveDate);
+
+  //   const previousProducts = this.premiumComputationResponse?.productLevelPremiums || [];
+  //   const formProducts = formValues.products;
+
+  //   const productsToInclude = formProducts.filter(p => {
+  //     const existing = previousProducts.find(prev => prev.code === p.code);
+  //     if (!existing) return true;
+
+  //     // 🧠 Compare limit amounts between current (request) and previous (response)
+  //     const prevLimits = existing.riskLevelPremiums
+  //       .flatMap(r => r.coverTypeDetails)
+  //       .flatMap(ct => ct.limitPremium || [])
+  //       .map(lp => ({
+  //         sectCode: lp.sectCode,
+  //         limitAmount: lp.limitAmount
+  //       }));
+  //     log.debug("Previous limits:", prevLimits)
+  //     const currentLimits = (p.risks || [])
+  //       .flatMap(r => r.subclassCoverTypeDto || [])
+  //       .flatMap(ct => ct.limits || [])
+  //       .map(l => ({
+  //         sectCode: l.section?.code,
+  //         limitAmount: l.limitAmount
+  //       }));
+  //     log.debug("Current  limits:", currentLimits)
+
+  //     const hasChangedLimit = currentLimits.some(curr => {
+  //       const prev = prevLimits.find(pl => pl.sectCode === curr.sectCode);
+  //       return !prev || prev.limitAmount !== curr.limitAmount;
+  //     });
+
+  //     return hasChangedLimit;
+  //   });
+
+
+
+  //   log.debug("Products to include:", productsToInclude)
+  //   // ✅ If none detected, compute all (first run)
+  //   const finalProducts = productsToInclude.length ? productsToInclude : formProducts;
+
+  //   const payload: PremiumComputationRequest = {
+  //     transactionStatus: "NB",
+  //     quotationStatus: "Draft",
+  //     frequencyOfPayment: "A",
+  //     interfaceType: null,
+  //     entityUniqueCode: null,
+  //     coinsurancePercentage: null,
+  //     coinsuranceLeader: null,
+  //     age: null,
+  //     underwritingYear: withEffectFrom.getFullYear(),
+  //     dateWithEffectTo: this.formatDate(new Date()),
+  //     dateWithEffectFrom: this.formatDate(withEffectFrom),
+  //     products: this.getProductPayload({ ...formValues, products: finalProducts }),
+  //     currency: { rate: this.exchangeRate }
+  //   };
+
+  //   this.currentComputationPayload = payload;
+  //   return payload;
+  // }
+
+  /**
+   * Builds the payload object required for premium computation based on the current form state.
+   * - Extracts raw values from the 'quickQuoteForm'.
+   * - Compares current form product data with previously computed products to determine what has changed.
+   * - Detects new risks or modified cover limits for each product.
+   * - Constructs a filtered list of products to include in the computation payload.
+   * - If no changes are detected, includes all products by default.
+   * - Prepares a complete `PremiumComputationRequest` object with quotation details, dates, products, and currency rate.
+   * - Updates the current computation payload reference for potential reuse.
+   *
+   * @method computationPayload
+   * @returns {PremiumComputationRequest} The formatted payload object to be sent for premium computation.
+   */
+
   computationPayload(): PremiumComputationRequest {
     const formValues = this.quickQuoteForm.getRawValue();
-    log.debug("QUICK QUOTE FORM VALUES B4VCOMP", formValues)
     const withEffectFrom = new Date(formValues.effectiveDate);
-    let payload = {
+
+    const previousProducts = this.premiumComputationResponse?.productLevelPremiums || [];
+    const formProducts = formValues.products;
+
+    const productsToInclude = formProducts
+      .map(p => {
+        const existing = previousProducts.find(prev => prev.code === p.code);
+        if (!existing) {
+          return p;
+        }
+
+        const prevLimits = existing.riskLevelPremiums
+          .flatMap(r => r.coverTypeDetails)
+          .flatMap(ct => ct.limitPremium || [])
+          .map(lp => ({
+            sectCode: lp.sectCode,
+            limitAmount: lp.limitAmount
+          }));
+
+        const currentLimits = (p.risks || [])
+          .flatMap(r => r.subclassCoverTypeDto || [])
+          .flatMap(ct => ct.limits || [])
+          .map(l => ({
+            sectCode: l.section?.code,
+            limitAmount: l.limitAmount
+          }));
+
+        const hasChangedLimit = currentLimits.some(curr => {
+          const prev = prevLimits.find(pl => pl.sectCode === curr.sectCode);
+          return !prev || prev.limitAmount !== curr.limitAmount;
+        });
+
+        const prevRiskCodes = existing.riskLevelPremiums.map(r => r.code);
+        const newRisks = (p.risks || []).filter(
+          r => !prevRiskCodes.includes(r.riskCode)
+        );
+
+        if (hasChangedLimit) return p;
+
+        if (newRisks.length > 0) {
+          return {
+            ...p,
+            risks: newRisks
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean);
+
+    const finalProducts = productsToInclude.length ? productsToInclude : formProducts;
+
+    const payload: PremiumComputationRequest = {
       transactionStatus: "NB",
       quotationStatus: "Draft",
       frequencyOfPayment: "A",
@@ -975,14 +1191,17 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       underwritingYear: withEffectFrom.getFullYear(),
       dateWithEffectTo: this.formatDate(new Date()),
       dateWithEffectFrom: this.formatDate(withEffectFrom),
-      products: this.getProductPayload(formValues),
-      currency: {
-        rate: this.exchangeRate
-      }
+      products: this.getProductPayload({
+        ...formValues,
+        products: finalProducts
+      }),
+      currency: { rate: this.exchangeRate }
     };
-    this.currentComputationPayload = payload
+
+    this.currentComputationPayload = payload;
     return payload;
   }
+
 
   getProductPayload(formValues: any): Product[] {
     let productPayload: Product[] = []
@@ -999,9 +1218,65 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     return productPayload
   }
 
+  // getRiskPayload(product: any, effectiveDate): Risk[] {
+  //   let riskPayload: Risk[] = []
+  //   for (const [index, risk] of product.risks.entries()) {
+
+  //     riskPayload.push({
+  //       code: risk.riskCode,
+  //       binderCode: risk?.applicableBinder?.code,
+  //       sumInsured: risk?.selfDeclaredValue || risk?.value,
+  //       useOfProperty: risk?.useOfProperty?.description,
+  //       withEffectFrom: this.formatDate(new Date(effectiveDate)),
+  //       withEffectTo: this.formatDate(new Date(product.effectiveTo)),
+  //       propertyId: `Risk ${index + 1}`,
+  //       prorata: "F",
+  //       subclassSection: {
+  //         code: risk?.useOfProperty?.code
+  //       },
+  //       taxes: risk.applicableTaxes.map((tax) => {
+  //         return {
+  //           taxRate: tax.taxRate,
+  //           code: tax.code,
+  //           taxCode: tax.taxCode,
+  //           divisionFactor: tax.divisionFactor,
+  //           applicationLevel: tax.applicationLevel,
+  //           taxRateType: tax.taxRateType,
+  //           rateDescription: tax.description
+  //         }
+  //       }),
+  //       itemDescription: risk.description,
+  //       noClaimDiscountLevel: 0,
+  //       enforceCovertypeMinimumPremium: "N",
+  //       binderDto: {
+  //         code: risk?.applicableBinder?.code,
+  //         currencyCode: risk?.applicableBinder?.currency_code,
+  //         maxExposure: risk?.applicableBinder?.maximum_exposure,
+  //         currencyRate: this.exchangeRate
+  //       },
+  //       subclassCoverTypeDto: this.getCoverTypePayload(risk)
+  //     })
+  //   }
+  //   return riskPayload;
+  // }
   getRiskPayload(product: any, effectiveDate): Risk[] {
-    let riskPayload: Risk[] = []
+    let riskPayload: Risk[] = [];
+
+    // Find previous product from computation response (if any)
+    const previousProduct = this.premiumComputationResponse?.productLevelPremiums?.find(
+      (prev) => prev.code === product.code
+    );
+
+    const existingRiskCount = previousProduct?.riskLevelPremiums?.length || 0;
+    console.debug(
+      `Existing risk count detected: ${existingRiskCount} for product code ${product.code}`
+    );
+
     for (const [index, risk] of product.risks.entries()) {
+      const riskNumber = existingRiskCount + index + 1; // continue numbering from previous count
+      const propertyId = `Risk ${riskNumber}`;
+      console.debug(`Assigning ${propertyId} for risk code ${risk?.riskCode}`);
+
       riskPayload.push({
         code: risk.riskCode,
         binderCode: risk?.applicableBinder?.code,
@@ -1009,22 +1284,20 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         useOfProperty: risk?.useOfProperty?.description,
         withEffectFrom: this.formatDate(new Date(effectiveDate)),
         withEffectTo: this.formatDate(new Date(product.effectiveTo)),
-        propertyId: `Risk ${index + 1}`,
+        propertyId,
         prorata: "F",
         subclassSection: {
           code: risk?.useOfProperty?.code
         },
-        taxes: risk.applicableTaxes.map((tax) => {
-          return {
-            taxRate: tax.taxRate,
-            code: tax.code,
-            taxCode: tax.taxCode,
-            divisionFactor: tax.divisionFactor,
-            applicationLevel: tax.applicationLevel,
-            taxRateType: tax.taxRateType,
-            rateDescription: tax.description
-          }
-        }),
+        taxes: risk.applicableTaxes.map((tax) => ({
+          taxRate: tax.taxRate,
+          code: tax.code,
+          taxCode: tax.taxCode,
+          divisionFactor: tax.divisionFactor,
+          applicationLevel: tax.applicationLevel,
+          taxRateType: tax.taxRateType,
+          rateDescription: tax.description
+        })),
         itemDescription: risk.description,
         noClaimDiscountLevel: 0,
         enforceCovertypeMinimumPremium: "N",
@@ -1035,8 +1308,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           currencyRate: this.exchangeRate
         },
         subclassCoverTypeDto: this.getCoverTypePayload(risk)
-      })
+      });
     }
+
+    console.debug("Final risk payload:", riskPayload);
     return riskPayload;
   }
 
@@ -2257,7 +2532,16 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     risk: RiskLevelPremium,
     premiumItems: Premiums[]
   }, sectionCodeToRemove?: number): PremiumComputationRequest {
-    const premiumComputationRequest = this.currentComputationPayload || this.computationPayload();
+    log.debug("currentComputationPayload", this.currentComputationPayload)
+    // const premiumComputationRequest = this.computationPayload() || this.currentComputationPayload
+    const premiumComputationRequest =
+      this.currentComputationPayload &&
+        this.currentComputationPayload.products.some(p =>
+          p.risks.some(r => r.code === benefitsDto.risk.code)
+        )
+        ? this.currentComputationPayload
+        : this.computationPayload();
+
     const riskCode = benefitsDto.risk.code;
     const coverTypeCode = benefitsDto.risk.selectCoverType.coverTypeCode;
     const updatedProducts = premiumComputationRequest.products.map(product => ({
@@ -2446,14 +2730,24 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-  onDownloadRequested(event?: { print?: boolean }) {
+  onDownloadRequested() {
     const payload = this.notificationPayload();
 
-    this.quotationService.generateQuotationReport(payload).pipe(
-      untilDestroyed(this)
-    ).subscribe((response) => {
-      if (event?.print) {
-        // Convert Base64 to Blob for printing
+    this.quotationService.generateQuotationReport(payload)
+      .pipe(untilDestroyed(this))
+      .subscribe((response) => {
+        // Normal download using utilService
+        this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf");
+      });
+  }
+
+
+  onPrintRequested() {
+    const payload = this.notificationPayload();
+
+    this.quotationService.generateQuotationReport(payload)
+      .pipe(untilDestroyed(this))
+      .subscribe((response) => {
         const byteCharacters = atob(response.base64);
         const byteNumbers = new Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
@@ -2463,19 +2757,22 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         const blob = new Blob([byteArray], { type: 'application/pdf' });
         const pdfUrl = URL.createObjectURL(blob);
 
-        // Open new tab & print
-        const printWindow = window.open(pdfUrl, '_blank');
-        if (printWindow) {
-          printWindow.addEventListener('load', () => {
-            printWindow.print();
-          });
-        }
-      } else {
-        // Normal download
-        this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf");
-      }
-    });
+        // Create hidden iframe for printing
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = pdfUrl;
+        document.body.appendChild(iframe);
+
+        iframe.onload = () => {
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
+
+        };
+      });
   }
+
+
+
 
 
 

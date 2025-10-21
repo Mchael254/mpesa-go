@@ -301,9 +301,20 @@ export class QuotationsService {
    * @param {string} productCode - The product code for which to retrieve clauses.
    * @return {Observable<any>} - An observable of the response containing product clauses.
    */
+  createQuotationProductClauses(productClauses: any) {
+    return this.api.POST(`v2/quotation-product-clauses`, JSON.stringify(productClauses), API_CONFIG.GIS_QUOTATION_BASE_URL);
+  }
+
   getProductClauses(productCode): Observable<any> {
     return this.api.GET<any>(`api/v1/products/${productCode}/clauses`, API_CONFIG.GIS_SETUPS_BASE_URL)
   }
+
+  getQuotationProductClauses(quotationProductCode: number) {
+    return this.api.GET( `v2/quotation-product-clauses?quotationProductCode=${quotationProductCode}`,
+      API_CONFIG.GIS_QUOTATION_BASE_URL
+    );
+  }
+
 
   deleteSchedule(level: any, riskCode: any, code: any) {
     return this.api.DELETE<scheduleDetails>(`v2/schedule-details?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
@@ -1227,7 +1238,7 @@ export class QuotationsService {
   }
 
   getAddedCommissions(quoteCode: number) {
-    return this.api.GET( `v2/risk-commission?quoteCode=${quoteCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+    return this.api.GET(`v2/risk-commission?quoteCode=${quoteCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1), catchError(this.errorHandl)
     );
   }

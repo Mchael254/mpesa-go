@@ -1,8 +1,8 @@
 <section class="rt-container" *ngIf="stepType === 'link'">
   <div class="container-fluid">
-    <div class="stepper">
+    <div class="stepper" [class.disabled]="disabled">
       <ng-container *ngFor="let step of stepperData; let i = index">
-        <div class="step" (click)="navigateToPage(step.link)">
+        <div class="step" (click)="!disabled && navigateToPage(step.link)">
           <div class="circle" [ngClass]="getStepClasses(i+1)">
             <div>{{ step.number }}</div>
           </div>
@@ -17,9 +17,9 @@
 
 <section class="rt-container" *ngIf="stepType === 'tab'">
   <div class="container-fluid">
-    <div class="stepper">
+    <div class="stepper" [class.disabled]="disabled">
       <ng-container *ngFor="let step of stepperData; let i = index">
-        <div class="step" (click)="setCurrentStep(step.number)">
+        <div class="step" (click)="!disabled && setCurrentStep(step.number)">
           <div class="circle" [ngClass]="getStepClasses(i+1)">
             <div>{{ step.number }}</div>
           </div>

@@ -3,7 +3,7 @@
 
   <!-- <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper> -->
   <div class="position-relative">
-    <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+    <app-stepper [currentStep]="3" [stepperData]="steps" [disabled]="viewQuoteFlag"></app-stepper>
 
     <div *ngIf="showWizzardModal" class="card shadow rounded p-3 position-absolute wizzard-modal" [ngStyle]="{ 
              top: wizzardModalPosition.top, 
@@ -28,7 +28,6 @@
 
 
     </div>
-
 
   </div>
 
@@ -113,15 +112,8 @@
               <div class="d-flex align-items-center w-50">
                 <p class="content mb-0 me-2">
                   {{
-                  quotationView?.comments
-                  ? quotationView.comments
-                  .split(" ")
-                  .slice(0, 3)
-                  .join(" ") +
-                  (quotationView.comments.split(" ").length > 3
-                  ? "..."
-                  : "")
-                  : ""
+                  quotationView?.comments? quotationView.comments.split(" ").slice(0, 3).join(" ") +
+                  (quotationView.comments.split(" ").length > 3? "...": ""): ""
                   }}
                 </p>
 
@@ -145,9 +137,6 @@
                 <!-- {{ storedQuotationFormDetails?.client | sentenceCase }} -->
                 {{ storedQuotationFormDetails?.client ? (storedQuotationFormDetails.client | sentenceCase) : '' }}
               </span>
-
-
-
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Proposer</p>
@@ -315,6 +304,7 @@
                 </div>
               </div>
             </div>
+
             <!-- Product table -->
             <div class="mt-3" id="">
               <p-table [value]="productDetails" dataKey="productCode?.code" editMode="row"
@@ -342,15 +332,6 @@
                       [ngClass]="{ 'text-end': col.field === 'premium' || col.field === 'totalSumInsured' }">
 
                       <ng-container [ngSwitch]="col.field">
-
-
-                        <!-- <ng-container *ngSwitchDefault>
-                          {{ getCellValue(product, col.field) }}
-                        </ng-container>
-                        <ng-container *ngIf="col.field === 'premium' || col.field === 'totalSumInsured'">
-                          {{ product[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.0-0' }}
-                        </ng-container> -->
-
                         <ng-container *ngSwitchDefault>
                           <ng-container *ngSwitchDefault>
                             <ng-container
@@ -406,6 +387,7 @@
                   </div>
                 </div>
               </div>
+
               <!-- TABS  -->
               <div class="row mt-5 mb-3">
                 <div class="col-7">
@@ -420,19 +402,9 @@
                       <a class="nav-link" [class.active]="activeTab === 'taxes'" (click)="setActiveTab('taxes')"
                         data-bs-toggle="tab" data-bs-target="#nav-taxes">Taxes</a>
                     </li>
-                    <!-- <br>
-                    <li class="nav-item">
-                      <a class="nav-link" [class.active]="activeTab === 'limits'" (click)="setActiveTab('limits')"
-                        data-bs-toggle="tab" data-bs-target="#nav-limits">Limits of Liability</a>
-                    </li>
-                    <br>
-                    <li class="nav-item">
-                      <a class="nav-link" [class.active]="activeTab === 'similarQuotes'"
-                         (click)="setActiveTab('similarQuotes')" data-bs-toggle="tab"
-                         data-bs-target="#nav-similarQuotes">Similar Quotes</a>
-                    </li> -->
                   </ul>
                 </div>
+
                 <div class="col-5 d-flex justify-content-end" id="navigationIcons">
                   <div class="row" *ngIf="
                       activeTab === 'clauses' ||
@@ -440,27 +412,8 @@
                       activeTab === 'limits'
                     ">
                     <div class="col-sm-3"></div>
-                    <!-- <div class="col-sm-3">
-                      <button type="button" id="icon" class="btn btn-primary" title="Add" [disabled]="viewQuoteFlag">
-                        <i class="fa-solid fa-plus"></i>
-                      </button>
-                    </div>
-                    <div class="col-sm-3">
-                      <button type="button" id="icon" class="btn btn-primary" title="Edit" [disabled]="viewQuoteFlag">
-                        <i class="fa-solid fa-pencil"></i>
-                      </button>
-                    </div> -->
                     <div class="d-flex justify-content-end align-items-center">
-                      <!-- <button *ngIf="activeTab === 'taxes'" id="openModalButtonAdd" class="btn btn-primary btn-sm"
-                        style="
-                          white-space: nowrap;
-                          height: 30px;
-                          padding: 2px 8px;
-                          font-size: 13px;
-                          line-height: 1;
-                        " (click)="openEditTaxModal();getTransactionTypes();getProductTaxes()">
-                        Add Tax
-                      </button> -->
+
                       <i *ngIf="activeTab === 'clauses'" #iconTrigger
                         class="pi border border-black p-1 rounded-1 text-black"
                         [ngClass]="{ 'pi-caret-up': showClauses, 'pi-caret-down': !showClauses }"
@@ -472,10 +425,7 @@
                 </div>
               </div>
 
-
-
               <div class="tab-content mb-4" id="nav-tabContent">
-
                 <!-- CLAUSES -->
                 <!-- Floating Clauses Column Selector -->
                 <div *ngIf="showClausesColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
@@ -486,11 +436,12 @@
                     <strong class="text-primary">Select Clauses Columns</strong>
                     <button class="btn-close btn-sm" (click)="showClausesColumnModal = false"></button>
                   </div>
-                  <div style="max-height: 200px;max-width:250px; overflow-y: auto;">
-                    <div *ngFor="let col of clausesColumns">
+
+                  <div style="max-height: 250px; overflow-y: auto;">
+                    <div *ngFor="let col of productClauseColumns">
                       <div class="form-check">
-                        <input class="form-check-input" type="checkbox" style="color: #00529B;"
-                          [(ngModel)]="col.visible" [id]="col.field">
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible"
+                          (change)="toggleProductClauseColumnVisibility(col.field)" [id]="col.field">
                         <label class="form-check-label" [for]="col.field">
                           {{ col.header }}
                         </label>
@@ -498,9 +449,11 @@
                     </div>
                   </div>
                 </div>
+
+                <!-- product clauses table -->
                 <div class="tab-pane fade show active" id="nav-clauses" role="tabpanel" aria-labelledby="nav-clauses"
                   tabindex="0">
-                  <p-table [value]="productClauses" #productClauseTable [paginator]="productClauses?.length > 10"
+                  <p-table [value]="sessionClauses" #productClauseTable [paginator]="sessionClauses?.length > 10"
                     [rowsPerPageOptions]="[3, 5, 10]" [rows]="3" [showCurrentPageReport]="true"
                     currentPageReportTemplate="{first} - {last} of {totalRecords}" class="ui-datatable"
                     responsiveLayout="scroll" [autoLayout]="true" [scrollable]="true" scrollHeight="200px">
@@ -508,7 +461,7 @@
                     <!-- Table Header -->
                     <ng-template pTemplate="header">
                       <tr>
-                        <th *ngFor="let col of clausesColumns" [hidden]="!col.visible" class="flexible-header"
+                        <th *ngFor="let col of productClauseColumns" [hidden]="!col.visible" class="flexible-header"
                           [pSortableColumn]="col.field">
                           {{ col.header }}
                           <p-sortIcon [field]="col.field"></p-sortIcon>
@@ -521,7 +474,7 @@
                       <!-- Filters Row -->
                       <ng-container *ngIf="rowIndex === 0">
                         <tr>
-                          <td *ngFor="let col of clausesColumns" [hidden]="!col.visible">
+                          <td *ngFor="let col of productClauseColumns" [hidden]="!col.visible">
                             <input type="text" pInputText class="form-control w-70"
                               (input)="filterTable($event, col.field, productClauseTable)" />
                           </td>
@@ -530,18 +483,25 @@
 
                       <!-- Data Row -->
                       <tr>
-                        <td *ngFor="let col of clausesColumns" [hidden]="!col.visible">
+                        <td *ngFor="let col of productClauseColumns" [hidden]="!col.visible">
                           <ng-container [ngSwitch]="col.field">
 
                             <!-- Truncated fields -->
-                            <span *ngSwitchCase="'clause'">
-                              {{ clause[col.field] | truncate:5 | sentenceCase }}
-                            </span>
+                            <ng-container *ngSwitchCase="'clauseWording'">
+                              <div class="clause-wrapper">
+                                {{ clause[col.field] | sentenceCase }}
+                                <div class="hover-card">
+                                  {{ clause[col.field] | sentenceCase }}
+                                </div>
+                              </div>
+
+                            </ng-container>
+
                             <span *ngSwitchCase="'clauseHeading'">
-                              {{ clause[col.field] | truncate:5 | sentenceCase }}
+                              {{ clause[col.field] | sentenceCase }}
                             </span>
                             <span *ngSwitchCase="'clauseShortDescription'">
-                              {{ clause[col.field] | truncate:5 | sentenceCase }}
+                              {{ clause[col.field] | sentenceCase }}
                             </span>
 
                             <!-- All other fields -->
@@ -558,7 +518,7 @@
                     <!-- Empty Message -->
                     <ng-template pTemplate="emptymessage">
                       <tr>
-                        <td [attr.colspan]="clausesColumns.length" class="text-center text-muted py-3">
+                        <td [attr.colspan]="productClauseColumns.length" class="text-center text-muted py-3">
                           “No product clauses available.”
                         </td>
                       </tr>
@@ -851,12 +811,12 @@
                           <a class="nav-link" [class.active]="activeRiskDetailsTab === 'excesses'"
                             (click)="activeRiskDetailsTab = 'excesses'">Excess</a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                           <a class="nav-link text-muted" [class.active]="activeRiskDetailsTab === 'comments'"
                             pTooltip="Feature under development" tooltipPosition="top">
                             Comments
                           </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                           <a class="nav-link" [class.active]="activeRiskDetailsTab === 'limits-liability'"
                             (click)="activeRiskDetailsTab = 'limits-liability'">Limits of liability</a>
@@ -1707,7 +1667,7 @@
             </small>
 
             <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
-              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;" 
                 (click)="reassignQuotation()">{{
                 'gis.quotation.reassign' | translate }}
               </button>
@@ -1823,18 +1783,19 @@
         <!-- Left-side buttons -->
         <div class="d-flex gap-2 flex-wrap">
           <button
-            style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"
-            (click)="navigateToRiskCenter()">
+            style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"  
+            (click)="navigateToRiskCenter()"
+            [disabled]="viewQuoteFlag">
             {{ 'gis.quotation.back' | translate }}
           </button>
 
           <button type="button" class="btn btn-outline-primary" (click)="openReassignQuotationModal()"
-            [disabled]="afterRejectQuote">
+            [disabled]="afterRejectQuote||viewQuoteFlag">
             {{ "gis.quotation.reassign" | translate }}
           </button>
 
           <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
-            [disabled]="afterRejectQuote">
+            [disabled]="afterRejectQuote||viewQuoteFlag">
             {{ 'gis.quotation.reject' | translate }}
           </button>
         </div>
@@ -1843,7 +1804,7 @@
         <div class="action-buttons">
           <div class="position-relative">
             <button class="btn btn-outline-primary me-2" *ngIf="isNewClientSelected" data-bs-toggle="modal"
-              data-bs-target="#createClientModal">
+              data-bs-target="#createClientModal"  [disabled]="viewQuoteFlag">
               Create Client
             </button>
             <div *ngIf="showClientWizzardModal" class="card shadow rounded p-3 position-absolute client-wizzard-modal"
@@ -1879,8 +1840,8 @@
             [tooltipDisabled]="!authorizeButtonDisabled" style="cursor: pointer;">
             <button *ngIf="showAuthorizeButton" type="button" class="btn"
               [ngClass]="{'btn-outline-primary': !authorizeButtonDisabled, 'btn-secondary': authorizeButtonDisabled}"
-              [disabled]="authorizeButtonDisabled" (click)="authorizeQuote()">
-              Authorize quote
+              [disabled]="authorizeButtonDisabled||viewQuoteFlag" (click)="authorizeQuote()">
+              Authorize quote 
             </button>
           </div>
           <!-- <div>
@@ -1892,7 +1853,7 @@
               View documents
             </button>
             <button class="btn btn-primary" *ngIf="showConfirmButton" data-bs-toggle="modal"
-              data-bs-target="#consentModal">
+              data-bs-target="#clientConsentModal">
               Confirm
             </button>
           </div>
@@ -1942,7 +1903,7 @@
 
     </div>
     <!-- Consent Modal -->
-    <div class="modal fade" id="consentModal" #consentModal tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="clientConsentModal" #clientConsentModal tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-sm" style="min-width:609px">
         <div class="modal-content px-4 pt-2 pb-4 ">
 
@@ -2029,8 +1990,7 @@
           </div>
           <div *ngIf="otpGenerated" class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
             <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary fw-bold">Cancel</button>
-            <button type="button" class="btn" style="background-color: #00529B;color:white;"
-              (click)="verifyOTP()">Verify</button>
+            <button type="button" class="btn btn-primary fw-bold" (click)="verifyOTP()">Verify</button>
           </div>
 
         </div>

@@ -21,14 +21,13 @@
 <ng-container *ngIf="group.subGroup?.length > 0">
   <ng-container *ngFor="let subGroup of group.subGroup">
 
-    <ng-container *ngIf="subGroup.presentationType==='fields'">
+    <ng-container *ngIf="subGroup.presentationType===PRESENTATION_TYPE.fields">
       <div class="row my-3">
         <div class="col-sm-8">
           <span class="text-primary lead">
             {{ subGroup.label[language] | titlecase }}
           </span>
               <span
-                *ngIf="subGroup.presentationType==='fields'"
                 id="edit-tab-btn"
                 class="m-2 text-primary"
               >
@@ -52,11 +51,12 @@
       </div>
     </ng-container>
 
-    <ng-container *ngIf="subGroup.presentationType !== 'fields'">
+    <ng-container *ngIf="subGroup.presentationType === PRESENTATION_TYPE.fields_and_table_columns">
       <app-overview-table
         [subGroup]="subGroup"
         [table]="table"
         [language]="language"
+        (deleteBtnClicked)="handleContactPersonDelete($event)"
       >
       </app-overview-table>
     </ng-container>

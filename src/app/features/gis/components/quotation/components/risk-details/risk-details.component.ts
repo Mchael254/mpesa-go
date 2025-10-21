@@ -735,21 +735,6 @@ export class RiskDetailsComponent {
     this.saveRiskDetailsColumnsToSession();
   }
 
-  // toggleRiskDetailsColumns(iconElement: HTMLElement): void {
-  //   this.showRiskDetails = !this.showRiskDetails;
-
-  //   const rect = iconElement.getBoundingClientRect();
-
-  //   const top = rect.top + rect.height + window.scrollY + 4;
-  //   const left = rect.left + window.scrollX;
-
-  //   this.columnModalPosition = {
-  //     top: `${top}px`,
-  //     left: `${left}px`
-  //   };
-
-  //   this.showRiskDetailsColumnModal = true;
-  // }
 
   toggleRiskDetailsColumns(iconElement: HTMLElement): void {
     this.showRiskDetails = true;
@@ -822,6 +807,7 @@ export class RiskDetailsComponent {
     this.modalInstance?.show();
     this.isEditMode = false
     this.isAddMode = true
+    this.selectedSubclassCode = null
     this.clearRiskForm()
     this.riskDetailsForm.reset({
       insureds: this.riskDetailsForm.get('insureds')?.value
@@ -1144,9 +1130,18 @@ export class RiskDetailsComponent {
     return date as string;
   }
 
-  sanitizeCurrency(raw: string): number {
-    const cleaned = raw.replace(/[^0-9]/g, '');
-    return Number(cleaned);
+  // sanitizeCurrency(raw: string): number {
+  //   const cleaned = raw.replace(/[^0-9]/g, '');
+  //   return Number(cleaned);
+  // }
+  sanitizeCurrency(raw: any): number | null {
+    if (raw == null) return null; // handles null and undefined
+
+    const str = String(raw); // ensure it's a string
+    const cleaned = str.replace(/[^0-9.-]/g, ''); // allow negative & decimal
+    const parsed = Number(cleaned);
+
+    return isNaN(parsed) ? null : parsed;
   }
 
   onBinderSelected(event: any) {
@@ -1630,7 +1625,8 @@ export class RiskDetailsComponent {
           this.quotationCode = quotationCode
           const quotationNo = data._embedded.quotationNo
           this.addProductClauses();
-
+          this.selectedFile = null;
+          this.selectedSubclassCode = null;
 
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
@@ -3314,7 +3310,7 @@ export class RiskDetailsComponent {
         modal.show();
       }
     } else {
-      this.globalMessagingService.displayErrorMessage('warning', 'You need to select a risk first');
+      this.globalMessagingService.displayErrorMessage('warning', 'Select a risk to proceed');
     }
   }
 
@@ -3765,26 +3761,49 @@ export class RiskDetailsComponent {
     }
   }
 
+  // fetchYearOfManufacture() {
+  //   this.productService.getYearOfManufacture()
+  //     .subscribe({
+  //       next: (modelYear) => {
+  //         const model = modelYear._embedded
+  //         this.yearList = model[0]["List of cover years"]
+  //         log.debug("YEAR LIST", this.yearList)
+
+  //       },
+  //       error: (error: HttpErrorResponse) => {
+  //         log.debug("Error log", error.error.message);
+
+  //         this.globalMessagingService.displayErrorMessage(
+  //           'Error',
+  //           error.error.message
+  //         );
+  //       },
+
+  //     })
+
+  // }
   fetchYearOfManufacture() {
-    this.productService.getYearOfManufacture()
-      .subscribe({
-        next: (modelYear) => {
-          const model = modelYear._embedded
-          this.yearList = model[0]["List of cover years"]
-          log.debug("YEAR LIST", this.yearList)
+    this.productService.getYearOfManufacture().subscribe({
+      next: (modelYear) => {
+        const model = modelYear._embedded;
+        const rawYears = model[0]["List of cover years"];
 
-        },
-        error: (error: HttpErrorResponse) => {
-          log.debug("Error log", error.error.message);
+        // ✅ Map raw numbers to label/value objects for p-dropdown filtering
+        this.yearList = rawYears.map((year: number) => ({
+          label: year.toString(),
+          value: year
+        }));
 
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
-        },
-
-      })
-
+        log.debug("YEAR LIST", this.yearList);
+      },
+      error: (error: HttpErrorResponse) => {
+        log.debug("Error log", error.error.message);
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          error.error.message
+        );
+      },
+    });
   }
 
   handleSelectChange(fieldName: string, event: any): void {
@@ -4114,7 +4133,7 @@ export class RiskDetailsComponent {
 
   openLimitModal(): void {
     if (!this.selectedSubclassCode || !this.selectedRiskCode) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk to proceed');
       log.debug("selectedSubclassCode does not exist", this.selectedSubclassCode)
       return;
     }
@@ -4473,7 +4492,7 @@ export class RiskDetailsComponent {
 
   openExcessModal(): void {
     if (!this.selectedSubclassCode || !this.selectedRiskCode) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk to proceed');
       return;
     }
 
@@ -4798,7 +4817,7 @@ export class RiskDetailsComponent {
 
   openPerilsModal(): void {
     if (!this.selectedSubclassCode || !this.selectedRiskCode) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk to proceed');
       return;
     }
     this.closeChoosePerilsModal();
@@ -4815,7 +4834,7 @@ export class RiskDetailsComponent {
 
   openChoosePerilsModal(): void {
     if (!this.selectedSubclassCode || !this.selectedRiskCode) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk first');
+      this.globalMessagingService.displayErrorMessage('Error', 'Select or add risk to proceed');
       return;
     }
 
@@ -5130,7 +5149,28 @@ export class RiskDetailsComponent {
     log.debug("commissionsColumns", this.commissionsColumns);
   }
 
-  defaultVisibleCommissionsFields = ['group', 'agentDto', 'setupRate', 'usedRate', 'discType', 'discRate',];
+  defaultVisibleCommissionsFields = ['group', 'agentDto', 'accountType', 'setupRate', 'usedRate', 'commissionAmount', 'withHoldingRate',
+    'withHoldingTax', 'discType', 'discRate'];
+
+  /**
+  * Checks if a commission field should be read-only (non-editable)
+  * @param fieldName The name of the field to check
+  * @returns boolean indicating if the field should be read-only
+  */
+  isCommissionFieldReadOnly(fieldName: string): boolean {
+    const readOnlyFields = [
+      'agentName',
+      'accountType',
+      'setupRate',
+      'withHoldingRate',
+      'withHoldingTax',
+      'transactionType',
+      'discAmount',
+    ];
+
+    return readOnlyFields.includes(fieldName);
+  }
+
 
   loadCommissions(): void {
     const subclassCode = this.selectedSubclassCode;
@@ -5141,7 +5181,7 @@ export class RiskDetailsComponent {
     this.agentCode = quotationDetails?.agent?.id || 0;
 
     if (!this.accountCode) {
-      this.globalMessagingService.displayErrorMessage('Error', 'Select agent first');
+      this.globalMessagingService.displayErrorMessage('Error', 'Select an agent to proceed');
       return;
     }
 
@@ -5335,6 +5375,7 @@ export class RiskDetailsComponent {
     }
 
     const sourceDescription = this.quotationDetails.source.description;
+    log.debug('sourceDescription', sourceDescription)
     return sourceDescription === 'Agent' ||
       sourceDescription === 'Agent/b' ||
       sourceDescription === 'Broker/agent';
@@ -5344,29 +5385,6 @@ export class RiskDetailsComponent {
     return !this.isAgentSourceSelected();
   }
 
-  /**
-   * Checks if a commission field should be read-only (non-editable)
-   * @param fieldName The name of the field to check
-   * @returns boolean indicating if the field should be read-only
-   */
-  isCommissionFieldReadOnly(fieldName: string): boolean {
-    const readOnlyFields = [
-      'agentName',
-      'accountType',
-      'account_type',
-      'setupRate',
-      'witholdingRate',
-      'witholding_rate',
-      'witholdingTaxType',
-      'witholding_tax_type',
-      'transactionType',
-      'transaction_type',
-      'discAmount',
-      'disc_amount'
-    ];
-
-    return readOnlyFields.includes(fieldName);
-  }
 
   onAddOtherSchedule(tab: any): void {
     log.debug("DYNAMIC SUBCLASS FORM FIELDS", this.dynamicSubclassFormFields)
@@ -6741,7 +6759,7 @@ export class RiskDetailsComponent {
     this.errorMessage = '';
 
     const keepValues = {
-      insureds: this.riskDetailsForm.get('insuredS')?.value,
+      insureds: this.riskDetailsForm.get('insureds')?.value,
       subclass: this.riskDetailsForm.get('subclass')?.value,
       coverFrom: this.riskDetailsForm.get('coverFrom')?.value,
       coverTo: this.riskDetailsForm.get('coverTo')?.value,
