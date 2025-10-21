@@ -178,6 +178,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   pageSize: number;
   selectedTableRecord: any;
   glAccounts: GenericResponse<Pagination<GLAccountDTO>> = <GenericResponse<Pagination<GLAccountDTO>>>{};
+  clientBranchData: AccountsEnum[];
   columns: any = [
     { field: 'account_number', header: 'ID', visible: true },
     { field: 'account_name', header: 'Name', visible: true },
@@ -203,6 +204,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     private accountService: AccountService,
     private authService: AuthService,
     private receiptManagementService: ReceiptManagementService,
+    private clientsService: ClientService,
   ) {
 
     this.uploadForm = this.fb.group({
@@ -1537,6 +1539,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       case 'accountTypeIndividual':
         this.fetchAccountTypes();
         break;
+      case 'cnt_individual_contact_details_branch':
+        this.fetchClientBranches(sectionIndex, fieldIndex, subGroupIndex);
+        break;
 
       default:
         log.warn(`No handler for field: ${fieldId}`);
@@ -2053,6 +2058,22 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         },
       });
     }
+  }
+
+  fetchClientBranches(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1) {
+    this.clientsService.getCLientBranches().subscribe({
+      next: (data: AccountsEnum[]) => {
+        this.clientBranchData = data;
+        const clientBranchStringArr = data.map(clientBranch => this.utilService.normalizeOption(clientBranch));
+        this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, clientBranchStringArr);
+        log.info(`client branches: `, clientBranchStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    })
   }
 
   /**
