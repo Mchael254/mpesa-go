@@ -722,16 +722,11 @@ export class QuotationManagementComponent implements OnDestroy {
         icon: 'pi pi-sync',
         title: this.actionDescriptions['Revise'],
         command: () => this.reviseQuotation(quotation)
+
       },
       {
         label: 'Reuse Quote',
         icon: 'pi pi-replay',
-        title: this.actionDescriptions['Reuse'],
-        command: () => this.reuseQuotation(quotation)
-      },
-      {
-        label: 'Reassign',
-        icon: 'pi pi-user-edit',
         title: this.actionDescriptions['Reassign'],
         command: () => this.reassignQuote(quotation)
       },
