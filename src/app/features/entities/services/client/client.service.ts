@@ -189,6 +189,41 @@ export class ClientService {
     );
   }
 
+  deleteOwnershipRecord(id: number): Observable<{message: string}> {
+    return this.api.DELETE<{message: string}>(
+      `account-ownership/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  deleteCr12Record(id: number): Observable<{message: string}> {
+    return this.api.DELETE<{message: string}>(
+      `cr12/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  deleteContactPerson(id: number): Observable<{message: string}> {
+    return this.api.DELETE<{message: string}>(
+      `contact-persons/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    )
+  }
+
+  deletePayee(id: number): Observable<{message: string}> {
+    return this.api.DELETE<{message: string}>(
+      `business-persons/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    )
+  }
+
+  deleteClientBranch(id: number): Observable<{message: string}> {
+    return this.api.DELETE<{message: string}>(
+      `client-branch/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    )
+  }
+
   requestOtp(optRequestPayload: OtpRequestPayload): Observable<any> {
     return this.api.POST<any>(
       `otp/request/`,

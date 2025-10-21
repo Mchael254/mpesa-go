@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Logger, UtilService} from "../../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
@@ -13,6 +13,12 @@ import {OccupationService} from "../../../../../../shared/services/setups/occupa
 import {AccountService} from "../../../../services/account/account.service";
 import {AccountsEnum} from "../../../../data/enums/accounts-enum";
 import {ClientService} from "../../../../services/client/client.service";
+import {ClientDTO, Cr12Detail, OwnershipDetails, WealthAmlDetails} from "../../../../data/ClientDTO";
+import {
+  DynamicScreenSetupDto,
+  FormGroupsDto,
+  FormSubGroupsDto
+} from "../../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('WealthAmlComponent');
 
@@ -27,60 +33,28 @@ export class WealthAmlComponent implements OnInit {
   @ViewChild('closeButton') closeButton!: ElementRef<HTMLButtonElement>;
   @ViewChild('closeDeleteDialogButton') closeDeleteDialogButton!: ElementRef<HTMLButtonElement>;
 
+  @Input() clientDetails: ClientDTO;
   @Input() wealthAmlDetailsConfig: any
-  @Input() formFieldsConfig: any;
   @Input() wealthAmlDetails: any;
   @Input() accountCode: number;
+  @Input() group: FormGroupsDto;
+  @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
+
+  subGroups: FormSubGroupsDto[];
+
+  ownershipDetails: OwnershipDetails[];
+  shouldShowCr12Details: boolean = false;
+  cr12SearchSubString: string = 'cr12';
+
 
   language: string = 'en';
   editForm: FormGroup;
 
   columnLabel: {};
-  columnDialogVisible: boolean = false;
   columns: TableFieldConfig[] = [];
   tableDetails: TableDetail;
   pageSize: number = 5;
   totalRecords: number;
-
-  globalFilterFields: string[] = [
-    'name', 'modeOfIdentity.name', 'identityNumber', 'pinNumber', 'categoryName'
-  ];
-
-
-  wealthAmlDetailsLabel  = {
-    id: { label: "id", visible: false },
-    nationalityCountryId: { label: "nationality country id", visible: false },
-    citizenshipCountryId: { label: "citizenship country id", visible: false },
-    fundsSource: { label: "source of funds", visible: true },
-    employmentStatus: { label: "type of employment", visible: true },
-    maritalStatus: { label: "marital status", visible: false },
-    occupationId: { label: "occupation id", visible: false },
-    occupation: { label: "occupation", visible: true },
-    sectorId: { label: "employment sector", visible: false },
-    sector: { label: "sector", visible: true },
-    tradingName: { label: "trading name", visible: false },
-    registeredName: { label: "registered name", visible: false },
-    certificateRegistrationNumber: { label: "certificate registration number", visible: false },
-    certificateYearOfRegistration: { label: "certificate year of registration", visible: false },
-    sourceOfWealthId: { label: "source of wealth id", visible: false },
-    parentCountryId: { label: "parent country id", visible: false },
-    operatingCountryId: { label: "operating country id", visible: false },
-    crFormRequired: { label: "cr form required", visible: false },
-    crFormYear: { label: "cr form year", visible: false },
-    partyAccountId: { label: "party account id", visible: false },
-    insurancePurpose: { label: "purpose of insurance", visible: true },
-    premiumFrequency: { label: "premium frequency", visible: true },
-    distributeChannel: { label: "distribution channel", visible: true },
-    parentCompany: { label: "parent company", visible: false },
-    category: { label: "category", visible: false },
-    modeOfIdentity: { label: "mode of identity", visible: false },
-    idNumber: { label: "id number", visible: false },
-    cr12Details: { label: "cr 12 details", visible: false },
-    createdBy: { label: "created by", visible: false },
-    createdDate: { label: "created date", visible: false },
-    modifiedBy: { label: "modified by", visible: false },
-    modifiedDate: { label: "modified date", visible: false }
-  };
 
   sourcesOfFunds$: Observable<FundSourceDTO[]>;
   sourcesOfFunds: FundSourceDTO[];
@@ -116,13 +90,16 @@ export class WealthAmlComponent implements OnInit {
     private occupationService: OccupationService,
     private accountService: AccountService,
     private clientService: ClientService,
+    private cdr: ChangeDetectorRef,
   ) {
-
+    this.utilService.currentLanguage.subscribe(lang => this.language = lang);
   }
 
 
   ngOnInit(): void {
-    this.utilService.currentLanguage.subscribe(lang => this.language = lang);
+
+    this.prepareSubgroupTables();
+
     this.sourcesOfFunds$ = this.bankService.getFundSource();
     this.sectors$ = this.sectorService.getSectors();
     this.occupations$ = this.occupationService.getOccupations();
@@ -130,10 +107,205 @@ export class WealthAmlComponent implements OnInit {
     this.premiumFrequencies$ = this.accountService.getPremiumFrequencies();
     this.employmentTypes$ = this.accountService.getEmploymentTypes();
     this.insurancePurposes$ = this.accountService.getInsurancePurpose();
-    this.initData();
+    // this.initData();
 
-    this.createEditForm(this.formFieldsConfig.fields);
-    this.prepareTableDetails();
+    // this.createEditForm(this.formFieldsConfig.fields);
+  }
+
+
+  prepareSubgroupTables(): void {
+    setTimeout(() => {
+      this.ownershipDetails = this.clientDetails.ownershipDetails;
+      const fields = this.formGroupsAndFieldConfig.fields;
+
+      this.group.subGroup.forEach(sub => {
+        sub.fields = fields.filter(field => field.formSubGroupingId === sub.subGroupId);
+        const tableData = this.createTableDisplay(sub);
+        sub.table = {
+          cols: sub.fields,
+          data: tableData
+        };
+      });
+
+      this.subGroups = this.group.subGroup;
+      this.cdr.detectChanges();
+
+    }, 1000);
+  }
+
+  /**
+   * create table display
+   * check subgroupId and create table data based on identified id
+   * @param subgroup
+   * @return tableData
+   */
+  createTableDisplay(subgroup: FormSubGroupsDto): any[] {
+
+    const subgroupId = subgroup.subGroupId;
+    const tableData = [];
+    let dataRecord = [];
+
+
+    switch (subgroupId) {
+      case '360_overview_corporate_ownership_details':
+        dataRecord = this.clientDetails.ownershipDetails;
+        dataRecord.forEach(record => {
+          const ownershipDetails = {
+            ownershipIdCorporate: record.code,
+            overview_stakeholder_name: record.name,
+            overview_stakeholder_doc_id_no: record.idNumber,
+            overview_stakeholder_mobile_no: record.contactPersonPhone,
+            overview_stakeholder_percent_ownership: record.percentOwnership
+          };
+          tableData.push(ownershipDetails);
+        });
+        break;
+
+        case '360_overview_corporate_aml_details':
+          dataRecord = this.clientDetails.wealthAmlDetails;
+          dataRecord.forEach(record => {
+            const amlDetails = {
+              amlIdCorporate: record.id,
+              overview_trading_name: record.tradingName,
+              overview_registered_name: record.registeredName,
+              overview_cert_reg_no: record.certificateRegistrationNumber,
+              overview_cert_reg_year: record.certificateYearOfRegistration,
+              overview_parent_country: record.parentCountryId,
+              overview_aml_operating_country: record.operatingCountryId,
+              overview_fund_source: record.fundsSource,
+              overview_economic_sector: record.sector
+            }
+            tableData.push(amlDetails);
+          });
+          break;
+
+      case '360_overview_individual_aml_details':
+        dataRecord = this.clientDetails.wealthAmlDetails;
+        dataRecord.forEach(record => {
+          const amlDetails = {
+            amlIdIndividual: record.id,
+            overview_source_of_funds: record.fundsSource,
+            overview_employment_type: record.employmentStatus,
+            overview_economic_sector: record.sector.sectorName,
+            overview_occupation: record.occupation.occupationName,
+            overview_insurance_purpose: record.insurancePurpose,
+            overview_premium_frequency: record.premiumFrequency,
+            overview_distribution_channel: record.distributeChannel
+          }
+          tableData.push(amlDetails);
+        });
+        break;
+      default:
+        //
+    }
+    return tableData;
+  }
+
+  /**
+   * prepare and display cr12 details based on selected AML record
+   * @param row
+   */
+  handleCr12Display(row: any) {
+    this.shouldShowCr12Details = false;
+
+    const amlDetails = this.clientDetails.wealthAmlDetails.find(item => item.registeredName === row.overview_registered_name);
+    const cr12Details = amlDetails?.cr12Details;
+    const subGroup = this.group.subGroup.find(subGroup => subGroup.subGroupId.includes(this.cr12SearchSubString));
+
+    let tableData = [];
+
+    if (cr12Details && cr12Details.length > 0) {
+      cr12Details.forEach(record => {
+        const cr12Details = {
+          cr12CorporateId: record.cr12Code,
+          overview_name: record.directorName,
+          overview_company_reg_no: record.directorIdRegNo,
+          overview_address: null,
+          overview_company_reg_date: record.certificateRegistrationYear,
+          overview_ref_no: record.certificateReferenceNo,
+          overview_ref_no_year: record.certificateRegistrationYear,
+        }
+        tableData.push(cr12Details);
+      });
+      subGroup.table.data = tableData;
+      this.shouldShowCr12Details = true;
+      log.info('wealth aml details selected >>> ', cr12Details, subGroup);
+    }
+  }
+
+  /**
+   * handle delete wealth AML record
+   * @param row
+   */
+  handleWealthAmlDelete(row: any, subGroup: FormSubGroupsDto) {
+    log.info('handling wealth aml delete...', row, subGroup);
+    if (subGroup.subGroupId.includes('ownership')) {
+      this.deleteOwnershipRecord(row, subGroup);
+    } else {
+      this.deleteWealthAmlRecord(row, subGroup);
+    }
+  }
+
+  deleteOwnershipRecord(row: any, subGroup: FormSubGroupsDto): void {
+    const ownershipId = row.ownershipIdCorporate
+    this.clientService.deleteOwnershipRecord(ownershipId).subscribe({
+      next: () => {
+        const foundSubgroup = this.subGroups.find(sub => sub.subGroupId === subGroup.subGroupId);
+        foundSubgroup.table.data = subGroup.table.data.filter(owner => (owner.ownershipIdCorporate || owner.ownershipIdCorporate) != ownershipId);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully ownership record');
+        this.getClientDetails(this.clientDetails.clientCode);
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error?.errors[0]);
+      }
+    });
+  }
+
+  deleteWealthAmlRecord(row: any, subGroup: FormSubGroupsDto): void {
+    const amlId = row.amlIdIndividual ? row.amlIdIndividual : row.amlIdCorporate;
+    this.clientService.deleteAmlRecord(amlId).subscribe({
+      next: () => {
+        const foundSubgroup = this.subGroups.find(sub => sub.subGroupId === subGroup.subGroupId);
+        foundSubgroup.table.data = subGroup.table.data.filter(aml => (aml.amlIdIndividual || aml.amlIdIndividual) != amlId);
+        this.shouldShowCr12Details = false;
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted AML record');
+        this.getClientDetails(this.clientDetails.clientCode);
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error?.errors[0]);
+      }
+    });
+  }
+
+  /**
+   * handle delete wealth cr12 record
+   * @param row
+   */
+  handleCr12Delete(row: any, subGroup: FormSubGroupsDto) {
+    this.clientService.deleteCr12Record(row.cr12CorporateId).subscribe({
+      next: () => {
+        subGroup.table.data = subGroup.table.data.filter(cr12 => cr12.cr12CorporateId !== row.cr12CorporateId);
+        this.shouldShowCr12Details = false;
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted AML record');
+        this.getClientDetails(this.clientDetails.clientCode);
+        this.cdr.detectChanges();
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error?.errors[0]);
+      }
+    });
+  }
+
+  getClientDetails(clientCode: number) {
+    this.clientService.getClientDetailsByClientCode(clientCode).subscribe({
+      next: (res) => {
+        this.clientDetails = res;
+        this.prepareSubgroupTables();
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', 'Could not fetch client details');
+      },
+    })
   }
 
   initData(): void {
@@ -163,7 +335,7 @@ export class WealthAmlComponent implements OnInit {
   }
 
 
-  prepareTableDetails(): void {
+  /*prepareTableDetails(): void {
     this.columns = [];
     this.totalRecords = this.wealthAmlDetails.length;
     const columns: string[] = Object.keys(this.wealthAmlDetails[0]);
@@ -177,7 +349,7 @@ export class WealthAmlComponent implements OnInit {
       }
       this.columns.push(tableColumn);
     });
-  }
+  }*/
 
   createEditForm(fields: any[]): void {
     const group: { [key: string]: any } = {};
@@ -198,7 +370,7 @@ export class WealthAmlComponent implements OnInit {
   }
 
   setSelectOptions(): void {
-    this.formFieldsConfig.fields.forEach(field => {
+    /*this.formFieldsConfig.fields.forEach(field => {
       switch (field.fieldId) {
         case 'fundsSource':
           field.options = this.sourcesOfFunds;
@@ -224,7 +396,7 @@ export class WealthAmlComponent implements OnInit {
         default:
           // do nothing;
       }
-    });
+    });*/
   }
 
   /*processSelectOption(event: any, fieldId: string): void {
@@ -271,7 +443,7 @@ export class WealthAmlComponent implements OnInit {
       next: res => {
         this.wealthAmlDetails = res.wealthAmlDetails;
         this.globalMessagingService.displaySuccessMessage('success', 'Wealth/AML details created/updated successfully!')
-        this.prepareTableDetails();
+        // this.prepareTableDetails();
         this.closeButton.nativeElement.click();
       },
       error: err => {
@@ -330,13 +502,12 @@ export class WealthAmlComponent implements OnInit {
         this.globalMessagingService.displaySuccessMessage('success', 'Wealth/AML details deleted successfully!')
         if (deleteIndex > -1)  this.wealthAmlDetails.splice(deleteIndex, 1);
         this.closeDeleteDialogButton.nativeElement.click();
-        this.prepareTableDetails();
+        // this.prepareTableDetails();
       },
       error: err => {
         this.globalMessagingService.displayErrorMessage('error', 'Wealth/AML details failed to delete! ' + err.error.message)
       }
     });
   }
-
 
 }

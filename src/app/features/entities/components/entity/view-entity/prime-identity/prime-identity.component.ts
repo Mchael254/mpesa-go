@@ -33,7 +33,6 @@ export class PrimeIdentityComponent implements OnInit {
 
   @Input() partyAccountDetails: PartyAccountsDetails;
   @Input() entityPartyIdDetails: ReqPartyById;
-  // @Input() primeDetailsConfig: any;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() clientDetails: any;
   selectOptions: {

@@ -81,7 +81,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
   @ViewChild('productClauseTable') productClauseTable: any;
   @ViewChild('riskClausesTable') riskClausesTable: any;
-  @ViewChild('consentModal') consentModal!: ElementRef;
+  @ViewChild('clientConsentModal') clientConsentModalElement!: ElementRef;
   @ViewChild('viewDocumentsModal') viewDocumentsModal!: ElementRef;
   @ViewChild('userInstructionsModal') userInstructionsModal!: ElementRef;
 
@@ -223,8 +223,17 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showProductColumnModal: boolean = false;
   columnModalPosition = { top: '0px', left: '0px' }
   columns: { field: string; header: string; visible: boolean }[] = [];
+
+  sessionClauses:any
   showClauses: boolean = true;
   showClausesColumnModal: boolean = false;
+  clausesColumns: { field: string; header: string; visible: boolean }[] = [];
+  show: boolean = false;
+  isProductClauseOpen: boolean = false
+  showProductClauses: boolean = true;
+  showProductClauseColumnModal = false;
+  productClauseColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
+
   showTaxesColumnModal: boolean = false;
   showRiskColumnModal: boolean = false;
   showSectionColumnModal: boolean = false;
@@ -238,7 +247,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showConfirmButton = false;
 
 
-  clausesColumns: { field: string; header: string; visible: boolean }[] = [];
+
   taxesColumns: { field: string; header: string; visible: boolean }[] = [];
   riskColumns: { field: string; header: string; visible: boolean }[] = [];
   sectionColumns: { field: string; header: string; visible: boolean }[] = [];
@@ -347,6 +356,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
+    // Check if fetchQuickQuoteProductClauses has already been called for this session
+    const quickQuoteProductClausesFetched = sessionStorage.getItem('quickQuoteProductClausesFetched');
+    if (!quickQuoteProductClausesFetched) {
+      this.fetchQuickQuoteProductClauses();
+    }
     this.checkAndOpenQuickQuoteModal();
     this.quickQuoteConvertedFlag = sessionStorage.getItem('quickQuoteConvertedFlag');
     if (this.quickQuoteConvertedFlag) {
@@ -391,6 +405,21 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           this.afterRejectQuote = true
         }
       });
+
+                      // Retrieve authorization flag specific to this quotation
+const authorizedFlag = sessionStorage.getItem(`quotationAuthorized_${this.quotationCode}`);
+this.quotationAuthorized = authorizedFlag === 'true';
+
+if (this.quotationAuthorized) {
+  this.showAuthorizeButton = false;
+  this.showViewDocumentsButton = true;
+  this.showConfirmButton = true;
+} else {
+  this.showAuthorizeButton = true;
+  this.showViewDocumentsButton = false;
+  this.showConfirmButton = false;
+}
+
 
 
     this.clientDetails = JSON.parse(
@@ -488,6 +517,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   ngAfterViewInit() {
     this.modals['chooseClientReassign'] = new bootstrap.Modal(this.chooseClientReassignModal.nativeElement);
     this.modals['reassignQuotation'] = new bootstrap.Modal(this.reassignQuotationModalElement.nativeElement);
+    this.modals['clientConsentModal'] = new bootstrap.Modal(this.clientConsentModalElement.nativeElement);
     this.modals['rejectQuotation'] = new bootstrap.Modal(this.rejectQuotationModalElement.nativeElement);
     if (this.isNewClientSelected) {
       setTimeout(() => this.openClientWizzard(), 300);
@@ -1279,8 +1309,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // this.getExcesses(subclassCode);
     this.getRiskClauses(data.code);
 
-    //       log.debug('subclassCode: passed for excess', subclassCode);
-    // log.debug('quotationProductCode: passed for excess', quotationProductCode);
     this.getLimitsofLiability(subclassCode, quotationProductCode, 'L');
     this.getLimitsofLiability(subclassCode, quotationProductCode, 'E')
 
@@ -1321,14 +1349,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       log.debug("No matching product found for the given code.");
     }
 
-    // this.getProductClause(proCode);
-    this.productClauses = data.productClauses
+    this.fetchAndLogQuotationProductClauses(proCode, data.productName || 'Selected Product', this.quotationView.code);
     this.getProductSubclass(proCode);
     // this.fetchSimilarQuotes(quotationProductCode);
-    log.debug('productClauses -handle click', this.productClauses)
-    if (this.productClauses) {
-      this.setColumnsFromClausesDetails(this.productClauses[0])
-    }
   }
 
   loadAllSubclass() {
@@ -2718,59 +2741,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }));
   }
 
-  // setColumnsFromClausesDetails(sample: ProductClauses) {
-  //   log.debug("SET COLUMN FOR PRODUCT CLAUSES", sample)
-  //   const defaultVisibleFields = [
-  //     'clauseShortDescription',
-  //     'clauseHeading',
-  //     'clause',
 
-  //   ];
-  //   const excludedFields = [];
-
-  //   this.clausesColumns = Object.keys(sample)
-  //     .filter((key) => !excludedFields.includes(key))
-  //     .map((key) => ({
-  //       field: key,
-  //       header: this.sentenceCase(key),
-  //       visible: defaultVisibleFields.includes(key),
-  //     }));
-
-
-  // }
-
-
-  setColumnsFromClausesDetails(sample: ProductClauses) {
-    log.debug("SET COLUMN FOR PRODUCT CLAUSES");
-
-    const defaultVisibleFields = [
-      'clauseShortDescription',
-      'clauseHeading',
-      'clause',
-    ];
-
-    const excludedFields: string[] = [];
-
-    // All keys from the sample
-    const keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
-
-    // Separate default fields and the rest
-    const defaultFields = defaultVisibleFields.filter(f => keys.includes(f));
-    const otherFields = keys.filter(k => !defaultVisibleFields.includes(k));
-
-    // Strictly order = defaults first, then others
-    const orderedKeys = [...defaultFields, ...otherFields];
-
-    this.clausesColumns = orderedKeys.map(key => ({
-      field: key,
-      header: this.sentenceCase(key),
-      visible: defaultVisibleFields.includes(key),
-      truncate: defaultVisibleFields.includes(key), // only these get truncated
-    }));
-
-    log.debug("clause columns", this.clausesColumns);
-    log.debug("product clauses clause columns:", this.productClauses);
-  }
 
 
 
@@ -3183,6 +3154,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             res?.message || 'Quotation authorized successfully.'
           );
 
+          sessionStorage.setItem(`quotationAuthorized_${quotationCode}`, 'true');
+
+
           // Step 2: Update Status
           const newStatus = 'Pending';
           const reason = '';
@@ -3230,7 +3204,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             'This quotation is already authorized.'
           );
           this.quotationAuthorized = true;
-          sessionStorage.setItem('quotationHasBeenAuthorzed', JSON.stringify(this.quotationAuthorized))
+          sessionStorage.setItem(`quotationAuthorized_${quotationCode}`, 'true');
           this.showAuthorizeButton = false;
           this.showViewDocumentsButton = true;
           this.showConfirmButton = true;
@@ -3278,19 +3252,66 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
+  // verifyOTP() {
+  //   const userIdentifier = this.otpResponse.userIdentifier
+  //   const otp = this.shareForm.value.otp
+  //   this.quotationService.verifyOTP(userIdentifier, otp)
+  //     .subscribe({
+  //       next: (res: any[]) => {
+  //         if (res) {
+  //           this.globalMessagingService.displaySuccessMessage("Succes", "Successfully verified OTP")
+
+  //           const modal = bootstrap.Modal.getInstance(this.consentModal.nativeElement);
+  //           modal.hide();
+  //           this.otpGenerated = false
+  //           this.changeToPolicyButtons = true
+  //           if (this.changeToPolicyButtons) {
+  //             this.showViewDocumentsButton = false
+  //             this.showConfirmButton = false
+  //           }
+  //         }
+  //       },
+  //       error: (err: any) => {
+  //         const backendMsg = err.error?.message || err.message || 'An unexpected error occurred'; console.error("OTP Verification Error:", backendMsg);
+
+  //         // 🔔 Show in global error handler
+  //         this.globalMessagingService.displayErrorMessage("Error", backendMsg);
+  //       }
+  //     });
+  // }
+  closeConsentModal() {
+
+    this.closeModals('clientConsentModal');
+  }
   verifyOTP() {
+
     const userIdentifier = this.otpResponse.userIdentifier
     const otp = this.shareForm.value.otp
     this.quotationService.verifyOTP(userIdentifier, otp)
       .subscribe({
         next: (res: any[]) => {
-          this.globalMessagingService.displaySuccessMessage("Succes", "Successfully verified OTP")
           if (res) {
-            // Close modal only on success
-            const modalEl: any = this.consentModal.nativeElement;
-            const modal = bootstrap.Modal.getInstance(modalEl)
-              || new bootstrap.Modal(modalEl);
-            modal.hide();
+            this.globalMessagingService.displaySuccessMessage("Succes", "Successfully verified OTP");
+
+            (document.activeElement as HTMLElement)?.blur();
+
+            const modalEl = this.clientConsentModalElement.nativeElement;
+            const modal = bootstrap.Modal.getInstance(modalEl);
+
+            if (modal) {
+              // Add event listener for when modal is fully hidden
+              modalEl.addEventListener(
+                'hidden.bs.modal',
+                () => {
+                  document.body.classList.remove('modal-open');
+                  document.body.style.overflow = '';
+                  document.body.style.paddingRight = '';
+                },
+                { once: true } // remove listener automatically
+              );
+
+              modal.hide();
+            }
             this.otpGenerated = false
             this.changeToPolicyButtons = true
             if (this.changeToPolicyButtons) {
@@ -3307,6 +3328,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         }
       });
   }
+
+
   fetchReports() {
     const system = 37;
     const applicationLevel = "QUOTE"
@@ -3660,6 +3683,225 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     const frequency = this.paymentFrequencies.find(freq => freq.value === frequencyValue);
     return frequency ? frequency.label : frequencyValue;
   }
+
+  fetchQuickQuoteProductClauses() {
+    const quickQuotePayloadString = sessionStorage.getItem('quickQuotePayload');
+
+    if (!quickQuotePayloadString) {
+      log.debug('quickQuotePayload not found in session storage');
+      return;
+    }
+
+    const quotationCodeString = sessionStorage.getItem('quotationCode');
+    if (!quotationCodeString) {
+      log.debug('quotationCode not found in session storage');
+      return;
+    }
+
+    try {
+      const quickQuotePayload = JSON.parse(quickQuotePayloadString);
+      const quotationCode = Number(quotationCodeString);
+      if (!quickQuotePayload.products || quickQuotePayload.products.length === 0) {
+        log.debug('No products found in quickQuotePayload');
+        return;
+      }
+
+      sessionStorage.setItem('quickQuoteProductClausesFetched', 'true');
+      // log.debug('fetchQuickQuoteProductClauses marked as executed in session storage');
+
+      const allProductClausesPayload: any[] = [];
+
+      quickQuotePayload.products.forEach((product: any, index: number) => {
+        const productCode = product.code;
+
+        if (!productCode) {
+          log.debug(`Product at index ${index} has no code`);
+          return;
+        }
+
+        log.debug(`Fetching clauses for product: ${product.description} (Code: ${productCode})`);
+
+        this.quotationService.getProductClauses(productCode)
+          .subscribe({
+            next: (clauses) => {
+              log.debug(`All clauses for product ${product.description} (Code: ${productCode}):`, clauses);
+
+              // Filter to get only mandatory clauses 
+              const mandatoryClauses = clauses.filter((clause: any) => clause.isMandatory === 'Y');
+              log.debug(`Mandatory clauses for product ${product.description} (Code: ${productCode}):`, mandatoryClauses);
+
+              if (mandatoryClauses.length === 0) {
+                log.debug(`No mandatory clauses found for product ${product.description} (Code: ${productCode})`);
+                return;
+              }
+
+              //mandatory product clauses
+              const transformedClauses = mandatoryClauses.map((clause: any) => ({
+                clauseWording: clause.wording || '',
+                clauseHeading: clause.heading || '',
+                clauseCode: clause.code || 0,
+                clauseType: clause.type || '',
+                clauseEditable: clause.isEditable || 'N',
+                clauseShortDescription: clause.shortDescription || ''
+              }));
+
+              const productClausePayload = {
+                quotationCode: quotationCode,
+                productCode: productCode,
+                productClauses: transformedClauses
+              };
+
+              allProductClausesPayload.push(productClausePayload);
+
+              log.debug(`Transformed mandatory clauses for product ${product.description}:`, productClausePayload);
+
+              // Post only the mandatory clauses to the quotation
+              this.quotationService.createQuotationProductClauses([productClausePayload])
+                .subscribe({
+                  next: (response) => {
+                    log.debug(`Successfully posted mandatory clauses for product ${product.description} (Code: ${productCode}):`, response);
+                    this.globalMessagingService.displaySuccessMessage(
+                      'Success',
+                      `Mandatory product clauses added successfully for ${product.description}`
+                    );
+
+                    this.fetchAndLogQuotationProductClauses(productCode, product.description, quotationCode);
+                  },
+                  error: (err) => {
+                    log.debug(`Error posting mandatory clauses for product ${product.description} (Code: ${productCode}):`, err);
+                    this.globalMessagingService.displayErrorMessage(
+                      'Error',
+                      `Failed to add mandatory clauses for ${product.description}. Please try again.`
+                    );
+                  }
+                });
+            },
+            error: (err) => {
+              log.debug(`Error fetching clauses for product ${product.description} (Code: ${productCode}):`, err);
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                `Failed to fetch clauses for ${product.description}. Please try again.`
+              );
+            }
+          });
+      });
+
+    } catch (error) {
+      log.debug('Error parsing quickQuotePayload from session storage:', error);
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Failed to process product clauses. Please refresh and try again.'
+      );
+    }
+  }
+
+  /**
+   * Fetches and logs quotation product clauses after they have been posted
+   * @param productCode - The product code
+   * @param productDescription - The product description for logging
+   * @param quotationCode - The quotation code
+   */
+  fetchAndLogQuotationProductClauses(productCode: number, productDescription: string, quotationCode: number) {
+    this.quotationService.getQuotationDetails(quotationCode)
+      .subscribe({
+        next: (quotationDetails: any) => {
+          const quotationProduct = quotationDetails.quotationProducts?.find(
+            (qp: any) => qp.productCode === productCode
+          );
+
+          if (quotationProduct && quotationProduct.code) {
+            const quotationProductCode = quotationProduct.code;
+            // log.debug(`Found quotationProductCode ${quotationProductCode} for product ${productDescription} (Code: ${productCode})`);
+
+            this.quotationService.getQuotationProductClauses(quotationProductCode)
+              .subscribe({
+                next: (response: any) => {
+                  if (response.status === 'SUCCESS' && response._embedded) {
+                    const clauses = response._embedded;
+                    // log.debug(`${response.message} - Retrieved ${clauses.length} clauses for ${productDescription}`);
+                    this.sessionClauses = clauses;
+                    if (this.sessionClauses.length > 0) {
+                      this.setProductClauseColumns(this.sessionClauses[0]);
+                    }
+
+                  } else {
+                    log.debug(`Unexpected response format or no clauses for ${productDescription}:`, response);
+                  }
+                },
+                error: (err) => {
+                  log.debug(`Error fetching quotation product clauses for ${productDescription}:`, err);
+                }
+              });
+          } else {
+            log.debug(`Could not find quotationProductCode for product ${productDescription} (Code: ${productCode}) in quotation details`);
+          }
+        },
+        error: (err) => {
+          log.debug(`Error fetching quotation details to get quotationProductCode for product ${productDescription}:`, err);
+        }
+      });
+  }
+
+  //product clauses
+  saveProductClauseColumnsToSession(): void {
+    if (this.productClauseColumns) {
+      const visibility = this.productClauseColumns.map(col => ({
+        field: col.field,
+        visible: col.visible
+      }));
+      sessionStorage.setItem('productClauseColumns', JSON.stringify(visibility));
+    }
+  }
+
+  toggleProductClauseColumnVisibility(field: string) {
+    this.saveProductClauseColumnsToSession();
+  }
+
+  toggleProductClauseColumns(iconElement: HTMLElement): void {
+
+    this.showProductClauses = true;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 160;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showProductClauseColumnModal = true;
+  }
+
+  setProductClauseColumns(productClause: any) {
+    const excludedFields = [
+    ];
+
+    this.productClauseColumns = Object.keys(productClause)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: this.defaultVisibleProductClauseFields.includes(key),
+        filterable: true,
+        sortable: true
+      }));
+
+    const saved = sessionStorage.getItem('productClauseColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.productClauseColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
+
+    // log.debug("productClauseColumns", this.productClauseColumns);
+  }
+
+  defaultVisibleProductClauseFields = ['clauseShortDescription', 'clauseHeading', 'clauseWording'];
+
 
 }
 

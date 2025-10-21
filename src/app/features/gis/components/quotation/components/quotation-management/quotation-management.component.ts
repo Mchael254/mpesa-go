@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild, OnDestroy } from '@angular/core';
 import { QuotationList, Status, StatusEnum } from '../../data/quotationsDTO';
 import { Logger, UtilService } from '../../../../../../shared/services';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
@@ -10,6 +10,7 @@ import { GlobalMessagingService } from '../../../../../../shared/services/messag
 import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { Table } from 'primeng/table';
+import { NgxCurrencyConfig } from 'ngx-currency';
 
 const log = new Logger('QuotationConcersionComponent');
 
@@ -20,7 +21,7 @@ const log = new Logger('QuotationConcersionComponent');
 })
 
 
-export class QuotationManagementComponent {
+export class QuotationManagementComponent implements OnDestroy {
   @ViewChild('menu') menu: Menu;
   @ViewChild('moreActionsMenu') moreActionsMenu: Menu;
   @ViewChild('quotationTable') quotationTable!: Table;
@@ -69,6 +70,30 @@ export class QuotationManagementComponent {
   viewQuoteFlag: Boolean = false;
   isClientSearchModalVisible = false;
   remainingMenuItems: MenuItem[] = [];
+  public currencyObj: NgxCurrencyConfig;
+  
+  // Tooltip descriptions for actions
+  actionDescriptions: { [key: string]: string } = {
+    'Edit': 'Change client details and process the quote',
+    'Revise': 'Create another version of this quote',
+    'Reuse': 'Use the existing quote details to create a new quote',
+    'View': 'Have a look at the quote details, without making any changes',
+    'Reassign': 'Assign to another user'
+  };
+
+  // Action icons mapping
+  actionIcons: { [key: string]: string } = {
+    'Edit': 'pi pi-pencil',
+    'Revise': 'pi pi-sync',
+    'Reuse': 'pi pi-replay',
+    'View': 'pi pi-eye',
+    'Reassign': 'pi pi-user-edit'
+  };
+
+  // Tooltip state management
+  hoveredAction: string | null = null;
+  tooltipPosition = { x: 0, y: 0 };
+  private tooltipTimer: any;
 
 
 
@@ -88,24 +113,54 @@ export class QuotationManagementComponent {
   ngOnInit(): void {
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
     this.dynamicSideBarMenu(this.quotationSubMenuList[6]);
+    this.initializeCurrency();
     this.fetchGISQuotations();
 
   }
 
-  ngOnDestroy(): void { }
+  private initializeCurrency(): void {
+    const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
+    const currencySymbol = sessionStorage.getItem('currencySymbol');
+    log.debug("currency Object:", currencySymbol);
+    log.debug("currency Delimeter:", currencyDelimiter);
+    this.currencyObj = {
+      prefix: currencySymbol + ' ',
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
+  }
+
+  // hide tooltip
+  immediateHideTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    this.hoveredAction = null;
+  }
+
+  ngOnDestroy(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+  }
 
   toggleMenu(event: Event, quotation: any) {
     this.selectedQuotation = quotation;
 
-    // Create base menu items
     const items = [
       {
-        label: 'View Quote',
+        label: 'View',
         command: () => this.viewQuote(quotation)
       }
     ];
 
-    // Only add Edit Quote if status is Draft
     if (quotation.status === 'Draft') {
       items.push({
         label: 'Edit Quote',
@@ -177,6 +232,8 @@ export class QuotationManagementComponent {
     if (quotationNumber && quotationNumber.trim() !== '') {
       sessionStorage.setItem('quotationNum', quotationNumber);
       sessionStorage.setItem('quotationCode', JSON.stringify(quotationCode));
+      this.viewQuoteFlag = false;
+      sessionStorage.setItem('viewQuoteFlag', JSON.stringify(this.viewQuoteFlag));
 
 
 
@@ -210,15 +267,13 @@ export class QuotationManagementComponent {
 
   }
 
-  printQuote(quotation: any) {
-    // Implement print quote functionality
-    log.debug('Print quote:', quotation);
-  }
+  // printQuote(quotation: any) {
+  //   log.debug('Print quote:', quotation);
+  // }
 
-  deleteQuote(quotation: any) {
-    // Implement delete quote functionality
-    log.debug('Delete quote:', quotation);
-  }
+  // deleteQuote(quotation: any) {
+  //   log.debug('Delete quote:', quotation);
+  // }
 
   dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
     if (sidebarMenu.link.length > 0) {
@@ -297,7 +352,7 @@ export class QuotationManagementComponent {
       cleanClientName = cleanClientName.replace(/\bnull\b/gi, '').trim();
       cleanClientName = cleanClientName === '' ? null : cleanClientName;
     }
-    
+
     this.clientName = cleanClientName;
     this.clientCode = event.id;
 
@@ -323,7 +378,7 @@ export class QuotationManagementComponent {
     // Optional: Log for debugging
     log.debug('Selected Agent:', event);
     log.debug("AgentId", this.agentId);
-    
+
     // Also fetch quotations for backend filtering
     this.fetchGISQuotations();
   }
@@ -391,7 +446,7 @@ export class QuotationManagementComponent {
     this.expiryDate = null;
     this.selectedDateFrom = null;
     this.selectedDateTo = null;
-    
+
     // Reset to original list when date filters are cleared
     if (this.originalQuotationList.length > 0) {
       this.gisQuotationList = [...this.originalQuotationList];
@@ -441,12 +496,12 @@ export class QuotationManagementComponent {
   clearAgentName(): void {
     this.agentName = '';
     this.agentId = null;
-    
+
     // Clear p-table filtering when agent is cleared
     if (this.quotationTable) {
       this.quotationTable.filterGlobal('', 'contains');
     }
-    
+
     this.fetchGISQuotations();
     this.cdr.detectChanges();
   }
@@ -533,7 +588,9 @@ export class QuotationManagementComponent {
   getAllActions(quotation: any): MenuItem[] {
     const items = [
       {
-        label: 'View Quote',
+        label: 'View',
+        icon: 'pi pi-eye',
+        title: this.actionDescriptions['View'],
         command: () => this.viewQuote(quotation)
       }
     ];
@@ -541,7 +598,9 @@ export class QuotationManagementComponent {
     // Only add Edit Quote if status is Draft
     if (quotation.status === 'Draft') {
       items.push({
-        label: 'Edit Quote',
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        title: this.actionDescriptions['Edit'],
         command: () => this.editQuote(quotation)
       });
     }
@@ -549,29 +608,37 @@ export class QuotationManagementComponent {
     // Add additional actions
     items.push(
       {
-        label: 'Revise Quote',
+        label: 'Revise',
+        icon: 'pi pi-refresh',
+        title: this.actionDescriptions['Revise'],
         command: () => this.reviseQuote(quotation)
       },
       {
-        label: 'Reuse Quote',
+        label: 'Reuse',
+        icon: 'pi pi-copy',
+        title: this.actionDescriptions['Reuse'],
         command: () => this.reuseQuote(quotation)
       },
       {
-        label: 'Reassign Quote',
+        label: 'Reassign',
+        icon: 'pi pi-user-edit',
+        title: this.actionDescriptions['Reassign'],
         command: () => this.reassignQuote(quotation)
       },
       {
-        label: 'Process',
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        title: this.actionDescriptions['Edit'],
         command: () => this.process(quotation)
-      },
-      {
-        label: 'Print Quote',
-        command: () => this.printQuote(quotation)
-      },
-      {
-        label: 'Delete Quote',
-        command: () => this.deleteQuote(quotation)
       }
+      // {
+      //   label: 'Print',
+      //   command: () => this.printQuote(quotation)
+      // },
+      // {
+      //   label: 'Delete',
+      //   command: () => this.deleteQuote(quotation)
+      // }
     );
 
     return items;
@@ -615,6 +682,70 @@ export class QuotationManagementComponent {
     if (this.quotationTable) {
       this.quotationTable.filterGlobal(filterValue, 'contains');
     }
+  }
+
+    // Tooltip methods
+  showTooltip(actionLabel: string, event: MouseEvent): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    
+    this.hoveredAction = actionLabel;
+    this.updateTooltipPosition(event);
+  }
+
+  hideTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+    
+    this.tooltipTimer = setTimeout(() => {
+      this.hoveredAction = null;
+      this.tooltipTimer = null;
+    }, 5);
+  }
+
+  updateTooltipPosition(event: MouseEvent): void {
+    const tooltipWidth = 300; 
+    const tooltipHeight = 60; 
+    const offset = 15;
+    
+    let x = event.clientX - (tooltipWidth / 2);
+    let y = event.clientY - tooltipHeight - offset;
+    
+    if (x < 10) x = 10;
+    if (x + tooltipWidth > window.innerWidth - 10) x = window.innerWidth - tooltipWidth - 10;
+    if (y < 10) y = event.clientY + offset; 
+    
+    this.tooltipPosition = { x, y };
+  }
+
+  getTooltipDescription(actionLabel: string): string {
+    return this.actionDescriptions[actionLabel] || '';
+  }
+
+  getActionIcon(actionLabel: string): string {
+    return this.actionIcons[actionLabel] || 'pi pi-info-circle';
+  }
+
+  showMenuTooltip(actionLabel: string, event: MouseEvent): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    
+    this.hoveredAction = actionLabel;
+    this.updateTooltipPosition(event);
+  }
+
+  hideMenuTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+    
+    this.hoveredAction = null;
+    this.tooltipTimer = null;
   }
 
 
