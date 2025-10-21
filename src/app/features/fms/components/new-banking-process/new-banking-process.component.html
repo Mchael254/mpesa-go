@@ -116,12 +116,34 @@
         <button class="btn btn-primary" (click)="onClickRetrieveRcts()">
           {{ "fms.banking.retrieveReceipts" | translate }}
         </button>
-        <span class="pt-2" (click)="showColumnsDialogs()">
-          <i class="fa-regular fa-square-caret-down"></i>
-        </span>
       </div>
+
+      <!-- PrimeNG Dialog for Column Selection -->
+
+      <p-dialog
+        header="Header"
+        [(visible)]="visible"
+        [modal]="true"
+        [style]="{ width: '25rem' }"
+      >
+        <ng-template pTemplate="header">
+          <div
+            class="inline-flex align-items-center justify-content-center gap-2"
+          ></div>
+        </ng-template>
+        <div *ngFor="let col of columns" class="field-checkbox">
+          <p-checkbox
+            [(ngModel)]="col.field"
+            SetSet
+            [label]="col.header"
+            [value]="col"
+            (click)="activate(col.header)"
+          />
+        </div>
+      </p-dialog>
+
       <p-table
-        [value]="receiptData"
+        [value]="filteredReceipts"
         dataKey="receiptId"
         selectionMode="single"
         [(selection)]="selectedReceipt"
@@ -155,6 +177,9 @@
               <button class="btn btn-primary">
                 {{ "fms.banking.assign" | translate }}
               </button>
+              <span class="pt-2" (click)="showColumnsDialogs()">
+                <i class="fa-regular fa-square-caret-down"></i>
+              </span>
             </div>
           </div>
         </ng-template>
@@ -163,6 +188,20 @@
           <tr>
             <th><p-tableHeaderCheckbox /></th>
             <th *ngFor="let col of columns">{{ col.header | translate }}</th>
+          </tr>
+          <tr>
+            <th>
+              <input disabled type="text" class="form-control" />
+            </th>
+            <th *ngFor="let col of columns">
+              <input
+                [disabled]="col.field === 'actions'"
+                [type]="col.field === 'amount' ? 'number' : 'text'"
+                class="form-control"
+                (input)="filter($event, col.field)"
+                (keyup.enter)="filter($event, col.field)"
+              />
+            </th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-receipt>

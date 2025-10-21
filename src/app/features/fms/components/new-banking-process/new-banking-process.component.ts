@@ -17,7 +17,7 @@ export class NewBankingProcessComponent implements OnInit {
 steps = fmsStepsData.bankingSteps;
   paymentMethods = ['mpesa', 'cash', 'bank'];
 
-filteredReceipts:receiptDto[]=[];
+
   receiptData: receiptDto[] = [
     {
       receiptId: 'RO1',
@@ -36,29 +36,30 @@ filteredReceipts:receiptDto[]=[];
       date: new Date('2000/02/24'),
     },
   ];
-totalRecord:number= this.receiptData.length;
-
-  selectedReceipt!: receiptDto;
-columns:any[];
+  filteredReceipts:receiptDto[]=this.receiptData;
+totalRecord:number= this.filteredReceipts.length;
+visible:boolean=false;
+selectedReceipt!: receiptDto;
+columns:Column[];
+returnedCol:Column[];
   constructor(
     public translate: TranslateService,
     private fb: FormBuilder,
     private router: Router,
     private globalMessagingService: GlobalMessagingService
   ) {}
-
-  ngOnInit() {
+ngOnInit() {
     this.createBankingForm();
    
    
     this.columns=[
-      {field:"receiptId",header:"fms.banking.receiptId"},
-      {field:"customer",header:"fms.banking.customer"},
-      {field:"amount",header:"fms.receipting.amount"},
-      {field:"collectionAcc",header:"fms.banking.collectionAcc"},
-      {field:"assignedTo",header:"fms.banking.assignedTo"},
-      {field:"date",header:"fms.date"},
-      {field:"actions",header:"fms.receipting.actions"}
+      {field:"receiptId",header:this.translate.instant("fms.banking.receiptId")},
+      {field:"customer",header:this.translate.instant("fms.banking.customer")},
+      {field:"amount",header:this.translate.instant("fms.receipting.amount")},
+      {field:"collectionAcc",header:this.translate.instant("fms.banking.collectionAcc")},
+      {field:"assignedTo",header:this.translate.instant("fms.banking.assignedTo")},
+      {field:"date",header:this.translate.instant("fms.date")},
+      {field:"actions",header:this.translate.instant("fms.receipting.actions")}
     ]
   }
 
@@ -88,8 +89,46 @@ get currentReportTemplate():string{
   navigateToBatch(): void {
     this.router.navigate(['/home/fms/process-batch']);
   }
-  showColumnsDialogs(){}
+  showColumnsDialogs():void{
+this.visible=true;
+  }
+activate(col:string):void{
+this.returnedCol = this.columns.filter((obj)=>{
+  return (obj.header===col);
+});
+}
+filter(event:any,fieldName:any):any{
+let inputValue=(event.target as HTMLInputElement).value;
 
+
+
+  this.filteredReceipts=this.receiptData.filter((obj)=>{
+    //acess the object property dynamically  using variable to avoid
+    //hardcoding name
+    //const fieldValue = obj.amount;
+   let fieldValue = obj[fieldName];
+   if(fieldValue instanceof Date){
+    const formattedDateField = fieldValue.toISOString().split('T')[0];
+    
+    return formattedDateField.includes(inputValue);
+  
+   }else if(typeof fieldValue ==='number' ){
+    const inputNumber = String(inputValue);
+   
+    return fieldValue.toString().includes(inputNumber);
+
+
+   }else if(typeof fieldValue === 'string'){
+    fieldValue = fieldValue.toString();
+    
+    return fieldValue.toLowerCase().includes(inputValue.toLowerCase())
+   }
+   return false;
+    
+  })
+
+
+}
   onRowSelected(event: any): void {
     const s = (event.target as HTMLInputElement).value;
     //console.log('event', s);
@@ -105,4 +144,8 @@ export interface receiptDto{
       collectionAcc:string;
       assignedTo:string;
       date:  Date
+}
+interface Column {
+  field: string;
+  header: string;
 }
