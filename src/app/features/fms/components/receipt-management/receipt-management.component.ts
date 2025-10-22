@@ -111,6 +111,7 @@ export class ReceiptManagementComponent implements OnInit {
   client: ClientDTO;
   agent: AgentDTO;
   receipt_no: string;
+  branchRctCode:string;
   whatsappSelected: boolean = true;
   shareMethod: string;
 
@@ -670,6 +671,7 @@ export class ReceiptManagementComponent implements OnInit {
   openReceiptShareModal(
     index: number,
     receipt_no: string,
+    branchRctCode:string,
     agent_code: number,
     account_code: number,
     printed: 'Y' | 'N'
@@ -677,6 +679,7 @@ export class ReceiptManagementComponent implements OnInit {
     this.agentCode = agent_code;
     this.accountCode = account_code;
     this.receipt_no = receipt_no;
+    this.branchRctCode  = branchRctCode;
     this.printStatus = printed as YesNo;
     this.sessionStorage.setItem('agentCode', this.agentCode);
     this.sessionStorage.setItem('accountCode', this.accountCode);
@@ -787,6 +790,7 @@ private prepareShareData(): {
       recipientEmail: shareData?.recipientEmail,
       recipientPhone: shareData?.recipientPhone,
       receiptNumber: String(this.receipt_no),
+      branchReceiptCode:this.branchRctCode,
       orgCode: String(this.defaultOrg?.id || this.selectedOrg?.id),
     };
     this.receiptManagementService.shareReceipt(body).subscribe({

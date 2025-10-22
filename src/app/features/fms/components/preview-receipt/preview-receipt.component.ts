@@ -21,6 +21,7 @@ export class PreviewReceiptComponent {
   agentCode: number | null;
   accountCode: number | null = null;
   receiptNo: number;
+  branchReceiptCode: string;
   code: number;
   name: string;
   email: string;
@@ -65,6 +66,7 @@ export class PreviewReceiptComponent {
       this.selectedOrg = null;
     }
     this.receiptNo = Number(this.sessionStorage.getItem('receiptNo'));
+    this.branchReceiptCode = this.sessionStorage.getItem('branchReceiptCode');
     const agent_code = this.sessionStorage.getItem('agentCode');
     this.agentCode = Number(agent_code) || null;
     const account_code = this.sessionStorage.getItem('accountCode');
@@ -173,6 +175,7 @@ export class PreviewReceiptComponent {
       recipientEmail: this.shareData.recipientEmail,
       recipientPhone: this.shareData.recipientPhone,
       receiptNumber: String(this.receiptNo),
+      branchReceiptCode: this.branchReceiptCode,
       orgCode: String(this.defaultOrg?.id || this.selectedOrg?.id),
       clientName: this.shareData.clientName,
     };
