@@ -563,6 +563,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   setProductClauseColumns(productClause: any) {
     const excludedFields = [
+    'clauseShortDescription',
+    'clauseHeading',
+    'clause'  
     ];
 
     this.productClauseColumns = Object.keys(productClause)
@@ -2589,7 +2592,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       'quotationCode',
       'quotationNo',
       'revisionNo',
-      'totalSumInsured'
+      'totalSumInsured',
+      'wet',
+      'wef'
     ];
 
     this.columns = Object.keys(sample)
