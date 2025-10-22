@@ -303,7 +303,7 @@
                                             <ng-container
                                                 *ngIf="motorClassAllowed =='Y' && field.name === 'riskDescription'">
                                                 <input type="text" id="quote-input"
-                                                    class="form-control   bg-light text-muted"
+                                                    class="form-control   readonly-input"
                                                     formControlName="riskDescription" [readonly]="true"
                                                     [value]="vehiclemakeModel">
 
@@ -938,8 +938,8 @@
                                             <div class="col-7">
                                                 <div class="col-7">
                                                     <input type="text" id="scheduleInput" style="width:300px"
-                                                        class="form-control form-control-sm mb-1"
-                                                        formControlName="sectionType">
+                                                        class="form-control form-control-sm mb-1 readonly-input"
+                                                        formControlName="sectionType" readonly>
                                                 </div>
                                             </div>
                                         </div>

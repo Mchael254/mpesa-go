@@ -9,7 +9,7 @@
 
                     <!-- Description acts as the toggle -->
                     <label (click)="onReportClick(report)"
-                        [ngClass]="{'text-primary fw-bold': currentReport?.code === report.code}"
+                        [ngClass]="{'text-report-primary fw-bold': currentReport?.code === report.code}"
                         class="flex-grow-1 report-label mb-2" style="cursor: pointer;">
                         {{ report.description }}
                     </label>
@@ -120,15 +120,16 @@
             <!-- ADD SECTION BUTTON ROW -->
             <div class="row mt-3" *ngIf="isClientCardDetailsOpen">
                 <div class="col-12 d-flex justify-content-end">
-                    <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal">
+                    <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#addClientDocumentModal">
                         Add document
                     </button>
 
-                    <!-- <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
-                        [ngClass]="{ 'pi-caret-down': showClientCard, 'pi-caret-up': !showClientCard }"
+                    <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                        [ngClass]="{ 'pi-caret-down': showClients, 'pi-caret-up': !showClients }"
                         style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
                         (click)="toggleClientCard(iconTrigger)">
-                    </i> -->
+                    </i>
 
                 </div>
             </div>
@@ -137,9 +138,166 @@
 
         <div [@slideInOut]="isClientCardDetailsOpen ? 'open' : 'closed'" class="mt-2">
 
+            <!-- Floating Column Selector -->
+            <div *ngIf="showClientColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                (document:mouseup)="onDragEnd()">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-primary"> {{'gis.quotation.select_columns' | translate}}</strong>
+                    <button class="btn-close btn-sm" (click)="showClientColumnModal = false"></button>
+                </div>
+                <div style="max-height: 200px;max-width:250px; overflow-y: auto;">
+                    <div *ngFor="let col of clientDocColumns">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                                [(ngModel)]="col.visible" [id]="col.field">
+                            <label class="form-check-label" [for]="col.field">
+                                {{ col.header }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p-table [value]="clientDocuments" [tableStyle]="{ 'min-width': '300px' }" selectionMode="single"
+                [(selection)]="selectedClientDoc" dataKey="id" [paginator]="clientDocuments?.length > 10"
+                [rowsPerPageOptions]="[5, 4, 6]" [rows]="5">
 
 
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngFor="let col of clientDocColumns" [hidden]="!col.visible" class="flexible-header"
+                            [pSortableColumn]="col.field">
+                            {{ col.header }}
+                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                        </th>
+                    </tr>
+                </ng-template>
 
+
+                <ng-template pTemplate="body" let-clientDoc let-rowIndex="rowIndex">
+                    <tr (click)="onSelectClientDoc(clientDoc)">
+                        <td *ngFor="let col of clientDocColumns" [hidden]="!col.visible" class="flexible-header">
+                            <ng-container [ngSwitch]="col.field">
+                                <ng-container *ngSwitchCase="'actions'">
+
+                                    <button pButton type="button"
+                                        class="p-button-text p-button-sm fw-bold text-primary">
+                                        Preview
+                                    </button>
+                                    <button pButton type="button"
+                                        class="p-button-text p-button-sm fw-bold text-primary">
+                                        Download
+                                    </button>
+                                    <button pButton type="button" class="p-button-text p-button-sm fw-bold text-primary"
+                                        data-bs-toggle="modal" data-bs-target="#deleteClientDocModal">
+                                        {{'gis.quotation.delete' | translate}}
+                                    </button>
+                                </ng-container>
+                                <ng-container *ngSwitchDefault>
+                                    {{ col.field === 'name' && !clientDoc['name'] ? clientDoc['actualName'] :
+                                    clientDoc[col.field] }}
+
+                                </ng-container>
+
+                            </ng-container>
+                        </td>
+                    </tr>
+                </ng-template>
+
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td [attr.colspan]="clientDocColumns.length" style="padding: 20px; text-align:center">
+
+                            No client documents. Click <span class="fw-bold">Add documents</span> to add documents
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+            <!-- Add Client Doc  Modal -->
+            <div class="modal fade" #addClientDocumentModal id="addClientDocumentModal" tabindex="-1" role="dialog"
+                aria-labelledby="addSectionLabel">
+                <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
+                    <div class="modal-content" id="addclientDocumentModal">
+                        <div class="modal-body">
+                            <h5 class="modal-title mt-2" id="addDocumentsLabel">
+                                Add document
+                                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </h5>
+                            <div class="upload-area mt-2 mb-1" (click)="fileInput.click()" [class.dragover]="isDragging"
+                                (drop)="onDrop($event)" (dragover)="onDragOver($event)"
+                                (dragleave)="onDragLeave($event)">
+
+                                <div class="upload-content">
+                                    <i class="pi pi-upload upload-icon"></i>
+
+                                    <p class="upload-text">Click this area to upload file</p>
+
+
+                                </div>
+
+                                <input #fileInput type="file" (change)="onFileSelected($event)"
+                                    accept=".pdf,.doc,.docx,.txt,.log,.jpg,.jpeg,.png" style="display: none;">
+                                <div class="selected-file" *ngIf="selectedFile">
+                                    <i [ngClass]="getFileIcon(selectedFile.name)" class="file-icon"></i>
+                                    <span class="file-name">{{ selectedFile.name }}</span>
+
+                                    <button class="remove-btn" (click)="removeFile()" aria-label="Remove">
+                                        <i class="pi pi-trash"></i>
+                                    </button>
+                                </div>
+
+
+                            </div>
+
+                            <div class="mt-4 d-flex justify-content-end ">
+                                <button type="button" class="btn btn-outline-primary me-2"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary " id="saveDetails"
+                                    data-bs-dismiss="modal">{{'gis.quotation.save' |
+                                    translate}}</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- Delete Client Doc   Modal -->
+            <div class="modal fade" id="deleteClientDocModal" tabindex="-1" aria-labelledby="deleteClientDocLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered ">
+                    <div class="modal-content">
+                        <div class="modal-header" style="border-bottom: none;">
+                            <h5 class="delete-title" id="exampleModalLabel">
+                                Delete document
+                            </h5>
+                            <button type="button" class="btn-close red-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="d-flex justify-content-center" id="deleteLabel">
+                                Are you sure you want to delete document?
+                            <div class="d-flex justify-content-center gap-3">
+
+
+                                <button type="button" class="btn btn-outline-primary" id="deleteNo"
+                                    data-bs-dismiss="modal">
+                                    {{ 'gis.quotation.cancel' | translate }}
+                                </button>
+
+                                <button type="button" class="btn btn-primary" id="deleteYes" data-bs-dismiss="modal">
+                                    {{ 'gis.quotation.delete' | translate }}
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
