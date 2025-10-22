@@ -118,8 +118,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   clauses: any;
   user: any;
   clientCode: any;
-  externalClaims: any;
-  internalClaims: any;
+
   computationDetails: any;
   premium: any;
   branch: any;
@@ -224,7 +223,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   columnModalPosition = { top: '0px', left: '0px' }
   columns: { field: string; header: string; visible: boolean }[] = [];
 
-  sessionClauses:any
+  sessionClauses: any
   showClauses: boolean = true;
   showClausesColumnModal: boolean = false;
   clausesColumns: { field: string; header: string; visible: boolean }[] = [];
@@ -394,12 +393,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.moreDetails = sessionStorage.getItem('quotationFormDetails');
 
 
- 
+
 
     // 1️⃣ Patch immediate UI from session (for instant rendering)
     this.patchQuotationData();
 
-    
+
 
     if (this.quotationCodeString) {
       this.quotationCode = Number(this.quotationCodeString);
@@ -409,24 +408,26 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
         log.debug("Quotation details>>>", response)
         this.quotationDetails = response
+        sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationDetails))
+
         if ('Rejected' === response.status) {
           this.afterRejectQuote = true
         }
       });
 
-                      // Retrieve authorization flag specific to this quotation
-const authorizedFlag = sessionStorage.getItem(`quotationAuthorized_${this.quotationCode}`);
-this.quotationAuthorized = authorizedFlag === 'true';
+    // Retrieve authorization flag specific to this quotation
+    const authorizedFlag = sessionStorage.getItem(`quotationAuthorized_${this.quotationCode}`);
+    this.quotationAuthorized = authorizedFlag === 'true';
 
-if (this.quotationAuthorized) {
-  this.showAuthorizeButton = false;
-  this.showViewDocumentsButton = true;
-  this.showConfirmButton = true;
-} else {
-  this.showAuthorizeButton = true;
-  this.showViewDocumentsButton = false;
-  this.showConfirmButton = false;
-}
+    if (this.quotationAuthorized) {
+      this.showAuthorizeButton = false;
+      this.showViewDocumentsButton = true;
+      this.showConfirmButton = true;
+    } else {
+      this.showAuthorizeButton = true;
+      this.showViewDocumentsButton = false;
+      this.showConfirmButton = false;
+    }
 
 
 
@@ -607,17 +608,7 @@ if (this.quotationAuthorized) {
   }
 
 
-  // Method to show external claims
-  external() {
-    this.showExternalClaims = true;
-    this.showInternalClaims = false;
-  }
 
-  // Method to show internal claims
-  internal() {
-    this.showInternalClaims = true;
-    this.showExternalClaims = false;
-  }
 
   // closeMenu() {
   //   this.menuItems[0].expanded = false; // Collapse the section
@@ -639,6 +630,8 @@ if (this.quotationAuthorized) {
       .subscribe((res: any) => {
         this.quotationView = res;
         log.debug('QuotationView', this.quotationView)
+        sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationView))
+
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
         this.user = this.quotationView.preparedBy;
@@ -811,137 +804,137 @@ if (this.quotationAuthorized) {
 
 
   patchQuotationData() {
-  const revisedQuotation = sessionStorage.getItem('revisedQuotation');
-  if (!revisedQuotation) {
-    log.debug('[QuotationSummaryComponent] No revisedQuotation found in session storage');
-    return;
-  }
-
-  const data = JSON.parse(revisedQuotation);
-  log.debug('[QuotationSummaryComponent] Patching from revisedQuotation session data:', data);
-
-  // ---Quotation Details ---
-  this.quotationView = data;
-  this.quotationDetails = data;
-  this.fetchedQuoteNum = data.quotationNo;
-  this.quotationCode = data.code;
-  this.coverFrom = this.convertDate(data.coverFrom);
-  this.coverTo = this.convertDate(data.coverTo);
-  this.expiryDate = this.convertDate(data.expiryDate);
-  this.source = data.source?.description || '';
-  this.sumInsured = data.sumInsured ?? 0;
-  this.user = data.preparedBy;
-  this.marketerCommissionAmount = data.marketerCommissionAmount ?? 0;
-  const currencySymbol = data.currency;
-
-
-this.currencyObj = {
-  prefix: currencySymbol + ' ',
-  suffix: '',
-  thousands: ',',
-  decimal: '.',
-  align: 'left',
-  allowNegative: false,
-  allowZero: true,
-  nullable: true,
-  precision: 0
-};
-
-log.debug("Currency Prefix Set To:", this.currencyObj.prefix);
-
-
-
-  
-  this.premiumAmount = data.premium ?? 0;
-
-  
-  this.quotationProducts = data.quotationProducts || [];
-  this.products = this.quotationProducts;
-  this.productDetails = this.quotationProducts;
-  log.debug('Patched quotationProducts:', this.quotationProducts);
-
-  if (this.products.length > 0) {
-    this.activeRiskTab = this.products[0].code;
-    const firstProduct = this.products[0];
-
-    // --- Patch Risk Information ---
-    this.riskDetails = firstProduct.riskInformation || [];
-    log.debug('Patched riskDetails:', this.riskDetails);
-
-    if (this.riskDetails.length > 0) {
-      this.setColumnsFromRiskDetails(this.riskDetails[0]);
-      const firstRisk = this.riskDetails[0];
-
-      // --- Patch Sections ---
-      this.sections = firstRisk.sectionsDetails || [];
-      log.debug('Patched sections:', this.sections);
-
-      // --- Patch Schedules ---
-      const scheduleArray = firstRisk.scheduleDetails || [];
-      const firstSchedule = scheduleArray[0] || {};
-      const details = firstSchedule.details || {};
-
-      this.availableScheduleLevels = Object.keys(details);
-      this.schedulesData = {};
-      this.availableScheduleLevels.forEach(level => {
-        const levelData = details[level];
-        this.schedulesData[level] = levelData ? [levelData] : [];
-      });
-
-      this.activeScheduleTab = this.availableScheduleLevels[0] || '';
-      log.debug('Patched schedule data:', this.schedulesData);
-
-      // --- Store Section Info in Session ---
-      const sectionDetails = this.sections?.[0] || {};
-      sessionStorage.setItem('premiumRate', sectionDetails.rate?.toString() || '');
-      sessionStorage.setItem('sectionDescription', sectionDetails.sectionShortDescription || '');
-      sessionStorage.setItem('sectionType', sectionDetails.sectionType || '');
-      sessionStorage.setItem('rateType', sectionDetails.rateType || '');
+    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+    if (!revisedQuotation) {
+      log.debug('[QuotationSummaryComponent] No revisedQuotation found in session storage');
+      return;
     }
 
-    // --- Patch Tax and Product Clauses ---
-    this.taxDetails = (firstProduct.taxInformation || []).map(tax => ({
-      ...tax,
-      taxAmount: tax.taxAmount ?? 0,
-      rate: tax.rate ?? 0
-    }));
+    const data = JSON.parse(revisedQuotation);
+    log.debug('[QuotationSummaryComponent] Patching from revisedQuotation session data:', data);
 
-    this.productClauses = firstProduct.productClauses || [];
-    log.debug('Patched taxDetails:', this.taxDetails);
-    log.debug('Patched productClauses:', this.productClauses);
+    // ---Quotation Details ---
+    this.quotationView = data;
+    this.quotationDetails = data;
+    this.fetchedQuoteNum = data.quotationNo;
+    this.quotationCode = data.code;
+    this.coverFrom = this.convertDate(data.coverFrom);
+    this.coverTo = this.convertDate(data.coverTo);
+    this.expiryDate = this.convertDate(data.expiryDate);
+    this.source = data.source?.description || '';
+    this.sumInsured = data.sumInsured ?? 0;
+    this.user = data.preparedBy;
+    this.marketerCommissionAmount = data.marketerCommissionAmount ?? 0;
+    const currencySymbol = data.currency;
 
-    // --- Patch Limits of Liability ---
-    const firstRisk = this.riskDetails?.[0];
-    const subclassCode = firstRisk?.subclassCode;
-    const quotationProductCode = firstRisk?.quotationProductCode;
-    if (subclassCode && quotationProductCode) {
-      this.getLimitsofLiability(subclassCode, quotationProductCode, 'L');
-      this.getLimitsofLiability(subclassCode, quotationProductCode, 'E');
+
+    this.currencyObj = {
+      prefix: currencySymbol + ' ',
+      suffix: '',
+      thousands: ',',
+      decimal: '.',
+      align: 'left',
+      allowNegative: false,
+      allowZero: true,
+      nullable: true,
+      precision: 0
+    };
+
+    log.debug("Currency Prefix Set To:", this.currencyObj.prefix);
+
+
+
+
+    this.premiumAmount = data.premium ?? 0;
+
+
+    this.quotationProducts = data.quotationProducts || [];
+    this.products = this.quotationProducts;
+    this.productDetails = this.quotationProducts;
+    log.debug('Patched quotationProducts:', this.quotationProducts);
+
+    if (this.products.length > 0) {
+      this.activeRiskTab = this.products[0].code;
+      const firstProduct = this.products[0];
+
+      // --- Patch Risk Information ---
+      this.riskDetails = firstProduct.riskInformation || [];
+      log.debug('Patched riskDetails:', this.riskDetails);
+
+      if (this.riskDetails.length > 0) {
+        this.setColumnsFromRiskDetails(this.riskDetails[0]);
+        const firstRisk = this.riskDetails[0];
+
+        // --- Patch Sections ---
+        this.sections = firstRisk.sectionsDetails || [];
+        log.debug('Patched sections:', this.sections);
+
+        // --- Patch Schedules ---
+        const scheduleArray = firstRisk.scheduleDetails || [];
+        const firstSchedule = scheduleArray[0] || {};
+        const details = firstSchedule.details || {};
+
+        this.availableScheduleLevels = Object.keys(details);
+        this.schedulesData = {};
+        this.availableScheduleLevels.forEach(level => {
+          const levelData = details[level];
+          this.schedulesData[level] = levelData ? [levelData] : [];
+        });
+
+        this.activeScheduleTab = this.availableScheduleLevels[0] || '';
+        log.debug('Patched schedule data:', this.schedulesData);
+
+        // --- Store Section Info in Session ---
+        const sectionDetails = this.sections?.[0] || {};
+        sessionStorage.setItem('premiumRate', sectionDetails.rate?.toString() || '');
+        sessionStorage.setItem('sectionDescription', sectionDetails.sectionShortDescription || '');
+        sessionStorage.setItem('sectionType', sectionDetails.sectionType || '');
+        sessionStorage.setItem('rateType', sectionDetails.rateType || '');
+      }
+
+      // --- Patch Tax and Product Clauses ---
+      this.taxDetails = (firstProduct.taxInformation || []).map(tax => ({
+        ...tax,
+        taxAmount: tax.taxAmount ?? 0,
+        rate: tax.rate ?? 0
+      }));
+
+      this.productClauses = firstProduct.productClauses || [];
+      log.debug('Patched taxDetails:', this.taxDetails);
+      log.debug('Patched productClauses:', this.productClauses);
+
+      // --- Patch Limits of Liability ---
+      const firstRisk = this.riskDetails?.[0];
+      const subclassCode = firstRisk?.subclassCode;
+      const quotationProductCode = firstRisk?.quotationProductCode;
+      if (subclassCode && quotationProductCode) {
+        this.getLimitsofLiability(subclassCode, quotationProductCode, 'L');
+        this.getLimitsofLiability(subclassCode, quotationProductCode, 'E');
+      }
     }
-  }
 
-  // --- Handle Client Info ---
-  this.clientCode = data.clientCode;
-  if (this.clientCode) {
-    this.loadClientDetails(this.clientCode);
-  }
+    // --- Handle Client Info ---
+    this.clientCode = data.clientCode;
+    if (this.clientCode) {
+      this.loadClientDetails(this.clientCode);
+    }
 
-  // --- Final Logging ---
-  log.debug('[QuotationSummaryComponent] Final patched quotation data:', {
-    quotationNo: this.fetchedQuoteNum,
-    quotationCode: this.quotationCode,
-    coverFrom: this.coverFrom,
-    coverTo: this.coverTo,
-    expiryDate: this.expiryDate,
-    source: this.source,
-    clientCode: this.clientCode,
-    premiumAmount: this.premiumAmount,
-    taxDetails: this.taxDetails,
-    products: this.products,
-    risks: this.riskDetails,
-    sections: this.sections
-  });
-}
+    // --- Final Logging ---
+    log.debug('[QuotationSummaryComponent] Final patched quotation data:', {
+      quotationNo: this.fetchedQuoteNum,
+      quotationCode: this.quotationCode,
+      coverFrom: this.coverFrom,
+      coverTo: this.coverTo,
+      expiryDate: this.expiryDate,
+      source: this.source,
+      clientCode: this.clientCode,
+      premiumAmount: this.premiumAmount,
+      taxDetails: this.taxDetails,
+      products: this.products,
+      risks: this.riskDetails,
+      sections: this.sections
+    });
+  }
 
   getRiskDetails() {
     const currentProduct = this.products.find(p => p.code === this.activeRiskTab);
@@ -1180,38 +1173,6 @@ log.debug("Currency Prefix Set To:", this.currencyObj.prefix);
       this.showEmail = true
       this.showSms = false
     }
-  }
-
-  getExternalClaimsExperience(clientCode: number) {
-    this.quotationService.getExternalClaimsExperience(clientCode)
-      .pipe(
-        untilDestroyed(this)
-      )
-      .subscribe(res => {
-        this.externalClaims = res;
-        this.externalTable = this.externalClaims._embedded;
-        log.debug("external claims table", this.externalTable);
-      })
-  }
-
-  getInternalClaimsExperience(clientCode: number) {
-    this.quotationService.getInternalClaimsExperience(clientCode)
-      .pipe(
-        untilDestroyed(this)
-      )
-      .subscribe(res => {
-        this.internalClaims = res;
-        this.internalTable = this.internalClaims._embedded;
-        log.debug("internal-claims table", this.internalTable);
-      })
-  }
-
-  showExternals() {
-    this.showExternalClaims = !this.showExternalClaims
-  }
-
-  showInternal() {
-    this.showInternalClaims = !this.showInternalClaims
   }
 
   getPremiumComputationDetails() {
@@ -1711,24 +1672,6 @@ log.debug("Currency Prefix Set To:", this.currencyObj.prefix);
     }
   }
 
-  openClaimDeleteModal() {
-    log.debug("Selected Claim experience to delete", this.selectedExternalClaimExp)
-    if (!this.selectedExternalClaimExp) {
-      this.globalMessagingService.displayInfoMessage('Error', 'Select a Claim experience to continue');
-    } else {
-      document.getElementById("openClaimModalButtonDelete").click();
-    }
-  }
-
-  onExternalClaimSelect(externalClaim: any): void {
-    this.selectedExternalClaimExp = externalClaim;
-    log.debug('Selected external Claim item:', this.selectedExternalClaimExp);
-  }
-
-  onInternalClaimSelect(internalClaim: any): void {
-    this.selectedIntetnalClaimExp = internalClaim;
-    log.debug('Selected internal Claim item:', internalClaim);
-  }
 
   fetchInsurers() {
     this.quotationService.getInsurers().subscribe({
@@ -1768,180 +1711,7 @@ log.debug("Currency Prefix Set To:", this.currencyObj.prefix);
     });
   }
 
-  createExternalClaimExp() {
-    // Mark all fields as touched and validate the form
-    this.insurersDetailsForm.markAllAsTouched();
-    this.insurersDetailsForm.updateValueAndValidity();
-    if (this.insurersDetailsForm.invalid) {
-      log.debug('Form is invalid, will not proceed');
-      return;
-    } else {
-      log.debug("The valid form", this.insurersDetailsForm);
-    }
-    Object.keys(this.insurersDetailsForm.controls).forEach(control => {
-      if (this.insurersDetailsForm.get(control).invalid) {
-        log.debug(`${control} is invalid`, this.insurersDetailsForm.get(control).errors);
-      }
-    });
 
-
-    // If form is valid, proceed
-    log.debug('Form is valid, proceeding with premium computation...');
-
-    // Extract only the name of the insurer
-    const insurer = { ...this.insurersDetailsForm.value, insurer: this.insurersDetailsForm.value.insurer?.name };
-    log.debug("Client Code", this.clientCode)
-
-    const damageAmountString = this.insurersDetailsForm.get('damageAmount').value.replace(/,/g, '');
-
-    log.debug('damageAmount (String):', damageAmountString);
-    const damageAmountInt = parseInt(damageAmountString);
-    log.debug('damageAmount (Integer):', damageAmountInt);
-
-    // Log and convert totalPaidAmount
-    const totalPaidAmountString = this.insurersDetailsForm.get('totalPaidAmount').value.replace(/,/g, '');
-    log.debug('totalPaidAmountInt (String):', totalPaidAmountString);
-    const totalPaidAmountInt = parseInt(totalPaidAmountString);
-    log.debug('totalPaidAmountInt (Integer):', totalPaidAmountInt);
-
-    // Log and convert otherAmount
-    const otherAmountString = this.insurersDetailsForm.get('otherAmount').value.replace(/,/g, '');
-    log.debug('otherAmount (String):', otherAmountString);
-    const otherAmountInt = parseInt(otherAmountString);
-    log.debug('otherAmount (Integer):', otherAmountInt);
-
-    insurer.damageAmount = damageAmountInt;
-    insurer.totalPaidAmount = totalPaidAmountInt;
-    insurer.otherAmount = otherAmountInt;
-    insurer.clientCode = this.clientCode;
-
-
-    // this.closebutton.nativeElement.click();
-
-    log.debug("EXTERNAL CLAIMS FORM-ADDING", insurer)
-    this.quotationService
-      .addExternalClaimExp(insurer)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience details added successfully');
-
-          log.debug("Response after adding external Claim Experience", response);
-          this.getExternalClaimsExperience(this.clientCode);
-
-        },
-        error: (error) => {
-          log.debug("error after adding external Claim Experience", error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add external claim exp...Try again later');
-        }
-      }
-      );
-  }
-
-  editExternalClaimExp() {
-    // Mark all fields as touched and validate the form
-    this.insurersDetailsForm.markAllAsTouched();
-    this.insurersDetailsForm.updateValueAndValidity();
-    if (this.insurersDetailsForm.invalid) {
-      log.debug('Form is invalid, will not proceed');
-      return;
-    } else {
-      log.debug("The valid form", this.insurersDetailsForm);
-    }
-    Object.keys(this.insurersDetailsForm.controls).forEach(control => {
-      if (this.insurersDetailsForm.get(control).invalid) {
-        log.debug(`${control} is invalid`, this.insurersDetailsForm.get(control).errors);
-      }
-    });
-
-
-    // If form is valid, proceed
-    log.debug('Form is valid, proceeding with premium computation...');
-
-    // Extract only the name of the insurer
-    const insurer = { ...this.insurersDetailsForm.value, insurer: this.insurersDetailsForm.value.insurer?.name };
-    log.debug("Client Code", this.clientCode)
-
-    const damageAmountString = this.insurersDetailsForm.get('damageAmount').value.replace(/,/g, '');
-
-    log.debug('damageAmount (String):', damageAmountString);
-    const damageAmountInt = parseInt(damageAmountString);
-    log.debug('damageAmount (Integer):', damageAmountInt);
-
-    // Log and convert totalPaidAmount
-    const totalPaidAmountString = this.insurersDetailsForm.get('totalPaidAmount').value.replace(/,/g, '');
-    log.debug('totalPaidAmount (String):', totalPaidAmountString);
-    const totalPaidAmountInt = parseInt(totalPaidAmountString);
-    log.debug('totalPaidAmount (Integer):', totalPaidAmountInt);
-
-    // Log and convert otherAmount
-    const otherAmountString = this.insurersDetailsForm.get('otherAmount').value.replace(/,/g, '');
-    log.debug('otherAmount (String):', otherAmountString);
-    const otherAmountInt = parseInt(otherAmountString);
-    log.debug('otherAmount (Integer):', otherAmountInt);
-
-    insurer.damageAmount = damageAmountInt;
-    insurer.totalPaidAmount = totalPaidAmountInt;
-    insurer.otherAmount = otherAmountInt;
-    insurer.clientCode = this.clientCode;
-    insurer.code = this.selectedExternalClaimExp.code;
-
-
-    // this.closebutton.nativeElement.click();
-
-    log.debug("EXTERNAL CLAIMS FORM-EDITING", insurer)
-    this.quotationService
-      .editExternalClaimExp(insurer)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience details edited successfully');
-
-          log.debug("Response after editing external Claim Experience", response);
-          this.getExternalClaimsExperience(this.clientCode);
-          this.selectedExternalClaimExp = null;
-
-        },
-        error: (error) => {
-          log.debug("Error editing an external claim exp", error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to edit external claim exp...Try again later');
-        }
-      }
-      );
-  }
-
-  deleteExternalClaimExperience() {
-
-    if (this.selectedExternalClaimExp.code) {
-      this.externalClaimExpCode = this.selectedExternalClaimExp.code;
-      log.debug('External claim exp code: ', this.externalClaimExpCode);
-    }
-
-    this.quotationService
-      .deleteExternalClaimExp(this.externalClaimExpCode)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          log.debug("Response after deleting an external claim experience ", response);
-          this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience deleted successfully');
-          this.getExternalClaimsExperience(this.clientCode);
-          this.selectedExternalClaimExp = null;
-        },
-        error: (error) => {
-          log.debug('Error deleting external claim exp', error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete external claim exp...Try again later');
-        }
-      }
-      );
-  }
-
-  openExternalClaimExpEditModal() {
-    if (!this.selectedExternalClaimExp) {
-      this.globalMessagingService.displayInfoMessage('Error', 'Please select an external claim experience to edit');
-    } else {
-      this.populateEditForm();
-    }
-  }
 
   populateEditForm() {
     // Find the matching insurer object from the insurersList
@@ -1976,13 +1746,7 @@ log.debug("Currency Prefix Set To:", this.currencyObj.prefix);
     });
   }
 
-  externalClaimExpAction() {
-    if (!this.selectedExternalClaimExp) {
-      this.createExternalClaimExp();
-    } else {
-      this.editExternalClaimExp();
-    }
-  }
+
 
 
   clearForm() {

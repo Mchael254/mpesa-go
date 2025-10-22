@@ -940,9 +940,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
    */
   getuser() {
     this.user = this.authService.getCurrentUserName();
+    log.debug("Username", this.user)
     this.userDetails = this.authService.getCurrentUser();
     log.info('Login UserDetails', this.userDetails);
-
+    this.user = this.userDetails.fullName || this.authService.getCurrentUserName();
     this.userCode = this.userDetails.code;
     log.debug('User Code ', this.userCode);
     sessionStorage.setItem('userCode', JSON.stringify(this.userCode))
@@ -2576,20 +2577,20 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     ];
     const excludedFields = [
-    'productClauses',
-    'limitsOfLiability',
-    'riskInformation',
-    'taxInformation',
-    'binder',
-    'commission',
-    'converted',
-    'policyNumber',
-    'premium',
-    'productShortDescription',
-    'quotationCode',
-    'quotationNo',
-    'revisionNo',
-    'totalSumInsured'
+      'productClauses',
+      'limitsOfLiability',
+      'riskInformation',
+      'taxInformation',
+      'binder',
+      'commission',
+      'converted',
+      'policyNumber',
+      'premium',
+      'productShortDescription',
+      'quotationCode',
+      'quotationNo',
+      'revisionNo',
+      'totalSumInsured'
     ];
 
     this.columns = Object.keys(sample)
@@ -2658,87 +2659,87 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
 
-patchReusedQuotationData() {
-  const reusedQuotation = sessionStorage.getItem('reusedQuotation');
-  if (!reusedQuotation) {
-    log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
-    return;
-  }
-
-  const data = JSON.parse(reusedQuotation);
-  log.debug('[QuotationDetailsComponent] Patching reused quotation data:', data);
-
-  
-  if (this.quotationForm) {
-    this.quotationForm.patchValue({
-      client: data.clientName || '',
-      email: data.emailAddress || '',
-      phone: data.phoneNumber || '',
-      source: data.source || '',
-      quotationType: data.quotationType || '',
-      branch: data.branchCode || '',
-      currency: data.currency || '',
-      introducer: data.introducerName || '',
-      paymentFrequency: data.frequencyOfPayment || '',
-      marketer: data.marketerName || '',
-      multiUserEntry: data.multiUser || 'N',
-      campaign: data.sourceCampaign || '',
-      internalComments: data.internalComments || '',
-      externalComments: data.externalComments || ''
-    });
-  }
-
-  // ✅ Handle client type
-  if (data.clientCode) {
-    this.setClientType('existing');
-    this.selectedClientName = data.clientName || '';
-  } else {
-    this.setClientType('new');
-  }
-
-  // ✅ Optional: patch dropdown selections for UI
-  this.selectedMarketerName = data.marketerName || '';
-  this.selectedIntroducerName = data.introducerName || '';
-  this.selectedAgentName = data.agentName || '';
-
-  // ✅ Patch product details + clauses + taxes
-  if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
-    this.quotationProducts = data.quotationProducts;
-    this.products = data.quotationProducts;
-    this.productDetails = data.quotationProducts;
-
-    log.debug('[QuotationDetailsComponent] Patched product details:', this.products);
-
-    if (this.productDetails?.length > 0) {
-      this.setColumnsFromProductDetails(this.productDetails[0]);
+  patchReusedQuotationData() {
+    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+    if (!reusedQuotation) {
+      log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
+      return;
     }
 
-    // ✅ Handle the first product’s clauses 
-    const firstProduct = this.products[0];
-    if (firstProduct) {
-      this.activeProductTab = firstProduct.productCode || '';
-      this.selectedProduct = firstProduct.productName || '';
+    const data = JSON.parse(reusedQuotation);
+    log.debug('[QuotationDetailsComponent] Patching reused quotation data:', data);
 
-      // ✅ Patch product clauses
-      this.sessionClauses = firstProduct.productClauses || [];
-        if (this.sessionClauses.length > 0) {
-        this.setProductClauseColumns(this.sessionClauses[0]);
+
+    if (this.quotationForm) {
+      this.quotationForm.patchValue({
+        client: data.clientName || '',
+        email: data.emailAddress || '',
+        phone: data.phoneNumber || '',
+        source: data.source || '',
+        quotationType: data.quotationType || '',
+        branch: data.branchCode || '',
+        currency: data.currency || '',
+        introducer: data.introducerName || '',
+        paymentFrequency: data.frequencyOfPayment || '',
+        marketer: data.marketerName || '',
+        multiUserEntry: data.multiUser || 'N',
+        campaign: data.sourceCampaign || '',
+        internalComments: data.internalComments || '',
+        externalComments: data.externalComments || ''
+      });
+    }
+
+    // ✅ Handle client type
+    if (data.clientCode) {
+      this.setClientType('existing');
+      this.selectedClientName = data.clientName || '';
+    } else {
+      this.setClientType('new');
+    }
+
+    // ✅ Optional: patch dropdown selections for UI
+    this.selectedMarketerName = data.marketerName || '';
+    this.selectedIntroducerName = data.introducerName || '';
+    this.selectedAgentName = data.agentName || '';
+
+    // ✅ Patch product details + clauses + taxes
+    if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
+      this.quotationProducts = data.quotationProducts;
+      this.products = data.quotationProducts;
+      this.productDetails = data.quotationProducts;
+
+      log.debug('[QuotationDetailsComponent] Patched product details:', this.products);
+
+      if (this.productDetails?.length > 0) {
+        this.setColumnsFromProductDetails(this.productDetails[0]);
       }
-      log.debug('[QuotationDetailsComponent] Patched productClauses:', this.sessionClauses);
 
-     
+      // ✅ Handle the first product’s clauses 
+      const firstProduct = this.products[0];
+      if (firstProduct) {
+        this.activeProductTab = firstProduct.productCode || '';
+        this.selectedProduct = firstProduct.productName || '';
+
+        // ✅ Patch product clauses
+        this.sessionClauses = firstProduct.productClauses || [];
+        if (this.sessionClauses.length > 0) {
+          this.setProductClauseColumns(this.sessionClauses[0]);
+        }
+        log.debug('[QuotationDetailsComponent] Patched productClauses:', this.sessionClauses);
+
+
+      }
+    } else {
+      log.debug('[QuotationDetailsComponent] No product details found in reused quotation.');
+      this.quotationProducts = [];
+      this.products = [];
+      this.productDetails = [];
+      this.productClauses = [];
+
     }
-  } else {
-    log.debug('[QuotationDetailsComponent] No product details found in reused quotation.');
-    this.quotationProducts = [];
-    this.products = [];
-    this.productDetails = [];
-    this.productClauses = [];
-    
+
+
   }
-
-
-}
 
 
 
