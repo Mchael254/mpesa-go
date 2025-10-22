@@ -201,4 +201,5 @@ export interface shareReceiptDTO{
   recipientPhone:string;
   receiptNumber:string;
   orgCode:string;
+  branchReceiptCode:string;
 }
