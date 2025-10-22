@@ -1858,6 +1858,10 @@ export class ClientAllocationComponent {
           'receiptNo',
           this.receiptResponse.receiptNumber
         );
+         this.sessionStorage.setItem(
+          'branchReceiptCode',
+          this.receiptResponse.receiptCode
+        );
         this.globalMessagingService.displaySuccessMessage(
           '',
           this.receiptResponse.message
@@ -1987,6 +1991,7 @@ export class ClientAllocationComponent {
       recipientEmail: shareData?.recipientEmail,
       recipientPhone: shareData?.recipientPhone,
       receiptNumber: this.receiptResponse.receiptNumber,
+      branchReceiptCode:this.receiptResponse.receiptCode,
       orgCode: String(this.defaultOrg?.id || this.selectedOrg?.id),
     };
     this.receiptManagementService.shareReceipt(body).subscribe({
@@ -2241,7 +2246,7 @@ export class ClientAllocationComponent {
           'receiptNo',
           this.receiptResponse.receiptNumber
         );
-        this.globalMessagingService.displaySuccessMessage(
+                  this.globalMessagingService.displaySuccessMessage(
           '',
           this.receiptResponse.message
         );
