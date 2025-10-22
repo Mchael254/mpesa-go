@@ -7037,6 +7037,8 @@ updateRiskCommissions(): void {
       withHoldingTax: comm.withHoldingTax
     };
 
+    log.debug("payload to update",payload)
+
     this.quotationService.updateRiskCommission(payload).subscribe({
       next: (res) => {
         this.globalMessagingService.displaySuccessMessage(
