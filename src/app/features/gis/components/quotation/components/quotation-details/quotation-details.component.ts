@@ -581,6 +581,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     if (saved) {
       const savedVisibility = JSON.parse(saved);
       this.productClauseColumns.forEach(col => {
+        if (col.field === 'actions') return;
         const savedCol = savedVisibility.find((s: any) => s.field === col.field);
         if (savedCol) col.visible = savedCol.visible;
       });
@@ -2571,9 +2572,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const defaultVisibleFields = [
       'coverFrom',
       'coverTo',
-      'productName',
-      'wet',
-      'wef'
+      'productName'
 
     ];
     const excludedFields = [
@@ -2757,7 +2756,7 @@ patchReusedQuotationData() {
 
 if (this.productDetails?.length > 0) {
 
-  // ✅ Normalize WEF/WET -> coverFrom/coverTo for UI to render correctly
+  
   this.productDetails = this.productDetails.map((p: any) => ({
     ...p,
     coverFrom: p.wef,
@@ -2780,7 +2779,7 @@ if (this.productDetails?.length > 0) {
     ...c,
     shortDescription: c.clauseShortDescription,
     heading: c.clauseHeading,
-    wording: c.clause    // "clause" contains the actual text
+    wording: c.clause   
   }));
   
   this.setProductClauseColumns(this.sessionClauses[0]);
