@@ -3227,12 +3227,18 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             }
           }
         },
-        error: (err: any) => {
-          const backendMsg = err.error?.message || err.message || 'An unexpected error occurred'; console.error("OTP Verification Error:", backendMsg);
-
-          // 🔔 Show in global error handler
-          this.globalMessagingService.displayErrorMessage("Error", backendMsg);
-        }
+       error: (err: any) => {
+  let backendMessage = "An error occurred while verifying OTP";
+  
+  if (typeof err === 'string') {
+    
+    backendMessage = "Invalid, expired or already used OTP";
+  } else {
+    backendMessage = err?.error?.message || err?.message || backendMessage;
+  }
+  
+  this.globalMessagingService.displayErrorMessage("Error", backendMessage);
+}
       });
   }
 
