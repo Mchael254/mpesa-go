@@ -1188,7 +1188,7 @@ export class QuotationsService {
   verifyOTP(user: string, otp: number) {
     return this.api.POST<any>(`v2/otp/verify?userIdentifier=${user}&otp=${otp}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
-      catchError(this.errorHandl)
+      // catchError(this.errorHandl)
     );
   }
   fetchReports(system: number, applicationLevel: string) {

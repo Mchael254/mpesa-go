@@ -563,6 +563,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   setProductClauseColumns(productClause: any) {
     const excludedFields = [
+    'clauseShortDescription',
+    'clauseHeading',
+    'clause'  
     ];
 
     this.productClauseColumns = Object.keys(productClause)
@@ -581,6 +584,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     if (saved) {
       const savedVisibility = JSON.parse(saved);
       this.productClauseColumns.forEach(col => {
+        if (col.field === 'actions') return;
         const savedCol = savedVisibility.find((s: any) => s.field === col.field);
         if (savedCol) col.visible = savedCol.visible;
       });
@@ -940,9 +944,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
    */
   getuser() {
     this.user = this.authService.getCurrentUserName();
+    log.debug("Username", this.user)
     this.userDetails = this.authService.getCurrentUser();
     log.info('Login UserDetails', this.userDetails);
-
+    this.user = this.userDetails.fullName || this.authService.getCurrentUserName();
     this.userCode = this.userDetails.code;
     log.debug('User Code ', this.userCode);
     sessionStorage.setItem('userCode', JSON.stringify(this.userCode))
@@ -2633,26 +2638,26 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const defaultVisibleFields = [
       'coverFrom',
       'coverTo',
-      'productName',
-      'wet',
-      'wef'
+      'productName'
 
     ];
     const excludedFields = [
-    'productClauses',
-    'limitsOfLiability',
-    'riskInformation',
-    'taxInformation',
-    'binder',
-    'commission',
-    'converted',
-    'policyNumber',
-    'premium',
-    'productShortDescription',
-    'quotationCode',
-    'quotationNo',
-    'revisionNo',
-    'totalSumInsured'
+      'productClauses',
+      'limitsOfLiability',
+      'riskInformation',
+      'taxInformation',
+      'binder',
+      'commission',
+      'converted',
+      'policyNumber',
+      'premium',
+      'productShortDescription',
+      'quotationCode',
+      'quotationNo',
+      'revisionNo',
+      'totalSumInsured',
+      'wet',
+      'wef'
     ];
 
     this.columns = Object.keys(sample)
@@ -2765,45 +2770,104 @@ patchReusedQuotationData() {
   this.selectedAgentName = data.agentName || '';
 
   // ✅ Patch product details + clauses + taxes
-  if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
-    this.quotationProducts = data.quotationProducts;
-    this.products = data.quotationProducts;
-    this.productDetails = data.quotationProducts;
+  // if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
+  //   this.quotationProducts = data.quotationProducts;
+  //   this.products = data.quotationProducts;
+  //   this.productDetails = data.quotationProducts;
 
-    log.debug('[QuotationDetailsComponent] Patched product details:', this.products);
+  //   log.debug('[QuotationDetailsComponent] Patched product details:', this.products);
 
-    if (this.productDetails?.length > 0) {
-      this.setColumnsFromProductDetails(this.productDetails[0]);
-    }
-
-    // ✅ Handle the first product’s clauses 
-    const firstProduct = this.products[0];
-    if (firstProduct) {
-      this.activeProductTab = firstProduct.productCode || '';
-      this.selectedProduct = firstProduct.productName || '';
-
-      // ✅ Patch product clauses
-      this.sessionClauses = firstProduct.productClauses || [];
-        if (this.sessionClauses.length > 0) {
-        this.setProductClauseColumns(this.sessionClauses[0]);
-      }
-      log.debug('[QuotationDetailsComponent] Patched productClauses:', this.sessionClauses);
-
-     
-    }
-  } else {
-    log.debug('[QuotationDetailsComponent] No product details found in reused quotation.');
-    this.quotationProducts = [];
-    this.products = [];
-    this.productDetails = [];
-    this.productClauses = [];
     
+
+    
+
+
+    if (this.quotationForm) {
+      this.quotationForm.patchValue({
+        client: data.clientName || '',
+        email: data.emailAddress || '',
+        phone: data.phoneNumber || '',
+        source: data.source || '',
+        quotationType: data.quotationType || '',
+        branch: data.branchCode || '',
+        currency: data.currency || '',
+        introducer: data.introducerName || '',
+        paymentFrequency: data.frequencyOfPayment || '',
+        marketer: data.marketerName || '',
+        multiUserEntry: data.multiUser || 'N',
+        campaign: data.sourceCampaign || '',
+        internalComments: data.internalComments || '',
+        externalComments: data.externalComments || ''
+      });
+    }
+
+    // ✅ Handle client type
+    if (data.clientCode) {
+      this.setClientType('existing');
+      this.selectedClientName = data.clientName || '';
+    } else {
+      this.setClientType('new');
+    }
+
+    // ✅ Optional: patch dropdown selections for UI
+    this.selectedMarketerName = data.marketerName || '';
+    this.selectedIntroducerName = data.introducerName || '';
+    this.selectedAgentName = data.agentName || '';
+
+    // ✅ Patch product details + clauses + taxes
+    if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
+      this.quotationProducts = data.quotationProducts;
+      this.products = data.quotationProducts;
+      this.productDetails = data.quotationProducts;
+
+      log.debug('[QuotationDetailsComponent] Patched product details:', this.products);
+
+if (this.productDetails?.length > 0) {
+
+  
+  this.productDetails = this.productDetails.map((p: any) => ({
+    ...p,
+    coverFrom: p.wef,
+    coverTo: p.wet,
+  }));
+
+  this.setColumnsFromProductDetails(this.productDetails[0]);
+}
+
+      // ✅ Handle the first product’s clauses 
+      const firstProduct = this.products[0];
+      if (firstProduct) {
+        this.activeProductTab = firstProduct.productCode || '';
+        this.selectedProduct = firstProduct.productName || '';
+
+        // ✅ Patch product clauses
+        this.sessionClauses = firstProduct.productClauses || [];
+        if (this.sessionClauses.length > 0) {
+  this.sessionClauses = this.sessionClauses.map((c: any) => ({
+    ...c,
+    shortDescription: c.clauseShortDescription,
+    heading: c.clauseHeading,
+    wording: c.clause   
+  }));
+  
+  this.setProductClauseColumns(this.sessionClauses[0]);
+}
+
+
+      }
+    } else {
+      log.debug('[QuotationDetailsComponent] No product details found in reused quotation.');
+      this.quotationProducts = [];
+      this.products = [];
+      this.productDetails = [];
+      this.productClauses = [];
+
+    }
+
+
   }
 
 
-}
-
-
-
 
 }
+
