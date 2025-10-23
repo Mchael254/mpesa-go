@@ -2948,20 +2948,20 @@ export class RiskDetailsComponent {
 
   onOpenEditSectionModal(selectedSection: any) {
     this.openEditSectionModal();
-    this.selectedSection = selectedSection; // Track the selected section
+    this.selectedSection = selectedSection; 
     log.debug("Selected section:", this.selectedSection);
 
     // Patch the form with the selected section's values, including the row number
     this.sectionDetailsForm.patchValue({
       ...this.selectedSection,
-      rowNumber: this.selectedSection.rowNumber // Preserve the row number
+      rowNumber: this.selectedSection.rowNumber 
     });
 
     // Open the modal
     const modalElement: HTMLElement | null = this.editSectionModal.nativeElement;
     if (modalElement) {
-      this.renderer.addClass(modalElement, 'show'); // Add 'show' class to make it visible
-      this.renderer.setStyle(modalElement, 'display', 'block'); // Set display property to 'block'
+      this.renderer.addClass(modalElement, 'show'); 
+      this.renderer.setStyle(modalElement, 'display', 'block'); 
     }
   }
 
@@ -6989,6 +6989,8 @@ export class RiskDetailsComponent {
     });
   }
 
+  // Commented out - inline editing not needed at the moment
+  
   markCommissionDirty(commission: any): void {
     commission._dirty = true;
   }
@@ -7040,6 +7042,8 @@ export class RiskDetailsComponent {
       });
     });
   }
+  
+  
   prepareDeleteCommission(commission: any): void {
     this.commissionToDelete = commission;
   }
