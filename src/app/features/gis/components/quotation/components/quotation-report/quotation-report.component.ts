@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { QuotationDetails, ReportParams, ReportResponse } from '../../data/quotationsDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -6,8 +6,9 @@ import { Logger, UtilService } from "../../../../../../shared/services";
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { DmsService } from 'src/app/shared/services/dms/dms.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
-import { DmsDocument } from 'src/app/shared/data/common/dmsDocument';
+import { DmsDocument, SingleDmsDocument } from 'src/app/shared/data/common/dmsDocument';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import * as bootstrap from 'bootstrap';
 
 const log = new Logger('QuotationReportComponent');
 
@@ -35,6 +36,12 @@ const log = new Logger('QuotationReportComponent');
   ],
 })
 export class QuotationReportComponent {
+  @ViewChild('addClientDocumentModal') addClientDocModalRef!: ElementRef;
+
+  private modals: { [key: string]: bootstrap.Modal } = {};
+
+
+
   reports: any[] = [];
   selectedReports: ReportResponse[] = [];
   fetchedReports: ReportResponse[] = [];
@@ -46,6 +53,7 @@ export class QuotationReportComponent {
   quotationCode: number
   filePath: string = '';
   zoomLevel = 1;
+  zoomClientDocLevel = 1
   public isClientCardDetailsOpen = false;
   showClients: boolean = true;
   showClientColumnModal = false;
@@ -64,6 +72,7 @@ export class QuotationReportComponent {
   clientDetails: ClientDTO;
   clientDocuments: DmsDocument[];
   selectedClientDoc: DmsDocument;
+  previewClientDoc: { name: string; mimeType: string; dataUrl: string } | null = null;
 
   constructor(
     public quotationService: QuotationsService,
@@ -449,7 +458,6 @@ export class QuotationReportComponent {
     }
 
     this.selectedFile = file;
-    this.selectedFile && this.addClientDocuments(this.selectedFile);
   }
   formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
@@ -509,6 +517,8 @@ export class QuotationReportComponent {
           log.info(`document uploaded successfully!`, res);
           this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
           this.fetchClientDoc(this.clientCode)
+          const modal = bootstrap.Modal.getInstance(this.addClientDocModalRef.nativeElement);
+          modal.hide();
         },
         error: (err) => {
           log.info(`upload failed!`, err)
@@ -517,8 +527,97 @@ export class QuotationReportComponent {
     }
     reader.readAsDataURL(file);
   }
-  onSelectClientDoc(event: any) {
+  saveClientDoc() {
+    this.selectedFile && this.addClientDocuments(this.selectedFile);
+
+  }
+
+  onPreviewClientDoc(event: any) {
     this.selectedClientDoc = event;
     log.info("Selected client doc", this.selectedClientDoc)
+    this.fetchDocById(this.selectedClientDoc)
   }
+  fetchDocById(selectedClientDoc: DmsDocument) {
+    const docId = selectedClientDoc.id
+
+    this.dmsService.getDocumentById(docId).subscribe({
+      next: (res: any) => {
+        log.info(`Selected Document details`, res);
+        // Construct the preview-friendly object
+        this.previewClientDoc = {
+          name: res.docName,
+          mimeType: res.docMimetype,
+          dataUrl: `data:${res.docMimetype};base64,${res.byteData}`
+        };
+
+        const modal = new bootstrap.Modal(document.getElementById('previewDocModal'));
+        modal.show();
+      },
+      error: (err) => {
+        log.info(`upload failed!`, err)
+      }
+    });
+  }
+  private documentBlobs: { [id: string]: Blob } = {};
+
+  onDownloadClientDoc(event: any) {
+    this.selectedClientDoc = event;
+    log.info("Selected client doc", this.selectedClientDoc);
+
+    const docId = this.selectedClientDoc.id;
+
+    // If we already have it cached, download directly
+    if (this.documentBlobs[docId]) {
+      this.downloadClientDocument(docId, this.selectedClientDoc.actualName);
+      return;
+    }
+
+    // Otherwise, fetch from backend
+    this.dmsService.getDocumentById(docId).subscribe({
+      next: (res: any) => {
+        log.info(`Selected Document details`, res);
+
+        if (!res || res.empty || !res.byteData) {
+          log.warn("Document data is empty or invalid");
+          return;
+        }
+
+        const byteCharacters = atob(res.byteData);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+
+        const blob = new Blob([byteArray], { type: res.docMimetype });
+        this.documentBlobs[docId] = blob; // cache it
+
+        this.downloadClientDocument(docId, res.docName);
+      },
+      error: (err) => {
+        log.error(`Download failed!`, err);
+      },
+    });
+  }
+
+  downloadClientDocument(docId: string, fileName?: string) {
+    const blob = this.documentBlobs[docId];
+    if (!blob) {
+      log.warn("No cached blob found for document:", docId);
+      return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName || 'document';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    log.info("Document downloaded:", fileName);
+  }
+
+
 }
