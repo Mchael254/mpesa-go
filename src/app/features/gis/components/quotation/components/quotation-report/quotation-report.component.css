@@ -178,3 +178,13 @@
     width: auto;
     text-align: left;
 }
+
+#previewDocModalLabel {
+    font-family: Roboto;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 20px;
+    line-height: 100%;
+    letter-spacing: 0%;
+    color: #000000;
+}

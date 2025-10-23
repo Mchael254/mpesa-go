@@ -990,7 +990,9 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
           // Optional: expand only new/updated products in UI
           this.expandedComparisonStates = this.premiumComputationResponse.productLevelPremiums.map(() => true);
-
+          this.expandedCoverTypeIndexes = this.premiumComputationResponse.productLevelPremiums.map(product =>
+            product.riskLevelPremiums.length > 0 ? 0 : null
+          );
           this.globalMessagingService.displaySuccessMessage('Success', 'Premium computed successfully');
           this.cdr.markForCheck();
         },
