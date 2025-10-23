@@ -303,7 +303,7 @@
                                             <ng-container
                                                 *ngIf="motorClassAllowed =='Y' && field.name === 'riskDescription'">
                                                 <input type="text" id="quote-input"
-                                                    class="form-control   bg-light text-muted"
+                                                    class="form-control   readonly-input"
                                                     formControlName="riskDescription" [readonly]="true"
                                                     [value]="vehiclemakeModel">
 
@@ -925,8 +925,8 @@
                                             <div class="col-7">
                                                 <div class="col-7">
                                                     <input type="text" id="scheduleInput" style="width:300px"
-                                                        class="form-control form-control-sm mb-1"
-                                                        formControlName="sectionType">
+                                                        class="form-control form-control-sm mb-1 readonly-input"
+                                                        formControlName="sectionType" readonly>
                                                 </div>
                                             </div>
                                         </div>
@@ -2566,19 +2566,19 @@
                                 <ng-container *ngSwitchCase="'actions'">
                                     <div class="d-flex flex-nowrap" style="gap: 1px;">
                                         <!-- Edit -->
-                                        <!-- <span class="p-button-label fw-bold text-primary"
+                                            <!-- <span class="p-button-label fw-bold text-primary"
                                             style="cursor: pointer; white-space: nowrap;"
                                             (click)="startEditing(commission)">
                                             {{ 'gis.quotation.edit' | translate }}
                                         </span> -->
 
-                                        <!-- Delete -->
-                                        <span class="p-button-label fw-bold text-primary"
-                                            style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
-                                            data-bs-target="#deleteCommission"
-                                            (click)="prepareDeleteCommission(commission)">
-                                            {{ 'gis.quotation.delete' | translate }}
-                                        </span>
+                                            <!-- Delete -->
+                                            <span class="p-button-label fw-bold text-primary"
+                                                style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
+                                                data-bs-target="#deleteCommission"
+                                                (click)="prepareDeleteCommission(commission)">
+                                                {{ 'gis.quotation.delete' | translate }}
+                                            </span>
                                     </div>
                                 </ng-container>
 
@@ -2597,20 +2597,23 @@
                                         </span>
                                     </ng-container>
 
-                                    <!-- Editable fields (input fields without save functionality) -->
+                                    <!-- Editable field template -->
                                     <ng-template #editableField>
-                                        <ng-container *ngIf="col.field === 'value'; else defaultField">
+                                        <ng-container *ngIf="col.field === 'value'; else textField">
                                             <input type="number" class="form-control w-100 text-end"
                                                 [(ngModel)]="commission[col.field]"
-                                                [ngModelOptions]="{standalone: true}" />
+                                                [ngModelOptions]="{standalone: true}"
+                                                (blur)="commission[col.field] = sanitizeCurrency(commission[col.field])" />
                                         </ng-container>
 
-                                        <ng-template #defaultField>
+                                        <ng-template #textField>
                                             <input type="text" class="form-control w-100"
                                                 [(ngModel)]="commission[col.field]"
-                                                [ngModelOptions]="{standalone: true}" />
+                                                [ngModelOptions]="{standalone: true}"
+                                                (input)="markCommissionDirty(commission)" />
                                         </ng-template>
                                     </ng-template>
+
                                 </ng-container>
 
                             </ng-container>
