@@ -1453,6 +1453,17 @@ export interface RiskCommissionDto{
   accountCode:number;
   trntCode: string;
   group: string;
+  transDescription?: string; 
+  usedRate?: number ;
+  setupRate?: number ;
+  discRate?: number ;
+  discType?: string;
+  amount?: number;
+  discAmount?: number ;
+  accountType?: string;
+  commissionAmount?: number;
+  withHoldingRate?: number ;
+  withHoldingTax?: number ;
 }
 
 

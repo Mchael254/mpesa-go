@@ -558,4 +558,8 @@ h2 {
   align-items: center;
 }
 
-/* Ensure consistent styling in commission table */
+.readonly-input[readonly] {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+  opacity: 1;
+}
