@@ -2784,7 +2784,8 @@ if (this.productDetails?.length > 0) {
     ...c,
     shortDescription: c.clauseShortDescription,
     heading: c.clauseHeading,
-    wording: c.clause   
+    wording: c.clause,
+    isEditable: c.clauseIsEditable  
   }));
   
   this.setProductClauseColumns(this.sessionClauses[0]);
