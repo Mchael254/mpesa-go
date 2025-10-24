@@ -207,5 +207,5 @@ export interface GLAccountDTO {
   account_number: string;
   account_name: string;
 }
-  branchReceiptCode:string;
-}
+//   branchReceiptCode:string;
+// }
