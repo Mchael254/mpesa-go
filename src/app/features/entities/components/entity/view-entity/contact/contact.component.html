@@ -1,3 +1,5 @@
+<!--{{ selectedSubgroup | json }}-->
+
 
 <ng-container *ngIf="group.subGroup?.length === 0">
   <div class="row">
@@ -18,26 +20,26 @@
 
 
 
-<ng-container *ngIf="group.subGroup?.length > 0">
-  <ng-container *ngFor="let subGroup of group.subGroup">
+<ng-container *ngIf="subGroups?.length > 0">
+  <ng-container *ngFor="let subGroup of subGroups">
 
     <ng-container *ngIf="subGroup.presentationType===PRESENTATION_TYPE.fields">
       <div class="row my-3">
         <div class="col-sm-8">
-          <span class="text-primary lead">
+          <span class="text-primary fw-bold">
             {{ subGroup.label[language] | titlecase }}
           </span>
-              <span
-                id="edit-tab-btn"
-                class="m-2 text-primary"
-              >
+          <span
+            class="m-2 text-primary edit-tab-btn"
+            (click)="openEditContactDialog(subGroup, SaveAction.EDIT_CONTACT_DETAILS)"
+          >
             <i class="fa fa-pencil"></i>
           </span>
         </div>
       </div>
       <div class="row mb-3">
         <ng-container *ngFor="let field of subGroup.fields">
-          <div class="col-sm-4">
+          <div class="col-sm-4" *ngIf="!(field.fieldId.toLowerCase().includes('id'))">
             <div class="row my-2">
               <div class="col-sm-4 text-dark">
                 {{ field.label[language] }}
@@ -57,6 +59,7 @@
         [table]="table"
         [language]="language"
         (deleteBtnClicked)="handleContactPersonDelete($event)"
+        (editBtnClicked)="prepareEditContactPersonForm($event, SaveAction.EDIT_CONTACT_PERSON)"
       >
       </app-overview-table>
     </ng-container>
@@ -74,17 +77,17 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <!--<h1 class="modal-title fs-4 text-primary" id="editContactModalLabel">
-          {{ formFieldsConfig?.label[language] || '-&#45;&#45;' | titlecase }}
-        </h1>-->
+        <h1 class="modal-title fs-4 text-primary" id="editContactModalLabel">
+          {{ formHeadingLabel?.label[language] | titlecase }}
+        </h1>
         <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <ng-container *ngIf=" editForm; else loadingForm">
           <form [formGroup]="editForm">
             <div class="row g-3">
-              <ng-container *ngFor="let field of fields">
-                <div class="col-md-6">
+              <ng-container *ngFor="let field of formFields">
+                <div class="col-md-6" *ngIf="!(field.fieldId.toLowerCase().includes('personid'))">
                   <label [for]="field.fieldId" class="form-label">
                     {{ field?.label[language] || '---' | titlecase }}
                   </label>
@@ -105,13 +108,13 @@
                     [id]="field.fieldId"
                     class="form-select"
                   >
-                    <option *ngFor="let opt of field.options" [value]="opt.id ? opt.id : opt.value">
+                    <option *ngFor="let opt of field.options" [value]="opt.id ? opt.id : (opt.value || opt.name)">
                       {{ opt.name || opt.description || opt.label | titlecase }}
                     </option>
                   </select>
 
                   <!--tel number-->
-                  <span *ngIf="['smsNumber', 'telNumber'].includes(field.fieldId)">
+                  <span *ngIf="checkTelNumber(field.fieldId)">
                     <ngx-intl-tel-input
                       [cssClass]="'form-control mb-1'"
                       [id]="field.fieldId"
@@ -130,6 +133,16 @@
                     >
                     </ngx-intl-tel-input>
                   </span>
+
+                  <!--Date-->
+                  <input
+                    *ngIf="field.type === 'date'"
+                    type="date"
+                    [formControlName]="field.fieldId"
+                    [placeholder]="field.placeholder[language] || ''"
+                    [id]="field.fieldId"
+                    class="form-control"
+                  />
                 </div>
               </ng-container>
             </div>
@@ -143,14 +156,14 @@
           </div>
         </ng-template>
       </div>
-     <!-- <div class="modal-footer">
+     <div class="modal-footer">
         <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-          {{ formFieldsConfig?.buttons?.cancel?.label[language] || '-&#45;&#45;' | titlecase }}
+<!--          {{ selectedSubgroup?.addButtonTextLabel[language] | titlecase }}-->
         </button>
-        <button type="button" class="btn btn-primary" (click)="editContactDetails()">
-          {{ formFieldsConfig?.buttons?.save?.label[language] || '-&#45;&#45;' | titlecase }}
+        <button type="button" class="btn btn-primary" (click)="saveDetails()">
+          {{ 'save' | titlecase }}
         </button>
-      </div>-->
+      </div>
     </div>
   </div>
 </div>
