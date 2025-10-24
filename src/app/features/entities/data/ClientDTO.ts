@@ -279,6 +279,7 @@ export interface ClientDTO {
   accountCode?: number,
   partyId?: number,
   partyAccountCode?: number,
+  contactChannel?: string,
 }
 
 export interface ClientTypeDTO {
