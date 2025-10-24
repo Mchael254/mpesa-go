@@ -179,6 +179,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   selectedTableRecord: any;
   glAccounts: GenericResponse<Pagination<GLAccountDTO>> = <GenericResponse<Pagination<GLAccountDTO>>>{};
   clientBranchData: AccountsEnum[];
+  tableSelectFieldId: string = '';
   columns: any = [
     { field: 'account_number', header: 'ID', visible: true },
     { field: 'account_name', header: 'Name', visible: true },
@@ -402,14 +403,15 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     this.uploadGroupSections = {
       selects: [],
       docs: [],
-      photo: []
+      photo: [],
+      docField: []
     }
 
     visibleFormFields.forEach((field: ConfigFormFieldsDto) => {
       if (field.type === 'select') {
         this.uploadGroupSections.selects.push(field);
-      } else if (field.type === 'button') {
-       this.uploadGroupSections.docs.push(field);
+      } else if (field.type === 'multiple_document_uploads') {
+       this.uploadGroupSections.docField.push(field);
       } else if (field.type === 'file') {
         this.uploadGroupSections.photo.push(field);
       }
@@ -768,7 +770,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           this.saveClient(formValues, upperDetails);
           break;
 
-        case PartyType.agent:
+        case PartyType.intermediary:
           this.saveAgentDetails(formValues, upperDetails);
           break;
 
@@ -833,16 +835,16 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     }
     log.info(`payloadObject >>>`, payloadObject, formValues);
     const address = {
-      boxNumber: "10300",
+      boxNumber: null,
       countryId: this.selectedAddressCountry?.id,
       houseNumber: payloadObject.houseNo,
       physicalAddress: payloadObject.physicalAddress,
-      postalCode: 22001 /*parseInt(payloadObject.postalCode)*/,
+      postalCode: payloadObject.postalCode ? payloadObject.postalCode : null,
       road: payloadObject.road,
       townId: this.selectedTown?.id,
       stateId: this.selectedState?.id,
       utilityAddressProof: null,
-      isUtilityAddress: "N"
+      isUtilityAddress: null
     }
 
     const contactDetails = {
@@ -859,87 +861,96 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       accountNumber: payloadObject.accountNumber,
       bankBranchId: this.selectedBankBranch?.id,
       currencyId: this.selectedCurrency?.id,
-      preferedChannel: payloadObject.paymentMethod,
-      mpayno: payloadObject.cnt_individual_financial_details_mobile_number,
+      preferedChannel: payloadObject.paymentMethod?.label,
+      mpayno: payloadObject.cnt_individual_financial_details_mobile_number?.internationalNumber,
       iban: payloadObject.intlBankAccountNumber,
-      swiftCode: payloadObject.swiftCode
+      swiftCode: payloadObject.swiftCode,
+      effectiveFromDate: payloadObject.cnt_individual_financial_details_wef,
+      effectiveToDate: payloadObject.cnt_individual_financial_details_wet,
     }
 
-    /*Note:
-    wealthAmlDetails, branches, contactPersons, payee, ownershipDetails should be arrays
-    I have just mapped the correct field ids*/
-    const branches = {
-      code: payloadObject.id,
-      branchName: payloadObject.cnt_corporate_branch_details_name,
-      countryId: payloadObject.country,
-      stateId: payloadObject.county,
-      townId: payloadObject.town,
-      physicalAddress: payloadObject.cnt_corporate_branch_details_physicalAddress,
-      email: payloadObject.cnt_corporate_branch_email,
-    }
+    const branchData = this.getDataByPattern('branch_details');
+    const branches = branchData.length > 0
+      ? branchData.map(item => ({
+        shortDesc: item.id,
+        branchName: item.cnt_corporate_branch_details_name,
+        countryId: item.country?.id,
+        stateId: item.county?.id,
+        townId: item.town?.id,
+        physicalAddress: item.cnt_corporate_branch_details_physicalAddress,
+        email: item.cnt_corporate_branch_email,
+        landlineNumber: item.landlineNumber,
+        mobileNumber: item.mobileNumber,
+      }))
+      : [];
 
-    const contactPersons = {
-      clientTitleCode: payloadObject.titleId,
-      name: payloadObject.name,
-      idNumber: payloadObject.docIdNumber,
-      email: payloadObject.emailAddress,
-      mobileNumber: payloadObject.phoneNumber,
-      wef: payloadObject.cnt_corporate_contact_person_details_wef,
-      wet: payloadObject.cnt_corporate_contact_person_details_wet,
-    }
+    const contactPersonData = this.getDataByPattern('contact_person_details');
+    const contactPersons = contactPersonData.length > 0
+      ? contactPersonData.map(item => ({
+        clientTitleCode: item.titleId?.id,
+        name: item.name,
+        idNumber: item.docIdNumber,
+        email: item.emailAddress,
+        mobileNumber: item.phoneNumber,
+        wef: item.cnt_corporate_contact_person_details_wef,
+        wet: item.cnt_corporate_contact_person_details_wet,
+      }))
+      : [];
 
-    const payee = {
-      name: payloadObject.payee_details_name,
-      idNo: payloadObject.cnt_corporate_payee_docIdNumber,
-      mobileNo: payloadObject.cnt_corporate_payee_mobileNumber,
-      email: payloadObject.payee_email_address,
-      // payloadObject.bankName,
-      // payloadObject.branchName,
-      accountNumber: payloadObject.cnt_corporate_payee_accountNumber,
-    }
+    const payeeData = this.getDataByPattern('payee_details');
+    const payee = payeeData.length > 0
+      ? payeeData.map(item => ({
+        name: item.payee_details_name,
+        idNo: item.cnt_corporate_payee_docIdNumber,
+        mobileNo: item.cnt_corporate_payee_mobileNumber,
+        email: item.payee_email_address,
+        bankBranchCode: item.branchName?.id,
+        accountNumber: item.cnt_corporate_payee_accountNumber,
+      })) : [];
 
-    const wealthAmlDetails = [{
-      fundsSource: payloadObject.source_of_fund || payloadObject.sourceOfFundAml,
-      employmentStatus: payloadObject.type_of_employment,
-      sectorId: payloadObject.economicSector || payloadObject.economicSectorAml,
-      occupationId: payloadObject.occupation,
-      insurancePurpose: payloadObject.purposeOfInsurance,
-      premiumFrequency: payloadObject.premiumFrequency,
-      distributeChannel: payloadObject.distributionChannel,
-      tradingName: payloadObject.tradingName,
-      registeredName: payloadObject.registeredName,
-      certificateRegistrationNumber: payloadObject.certificateRegistrationNumber,
-      certificateYearOfRegistration: payloadObject.certificateRegistrationYear,
-      parentCountryId: payloadObject.parentCountry,
-      operatingCountryId: payloadObject.operatingCountry,
+    const cr12Data = this.getDataByPattern('cr12_details');
+    const cr12Details = cr12Data.length > 0
+      ? cr12Data.map(item => ({
+        directorName: item.cr12_name,
+        directorIdRegNo: item.companyRegistrationNumber,
+        directorDob: item.companyRegistrationDate,
+        address: item.cr12_details_address,
+        certificateReferenceNo: item.referenceNumber,
+        certificateRegistrationYear: item.referenceNumberYear,
+      }))
+      : [];
 
-      /*Note: cr12 details[] should be part of wealthAmlDetails[]*/
-    }]
+    const wealthAmlData = this.getDataByPattern('aml_details');
+    const wealthAmlDetails = wealthAmlData.length > 0
+      ? wealthAmlData.map(item => ({
+        fundsSource: item.source_of_fund?.label || item.sourceOfFundAml?.id,
+        employmentStatus: item.type_of_employment?.id,
+        sectorId: item.economicSector?.id || item.economicSectorAml?.id,
+        occupationId: item.occupation?.id,
+        insurancePurpose: item.purposeOfInsurance?.label,
+        premiumFrequency: item.premiumFrequency?.id,
+        distributeChannel: item.distributionChannel?.id,
+        tradingName: item.tradingName,
+        registeredName: item.registeredName,
+        certificateRegistrationNumber: item.certificateRegistrationNumber,
+        certificateYearOfRegistration: item.certificateRegistrationYear,
+        parentCountryId: item.parentCountry?.id,
+        operatingCountryId: item.operatingCountry?.id,
+        cr12Details
+      }))
+      : [];
 
-    const cr12Details = {
-      directorName: payloadObject.cr12_name,
-      directorIdRegNo: payloadObject.companyRegistrationNumber,
-      directorDob: payloadObject.companyRegistrationDate,
-      address: payloadObject.cr12_details_address,
-      certificateReferenceNo: payloadObject.referenceNumber,
-      certificateRegistrationYear: payloadObject.referenceNumberYear,
-    }
+    const ownershipData = this.getDataByPattern('ownership_details');
+    const ownershipDetails = ownershipData.length > 0
+      ? ownershipData.map(item => ({
+        name: item.cnt_corporate_ownership_details_name,
+        idNumber: item.cnt_corporate_ownership_details_docIdNumber,
+        contactPersonPhone: item.contactPersonPhone,
+        percentOwnership: item.percentOwnership,
+      }))
+      : [];
 
-    const ownershipDetails = [{
-      name: payloadObject.cnt_corporate_ownership_details_name,
-      idNumber: payloadObject.cnt_corporate_ownership_details_docIdNumber,
-      contactPersonPhone: payloadObject.contactPersonPhone,
-      percentOwnership: payloadObject.percentOwnership,
-    }]
-
-    // const wealthAmlDetails = this.wealthAmlDetails;
-    // const branches = this.branchDetails;
-    // const contactPersons = this.contactPersonDetails;
-    // const payee = this.payeeDetails;
-    // const ownershipDetails = this.ownershipDetails;
-    // const cr12Details = this.cr12Details;
-
-
+    const clientOrOrganizationType = this.category === 'corporate' ? payloadObject.organizationType.toLowerCase() : payloadObject.clientType.toLowerCase();
     const client: any = { // todo: update Model (ClientDTO)
       address,
       contactDetails,
@@ -949,22 +960,20 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       contactPersons,
       payee,
       ownershipDetails,
-      cr12Details,
       withEffectFromDate: payloadObject.wef,
       withEffectToDate: payloadObject.wet,
       firstName: this.category === 'corporate' ? payloadObject.entityName.substring(0, payloadObject.entityName.indexOf(' ')) : payloadObject.otherNames,
       gender: payloadObject.gender,
       lastName: this.category === 'corporate' ? payloadObject.entityName.substring(payloadObject.entityName.indexOf(' ') + 1) : payloadObject.lastName,
-      pinNumber: payloadObject.pinNumber /*A487438114W*/,
+      pinNumber: payloadObject.pinNumber,
       category: payloadObject.category,
-      countryId: this.selectedAddressCountry?.id,
-      clientTypeId: "13" || "14",
+      countryId: payloadObject?.citizenshipCountryId?.id,
+      clientTypeId: this.clientTypes.find(clientType => clientType.clientTypeName.toLowerCase() === clientOrOrganizationType)?.code,
       dateOfBirth: payloadObject.dateOfBirth || payloadObject.dateOfIncorporation,
       modeOfIdentityId: this.selectedIdType?.id,
-      idNumber: payloadObject.idNumber || payloadObject.businessRegNumber /*"37678960"*/ /*99245/6789Z*/,
-      branchId: 338,
-      maritalStatus: this.selectedMaritalStatus?.value/*"S"*/,
-      partyId: 3661
+      idNumber: payloadObject.idNumber || payloadObject.businessRegNumber,
+      organizationBranchId: payloadObject?.cnt_individual_contact_details_branch?.id || payloadObject?.cnt_corporate_contact_details_branch?.id,
+      maritalStatus: this.selectedMaritalStatus?.value,
     };
 
     log.info(`clientDto >>> `, client);
@@ -972,7 +981,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     this.clientService.saveClientDetails2(client).subscribe({
       next: (response) => {
         log.info(`client saved >>> `, response);
-        this.uploadImage(this.profilePicture, response.partyId)
+        this.uploadImage(this.profilePicture, response.partyId);
+        this.entityName = response.firstName + ' ' + response.lastName;
+        this.entityCode = response.clientCode;
         this.uploadDocumentToDms();
       },
       error: (error) => {
@@ -1031,7 +1042,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         telephone: item?.refTelNo,
         idNumber: item?.refDocIdNo,
         preferredCommunicationChannel: item?.communicationChannel?.id,
-        status: item?.refStatus,
+        status: item?.refStatus?.id,
       }))
       : [];
 
@@ -1120,7 +1131,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       const updatedDoc = {...doc};
 
       switch (this.role?.partyTypeShtDesc) {
-        case PartyType.agent:
+        case PartyType.intermediary:
           updatedDoc.agentName = this.entityName;
           updatedDoc.agentCode = this.entityCode?.toString();
           break;
@@ -1146,7 +1157,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           }
         });
         break;
-      case PartyType.agent:
+      case PartyType.intermediary:
         this.dmsService.saveAgentDocs(documentsWithEntityInfo).subscribe({
           next: (res: any) => {
             log.info(`document uploaded successfully!`, res);
@@ -1280,8 +1291,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         (c: ClientTypeDTO) => c.clientTypeName.toLowerCase() === selectedOrgOrClientType.toLowerCase())[0];
       log.info(`accountSubType >>> `, accountSubType, this.clientTypes);*/
 
-      switch (formValues.role) {
-        case 'agent':
+      switch (this.role?.partyTypeShtDesc) {
+        case PartyType.intermediary:
           this.requiredDocumentsService.getAccountTypeRequiredDocument(accountType.partyTypeShtDesc, null, accountSubType, null).subscribe({
             next: (data: RequiredDocumentDTO[]) => {
               this.requiredDocuments = data;
@@ -1314,7 +1325,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       case PartyType.client:
         return this.clientTypes.find((c: ClientTypeDTO) =>
           c.clientTypeName.toLowerCase() === selectedOrgOrClientOrAccType.toLowerCase())?.code;
-      case PartyType.agent:
+      case PartyType.intermediary:
         return this.accountTypeData.find((d: AccountTypeDTO) =>
           d.accountType.toLowerCase() === selectedOrgOrClientOrAccType.toLowerCase())?.id;
       default:
@@ -2166,7 +2177,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           case PartyType.client:
             this.readScannedDocuments(urls);
             break;
-          case PartyType.agent:
+          case PartyType.intermediary:
             this.readAgentScannedDocuments(urls);
             break;
           default:
@@ -3028,16 +3039,17 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     return null;
   }
 
-  openMultiSelectModal() {
-    const modal = document.getElementById('multiSelectModal');
+  openTableSelectModal(fieldId?: string) {
+    const modal = document.getElementById('tableSelectModal');
     if (modal) {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
+    this.tableSelectFieldId = fieldId;
   }
 
-  closeMultiSelectModal() {
-    const modal = document.getElementById('multiSelectModal');
+  closeTableSelectModal() {
+    const modal = document.getElementById('tableSelectModal');
     if (modal) {
       modal.classList.remove('show');
       modal.style.display = 'none';
