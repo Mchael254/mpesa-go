@@ -555,7 +555,8 @@
     "editTableColumns": "Editar columnas de la tabla",
     "columnLabel": "Etiqueta de columna",
     "columns": "Columnas",
-    "noRecordsFound": "No se encontraron registros"
+    "noRecordsFound": "No se encontraron registros",
+    "sendToClient": "Enviar al cliente"
   },
   "entities": {
     "account_number": "Número de cuenta",

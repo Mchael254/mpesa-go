@@ -10,7 +10,7 @@
           <div class="row">
             <h5 class="mb-4 ms-md-5 text-primary">{{ subModules[0]?.label[language] | titlecase }}</h5>
             <ng-container *ngFor="let field of uploadGroupSections?.selects;">
-              <div class="col-sm-12 col-md-6 col-lg-4">
+              <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
                 <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
                   <ng-container *ngIf="field.type === 'select'">
                     <ng-container *ngIf="field.fieldId">
@@ -96,7 +96,7 @@
 
           <!--client documents-->
           <div class="row" *ngIf="uploadGroupSections?.docs?.length > 0">
-            <h6 class="mb-4 ms-md-5 mt-3 text-primary">Document upload</h6>
+            <h6 class="mb-4 ms-md-5 mt-3 text-primary">{{ uploadGroupSections?.docField[0]?.label[language] | titlecase }}</h6>
 
             <ng-container *ngFor="let doc of uploadGroupSections?.docs">
               <div class="col-sm-6">
@@ -635,11 +635,11 @@
       <div class="col-sm-8"></div>
       <div class="col-sm-4 my-4 text-end">
         <button class="btn btn-outline-primary btn-sm me-2">
-          Send to client
+          {{ 'crm.sendToClient' | translate }}
         </button>
 
-        <button class="btn btn-primary btn-sm" (click)="saveDetails()">
-          Save details
+        <button class="btn btn-primary btn-sm" id="saveDetailsBtn" (click)="saveDetails()">
+          {{ 'crm.saveDetails' | translate }}
         </button>
       </div>
     </div>
@@ -790,7 +790,7 @@
       </div>
     </ng-container>
 
-    <ng-container *ngIf="field.type === FieldType.multi_select">
+    <ng-container *ngIf="field.type === FieldType.table_select">
       <label class="form-label">{{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
       </label>
@@ -802,14 +802,15 @@
           id="{{ field.fieldId }}"
           value="{{ selectedTableRecord?.account_name }}"
           [placeholder]="field.placeholder?.[language] || ''"
+          readonly
         />
         <button
           class="btn btn-outline-primary"
           type="button"
           id="button-addon"
           style="border-color: #dee2e6; border-left: none;"
-          (click)="openMultiSelectModal()"
-          [disabled]="isPreviewMode"
+          (click)="openTableSelectModal(field.label?.[language])"
+          [disabled]="isPreviewMode || field.disabled"
         >
           <i class="fa-solid fa-angle-double-down"></i>
         </button>
@@ -829,19 +830,19 @@
 <!--Multi select modal-->
 <div
   class="modal fade"
-  #multiSelectModal
-  id="multiSelectModal"
+  #tableSelectModal
+  id="tableSelectModal"
   tabindex="-1"
   aria-labelledby="exampleModalLabel"
 >
   <div class="modal-dialog modal-lg modal-dialog-centered align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title text-primary" id="exampleModalLabel"> GL Account </h5>
+        <h5 class="modal-title text-primary" id="exampleModalLabel"> {{ tableSelectFieldId | titlecase }} </h5>
         <button
           type="button"
           class="btn-close"
-          (click)="closeMultiSelectModal()"
+          (click)="closeTableSelectModal()"
         ></button>
       </div>
       <div class="modal-body">
