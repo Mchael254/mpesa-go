@@ -525,7 +525,8 @@
     "editTableColumns": "Tabellenspalten bearbeiten",
     "columnLabel": "Spaltenbezeichnung",
     "columns": "Spalten",
-    "noRecordsFound": "Keine Datensätze gefunden"
+    "noRecordsFound": "Keine Datensätze gefunden",
+    "sendToClient": "An den Kunden senden"
   },
   "entities": {
     "account_number": "Kontonummer",

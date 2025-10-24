@@ -640,7 +640,8 @@
     "editTableColumns": "Edit table columns",
     "columnLabel": "Column label",
     "columns": "Columns",
-    "noRecordsFound": "No records found"
+    "noRecordsFound": "No records found",
+    "sendToClient": "Send to client"
   },
   "entities": {
     "account_number": "Account Number",
