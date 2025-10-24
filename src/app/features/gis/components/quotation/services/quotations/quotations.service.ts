@@ -1059,9 +1059,9 @@ export class QuotationsService {
 
 
 
-  reviseQuotation(quotCode: number, newQuote: string = "N"): Observable<any> {
-    return this.api.POST<any[]>(`v2/revise?quotCode=${quotCode}&newQuote=${newQuote}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL,);
-  }
+  // reviseQuotation(quotCode: number, newQuote: string = "N"): Observable<any> {
+  //   return this.api.POST<any[]>(`v2/revise?quotCode=${quotCode}&newQuote=${newQuote}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL,);
+  // }
 
   updateQuotationComment(payload: QuotationComment): Observable<any> {
     return this.api.PUT<any>(`v2/quotation/comment`, JSON.stringify(payload), API_CONFIG.GIS_QUOTATION_BASE_URL);
@@ -1188,7 +1188,7 @@ export class QuotationsService {
   verifyOTP(user: string, otp: number) {
     return this.api.POST<any>(`v2/otp/verify?userIdentifier=${user}&otp=${otp}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
-      catchError(this.errorHandl)
+      // catchError(this.errorHandl)
     );
   }
   fetchReports(system: number, applicationLevel: string) {
@@ -1261,6 +1261,20 @@ deleteRiskCommission(code: number): Observable<any> {
     catchError(this.errorHandl)
   );
 }
+reviseQuote(quotationCode: number, createNewQuotation: 'Y' | 'N' = 'N'): Observable<any> {
+  return this.api.POST<any>(
+    `v1/quotation/revise/${quotationCode}?createNewQuotation=${createNewQuotation}`,
+    null,
+    API_CONFIG.GIS_QUOTATION_BASE_URL
+  ).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  );
+}
+
+
+
+
 
 
 }
