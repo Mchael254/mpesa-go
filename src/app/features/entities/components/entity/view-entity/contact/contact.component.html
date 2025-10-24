@@ -1,4 +1,3 @@
-<!--{{ selectedSubgroup | json }}-->
 
 
 <ng-container *ngIf="group.subGroup?.length === 0">
@@ -31,7 +30,7 @@
           </span>
           <span
             class="m-2 text-primary edit-tab-btn"
-            (click)="openEditContactDialog(subGroup, SaveAction.EDIT_CONTACT_DETAILS)"
+            (click)="openEditContactDialog(subGroup, Save_Action.EDIT_CONTACT_DETAILS)"
           >
             <i class="fa fa-pencil"></i>
           </span>
@@ -59,7 +58,7 @@
         [table]="table"
         [language]="language"
         (deleteBtnClicked)="handleContactPersonDelete($event)"
-        (editBtnClicked)="prepareEditContactPersonForm($event, SaveAction.EDIT_CONTACT_PERSON)"
+        (editBtnClicked)="prepareEditContactPersonForm($event, Save_Action.EDIT_CONTACT_PERSON)"
       >
       </app-overview-table>
     </ng-container>
