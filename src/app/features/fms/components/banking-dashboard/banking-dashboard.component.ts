@@ -94,14 +94,14 @@ export class BankingDashboardComponent {
   constructor(public translate: TranslateService, private router: Router) {}
   ngOnInit() {
     this.cols=[
-        { field: 'batchNo', header: 'fms.receipting.batchNumber'},
-      { field: 'slipNo', header: 'fms.banking.slipNumber' },
-      { field: 'date', header: 'fms.banking.date' },
-      { field: 'assignee', header: 'serviceDesk.assignee' },
-      { field: 'amount', header: 'fms.receipting.amount' },
-      { field: 'bankAcc', header: 'fms.banking.bankAccount' },
-      { field: 'status', header: 'base.status' },
-      { field: 'actions', header: 'fms.receipting.actions' }
+        { field: 'batchNo', header:this.translate.instant('fms.receipting.batchNumber') },
+      { field: 'slipNo', header: this.translate.instant('fms.banking.slipNumber') },
+      { field: 'date', header: this.translate.instant('fms.banking.date') },
+      { field: 'assignee', header:this.translate.instant('serviceDesk.assignee') },
+      { field: 'amount', header: this.translate.instant('fms.receipting.amount') },
+      { field: 'bankAcc', header: this.translate.instant('fms.banking.bankAccount') },
+      { field: 'status', header: this.translate.instant('base.status') },
+      { field: 'actions', header:this.translate.instant('fms.receipting.actions')  }
 
     ];
     this.selectedColumns=[...this.cols];
