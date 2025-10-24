@@ -1626,7 +1626,6 @@ export class RiskDetailsComponent {
           const quotationNo = data._embedded.quotationNo
           this.addProductClauses();
           this.selectedFile = null;
-          this.selectedSubclassCode = null;
 
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
@@ -1692,6 +1691,8 @@ export class RiskDetailsComponent {
           sessionStorage.setItem("selectedRiskCode", String(currentQuotationRiskCode));
           this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
           this.loadPersistedRiskClauses();
+          this.selectedSubclassCode = null;
+
 
         },
         // error: () => this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
@@ -7003,42 +7004,64 @@ export class RiskDetailsComponent {
     this.editingRowCode = null;
   }
 
+updateRiskCommissions(): void {
+  const modified = this.addedCommissions.filter(c => c._dirty);
 
-  updateRiskCommissions(): void {
-    const modified = this.addedCommissions.filter(c => c._dirty);
+  if (!modified.length) return;
 
-    modified.forEach(comm => {
-      const payload: RiskCommissionDto = {
-        code: comm.code,
-        quotationRiskCode: comm.quotationRiskCode,
-        quotationCode: comm.quotationCode,
-        agentCode: comm.agentCode,
-        transCode: comm.transCode,
-        accountCode: comm.accountCode,
-        trntCode: comm.trntCode,
-        group: comm.group
-      };
+  modified.forEach(comm => {
+    const payload: RiskCommissionDto = {
+      code: comm.code,
+      quotationRiskCode: comm.quotationRiskCode,
+      quotationCode: comm.quotationCode,
 
-      this.quotationService.updateRiskCommission(payload).subscribe({
-        next: (res) => {
-          log.debug('Update success:', res);
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Commission updated successfully'
-          );
-          comm._dirty = false;
-          this.resetEditing();
-        },
-        error: (err) => {
-          log.error('Update error:', err);
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            'Failed to update commission'
-          );
-        }
-      });
+      
+      agentCode: comm.agentDto?.id ?? comm.agentCode,
+
+      transCode: comm.transCode,
+      transDescription: comm.transDescription,
+      accountCode: comm.accountCode,
+      trntCode: comm.trntCode,
+      group: comm.group,
+
+  
+      usedRate: comm.usedRate,
+      setupRate: comm.setupRate,
+      discRate: comm.discRate,
+      discType: comm.discType,
+      amount: comm.amount,
+      discAmount: comm.discAmount,
+      accountType: comm.accountType,
+      commissionAmount: comm.commissionAmount,
+      withHoldingRate: comm.withHoldingRate,
+      withHoldingTax: comm.withHoldingTax
+    };
+
+    log.debug("payload to update",payload)
+
+    this.quotationService.updateRiskCommission(payload).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Commission updated successfully'
+        );
+
+        // ✅ ensure row no longer marked dirty
+        comm._dirty = false;
+
+        // ✅ immediately reload data from DB so user sees persisted values
+        this.fetchAddedCommissions();
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Failed to update commission'
+        );
+      }
     });
-  }
+  });
+}
+
   prepareDeleteCommission(commission: any): void {
     this.commissionToDelete = commission;
   }
