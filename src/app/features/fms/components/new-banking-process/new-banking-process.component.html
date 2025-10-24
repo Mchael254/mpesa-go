@@ -27,7 +27,6 @@
       <h5 class="pt-2 pb-2 text-primary">
         {{ "fms.banking.retrieveReceipts" | translate }}
       </h5>
-      <button class="btn btn-primary" (click)="back()">back</button>
       <div class="mb-3">
         <form [formGroup]="bankingForm">
           <div class="row">
@@ -88,10 +87,10 @@
                 formControlName="paymentMethod"
               >
                 <option
-                  *ngFor="let paymentMode of paymentMethods"
-                  value="paymentMode"
+                  *ngFor="let paymentMode of paymentModes"
+                  [value]="paymentMode.code"
                 >
-                  {{ paymentMode }}
+                  {{ paymentMode.code }}
                 </option>
               </select>
               <div
@@ -133,18 +132,18 @@
         </ng-template>
         <div *ngFor="let col of columns" class="field-checkbox">
           <p-checkbox
-            [(ngModel)]="col.field"
-            SetSet
+            [(ngModel)]="selectedColumns"
+            name="col"
             [label]="col.header"
             [value]="col"
-            (click)="activate(col.header)"
           />
         </div>
       </p-dialog>
 
       <p-table
+        *ngIf="displayTable"
         [value]="filteredReceipts"
-        dataKey="receiptId"
+        dataKey="receiptNo"
         selectionMode="single"
         [(selection)]="selectedReceipt"
         [tableStyle]="{ 'min-width': '50rem' }"
@@ -187,13 +186,16 @@
         <ng-template pTemplate="header">
           <tr>
             <th><p-tableHeaderCheckbox /></th>
-            <th *ngFor="let col of columns">{{ col.header | translate }}</th>
+            <th *ngFor="let col of selectedColumns">
+              {{ col.header | translate }}
+            </th>
           </tr>
+          <!-- filter row -->
           <tr>
             <th>
               <input disabled type="text" class="form-control" />
             </th>
-            <th *ngFor="let col of columns">
+            <th *ngFor="let col of selectedColumns">
               <input
                 [disabled]="col.field === 'actions'"
                 [type]="col.field === 'amount' ? 'number' : 'text'"
@@ -203,19 +205,27 @@
               />
             </th>
           </tr>
+          <!-- end of filter row -->
         </ng-template>
         <ng-template pTemplate="body" let-receipt>
           <tr>
             <td>
               <p-tableCheckbox [value]="receipt" />
             </td>
-            <td>{{ receipt.receiptId }}</td>
-            <td>{{ receipt.customer }}</td>
-            <td>{{ receipt.amount }}</td>
-            <td>{{ receipt.collectionAcc }}</td>
-            <td>{{ receipt.assignedTo }}</td>
-            <td>{{ receipt.date | date : "dd/MM/yyyy" }}</td>
-            <td>assign</td>
+            <td *ngFor="let col of selectedColumns">
+              <ng-container [ngSwitch]="col.field">
+                <ng-container *ngSwitchCase="'date'">
+                  {{ receipt.receiptDate | date : "dd/MM/yyyy" }}
+                </ng-container>
+                <ng-container *ngSwitchCase="'actions'">
+                  <button class="btn btn-sm btn-primary">Assign</button>
+                </ng-container>
+
+                <ng-container *ngSwitchDefault>
+                  {{ receipt[col.field] }}
+                </ng-container>
+              </ng-container>
+            </td>
           </tr>
         </ng-template>
       </p-table>

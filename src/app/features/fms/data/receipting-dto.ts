@@ -97,7 +97,6 @@ export interface ManualExchangeRateResponseDTO {
   data: string | object; // Adjust type if necessary (e.g., object or another type)
 }
 
-
 export interface NarrationDTO {
   code: number;
   narration: string;
@@ -159,11 +158,6 @@ export interface ChargeManagementDTO {
   receiptChargeAmount: number;
   suspenseRct: string;
 }
-// export interface ExistingChargesResponseDTO {
-//   msg: string;
-//   success: boolean;
-//   data: any[]; // Replace `any[]` with the specific type if known
-// }
 export interface ExistingChargesResponseDTO {
   id: number;
   receiptChargeId: number;
@@ -286,9 +280,9 @@ export interface ReceiptParticularDetail {
 }
 
 export interface GroupBusinessAccount {
-  accountNumber: string; // Primary key for this data type
+  accountNumber: string; 
   accountName: string;
-  businessUnit: string; // Assuming you need to connect to a business unit
+  businessUnit: string;
   balance: number;
   currency: string;
 }
@@ -298,7 +292,6 @@ export interface GlAccount {
   description: string;
   balance: number;
   currency: string;
-  // Add any other relevant GL Account properties
 }
 
 export interface Client {
@@ -318,7 +311,6 @@ export interface Transaction {
   allocatedAmount?: string;
   narration?: string;
   policyNumber?: number;
-
   date?: Date;
 }
 
@@ -360,7 +352,6 @@ export interface ReceiptSaveDTO {
   drawerBank: string;
   userCode: number;
   narration: string;
- // insurerAccount: string;
   receivedFrom: string;
   grossOrNet: string;
   sysShtDesc: string;
@@ -429,9 +420,9 @@ export interface ReceiptParticularDTO {
 export interface AllocationDTO {
   receiptParticulars: ReceiptParticularDTO[];
 }
-export interface ReceiptParticularsDTO{
+export interface ReceiptParticularsDTO {
   receiptNumber: number;
-  amount:number;
+  amount: number;
   capturedBy: number;
   systemCode: number;
   branchCode: number;
@@ -613,7 +604,6 @@ export interface Allocation {
   referenceNo: string;
   amount: number;
   policyNumber: string;
- 
 }
 
 export interface YearDTO {
@@ -655,16 +645,58 @@ export interface acknowledgementSlipDTO {
   userCode: number;
 }
 
-
-
 export interface SharePreviewDataDTO {
   shareType: string;
   recipientEmail: string | null;
   recipientPhone: string | null;
   clientName: string;
 }
- 
+export  interface PageableQuery{
+   page: number;
+  size: number;
+  sort: string;
+}
+export interface PageableResponse<T> {
+  content: T[];
+  pageable: any; // Define further if needed
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  // Add other properties from the response if you need them
+}
+export interface ReceiptsToBankRequest {
+  dateFrom: string;
+  dateTo: string;
+  orgCode: number;
+  payMode: string;
+  includeBatched?: string;
+  bctCode?: number;
+  brhCode?: number;
+  pageable: PageableQuery;
+}
 
 
- 
- 
+export interface ReceiptDTO {
+  receiptNo: number;
+  receiptDate: string;
+  receiptCaptureDate: string;
+  receiptCapturedByCode: number;
+  receiptAmount: number;
+  paymentMode: string;
+  description: string;
+  printed: string;
+  accountCode: number;
+  branchCode: number;
+  status: string;
+  paidBy: string;
+  receivedFrom: string;
+  capturedByUser: string;
+  userEmail: string;
+  allocationStatus: string;
+}
+export interface ApiResponse<T> {
+  msg: string;
+  success: boolean;
+  data: T;
+}
