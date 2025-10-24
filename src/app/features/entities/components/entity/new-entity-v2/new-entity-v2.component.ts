@@ -180,9 +180,17 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   glAccounts: GenericResponse<Pagination<GLAccountDTO>> = <GenericResponse<Pagination<GLAccountDTO>>>{};
   clientBranchData: AccountsEnum[];
   tableSelectFieldId: string = '';
+  filterObject: {
+    accountName: string;
+    accountNumber: string;
+  } = {
+    accountName: '',
+    accountNumber: '',
+  };
+  filteredGlAccounts: GLAccountDTO[] = [];
   columns: any = [
-    { field: 'account_number', header: 'ID', visible: true },
-    { field: 'account_name', header: 'Name', visible: true },
+    { field: 'accountNumber', header: 'ID', visible: true },
+    { field: 'accountName', header: 'Name', visible: true },
   ];
 
   constructor(
@@ -1063,7 +1071,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       commissionEffectiveDate: payloadObject.commissionStatusEffectiveDate,
       commissionStatusDate: payloadObject.commissionStatusDate,
       creditLimit: payloadObject.creditLimit,
-      glAccountNumber: this.selectedTableRecord?.account_number,
+      glAccountNumber: this.selectedTableRecord?.accountNumber,
       paymentFrequency: payloadObject.freqOfPayment?.id,
       paymentTerms: payloadObject.paymentTerms,
       taxAuthorityCode: payloadObject.taxAuthorityCode,
@@ -3064,7 +3072,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   onTableDetailsSelect(event): void {
     this.globalMessagingService.displayInfoMessage(
       'GL selected',
-      event.data.account_name
+      event.data.accountName
     );
     log.info("event", event.data, this.selectedTableRecord);
   }
@@ -3079,6 +3087,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       .subscribe({
         next: (response: GenericResponse<Pagination<GLAccountDTO>>) => {
           this.glAccounts = response;
+          this.filteredGlAccounts = [...response.data.content];
           log.info(`Fetched gl accounts>>>`, response);
           this.cdr.detectChanges();
         },
@@ -3086,5 +3095,29 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           this.globalMessagingService.displayErrorMessage('Error', err.message);
         }
       });
+  }
+
+  filter() {
+    if (!this.glAccounts?.data?.content) return;
+
+    this.filteredGlAccounts = this.glAccounts.data.content.filter(account => {
+      const matchesAccountNumber = !this.filterObject.accountNumber ||
+        account.accountNumber?.toLowerCase().includes(this.filterObject.accountNumber.toLowerCase());
+
+      const matchesAccountName = !this.filterObject.accountName ||
+        account.accountName?.toLowerCase().includes(this.filterObject.accountName.toLowerCase());
+
+      return matchesAccountNumber && matchesAccountName;
+    });
+  }
+
+  inputAccountNumber(event: any) {
+    this.filterObject.accountNumber = event?.target?.value || '';
+    this.filter();
+  }
+
+  inputAccountName(event: any) {
+    this.filterObject.accountName = event?.target?.value || '';
+    this.filter();
   }
 }
