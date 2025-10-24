@@ -1,3 +1,5 @@
+<!--{{ clientDetails.address | json }}-->
+
 
 <ng-container *ngIf="group.subGroup?.length === 0">
   <div class="row">
@@ -23,12 +25,13 @@
     <ng-container *ngIf="subGroup.presentationType===PRESENTATION_TYPE.fields">
       <div class="row my-3">
         <div class="col-sm-8">
-          <span class="text-primary lead">
+          <span class="text-primary fw-bold">
             {{ subGroup.label[language] | titlecase }}
           </span>
           <span
             id="edit-tab-btn"
             class="m-2 text-primary"
+            (click)="openEditAddressDialog(subGroup, Save_Action.EDIT_ADDRESS_DETAILS)"
           >
             <i class="fa fa-pencil"></i>
           </span>
@@ -36,7 +39,7 @@
       </div>
       <div class="row mb-3">
         <ng-container *ngFor="let field of subGroup.fields">
-          <div class="col-sm-4">
+          <div class="col-sm-4" *ngIf="!(field.fieldId.toLowerCase().includes('id'))">
             <div class="row my-2">
               <div class="col-sm-4 text-dark">
                 {{ field.label[language] }}
@@ -56,6 +59,7 @@
         [table]="table"
         [language]="language"
         (deleteBtnClicked)="handleBranchDelete($event)"
+        (editBtnClicked)="prepareEditBranchForm($event, Save_Action.EDIT_BRANCH)"
       >
       </app-overview-table>
     </ng-container>
@@ -188,16 +192,17 @@
         <div class="modal-body">
           <ng-container
             *ngIf="
-              editForm && countries?.length > 0;
+              editForm;
               else loadingForm
             "
           > <!--todo: fix condition-->
             <form [formGroup]="editForm">
               <div class="row g-3">
-                <ng-container *ngFor="let field of formFieldsConfig.fields">
-                  <div class="col-md-6">
+                <ng-container *ngFor="let field of formFields">
+                  <div class="col-md-6" *ngIf="!(field.fieldId.toLowerCase().includes('id'))">
                     <label [for]="field.fieldId" class="form-label">
                       {{ field.label[language] | titlecase }}
+                      {{ field.fieldId }}
                     </label>
                     <!-- Text input -->
                     <input
@@ -222,6 +227,27 @@
                       </option>
                     </select>
 
+                    <!--tel number-->
+                    <span *ngIf="checkTelNumber(field.fieldId)">
+                    <ngx-intl-tel-input
+                      [cssClass]="'form-control mb-1'"
+                      [id]="field.fieldId"
+                      [preferredCountries]=""
+                      [enableAutoCountrySelect]="true"
+                      [enablePlaceholder]="true"
+                      [searchCountryFlag]="true"
+                      [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                      [selectFirstCountry]="false"
+                      [selectedCountryISO]="CountryISO.Nigeria"
+                      [phoneValidation]="true"
+                      [separateDialCode]="true"
+                      [numberFormat]="PhoneNumberFormat.National"
+                      [formControlName]="field.fieldId"
+                      [style]="{ width: '100%' }"
+                    >
+                    </ngx-intl-tel-input>
+                  </span>
+
                   </div>
                 </ng-container>
               </div>
@@ -235,14 +261,14 @@
             </div>
           </ng-template>
         </div>
-        <!--<div class="modal-footer border-0">
+        <div class="modal-footer border-0">
           <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-            {{ formFieldsConfig.buttons.cancel.label[language] | titlecase }}
+<!--            {{ formFieldsConfig.buttons.cancel.label[language] | titlecase }}-->
           </button>
-          <button type="button" class="btn btn-primary" (click)="editAddressDetails()">
-            {{ formFieldsConfig.buttons.save.label[language] | titlecase }}
+          <button type="button" class="btn btn-primary" (click)="saveDetails()">
+            {{ 'save' | titlecase }}
           </button>
-        </div>-->
+        </div>
       </div>
     </div>
   </div>
