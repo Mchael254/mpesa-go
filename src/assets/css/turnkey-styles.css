@@ -832,3 +832,13 @@ ngx-intl-tel-input.is-invalid input {
     max-width: 95% !important;
   }
 }
+
+.edit-tab-btn {
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50px;
+}
+.edit-tab-btn:hover {
+  background: #F0F0F0;
+  font-size: 1.1rem;
+}
