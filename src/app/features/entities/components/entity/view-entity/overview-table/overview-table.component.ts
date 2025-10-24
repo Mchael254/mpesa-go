@@ -16,6 +16,7 @@ export class OverviewTableComponent {
   @Input() language: string;
   @Output() rowClicked = new EventEmitter<any>();
   @Output() deleteBtnClicked = new EventEmitter<any>();
+  @Output() editBtnClicked = new EventEmitter<any>();
 
   columnDialogVisible: boolean = false;
   selectedRow: any;
@@ -35,6 +36,10 @@ export class OverviewTableComponent {
     this.deleteBtnClicked.emit(this.selectedRow);
     this.visible = false;
     this.cdr.detectChanges();
+  }
+
+  onEditButtonClick(row) {
+    this.editBtnClicked.emit({row, subGroup: this.subGroup});
   }
 
   triggerDeleteConfirmation(rowData: any) {
