@@ -528,7 +528,8 @@
     "editTableColumns": "Hariri safu za jedwali",
     "columnLabel": "Lebo ya safu",
     "columns": "Safu",
-    "noRecordsFound": "Hakuna rekodi zilizopatikana"
+    "noRecordsFound": "Hakuna rekodi zilizopatikana",
+    "sendToClient": "Tuma kwa mteja"
   },
   "entities": {
     "account_number": "Nambari ya Akaunti",

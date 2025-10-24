@@ -527,7 +527,8 @@
     "editTableColumns": "编辑表格列",
     "columnLabel": "列标签",
     "columns": "列",
-    "noRecordsFound": "未找到记录"
+    "noRecordsFound": "未找到记录",
+    "sendToClient": "发送给客户"
   },
   "entities": {
     "account_number": "帐号",
