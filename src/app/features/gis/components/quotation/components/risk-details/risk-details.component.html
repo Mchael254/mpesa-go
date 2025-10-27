@@ -2566,19 +2566,19 @@
                                 <ng-container *ngSwitchCase="'actions'">
                                     <div class="d-flex flex-nowrap" style="gap: 1px;">
                                         <!-- Edit -->
-                                            <!-- <span class="p-button-label fw-bold text-primary"
+                                        <!-- <span class="p-button-label fw-bold text-primary"
                                             style="cursor: pointer; white-space: nowrap;"
                                             (click)="startEditing(commission)">
                                             {{ 'gis.quotation.edit' | translate }}
                                         </span> -->
 
-                                            <!-- Delete -->
-                                            <span class="p-button-label fw-bold text-primary"
-                                                style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
-                                                data-bs-target="#deleteCommission"
-                                                (click)="prepareDeleteCommission(commission)">
-                                                {{ 'gis.quotation.delete' | translate }}
-                                            </span>
+                                        <!-- Delete -->
+                                        <span class="p-button-label fw-bold text-primary"
+                                            style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
+                                            data-bs-target="#deleteCommission"
+                                            (click)="prepareDeleteCommission(commission)">
+                                            {{ 'gis.quotation.delete' | translate }}
+                                        </span>
                                     </div>
                                 </ng-container>
 
@@ -3282,23 +3282,20 @@
 
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
-                                    <div class="d-flex gap-2 flex-nowrap">
-                                        <!-- Edit -->
-                                        <span class="p-button-label fw-bold text-primary"
-                                            style="cursor: pointer; display: inline-block; width: 30px; white-space: nowrap;"
+                                    <div class="d-flex flex-nowrap">
+                                        <span class="p-button-label fw-bold text-primary me-1"
+                                            style="cursor: pointer; display: inline-block; white-space: nowrap;"
                                             data-bs-toggle="modal" data-bs-target="#editExcess"
                                             (click)="populateEditExcessModal(excess)">
                                             {{ 'gis.quotation.edit' | translate }}
                                         </span>
-
-                                        <!-- Delete -->
                                         <span class="p-button-label fw-bold text-primary"
                                             style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
                                             data-bs-target="#deleteExcess" (click)="prepareDeleteExcess(excess)">
                                             {{ 'gis.quotation.delete' | translate }}
                                         </span>
-
                                     </div>
+
                                 </ng-container>
 
                                 <!-- Default columns added dynamically) -->
