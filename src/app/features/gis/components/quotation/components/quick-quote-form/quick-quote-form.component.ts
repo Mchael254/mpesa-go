@@ -826,26 +826,64 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   // Remove product
   deleteProduct(product: AbstractControl, productIndex: number) {
-    log.debug("Selected product>>>", product.value, this.quickQuoteForm.get('product'))
-    const deletedCode = product.value.code;
-    log.debug("PRODUCT to be deleted", deletedCode)
+    const quotationCodeStr = sessionStorage.getItem('quotationCode');
+    const quotationCode = quotationCodeStr ? Number(quotationCodeStr) : 0;
 
-    log.debug("PRODUCT INDEX", this.previousSelected)
-    this.previousSelected = this.previousSelected.filter(value => value.code !== product.value.code)
-    this.removeProductCoverTypes(product.value.code)
-    // Remove from selectedProducts
-    this.selectedProducts = this.selectedProducts.filter(p => p.code !== deletedCode);
-    this.selectedProductCovers = this.selectedProductCovers.filter(p => p.code !== deletedCode);
-    this.quickQuoteForm.patchValue({
-      product: this.previousSelected
-    })
-    log.debug("Current computation payload >>>", this.premiumComputationResponse)
-    this.productsFormArray.removeAt(productIndex);
-    if (this.premiumComputationResponse.productLevelPremiums.length > 0) {
-      this.canMoveToNextScreen = true
-    } else {
-      this.premiumComputationResponse = null
+    const quickQuotePayloadStr = sessionStorage.getItem('quickQuotePayload');
+    const quickQuotePayload = quickQuotePayloadStr ? JSON.parse(quickQuotePayloadStr) : null;
+
+    if (!quickQuotePayload || !quickQuotePayload.products || quickQuotePayload.products.length === 0) {
+      log.debug('No products found in session quickQuotePayload');
+      return;
     }
+
+    const deletedCode = product.value.code;
+    log.debug("Selected product>>>", product.value, this.quickQuoteForm.get('product'));
+    log.debug("PRODUCT to be deleted", deletedCode);
+
+    // find the product to delete from the stored payload
+    const targetProduct = quickQuotePayload.products.find((p: any) => p.code === deletedCode);
+
+    if (!targetProduct) {
+      log.debug("Product not found in quickQuotePayload:", deletedCode);
+      return;
+    }
+
+    const quotationProductCode = targetProduct.code;
+
+    // === Call the backend delete service ===
+    this.quotationService.deleteQuotationProduct(quotationCode, quotationProductCode).subscribe({
+      next: (response: any) => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Product deleted successfully');
+
+        // ✅ Update UI state and form data locally after successful deletion
+        this.previousSelected = this.previousSelected.filter(value => value.code !== deletedCode);
+        this.removeProductCoverTypes(product.value.code);
+
+        this.selectedProducts = this.selectedProducts.filter(p => p.code !== deletedCode);
+        this.selectedProductCovers = this.selectedProductCovers.filter(p => p.code !== deletedCode);
+
+        this.quickQuoteForm.patchValue({
+          product: this.previousSelected
+        });
+
+        this.productsFormArray.removeAt(productIndex);
+
+        if (this.premiumComputationResponse?.productLevelPremiums?.length > 0) {
+          this.canMoveToNextScreen = true;
+        } else {
+          this.premiumComputationResponse = null;
+        }
+
+        // Optional: remove from session payload
+        quickQuotePayload.products = quickQuotePayload.products.filter((p: any) => p.code !== deletedCode);
+        sessionStorage.setItem('quickQuotePayload', JSON.stringify(quickQuotePayload));
+      },
+      error: (error: any) => {
+        log.error("Failed to delete quotation product:", error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Unable to delete product. Please try again later');
+      }
+    });
   }
 
   removeProductCoverTypes(code: number) {
