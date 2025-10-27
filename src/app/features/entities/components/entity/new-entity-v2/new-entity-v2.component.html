@@ -4,13 +4,13 @@
     </app-dynamic-breadcrumb>
   </div>
   <div class="card mb-3">
-    <div class="m-3">
+    <div class="my-4">
       <div id="upload-section">
         <form [formGroup]="uploadForm">
           <div class="row">
-            <h6 class="mb-4 ms-md-5 text-primary">{{ subModules[0]?.label[language] | titlecase }}</h6>
+            <h5 class="mb-4 ms-md-5 text-primary">{{ subModules[0]?.label[language] | titlecase }}</h5>
             <ng-container *ngFor="let field of uploadGroupSections?.selects;">
-              <div class="col-sm-12 col-md-6 col-lg-4">
+              <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
                 <div class="mb-3 pe-md-5 ms-md-5 me-md-5">
                   <ng-container *ngIf="field.type === 'select'">
                     <ng-container *ngIf="field.fieldId">
@@ -92,11 +92,11 @@
             </ng-container>
           </div>
 
-          <hr *ngIf="uploadGroupSections?.buttons?.length > 0" class="my-3 mx-3">
+          <hr *ngIf="uploadGroupSections?.docs?.length > 0" class="my-3 mx-5">
 
           <!--client documents-->
           <div class="row" *ngIf="uploadGroupSections?.docs?.length > 0">
-            <h6 class="mb-4 ms-md-5 mt-3">Document upload</h6>
+            <h6 class="mb-4 ms-md-5 mt-3 text-primary">{{ uploadGroupSections?.docField[0]?.label[language] | titlecase }}</h6>
 
             <ng-container *ngFor="let doc of uploadGroupSections?.docs">
               <div class="col-sm-6">
@@ -528,11 +528,10 @@
     </ng-container>
     <ng-container *ngFor="let group of formGroupSections" [formGroupName]="group.groupId">
       <div class="card mb-3">
-        <div class="m-3 text-muted">
+        <div class="my-4 text-muted">
           <div class="row">
             <div class="col-sm-10">
               <h5 class="mb-4 ms-md-5 text-primary">
-                {{ group.order }}.
                 {{ group.label?.[language] | titlecase }}
               </h5>
             </div>
@@ -549,17 +548,17 @@
             <ng-container *ngIf="group.subGroup?.length > 0; else noSubGroup">
               <ng-container *ngFor="let subGroup of group.subGroup">
                 <!-- Subgroup header (if any) -->
-                <ng-container *ngIf="subGroup.label && (subGroup.presentationType || group.presentationType) === PresentationType.fields && group.presentationType !== 'privacy_policy'">
+                <ng-container *ngIf="subGroup.label && (subGroup.presentationType || group.presentationType) === PresentationType.fields && group.presentationType !== privacyPolicyPresentationType">
                   <h5 class="text-dark mb-3 pe-md-5 me-md-4 ms-md-5">
                     {{ subGroup.label?.[language] | titlecase }}
                   </h5>
                 </ng-container>
 
                 <!-- Inline fields for subGroup (presentationType precedence: subGroup -> group) -->
-                <div *ngIf="(subGroup.presentationType || group.presentationType) === PresentationType.fields && group.presentationType !== 'privacy_policy'">
+                <div *ngIf="(subGroup.presentationType || group.presentationType) === PresentationType.fields && group.presentationType !== privacyPolicyPresentationType">
                   <div class="row">
                     <ng-container *ngFor="let field of (subGroup.fields || [])">
-                      <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                      <div class="col-sm-12 col-md-6 col-lg-4 mb-3" *ngIf="field.isVisible !== false">
                         <div class="mb-3 pe-md-5 me-md-4 ms-md-5">
                           <ng-container
                             *ngTemplateOutlet="renderFields; context: {field: field, groupId: group.groupId, groupForm: entityForm.get(group.groupId)}">
@@ -583,7 +582,7 @@
                   ></app-dynamic-setup-table>
                 </div>
 
-                <div *ngIf="group.presentationType === 'privacy_policy'">
+                <div *ngIf="group.presentationType === privacyPolicyPresentationType">
                   <app-privacy-policy
                     [otpFormFields]="subGroup.fields"
                     [verifyButtonText]="subGroup?.addButtonTextLabel?.[language]"
@@ -595,10 +594,10 @@
 
             <!-- No subGroups: fallback to group.fields or group-level table -->
             <ng-template #noSubGroup>
-              <div *ngIf="(group.presentationType || 'fields') === 'fields'">
+              <div *ngIf="(group.presentationType || 'fields') === PresentationType.fields">
                 <div class="row">
                   <ng-container *ngFor="let field of (group.fields || [])">
-                    <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                    <div class="col-sm-12 col-md-6 col-lg-4 mb-3" *ngIf="field.isVisible !== false">
                       <div class="mb-3 pe-md-5 me-md-4 ms-md-5">
                         <ng-container
                           *ngTemplateOutlet="renderFields; context: {field: field, groupId: group.groupId, groupForm: entityForm.get(group.groupId)}">
@@ -636,11 +635,11 @@
       <div class="col-sm-8"></div>
       <div class="col-sm-4 my-4 text-end">
         <button class="btn btn-outline-primary btn-sm me-2">
-          Send to client
+          {{ 'crm.sendToClient' | translate }}
         </button>
 
-        <button class="btn btn-primary btn-sm" (click)="saveDetails()">
-          Save details
+        <button class="btn btn-primary btn-sm" id="saveDetailsBtn" (click)="saveDetails()">
+          {{ 'crm.saveDetails' | translate }}
         </button>
       </div>
     </div>
@@ -650,7 +649,7 @@
 </div>
 <ng-template #renderFields let-field="field" let-groupId="groupId" let-groupForm="groupForm">
   <div  [formGroup]="groupForm" *ngIf="groupForm">
-    <ng-container *ngIf="field.type === 'text' || field.type === 'email'">
+    <ng-container *ngIf="field.type === FieldType.text || field.type === FieldType.email">
       <label class="form-label" [for]="field.fieldId">
         {{ getDynamicLabel(field, language) | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
@@ -663,13 +662,13 @@
         [placeholder]="field.placeholder?.[language] || ''"
         [id]="field.fieldId"
         class="form-control"
-        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
+        [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"
 
       />
     </ng-container>
 
     <!--TEL-->
-    <ng-container *ngIf="field.type === 'tel'">
+    <ng-container *ngIf="field.type === FieldType.tel">
       <label class="form-label" [for]="field.fieldId">
         {{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
@@ -684,18 +683,18 @@
         [searchCountryFlag]="true"
         [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
         [selectFirstCountry]="false"
-        [selectedCountryISO]="CountryISO.Nigeria"
+        [selectedCountryISO]="countryISO"
         [phoneValidation]="true"
         [separateDialCode]="true"
         [numberFormat]="PhoneNumberFormat.National"
         [formControlName]="field.fieldId"
-        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
+        [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"
         [style]="{ width: '100%' }">
       </ngx-intl-tel-input>
     </ng-container>
 
     <!-- TEXTAREA -->
-    <ng-container *ngIf="field.type === 'textarea'">
+    <ng-container *ngIf="field.type === FieldType.textarea">
       <label class="form-label">
         {{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
@@ -703,13 +702,13 @@
       <textarea
         [formControlName]="field.fieldId"
         class="form-control"
-        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
+        [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"
         [placeholder]="field.placeholder?.[language] || ''">
       </textarea>
     </ng-container>
 
     <!-- DATE -->
-    <ng-container *ngIf="field.type === 'date'">
+    <ng-container *ngIf="field.type === FieldType.date">
       <label class="form-label">
         {{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
@@ -718,11 +717,11 @@
         type="date"
         [formControlName]="field.fieldId"
         class="form-control"
-        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"/>
+        [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"/>
     </ng-container>
 
     <!-- NUMBER -->
-    <ng-container *ngIf="field.type === 'number'">
+    <ng-container *ngIf="field.type === FieldType.number">
       <label class="form-label">
         {{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
@@ -731,18 +730,18 @@
         type="number"
         [formControlName]="field.fieldId"
         class="form-control"
-        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"/>
+        [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"/>
     </ng-container>
 
     <!-- SELECT -->
-    <ng-container *ngIf="field.type === 'select'">
+    <ng-container *ngIf="field.type === FieldType.select">
       <label class="form-label">
         {{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
       </label>
       <select
         class="form-select"
-        [class.is-invalid]="entityForm.get(field.fieldId)?.invalid && entityForm.get(field.fieldId)?.touched"
+        [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"
         [formControlName]="field.fieldId"
         (change)="processSelectOption($event, field.fieldId)"
         (click)="fetchSelectOptions(groupId, field.fieldId)"
@@ -755,7 +754,7 @@
     </ng-container>
 
     <!-- RADIO -->
-    <ng-container *ngIf="field.type === 'radio'">
+    <ng-container *ngIf="field.type === FieldType.radio">
       <label class="form-label">
         {{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
@@ -775,7 +774,7 @@
     </ng-container>
 
     <!-- CHECKBOX -->
-    <ng-container *ngIf="field.type === 'checkbox'">
+    <ng-container *ngIf="field.type === FieldType.checkbox">
       <label class="form-label">{{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
       </label>
@@ -791,6 +790,33 @@
       </div>
     </ng-container>
 
+    <ng-container *ngIf="field.type === FieldType.table_select">
+      <label class="form-label">{{ field.label?.[language] | titlecase }}
+        <span *ngIf="field.mandatory" class="text-danger">*</span>
+      </label>
+      <div class="input-group mb-3">
+        <input
+          type="text"
+          class="form-control"
+          [formControlName]="field.fieldId"
+          id="{{ field.fieldId }}"
+          value="{{ selectedTableRecord?.account_name }}"
+          [placeholder]="field.placeholder?.[language] || ''"
+          readonly
+        />
+        <button
+          class="btn btn-outline-primary"
+          type="button"
+          id="button-addon"
+          style="border-color: #dee2e6; border-left: none;"
+          (click)="openTableSelectModal(field.label?.[language])"
+          [disabled]="isPreviewMode || field.disabled"
+        >
+          <i class="fa-solid fa-angle-double-down"></i>
+        </button>
+      </div>
+    </ng-container>
+
     <!-- Validation: required -->
     <ng-container *ngIf="field.mandatory">
       <span class="text-danger" *ngIf="getValidationMessage(field, language)">
@@ -800,3 +826,73 @@
   </div>
 
 </ng-template>
+
+<!--Multi select modal-->
+<div
+  class="modal fade"
+  #tableSelectModal
+  id="tableSelectModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title text-primary" id="exampleModalLabel"> {{ tableSelectFieldId | titlecase }} </h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeTableSelectModal()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p-table
+          #dt2
+          [paginator]="true"
+          [rows]="pageSize || 10"
+          [totalRecords]="glAccounts?.data?.totalElements"
+          [value]="glAccounts?.data?.content"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+          responsiveLayout="stack"
+          scrollHeight="400px"
+          [scrollable]="true"
+          [resizableColumns]="true"
+          selectionMode="single"
+          [(selection)]="selectedTableRecord"
+          [globalFilterFields]="['label']"
+          (onRowSelect)="onTableDetailsSelect($event)"
+          (onLazyLoad)="lazyLoadGlAccount($event)"
+          [lazy]="true"
+        >
+
+          <ng-template pTemplate="header">
+            <tr>
+              <ng-container *ngFor="let col of columns">
+                <th *ngIf="col.visible"
+                    [pSortableColumn]="col.field">
+                  {{ col.header | titlecase }}
+                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                </th>
+              </ng-container>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-rowData>
+            <tr [pSelectableRow]="rowData">
+              <ng-container *ngFor="let col of columns">
+                <td>{{ rowData[col.field] }}</td>
+              </ng-container>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td [attr.colspan]="columns?.length + 1" class="text-center">
+                {{'crm.noRecordsFound' | translate}}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>

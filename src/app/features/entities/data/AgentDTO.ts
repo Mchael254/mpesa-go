@@ -186,7 +186,7 @@ export interface AgentV2DTO {
   wealthAmlDetails: WealthAmlDetailsDTO[],
   ownershipDetails?: OwnershipDTO[],
   referees: IntermediaryRefereeDTO[],
-  status?: StatusEnum,
+  status?: string,
   maritalStatus: string,
 }
 
@@ -268,14 +268,6 @@ export interface IntermediaryRefereeDTO {
   agencyCode?: number,
   preferredCommunicationChannel: number,
   status: string,
-}
-
-export enum StatusEnum {
-  Active = 'ACTIVE',
-  Draft = 'DRAFT',
-  Ready = 'READY',
-  Inactive = 'INACTIVE',
-  Suspended = 'SUSPENDED',
 }
 
 export interface WealthAmlDetailsDTO {
