@@ -467,10 +467,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }
     });
   }
-  disableClientAndAgent() {
-    this.quotationForm.get('client')?.disable();
-    this.quotationForm.get('agent')?.disable();
-     }
+ 
 
 
   setClientType(value: 'new' | 'existing') {
@@ -2760,7 +2757,7 @@ patchReusedQuotationData() {
       client: data.clientName || '',
       email: data.emailAddress || '',
       phone: data.phoneNumber || '',
-      source: data.source || '',
+      source: data.source.description || '',
       quotationType: data.quotationType || '',
       branch: data.branchCode || '',
       currency: data.currency || '',
