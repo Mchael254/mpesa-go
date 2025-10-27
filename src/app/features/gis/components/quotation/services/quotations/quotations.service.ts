@@ -310,7 +310,7 @@ export class QuotationsService {
   }
 
   getQuotationProductClauses(quotationProductCode: number) {
-    return this.api.GET( `v2/quotation-product-clauses?quotationProductCode=${quotationProductCode}`,
+    return this.api.GET(`v2/quotation-product-clauses?quotationProductCode=${quotationProductCode}`,
       API_CONFIG.GIS_QUOTATION_BASE_URL
     );
   }
@@ -1278,4 +1278,6 @@ reviseQuote(quotationCode: number, createNewQuotation: 'Y' | 'N' = 'N'): Observa
 
 
 }
+
+
 
