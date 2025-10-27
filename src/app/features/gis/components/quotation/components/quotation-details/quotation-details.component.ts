@@ -212,6 +212,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   quotationProducts: any;
   activeProductTab: any;
   productClauses: any;
+  isRevision: boolean = false;
+
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -293,12 +295,19 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       paymentFrequency: [this.paymentFrequencies[0].value, Validators.required],
       // marketer: ['']
     });
+
+    this.isRevision = sessionStorage.getItem('isRevision') === 'true';
+    
+
+    
     this.loadDetailedQuotationFields();
     this.minDate = new Date();
     // this.todaysDate = new Date();
     // this.coverToDate = new Date(this.todaysDate);
     //  this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);
     this.createQuotationProductForm();
+
+    
     if (this.productDetails?.length > 0) {
       this.setColumnsFromProductDetails(this.productDetails[0]);
       this.checkProducts()
@@ -323,8 +332,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.loadPersistedClauses();
     this.getUsers();
     this.patchReusedQuotationData();
+    this.patchRevisedQuotationData();
+
+    
 
   }
+
+  
 
   checkProducts() {
     if (this.productDetails && this.productDetails.length > 0) {
@@ -453,6 +467,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }
     });
   }
+  disableClientAndAgent() {
+    this.quotationForm.get('client')?.disable();
+    this.quotationForm.get('agent')?.disable();
+     }
 
 
   setClientType(value: 'new' | 'existing') {
@@ -2782,24 +2800,6 @@ patchReusedQuotationData() {
     
 
 
-    if (this.quotationForm) {
-      this.quotationForm.patchValue({
-        client: data.clientName || '',
-        email: data.emailAddress || '',
-        phone: data.phoneNumber || '',
-        source: data.source || '',
-        quotationType: data.quotationType || '',
-        branch: data.branchCode || '',
-        currency: data.currency || '',
-        introducer: data.introducerName || '',
-        paymentFrequency: data.frequencyOfPayment || '',
-        marketer: data.marketerName || '',
-        multiUserEntry: data.multiUser || 'N',
-        campaign: data.sourceCampaign || '',
-        internalComments: data.internalComments || '',
-        externalComments: data.externalComments || ''
-      });
-    }
 
     // ✅ Handle client type
     if (data.clientCode) {
@@ -2867,6 +2867,81 @@ if (this.productDetails?.length > 0) {
 
 
   }
+
+
+  patchRevisedQuotationData() {
+  const isRevision = sessionStorage.getItem('isRevision') === 'true';
+  if (!isRevision) return;
+
+  const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+  if (!revisedQuotation) return;
+
+  const data = JSON.parse(revisedQuotation);
+
+  // ✅ Patch agent + client back into form
+  this.quotationForm.patchValue({
+      client: data.clientName || '',
+      agent: data.agentName || '',
+      email: data.emailAddress || '',
+      phone: data.phoneNumber || '',
+      source: data.source.description || '',
+      quotationType: data.quotationType || '',
+      branch: data.branchCode || '',
+      currency: data.currency || '',
+      introducer: data.introducerName || '',
+      paymentFrequency: data.frequencyOfPayment || '',
+      marketer: data.marketerName || '',
+      multiUserEntry: data.multiUser || 'N',
+      campaign: data.sourceCampaign || '',
+      internalComments: data.internalComments || '',
+      externalComments: data.externalComments || ''
+  });
+
+  
+  this.quotationForm.get('client')?.disable({ emitEvent: false });
+  this.quotationForm.get('agent')?.disable({ emitEvent: false });
+
+  // ✅ Patch product details
+  if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
+    this.quotationProducts = data.quotationProducts;
+    this.products = data.quotationProducts;
+    this.productDetails = data.quotationProducts;
+
+    // map coverFrom / coverTo values
+    this.productDetails = this.productDetails.map((p: any) => ({
+      ...p,
+      coverFrom: p.wef,
+      coverTo: p.wet,
+    }));
+
+    // set product columns
+    if (this.productDetails?.length > 0) {
+      this.setColumnsFromProductDetails(this.productDetails[0]);
+    }
+
+    log.debug("productDetails for revise", this.productDetails)
+
+    // ✅ Patch clauses
+    const firstProduct = this.products[0];
+    log.debug("first product", firstProduct)
+    this.sessionClauses = firstProduct.productClauses || [];
+    if (this.sessionClauses.length > 0) {
+      this.sessionClauses = this.sessionClauses.map((c: any) => ({
+        ...c,
+        shortDescription: c.clauseShortDescription,
+        heading: c.clauseHeading,
+        wording: c.clause,
+        isEditable: c.clauseIsEditable
+      }));
+      this.setProductClauseColumns(this.sessionClauses[0]);
+    }
+  }
+
+  log.debug("session clauses for revise",this.sessionClauses)
+}
+
+
+  
 
 
 

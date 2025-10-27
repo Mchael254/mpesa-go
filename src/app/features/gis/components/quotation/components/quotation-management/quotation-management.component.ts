@@ -542,6 +542,8 @@ export class QuotationManagementComponent implements OnDestroy {
           log.debug("Response for revise", response)
 
           sessionStorage.setItem('revisedQuotation', JSON.stringify(response));
+          sessionStorage.setItem('isRevision', 'true');
+
           // Navigate to quotation summary
           this.router.navigate(['/home/gis/quotation/quotation-summary']);
 
