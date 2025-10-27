@@ -205,7 +205,7 @@ export interface shareReceiptDTO{
 }
 
 export interface GLAccountDTO {
-  account_number: string;
-  account_name: string;
+  accountNumber: string;
+  accountName: string;
 }
 
