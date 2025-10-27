@@ -570,9 +570,9 @@
                 </div>
 
                 <!-- Table columns for this subgroup -->
-                <div *ngIf="(subGroup.presentationType || group.presentationType) === PresentationType.fields_and_table_columns" class="mt-3">
+                <div *ngIf="(subGroup.presentationType || group.presentationType) === PresentationType.fields_and_table_columns">
                   <app-dynamic-setup-table
-                    [tableTitle]="subGroup.label?.[language]"
+                    [tableTitle]="group?.subGroup?.length == 1 ? '' : subGroup.label?.[language]"
                     [addButtonText]="subGroup.addButtonTextLabel?.[language]"
                     [formFields]="subGroup.fields"
                     [subGroupId]="subGroup.subGroupId"
@@ -800,7 +800,7 @@
           class="form-control"
           [formControlName]="field.fieldId"
           id="{{ field.fieldId }}"
-          value="{{ selectedTableRecord?.account_name }}"
+          value="{{ selectedTableRecord?.accountName }}"
           [placeholder]="field.placeholder?.[language] || ''"
           readonly
         />
@@ -850,8 +850,8 @@
           #dt2
           [paginator]="true"
           [rows]="pageSize || 10"
-          [totalRecords]="glAccounts?.data?.totalElements"
-          [value]="glAccounts?.data?.content"
+          [totalRecords]="filteredGlAccounts.length"
+          [value]="filteredGlAccounts"
           [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
           responsiveLayout="stack"
           scrollHeight="400px"
@@ -874,6 +874,24 @@
                   <p-sortIcon [field]="col.field"></p-sortIcon>
                 </th>
               </ng-container>
+            </tr>
+            <tr>
+              <th>
+                <input
+                  type="text"
+                  class="form-control w-75"
+                  (keyup.enter)="filter()"
+                  (input)="inputAccountNumber($event)"
+                />
+              </th>
+              <th>
+                <input
+                  type="text"
+                  class="form-control w-75"
+                  (keyup.enter)="filter()"
+                  (input)="inputAccountName($event)"
+                />
+              </th>
             </tr>
           </ng-template>
 
