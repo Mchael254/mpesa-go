@@ -168,6 +168,20 @@ export enum PresentationType {
   fields_and_table_columns = "fields_and_table_columns",
 }
 
+export enum SaveAction {
+  // SAVE_CONTACT_DETAILS = 'SAVE_CONTACT_DETAILS',
+  EDIT_CONTACT_DETAILS = 'EDIT_CONTACT_DETAILS',
+  SAVE_CONTACT_PERSON = 'SAVE_CONTACT_PERSON',
+  EDIT_CONTACT_PERSON = 'EDIT_CONTACT_PERSON',
+}
+
+export enum SaveAddressAction {
+  EDIT_ADDRESS_DETAILS = 'EDIT_ADDRESS_DETAILS',
+  EDIT_BRANCH = 'EDIT_BRANCH',
+  SAVE_BRANCH = 'SAVE_BRANCH',
+}
+
+
 export enum FieldType {
   text = "text",
   number = "number",

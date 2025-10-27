@@ -208,4 +208,3 @@ export interface GLAccountDTO {
   accountNumber: string;
   accountName: string;
 }
-

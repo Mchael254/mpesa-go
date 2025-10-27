@@ -4,7 +4,7 @@ import {ClientService} from "../../../../services/client/client.service";
 import {ClientTitleDTO} from "../../../../../../shared/data/common/client-title-dto";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
 import {FormBuilder, FormGroup } from "@angular/forms";
-import {forkJoin, Observable} from "rxjs";
+import {forkJoin} from "rxjs";
 import {BranchService} from "../../../../../../shared/services/setups/branch/branch.service";
 import {OrganizationBranchDto} from "../../../../../../shared/data/common/organization-branch-dto";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
@@ -13,7 +13,7 @@ import {AccountsEnum} from "../../../../data/enums/accounts-enum";
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto, FormSubGroupsDto, PresentationType
+  FormGroupsDto, FormSubGroupsDto, PresentationType, SaveAction
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {ClientDTO, ContactDetails, ContactPerson} from "../../../../data/ClientDTO";
 
@@ -50,7 +50,6 @@ export class ContactComponent implements OnInit {
   protected readonly CountryISO = CountryISO;
   protected readonly SearchCountryField = SearchCountryField;
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
-  protected readonly SaveAction = SaveAction;
 
   fields: ConfigFormFieldsDto[];
   formFields: ConfigFormFieldsDto[] = [];
@@ -62,6 +61,7 @@ export class ContactComponent implements OnInit {
   formHeadingLabel: FormSubGroupsDto | FormGroupsDto;
 
   PRESENTATION_TYPE = PresentationType;
+  Save_Action = SaveAction;
   saveAction: SaveAction;
 
   constructor(
@@ -280,7 +280,12 @@ export class ContactComponent implements OnInit {
 
     this.fetchSelectOptions();
     this.editForm = this.fb.group(group);
-    if (saveAction === SaveAction.EDIT_CONTACT_DETAILS || saveAction === SaveAction.EDIT_CONTACT_PERSON) this.patchFormValues(fields);
+
+    if (
+      saveAction === SaveAction.EDIT_CONTACT_DETAILS ||
+      saveAction === SaveAction.EDIT_CONTACT_PERSON
+    ) this.patchFormValues(fields);
+
   }
 
   patchFormValues(fields): void {
@@ -319,18 +324,25 @@ export class ContactComponent implements OnInit {
         this.editForm.reset();
         this.addEditContactPerson();
         break;
-
+      default:
+        // do something
     }
   }
 
   editContactDetails(): void {
     const formValues = this.editForm.getRawValue();
+    log.info('form values', formValues);
+
+    const emailAddress = formValues.overview_contact_details_email ? formValues.overview_contact_details_email : formValues.overview_email;
+    const smsNumber = formValues.overview_contact_person_mobile_no ? formValues.overview_contact_person_mobile_no: formValues.overview_sms_number
+    const phoneNumber = formValues.overview_tel_no ? formValues.overview_tel_no: formValues.overview_telephone_number
+
     const contactDetails = {
       ...this.contactDetails,
       titleId: formValues.overview_title,
-      smsNumber: formValues.overview_contact_person_mobile_no?.internationalNumber,
-      phoneNumber: formValues.overview_tel_no?.internationalNumber,
-      emailAddress: formValues.overview_contact_details_email,
+      smsNumber: (smsNumber?.internationalNumber)?.replace(/\s+/g, ''),
+      phoneNumber: (phoneNumber?.internationalNumber)?.replace(/\s+/g, ''),
+      emailAddress,
       contactChannel: formValues.overview_pref_contact_channel,
       websiteUrl: formValues.overview_website_url,
       socialMediaUrl: formValues.overview_social_media,
@@ -421,11 +433,4 @@ export class ContactComponent implements OnInit {
     return subStrs.some(subStr => mainStr.includes(subStr));
   }
 
-}
-
-enum SaveAction {
-  // SAVE_CONTACT_DETAILS = 'SAVE_CONTACT_DETAILS',
-  EDIT_CONTACT_DETAILS = 'EDIT_CONTACT_DETAILS',
-  SAVE_CONTACT_PERSON = 'SAVE_CONTACT_PERSON',
-  EDIT_CONTACT_PERSON = 'EDIT_CONTACT_PERSON',
 }

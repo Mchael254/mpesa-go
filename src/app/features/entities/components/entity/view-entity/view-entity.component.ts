@@ -33,7 +33,6 @@ import {
 import { BankService } from '../../../../../shared/services/setups/bank/bank.service';
 import { BankBranchDTO } from '../../../../../shared/data/common/bank-dto';
 import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
-import {HttpClient} from "@angular/common/http";
 import {PrimeIdentityComponent} from "./prime-identity/prime-identity.component";
 import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
 import {ContactComponent} from "./contact/contact.component";
@@ -47,7 +46,7 @@ import {
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto, FormSubGroupsDto, SubModulesDto
+  FormGroupsDto, FormSubGroupsDto, SaveAction, SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('ViewEntityComponent');
@@ -67,7 +66,7 @@ export class ViewEntityComponent implements OnInit {
   @ViewChild('financialRef') financialComponent!: FinancialComponent;
   @ViewChild('wealthAmlRef') wealthAmlComponent!: WealthAmlComponent;
 
-  entityTransactions: EntityTransactionsComponent;
+  // entityTransactions: EntityTransactionsComponent;
 
   public entityDetails: StaffDto | ClientDTO | ServiceProviderRes | AgentDTO;
 
@@ -82,7 +81,7 @@ export class ViewEntityComponent implements OnInit {
   page = 0;
   pageSize = 5;
   checked: boolean;
-  showRelatedAccountsTab: boolean = false;
+  // showRelatedAccountsTab: boolean = false;
 
   entitySummaryForm: FormGroup;
   selectRoleModalForm: FormGroup;
@@ -114,7 +113,7 @@ export class ViewEntityComponent implements OnInit {
   states: StateDto[] = [];
 
   wealthAmlDetails: any;
-  bankDetails: any;
+  // bankDetails: any;
   nokDetails: any[] = [];
   bankBranchDetails: BankBranchDTO;
 
@@ -129,11 +128,11 @@ export class ViewEntityComponent implements OnInit {
 
   language: string = 'en';
 
-  editPrimeDetailsFormConfig: any;
-  editContactFormConfig: any;
-  editAddressFormConfig: any;
-  editFinancialFormConfig: any;
-  editWealthAmlFormConfig: any;
+  // editPrimeDetailsFormConfig: any;
+  // editContactFormConfig: any;
+  // editAddressFormConfig: any;
+  // editFinancialFormConfig: any;
+  // editWealthAmlFormConfig: any;
 
   selectOptions: {
     idTypes: IdentityModeDTO[],
@@ -147,6 +146,10 @@ export class ViewEntityComponent implements OnInit {
   moduleId: string = 'account_management';
   subModules: SubModulesDto[];
 
+  Save_Action = SaveAction;
+  // saveAction: SaveAction;
+
+  // protected readonly SaveAction = SaveAction;
 
   constructor(
     private fb: FormBuilder,
@@ -160,7 +163,6 @@ export class ViewEntityComponent implements OnInit {
     private bankService: BankService,
     private globalMessagingService: GlobalMessagingService,
     private utilService: UtilService,
-    private http: HttpClient,
     private clientService: ClientService,
     private dynamicScreenSetupService: DynamicScreensSetupService,
   ) {
@@ -737,7 +739,7 @@ export class ViewEntityComponent implements OnInit {
         this.primeIdentityComponent.openEditPrimeIdentityDialog();
         break;
       case 'contact details':
-        this.contactComponent.openEditContactDialog();
+        this.contactComponent.openEditContactDialog(subgroup, SaveAction.EDIT_CONTACT_DETAILS);
         break;
       case 'address details':
         this.addressComponent.openEditAddressDialog();
