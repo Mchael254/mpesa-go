@@ -22,6 +22,8 @@ import {AccountsEnum} from "../../../features/entities/data/enums/accounts-enum"
 import {ConfigFormFieldsDto} from "../../data/common/dynamic-screens-dto";
 import {IdentityModeDTO} from "../../../features/entities/data/entityDto";
 import {EntityService} from "../../../features/entities/services/entity/entity.service";
+import {StatusService} from "../../services/system-definitions/status.service";
+import {StatusDTO} from "../../data/common/systemsDto";
 
 const log = new Logger("DynamicSetupTableComponent");
 @Component({
@@ -85,6 +87,7 @@ export class DynamicSetupTableComponent implements OnInit {
   selectedCity: StateDto;
   selectedTown: TownDto;
   selectedBank: BankDTO;
+  statusesData: StatusDTO[] = [];
 
   premiumFrequenciesData: AccountsEnum[] = [];
   employmentTypesData: AccountsEnum[] = [];
@@ -106,6 +109,7 @@ export class DynamicSetupTableComponent implements OnInit {
     private countryService: CountryService,
     private bankService: BankService,
     private entityService: EntityService,
+    private statusService: StatusService,
   ) {
     this.form = this.fb.group({});
     this.dynamicModalForm = this.fb.group({});
@@ -640,6 +644,9 @@ export class DynamicSetupTableComponent implements OnInit {
       case 'docIdType':
         this.fetchIdTypes(fieldIndex);
         break;
+      case 'refStatus':
+        this.fetchStatuses(fieldIndex);
+        break;
       default:
         log.info(`no fieldId found`)
     }
@@ -938,6 +945,22 @@ export class DynamicSetupTableComponent implements OnInit {
         log.error(`could not fetch: `, err);
       }
     });
+  }
+
+  fetchStatuses(fieldIndex: number) {
+    this.statusService.getStatus().subscribe({
+      next: (data: StatusDTO[]) => {
+        this.statusesData = data;
+        const statusesStringArr = data.map(d => this.utilService.normalizeOption(d));
+        this.formFields[fieldIndex].options = statusesStringArr
+        log.info(`statuses: `, statusesStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    })
   }
 }
 
