@@ -842,3 +842,10 @@ ngx-intl-tel-input.is-invalid input {
   background: #F0F0F0;
   font-size: 1.1rem;
 }
+
+.columnDialogBtn {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 0.5rem;
+  margin-right: 1rem;
+}

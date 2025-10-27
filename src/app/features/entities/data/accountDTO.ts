@@ -577,7 +577,7 @@ export interface Cr12Detail {
 export enum PartyType {
   staff = 'S',
   client = 'C',
-  agent = 'A',
+  intermediary = 'A',
   service_provider = 'SP',
   creditor = 'CRD',
   debtoris = 'DPRS',

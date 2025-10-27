@@ -199,4 +199,5 @@ export enum FieldType {
   tel = "tel",
   button = "button",
   table_select = "table_select",
+  multiple_document_uploads = "multiple_document_uploads",
 }
