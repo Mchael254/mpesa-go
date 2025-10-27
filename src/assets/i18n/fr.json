@@ -553,7 +553,8 @@
     "editTableColumns": "Modifier les colonnes du tableau",
     "columnLabel": "Étiquette de colonne",
     "columns": "Colonnes",
-    "noRecordsFound": "Aucun enregistrement trouvé"
+    "noRecordsFound": "Aucun enregistrement trouvé",
+    "sendToClient": "Envoyer au client"
   },
   "entities": {
     "account_number": "Numéro de compte",

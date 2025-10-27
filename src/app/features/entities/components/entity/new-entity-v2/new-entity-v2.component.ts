@@ -26,7 +26,7 @@ import {
   Branch,
   ContactDetails,
   Cr12Detail,
-  OwnerDetail,
+  OwnerDetail, PartyType,
   Payee,
   WealthAmlDTO
 } from "../../../data/accountDTO";
@@ -37,7 +37,7 @@ import {
 } from "../../../../../shared/services/setups/dynamic-screen-config/dynamic-screens-setup.service";
 import {
   ConfigFormFieldsDto,
-  DynamicScreenSetupDto,
+  DynamicScreenSetupDto, FieldType,
   FormGroupsDto, PresentationType, SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
 import {IntermediaryService} from "../../../services/intermediary/intermediary.service";
@@ -52,6 +52,12 @@ import {
   PaymentDetailsDTO, WealthAmlDetailsDTO
 } from "../../../data/AgentDTO";
 import {AuthService} from "../../../../../shared/services/auth.service";
+import {Pagination} from "../../../../../shared/data/common/pagination";
+import {LazyLoadEvent} from "primeng/api";
+import {TableLazyLoadEvent} from "primeng/table";
+import {GenericResponse} from "../../../../fms/data/receipting-dto";
+import {GLAccountDTO} from "../../../../fms/data/receipt-management-dto";
+import {ReceiptManagementService} from "../../../../fms/services/receipt-management.service";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -84,7 +90,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   uploadForm!: FormGroup;
   language: string = 'en';
   category: string = '';
-  role: string = '';
+  role: PartyTypeDto;
   idType: string = 'NATIONAL_ID'
   validationObject = {} // todo: add type to this
 
@@ -166,6 +172,18 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   assignee: any;
   entityName: string;
   entityCode: number;
+  privacyPolicyPresentationType: string = 'privacy_policy';
+  defaultCountryISO = CountryISO.Kenya;
+  protected readonly FieldType = FieldType;
+  pageSize: number;
+  selectedTableRecord: any;
+  glAccounts: GenericResponse<Pagination<GLAccountDTO>> = <GenericResponse<Pagination<GLAccountDTO>>>{};
+  clientBranchData: AccountsEnum[];
+  tableSelectFieldId: string = '';
+  columns: any = [
+    { field: 'account_number', header: 'ID', visible: true },
+    { field: 'account_name', header: 'Name', visible: true },
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -186,6 +204,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     private intermediaryService: IntermediaryService,
     private accountService: AccountService,
     private authService: AuthService,
+    private receiptManagementService: ReceiptManagementService,
+    private clientsService: ClientService,
   ) {
 
     this.uploadForm = this.fb.group({
@@ -298,7 +318,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           this.addUploadFormFields();
 
           this.uploadForm.controls['role'].setValue(
-            this.role
+            this.role?.partyTypeName.toLowerCase()
           );
           this.uploadForm.controls['category'].setValue(
             this.category
@@ -383,14 +403,15 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     this.uploadGroupSections = {
       selects: [],
       docs: [],
-      photo: []
+      photo: [],
+      docField: []
     }
 
     visibleFormFields.forEach((field: ConfigFormFieldsDto) => {
       if (field.type === 'select') {
         this.uploadGroupSections.selects.push(field);
-      } else if (field.type === 'button') {
-       this.uploadGroupSections.docs.push(field);
+      } else if (field.type === 'multiple_document_uploads') {
+       this.uploadGroupSections.docField.push(field);
       } else if (field.type === 'file') {
         this.uploadGroupSections.photo.push(field);
       }
@@ -573,7 +594,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       if (group.groupId?.includes('privacy_policy')) {
         return {
           ...group,
-          presentationType: 'privacy_policy'
+          presentationType: this.privacyPolicyPresentationType
         };
       }
       return group;
@@ -596,14 +617,13 @@ export class NewEntityV2Component implements OnInit, OnChanges {
             // add subGroup fields as controls directly under groupForm
             (subGroup.fields || []).forEach((field: any) => {
               if (!groupForm.contains(field.fieldId)) {
-                // const control = field.mandatory ? this.fb.control('', Validators.required) : this.fb.control('');
                 const control = field.mandatory
                   ? this.fb.control({value: '', disabled: field.disabled || false}, Validators.required)
                   : this.fb.control({value: '', disabled: field.disabled || false});
                 groupForm.addControl(field.fieldId, control);
 
-                // Apply dynamic validators if field has conditions
-                if (field.conditions) {
+                // Apply dynamic validators for fields with conditions
+                if (field.conditions && field.conditions.length > 0) {
                   const controllingFieldId = field.conditions[0].field;
                   const controllingControl = groupForm.get(controllingFieldId);
 
@@ -611,11 +631,11 @@ export class NewEntityV2Component implements OnInit, OnChanges {
                     controllingControl.valueChanges.subscribe(() => {
                       this.applyDynamicValidators(field, groupForm);
                     });
-
-                    // also apply once initially
-                    this.applyDynamicValidators(field, groupForm);
                   }
                 }
+
+                // Always apply validators initially (whether or not field has conditions)
+                this.applyDynamicValidators(field, groupForm);
               }
             });
           } else if (pType === PresentationType.fields_and_table_columns) {
@@ -631,14 +651,13 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         if (gType === PresentationType.fields) {
           (group.fields || []).forEach((field: any) => {
             if (!groupForm.contains(field.fieldId)) {
-              // const control = field.mandatory ? this.fb.control('', Validators.required) : this.fb.control('');
               const control = field.mandatory
                 ? this.fb.control({value: '', disabled: field.disabled || false}, Validators.required)
                 : this.fb.control({value: '', disabled: field.disabled || false});
               groupForm.addControl(field.fieldId, control);
 
-              // Apply dynamic validators if field has conditions
-              if (field.conditions) {
+              // Apply dynamic validators for fields with conditions
+              if (field.conditions && field.conditions.length > 0) {
                 const controllingFieldId = field.conditions[0].field;
                 const controllingControl = groupForm.get(controllingFieldId);
 
@@ -646,24 +665,18 @@ export class NewEntityV2Component implements OnInit, OnChanges {
                   controllingControl.valueChanges.subscribe(() => {
                     this.applyDynamicValidators(field, groupForm);
                   });
-
-                  // also apply once initially
-                  this.applyDynamicValidators(field, groupForm);
                 }
               }
+
+              // Always apply validators initially (whether or not field has conditions)
+              this.applyDynamicValidators(field, groupForm);
             }
           });
         } else if (gType === PresentationType.fields_and_table_columns) {
-          // If you want a placeholder for group-level table binding, you can create one,
-          // but most table components manage their own internal form state.
-          // We'll still create a safe placeholder so templates/components that expect a nested
-          // group won't crash (non-destructive):
+          // Create a safe placeholder so templates/components that expect a nested group
           const placeholderName = `${group.groupId}_table`;
           if (!groupForm.contains(placeholderName)) {
             groupForm.addControl(placeholderName, this.fb.group({}));
-
-            // attach dynamic label/validation handling
-            // this.applyDynamicConditions(field, groupForm);
           }
         }
       }
@@ -752,12 +765,12 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     log.info(`entity form >>>`, this.getInvalidControls(this.entityForm))
 
     if (this.entityForm.valid) {
-      switch (this.role) {
-        case 'client':
+      switch (this.role?.partyTypeShtDesc) {
+        case PartyType.client:
           this.saveClient(formValues, upperDetails);
           break;
 
-        case 'agent':
+        case PartyType.intermediary:
           this.saveAgentDetails(formValues, upperDetails);
           break;
 
@@ -822,16 +835,16 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     }
     log.info(`payloadObject >>>`, payloadObject, formValues);
     const address = {
-      boxNumber: "10300",
+      boxNumber: null,
       countryId: this.selectedAddressCountry?.id,
       houseNumber: payloadObject.houseNo,
       physicalAddress: payloadObject.physicalAddress,
-      postalCode: 22001 /*parseInt(payloadObject.postalCode)*/,
+      postalCode: payloadObject.postalCode ? payloadObject.postalCode : null,
       road: payloadObject.road,
       townId: this.selectedTown?.id,
       stateId: this.selectedState?.id,
       utilityAddressProof: null,
-      isUtilityAddress: "N"
+      isUtilityAddress: null
     }
 
     const contactDetails = {
@@ -848,87 +861,96 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       accountNumber: payloadObject.accountNumber,
       bankBranchId: this.selectedBankBranch?.id,
       currencyId: this.selectedCurrency?.id,
-      preferedChannel: payloadObject.paymentMethod,
-      mpayno: payloadObject.cnt_individual_financial_details_mobile_number,
+      preferedChannel: payloadObject.paymentMethod?.label,
+      mpayno: payloadObject.cnt_individual_financial_details_mobile_number?.internationalNumber,
       iban: payloadObject.intlBankAccountNumber,
-      swiftCode: payloadObject.swiftCode
+      swiftCode: payloadObject.swiftCode,
+      effectiveFromDate: payloadObject.cnt_individual_financial_details_wef,
+      effectiveToDate: payloadObject.cnt_individual_financial_details_wet,
     }
 
-    /*Note:
-    wealthAmlDetails, branches, contactPersons, payee, ownershipDetails should be arrays
-    I have just mapped the correct field ids*/
-    const branches = {
-      code: payloadObject.id,
-      branchName: payloadObject.cnt_corporate_branch_details_name,
-      countryId: payloadObject.country,
-      stateId: payloadObject.county,
-      townId: payloadObject.town,
-      physicalAddress: payloadObject.cnt_corporate_branch_details_physicalAddress,
-      email: payloadObject.cnt_corporate_branch_email,
-    }
+    const branchData = this.getDataByPattern('branch_details');
+    const branches = branchData.length > 0
+      ? branchData.map(item => ({
+        shortDesc: item.id,
+        branchName: item.cnt_corporate_branch_details_name,
+        countryId: item.country?.id,
+        stateId: item.county?.id,
+        townId: item.town?.id,
+        physicalAddress: item.cnt_corporate_branch_details_physicalAddress,
+        email: item.cnt_corporate_branch_email,
+        landlineNumber: item.landlineNumber,
+        mobileNumber: item.mobileNumber,
+      }))
+      : [];
 
-    const contactPersons = {
-      clientTitleCode: payloadObject.titleId,
-      name: payloadObject.name,
-      idNumber: payloadObject.docIdNumber,
-      email: payloadObject.emailAddress,
-      mobileNumber: payloadObject.phoneNumber,
-      wef: payloadObject.cnt_corporate_contact_person_details_wef,
-      wet: payloadObject.cnt_corporate_contact_person_details_wet,
-    }
+    const contactPersonData = this.getDataByPattern('contact_person_details');
+    const contactPersons = contactPersonData.length > 0
+      ? contactPersonData.map(item => ({
+        clientTitleCode: item.titleId?.id,
+        name: item.name,
+        idNumber: item.docIdNumber,
+        email: item.emailAddress,
+        mobileNumber: item.phoneNumber,
+        wef: item.cnt_corporate_contact_person_details_wef,
+        wet: item.cnt_corporate_contact_person_details_wet,
+      }))
+      : [];
 
-    const payee = {
-      name: payloadObject.payee_details_name,
-      idNo: payloadObject.cnt_corporate_payee_docIdNumber,
-      mobileNo: payloadObject.cnt_corporate_payee_mobileNumber,
-      email: payloadObject.payee_email_address,
-      // payloadObject.bankName,
-      // payloadObject.branchName,
-      accountNumber: payloadObject.cnt_corporate_payee_accountNumber,
-    }
+    const payeeData = this.getDataByPattern('payee_details');
+    const payee = payeeData.length > 0
+      ? payeeData.map(item => ({
+        name: item.payee_details_name,
+        idNo: item.cnt_corporate_payee_docIdNumber,
+        mobileNo: item.cnt_corporate_payee_mobileNumber,
+        email: item.payee_email_address,
+        bankBranchCode: item.branchName?.id,
+        accountNumber: item.cnt_corporate_payee_accountNumber,
+      })) : [];
 
-    const wealthAmlDetails = [{
-      fundsSource: payloadObject.source_of_fund || payloadObject.sourceOfFundAml,
-      employmentStatus: payloadObject.type_of_employment,
-      sectorId: payloadObject.economicSector || payloadObject.economicSectorAml,
-      occupationId: payloadObject.occupation,
-      insurancePurpose: payloadObject.purposeOfInsurance,
-      premiumFrequency: payloadObject.premiumFrequency,
-      distributeChannel: payloadObject.distributionChannel,
-      tradingName: payloadObject.tradingName,
-      registeredName: payloadObject.registeredName,
-      certificateRegistrationNumber: payloadObject.certificateRegistrationNumber,
-      certificateYearOfRegistration: payloadObject.certificateRegistrationYear,
-      parentCountryId: payloadObject.parentCountry,
-      operatingCountryId: payloadObject.operatingCountry,
+    const cr12Data = this.getDataByPattern('cr12_details');
+    const cr12Details = cr12Data.length > 0
+      ? cr12Data.map(item => ({
+        directorName: item.cr12_name,
+        directorIdRegNo: item.companyRegistrationNumber,
+        directorDob: item.companyRegistrationDate,
+        address: item.cr12_details_address,
+        certificateReferenceNo: item.referenceNumber,
+        certificateRegistrationYear: item.referenceNumberYear,
+      }))
+      : [];
 
-      /*Note: cr12 details[] should be part of wealthAmlDetails[]*/
-    }]
+    const wealthAmlData = this.getDataByPattern('aml_details');
+    const wealthAmlDetails = wealthAmlData.length > 0
+      ? wealthAmlData.map(item => ({
+        fundsSource: item.source_of_fund?.label || item.sourceOfFundAml?.id,
+        employmentStatus: item.type_of_employment?.id,
+        sectorId: item.economicSector?.id || item.economicSectorAml?.id,
+        occupationId: item.occupation?.id,
+        insurancePurpose: item.purposeOfInsurance?.label,
+        premiumFrequency: item.premiumFrequency?.id,
+        distributeChannel: item.distributionChannel?.id,
+        tradingName: item.tradingName,
+        registeredName: item.registeredName,
+        certificateRegistrationNumber: item.certificateRegistrationNumber,
+        certificateYearOfRegistration: item.certificateRegistrationYear,
+        parentCountryId: item.parentCountry?.id,
+        operatingCountryId: item.operatingCountry?.id,
+        cr12Details
+      }))
+      : [];
 
-    const cr12Details = {
-      directorName: payloadObject.cr12_name,
-      directorIdRegNo: payloadObject.companyRegistrationNumber,
-      directorDob: payloadObject.companyRegistrationDate,
-      address: payloadObject.cr12_details_address,
-      certificateReferenceNo: payloadObject.referenceNumber,
-      certificateRegistrationYear: payloadObject.referenceNumberYear,
-    }
+    const ownershipData = this.getDataByPattern('ownership_details');
+    const ownershipDetails = ownershipData.length > 0
+      ? ownershipData.map(item => ({
+        name: item.cnt_corporate_ownership_details_name,
+        idNumber: item.cnt_corporate_ownership_details_docIdNumber,
+        contactPersonPhone: item.contactPersonPhone,
+        percentOwnership: item.percentOwnership,
+      }))
+      : [];
 
-    const ownershipDetails = [{
-      name: payloadObject.cnt_corporate_ownership_details_name,
-      idNumber: payloadObject.cnt_corporate_ownership_details_docIdNumber,
-      contactPersonPhone: payloadObject.contactPersonPhone,
-      percentOwnership: payloadObject.percentOwnership,
-    }]
-
-    // const wealthAmlDetails = this.wealthAmlDetails;
-    // const branches = this.branchDetails;
-    // const contactPersons = this.contactPersonDetails;
-    // const payee = this.payeeDetails;
-    // const ownershipDetails = this.ownershipDetails;
-    // const cr12Details = this.cr12Details;
-
-
+    const clientOrOrganizationType = this.category === 'corporate' ? payloadObject.organizationType.toLowerCase() : payloadObject.clientType.toLowerCase();
     const client: any = { // todo: update Model (ClientDTO)
       address,
       contactDetails,
@@ -938,22 +960,20 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       contactPersons,
       payee,
       ownershipDetails,
-      cr12Details,
       withEffectFromDate: payloadObject.wef,
       withEffectToDate: payloadObject.wet,
       firstName: this.category === 'corporate' ? payloadObject.entityName.substring(0, payloadObject.entityName.indexOf(' ')) : payloadObject.otherNames,
       gender: payloadObject.gender,
       lastName: this.category === 'corporate' ? payloadObject.entityName.substring(payloadObject.entityName.indexOf(' ') + 1) : payloadObject.lastName,
-      pinNumber: payloadObject.pinNumber /*A487438114W*/,
+      pinNumber: payloadObject.pinNumber,
       category: payloadObject.category,
-      countryId: this.selectedAddressCountry?.id,
-      clientTypeId: "13" || "14",
+      countryId: payloadObject?.citizenshipCountryId?.id,
+      clientTypeId: this.clientTypes.find(clientType => clientType.clientTypeName.toLowerCase() === clientOrOrganizationType)?.code,
       dateOfBirth: payloadObject.dateOfBirth || payloadObject.dateOfIncorporation,
       modeOfIdentityId: this.selectedIdType?.id,
-      idNumber: payloadObject.idNumber || payloadObject.businessRegNumber /*"37678960"*/ /*99245/6789Z*/,
-      branchId: 338,
-      maritalStatus: this.selectedMaritalStatus?.value/*"S"*/,
-      partyId: 3661
+      idNumber: payloadObject.idNumber || payloadObject.businessRegNumber,
+      organizationBranchId: payloadObject?.cnt_individual_contact_details_branch?.id || payloadObject?.cnt_corporate_contact_details_branch?.id,
+      maritalStatus: this.selectedMaritalStatus?.value,
     };
 
     log.info(`clientDto >>> `, client);
@@ -961,7 +981,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     this.clientService.saveClientDetails2(client).subscribe({
       next: (response) => {
         log.info(`client saved >>> `, response);
-        this.uploadImage(this.profilePicture, response.partyId)
+        this.uploadImage(this.profilePicture, response.partyId);
+        this.entityName = response.firstName + ' ' + response.lastName;
+        this.entityCode = response.clientCode;
         this.uploadDocumentToDms();
       },
       error: (error) => {
@@ -1020,7 +1042,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         telephone: item?.refTelNo,
         idNumber: item?.refDocIdNo,
         preferredCommunicationChannel: item?.communicationChannel?.id,
-        status: item?.refStatus,
+        status: item?.refStatus?.id,
       }))
       : [];
 
@@ -1041,7 +1063,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       commissionEffectiveDate: payloadObject.commissionStatusEffectiveDate,
       commissionStatusDate: payloadObject.commissionStatusDate,
       creditLimit: payloadObject.creditLimit,
-      glAccountNumber: payloadObject.glAccount,
+      glAccountNumber: this.selectedTableRecord?.account_number,
       paymentFrequency: payloadObject.freqOfPayment?.id,
       paymentTerms: payloadObject.paymentTerms,
       taxAuthorityCode: payloadObject.taxAuthorityCode,
@@ -1108,12 +1130,12 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     const documentsWithEntityInfo = this.filesToUpload.map(doc => {
       const updatedDoc = {...doc};
 
-      switch (this.role) {
-        case 'agent':
+      switch (this.role?.partyTypeShtDesc) {
+        case PartyType.intermediary:
           updatedDoc.agentName = this.entityName;
           updatedDoc.agentCode = this.entityCode?.toString();
           break;
-        case 'client':
+        case PartyType.client:
           updatedDoc.clientName = this.entityName;
           updatedDoc.clientCode = this.entityCode?.toString();
           break;
@@ -1124,8 +1146,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
 
     log.info(`Documents with entity info >>> `, documentsWithEntityInfo);
 
-    switch (this.role) {
-      case 'client':
+    switch (this.role?.partyTypeShtDesc) {
+      case PartyType.client:
         this.dmsService.saveClientDocs(documentsWithEntityInfo).subscribe({
           next: (res: any) => {
             log.info(`document uploaded successfully!`, res);
@@ -1135,7 +1157,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           }
         });
         break;
-      case 'agent':
+      case PartyType.intermediary:
         this.dmsService.saveAgentDocs(documentsWithEntityInfo).subscribe({
           next: (res: any) => {
             log.info(`document uploaded successfully!`, res);
@@ -1166,24 +1188,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     log.info(`processSelectOptions >>> `, selected, fieldId, controlVal);*/
 
     const formValue = this.entityForm.getRawValue();
-    // Helper function to find a control by fieldId in a form group
-    const findControlInGroup = (group: any, id: string): any => {
-      for (const key in group) {
-        if (key === id) {
-          return { value: group[key], group: group };
-        }
-        if (typeof group[key] === 'object' && group[key] !== null) {
-          const found = findControlInGroup(group[key], id);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-
-    // Find the control in the form
-    const found = findControlInGroup(formValue, fieldId);
-
-    // Log the found control for debugging
+    // Helper call function to find a control by fieldId in a form group
+    const found = this.findControlInGroup(formValue, fieldId);
     log.info(`Found control for ${fieldId}:`, found);
 
     const controlVal = found ? found.value : undefined;
@@ -1241,7 +1247,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       case 'role':
         this.createEntityForm();
         this.category = formValues.category;
-        this.role = formValues.role;
+        // this.role = formValues.role;
+        this.role = this.roles.find(partyType => partyType.partyTypeName.toLowerCase() === formValues.role.toLowerCase());
         if (formValues.category && formValues.role) this.fetchFormFields(formValues.category, formValues.role);
 
         this.idType = this.category ==='corporate' ? 'CERT_OF_INCOP_NUMBER' : 'NATIONAL_ID';
@@ -1257,6 +1264,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       case 'financialBranchName':
         this.selectedBankBranch = this.bankBranches.find((b: BankBranchDTO) => b.id === selected.id || b.name === selected.label);
         log.info(`selectedbank branch >>> `, selected, this.selectedBankBranch);
+        break;
+      case 'commissionAllowed':
+        this.refreshVisibility();
         break;
       default:
           log.info(`no fieldId found`)
@@ -1276,13 +1286,13 @@ export class NewEntityV2Component implements OnInit, OnChanges {
 
       const category: string = formValues.category;
 
-      const accountSubType = this.getSubTypeCode(this.role, selectedOrgOrClientOrAccType);
+      const accountSubType = this.getSubTypeCode(this.role?.partyTypeShtDesc, selectedOrgOrClientOrAccType);
       /*const accountSubType: ClientTypeDTO = this.clientTypes.filter(
         (c: ClientTypeDTO) => c.clientTypeName.toLowerCase() === selectedOrgOrClientType.toLowerCase())[0];
       log.info(`accountSubType >>> `, accountSubType, this.clientTypes);*/
 
-      switch (formValues.role) {
-        case 'agent':
+      switch (this.role?.partyTypeShtDesc) {
+        case PartyType.intermediary:
           this.requiredDocumentsService.getAccountTypeRequiredDocument(accountType.partyTypeShtDesc, null, accountSubType, null).subscribe({
             next: (data: RequiredDocumentDTO[]) => {
               this.requiredDocuments = data;
@@ -1312,10 +1322,10 @@ export class NewEntityV2Component implements OnInit, OnChanges {
 
   getSubTypeCode(role: string, selectedOrgOrClientOrAccType: string) {
     switch (role) {
-      case 'client':
+      case PartyType.client:
         return this.clientTypes.find((c: ClientTypeDTO) =>
           c.clientTypeName.toLowerCase() === selectedOrgOrClientOrAccType.toLowerCase())?.code;
-      case 'agent':
+      case PartyType.intermediary:
         return this.accountTypeData.find((d: AccountTypeDTO) =>
           d.accountType.toLowerCase() === selectedOrgOrClientOrAccType.toLowerCase())?.id;
       default:
@@ -1540,6 +1550,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       case 'accountTypeIndividual':
         this.fetchAccountTypes();
         break;
+      case 'cnt_individual_contact_details_branch':
+        this.fetchClientBranches(sectionIndex, fieldIndex, subGroupIndex);
+        break;
 
       default:
         log.warn(`No handler for field: ${fieldId}`);
@@ -1699,6 +1712,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * fetch bank branches by bankId
    * @param sectionIndex
    * @param fieldIndex
+   * @param subGroupIndex
    */
   fetchBankBranches(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if(!(this.bankBranches.length > 0)) {
@@ -1727,6 +1741,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * fetch countries
    * @param sectionIndex
    * @param fieldIndex
+   * @param subGroupIndex
    */
   fetchCountries(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     log.info(`fetchCountries >>> `, sectionIndex, fieldIndex, this.formGroupSections);
@@ -1754,6 +1769,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * Fetch the list of states by country code
    * @param sectionIndex
    * @param fieldIndex
+   * @param subGroupIndex
    */
   fetchStatesByCountryCode(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (this.selectedAddressCountry) {
@@ -1779,6 +1795,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * Fetch towns based on selected state
    * @param sectionIndex
    * @param fieldIndex
+   * @param subGroupIndex
    */
   fetchTownsByStateCode(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (this.selectedState) {
@@ -1804,6 +1821,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * Fetch postal code by town code (town must be selected first)
    * @param sectionIndex
    * @param fieldIndex
+   * @param subGroupIndex
    */
   fetchPostalCodeByTownCode(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (this.selectedTown) {
@@ -1829,6 +1847,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * Fetch id types
    * @param sectionIndex
    * @param fieldIndex
+   * @param subGroupIndex
    */
   fetchIdTypes(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.idTypes.length > 0)) {
@@ -1852,6 +1871,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * Fetch list of currencies
    * @param sectionIndex
    * @param fieldIndex
+   * @param subGroupIndex
    */
   fetchCurrencies(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.currencies.length > 0)) {
@@ -1874,6 +1894,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * Fetch client titles
    * @param sectionIndex
    * @param fieldIndex
+   * @param subGroupIndex
    */
   fetchClientTitles(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
     if(!(this.clientTitles.length > 0)) {
@@ -2050,6 +2071,22 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     }
   }
 
+  fetchClientBranches(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1) {
+    this.clientsService.getCLientBranches().subscribe({
+      next: (data: AccountsEnum[]) => {
+        this.clientBranchData = data;
+        const clientBranchStringArr = data.map(clientBranch => this.utilService.normalizeOption(clientBranch));
+        this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, clientBranchStringArr);
+        log.info(`client branches: `, clientBranchStringArr);
+      },
+      error: err => {
+        log.error(`could not fetch: `, err);
+        let errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    })
+  }
+
   /**
    * process file selection
    * @param event
@@ -2135,7 +2172,17 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       next: (result: any) => {
         const urls = result.map(item => item.content_block.url);
         log.info(`scanned documents >>> `, urls);
-        this.readScannedDocuments(urls);
+
+        switch (this.role?.partyTypeShtDesc) {
+          case PartyType.client:
+            this.readScannedDocuments(urls);
+            break;
+          case PartyType.intermediary:
+            this.readAgentScannedDocuments(urls);
+            break;
+          default:
+            break;
+        }
       },
       error: (err) => {}
     })
@@ -2463,6 +2510,230 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     });
   }
 
+  readAgentScannedDocuments(urls): void {
+    const schema = {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AgentSchema",
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "description": "Agent's full name"
+        },
+        "docIdNumber": {
+          "type": "string",
+          "description": "Agent's ID number"
+        },
+        "taxPinNumber": {
+          "type": "string",
+          "description": "Agent's pib number"
+        },
+        "iraLicenseNo": {
+          "type": "string",
+          "description": "Agent's IRA license number"
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date",
+          "description": "Agent's date of birth"
+        },
+        "citizenship": {
+          "type": "string",
+          "description": "Agent citizenship country"
+        },
+        "gender": {
+          "type": "string",
+          "description": "Gender of an agent"
+        },
+        "maritalStatus": {
+          "type": "string",
+          "description": "Marital status of an agent"
+        },
+        "wef": {
+          "type": "string",
+          "format": "date",
+          "description": "With effect from date"
+        },
+        "wet": {
+          "type": "string",
+          "format": "date",
+          "description": "With effect to date"
+        },
+        "address": {
+          "type": "string",
+          "description": "Agent's address"
+        },
+        "country": {
+          "type": "string",
+          "description": "Agent's country"
+        },
+        "countyState": {
+          "type": "string",
+          "description": "Agent's county/state"
+        },
+        "cityTown": {
+          "type": "string",
+          "description": "Agent's City/Town"
+        },
+        "physicalAddress": {
+          "type": "string",
+          "description": "Physical address"
+        },
+        "postalAddress": {
+          "type": "string",
+          "description": "Postal address"
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "Postal code"
+        },
+        "bankName": {
+          "type": "string",
+          "description": "Bank name"
+        },
+        "branchName": {
+          "type": "string",
+          "description": "Bank branch name"
+        },
+        "accountNo": {
+          "type": "string",
+          "description": "Account number"
+        },
+        "glAccount": {
+          "type": "string",
+          "description": "General ledger account"
+        },
+        "taxAuthorityCode": {
+          "type": "string",
+          "description": "Tax Authority code"
+        },
+        "vatApplicability": {
+          "type": "string",
+          "description": "VAT applicability"
+        },
+        "creditLimit": {
+          "type": "string",
+          "description": "Credit limit"
+        },
+        "paymentTerms": {
+          "type": "string",
+          "description": "Payment terms"
+        },
+        "commissionAllowed": {
+          "type": "string",
+          "description": "Commission allowed"
+        },
+        "commissionStatusEffectiveDate": {
+          "type": "string",
+          "format": "date",
+          "description": "Commission status effective date"
+        },
+        "commissionStatusDate": {
+          "type": "string",
+          "format": "date",
+          "description": "Commission status date"
+        },
+        "freqOfPayment": {
+          "type": "string",
+          "description": "Payment frequency"
+        },
+        "paymentMode": {
+          "type": "string",
+          "description": "Payment mode"
+        }
+      },
+      "required": []
+    }
+
+    this.isPatchingFormValues = true;
+    this.entityForm.disable();
+
+    const requestPayload = {
+      assistant_id: "DocumentHubAgent",
+      config: {
+        configurable: {
+          score_extraction: true,
+          strict: false
+        }
+      },
+      input: {
+        // schema: "app.document_hub.schemas.document.kenya.KenyanKRAPIN",
+        schema,
+        files: [
+          ...urls
+        ]
+      }
+    };
+
+    this.clientService.readScannedDocuments(requestPayload).subscribe({
+      next: (result: any) => {
+        const data = result.data;
+
+        const dataToPatch = {
+          ...data,
+          fullName: data.fullName,
+          docIdNumber: data.docIdNumber,
+          taxPinNumber: data.taxPinNumber,
+          iraLicenseNo: data.iraLicenseNo,
+          dateOfBirth: data.dateOfBirth,
+          citizenship: data.citizenship,
+          gender: data.gender,
+          maritalStatus: data.maritalStatus,
+          wef: data.wef,
+          wet: data.wet,
+        }
+
+        this.entityForm.patchValue({
+          int_individual_prime_identity: {
+            fullName: data.fullName,
+            docIdNumber: data.docIdNumber,
+            taxPinNumber: data.taxPinNumber,
+            iraLicenseNo: data.iraLicenseNo,
+            dateOfBirth: data.dateOfBirth,
+            citizenship: data.citizenship,
+            gender: data.gender,
+            maritalStatus: data.maritalStatus,
+            wef: data.wef,
+            wet: data.wet
+          },
+          int_individual_address_details: {
+            address: data.address,
+            country: data.country,
+            countyState: data.countyState,
+            cityTown: data.cityTown,
+            physicalAddress: data.physicalAddress,
+            postalAddress: data.postalAddress,
+            postalCode: data.postalCode
+          },
+          int_individual_financial_details: {
+            bankName: data.bankName,
+            branchName: data.branchName,
+            accountNo: data.accountNo,
+            glAccount: data.glAccount,
+            taxAuthorityCode: data.taxAuthorityCode,
+            vatApplicability: data.vatApplicability,
+            creditLimit: data.creditLimit,
+            paymentTerms: data.paymentTerms,
+            commissionAllowed: data.commissionAllowed,
+            commissionStatusEffectiveDate: data.commissionStatusEffectiveDate,
+            commissionStatusDate: data.commissionStatusDate,
+            freqOfPayment: data.freqOfPayment,
+            paymentMode: data.paymentMode
+          }
+        });
+
+        log.info(`scanned document data >>> `, typeof dataToPatch, dataToPatch, this.entityForm.getRawValue());
+        this.isPatchingFormValues = false;
+        this.entityForm.enable();
+
+      },
+      error: (err) => {
+        this.isPatchingFormValues = false;
+        this.entityForm.enable();
+        this.globalMessagingService.displayErrorMessage('Error', err.message);
+      }
+    });
+  }
 
   /**
    * The function `uploadImage` uploads an image file to the server and updates the profile picture and
@@ -2626,15 +2897,22 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     if (!control) return;
 
     const activeCondition = this.getActiveCondition(field, groupForm);
-
-    // Choose correct validations
-    const validations = activeCondition?.config?.validations || field.validations || [];
+    const validations = (activeCondition?.config?.validations) || (field.validations) || [];
 
     const angularValidators = validations.map((v: any) => {
       if (v.type === 'pattern') return Validators.pattern(v.value);
       if (v.type === 'required') return Validators.required;
+      if (v.type === 'min') return Validators.min(v.value);
+      if (v.type === 'max') return Validators.max(v.value);
+      if (v.type === 'minlength') return Validators.minLength(v.value);
+      if (v.type === 'maxlength') return Validators.maxLength(v.value);
+      if (v.type === 'email') return Validators.email;
       return null;
     }).filter(Boolean);
+
+    if (field.mandatory && !validations.some(v => v.type === 'required')) {
+      angularValidators.push(Validators.required);
+    }
 
     control.setValidators(angularValidators);
     control.updateValueAndValidity({ emitEvent: false });
@@ -2665,19 +2943,18 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       const groupForm = this.entityForm.get(group.groupId) as FormGroup | null;
 
       if (group.fields) {
-        group.fields = group.fields.filter(field =>
-          this.evaluateFieldVisibility(field, groupForm)
-        );
+        group.fields.forEach(field => {
+          field.isVisible = this.evaluateFieldVisibility(field, groupForm);
+        });
       }
 
       if (group.subGroup) {
-        group.subGroup = group.subGroup.map(sub => {
+        group.subGroup.forEach(sub => {
           if (sub.fields) {
-            sub.fields = sub.fields.filter(field =>
-              this.evaluateFieldVisibility(field, groupForm)
-            );
+            sub.fields.forEach(field => {
+              field.isVisible = this.evaluateFieldVisibility(field, groupForm);
+            });
           }
-          return sub;
         });
       }
     });
@@ -2743,5 +3020,71 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       .filter(key => key.includes(pattern))
       .map(key => this.dynamicTableData[key])
       .flat();
+  }
+
+  get countryISO(): CountryISO | undefined {
+    return this.selectedAddressCountry?.short_description as CountryISO || this.defaultCountryISO;
+  }
+
+  findControlInGroup = (group: any, id: string): any => {
+    for (const key in group) {
+      if (key === id) {
+        return { value: group[key], group: group };
+      }
+      if (typeof group[key] === 'object' && group[key] !== null) {
+        const found = this.findControlInGroup(group[key], id);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  openTableSelectModal(fieldId?: string) {
+    const modal = document.getElementById('tableSelectModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+    this.tableSelectFieldId = fieldId;
+  }
+
+  closeTableSelectModal() {
+    const modal = document.getElementById('tableSelectModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
+  /**
+   * Handles the selection of a row in a user table.
+   * Displays an info message, logs event data, and patches a specified field in the entity form.
+   * @param event The event object containing the selected row's data.
+   */
+  onTableDetailsSelect(event): void {
+    this.globalMessagingService.displayInfoMessage(
+      'GL selected',
+      event.data.account_name
+    );
+    log.info("event", event.data, this.selectedTableRecord);
+  }
+
+  lazyLoadGlAccount(event: LazyLoadEvent | TableLazyLoadEvent) {
+    const pageIndex = event.first / event.rows;
+    const sortField = event.sortField;
+    const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
+    const pageSize = event.rows;
+
+    this.receiptManagementService.getGlAccounts(pageIndex, pageSize, sortField, sortOrder)
+      .subscribe({
+        next: (response: GenericResponse<Pagination<GLAccountDTO>>) => {
+          this.glAccounts = response;
+          log.info(`Fetched gl accounts>>>`, response);
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
+      });
   }
 }

@@ -2,12 +2,15 @@
 
 <div class="row my-3">
   <div class="col-sm-8">
-          <span class="text-primary lead">
+          <span class="text-primary fw-bold">
           {{ subGroup.label[language] | titlecase }}
         </span>
   </div>
   <div class="col-sm-4 text-end">
-    <button class="btn btn-primary btn-sm">
+    <button
+      class="btn btn-primary btn-sm"
+      (click)="onEditButtonClick({})"
+    >
       {{ subGroup.addButtonTextLabel[language] | titlecase }}
     </button>
     <span class="p-1 mx-2 caret border" (click)="columnDialogVisible = true">
@@ -27,42 +30,46 @@
   </div>
 </p-dialog>
 
+<div style="overflow-x: auto;">
+  <p-table
+    [totalRecords]="table?.data.length"
+    [value]="table?.data"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <ng-container *ngFor="let col of table?.cols">
+          <th *ngIf="col.visible" [pSortableColumn]="col.field">
+            {{ col?.label[language] | titlecase }}
+            <p-sortIcon [field]="col.field"></p-sortIcon>
+          </th>
+        </ng-container>
+        <th></th>
+      </tr>
+    </ng-template>
 
-<p-table
-  [totalRecords]="table?.data.length"
-  [value]="table?.data"
->
-  <ng-template pTemplate="header">
-    <tr>
-      <ng-container *ngFor="let col of table?.cols">
-        <th *ngIf="col.visible" [pSortableColumn]="col.field">
-          {{ col?.label[language] | titlecase }}
-          <p-sortIcon [field]="col.field"></p-sortIcon>
-        </th>
-      </ng-container>
-      <th></th>
-    </tr>
-  </ng-template>
-
-  <ng-template pTemplate="body" let-rowData>
-    <tr (click)="onRowClick(rowData)">
-      <ng-container *ngFor="let col of table.cols" >
-        <td *ngIf="col.visible" class="py-3">
-          <span *ngIf="col.fieldId !=='overview_wef' && col.fieldId !=='overview_wet'">{{ rowData[col.fieldId]  }}</span>
-          <span *ngIf="col.fieldId === 'overview_wef' || col.fieldId === 'overview_wet'">{{ rowData[col.fieldId] | date }}</span>
+    <ng-template pTemplate="body" let-rowData>
+      <tr (click)="onRowClick(rowData)">
+        <ng-container *ngFor="let col of table.cols" >
+          <td *ngIf="col.visible" class="py-3">
+            <span *ngIf="col.fieldId !=='overview_wef' && col.fieldId !=='overview_wet'">{{ rowData[col.fieldId]  }}</span>
+            <span *ngIf="col.fieldId === 'overview_wef' || col.fieldId === 'overview_wet'">{{ rowData[col.fieldId] | date }}</span>
+          </td>
+        </ng-container>
+        <td class="text-primary">
+          <button
+            class="btn btn-link text-primary"
+            (click)="onEditButtonClick(rowData); $event.stopPropagation()"
+          >Edit</button>
+          <button
+            class="btn btn-link text-primary"
+            (click)="triggerDeleteConfirmation(rowData); $event.stopPropagation()"
+          >Delete
+          </button>
         </td>
-      </ng-container>
-      <td class="text-primary">
-        <button class="btn btn-link text-primary">Edit</button>
-        <button
-          class="btn btn-link text-primary"
-          (click)="triggerDeleteConfirmation(rowData); $event.stopPropagation()"
-        >Delete
-        </button>
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
 
 <p-dialog header="Confirm Delete?" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }" [blockScroll]="false" (onHide)="onDialogHide()">
   <span class="p-text-danger block mb-8">Are you sure?</span>

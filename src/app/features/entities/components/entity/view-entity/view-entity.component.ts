@@ -47,7 +47,7 @@ import {
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto, SubModulesDto
+  FormGroupsDto, FormSubGroupsDto, SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('ViewEntityComponent');
@@ -729,7 +729,9 @@ export class ViewEntityComponent implements OnInit {
     this.selectedSubTab = this.secondaryTabs.includes(tab.originalLabel) ? tab.originalLabel : this.selectedSubTab;
   }
 
-  openEditModal(tabTitle: string): void {
+  openEditModal(subgroup: FormSubGroupsDto): void {
+    const tabTitle = subgroup.originalLabel
+    log.info('openEditModal', tabTitle, subgroup);
     switch (tabTitle.toLowerCase()) {
       case 'prime identity':
         this.primeIdentityComponent.openEditPrimeIdentityDialog();

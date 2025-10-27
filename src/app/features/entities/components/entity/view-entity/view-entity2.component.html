@@ -15,7 +15,7 @@
               {{ tab.label[language] | titlecase }}
             </span>
         </ng-template>
-        
+
         <ng-container
           *ngIf="
           entityPartyIdDetails &&
@@ -58,9 +58,9 @@
             </span>
           <span
             id="edit-tab-btn"
-            *ngIf="(tab.originalLabel === selectedTab || tab.originalLabel === selectedSubTab) && tab.groupId !== 'wealth_aml'"
+            *ngIf="(tab.originalLabel === selectedTab || tab.originalLabel === selectedSubTab) && tab.subGroup.length === 0"
             class="m-2"
-            (click)="openEditModal(tab.originalLabel)"
+            (click)="openEditModal(tab)"
           >
             <i class="fa fa-pencil"></i>
           </span>
