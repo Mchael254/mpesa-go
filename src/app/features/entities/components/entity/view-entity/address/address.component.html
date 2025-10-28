@@ -39,7 +39,10 @@
       </div>
       <div class="row mb-3">
         <ng-container *ngFor="let field of subGroup.fields">
-          <div class="col-sm-4" *ngIf="!(field.fieldId.toLowerCase().includes('id'))">
+          <div
+            class="col-sm-4"
+            *ngIf="!(field.fieldId.toLowerCase().includes('id')) && field.formSubGroupingId === subGroup.subGroupId"
+          >
             <div class="row my-2">
               <div class="col-sm-4 text-dark">
                 {{ field.label[language] }}
@@ -67,113 +70,6 @@
   </ng-container>
 </ng-container>
 
-
-<!--
-
-  <table class="table table-borderless">
-    <tbody>
-    <tr>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.country[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold" *ngIf="clientCountry">
-            {{ clientCountry.name | titlecase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.county[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold" *ngIf="clientState">
-            {{ clientState?.name | titlecase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.city[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold" *ngIf="clientTown">
-            {{ clientTown.name | titlecase }}
-          </div>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.physical_address[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ addressDetails?.physicalAddress | titlecase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.postal_address[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ addressDetails?.residentialAddress | titlecase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.postal_code[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ addressDetails?.postalCode | uppercase }}
-          </div>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.town[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ clientTown?.name | titlecase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.road[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ addressDetails?.road | titlecase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.house_no[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ addressDetails?.houseNumber | uppercase }}
-          </div>
-        </div>
-      </td>
-    </tr>
-    </tbody>
-  </table>
--->
-
-
-
   <!--edit prime details modal-->
   <button #editButton type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editAddressModal" hidden>
     Open Edit Address Modal
@@ -199,7 +95,10 @@
             <form [formGroup]="editForm">
               <div class="row g-3">
                 <ng-container *ngFor="let field of formFields">
-                  <div class="col-md-6" *ngIf="!(field.fieldId.toLowerCase().includes('id'))">
+                  <div
+                    class="col-md-6"
+                    *ngIf="!(field.fieldId.toLowerCase().includes('id')) && field.formSubGroupingId === selectedSubgroup?.subGroupId"
+                  >
                     <label [for]="field.fieldId" class="form-label">
                       {{ field.label[language] | titlecase }}
                     </label>
