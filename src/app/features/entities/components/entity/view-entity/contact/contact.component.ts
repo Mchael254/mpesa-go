@@ -376,6 +376,7 @@ export class ContactComponent implements OnInit {
     this.formFields =  this.tableHeaders.map(field => ({...field})) ;
     const row = data.row;
     this.selectedContactPerson = this.contactPersons.find(person => person.code = row.contactPersonId);
+    this.selectedSubgroup = data.subGroup;
 
     this.formFields.forEach((field: ConfigFormFieldsDto) => {
       field.dataValue = row[field.fieldId];
