@@ -22,8 +22,8 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { ReceiptService } from '../../services/receipt.service';
 import { TranslateService } from '@ngx-translate/core';
-import fmsStepsData from '../../data/fms-step.json';
 
+import fmsStepsData from '../../data/fms-step.json';
 const log = new Logger('ReceiptPreviewComponent');
 
 /**
@@ -45,7 +45,7 @@ export class PdSlipPreviewComponent implements OnInit {
   /**
    * @description Step data for the FMS workflow.
    */
-  steps = fmsStepsData;
+  steps = fmsStepsData.receiptingSteps;
   // Reference to the iframe
 
   filePath: string = '';
