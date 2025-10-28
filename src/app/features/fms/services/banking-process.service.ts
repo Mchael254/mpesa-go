@@ -6,7 +6,7 @@ import { API_CONFIG } from 'src/environments/api_service_config';
 import { GenericResponseFMS } from 'src/app/shared/data/common/genericResponseDTO';
 import { PaymentModesDTO } from '../data/auth-requisition-dto';
 import { HttpParams } from '@angular/common/http';
-import { ApiResponse, PageableResponse, ReceiptDTO, ReceiptsToBankRequest } from '../data/receipting-dto';
+import { ApiResponse, assignedUsersDTO, PageableResponse, ReceiptDTO, ReceiptsToBankRequest, UsersDTO } from '../data/receipting-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -20,39 +20,7 @@ export class BankingProcessService {
      API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL
     );
   }
-//   getReceipts(request:ReceiptsToBankRequest):Observable<ApiResponse<ReceiptDTO[]>>{
-// let params = new HttpParams()
-//       .set('dateFrom', request.dateFrom)
-//       .set('dateTo', request.dateTo)
-//       .set('orgCode', request.orgCode.toString())
-//       .set('payMode', request.payMode)
-//       .set('page', request.pageable.page.toString())
-//       .set('size', request.pageable.size.toString())
-//       .set('sort', JSON.stringify(request.pageable.sort));
-
-//     if (request.includeBatched) {
-//       params = params.set('includeBatched', request.includeBatched);
-//     }
-//     if (request.bctCode) {
-//       params = params.set('bctCode', request.bctCode.toString());
-//     }
-//     if (request.brhCode) {
-//       params = params.set('brhCode', request.brhCode.toString());
-//     }
-
-//       return this.api.GET<ApiResponse<ReceiptDTO>>[]>(
-//           `receipts/receipts-to-bank`,
-//             API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
-//             params
-        
-//       ).pipe(
-//         map(response => response.data.content) // Extract the array you need
-//     );
-//   }
-
-  getReceipts(request: ReceiptsToBankRequest): Observable<ReceiptDTO[]> {
-
-    // Start with the mandatory parameters
+getReceipts(request: ReceiptsToBankRequest): Observable<ReceiptDTO[]> {
     let params = new HttpParams()
       .set('dateFrom', request.dateFrom)
       .set('dateTo', request.dateTo)
@@ -60,10 +28,8 @@ export class BankingProcessService {
       .set('payMode', request.payMode)
       .set('page', request.pageable.page.toString())
       .set('size', request.pageable.size.toString())
-      .set('sort', request.pageable.sort); // Sorting might need adjustment, see note below
+      .set('sort', request.pageable.sort);
 
-    // *** FIX 1: Add the previously missing optional parameters ***
-    // HttpParams is immutable, so we must reassign the result of .set()
     if (request.includeBatched) {
       params = params.set('includeBatched', request.includeBatched);
     }
@@ -74,11 +40,8 @@ export class BankingProcessService {
       params = params.set('brhCode', request.brhCode.toString());
     }
 
-    // Define the full, expected API response structure
     const endpoint = `receipts/receipts-to-bank`;
     const baseUrl = API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL;
-
-    // *** FIX 2: Define the full response type and use `pipe(map(...))` to extract the content array ***
     return this.api.GET<ApiResponse<PageableResponse<ReceiptDTO>>>(endpoint, baseUrl, params)
       .pipe(
         map(response => {
@@ -90,5 +53,14 @@ export class BankingProcessService {
           return [];
         })
       );
+  }
+  getUsers(currentUserCode:number):Observable<assignedUsersDTO[]>{
+    const params =  new HttpParams().set('currentUserCode',currentUserCode);
+    return this.api.GET<assignedUsersDTO[]>(
+      `users/assignable`,
+      API_CONFIG.FMS_SETUPS_SERVICE_BASE_URL,
+      params
+    )
+
   }
 }

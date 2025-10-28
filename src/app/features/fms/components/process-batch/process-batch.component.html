@@ -27,7 +27,11 @@
       <p-table
         [value]="batches"
         sortMode="multiple"
-        [(selection)]="selectedBatch"
+        [paginator]="true"
+        [rows]="5"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [currentPageReportTemplate]="currentReportTemplate"
       >
         <ng-template pTemplate="header">
           <tr>

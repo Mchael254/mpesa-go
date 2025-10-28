@@ -1,4 +1,10 @@
-
 .custom-caption {
-background-color: white !important; /* remove bg-color for caption template */
+background-color: white !important; 
+}
+.required::after{
+
+    content: '*';
+    margin-left: 2px;
+    color:#dc3545;
+    
 }

@@ -9,43 +9,14 @@ import fmsStepsData from '../../data/fms-step.json';
 })
 export class ProcessBatchComponent {
   steps=fmsStepsData.bankingSteps;
-  selectedBatch!:batch;
-    batches: batch[] = [
-      {
-        batchNo: 'BL11',
-        amount: 3000,
-        assignee: 'frank',
-        date: new Date('2000-02-20'),
-      },
-      {
-        batchNo: 'BL34',
-        amount: 3400,
-        assignee: 'frank',
-        date: new Date('2000-02-20'),
-      },
-      {
-        batchNo: 'BL34',
-        amount: 1000,
-        assignee: 'frank',
-        date: new Date('2000-02-20'),
-      },
-      {
-        batchNo: 'BL221',
-      amount: 8889,
-        assignee: 'frank',
-        date: new Date('2000-02-20'),
-      },
-    ];
+  //selectedBatch!:batch;
+    batches: any[] = [];
   constructor(public translate:TranslateService,private router:Router) {}
   ngOnInit() {}
   navigateToDashboard():void{
     this.router.navigate(['/home/fms/banking-dashboard']);
   }
-}
-export interface batch {
-  batchNo: string;
- amount: number;
-  date: Date;
-  assignee: string;
-  
+   get currentReportTemplate(): string {
+    return this.translate.instant('fms.receipt-management.pageReport');
+  }
 }
