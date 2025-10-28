@@ -651,19 +651,6 @@ export interface SharePreviewDataDTO {
   recipientPhone: string | null;
   clientName: string;
 }
-export  interface PageableQuery{
-   page: number;
-  size: number;
-  sort: string;
-}
-export interface PageableResponse<T> {
-  content: T[];
-  pageable: any; 
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
 export interface ReceiptsToBankRequest {
   dateFrom: string;
   dateTo: string;
@@ -672,7 +659,7 @@ export interface ReceiptsToBankRequest {
   includeBatched?: string;
   bctCode?: number;
   brhCode?: number;
-  pageable: PageableQuery;
+  
 }
 export interface ReceiptDTO {
   receiptNo: number;
@@ -692,11 +679,7 @@ export interface ReceiptDTO {
   userEmail: string;
   allocationStatus: string;
 }
-export interface ApiResponse<T> {
-  msg: string;
-  success: boolean;
-  data: T;
-}
+
 export interface assignedUsersDTO{
    user_id: number;
     username: string;

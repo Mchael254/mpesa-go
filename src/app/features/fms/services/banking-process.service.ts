@@ -6,7 +6,8 @@ import { API_CONFIG } from 'src/environments/api_service_config';
 import { GenericResponseFMS } from 'src/app/shared/data/common/genericResponseDTO';
 import { PaymentModesDTO } from '../data/auth-requisition-dto';
 import { HttpParams } from '@angular/common/http';
-import { ApiResponse, assignedUsersDTO, PageableResponse, ReceiptDTO, ReceiptsToBankRequest, UsersDTO } from '../data/receipting-dto';
+import { assignedUsersDTO, GenericResponse,  ReceiptDTO, ReceiptsToBankRequest, UsersDTO } from '../data/receipting-dto';
+import { Pagination } from 'src/app/shared/data/common/pagination';
 
 @Injectable({
   providedIn: 'root',
@@ -26,9 +27,9 @@ getReceipts(request: ReceiptsToBankRequest): Observable<ReceiptDTO[]> {
       .set('dateTo', request.dateTo)
       .set('orgCode', request.orgCode.toString())
       .set('payMode', request.payMode)
-      .set('page', request.pageable.page.toString())
-      .set('size', request.pageable.size.toString())
-      .set('sort', request.pageable.sort);
+      .set('page', 0)
+      .set('size', 5)
+      .set('sort','ASC');
 
     if (request.includeBatched) {
       params = params.set('includeBatched', request.includeBatched);
@@ -42,7 +43,7 @@ getReceipts(request: ReceiptsToBankRequest): Observable<ReceiptDTO[]> {
 
     const endpoint = `receipts/receipts-to-bank`;
     const baseUrl = API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL;
-    return this.api.GET<ApiResponse<PageableResponse<ReceiptDTO>>>(endpoint, baseUrl, params)
+    return this.api.GET<GenericResponse<Pagination<ReceiptDTO>>>(endpoint, baseUrl, params)
       .pipe(
         map(response => {
           // Check if the response and its nested properties exist before returning
