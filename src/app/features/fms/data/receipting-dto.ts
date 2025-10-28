@@ -658,12 +658,11 @@ export  interface PageableQuery{
 }
 export interface PageableResponse<T> {
   content: T[];
-  pageable: any; // Define further if needed
+  pageable: any; 
   totalElements: number;
   totalPages: number;
   size: number;
   number: number;
-  // Add other properties from the response if you need them
 }
 export interface ReceiptsToBankRequest {
   dateFrom: string;
@@ -675,8 +674,6 @@ export interface ReceiptsToBankRequest {
   brhCode?: number;
   pageable: PageableQuery;
 }
-
-
 export interface ReceiptDTO {
   receiptNo: number;
   receiptDate: string;
@@ -699,4 +696,14 @@ export interface ApiResponse<T> {
   msg: string;
   success: boolean;
   data: T;
+}
+export interface assignedUsersDTO{
+   user_id: number;
+    username: string;
+    name: string;
+    email: string;
+    personnel_rank: string;
+    date_created: Date;
+    user_type: string;
+    status: string;
 }

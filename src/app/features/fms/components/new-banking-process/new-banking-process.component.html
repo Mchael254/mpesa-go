@@ -28,7 +28,7 @@
         {{ "fms.banking.retrieveReceipts" | translate }}
       </h5>
       <div class="mb-3">
-        <form [formGroup]="bankingForm">
+        <form [formGroup]="rctsRetrievalForm">
           <div class="row">
             <div class="col col-4">
               <label for="sdate">{{
@@ -44,12 +44,14 @@
               <div
                 class="text-danger mt-1"
                 *ngIf="
-                  bankingForm.get('startDate')?.invalid &&
-                  (bankingForm.get('startDate')?.dirty ||
-                    bankingForm.get('startDate')?.touched)
+                  rctsRetrievalForm.get('startDate')?.invalid &&
+                  (rctsRetrievalForm.get('startDate')?.dirty ||
+                    rctsRetrievalForm.get('startDate')?.touched)
                 "
               >
-                <div *ngIf="bankingForm.get('startDate')?.errors?.['required']">
+                <div
+                  *ngIf="rctsRetrievalForm.get('startDate')?.errors?.['required']"
+                >
                   Date From is required
                 </div>
               </div>
@@ -66,12 +68,14 @@
               <div
                 class="text-danger mt-1"
                 *ngIf="
-                  bankingForm.get('endDate')?.invalid &&
-                  (bankingForm.get('endDate')?.dirty ||
-                    bankingForm.get('endDate')?.touched)
+                  rctsRetrievalForm.get('endDate')?.invalid &&
+                  (rctsRetrievalForm.get('endDate')?.dirty ||
+                    rctsRetrievalForm.get('endDate')?.touched)
                 "
               >
-                <div *ngIf="bankingForm.get('endDate')?.errors?.['required']">
+                <div
+                  *ngIf="rctsRetrievalForm.get('endDate')?.errors?.['required']"
+                >
                   Date to is required
                 </div>
               </div>
@@ -96,13 +100,13 @@
               <div
                 class="text-danger mt-1"
                 *ngIf="
-                  bankingForm.get('paymentMethod')?.invalid &&
-                  (bankingForm.get('paymentMethod')?.dirty ||
-                    bankingForm.get('paymentMethod')?.touched)
+                  rctsRetrievalForm.get('paymentMethod')?.invalid &&
+                  (rctsRetrievalForm.get('paymentMethod')?.dirty ||
+                    rctsRetrievalForm.get('paymentMethod')?.touched)
                 "
               >
                 <div
-                  *ngIf="bankingForm.get('paymentMethod')?.errors?.['required']"
+                  *ngIf="rctsRetrievalForm.get('paymentMethod')?.errors?.['required']"
                 >
                   Payment Method is required
                 </div>
@@ -140,22 +144,81 @@
         </div>
       </p-dialog>
 
+      <!-- primeng dialog for user selection -->
+      <div class="modal" id="userModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h6 class="modal-title text-primary">Assign Task</h6>
+              <button
+                type="button"
+                class="btn-close"
+                data-dismiss="modal"
+                aria-label="Close"
+                (click)="closeAssignModal()"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form [formGroup]="usersForm">
+                <div class="form-group w-75 mb-3">
+                  <label for="userselect" class="form-label required"
+                    >User</label
+                  >
+                  <select
+                    class="form-select form-select-sm"
+                    id="userselect"
+                    formControlName="user"
+                  >
+                    <option *ngFor="let user of users" value="user.user_id">
+                      {{ user.username }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group w-75 mb-3">
+                  <label for="textarea" class="form-label">Comments</label>
+                  <textarea
+                    id="textarea"
+                    class="form-control form-control-sm"
+                    rows="3"
+                    formControlName="comment"
+                  ></textarea>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+                (click)="closeAssignModal()"
+              >
+                {{ "fms.receipt-management.cancel" | translate }}
+              </button>
+              <button type="button" class="btn btn-primary">
+                {{ "auth.save" | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- primeng table for displaying receipts to bank
+        -->
+
       <p-table
-        *ngIf="displayTable"
         [value]="filteredReceipts"
         dataKey="receiptNo"
-        selectionMode="single"
-        [(selection)]="selectedReceipt"
-        [tableStyle]="{ 'min-width': '50rem' }"
+        selectionMode="multiple"
         sortMode="multiple"
-        (onRowSelect)="onRowSelected($event)"
         [resizableColumns]="true"
         [scrollable]="true"
+        [(selection)]="selectedReceipts"
         [paginator]="true"
         [rows]="5"
         [rowsPerPageOptions]="[10, 25, 50]"
         [showCurrentPageReport]="true"
         [currentPageReportTemplate]="currentReportTemplate"
+        *ngIf="displayTable"
       >
         <ng-template pTemplate="caption">
           <div
@@ -166,14 +229,17 @@
                 {{ "fms.banking.retrievedReceipts" | translate }}
               </h5>
 
-              <p class="text text-body-secondary">
+              <p
+                class="text text-body-secondary"
+                *ngIf="filteredReceipts.length != 0"
+              >
                 Found {{ totalRecord }} records.Please select record to assign
                 and create batches
               </p>
             </div>
 
             <div class="justify-content-end">
-              <button class="btn btn-primary">
+              <button class="btn btn-primary" (click)="openAssignModal()">
                 {{ "fms.banking.assign" | translate }}
               </button>
               <span class="pt-2" (click)="showColumnsDialogs()">
@@ -191,18 +257,28 @@
             </th>
           </tr>
           <!-- filter row -->
+
           <tr>
-            <th>
-              <input disabled type="text" class="form-control" />
-            </th>
+            <th></th>
             <th *ngFor="let col of selectedColumns">
-              <input
-                [disabled]="col.field === 'actions'"
-                [type]="col.field === 'amount' ? 'number' : 'text'"
-                class="form-control"
-                (input)="filter($event, col.field)"
-                (keyup.enter)="filter($event, col.field)"
-              />
+              <ng-container [ngSwitch]="col.field">
+                <ng-container *ngSwitchCase="'actions'">
+                  <button
+                    class="btn btn-outline-primary btn-md"
+                    (click)="clearFilters()"
+                  >
+                    {{ "fms.banking.clearFilter" | translate }}
+                  </button>
+                </ng-container>
+                <ng-container *ngSwitchDefault="">
+                  <input
+                    [type]="col.field === 'amount' ? 'number' : 'text'"
+                    class="form-control"
+                    (input)="filter($event, col.field)"
+                    (keyup.enter)="filter($event, col.field)"
+                  />
+                </ng-container>
+              </ng-container>
             </th>
           </tr>
           <!-- end of filter row -->
@@ -218,9 +294,14 @@
                   {{ receipt.receiptDate | date : "dd/MM/yyyy" }}
                 </ng-container>
                 <ng-container *ngSwitchCase="'actions'">
-                  <button class="btn btn-sm btn-primary">Assign</button>
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-link btn-sm">Deposit</button>
+                    <button class="btn btn-link btn-sm">Re-assign</button>
+                  </div>
                 </ng-container>
-
+                <ng-container *ngSwitchCase="'batchAssignedUser'">
+                  {{ receipt.batchAssignedUser ?? "unassigned" }}
+                </ng-container>
                 <ng-container *ngSwitchDefault>
                   {{ receipt[col.field] }}
                 </ng-container>
@@ -232,7 +313,11 @@
     </div>
   </div>
   <div class="d-flex mt-1 justify-content-end">
-    <button class="btn btn-primary" (click)="navigateToBatch()">
+    <button
+      class="btn btn-primary"
+      (click)="navigateToBatch()"
+      *ngIf="displayTable"
+    >
       {{ "fms.banking.createBatches" | translate }}
     </button>
   </div>
