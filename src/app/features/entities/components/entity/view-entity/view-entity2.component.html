@@ -1,233 +1,137 @@
-<!--<div *ngFor="let el of dynamicScreenFormGroupSetup">
-  <h5>{{ el.originalLabel | json }}</h5><br>
-  <p *ngFor="let field of el.fields">
-    {{ field.fieldId }}
-  </p>
-  <hr>
-</div>-->
 
-<!--{{ secondaryTabs2 | json }}-->
 
-<!--
-<div *ngIf="dynamicScreenFormGroupSetup" class="entity-container">
+<div *ngIf="subModules" class="entity-container">
   <p-tabView>
-    <ng-container *ngFor="let tab of dynamicScreenFormGroupSetup">
+    <ng-container *ngFor="let tab of subModules">
       <p-tabPanel>
         <ng-template pTemplate="header" >
             <span
               class="m-2 tab-title" (click)="selectTab(tab)"
               [ngClass]="{
-                'text-primary': tab.groupId === selectedSubTab,
-                'text-dark': tab.groupId !== selectedSubTab
+                'text-primary': tab.originalLabel === selectedTab,
+                'text-dark': tab.originalLabel !== selectedTab
                 }"
             >
               {{ tab.label[language] | titlecase }}
             </span>
-            <span
-              id="edit-tab-btn"
-              *ngIf="(tab.groupId === selectedTab || tab.groupId === selectedSubTab) && tab.groupId !== 'wealth_aml'"
-              class="m-2"
-              (click)="openEditModal(tab.groupId)"
-            >
-                <i class="fa fa-pencil"></i>
-            </span>
         </ng-template>
-        <ng-container>
-          <div class="row">
-            <ng-container *ngFor="let field of tab.fields">
-              <div class="col-sm-4 my-3">
-                <div class="row">
-                  <div class="col-sm-4">
-                    {{ field.label[language] | titlecase }}
-                  </div>
-                  <div class="col-sm-8 fw-bold text-dark">
-                    {{ field.dataValue | json }}
-                    ==> {{ field.fieldId }} ==> {{ field.code }}
-                  </div>
-                </div>
-              </div>
-            </ng-container>
-          </div>
+
+        <ng-container
+          *ngIf="
+          entityPartyIdDetails &&
+          entityAccountIdDetails &&
+          clientDetails &&
+          unAssignedPartyTypes &&
+          clientDetails &&
+          tab.originalLabel === '360 overview'
+          "
+        >
+        <app-entity-basic-info
+          [unAssignedPartyTypes]="unAssignedPartyTypes"
+          [partyAccountDetails]="partyAccountDetails"
+          [entityAccountIdDetails]="entityAccountIdDetails"
+          [entityPartyIdDetails]="entityPartyIdDetails"
+          [clientDetails]="clientDetails"
+          (assignRole)="onAssignRole($event)"
+          (partyTypeRole)="selectPartyTypeRole($event)"
+          [overviewConfig]="tab"
+          [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
+        ></app-entity-basic-info>
+    </ng-container>
+      </p-tabPanel>
+    </ng-container>
+  </p-tabView>
+
+
+  <p-tabView>
+    <ng-container *ngFor="let tab of formGroupsAndFieldConfig?.groups">
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+            <span
+              class="m-2 tab-title" (click)="selectTab(tab)"
+              [ngClass]="{
+                'text-primary': tab.originalLabel === selectedSubTab,
+                'text-dark': tab.originalLabel !== selectedSubTab
+                }"
+            >
+              {{ tab.label[language] | titlecase }}
+            </span>
+          <span
+            id="edit-tab-btn"
+            *ngIf="(tab.originalLabel === selectedTab || tab.originalLabel === selectedSubTab) && tab.subGroup.length === 0"
+            class="m-2"
+            (click)="openEditModal(tab)"
+          >
+            <i class="fa fa-pencil"></i>
+          </span>
+        </ng-template>
+
+        <ng-container *ngIf="
+           clientDetails &&
+           tab.originalLabel==='Prime Identity';"
+        >
+          <app-prime-identity
+            #primeIdentityRef
+            [partyAccountDetails]="partyAccountDetails"
+            [clientDetails]="clientDetails"
+            [group]="tab"
+            [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
+          >
+          </app-prime-identity>
         </ng-container>
+
+        <ng-container *ngIf="
+            clientDetails &&
+            tab.originalLabel==='Contact Details'"
+        >
+          <app-contact
+            #contactRef
+            [clientDetails]="clientDetails"
+            [group]="tab"
+            [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
+          ></app-contact>
+        </ng-container>
+
+        <ng-container *ngIf="
+            clientDetails &&
+            tab.originalLabel==='Address Details';"
+        >
+          <app-address
+            #addressRef
+            [clientDetails]="clientDetails"
+            [group]="tab"
+            [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
+          ></app-address>
+        </ng-container>
+
+        <ng-container *ngIf="
+            clientDetails &&
+            tab.originalLabel==='Financial Details'"
+        >
+          <app-financial
+            #financialRef
+            [clientDetails]="clientDetails"
+            [group]="tab"
+            [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
+            [countryId]="clientDetails?.address?.countryId"
+          >
+          </app-financial>
+        </ng-container>
+
+        <ng-container *ngIf="
+            clientDetails &&
+            tab.originalLabel==='Wealth And Anti-money Laundering Details'"
+        >
+          <app-wealth-aml
+            #wealthAmlRef
+            [clientDetails]="clientDetails"
+            [accountCode]="clientDetails.clientCode"
+            [group]="tab"
+            [formGroupsAndFieldConfig]="formGroupsAndFieldConfig"
+          ></app-wealth-aml>
+        </ng-container>
+
       </p-tabPanel>
     </ng-container>
   </p-tabView>
 </div>
--->
-
-<div *ngIf="dynamicDisplay" class="entity-container">
-  <ng-container *ngFor="let display of dynamicDisplay">
-    <p-tabView>
-      <ng-container *ngFor="let tab of display?.tabs">
-        <p-tabPanel>
-          <ng-template pTemplate="header">
-            <span
-              class="m-2 tab-title" (click)="selectTab(tab)"
-              [ngClass]="{
-                'text-primary': tab.title === selectedTab || tab.title === selectedSubTab,
-                'text-dark': tab.title !== selectedTab || tab.title !== selectedSubTab
-                }"
-            >
-              {{ tab.label[language] | titlecase }}
-            </span>
-            <span
-              id="edit-tab-btn"
-              *ngIf="(tab.title === selectedTab || tab.title === selectedSubTab) && tab.title !== 'wealth_aml'"
-              class="m-2"
-              (click)="openEditModal(tab.title)"
-            >
-              <i class="fa fa-pencil"></i>
-            </span>
-          </ng-template>
-          <ng-container
-            *ngIf="
-            entityPartyIdDetails &&
-            entityAccountIdDetails &&
-            clientDetails &&
-            unAssignedPartyTypes &&
-            clientDetails &&
-            tab.title === 'overview'
-          "
-          >
-            <app-entity-basic-info
-              [unAssignedPartyTypes]="unAssignedPartyTypes"
-              [partyAccountDetails]="partyAccountDetails"
-              [entityAccountIdDetails]="entityAccountIdDetails"
-              [entityPartyIdDetails]="entityPartyIdDetails"
-              [clientDetails]="clientDetails"
-              [overviewFormFields]="overviewFormFields"
-              (assignRole)="onAssignRole($event)"
-              (partyTypeRole)="selectPartyTypeRole($event)"
-              [overviewConfig]="tab"
-            ></app-entity-basic-info>
-          </ng-container>
-
-          <ng-container *ngIf="
-            clientDetails &&
-            tab.title==='prime_identity';"
-          >
-            <app-prime-identity
-              #primeIdentityRef
-              [partyAccountDetails]="partyAccountDetails"
-              [clientDetails]="clientDetails"
-              [primeDetailsConfig]="tab"
-              [formFieldsConfig]="editPrimeDetailsFormConfig"
-            >
-            </app-prime-identity>
-          </ng-container>
-
-          <ng-container *ngIf="
-            clientDetails &&
-            editContactFormConfig?.fields.length > 0 &&
-            tab.title==='contact'"
-          >
-            <app-contact
-              #contactRef
-              [contactDetails]="clientDetails?.contactDetails"
-              [accountCode]="clientDetails.clientCode"
-              [contactDetailsConfig]="tab"
-              [formFieldsConfig]="editContactFormConfig"
-            ></app-contact>
-          </ng-container>
-
-          <ng-container *ngIf="
-            clientDetails &&
-            tab.title==='address';"
-          >
-            <app-address
-              #addressRef
-              [addressDetails]="clientDetails.address"
-              [accountCode]="clientDetails.clientCode"
-              [addressDetailsConfig]="tab"
-              [formFieldsConfig]="editAddressFormConfig"
-            ></app-address>
-          </ng-container>
-
-          <ng-container *ngIf="
-            clientDetails &&
-            tab.title==='financial'"
-          >
-            <app-financial
-              #financialRef
-              [financialDetails]="clientDetails.paymentDetails"
-              [accountCode]="clientDetails.clientCode"
-              [financialDetailsConfig]="tab"
-              [formFieldsConfig]="editFinancialFormConfig"
-              [countryId]="clientDetails?.address?.countryId"
-            >
-            </app-financial>
-          </ng-container>
-
-          <ng-container *ngIf="
-            clientDetails &&
-            tab.title==='wealth_aml'"
-          >
-            <app-wealth-aml
-              #wealthAmlRef
-              [wealthAmlDetails]="clientDetails.wealthAmlDetails"
-              [accountCode]="clientDetails.clientCode"
-              [wealthAmlDetailsConfig]="tab"
-              [formFieldsConfig]="editWealthAmlFormConfig"
-            ></app-wealth-aml>
-          </ng-container>
-
-        </p-tabPanel>
-      </ng-container>
-    </p-tabView>
-  </ng-container>
-</div>
-
-
-<!--
-<div class="entity-container">
-  <ngx-spinner
-    type="ball-clip-rotate-multiple"
-    [fullScreen]="false"
-    color="#00529B"
-    size="medium"
-    bdColor="rgba(255, 255, 255, 0.966)"
-  ></ngx-spinner>
-  <div class="p-2">
-    <p-tabView>
-      <p-tabPanel header="Overview">
-        <ng-container
-          *ngIf="
-            entityPartyIdDetails &&
-            entityAccountIdDetails &&
-            partyAccountDetails &&
-            unAssignedPartyTypes
-          "
-        >
-          <app-entity-basic-info
-            [unAssignedPartyTypes]="unAssignedPartyTypes"
-            [partyAccountDetails]="partyAccountDetails"
-            [entityAccountIdDetails]="entityAccountIdDetails"
-            [entityPartyIdDetails]="entityPartyIdDetails"
-            (assignRole)="onAssignRole($event)"
-            (partyTypeRole)="selectPartyTypeRole($event)"
-          ></app-entity-basic-info>
-        </ng-container>
-
-        <ng-container *ngIf="partyAccountDetails">
-          <app-entity-other-details
-            [countries]="countries"
-            [partyAccountDetails]="partyAccountDetails"
-            [bankDetails]="bankDetails"
-            [bankBranch]="bankBranchDetails"
-            [wealthAmlDetails]="wealthAmlDetails"
-            [nokList]="nokDetails"
-            [states]="states"
-            [entityPartyIdDetails]="entityPartyIdDetails"
-            (refreshData)="refreshData()"
-          ></app-entity-other-details>
-        </ng-container>
-      </p-tabPanel>
-      <p-tabPanel header="Transactions">
-        <app-entity-transactions
-          [clientName]="entityPartyIdDetails?.name"
-        ></app-entity-transactions>
-      </p-tabPanel>
-    </p-tabView>
-  </div>
-</div>
--->

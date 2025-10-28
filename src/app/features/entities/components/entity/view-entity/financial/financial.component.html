@@ -1,123 +1,73 @@
-<!--{{ financialDetails | json }}-->
-<!--{{ countryId | json }}-->
 
-<!--<ng-container *ngIf="editForm && countries && states && towns; else loadingContent">-->
-<table class="table table-borderless">
-  <tbody>
-  <tr>
-    <td>
-      <div class="row">
-        <div class="col-sm-5">
-          {{ financialDetailsConfig?.financial_details?.bank_name[language] | titlecase }}
-        </div>
-        <div class="col-sm-7 fw-bold" *ngIf="true">
-          {{ financialDetails?.bankName }}
-        </div>
-      </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ financialDetailsConfig?.financial_details?.branch_name[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ financialDetails?.bankBranchName }}
+
+<ng-container *ngIf="group.subGroup?.length === 0">
+  <div class="row">
+    <ng-container *ngFor="let field of fields">
+      <div class="col-sm-4">
+        <div class="row my-2">
+          <div class="col-sm-4 text-dark">
+            {{ field.label[language] }}
+          </div>
+          <div class="col-sm-8 text-dark fw-bold">
+            {{ field.dataValue }}
+          </div>
         </div>
       </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ financialDetailsConfig?.financial_details?.account_number[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ financialDetails.accountNumber }}
-        </div>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <div class="row">
-        <div class="col-sm-5">
-          {{ financialDetailsConfig?.financial_details?.currency[language] | titlecase }}
-        </div>
-        <div class="col-sm-7 fw-bold">
-          {{ selectedCurrency?.symbol }}
-        </div>
-      </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ financialDetailsConfig?.financial_details?.wef[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ financialDetails?.effectiveFromDate | date }}
+    </ng-container>
+  </div>
+</ng-container>
+
+
+<ng-container *ngIf="group.subGroup?.length > 0">
+  <ng-container *ngFor="let subGroup of group.subGroup">
+
+    <ng-container *ngIf="subGroup.presentationType===PRESENTATION_TYPE.fields">
+      <div class="row my-3">
+        <div class="col-sm-8">
+          <span class="text-primary fw-bold">
+            {{ subGroup.label[language] | titlecase }}
+          </span>
+          <span
+            id="edit-tab-btn"
+            class="m-2 text-primary"
+            (click)="openEditFinancialDialog(subGroup, Save_Action.EDIT_FINANCE_DETAILS)"
+          >
+            <i class="fa fa-pencil"></i>
+          </span>
         </div>
       </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ financialDetailsConfig?.financial_details?.wet[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ financialDetails?.effectiveToDate | date }}
-        </div>
+      <div class="row mb-3">
+        <ng-container *ngFor="let field of subGroup.fields">
+          <div
+            class="col-sm-4"
+            *ngIf="!(field.fieldId.toLowerCase().includes('id')) && field.formSubGroupingId === subGroup.subGroupId"
+          >
+            <div class="row my-2">
+              <div class="col-sm-4 text-dark">
+                {{ field.label[language] }}
+              </div>
+              <div class="col-sm-8 text-dark fw-bold">
+                {{ field.dataValue }}
+              </div>
+            </div>
+          </div>
+        </ng-container>
       </div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <div class="row">
-        <div class="col-sm-5">
-          {{ financialDetailsConfig?.financial_details?.mobile_money_number[language] | titlecase }}
-        </div>
-        <div class="col-sm-7 fw-bold">
-          {{ financialDetails?.mpayno | titlecase }}
-        </div>
-      </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ financialDetailsConfig?.financial_details?.iban[language] | uppercase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ financialDetails?.iban | titlecase }}
-        </div>
-      </div>
-    </td>
-    <td>
-      <div class="row">
-        <div class="col-sm-4">
-          {{ financialDetailsConfig?.financial_details?.swift_code[language] | titlecase }}
-        </div>
-        <div class="col-sm-8 fw-bold">
-          {{ financialDetails?.swiftCode | uppercase }}
-        </div>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <div class="row">
-        <div class="col-sm-5">
-          {{ financialDetailsConfig?.financial_details?.preferred_payment_channel[language] | titlecase }}
-        </div>
-        <div class="col-sm-7 fw-bold">
-          {{ selectedPaymentMode?.shortDescription| uppercase }}
-        </div>
-      </div>
-    </td>
-    <td>
-    </td>
-    <td>
-    </td>
-  </tr>
-  </tbody>
-</table>
+    </ng-container>
+
+    <ng-container *ngIf="subGroup.presentationType === PRESENTATION_TYPE.fields_and_table_columns">
+      <app-overview-table
+        [subGroup]="subGroup"
+        [table]="table"
+        [language]="language"
+        (deleteBtnClicked)="handlePayeeDelete($event)"
+        (editBtnClicked)="prepareEditPayeeForm($event, Save_Action.EDIT_PAYEE)"
+      >
+      </app-overview-table>
+    </ng-container>
+
+  </ng-container>
+</ng-container>
 
 
 
@@ -132,7 +82,7 @@
     <div class="modal-content">
       <div class="modal-header border-0">
         <h1 class="modal-title fs-4 text-primary" id="editFinancialModalLabel">
-          {{ formFieldsConfig.label[language] | titlecase }}
+<!--          {{ formFieldsConfig.label[language] | titlecase }}-->
         </h1>
         <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -145,10 +95,14 @@
         >
           <form [formGroup]="editForm">
             <div class="row g-3">
-              <ng-container *ngFor="let field of formFieldsConfig.fields">
-                <div class="col-md-6">
+              <ng-container *ngFor="let field of formFields">
+                <div
+                  class="col-md-6"
+                  *ngIf="!(field.fieldId.toLowerCase().includes('businessPersonId')) && field.formSubGroupingId === selectedSubgroup?.subGroupId"
+                >
                   <label [for]="field.fieldId" class="form-label">
                     {{ field.label[language] | titlecase }}
+                    <br> {{ field.fieldId }} ++ {{ field.type }}
                   </label>
                   <!-- Text input -->
                   <input
@@ -182,6 +136,27 @@
                     [id]="field.fieldId"
                     class="form-control"
                   />
+
+                  <!--tel number-->
+                  <span *ngIf="checkTelNumber(field.fieldId)">
+                    <ngx-intl-tel-input
+                      [cssClass]="'form-control mb-1'"
+                      [id]="field.fieldId"
+                      [preferredCountries]=""
+                      [enableAutoCountrySelect]="true"
+                      [enablePlaceholder]="true"
+                      [searchCountryFlag]="true"
+                      [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                      [selectFirstCountry]="false"
+                      [selectedCountryISO]="CountryISO.Nigeria"
+                      [phoneValidation]="true"
+                      [separateDialCode]="true"
+                      [numberFormat]="PhoneNumberFormat.National"
+                      [formControlName]="field.fieldId"
+                      [style]="{ width: '100%' }"
+                    >
+                    </ngx-intl-tel-input>
+                  </span>
                 </div>
               </ng-container>
             </div>
@@ -196,16 +171,13 @@
         </ng-template>
       </div>
       <div class="modal-footer border-0">
-        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+        <!--<button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
           {{ formFieldsConfig.buttons.cancel.label[language] | titlecase }}
-        </button>
-        <button type="button" class="btn btn-primary" (click)="editFinancialDetails()">
-          {{ formFieldsConfig.buttons.save.label[language] | titlecase }}
+        </button> -->
+        <button type="button" class="btn btn-primary" (click)="saveDetails()">
+          {{ 'save' | titlecase }}
         </button>
       </div>
     </div>
   </div>
 </div>
-
-<!--</ng-container>-->
-

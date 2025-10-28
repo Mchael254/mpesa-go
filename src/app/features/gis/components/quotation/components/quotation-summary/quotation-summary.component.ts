@@ -49,6 +49,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NotificationService } from '../../services/notification/notification.service';
 import { NgxCurrencyConfig } from 'ngx-currency';
 import { Modal } from 'bootstrap';
+import { left } from '@popperjs/core';
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
 
@@ -66,10 +67,6 @@ interface FileItem {
   styleUrls: ['./quotation-summary.component.css']
 })
 export class QuotationSummaryComponent implements OnInit, OnDestroy {
-  quotationAuthorized: boolean;
-  fileUrl: SafeResourceUrl;
-  showWizardModal: boolean;
-
 
   viewClientProfile() {
     throw new Error('Method not implemented.');
@@ -84,7 +81,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
   @ViewChild('productClauseTable') productClauseTable: any;
   @ViewChild('riskClausesTable') riskClausesTable: any;
-  @ViewChild('consentModal') consentModal!: ElementRef;
+  @ViewChild('clientConsentModal') clientConsentModalElement!: ElementRef;
   @ViewChild('viewDocumentsModal') viewDocumentsModal!: ElementRef;
   @ViewChild('userInstructionsModal') userInstructionsModal!: ElementRef;
 
@@ -95,7 +92,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   showWizzardModal = false;
-  wizzardModalPosition = { top: '90px', left: '570px' };
+  showClientWizzardModal = false;
+  wizzardModalPosition = { top: '-40px', left: '430px' };
+  wizzardClientModalPosition = { top: '-140px', left: '-70px' };
   userInstructionsModalInstance: any;
   hasOpened = false;
 
@@ -119,8 +118,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   clauses: any;
   user: any;
   clientCode: any;
-  externalClaims: any;
-  internalClaims: any;
+
   computationDetails: any;
   premium: any;
   branch: any;
@@ -224,8 +222,17 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showProductColumnModal: boolean = false;
   columnModalPosition = { top: '0px', left: '0px' }
   columns: { field: string; header: string; visible: boolean }[] = [];
+
+  sessionClauses: any
   showClauses: boolean = true;
   showClausesColumnModal: boolean = false;
+  clausesColumns: { field: string; header: string; visible: boolean }[] = [];
+  show: boolean = false;
+  isProductClauseOpen: boolean = false
+  showProductClauses: boolean = true;
+  showProductClauseColumnModal = false;
+  productClauseColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
+
   showTaxesColumnModal: boolean = false;
   showRiskColumnModal: boolean = false;
   showSectionColumnModal: boolean = false;
@@ -239,7 +246,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showConfirmButton = false;
 
 
-  clausesColumns: { field: string; header: string; visible: boolean }[] = [];
+
   taxesColumns: { field: string; header: string; visible: boolean }[] = [];
   riskColumns: { field: string; header: string; visible: boolean }[] = [];
   sectionColumns: { field: string; header: string; visible: boolean }[] = [];
@@ -284,6 +291,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   introducers: IntroducerDto[] = [];
   introducerName: string = '';
   quotationFormDetails: any;
+  quotationAuthorized: boolean;
+  fileUrl: SafeResourceUrl;
+  showWizardModal: boolean;
+  quickQuoteQuotation: boolean;
+  showCreateClientTip = false;
+
 
   constructor(
     public quotationService: QuotationsService,
@@ -342,8 +355,18 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
+    // Check if fetchQuickQuoteProductClauses has already been called for this session
+    const quickQuoteProductClausesFetched = sessionStorage.getItem('quickQuoteProductClausesFetched');
+    if (!quickQuoteProductClausesFetched) {
+      this.fetchQuickQuoteProductClauses();
+    }
     this.checkAndOpenQuickQuoteModal();
     this.quickQuoteConvertedFlag = sessionStorage.getItem('quickQuoteConvertedFlag');
+    if (this.quickQuoteConvertedFlag) {
+      this.quickQuoteQuotation = true
+      sessionStorage.setItem('quickQuoteQuotation', JSON.stringify(this.quickQuoteQuotation))
+
+    }
     this.quotationCodeString = sessionStorage.getItem('quotationCode');
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'));
     log.debug("two codes", this.quotationCode, this.quotationCodeString)
@@ -351,6 +374,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     log.debug('quotationCode', this.quotationCodeString)
     log.debug("quick Quotation number", this.quotationNumber);
     this.isNewClientSelected = JSON.parse(sessionStorage.getItem('isNewClientSelected'))
+    if (this.isNewClientSelected) {
+      setTimeout(() => this.openClientWizzard(), 300);
+
+    }
     this.storedQuotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
     log.debug("QUOTATION FORM DETAILS", this.storedQuotationFormDetails)
     this.conversionFlagString = sessionStorage.getItem("conversionFlag");
@@ -365,6 +392,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.moreDetails = sessionStorage.getItem('quotationFormDetails');
 
+
+
+
+    // 1️⃣ Patch immediate UI from session (for instant rendering)
+    this.patchQuotationData();
+
+
+
     if (this.quotationCodeString) {
       this.quotationCode = Number(this.quotationCodeString);
       log.debug("second code", this.quotationCode)
@@ -373,10 +408,27 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
         log.debug("Quotation details>>>", response)
         this.quotationDetails = response
+        sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationDetails))
+
         if ('Rejected' === response.status) {
           this.afterRejectQuote = true
         }
       });
+
+    // Retrieve authorization flag specific to this quotation
+    const authorizedFlag = sessionStorage.getItem(`quotationAuthorized_${this.quotationCode}`);
+    this.quotationAuthorized = authorizedFlag === 'true';
+
+    if (this.quotationAuthorized) {
+      this.showAuthorizeButton = false;
+      this.showViewDocumentsButton = true;
+      this.showConfirmButton = true;
+    } else {
+      this.showAuthorizeButton = true;
+      this.showViewDocumentsButton = false;
+      this.showConfirmButton = false;
+    }
+
 
 
     this.clientDetails = JSON.parse(
@@ -474,10 +526,17 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   ngAfterViewInit() {
     this.modals['chooseClientReassign'] = new bootstrap.Modal(this.chooseClientReassignModal.nativeElement);
     this.modals['reassignQuotation'] = new bootstrap.Modal(this.reassignQuotationModalElement.nativeElement);
+    this.modals['clientConsentModal'] = new bootstrap.Modal(this.clientConsentModalElement.nativeElement);
     this.modals['rejectQuotation'] = new bootstrap.Modal(this.rejectQuotationModalElement.nativeElement);
+    if (this.isNewClientSelected) {
+      setTimeout(() => this.openClientWizzard(), 300);
 
+    }
   }
 
+  hideCreateClientTip() {
+    this.showCreateClientTip = false;
+  }
   openModals(modalName: string) {
     this.modals[modalName]?.show();
   }
@@ -549,17 +608,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
 
-  // Method to show external claims
-  external() {
-    this.showExternalClaims = true;
-    this.showInternalClaims = false;
-  }
 
-  // Method to show internal claims
-  internal() {
-    this.showInternalClaims = true;
-    this.showExternalClaims = false;
-  }
 
   // closeMenu() {
   //   this.menuItems[0].expanded = false; // Collapse the section
@@ -581,6 +630,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
         this.quotationView = res;
         log.debug('QuotationView', this.quotationView)
+        sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationView))
+
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
         this.user = this.quotationView.preparedBy;
@@ -750,6 +801,141 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   }
+
+
+  patchQuotationData() {
+    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+    if (!revisedQuotation) {
+      log.debug('[QuotationSummaryComponent] No revisedQuotation found in session storage');
+      return;
+    }
+
+    const data = JSON.parse(revisedQuotation);
+    log.debug('[QuotationSummaryComponent] Patching from revisedQuotation session data:', data);
+
+    // ---Quotation Details ---
+    this.quotationView = data;
+    this.quotationDetails = data;
+    this.fetchedQuoteNum = data.quotationNo;
+    this.quotationCode = data.code;
+    this.coverFrom = this.convertDate(data.coverFrom);
+    this.coverTo = this.convertDate(data.coverTo);
+    this.expiryDate = this.convertDate(data.expiryDate);
+    this.source = data.source?.description || '';
+    this.sumInsured = data.sumInsured ?? 0;
+    this.user = data.preparedBy;
+    this.marketerCommissionAmount = data.marketerCommissionAmount ?? 0;
+    const currencySymbol = data.currency;
+
+
+    this.currencyObj = {
+      prefix: currencySymbol + ' ',
+      suffix: '',
+      thousands: ',',
+      decimal: '.',
+      align: 'left',
+      allowNegative: false,
+      allowZero: true,
+      nullable: true,
+      precision: 0
+    };
+
+    log.debug("Currency Prefix Set To:", this.currencyObj.prefix);
+
+
+
+
+    this.premiumAmount = data.premium ?? 0;
+
+
+    this.quotationProducts = data.quotationProducts || [];
+    this.products = this.quotationProducts;
+    this.productDetails = this.quotationProducts;
+    log.debug('Patched quotationProducts:', this.quotationProducts);
+
+    if (this.products.length > 0) {
+      this.activeRiskTab = this.products[0].code;
+      const firstProduct = this.products[0];
+
+      // --- Patch Risk Information ---
+      this.riskDetails = firstProduct.riskInformation || [];
+      log.debug('Patched riskDetails:', this.riskDetails);
+
+      if (this.riskDetails.length > 0) {
+        this.setColumnsFromRiskDetails(this.riskDetails[0]);
+        const firstRisk = this.riskDetails[0];
+
+        // --- Patch Sections ---
+        this.sections = firstRisk.sectionsDetails || [];
+        log.debug('Patched sections:', this.sections);
+
+        // --- Patch Schedules ---
+        const scheduleArray = firstRisk.scheduleDetails || [];
+        const firstSchedule = scheduleArray[0] || {};
+        const details = firstSchedule.details || {};
+
+        this.availableScheduleLevels = Object.keys(details);
+        this.schedulesData = {};
+        this.availableScheduleLevels.forEach(level => {
+          const levelData = details[level];
+          this.schedulesData[level] = levelData ? [levelData] : [];
+        });
+
+        this.activeScheduleTab = this.availableScheduleLevels[0] || '';
+        log.debug('Patched schedule data:', this.schedulesData);
+
+        // --- Store Section Info in Session ---
+        const sectionDetails = this.sections?.[0] || {};
+        sessionStorage.setItem('premiumRate', sectionDetails.rate?.toString() || '');
+        sessionStorage.setItem('sectionDescription', sectionDetails.sectionShortDescription || '');
+        sessionStorage.setItem('sectionType', sectionDetails.sectionType || '');
+        sessionStorage.setItem('rateType', sectionDetails.rateType || '');
+      }
+
+      // --- Patch Tax and Product Clauses ---
+      this.taxDetails = (firstProduct.taxInformation || []).map(tax => ({
+        ...tax,
+        taxAmount: tax.taxAmount ?? 0,
+        rate: tax.rate ?? 0
+      }));
+
+      this.productClauses = firstProduct.productClauses || [];
+      log.debug('Patched taxDetails:', this.taxDetails);
+      log.debug('Patched productClauses:', this.productClauses);
+
+      // --- Patch Limits of Liability ---
+      const firstRisk = this.riskDetails?.[0];
+      const subclassCode = firstRisk?.subclassCode;
+      const quotationProductCode = firstRisk?.quotationProductCode;
+      if (subclassCode && quotationProductCode) {
+        this.getLimitsofLiability(subclassCode, quotationProductCode, 'L');
+        this.getLimitsofLiability(subclassCode, quotationProductCode, 'E');
+      }
+    }
+
+    // --- Handle Client Info ---
+    this.clientCode = data.clientCode;
+    if (this.clientCode) {
+      this.loadClientDetails(this.clientCode);
+    }
+
+    // --- Final Logging ---
+    log.debug('[QuotationSummaryComponent] Final patched quotation data:', {
+      quotationNo: this.fetchedQuoteNum,
+      quotationCode: this.quotationCode,
+      coverFrom: this.coverFrom,
+      coverTo: this.coverTo,
+      expiryDate: this.expiryDate,
+      source: this.source,
+      clientCode: this.clientCode,
+      premiumAmount: this.premiumAmount,
+      taxDetails: this.taxDetails,
+      products: this.products,
+      risks: this.riskDetails,
+      sections: this.sections
+    });
+  }
+
   getRiskDetails() {
     const currentProduct = this.products.find(p => p.code === this.activeRiskTab);
     const riskDetails = currentProduct?.riskInformation || [];
@@ -987,38 +1173,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.showEmail = true
       this.showSms = false
     }
-  }
-
-  getExternalClaimsExperience(clientCode: number) {
-    this.quotationService.getExternalClaimsExperience(clientCode)
-      .pipe(
-        untilDestroyed(this)
-      )
-      .subscribe(res => {
-        this.externalClaims = res;
-        this.externalTable = this.externalClaims._embedded;
-        log.debug("external claims table", this.externalTable);
-      })
-  }
-
-  getInternalClaimsExperience(clientCode: number) {
-    this.quotationService.getInternalClaimsExperience(clientCode)
-      .pipe(
-        untilDestroyed(this)
-      )
-      .subscribe(res => {
-        this.internalClaims = res;
-        this.internalTable = this.internalClaims._embedded;
-        log.debug("internal-claims table", this.internalTable);
-      })
-  }
-
-  showExternals() {
-    this.showExternalClaims = !this.showExternalClaims
-  }
-
-  showInternal() {
-    this.showInternalClaims = !this.showInternalClaims
   }
 
   getPremiumComputationDetails() {
@@ -1259,8 +1413,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // this.getExcesses(subclassCode);
     this.getRiskClauses(data.code);
 
-    //       log.debug('subclassCode: passed for excess', subclassCode);
-    // log.debug('quotationProductCode: passed for excess', quotationProductCode);
     this.getLimitsofLiability(subclassCode, quotationProductCode, 'L');
     this.getLimitsofLiability(subclassCode, quotationProductCode, 'E')
 
@@ -1301,14 +1453,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       log.debug("No matching product found for the given code.");
     }
 
-    // this.getProductClause(proCode);
-    this.productClauses = data.productClauses
+    this.fetchAndLogQuotationProductClauses(proCode, data.productName || 'Selected Product', this.quotationView.code);
     this.getProductSubclass(proCode);
     // this.fetchSimilarQuotes(quotationProductCode);
-    log.debug('productClauses -handle click', this.productClauses)
-    if (this.productClauses) {
-      this.setColumnsFromClausesDetails(this.productClauses[0])
-    }
   }
 
   loadAllSubclass() {
@@ -1525,24 +1672,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
-  openClaimDeleteModal() {
-    log.debug("Selected Claim experience to delete", this.selectedExternalClaimExp)
-    if (!this.selectedExternalClaimExp) {
-      this.globalMessagingService.displayInfoMessage('Error', 'Select a Claim experience to continue');
-    } else {
-      document.getElementById("openClaimModalButtonDelete").click();
-    }
-  }
-
-  onExternalClaimSelect(externalClaim: any): void {
-    this.selectedExternalClaimExp = externalClaim;
-    log.debug('Selected external Claim item:', this.selectedExternalClaimExp);
-  }
-
-  onInternalClaimSelect(internalClaim: any): void {
-    this.selectedIntetnalClaimExp = internalClaim;
-    log.debug('Selected internal Claim item:', internalClaim);
-  }
 
   fetchInsurers() {
     this.quotationService.getInsurers().subscribe({
@@ -1582,180 +1711,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  createExternalClaimExp() {
-    // Mark all fields as touched and validate the form
-    this.insurersDetailsForm.markAllAsTouched();
-    this.insurersDetailsForm.updateValueAndValidity();
-    if (this.insurersDetailsForm.invalid) {
-      log.debug('Form is invalid, will not proceed');
-      return;
-    } else {
-      log.debug("The valid form", this.insurersDetailsForm);
-    }
-    Object.keys(this.insurersDetailsForm.controls).forEach(control => {
-      if (this.insurersDetailsForm.get(control).invalid) {
-        log.debug(`${control} is invalid`, this.insurersDetailsForm.get(control).errors);
-      }
-    });
 
-
-    // If form is valid, proceed
-    log.debug('Form is valid, proceeding with premium computation...');
-
-    // Extract only the name of the insurer
-    const insurer = { ...this.insurersDetailsForm.value, insurer: this.insurersDetailsForm.value.insurer?.name };
-    log.debug("Client Code", this.clientCode)
-
-    const damageAmountString = this.insurersDetailsForm.get('damageAmount').value.replace(/,/g, '');
-
-    log.debug('damageAmount (String):', damageAmountString);
-    const damageAmountInt = parseInt(damageAmountString);
-    log.debug('damageAmount (Integer):', damageAmountInt);
-
-    // Log and convert totalPaidAmount
-    const totalPaidAmountString = this.insurersDetailsForm.get('totalPaidAmount').value.replace(/,/g, '');
-    log.debug('totalPaidAmountInt (String):', totalPaidAmountString);
-    const totalPaidAmountInt = parseInt(totalPaidAmountString);
-    log.debug('totalPaidAmountInt (Integer):', totalPaidAmountInt);
-
-    // Log and convert otherAmount
-    const otherAmountString = this.insurersDetailsForm.get('otherAmount').value.replace(/,/g, '');
-    log.debug('otherAmount (String):', otherAmountString);
-    const otherAmountInt = parseInt(otherAmountString);
-    log.debug('otherAmount (Integer):', otherAmountInt);
-
-    insurer.damageAmount = damageAmountInt;
-    insurer.totalPaidAmount = totalPaidAmountInt;
-    insurer.otherAmount = otherAmountInt;
-    insurer.clientCode = this.clientCode;
-
-
-    // this.closebutton.nativeElement.click();
-
-    log.debug("EXTERNAL CLAIMS FORM-ADDING", insurer)
-    this.quotationService
-      .addExternalClaimExp(insurer)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience details added successfully');
-
-          log.debug("Response after adding external Claim Experience", response);
-          this.getExternalClaimsExperience(this.clientCode);
-
-        },
-        error: (error) => {
-          log.debug("error after adding external Claim Experience", error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to add external claim exp...Try again later');
-        }
-      }
-      );
-  }
-
-  editExternalClaimExp() {
-    // Mark all fields as touched and validate the form
-    this.insurersDetailsForm.markAllAsTouched();
-    this.insurersDetailsForm.updateValueAndValidity();
-    if (this.insurersDetailsForm.invalid) {
-      log.debug('Form is invalid, will not proceed');
-      return;
-    } else {
-      log.debug("The valid form", this.insurersDetailsForm);
-    }
-    Object.keys(this.insurersDetailsForm.controls).forEach(control => {
-      if (this.insurersDetailsForm.get(control).invalid) {
-        log.debug(`${control} is invalid`, this.insurersDetailsForm.get(control).errors);
-      }
-    });
-
-
-    // If form is valid, proceed
-    log.debug('Form is valid, proceeding with premium computation...');
-
-    // Extract only the name of the insurer
-    const insurer = { ...this.insurersDetailsForm.value, insurer: this.insurersDetailsForm.value.insurer?.name };
-    log.debug("Client Code", this.clientCode)
-
-    const damageAmountString = this.insurersDetailsForm.get('damageAmount').value.replace(/,/g, '');
-
-    log.debug('damageAmount (String):', damageAmountString);
-    const damageAmountInt = parseInt(damageAmountString);
-    log.debug('damageAmount (Integer):', damageAmountInt);
-
-    // Log and convert totalPaidAmount
-    const totalPaidAmountString = this.insurersDetailsForm.get('totalPaidAmount').value.replace(/,/g, '');
-    log.debug('totalPaidAmount (String):', totalPaidAmountString);
-    const totalPaidAmountInt = parseInt(totalPaidAmountString);
-    log.debug('totalPaidAmount (Integer):', totalPaidAmountInt);
-
-    // Log and convert otherAmount
-    const otherAmountString = this.insurersDetailsForm.get('otherAmount').value.replace(/,/g, '');
-    log.debug('otherAmount (String):', otherAmountString);
-    const otherAmountInt = parseInt(otherAmountString);
-    log.debug('otherAmount (Integer):', otherAmountInt);
-
-    insurer.damageAmount = damageAmountInt;
-    insurer.totalPaidAmount = totalPaidAmountInt;
-    insurer.otherAmount = otherAmountInt;
-    insurer.clientCode = this.clientCode;
-    insurer.code = this.selectedExternalClaimExp.code;
-
-
-    // this.closebutton.nativeElement.click();
-
-    log.debug("EXTERNAL CLAIMS FORM-EDITING", insurer)
-    this.quotationService
-      .editExternalClaimExp(insurer)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience details edited successfully');
-
-          log.debug("Response after editing external Claim Experience", response);
-          this.getExternalClaimsExperience(this.clientCode);
-          this.selectedExternalClaimExp = null;
-
-        },
-        error: (error) => {
-          log.debug("Error editing an external claim exp", error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to edit external claim exp...Try again later');
-        }
-      }
-      );
-  }
-
-  deleteExternalClaimExperience() {
-
-    if (this.selectedExternalClaimExp.code) {
-      this.externalClaimExpCode = this.selectedExternalClaimExp.code;
-      log.debug('External claim exp code: ', this.externalClaimExpCode);
-    }
-
-    this.quotationService
-      .deleteExternalClaimExp(this.externalClaimExpCode)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (response: any) => {
-          log.debug("Response after deleting an external claim experience ", response);
-          this.globalMessagingService.displaySuccessMessage('Success', 'External claim experience deleted successfully');
-          this.getExternalClaimsExperience(this.clientCode);
-          this.selectedExternalClaimExp = null;
-        },
-        error: (error) => {
-          log.debug('Error deleting external claim exp', error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete external claim exp...Try again later');
-        }
-      }
-      );
-  }
-
-  openExternalClaimExpEditModal() {
-    if (!this.selectedExternalClaimExp) {
-      this.globalMessagingService.displayInfoMessage('Error', 'Please select an external claim experience to edit');
-    } else {
-      this.populateEditForm();
-    }
-  }
 
   populateEditForm() {
     // Find the matching insurer object from the insurersList
@@ -1790,13 +1746,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  externalClaimExpAction() {
-    if (!this.selectedExternalClaimExp) {
-      this.createExternalClaimExp();
-    } else {
-      this.editExternalClaimExp();
-    }
-  }
+
 
 
   clearForm() {
@@ -2698,59 +2648,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }));
   }
 
-  // setColumnsFromClausesDetails(sample: ProductClauses) {
-  //   log.debug("SET COLUMN FOR PRODUCT CLAUSES", sample)
-  //   const defaultVisibleFields = [
-  //     'clauseShortDescription',
-  //     'clauseHeading',
-  //     'clause',
 
-  //   ];
-  //   const excludedFields = [];
-
-  //   this.clausesColumns = Object.keys(sample)
-  //     .filter((key) => !excludedFields.includes(key))
-  //     .map((key) => ({
-  //       field: key,
-  //       header: this.sentenceCase(key),
-  //       visible: defaultVisibleFields.includes(key),
-  //     }));
-
-
-  // }
-
-
-  setColumnsFromClausesDetails(sample: ProductClauses) {
-    log.debug("SET COLUMN FOR PRODUCT CLAUSES");
-
-    const defaultVisibleFields = [
-      'clauseShortDescription',
-      'clauseHeading',
-      'clause',
-    ];
-
-    const excludedFields: string[] = [];
-
-    // All keys from the sample
-    const keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
-
-    // Separate default fields and the rest
-    const defaultFields = defaultVisibleFields.filter(f => keys.includes(f));
-    const otherFields = keys.filter(k => !defaultVisibleFields.includes(k));
-
-    // Strictly order = defaults first, then others
-    const orderedKeys = [...defaultFields, ...otherFields];
-
-    this.clausesColumns = orderedKeys.map(key => ({
-      field: key,
-      header: this.sentenceCase(key),
-      visible: defaultVisibleFields.includes(key),
-      truncate: defaultVisibleFields.includes(key), // only these get truncated
-    }));
-
-    log.debug("clause columns", this.clausesColumns);
-    log.debug("product clauses clause columns:", this.productClauses);
-  }
 
 
 
@@ -3138,7 +3036,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   get authorizeButtonDisabled(): boolean {
-    return this.hasExceptionsData() || this.hasEmptySchedules();
+    return this.hasExceptionsData() || this.hasEmptySchedules() || this.isNewClientSelected;
   }
 
   authorizeQuote() {
@@ -3162,6 +3060,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             'Success',
             res?.message || 'Quotation authorized successfully.'
           );
+
+          sessionStorage.setItem(`quotationAuthorized_${quotationCode}`, 'true');
+
 
           // Step 2: Update Status
           const newStatus = 'Pending';
@@ -3210,7 +3111,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             'This quotation is already authorized.'
           );
           this.quotationAuthorized = true;
-          sessionStorage.setItem('quotationHasBeenAuthorzed', JSON.stringify(this.quotationAuthorized))
+          sessionStorage.setItem(`quotationAuthorized_${quotationCode}`, 'true');
           this.showAuthorizeButton = false;
           this.showViewDocumentsButton = true;
           this.showConfirmButton = true;
@@ -3258,19 +3159,66 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
+  // verifyOTP() {
+  //   const userIdentifier = this.otpResponse.userIdentifier
+  //   const otp = this.shareForm.value.otp
+  //   this.quotationService.verifyOTP(userIdentifier, otp)
+  //     .subscribe({
+  //       next: (res: any[]) => {
+  //         if (res) {
+  //           this.globalMessagingService.displaySuccessMessage("Succes", "Successfully verified OTP")
+
+  //           const modal = bootstrap.Modal.getInstance(this.consentModal.nativeElement);
+  //           modal.hide();
+  //           this.otpGenerated = false
+  //           this.changeToPolicyButtons = true
+  //           if (this.changeToPolicyButtons) {
+  //             this.showViewDocumentsButton = false
+  //             this.showConfirmButton = false
+  //           }
+  //         }
+  //       },
+  //       error: (err: any) => {
+  //         const backendMsg = err.error?.message || err.message || 'An unexpected error occurred'; console.error("OTP Verification Error:", backendMsg);
+
+  //         // 🔔 Show in global error handler
+  //         this.globalMessagingService.displayErrorMessage("Error", backendMsg);
+  //       }
+  //     });
+  // }
+  closeConsentModal() {
+
+    this.closeModals('clientConsentModal');
+  }
   verifyOTP() {
+
     const userIdentifier = this.otpResponse.userIdentifier
     const otp = this.shareForm.value.otp
     this.quotationService.verifyOTP(userIdentifier, otp)
       .subscribe({
         next: (res: any[]) => {
-          this.globalMessagingService.displaySuccessMessage("Succes", "Successfully verified OTP")
           if (res) {
-            // Close modal only on success
-            const modalEl: any = this.consentModal.nativeElement;
-            const modal = bootstrap.Modal.getInstance(modalEl)
-              || new bootstrap.Modal(modalEl);
-            modal.hide();
+            this.globalMessagingService.displaySuccessMessage("Succes", "Successfully verified OTP");
+
+            (document.activeElement as HTMLElement)?.blur();
+
+            const modalEl = this.clientConsentModalElement.nativeElement;
+            const modal = bootstrap.Modal.getInstance(modalEl);
+
+            if (modal) {
+              // Add event listener for when modal is fully hidden
+              modalEl.addEventListener(
+                'hidden.bs.modal',
+                () => {
+                  document.body.classList.remove('modal-open');
+                  document.body.style.overflow = '';
+                  document.body.style.paddingRight = '';
+                },
+                { once: true } // remove listener automatically
+              );
+
+              modal.hide();
+            }
             this.otpGenerated = false
             this.changeToPolicyButtons = true
             if (this.changeToPolicyButtons) {
@@ -3279,14 +3227,22 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             }
           }
         },
-        error: (err: any) => {
-          const backendMsg = err.error?.message || err.message || 'An unexpected error occurred'; console.error("OTP Verification Error:", backendMsg);
-
-          // 🔔 Show in global error handler
-          this.globalMessagingService.displayErrorMessage("Error", backendMsg);
-        }
+       error: (err: any) => {
+  let backendMessage = "An error occurred while verifying OTP";
+  
+  if (typeof err === 'string') {
+    
+    backendMessage = "Invalid, expired or already used OTP";
+  } else {
+    backendMessage = err?.error?.message || err?.message || backendMessage;
+  }
+  
+  this.globalMessagingService.displayErrorMessage("Error", backendMessage);
+}
       });
   }
+
+
   fetchReports() {
     const system = 37;
     const applicationLevel = "QUOTE"
@@ -3617,6 +3573,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     if (this.userInstructionsModalInstance) {
       this.userInstructionsModalInstance.hide();
     }
+    sessionStorage.setItem('quickQuoteConvertedFlag', 'false');
     setTimeout(() => this.openWizzard(), 300);
   }
 
@@ -3624,6 +3581,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.showWizzardModal = true;
   }
 
+  openClientWizzard() {
+    log.debug("openClientWizzard called")
+    this.showClientWizzardModal = true;
+  }
   /**
    * Gets the full payment frequency label based on the abbreviation
    * @param frequencyValue - The frequency abbreviation (A, S, Q, M, O)
@@ -3635,6 +3596,225 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     const frequency = this.paymentFrequencies.find(freq => freq.value === frequencyValue);
     return frequency ? frequency.label : frequencyValue;
   }
+
+  fetchQuickQuoteProductClauses() {
+    const quickQuotePayloadString = sessionStorage.getItem('quickQuotePayload');
+
+    if (!quickQuotePayloadString) {
+      log.debug('quickQuotePayload not found in session storage');
+      return;
+    }
+
+    const quotationCodeString = sessionStorage.getItem('quotationCode');
+    if (!quotationCodeString) {
+      log.debug('quotationCode not found in session storage');
+      return;
+    }
+
+    try {
+      const quickQuotePayload = JSON.parse(quickQuotePayloadString);
+      const quotationCode = Number(quotationCodeString);
+      if (!quickQuotePayload.products || quickQuotePayload.products.length === 0) {
+        log.debug('No products found in quickQuotePayload');
+        return;
+      }
+
+      sessionStorage.setItem('quickQuoteProductClausesFetched', 'true');
+      // log.debug('fetchQuickQuoteProductClauses marked as executed in session storage');
+
+      const allProductClausesPayload: any[] = [];
+
+      quickQuotePayload.products.forEach((product: any, index: number) => {
+        const productCode = product.code;
+
+        if (!productCode) {
+          log.debug(`Product at index ${index} has no code`);
+          return;
+        }
+
+        log.debug(`Fetching clauses for product: ${product.description} (Code: ${productCode})`);
+
+        this.quotationService.getProductClauses(productCode)
+          .subscribe({
+            next: (clauses) => {
+              log.debug(`All clauses for product ${product.description} (Code: ${productCode}):`, clauses);
+
+              // Filter to get only mandatory clauses 
+              const mandatoryClauses = clauses.filter((clause: any) => clause.isMandatory === 'Y');
+              log.debug(`Mandatory clauses for product ${product.description} (Code: ${productCode}):`, mandatoryClauses);
+
+              if (mandatoryClauses.length === 0) {
+                log.debug(`No mandatory clauses found for product ${product.description} (Code: ${productCode})`);
+                return;
+              }
+
+              //mandatory product clauses
+              const transformedClauses = mandatoryClauses.map((clause: any) => ({
+                clauseWording: clause.wording || '',
+                clauseHeading: clause.heading || '',
+                clauseCode: clause.code || 0,
+                clauseType: clause.type || '',
+                clauseEditable: clause.isEditable || 'N',
+                clauseShortDescription: clause.shortDescription || ''
+              }));
+
+              const productClausePayload = {
+                quotationCode: quotationCode,
+                productCode: productCode,
+                productClauses: transformedClauses
+              };
+
+              allProductClausesPayload.push(productClausePayload);
+
+              log.debug(`Transformed mandatory clauses for product ${product.description}:`, productClausePayload);
+
+              // Post only the mandatory clauses to the quotation
+              this.quotationService.createQuotationProductClauses([productClausePayload])
+                .subscribe({
+                  next: (response) => {
+                    log.debug(`Successfully posted mandatory clauses for product ${product.description} (Code: ${productCode}):`, response);
+                    this.globalMessagingService.displaySuccessMessage(
+                      'Success',
+                      `Mandatory product clauses added successfully for ${product.description}`
+                    );
+
+                    this.fetchAndLogQuotationProductClauses(productCode, product.description, quotationCode);
+                  },
+                  error: (err) => {
+                    log.debug(`Error posting mandatory clauses for product ${product.description} (Code: ${productCode}):`, err);
+                    this.globalMessagingService.displayErrorMessage(
+                      'Error',
+                      `Failed to add mandatory clauses for ${product.description}. Please try again.`
+                    );
+                  }
+                });
+            },
+            error: (err) => {
+              log.debug(`Error fetching clauses for product ${product.description} (Code: ${productCode}):`, err);
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                `Failed to fetch clauses for ${product.description}. Please try again.`
+              );
+            }
+          });
+      });
+
+    } catch (error) {
+      log.debug('Error parsing quickQuotePayload from session storage:', error);
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Failed to process product clauses. Please refresh and try again.'
+      );
+    }
+  }
+
+  /**
+   * Fetches and logs quotation product clauses after they have been posted
+   * @param productCode - The product code
+   * @param productDescription - The product description for logging
+   * @param quotationCode - The quotation code
+   */
+  fetchAndLogQuotationProductClauses(productCode: number, productDescription: string, quotationCode: number) {
+    this.quotationService.getQuotationDetails(quotationCode)
+      .subscribe({
+        next: (quotationDetails: any) => {
+          const quotationProduct = quotationDetails.quotationProducts?.find(
+            (qp: any) => qp.productCode === productCode
+          );
+
+          if (quotationProduct && quotationProduct.code) {
+            const quotationProductCode = quotationProduct.code;
+            // log.debug(`Found quotationProductCode ${quotationProductCode} for product ${productDescription} (Code: ${productCode})`);
+
+            this.quotationService.getQuotationProductClauses(quotationProductCode)
+              .subscribe({
+                next: (response: any) => {
+                  if (response.status === 'SUCCESS' && response._embedded) {
+                    const clauses = response._embedded;
+                    // log.debug(`${response.message} - Retrieved ${clauses.length} clauses for ${productDescription}`);
+                    this.sessionClauses = clauses;
+                    if (this.sessionClauses.length > 0) {
+                      this.setProductClauseColumns(this.sessionClauses[0]);
+                    }
+
+                  } else {
+                    log.debug(`Unexpected response format or no clauses for ${productDescription}:`, response);
+                  }
+                },
+                error: (err) => {
+                  log.debug(`Error fetching quotation product clauses for ${productDescription}:`, err);
+                }
+              });
+          } else {
+            log.debug(`Could not find quotationProductCode for product ${productDescription} (Code: ${productCode}) in quotation details`);
+          }
+        },
+        error: (err) => {
+          log.debug(`Error fetching quotation details to get quotationProductCode for product ${productDescription}:`, err);
+        }
+      });
+  }
+
+  //product clauses
+  saveProductClauseColumnsToSession(): void {
+    if (this.productClauseColumns) {
+      const visibility = this.productClauseColumns.map(col => ({
+        field: col.field,
+        visible: col.visible
+      }));
+      sessionStorage.setItem('productClauseColumns', JSON.stringify(visibility));
+    }
+  }
+
+  toggleProductClauseColumnVisibility(field: string) {
+    this.saveProductClauseColumnsToSession();
+  }
+
+  toggleProductClauseColumns(iconElement: HTMLElement): void {
+
+    this.showProductClauses = true;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 160;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showProductClauseColumnModal = true;
+  }
+
+  setProductClauseColumns(productClause: any) {
+    const excludedFields = [
+    ];
+
+    this.productClauseColumns = Object.keys(productClause)
+      .filter((key) => !excludedFields.includes(key))
+      .map((key) => ({
+        field: key,
+        header: this.sentenceCase(key),
+        visible: this.defaultVisibleProductClauseFields.includes(key),
+        filterable: true,
+        sortable: true
+      }));
+
+    const saved = sessionStorage.getItem('productClauseColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.productClauseColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
+
+    // log.debug("productClauseColumns", this.productClauseColumns);
+  }
+
+  defaultVisibleProductClauseFields = ['clauseShortDescription', 'clauseHeading', 'clauseWording'];
+
 
 }
 

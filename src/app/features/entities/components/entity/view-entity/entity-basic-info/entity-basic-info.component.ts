@@ -46,8 +46,8 @@ export class EntityBasicInfoComponent {
   @Input() unAssignedPartyTypes: PartyTypeDto[];
   @Input() overviewConfig: any;
   @Input() clientDetails: any;
+  @Input() formGroupsAndFieldConfig: any;
 
-  basicInfo: any;
   language: string = 'en'
   selectedRole: PartyTypeDto;
   clientStatuses: StatusDTO[];
@@ -60,6 +60,15 @@ export class EntityBasicInfoComponent {
   isEditingWefWet: boolean = false;
   wetDateForm:FormGroup;
   photoPreviewUrl: string = '../../../../../../../assets/images/profile_picture_placeholder.png';
+
+  applicable_status = {
+    "active": ["active", "suspended", "inactive", "blacklisted"],
+    "inactive": ["active", "suspended", "inactive", "blacklisted"],
+    "blacklisted": ["active", "suspended", "inactive", "blacklisted"],
+    "ready": ["ready", "active", "blacklisted"],
+    "suspended": ["active", "suspended", "inactive", "blacklisted"],
+    "draft": ["draft", "ready"]
+  };
 
   constructor(
     private utilService: UtilService,
@@ -79,17 +88,9 @@ export class EntityBasicInfoComponent {
     })
 
     setTimeout(() => {
-      this.basicInfo = this.overviewConfig?.basic_info;
       this.fetchClientStatuses();
-      log.info('client details for basic info >>> ', this.clientDetails);
-      // this.photoPreviewUrl =
     }, 1000);
   }
-
-  getFieldLabel(fieldName: string): ConfigFormFieldsDto {
-    return this.overviewFormFields.filter(el => el.originalLabel.toLowerCase() === fieldName.toLowerCase())[0]
-  }
-
 
   fetchClientStatuses(): void {
     this.statusService.getClientStatus().subscribe({
@@ -103,8 +104,6 @@ export class EntityBasicInfoComponent {
 
   setCurrentStatus(statuses: StatusDTO[]): void {
     const activeStatus = (this.partyAccountDetails?.status)?.toUpperCase();
-    // const activeStatus = 'D'.toUpperCase();
-    // this.partyAccountDetails.status = 'D'
 
     switch (activeStatus) {
       case 'A':
@@ -136,7 +135,7 @@ export class EntityBasicInfoComponent {
     const filteredStatuses = [];
     this.actionableStatuses = [];
     const currentStatus: string = (this.selectedClientStatus?.value)?.toLowerCase();
-    const applicableStatuses: string[] = this.overviewConfig.applicable_status[currentStatus];
+    const applicableStatuses: string[] = this.applicable_status[currentStatus];
 
     this.clientStatuses.forEach((status: StatusDTO) => {
       if (applicableStatuses &&
@@ -259,7 +258,10 @@ export class EntityBasicInfoComponent {
         }
       })
     }
+  }
 
+  getFieldLabel(fieldName: string): ConfigFormFieldsDto {
+    return this.overviewConfig.fields.filter(el => el.originalLabel.toLowerCase() === fieldName.toLowerCase())[0]
   }
 
 }

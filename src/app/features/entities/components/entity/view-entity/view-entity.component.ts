@@ -1,39 +1,36 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { StaffDto } from '../../../data/StaffDto';
-import { AgentDTO } from '../../../data/AgentDTO';
-import { PartyTypeDto } from '../../../data/partyTypeDto';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {StaffDto} from '../../../data/StaffDto';
+import {AgentDTO} from '../../../data/AgentDTO';
+import {PartyTypeDto} from '../../../data/partyTypeDto';
 import {
   AccountReqPartyId,
-  EntityDto, IdentityModeDTO,
+  EntityDto,
+  IdentityModeDTO,
   PoliciesDTO,
   ReqPartyById,
   Roles,
 } from '../../../data/entityDto';
-import { Pagination } from '../../../../../shared/data/common/pagination';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {ReplaySubject, finalize, takeUntil, take, forkJoin} from 'rxjs';
-import { PartyAccountsDetails } from '../../../data/accountDTO';
-import { ActivatedRoute, Router } from '@angular/router';
-import { EntityService } from '../../../services/entity/entity.service';
-import { AccountService } from '../../../services/account/account.service';
-import { DatePipe } from '@angular/common';
+import {Pagination} from '../../../../../shared/data/common/pagination';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {finalize, ReplaySubject, take, takeUntil} from 'rxjs';
+import {PartyAccountsDetails} from '../../../data/accountDTO';
+import {ActivatedRoute, Router} from '@angular/router';
+import {EntityService} from '../../../services/entity/entity.service';
+import {AccountService} from '../../../services/account/account.service';
+import {DatePipe} from '@angular/common';
 import {Logger, UtilService} from '../../../../../shared/services';
-import { ClientDTO } from '../../../data/ClientDTO';
-import { ServiceProviderRes } from '../../../data/ServiceProviderDTO';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { QuotationsDTO } from '../../../../gis/data/quotations-dto';
-import { ClaimsDTO } from '../../../../gis/data/claims-dto';
+import {ClientDTO} from '../../../data/ClientDTO';
+import {ServiceProviderRes} from '../../../data/ServiceProviderDTO';
+import {NgxSpinnerService} from 'ngx-spinner';
+import {QuotationsDTO} from '../../../../gis/data/quotations-dto';
+import {ClaimsDTO} from '../../../../gis/data/claims-dto';
 
-import { EntityTransactionsComponent } from './entity-transactions/entity-transactions.component';
-import { CountryService } from '../../../../../shared/services/setups/country/country.service';
-import {
-  CountryDto,
-  StateDto,
-} from '../../../../../shared/data/common/countryDto';
-import { BankService } from '../../../../../shared/services/setups/bank/bank.service';
-import { BankBranchDTO } from '../../../../../shared/data/common/bank-dto';
-import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
-import {HttpClient} from "@angular/common/http";
+import {EntityTransactionsComponent} from './entity-transactions/entity-transactions.component';
+import {CountryService} from '../../../../../shared/services/setups/country/country.service';
+import {CountryDto, StateDto,} from '../../../../../shared/data/common/countryDto';
+import {BankService} from '../../../../../shared/services/setups/bank/bank.service';
+import {BankBranchDTO} from '../../../../../shared/data/common/bank-dto';
+import {GlobalMessagingService} from '../../../../../shared/services/messaging/global-messaging.service';
 import {PrimeIdentityComponent} from "./prime-identity/prime-identity.component";
 import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
 import {ContactComponent} from "./contact/contact.component";
@@ -47,7 +44,11 @@ import {
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto
+  FormGroupsDto,
+  FormSubGroupsDto,
+  SaveAction,
+  SaveAddressAction, SaveFinanceAction,
+  SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('ViewEntityComponent');
@@ -67,7 +68,7 @@ export class ViewEntityComponent implements OnInit {
   @ViewChild('financialRef') financialComponent!: FinancialComponent;
   @ViewChild('wealthAmlRef') wealthAmlComponent!: WealthAmlComponent;
 
-  entityTransactions: EntityTransactionsComponent;
+  // entityTransactions: EntityTransactionsComponent;
 
   public entityDetails: StaffDto | ClientDTO | ServiceProviderRes | AgentDTO;
 
@@ -82,7 +83,7 @@ export class ViewEntityComponent implements OnInit {
   page = 0;
   pageSize = 5;
   checked: boolean;
-  showRelatedAccountsTab: boolean = false;
+  // showRelatedAccountsTab: boolean = false;
 
   entitySummaryForm: FormGroup;
   selectRoleModalForm: FormGroup;
@@ -114,27 +115,26 @@ export class ViewEntityComponent implements OnInit {
   states: StateDto[] = [];
 
   wealthAmlDetails: any;
-  bankDetails: any;
+  // bankDetails: any;
   nokDetails: any[] = [];
   bankBranchDetails: BankBranchDTO;
 
   partyTypes: PartyTypeDto[];
-  selectedTab: string = 'overview';
-  selectedSubTab: string = 'prime_identity';
+  selectedTab: string = '360 overview';
+  selectedSubTab: string = 'Prime Identity';
 
   primaryTabs: string[] = [];
   secondaryTabs: string[] = [];
-  secondaryTabs2: string[] = [];
 
   dynamicDisplay: any = null;
 
   language: string = 'en';
 
-  editPrimeDetailsFormConfig: any;
-  editContactFormConfig: any;
-  editAddressFormConfig: any;
-  editFinancialFormConfig: any;
-  editWealthAmlFormConfig: any;
+  // editPrimeDetailsFormConfig: any;
+  // editContactFormConfig: any;
+  // editAddressFormConfig: any;
+  // editFinancialFormConfig: any;
+  // editWealthAmlFormConfig: any;
 
   selectOptions: {
     idTypes: IdentityModeDTO[],
@@ -143,8 +143,15 @@ export class ViewEntityComponent implements OnInit {
   } = undefined
 
   clientDetails: ClientDTO;
-  dynamicScreenFormGroupSetup: FormGroupsDto[];
-  overviewFormFields: ConfigFormFieldsDto[]
+  formGroupsAndFieldConfig: any;
+  subModuleId: string = '360_overview';
+  moduleId: string = 'account_management';
+  subModules: SubModulesDto[];
+
+  Save_Action = SaveAction;
+  // saveAction: SaveAction;
+
+  // protected readonly SaveAction = SaveAction;
 
   constructor(
     private fb: FormBuilder,
@@ -158,7 +165,6 @@ export class ViewEntityComponent implements OnInit {
     private bankService: BankService,
     private globalMessagingService: GlobalMessagingService,
     private utilService: UtilService,
-    private http: HttpClient,
     private clientService: ClientService,
     private dynamicScreenSetupService: DynamicScreensSetupService,
   ) {
@@ -170,10 +176,9 @@ export class ViewEntityComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.fetchSelectOptions();
-    this.fetchOverviewFormFields();
-    this.fetchDynamicDisplayConfig();
-    this.edit360ViewFormsConfig();
+    this.fetchSubModules();
+    // this.fetchDynamicDisplayConfig();
+    // this.edit360ViewFormsConfig();
     this.createEntitySummaryForm();
     this.createSelectRoleForm();
     this.entityId = this.activatedRoute.snapshot.params['id'];
@@ -184,17 +189,17 @@ export class ViewEntityComponent implements OnInit {
   }
 
   /**
-   * Fetch overview form details
+   * Fetch submodules for upper screen display
    */
-  fetchOverviewFormFields(): void {
-    const subModuleCode = 41;
-    this.dynamicScreenSetupService.fetchFormFields(subModuleCode).subscribe({
-      next: (result: ConfigFormFieldsDto[]) => {
-        this.overviewFormFields = result;
+  fetchSubModules(): void {
+    this.dynamicScreenSetupService.fetchSubModules(null, this.moduleId).subscribe({
+      next: data => {
+        this.subModules = data.filter(el => el.subModuleId.includes('360'));
+        this.primaryTabs = this.subModules.map(item => item.originalLabel);
       },
       error: err => {
         this.globalMessagingService.displayErrorMessage('Error', err.error.message)
-      }
+      },
     })
   }
 
@@ -202,13 +207,17 @@ export class ViewEntityComponent implements OnInit {
    * This method fetches the setup configuration for Entity360 screen
    */
   fetchDynamicScreenSetup(): void {
-    // const screenCode = 1;
-    const subModuleId: string = '360_overview';
     const targetEntityShortDescription: string = this.entityAccountIdDetails[0].partyType.partyTypeShtDesc;
 
-    this.dynamicScreenSetupService.fetchDynamicSetupByScreen(null, null, subModuleId, targetEntityShortDescription).subscribe({
-      next: (result: DynamicScreenSetupDto) => {
-        this.filterGroupsAndFieldsByCategory(result)
+    this.dynamicScreenSetupService.fetchDynamicSetupByScreen(
+      null,
+      null,
+      null,
+      this.subModuleId,
+      targetEntityShortDescription
+    ).subscribe({
+      next: (res: DynamicScreenSetupDto) => {
+        this.filterGroupsAndFieldsByCategory(res)
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage('Error', err.error.message)
@@ -221,8 +230,11 @@ export class ViewEntityComponent implements OnInit {
    * @param dynamicScreenSetupDto
    */
   filterGroupsAndFieldsByCategory(dynamicScreenSetupDto: DynamicScreenSetupDto): void {
-    const category: string = (this.activatedRoute.snapshot.queryParams['category']).toLowerCase();
+    const category: string = (this.activatedRoute.snapshot.queryParams['category'])?.toLowerCase();
     const partyTypeShtDesc: string = this.entityAccountIdDetails[0].partyType.partyTypeShtDesc;
+
+    log.info('dynamic screen setup result', dynamicScreenSetupDto);
+
 
     let groups: FormGroupsDto[];
     let fields: ConfigFormFieldsDto[];
@@ -243,15 +255,17 @@ export class ViewEntityComponent implements OnInit {
       //
     }
 
+    this.secondaryTabs = groups.map(item => item.originalLabel)
+
 
     // map entity details with fields setup
-    switch (partyTypeShtDesc) {
+    /*switch (partyTypeShtDesc) {
       case 'C':
         this.mapClientDetailsWithFieldSetup(this.clientDetails, fields);
         break;
-    }
+    }*/
 
-    log.info('setup groups >>> ', groups);
+    /*log.info('setup groups >>> ', groups);
     log.info ('setup fields >>> ', fields);
 
     for (const group of groups) {
@@ -259,11 +273,12 @@ export class ViewEntityComponent implements OnInit {
       this.secondaryTabs2.push(group.groupId);
     }
     this.dynamicScreenFormGroupSetup = groups;
-    this.selectedSubTab = groups[0].groupId;
+    this.selectedSubTab = groups[0].groupId;*/
+    this.formGroupsAndFieldConfig = { groups, fields };
     log.info('sorted groups with fields >>> ', groups);
   }
 
-  fetchDynamicDisplayConfig(): void {
+  /*fetchDynamicDisplayConfig(): void {
     this.http.get<any>( 'assets/data/dynamicDisplay360View.json').subscribe({
       next: (data: any) => {
         this.dynamicDisplay = data;
@@ -288,10 +303,10 @@ export class ViewEntityComponent implements OnInit {
         log.error(err);
       }
     });
-  }
+  }*/
 
 
-  edit360ViewFormsConfig(): void {
+  /*edit360ViewFormsConfig(): void {
     this.http.get<any>( 'assets/data/edit360ViewForms.json').subscribe({
       next: (data: any) => {
         this.editPrimeDetailsFormConfig = data.prime_identity;
@@ -304,7 +319,7 @@ export class ViewEntityComponent implements OnInit {
         log.error(err);
       }
     });
-  }
+  }*/
 
   getCountries() {
     this.countryService
@@ -396,113 +411,6 @@ export class ViewEntityComponent implements OnInit {
         this.globalMessagingService.displayErrorMessage('Error', 'Could not fetch client details');
       },
     })
-  }
-
-  mapClientDetailsWithFieldSetup(clientDetails: ClientDTO, fields:ConfigFormFieldsDto[]): void {
-    let overviewInfo: {};
-
-    if (clientDetails.category.toLowerCase() === 'individual') {
-      overviewInfo = {
-        // prime identity
-        overview_business_reg_no: clientDetails.idNumber,
-        overview_pin_number: clientDetails.pinNumber,
-        overview_date_of_incorporation: clientDetails.dateOfBirth,
-        overview_client_type: clientDetails.clientType.clientTypeName,
-        overview_primary_id_type: clientDetails.modeOfIdentity,
-        overview_id_number: clientDetails.idNumber,
-        overview_date_of_birth: clientDetails.dateOfBirth,
-        overview_citizenship: clientDetails.citizenshipCountryId,
-        overview_gender: clientDetails.gender,
-        overview_marital_status: clientDetails.maritalStatus,
-
-        // contact details
-        overview_title: clientDetails.contactDetails.title.description,
-        overview_contact_person_full_name: clientDetails.contactDetails.principalContactName,
-        overview_contact_details_email: clientDetails.contactDetails.emailAddress,
-        overview_website_url: clientDetails.contactDetails.websiteUrl,
-        overview_tel_no: clientDetails.contactDetails.phoneNumber,
-        overview_pref_contact_channel: clientDetails.contactDetails.contactChannel,
-        overview_social_media: clientDetails.contactDetails.socialMediaURL,
-        overview_contact_person_mobile_no: clientDetails.contactDetails.contactPersonMobileNo,
-        overview_wef: clientDetails.contactDetails.wef,
-        overview_wet: clientDetails.contactDetails.wet,
-        overview_sms_number: clientDetails.contactDetails.smsNumber,
-        overview_telephone_number: clientDetails.contactDetails.phoneNumber,
-        overview_email: clientDetails.contactDetails.emailAddress,
-
-
-        // address details
-        overview_country: clientDetails.address.countryId,
-        overview_county: clientDetails.address.townId,
-        overview_city: clientDetails.address.stateId,
-        overview_physical_address: clientDetails.address.physicalAddress,
-        overview_postal_address: clientDetails.address.residentialAddress,
-        overview_postal_code: clientDetails.address.postalCode,
-        overview_road: clientDetails.address.road,
-        overview_house_name_no: clientDetails.address.houseNumber
-      };
-    } else {
-      overviewInfo = {
-        // prime identity
-        overview_business_reg_no: clientDetails.idNumber,
-        overview_pin_number: clientDetails.pinNumber,
-        overview_date_of_incorporation: clientDetails.dateOfBirth,
-        overview_client_type: clientDetails.clientType,
-        overview_primary_id_type: clientDetails.modeOfIdentity,
-        overview_id_number: clientDetails.idNumber,
-        overview_date_of_birth: clientDetails.dateOfBirth,
-        overview_citizenship: clientDetails.citizenshipCountryId,
-        overview_gender: clientDetails.gender,
-        overview_marital_status: clientDetails.maritalStatus,
-
-        // contact details
-        overview_title: clientDetails.contactDetails.title,
-        overview_contact_person_full_name: clientDetails.contactDetails.principalContactName,
-        overview_contact_details_email: clientDetails.contactDetails.emailAddress,
-        overview_contact_person_doc_id_no: null,
-        overview_website_url: clientDetails.contactDetails.websiteUrl,
-        overview_tel_no: clientDetails.contactDetails.phoneNumber,
-        overview_contact_person_email: clientDetails.contactDetails.emailAddress,
-        overview_pref_contact_channel: clientDetails.contactDetails.contactChannel,
-        overview_social_media: clientDetails.contactDetails.socialMediaURL,
-        overview_contact_person_mobile_no: clientDetails.contactDetails.phoneNumber,
-        overview_wef: clientDetails.withEffectFromDate,
-        overview_wet: clientDetails.withEffectToDate,
-        overview_branch: null,
-        overview_sms_number: clientDetails.contactDetails.smsNumber,
-        overview_telephone_number: clientDetails.contactDetails.phoneNumber,
-        overview_email: clientDetails.contactDetails.emailAddress,
-
-        // address details
-        overview_branch_Id: clientDetails.address.id,
-        overview_head_office_address: null,
-        overview_branch_details_name: null,
-        overview_head_office_country: null,
-        overview_head_office_county: null,
-        overview_country: clientDetails.address.countryId,
-        overview_head_office_city: null,
-        overview_county: clientDetails.address.townId,
-        overview_head_office_physical_address: null,
-        overview_city: clientDetails.address.stateId,
-        overview_head_office_postal_address: null,
-        overview_physical_address: clientDetails.address.physicalAddress,
-        overview_head_office_postal_code: null,
-        overview_postal_address: clientDetails.address.residentialAddress,
-        overview_postal_code: clientDetails.address.postalCode,
-        overview_branch_email: null,
-        overview_landline_number: null,
-        overview_branch_mobile_no: null,
-        overview_road: clientDetails.address.road,
-        overview_house_name_no: clientDetails.address.houseNumber
-      };
-    }
-
-
-    for (const field of fields) {
-      field.dataValue = overviewInfo[field.fieldId] ?? null;
-      log.info(' mapped fields with data value >>> ', field, overviewInfo[field.fieldId]);
-    }
-    log.info('client details >>> ', clientDetails);
   }
 
   /***
@@ -598,8 +506,8 @@ export class ViewEntityComponent implements OnInit {
       .subscribe((data: AccountReqPartyId[]) => {
         this.entityAccountIdDetails = data;
         this.getUnAssignedRoles();
-        // this.fetchDynamicScreenSetup(data[0].partyType.partyTypeShtDesc);
         this.entityService.setCurrentEntityAccounts(data);
+        this.fetchDynamicScreenSetup();
         // this.fetchAllPartyAccountsDetails();
       });
   }
@@ -821,25 +729,25 @@ export class ViewEntityComponent implements OnInit {
 
 
   selectTab(tab: any): void {
-    log.info('selected tab >>> ', tab)
-    this.selectedTab = this.primaryTabs.includes(tab.title) ? tab.title : this.selectedTab;
-    // this.selectedSubTab = this.secondaryTabs.includes(tab.title) ? tab.title : this.selectedSubTab;
-    this.selectedSubTab = this.secondaryTabs2.includes(tab.groupId) ? tab.groupId : this.selectedSubTab;
+    this.selectedTab = this.primaryTabs.includes(tab.originalLabel) ? tab.originalLabel : this.selectedTab;
+    this.selectedSubTab = this.secondaryTabs.includes(tab.originalLabel) ? tab.originalLabel : this.selectedSubTab;
   }
 
-  openEditModal(tabTitle: string): void {
-    switch (tabTitle) {
-      case 'prime_identity':
+  openEditModal(subgroup: FormSubGroupsDto): void {
+    const tabTitle = subgroup.originalLabel
+    log.info('openEditModal', tabTitle, subgroup);
+    switch (tabTitle.toLowerCase()) {
+      case 'prime identity':
         this.primeIdentityComponent.openEditPrimeIdentityDialog();
         break;
-      case 'contact':
-        this.contactComponent.openEditContactDialog();
+      case 'contact details':
+        this.contactComponent.openEditContactDialog(subgroup, SaveAction.EDIT_CONTACT_DETAILS);
         break;
-      case 'address':
-        this.addressComponent.openEditAddressDialog();
+      case 'address details':
+        this.addressComponent.openEditAddressDialog(subgroup, SaveAddressAction.EDIT_ADDRESS_DETAILS);
         break;
-      case 'financial':
-        this.financialComponent.openEditFinancialDialog();
+      case 'financial details':
+        this.financialComponent.openEditFinancialDialog(subgroup, SaveFinanceAction.EDIT_FINANCE_DETAILS);
         break;
       case 'wealth_aml':
         this.wealthAmlComponent.openEditWealthAmlDialog(false);

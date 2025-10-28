@@ -1,1 +1,374 @@
-<p>quotation-report works!</p>
+<div class="card mb-4" style="min-height: 634px;">
+    <div class="card-body mx-4 my-4">
+        <div class="row  mb-3" style="min-height: 600px;">
+            <!-- Left side: reports list -->
+            <div class="col-4  overflow-auto" style="max-height: 600px;">
+                <h6 class="reports-title mb-2">Reports</h6>
+
+                <div *ngFor="let report of fetchedReports; let i = index" class="d-flex align-items-center mb-2">
+
+                    <!-- Description acts as the toggle -->
+                    <label (click)="onReportClick(report)"
+                        [ngClass]="{'text-report-primary fw-bold': currentReport?.code === report.code}"
+                        class="flex-grow-1 report-label mb-2" style="cursor: pointer;">
+                        {{ report.description }}
+                    </label>
+
+                    <!-- Download / Print icons -->
+                    <i class="pi pi-download ms-3 text-primary" (click)="downloadReports(selectedReports)"
+                        pTooltip="Download" tooltipPosition="top"
+                        style="cursor: pointer !important; font-size: 13px;"></i>
+
+                    <i class="pi pi-print ms-2 text-primary" (click)="printReport(report)" pTooltip="Print"
+                        tooltipPosition="top" style="cursor: pointer !important; font-size: 13px;"></i>
+                </div>
+
+            </div>
+
+            <!-- Right side: preview + nav -->
+            <div class="col-8" style="min-height: 600px;">
+
+                <div class="d-flex justify-content-center align-items-center gap-3 mt-2 mb-2">
+
+                    <!-- Zoom Out -->
+
+                    <i class="pi pi-minus text-primary" (click)="zoomLevel = zoomLevel - 0.2" pTooltip="Zoom out"
+                        style="cursor: pointer; font-size: 16px;">
+                    </i>
+
+                    <!-- Current Zoom Percentage -->
+                    <span class=" px-2 py-1 border rounded" style="color: black;border-color: black;">
+                        {{ (zoomLevel * 100) | number:'1.0-0' }}%
+                    </span>
+                    <!-- Zoom In -->
+                    <i class="pi pi-plus cursor-pointer" (click)="zoomLevel = zoomLevel + 0.2" pTooltip="Zoom in"
+                        style="cursor: pointer !important; font-size: 16px;">
+                    </i>
+                    <!-- Reset -->
+                    <button class="btn btn-sm btn-primary ms-2" (click)="zoomLevel = 1"
+                        style="cursor: pointer !important; font-size: 16px;">
+                        Reset
+                    </button>
+
+                </div>
+
+                <div style="height: 600px; background: #fff; position: relative;">
+
+                    <!-- LEFT NAV ICON (centered vertically on left side) -->
+                    <button class="btn position-absolute p-0 border-0 bg-transparent"
+                        style="top: 50%; left: -15px; transform: translateY(-50%);"
+                        [attr.aria-label]="'Previous report'" (click)="toggleReport('prev')">
+                        <i class="pi pi-chevron-left " style="font-size: 0.8rem; color: #00529B;"></i>
+                    </button>
+
+                    <!-- PDF Viewer -->
+                    <div style="width:100%; height:100%; overflow:auto;" class="px-4">
+
+                        <!-- PDF Viewer -->
+                        <pdf-viewer *ngIf="filePath" [src]="filePath" [render-text]="true" [show-all]="true"
+                            [original-size]="false" [fit-to-page]="true" [zoom]="zoomLevel" style="width:100%; height:100%; display:block; border: 1px solid #00000033;
+">
+                        </pdf-viewer>
+
+                        <!-- Placeholder if no file loaded -->
+                        <div *ngIf="!filePath" class="d-flex align-items-center justify-content-center"
+                            style="height:100%;">
+                            <div class="text-muted">No document selected. Check a report on the left to load the
+                                PDF.</div>
+                        </div>
+
+
+
+                    </div>
+
+
+
+                    <!-- RIGHT NAV ICON (centered vertically on right side) -->
+                    <button class="btn position-absolute p-0 border-0 bg-transparent"
+                        style="top: 50%; right: -15px; transform: translateY(-50%);" [attr.aria-label]="'Next report'"
+                        (click)="toggleReport('next')">
+                        <i class="pi pi-chevron-right " style="font-size: 0.8rem;color: #00529B;"></i>
+                    </button>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- CLIENT DOCUMENTS CARD -->
+<div class="card mb-3">
+    <div class="card-body mx-4">
+        <div class="row">
+            <div class="col-4 ">
+                <p class="section-title "> Client documents</p>
+            </div>
+            <div class="col-8 d-flex justify-content-end">
+                <div class="row">
+
+                    <div class="col-4 ">
+                        <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse"
+                            data-bs-target="#clientCard" aria-expanded="false"
+                            [attr.aria-expanded]="isClientCardDetailsOpen" (click)="toggleClientCardDetails()">
+                            <i class="fa-solid"
+                                [ngClass]="isClientCardDetailsOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <!-- ADD SECTION BUTTON ROW -->
+            <div class="row mt-3" *ngIf="isClientCardDetailsOpen">
+                <div class="col-12 d-flex justify-content-end">
+                    <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#addClientDocumentModal">
+                        Add document
+                    </button>
+
+                    <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                        [ngClass]="{ 'pi-caret-down': showClients, 'pi-caret-up': !showClients }"
+                        style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                        (click)="toggleClientCard(iconTrigger)">
+                    </i>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div [@slideInOut]="isClientCardDetailsOpen ? 'open' : 'closed'" class="mt-2">
+
+            <!-- Floating Column Selector -->
+            <div *ngIf="showClientColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+                [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+                (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
+                (document:mouseup)="onDragEnd()">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-primary"> {{'gis.quotation.select_columns' | translate}}</strong>
+                    <button class="btn-close btn-sm" (click)="showClientColumnModal = false"></button>
+                </div>
+                <div style="max-height: 200px;max-width:250px; overflow-y: auto;">
+                    <div *ngFor="let col of clientDocColumns">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" style="color: #00529B;"
+                                [(ngModel)]="col.visible" [id]="col.field">
+                            <label class="form-check-label" [for]="col.field">
+                                {{ col.header }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p-table [value]="clientDocuments" [tableStyle]="{ 'min-width': '300px' }" selectionMode="single"
+                [(selection)]="selectedClientDoc" dataKey="id" [paginator]="clientDocuments?.length > 10"
+                [rowsPerPageOptions]="[5, 4, 6]" [rows]="5">
+
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngFor="let col of clientDocColumns" [hidden]="!col.visible" class="flexible-header"
+                            [pSortableColumn]="col.field">
+                            {{ col.header }}
+                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                        </th>
+                    </tr>
+                </ng-template>
+
+
+                <ng-template pTemplate="body" let-clientDoc let-rowIndex="rowIndex">
+                    <tr>
+                        <td *ngFor="let col of clientDocColumns" [hidden]="!col.visible" class="flexible-header">
+                            <ng-container [ngSwitch]="col.field">
+                                <ng-container *ngSwitchCase="'actions'">
+
+                                    <button type="button" class="btn btn-link btn-sm fw-bold text-primary px-2"
+                                        (click)="onPreviewClientDoc(clientDoc)">
+                                        Preview
+                                    </button>
+
+                                    <button type="button" class="btn btn-link btn-sm fw-bold text-primary px-2"
+                                        (click)="onDownloadClientDoc(clientDoc)">
+                                        Download
+                                    </button>
+
+                                    <button type="button" class="btn btn-link btn-sm fw-bold text-primary px-2"
+                                        data-bs-toggle="modal" data-bs-target="#deleteClientDocModal">
+                                        {{ 'gis.quotation.delete' | translate }}
+                                    </button>
+
+                                </ng-container>
+                                <ng-container *ngSwitchDefault>
+                                    {{ col.field === 'name' && !clientDoc['name'] ? clientDoc['actualName'] :
+                                    clientDoc[col.field] }}
+
+                                </ng-container>
+
+                            </ng-container>
+                        </td>
+                    </tr>
+                </ng-template>
+
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td [attr.colspan]="clientDocColumns.length" style="padding: 20px; text-align:center">
+
+                            No client documents. Click <span class="fw-bold">Add documents</span> to add documents
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+            <!-- Add Client Doc  Modal -->
+            <div class="modal fade" #addClientDocumentModal id="addClientDocumentModal" tabindex="-1" role="dialog"
+                aria-labelledby="addSectionLabel">
+                <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
+                    <div class="modal-content" id="addclientDocumentModal">
+                        <div class="modal-body">
+                            <h5 class="modal-title mt-2" id="addDocumentsLabel">
+                                Add document
+                                <button type="button" class="btn-close red-close float-end" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </h5>
+                            <div class="upload-area mt-2 mb-1" (click)="fileInput.click()" [class.dragover]="isDragging"
+                                (drop)="onDrop($event)" (dragover)="onDragOver($event)"
+                                (dragleave)="onDragLeave($event)">
+
+                                <div class="upload-content">
+                                    <i class="pi pi-upload upload-icon"></i>
+
+                                    <p class="upload-text">Click this area to upload file</p>
+
+
+                                </div>
+
+                                <input #fileInput type="file" (change)="onFileSelected($event)"
+                                    accept=".pdf,.doc,.docx,.txt,.log,.jpg,.jpeg,.png" style="display: none;">
+                                <div class="selected-file" *ngIf="selectedFile">
+                                    <i [ngClass]="getFileIcon(selectedFile.name)" class="file-icon"></i>
+                                    <span class="file-name">{{ selectedFile.name }}</span>
+
+                                    <button class="remove-btn" (click)="removeFile()" aria-label="Remove">
+                                        <i class="pi pi-trash"></i>
+                                    </button>
+                                </div>
+
+
+                            </div>
+
+                            <div class="mt-4 d-flex justify-content-end ">
+                                <button type="button" class="btn btn-outline-primary me-2"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary " id="saveDetails"
+                                    (click)="saveClientDoc()">{{'gis.quotation.save' |
+                                    translate}}</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- Delete Client Doc   Modal -->
+            <div class="modal fade" id="deleteClientDocModal" tabindex="-1" aria-labelledby="deleteClientDocLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered ">
+                    <div class="modal-content">
+                        <div class="modal-header" style="border-bottom: none;">
+                            <h5 class="delete-title" id="exampleModalLabel">
+                                Delete document
+                            </h5>
+                            <button type="button" class="btn-close red-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="d-flex justify-content-center" id="deleteLabel">
+                                Are you sure you want to delete document?
+                            <div class="d-flex justify-content-center gap-3">
+
+
+                                <button type="button" class="btn btn-outline-primary" id="deleteNo"
+                                    data-bs-dismiss="modal">
+                                    {{ 'gis.quotation.cancel' | translate }}
+                                </button>
+
+                                <button type="button" class="btn btn-primary" id="deleteYes" data-bs-dismiss="modal">
+                                    {{ 'gis.quotation.delete' | translate }}
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Preview Client Doc Modal -->
+            <div class="modal fade" id="previewDocModal" tabindex="-1" aria-labelledby="previewDocModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header d-flex justify-content-center align-items-center position-relative"
+                            style="border-bottom: none;">
+                            <!-- Centered Title -->
+                            <h5 class="modal-title text-center m-0" id="previewDocModalLabel"
+                                style="position: absolute; left: 50%; transform: translateX(-50%);">
+                                {{ previewClientDoc?.name }}
+                            </h5>
+
+                            <!-- Close Button -->
+                            <button type="button" class="btn-close ms-auto position-relative" data-bs-dismiss="modal"
+                                aria-label="Close" style="z-index: 10;">
+                            </button>
+                        </div>
+
+                        <div class="d-flex justify-content-center align-items-center gap-3 mt-2 mb-2">
+
+                            <!-- Zoom Out -->
+
+                            <i class="pi pi-minus text-primary" (click)="zoomClientDocLevel = zoomClientDocLevel - 0.2"
+                                pTooltip="Zoom out" style="cursor: pointer; font-size: 16px;">
+                            </i>
+
+                            <!-- Current Zoom Percentage -->
+                            <span class=" px-2 py-1 border rounded" style="color: black;border-color: black;">
+                                {{ (zoomClientDocLevel * 100) | number:'1.0-0' }}%
+                            </span>
+                            <!-- Zoom In -->
+                            <i class="pi pi-plus cursor-pointer" (click)="zoomClientDocLevel = zoomClientDocLevel + 0.2"
+                                pTooltip="Zoom in" style="cursor: pointer !important; font-size: 16px;">
+                            </i>
+                            <!-- Reset -->
+                            <button class="btn btn-sm btn-primary ms-2" (click)="zoomClientDocLevel = 1"
+                                style="cursor: pointer !important; font-size: 16px;">
+                                Reset
+                            </button>
+
+                        </div>
+                        <div class="modal-body text-center">
+                            <!-- 🖼️ Image preview -->
+                            <img *ngIf="previewClientDoc?.mimeType?.startsWith('image/')"
+                                [src]="previewClientDoc.dataUrl" alt="Preview" class="img-fluid rounded shadow">
+
+                            <!-- 📄 PDF preview using ng2-pdf-viewer -->
+                            <pdf-viewer *ngIf="previewClientDoc?.mimeType === 'application/pdf'"
+                                [src]="previewClientDoc.dataUrl" [render-text]="true" [original-size]="false"
+                                style="display: block; height: 70vh;" [zoom]="zoomClientDocLevel">
+                            </pdf-viewer>
+
+                            <!-- 📦 Unsupported formats -->
+                            <div
+                                *ngIf="previewClientDoc && !previewClientDoc.mimeType.startsWith('image/') && previewClientDoc.mimeType !== 'application/pdf'">
+                                <p>Preview not available for this file type.</p>
+                                <a [href]="previewClientDoc.dataUrl" download="{{ previewClientDoc.name }}"
+                                    class="btn btn-primary btn-sm mt-2">
+                                    Download File
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>

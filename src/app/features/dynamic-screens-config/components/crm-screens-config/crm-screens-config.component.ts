@@ -682,7 +682,9 @@ export class CrmScreensConfigComponent implements OnInit {
       return group;
     });
 
-    this.closeSubSectionTwoModal();
+    // this.closeSubSectionTwoModal();
+    this.modalId = 'subSectionTwoModal';
+    this.openMultilingualModal();
   }
 
   /**

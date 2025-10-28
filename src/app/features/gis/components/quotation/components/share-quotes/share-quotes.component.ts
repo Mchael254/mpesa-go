@@ -28,6 +28,7 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
 
   display = true;
   @Output() downloadRequested = new EventEmitter<void>();
+  @Output() printRequested = new EventEmitter<void>();
   @Output() previewRequested = new EventEmitter<void>();
   @Output() sendEvent = new EventEmitter<{ mode: ShareQuoteDTO }>();
   @Input() previewVisible!: boolean;
@@ -98,6 +99,8 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
     log.debug("Email payload", payload)
     this.notificationService.sendEmail(payload).subscribe({
       next: (response) => {
+        log.debug("Response after sending email:", response)
+        log.debug("Email sent:", response.sent)
 
         this.closeButton.nativeElement.click();
 
@@ -119,5 +122,10 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
     this.previewRequested.emit();
 
   }
+
+  onPrint() {
+  this.printRequested.emit();
+}
+
 
 }

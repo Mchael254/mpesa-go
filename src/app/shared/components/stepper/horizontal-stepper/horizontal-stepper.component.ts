@@ -16,6 +16,7 @@ export class HorizontalStepperComponent {
   @Input() currentStep: number;
   @Input() dbStep: number;
   @Input() stepType: string = 'link';
+  @Input() disabled: boolean = false;
   @Output() stepChange = new EventEmitter<number>();  // EventEmitter for step changes
 
   stepperItems: any[] = [
@@ -63,6 +64,7 @@ export class HorizontalStepperComponent {
   // }
 
   setCurrentStep(stepNumber: number) {
+    if (this.disabled) return;
     if (stepNumber <= this.dbStep && stepNumber !== this.currentStep) {
       this.stepChange.emit(stepNumber);  // Emit the step number
     }

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Logger, UtilService } from '../../services';
 
 
@@ -14,6 +14,9 @@ const log = new Logger('AiImportProgressModalComponent');
 export class AiImportProgressModalComponent {
   @Input() progress: number = 0;
   @Input() visible: boolean = false;
+  @Input() errorMessage: string | null = null;
+
+  @Output() dismiss = new EventEmitter<void>();
 
   stepMessages: string[] = [
     'Scanning file',
@@ -24,5 +27,8 @@ export class AiImportProgressModalComponent {
     if (this.progress < 34) return this.stepMessages[0];
     if (this.progress < 67) return this.stepMessages[1];
     return this.stepMessages[2];
+  }
+  onDismiss(): void {
+    this.dismiss.emit();
   }
 }
