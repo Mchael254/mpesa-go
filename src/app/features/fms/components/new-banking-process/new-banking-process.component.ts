@@ -249,12 +249,8 @@ export class NewBankingProcessComponent implements OnInit {
       dateTo: this.rctsRetrievalForm.get('endDate')?.value,
       orgCode: this.defaultOrg?.id || this.selectedOrg?.id,
       payMode: this.rctsRetrievalForm.get('paymentMethod')?.value,
-      includeBatched: 'Y',
-      pageable: {
-        page: 0,
-        size: 20,
-        sort: 'receiptDate',
-      },
+      includeBatched: 'Y'
+     
     };
     this.bankingService.getReceipts(params).subscribe({
       next: (response) => {
