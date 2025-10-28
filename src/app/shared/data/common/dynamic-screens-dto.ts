@@ -181,6 +181,11 @@ export enum SaveAddressAction {
   SAVE_BRANCH = 'SAVE_BRANCH',
 }
 
+export enum SaveFinanceAction {
+  EDIT_FINANCE_DETAILS = 'EDIT_FINANCE_DETAILS',
+  EDIT_PAYEE = 'EDIT_PAYEE',
+  SAVE_PAYEE = 'SAVE_PAYEE',
+}
 
 export enum FieldType {
   text = "text",
