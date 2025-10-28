@@ -1,15 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { FmsRoutingModule } from './fms-routing.module';
 import { ChequeAuthorizationComponent } from './cheque-authorization/cheque-authorization.component';
-import {DropdownModule} from "primeng/dropdown";
-import {TableModule} from "primeng/table";
-import {NgxSpinnerModule} from "ngx-spinner";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {TranslateModule} from "@ngx-translate/core";
-import {SharedModule} from "../../shared/shared.module";
-
+import { DropdownModule } from 'primeng/dropdown';
+import { TableModule } from 'primeng/table';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
+import { SharedModule } from '../../shared/shared.module';
 import { ReceiptAuthorizationComponent } from './components/receipt-authorization/receipt-authorization.component';
 import { BaseFmsComponent } from './components/base-fms/base-fms.component';
 import { ReceiptCaptureComponent } from './components/receipt-capture/receipt-capture.component';
@@ -25,18 +23,15 @@ import { FmsHorizontalStepperComponent } from './components/shared/fms-horizonta
 import { PreviewReceiptComponent } from './components/preview-receipt/preview-receipt.component';
 import { BankingDashboardComponent } from './components/banking-dashboard/banking-dashboard.component';
 import { NewBankingProcessComponent } from './components/new-banking-process/new-banking-process.component';
-
-
-
-
-
+import { ProcessBatchComponent } from './components/process-batch/process-batch.component';
+import { DialogModule } from 'primeng/dialog';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { CheckboxModule } from 'primeng/checkbox';
 @NgModule({
   declarations: [
     ChequeAuthorizationComponent,
-    
     ReceiptAuthorizationComponent,
     BaseFmsComponent,
-   
     ReceiptCaptureComponent,
     ClientSearchComponent,
     ClientAllocationComponent,
@@ -48,21 +43,23 @@ import { NewBankingProcessComponent } from './components/new-banking-process/new
     FmsHorizontalStepperComponent,
     PreviewReceiptComponent,
     BankingDashboardComponent,
-    NewBankingProcessComponent
-
-   
+    NewBankingProcessComponent,
+    ProcessBatchComponent,
   ],
-    imports: [
-        CommonModule,
-        FmsRoutingModule,
-        DropdownModule,
-        TableModule,
-        NgxSpinnerModule,
-        FormsModule,
-        ReactiveFormsModule,
-        TranslateModule,
-        SharedModule,
-        
-    ]
+  imports: [
+    CommonModule,
+    FmsRoutingModule,
+    DropdownModule,
+    TableModule,
+    NgxSpinnerModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    SharedModule,
+    DialogModule,
+    MultiSelectModule,
+    CheckboxModule
+    
+  ],
 })
-export class FmsModule { }
+export class FmsModule {}

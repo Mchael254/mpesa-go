@@ -1,0 +1,10 @@
+.custom-caption {
+background-color: white !important; 
+}
+.required::after{
+
+    content: '*';
+    margin-left: 2px;
+    color:#dc3545;
+    
+}

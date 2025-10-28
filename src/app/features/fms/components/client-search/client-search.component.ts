@@ -48,7 +48,7 @@ export class ClientSearchComponent implements OnInit {
   /**
    * @description Step data for the FMS workflow.
    */
-  steps = fmsStepsData;
+  steps = fmsStepsData.receiptingSteps;
   /** @property {number} globalReceiptNumber - Stores the global receipt number for the application.*/
   branchReceiptNumber: number;
 

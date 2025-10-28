@@ -1,4 +1,4 @@
-<div class="contianer ms-2">
+<div class="container ms-2">
   <div class="row me-4 mt-1 align-items-center">
     <div class="col-8">
       <app-dynamic-breadcrumb
@@ -21,85 +21,304 @@
       </app-dynamic-breadcrumb>
     </div>
   </div>
+  <app-steper [currentStep]="1" [stepperData]="steps"></app-steper>
   <div class="card">
     <div class="card-body">
-      <h5 class="pt-4 pb-1">Retrieve receipt</h5>
+      <h5 class="pt-2 pb-2 text-primary">
+        {{ "fms.banking.retrieveReceipts" | translate }}
+      </h5>
       <div class="mb-3">
-        <form [formGroup]="bankingForm">
+        <form [formGroup]="rctsRetrievalForm">
           <div class="row">
             <div class="col col-4">
-              <label for="sdate">From Date</label>
+              <label for="sdate">{{
+                "fms.banking.fromDate" | translate
+              }}</label>
+              <span class="required"></span>
               <input
                 type="date"
                 class="form-control"
                 formControlName="startDate"
                 id="sdate"
               />
+              <div
+                class="text-danger mt-1"
+                *ngIf="
+                  rctsRetrievalForm.get('startDate')?.invalid &&
+                  (rctsRetrievalForm.get('startDate')?.dirty ||
+                    rctsRetrievalForm.get('startDate')?.touched)
+                "
+              >
+                <div
+                  *ngIf="rctsRetrievalForm.get('startDate')?.errors?.['required']"
+                >
+                  Date From is required
+                </div>
+              </div>
             </div>
             <div class="col col-4">
-              <label for="edate">To Date</label>
+              <label for="edate">{{ "fms.banking.toDate" | translate }}</label>
+              <span class="required"></span>
               <input
                 type="date"
                 class="form-control"
                 formControlName="endDate"
                 id="edate"
               />
+              <div
+                class="text-danger mt-1"
+                *ngIf="
+                  rctsRetrievalForm.get('endDate')?.invalid &&
+                  (rctsRetrievalForm.get('endDate')?.dirty ||
+                    rctsRetrievalForm.get('endDate')?.touched)
+                "
+              >
+                <div
+                  *ngIf="rctsRetrievalForm.get('endDate')?.errors?.['required']"
+                >
+                  Date to is required
+                </div>
+              </div>
             </div>
             <div class="col col-4">
-              <label for="paymentMode">Payment Mode</label>
+              <label for="paymentMode">{{
+                "mngt_wrkflw.claimDetails.paymentMode" | translate
+              }}</label>
+              <span class="required"></span>
               <select
                 class="form-select"
                 id="paymentMode"
                 formControlName="paymentMethod"
               >
                 <option
-                  *ngFor="let paymentMode of paymentMethods"
-                  value="paymentMode"
+                  *ngFor="let paymentMode of paymentModes"
+                  [value]="paymentMode.code"
                 >
-                  {{ paymentMode }}
+                  {{ paymentMode.code }}
                 </option>
               </select>
+              <div
+                class="text-danger mt-1"
+                *ngIf="
+                  rctsRetrievalForm.get('paymentMethod')?.invalid &&
+                  (rctsRetrievalForm.get('paymentMethod')?.dirty ||
+                    rctsRetrievalForm.get('paymentMethod')?.touched)
+                "
+              >
+                <div
+                  *ngIf="rctsRetrievalForm.get('paymentMethod')?.errors?.['required']"
+                >
+                  Payment Method is required
+                </div>
+              </div>
             </div>
           </div>
         </form>
       </div>
-      <div class="d-flex justify-content-end">
-        <button class="btn btn-primary">Retrieve Receipts</button>
+      <div class="d-flex justify-content-end pb-1">
+        <button class="btn btn-primary" (click)="onClickRetrieveRcts()">
+          {{ "fms.banking.retrieveReceipts" | translate }}
+        </button>
       </div>
-      <p-table
-        [value]="receiptData"
-        [(selection)]="receiptData"
-        dataKey="receiptId"
-        selectionMode="multiple"
-        [tableStyle]="{ 'min-width': '50rem' }"
+
+      <!-- PrimeNG Dialog for Column Selection -->
+
+      <p-dialog
+        header="Header"
+        [(visible)]="visible"
+        [modal]="true"
+        [style]="{ width: '25rem' }"
       >
         <ng-template pTemplate="header">
+          <div
+            class="inline-flex align-items-center justify-content-center gap-2"
+          ></div>
+        </ng-template>
+        <div *ngFor="let col of columns" class="field-checkbox">
+          <p-checkbox
+            [(ngModel)]="selectedColumns"
+            name="col"
+            [label]="col.header"
+            [value]="col"
+          />
+        </div>
+      </p-dialog>
+
+      <!-- primeng dialog for user selection -->
+      <div class="modal" id="userModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h6 class="modal-title text-primary">Assign Task</h6>
+              <button
+                type="button"
+                class="btn-close"
+                data-dismiss="modal"
+                aria-label="Close"
+                (click)="closeAssignModal()"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form [formGroup]="usersForm">
+                <div class="form-group w-75 mb-3">
+                  <label for="userselect" class="form-label required"
+                    >User</label
+                  >
+                  <select
+                    class="form-select form-select-sm"
+                    id="userselect"
+                    formControlName="user"
+                  >
+                    <option *ngFor="let user of users" value="user.user_id">
+                      {{ user.username }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group w-75 mb-3">
+                  <label for="textarea" class="form-label">Comments</label>
+                  <textarea
+                    id="textarea"
+                    class="form-control form-control-sm"
+                    rows="3"
+                    formControlName="comment"
+                  ></textarea>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+                (click)="closeAssignModal()"
+              >
+                {{ "fms.receipt-management.cancel" | translate }}
+              </button>
+              <button type="button" class="btn btn-primary">
+                {{ "auth.save" | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- primeng table for displaying receipts to bank
+        -->
+
+      <p-table
+        [value]="filteredReceipts"
+        dataKey="receiptNo"
+        selectionMode="multiple"
+        sortMode="multiple"
+        [resizableColumns]="true"
+        [scrollable]="true"
+        [(selection)]="selectedReceipts"
+        [paginator]="true"
+        [rows]="5"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [currentPageReportTemplate]="currentReportTemplate"
+        *ngIf="displayTable"
+      >
+        <ng-template pTemplate="caption">
+          <div
+            class="d-flex align-items-center justify-content-between bg-white"
+          >
+            <div class="div">
+              <h5 class="text">
+                {{ "fms.banking.retrievedReceipts" | translate }}
+              </h5>
+
+              <p
+                class="text text-body-secondary"
+                *ngIf="filteredReceipts.length != 0"
+              >
+                Found {{ totalRecord }} records.Please select record to assign
+                and create batches
+              </p>
+            </div>
+
+            <div class="justify-content-end">
+              <button class="btn btn-primary" (click)="openAssignModal()">
+                {{ "fms.banking.assign" | translate }}
+              </button>
+              <span class="pt-2" (click)="showColumnsDialogs()">
+                <i class="fa-regular fa-square-caret-down"></i>
+              </span>
+            </div>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
           <tr>
-            <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
-            <th>ReceiptId</th>
-            <th>Date</th>
-            <th>Customer</th>
-            <th>Amount</th>
-            <th>Collection A/C</th>
-            <th>Assigned to</th>
-            <th>Actions</th>
+            <th><p-tableHeaderCheckbox /></th>
+            <th *ngFor="let col of selectedColumns">
+              {{ col.header | translate }}
+            </th>
           </tr>
+          <!-- filter row -->
+
+          <tr>
+            <th></th>
+            <th *ngFor="let col of selectedColumns">
+              <ng-container [ngSwitch]="col.field">
+                <ng-container *ngSwitchCase="'actions'">
+                  <button
+                    class="btn btn-outline-primary btn-md"
+                    (click)="clearFilters()"
+                  >
+                    {{ "fms.banking.clearFilter" | translate }}
+                  </button>
+                </ng-container>
+                <ng-container *ngSwitchDefault="">
+                  <input
+                    [type]="col.field === 'amount' ? 'number' : 'text'"
+                    class="form-control"
+                    (input)="filter($event, col.field)"
+                    (keyup.enter)="filter($event, col.field)"
+                  />
+                </ng-container>
+              </ng-container>
+            </th>
+          </tr>
+          <!-- end of filter row -->
         </ng-template>
         <ng-template pTemplate="body" let-receipt>
           <tr>
             <td>
-              <p-tableCheckbox [value]="receiptData" />
+              <p-tableCheckbox [value]="receipt" />
             </td>
-            <td>{{ receipt.receiptId }}</td>
-            <td>{{ receipt.date | date : "dd/MM/yyyy" }}</td>
-            <td>{{ receipt.customer }}</td>
-            <td>{{ receipt.amount }}</td>
-            <td>{{ receipt.collectionAcc }}</td>
-            <td>{{ receipt.assignedTo }}</td>
-            <td>assign</td>
+            <td *ngFor="let col of selectedColumns">
+              <ng-container [ngSwitch]="col.field">
+                <ng-container *ngSwitchCase="'date'">
+                  {{ receipt.receiptDate | date : "dd/MM/yyyy" }}
+                </ng-container>
+                <ng-container *ngSwitchCase="'actions'">
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-link btn-sm">Deposit</button>
+                    <button class="btn btn-link btn-sm">Re-assign</button>
+                  </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="'batchAssignedUser'">
+                  {{ receipt.batchAssignedUser ?? "unassigned" }}
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  {{ receipt[col.field] }}
+                </ng-container>
+              </ng-container>
+            </td>
           </tr>
         </ng-template>
       </p-table>
     </div>
+  </div>
+  <div class="d-flex mt-1 justify-content-end">
+    <button
+      class="btn btn-primary"
+      (click)="navigateToBatch()"
+      *ngIf="displayTable"
+    >
+      {{ "fms.banking.createBatches" | translate }}
+    </button>
   </div>
 </div>
