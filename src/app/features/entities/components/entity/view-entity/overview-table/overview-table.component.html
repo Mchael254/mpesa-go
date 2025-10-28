@@ -34,11 +34,18 @@
   <p-table
     [totalRecords]="table?.data.length"
     [value]="table?.data"
+    [responsiveLayout]="'scroll'"
+    [scrollable]="true"
+    scrollHeight="400px"
+    [style]="{'min-width': '800px'}"
   >
     <ng-template pTemplate="header">
       <tr>
         <ng-container *ngFor="let col of table?.cols">
-          <th *ngIf="col.visible" [pSortableColumn]="col.field">
+          <th
+            *ngIf="col.visible" [pSortableColumn]="col.field"
+            style="white-space: nowrap; min-width: 150px; text-align: left;"
+          >
             {{ col?.label[language] | titlecase }}
             <p-sortIcon [field]="col.field"></p-sortIcon>
           </th>

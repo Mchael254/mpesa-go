@@ -96,18 +96,18 @@ export class AddressComponent implements OnInit {
 
       const displayAddressDetails  = {
         overview_branch_Id: null,
-        overview_head_office_address: null,
-        overview_branch_details_name: null,
+        overview_head_office_address: this.addressDetails.residentialAddress,
+        // overview_branch_details_name: null,
         overview_head_office_country: this.addressDetails.countryName,
-        overview_head_office_county: null,
+        overview_head_office_county: this.addressDetails.stateName,
         overview_country: this.addressDetails.countryName,
-        overview_head_office_city: null,
+        overview_head_office_city: this.addressDetails.townName,
         overview_county: this.addressDetails.stateName,
         overview_head_office_physical_address: this.addressDetails.physicalAddress,
         overview_city: this.addressDetails.townName,
         overview_head_office_postal_address: this.addressDetails.residentialAddress,
         overview_physical_address: this.addressDetails.physicalAddress,
-        overview_head_office_postal_code: null,
+        overview_head_office_postal_code: this.addressDetails.postalCode,
         overview_postal_address: this.addressDetails.residentialAddress,
         overview_postal_code: this.addressDetails.postalCode,
         overview_branch_email: null,
@@ -253,14 +253,8 @@ export class AddressComponent implements OnInit {
     this.formFields = fields;
     this.createEditForm(fields, saveAction);
     this.editButton.nativeElement.click();
-    log.info('subgroup >>> ', subgroup)
+    log.info('subgroup >>> ', subgroup);
   }
-
-  /*openEditAddressDialog(subgroup?: FormSubGroupsDto, saveAction?: SaveAddressAction): void {
-    this.editButton.nativeElement.click();
-    this.setSelectOptions();
-    setTimeout(() => {this.patchFormValues()}, 500)
-  }*/
 
 
   createEditForm(fields: ConfigFormFieldsDto[], saveAction?: SaveAddressAction): void {
@@ -340,25 +334,13 @@ export class AddressComponent implements OnInit {
 
 
   patchFormValues(fields): void {
-    // const patchData = {
-    //   address: '',
-    //   country: this.clientCountry?.id,
-    //   county: this.clientState?.id,
-    //   city: this.clientTown?.id,
-    //   physicalAddress: this.addressDetails?.physicalAddress,
-    //   postalAddress: this.addressDetails?.residentialAddress,
-    //   postalCode: this.addressDetails?.postalCode,
-    //   town: this.clientTown?.id,
-    //   road: this.addressDetails?.road,
-    //   houseNumber: this.addressDetails?.houseNumber,
-    // }
-    // this.editForm.patchValue(patchData);
 
     let patchData = {};
 
     if (this.group.subGroup.length > 0) {
       this.formFields.forEach(field => { // corporate
         patchData[field.fieldId] = field.dataValue;
+        log.info('patch data >>> ', field.fieldId, field.dataValue);
       });
     } else if (this.group.subGroup.length === 0) { // individual
       fields.forEach(field => {
@@ -417,13 +399,14 @@ export class AddressComponent implements OnInit {
 
   editAddressDetails(): void {
     const formValues = this.editForm.getRawValue();
-    const addressDetails = {
+    log.info('form values ->', formValues, formValues.overview_head_office_country);
+    const address = {
       ...this.addressDetails,
-      countryId: formValues.overview_country,
-      stateId: formValues.overview_county,
+      countryId: /*formValues.overview_country || */formValues.overview_head_office_country,
+      stateId: /*formValues.overview_county*/ formValues.overview_head_office_county,
       townId: formValues.overview_head_office_city,
       physicalAddress: formValues.overview_head_office_physical_address,
-      residentialAddress: formValues.overview_head_office_postal_address,
+      residentialAddress: formValues.overview_postal_address,
       // postalAddress: formValues.residentialAddress || formValues.postalAddress,
       postalCode: formValues.overview_head_office_postal_code,
       // townId: formValues.town,
@@ -435,7 +418,7 @@ export class AddressComponent implements OnInit {
       clientCode: this.clientDetails.clientCode,
       partyAccountCode: this.clientDetails.partyAccountCode,
       partyId: this.clientDetails.partyId,
-      addressDetails
+      address
     };
 
     this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
@@ -453,11 +436,12 @@ export class AddressComponent implements OnInit {
   }
 
   prepareEditBranchForm(data: any, saveAction: SaveAddressAction) {
-    log.info('selected row ', data.row)
+    log.info('selected row ', data)
     this.saveAction = saveAction;
     this.formFields =  this.tableHeaders.map(field => ({...field})) ;
     const row = data.row;
     this.selectedBranch = this.branchDetails.find(branch => branch.code = row.branchAddressId);
+    this.selectedSubgroup = data.subGroup;
 
     this.formFields.forEach((field: ConfigFormFieldsDto) => {
       field.dataValue = row[field.fieldId];
@@ -472,6 +456,7 @@ export class AddressComponent implements OnInit {
 
   addEditBranch(): void {
     const formValues = this.editForm.getRawValue();
+    log.info('form values ->', this.editForm.value);
 
     const branch = {
       ...this.selectedBranch,
@@ -503,7 +488,7 @@ export class AddressComponent implements OnInit {
       next: data => {
         this.clientDetails = data;
         this.prepareDataDisplay();
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted contact person');
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated branch');
         this.closeButton.nativeElement.click();
       },
       error: err => {

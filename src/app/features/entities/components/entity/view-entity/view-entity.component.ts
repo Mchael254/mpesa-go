@@ -1,38 +1,36 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { StaffDto } from '../../../data/StaffDto';
-import { AgentDTO } from '../../../data/AgentDTO';
-import { PartyTypeDto } from '../../../data/partyTypeDto';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {StaffDto} from '../../../data/StaffDto';
+import {AgentDTO} from '../../../data/AgentDTO';
+import {PartyTypeDto} from '../../../data/partyTypeDto';
 import {
   AccountReqPartyId,
-  EntityDto, IdentityModeDTO,
+  EntityDto,
+  IdentityModeDTO,
   PoliciesDTO,
   ReqPartyById,
   Roles,
 } from '../../../data/entityDto';
-import { Pagination } from '../../../../../shared/data/common/pagination';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {ReplaySubject, finalize, takeUntil, take, forkJoin} from 'rxjs';
-import { PartyAccountsDetails } from '../../../data/accountDTO';
-import { ActivatedRoute, Router } from '@angular/router';
-import { EntityService } from '../../../services/entity/entity.service';
-import { AccountService } from '../../../services/account/account.service';
-import { DatePipe } from '@angular/common';
+import {Pagination} from '../../../../../shared/data/common/pagination';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {finalize, ReplaySubject, take, takeUntil} from 'rxjs';
+import {PartyAccountsDetails} from '../../../data/accountDTO';
+import {ActivatedRoute, Router} from '@angular/router';
+import {EntityService} from '../../../services/entity/entity.service';
+import {AccountService} from '../../../services/account/account.service';
+import {DatePipe} from '@angular/common';
 import {Logger, UtilService} from '../../../../../shared/services';
-import { ClientDTO } from '../../../data/ClientDTO';
-import { ServiceProviderRes } from '../../../data/ServiceProviderDTO';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { QuotationsDTO } from '../../../../gis/data/quotations-dto';
-import { ClaimsDTO } from '../../../../gis/data/claims-dto';
+import {ClientDTO} from '../../../data/ClientDTO';
+import {ServiceProviderRes} from '../../../data/ServiceProviderDTO';
+import {NgxSpinnerService} from 'ngx-spinner';
+import {QuotationsDTO} from '../../../../gis/data/quotations-dto';
+import {ClaimsDTO} from '../../../../gis/data/claims-dto';
 
-import { EntityTransactionsComponent } from './entity-transactions/entity-transactions.component';
-import { CountryService } from '../../../../../shared/services/setups/country/country.service';
-import {
-  CountryDto,
-  StateDto,
-} from '../../../../../shared/data/common/countryDto';
-import { BankService } from '../../../../../shared/services/setups/bank/bank.service';
-import { BankBranchDTO } from '../../../../../shared/data/common/bank-dto';
-import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
+import {EntityTransactionsComponent} from './entity-transactions/entity-transactions.component';
+import {CountryService} from '../../../../../shared/services/setups/country/country.service';
+import {CountryDto, StateDto,} from '../../../../../shared/data/common/countryDto';
+import {BankService} from '../../../../../shared/services/setups/bank/bank.service';
+import {BankBranchDTO} from '../../../../../shared/data/common/bank-dto';
+import {GlobalMessagingService} from '../../../../../shared/services/messaging/global-messaging.service';
 import {PrimeIdentityComponent} from "./prime-identity/prime-identity.component";
 import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
 import {ContactComponent} from "./contact/contact.component";
@@ -46,7 +44,11 @@ import {
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto, FormSubGroupsDto, SaveAction, SubModulesDto
+  FormGroupsDto,
+  FormSubGroupsDto,
+  SaveAction,
+  SaveAddressAction, SaveFinanceAction,
+  SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('ViewEntityComponent');
@@ -742,10 +744,10 @@ export class ViewEntityComponent implements OnInit {
         this.contactComponent.openEditContactDialog(subgroup, SaveAction.EDIT_CONTACT_DETAILS);
         break;
       case 'address details':
-        this.addressComponent.openEditAddressDialog();
+        this.addressComponent.openEditAddressDialog(subgroup, SaveAddressAction.EDIT_ADDRESS_DETAILS);
         break;
       case 'financial details':
-        this.financialComponent.openEditFinancialDialog();
+        this.financialComponent.openEditFinancialDialog(subgroup, SaveFinanceAction.EDIT_FINANCE_DETAILS);
         break;
       case 'wealth_aml':
         this.wealthAmlComponent.openEditWealthAmlDialog(false);
