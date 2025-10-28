@@ -6,7 +6,7 @@ import { Pagination } from '../../../../shared/data/common/pagination';
 import {
   AccountTypeDTO,
   AgentDTO,
-  AgentPostDTO,
+  AgentPostDTO, AgentV2DTO,
   IntermediaryDTO,
 } from '../../data/AgentDTO';
 import { IdentityModeDTO } from '../../data/entityDto';
@@ -107,6 +107,14 @@ export class IntermediaryService {
   saveAgentDetails(data: AgentPostDTO): Observable<IntermediaryDTO> {
     return this.api.POST<IntermediaryDTO>(
       `accounts`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  saveAgentDetailsV2(data: AgentV2DTO): Observable<AgentV2DTO> {
+    return this.api.POST<AgentV2DTO>(
+      `v2/api/intermediary/`,
       JSON.stringify(data),
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );

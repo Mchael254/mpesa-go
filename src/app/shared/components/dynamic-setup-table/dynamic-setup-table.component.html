@@ -8,9 +8,8 @@
     </button>
 
     <!-- Caret Dropdown-style Button -->
-    <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-2"
-            (click)="columnDialogVisible = true"
-            style="width: 25px; height: 25px; border-radius: 0.5rem;">
+    <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-2 columnDialogBtn"
+            (click)="columnDialogVisible = true">
       <i class="fa-solid fa-caret-down fs-5 text-dark"></i>
     </button>
 
@@ -237,7 +236,7 @@
                       >
                         <option [ngValue]="null"></option>
                         <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [ngValue]="option">
-                          {{ option.label | titlecase }}
+                          {{ option.label ? option.label : option | titlecase }}
                         </option>
                       </select>
                       <span class="text-danger" *ngIf="regexErrorMessages[field.fieldId]?.showErrorMessage">

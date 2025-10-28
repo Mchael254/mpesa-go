@@ -27,10 +27,16 @@
       </div>
 
       <!-- Download -->
-      <div (click)="onDownload()" role="button" tabindex="0">
+      <div (click)="onDownload()" class="me-3" role="button" tabindex="0">
         <i class="pi pi-download me-2 text-primary"></i>
         <span class="text-primary">Download</span>
       </div>
+
+       <!-- Print -->
+  <div (click)="onPrint()" role="button" tabindex="0">
+    <i class="pi pi-print me-2 text-primary"></i>
+    <span class="text-primary">Print</span>
+  </div>
 
     </div>
 
@@ -93,21 +99,26 @@
 </form>
 <p-dialog [(visible)]="previewVisible" [modal]="true" [style]="{ width: '40vw', height: '95vh' }"
    class="custom-pdf-modal">
-  <ng-template pTemplate="header">
-    <div class="dialog-header-column">
-      <span class="dialog-title">Preview report</span>
-     <div
-      (click)="onDownload()"
-      role="button"
-      tabindex="0"
-    
-    >
-      <i class="pi pi-download me-2 text-primary"></i>
-      <span class="text-primary">Download</span>
+ <ng-template pTemplate="header">
+  <div class="dialog-header-column">
+    <span class="dialog-title">Preview report</span>
+
+    <div class="actions">
+      <!-- Download -->
+      <div (click)="onDownload()" role="button" tabindex="0" class="me-3">
+        <i class="pi pi-download me-2 text-primary"></i>
+        <span class="text-primary">Download</span>
+      </div>
+
+      <!-- Print -->
+      <div (click)="onPrint()" role="button" tabindex="0" class="me-3">
+        <i class="pi pi-print me-2 text-primary"></i>
+        <span class="text-primary">Print</span>
+      </div>
     </div>
-  
-    </div>
-  </ng-template>
+  </div>
+</ng-template>
+
   <div style="height: calc(100% - 40px); background: #fff;  margin: 0; padding: 0;">
     <pdf-viewer [src]="pdfSrc" [render-text]="true" [original-size]="false"
       style="display: block; width: 100%; height: 100%; background: #fff;">

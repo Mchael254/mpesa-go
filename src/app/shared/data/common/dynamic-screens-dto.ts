@@ -22,6 +22,7 @@ export interface ScreensDto {
   hasFields: boolean;
   subModuleId?: string,
   presentationType?: PresentationType,
+  targetEntityShortDescription?: string,
 }
 
 export interface ScreenFormsDto {
@@ -55,6 +56,7 @@ export interface FormGroupsDto {
   formId?: string,
   presentationType?: PresentationType,
   fields?: ConfigFormFieldsDto[],
+  table?: any;
 }
 
 export interface FormSubGroupsDto {
@@ -69,6 +71,8 @@ export interface FormSubGroupsDto {
   hasFields: boolean;
   formGroupingId: string,
   presentationType?: PresentationType,
+  fields?: ConfigFormFieldsDto[],
+  table?: any;
 }
 
 export interface ConfigFormFieldsDto {
@@ -106,7 +110,7 @@ export interface ConfigFormFieldsDto {
   formSubGroupingId?: string,
   screenId?: string,
   subModuleId?: string,
-  dataValue?: any
+  dataValue?: string | number | object | null | undefined;
 }
 
 export interface MultilingualText {
@@ -160,5 +164,45 @@ export interface DynamicScreenSetupDto {
 
 export enum PresentationType {
   fields = "fields",
-  table_columns = "table_columns"
+  table_columns = "table_columns",
+  fields_and_table_columns = "fields_and_table_columns",
+}
+
+export enum SaveAction {
+  // SAVE_CONTACT_DETAILS = 'SAVE_CONTACT_DETAILS',
+  EDIT_CONTACT_DETAILS = 'EDIT_CONTACT_DETAILS',
+  SAVE_CONTACT_PERSON = 'SAVE_CONTACT_PERSON',
+  EDIT_CONTACT_PERSON = 'EDIT_CONTACT_PERSON',
+}
+
+export enum SaveAddressAction {
+  EDIT_ADDRESS_DETAILS = 'EDIT_ADDRESS_DETAILS',
+  EDIT_BRANCH = 'EDIT_BRANCH',
+  SAVE_BRANCH = 'SAVE_BRANCH',
+}
+
+export enum SaveFinanceAction {
+  EDIT_FINANCE_DETAILS = 'EDIT_FINANCE_DETAILS',
+  EDIT_PAYEE = 'EDIT_PAYEE',
+  SAVE_PAYEE = 'SAVE_PAYEE',
+}
+
+export enum FieldType {
+  text = "text",
+  number = "number",
+  email = "email",
+  password = "password",
+  date = "date",
+  datetime = "datetime",
+  select = "select",
+  multi_select = "multi_select",
+  checkbox = "checkbox",
+  radio = "radio",
+  textarea = "textarea",
+  file = "file",
+  hidden = "hidden",
+  tel = "tel",
+  button = "button",
+  table_select = "table_select",
+  multiple_document_uploads = "multiple_document_uploads",
 }

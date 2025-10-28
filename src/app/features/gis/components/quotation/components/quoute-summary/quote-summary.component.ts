@@ -609,18 +609,49 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
+onDownloadRequested() {
+  const payload = this.notificationPayload();
 
-
-
-  onDownloadRequested() {
-    const payload = this.notificationPayload();
-    log.debug("Payload", payload)
-    this.quotationService.generateQuotationReport(payload).pipe(
-      untilDestroyed(this)
-    ).subscribe((response) => {
-      this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf")
+  this.quotationService.generateQuotationReport(payload)
+    .pipe(untilDestroyed(this))
+    .subscribe((response) => {
+      // Normal download using utilService
+      this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf");
     });
-  }
+}
+
+
+onPrintRequested() {
+  const payload = this.notificationPayload();
+
+  this.quotationService.generateQuotationReport(payload)
+    .pipe(untilDestroyed(this))
+    .subscribe((response) => {
+      const byteCharacters = atob(response.base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const pdfUrl = URL.createObjectURL(blob);
+
+      // Create hidden iframe for printing
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = pdfUrl;
+      document.body.appendChild(iframe);
+
+      iframe.onload = () => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+       
+      };
+    });
+}
+
+
+
 
   listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
     const emailPayload = this.notificationPayload()

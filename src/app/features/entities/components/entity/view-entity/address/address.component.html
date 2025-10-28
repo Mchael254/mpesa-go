@@ -1,107 +1,74 @@
-<!--<ng-container *ngIf="editForm && countries && states && towns; else loadingContent">-->
-<!--{{ addressDetails | json }}-->
-  <table class="table table-borderless">
-    <tbody>
-    <tr>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.country[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold" *ngIf="clientCountry">
-            {{ clientCountry.name | titlecase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.county[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold" *ngIf="clientState">
-            {{ clientState?.name | titlecase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.city[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold" *ngIf="clientTown">
-            {{ clientTown.name | titlecase }}
-          </div>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.physical_address[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ addressDetails?.physicalAddress | titlecase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.postal_address[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ addressDetails?.residentialAddress | titlecase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.postal_code[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ addressDetails?.postalCode | uppercase }}
-          </div>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.town[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ clientTown?.name | titlecase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.road[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ addressDetails?.road | titlecase }}
-          </div>
-        </div>
-      </td>
-      <td>
-        <div class="row">
-          <div class="col-sm-4">
-            {{ addressDetailsConfig?.address_details?.house_no[language] | titlecase }}
-          </div>
-          <div class="col-sm-8 fw-bold">
-            {{ addressDetails?.houseNumber | uppercase }}
-          </div>
-        </div>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+<!--{{ clientDetails.address | json }}-->
 
 
+<ng-container *ngIf="group.subGroup?.length === 0">
+  <div class="row">
+    <ng-container *ngFor="let field of fields">
+      <div class="col-sm-4">
+        <div class="row my-2">
+          <div class="col-sm-4 text-dark">
+            {{ field.label[language] }}
+          </div>
+          <div class="col-sm-8 text-dark fw-bold">
+            {{ field.dataValue }}
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</ng-container>
+
+
+<ng-container *ngIf="group.subGroup?.length > 0">
+  <ng-container *ngFor="let subGroup of group.subGroup">
+
+    <ng-container *ngIf="subGroup.presentationType===PRESENTATION_TYPE.fields">
+      <div class="row my-3">
+        <div class="col-sm-8">
+          <span class="text-primary fw-bold">
+            {{ subGroup.label[language] | titlecase }}
+          </span>
+          <span
+            id="edit-tab-btn"
+            class="m-2 text-primary"
+            (click)="openEditAddressDialog(subGroup, Save_Action.EDIT_ADDRESS_DETAILS)"
+          >
+            <i class="fa fa-pencil"></i>
+          </span>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <ng-container *ngFor="let field of subGroup.fields">
+          <div
+            class="col-sm-4"
+            *ngIf="!(field.fieldId.toLowerCase().includes('id')) && field.formSubGroupingId === subGroup.subGroupId"
+          >
+            <div class="row my-2">
+              <div class="col-sm-4 text-dark">
+                {{ field.label[language] }}
+              </div>
+              <div class="col-sm-8 text-dark fw-bold">
+                {{ field.dataValue }}
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="subGroup.presentationType === PRESENTATION_TYPE.fields_and_table_columns">
+      <app-overview-table
+        [subGroup]="subGroup"
+        [table]="table"
+        [language]="language"
+        (deleteBtnClicked)="handleBranchDelete($event)"
+        (editBtnClicked)="prepareEditBranchForm($event, Save_Action.EDIT_BRANCH)"
+      >
+      </app-overview-table>
+    </ng-container>
+
+  </ng-container>
+</ng-container>
 
   <!--edit prime details modal-->
   <button #editButton type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editAddressModal" hidden>
@@ -114,21 +81,24 @@
       <div class="modal-content">
         <div class="modal-header border-0">
           <h1 class="modal-title fs-4 text-primary" id="editAddressModalLabel">
-            {{ formFieldsConfig.label[language] | titlecase }}
+<!--            {{ formFieldsConfig.label[language] | titlecase }}-->
           </h1>
           <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <ng-container
             *ngIf="
-              editForm && countries?.length > 0;
+              editForm;
               else loadingForm
             "
           > <!--todo: fix condition-->
             <form [formGroup]="editForm">
               <div class="row g-3">
-                <ng-container *ngFor="let field of formFieldsConfig.fields">
-                  <div class="col-md-6">
+                <ng-container *ngFor="let field of formFields">
+                  <div
+                    class="col-md-6"
+                    *ngIf="!(field.fieldId.toLowerCase().includes('id')) && field.formSubGroupingId === selectedSubgroup?.subGroupId"
+                  >
                     <label [for]="field.fieldId" class="form-label">
                       {{ field.label[language] | titlecase }}
                     </label>
@@ -155,6 +125,27 @@
                       </option>
                     </select>
 
+                    <!--tel number-->
+                    <span *ngIf="checkTelNumber(field.fieldId)">
+                    <ngx-intl-tel-input
+                      [cssClass]="'form-control mb-1'"
+                      [id]="field.fieldId"
+                      [preferredCountries]=""
+                      [enableAutoCountrySelect]="true"
+                      [enablePlaceholder]="true"
+                      [searchCountryFlag]="true"
+                      [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                      [selectFirstCountry]="false"
+                      [selectedCountryISO]="CountryISO.Nigeria"
+                      [phoneValidation]="true"
+                      [separateDialCode]="true"
+                      [numberFormat]="PhoneNumberFormat.National"
+                      [formControlName]="field.fieldId"
+                      [style]="{ width: '100%' }"
+                    >
+                    </ngx-intl-tel-input>
+                  </span>
+
                   </div>
                 </ng-container>
               </div>
@@ -170,10 +161,10 @@
         </div>
         <div class="modal-footer border-0">
           <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-            {{ formFieldsConfig.buttons.cancel.label[language] | titlecase }}
+<!--            {{ formFieldsConfig.buttons.cancel.label[language] | titlecase }}-->
           </button>
-          <button type="button" class="btn btn-primary" (click)="editAddressDetails()">
-            {{ formFieldsConfig.buttons.save.label[language] | titlecase }}
+          <button type="button" class="btn btn-primary" (click)="saveDetails()">
+            {{ 'save' | titlecase }}
           </button>
         </div>
       </div>

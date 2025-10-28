@@ -161,10 +161,13 @@
 
                             </div>
                             <!-- Messages -->
-                            <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-                            <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
-                            <app-ai-import-progress-modal [visible]="showAiImportModal" [progress]="uploadProgress">
+
+                            <app-ai-import-progress-modal [visible]="showAiImportModal" [progress]="uploadProgress"
+                                [errorMessage]="aiErrorMessage" (dismiss)="onDismissModal()">
                             </app-ai-import-progress-modal>
+
+
+
 
                         </div>
 
@@ -216,10 +219,14 @@
                                             </ng-container> -->
 
                                             <!-- date -->
-                                            <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
-                                                dateFormat="yy-mm-dd" [showIcon]="true"
-                                                [attr.placeholder]="field.label | translate">
-                                            </p-calendar>
+                                            <ng-container
+                                                *ngIf="field.name !== 'coverFrom' && field.name !== 'coverTo' && riskDetailsForm && riskDetailsForm.contains(field.name)">
+                                                <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
+                                                    [dateFormat]="dateFormat" [showIcon]="true"
+                                                    [attr.placeholder]="field.label | translate">
+                                                </p-calendar>
+                                            </ng-container>
+
 
                                             <!-- number -->
                                             <input *ngIf="field.type === 'number'" type="text" class="form-control"
@@ -260,9 +267,9 @@
 
                                             <!-- text input fields -->
                                             <ng-container
-                                                *ngIf="field.name !== 'registrationNumber' && field.name !== 'riskDescription' && field.name !== 'ncdStatus' && riskDetailsForm && riskDetailsForm.contains(field.name)">
+                                                *ngIf="field.name !== 'registrationNumber' && field.name !== 'riskDescription' && field.name !== 'ncdStatus' && field.name !== 'coverDays' && riskDetailsForm && riskDetailsForm.contains(field.name)">
 
-                                                <input *ngIf="field.type === 'text'" type="text" class="form-control"
+                                                <input *ngIf="field.type === 'text'" type="text" class="form-control "
                                                     [formControlName]="field.name" />
                                             </ng-container>
                                             <ng-container *ngIf="field.name === 'ncdStatus'">
@@ -288,7 +295,7 @@
                                             </ng-container>
                                             <ng-container *ngIf="field.name === 'registrationNumber'">
                                                 <input type="text" id="quote-input"
-                                                    class="form-control form-control-sm mb-1"
+                                                    class="form-control form-control-sm "
                                                     formControlName="registrationNumber"
                                                     (input)="riskIdPassed($event); transformToUpperCase($event)"
                                                     placeholder="KAA 123X">
@@ -296,15 +303,20 @@
                                             <ng-container
                                                 *ngIf="motorClassAllowed =='Y' && field.name === 'riskDescription'">
                                                 <input type="text" id="quote-input"
-                                                    class="form-control form-control-sm mb-1 bg-light text-muted"
+                                                    class="form-control   readonly-input"
                                                     formControlName="riskDescription" [readonly]="true"
                                                     [value]="vehiclemakeModel">
 
                                             </ng-container>
+                                            <ng-container *ngIf="field.name === 'coverDays'">
+                                                <input type="text" id="quote-input"
+                                                    class="form-control   bg-light text-muted"
+                                                    formControlName="coverDays" [readonly]="true">
+
+                                            </ng-container>
                                             <ng-container
                                                 *ngIf="motorClassAllowed =='N' && field.name === 'riskDescription'">
-                                                <input type="text" id="quote-input"
-                                                    class="form-control form-control-sm mb-1 "
+                                                <input type="text" id="quote-input" class="form-control "
                                                     formControlName="riskDescription">
 
                                             </ng-container>
@@ -325,10 +337,13 @@
                                             </ng-container>
                                             <!-- YEAR OF MANUFACTURE -->
                                             <ng-container *ngIf="field.name === 'yearOfManufacture'">
+                                                <!-- <p-dropdown formControlName="yearOfManufacture" [options]="yearList"
+                                                    placeholder="" [filter]="true" filterBy="label">
+                                                </p-dropdown> -->
                                                 <p-dropdown formControlName="yearOfManufacture" [options]="yearList"
-                                                    placeholder="" [filter]="true">
+                                                    optionLabel="label" optionValue="value" [filter]="true"
+                                                    filterBy="label" [showClear]="true">
                                                 </p-dropdown>
-
                                             </ng-container>
                                             <!-- MARINE AND FIRE FIELDS -->
                                             <!-- PERIOD RATES -->
@@ -357,10 +372,27 @@
                                                 </p-dropdown>
                                             </ng-container>
                                             <!-- DATE -->
-                                            <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
-                                                dateFormat="yy-mm-dd" [showIcon]="true"
-                                                [attr.placeholder]="field.label | translate">
+                                            <ng-container
+                                                *ngIf="field.name !== 'coverFrom' && field.name !== 'coverTo' && riskDetailsForm && riskDetailsForm.contains(field.name)">
+                                                <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
+                                                    [dateFormat]="dateFormat" [showIcon]="true"
+                                                    [attr.placeholder]="field.label | translate">
+                                                </p-calendar>
+                                            </ng-container>
+                                            <!-- Cover From -->
+                                            <p-calendar *ngIf="field.name === 'coverFrom'"
+                                                [formControlName]="field.name" [dateFormat]="dateFormat"
+                                                [showIcon]="true" [attr.placeholder]="field.label | translate"
+                                                (onSelect)="onDateChange()">
                                             </p-calendar>
+
+                                            <!-- Cover To -->
+                                            <p-calendar *ngIf="field.name === 'coverTo'" [formControlName]="field.name"
+                                                [dateFormat]="dateFormat" [showIcon]="true"
+                                                [attr.placeholder]="field.label | translate"
+                                                (onSelect)="onDateChange()">
+                                            </p-calendar>
+
 
                                             <!-- number -->
                                             <input *ngIf="field.type === 'number'" type="text" class="form-control"
@@ -598,7 +630,7 @@
 
                                             <!-- Date -->
                                             <p-calendar *ngIf="field.type === 'date'" [formControlName]="field.name"
-                                                dateFormat="yy-mm-dd" [showIcon]="true">
+                                                [dateFormat]="dateFormat" [showIcon]="true">
                                             </p-calendar>
 
                                             <!-- Number -->
@@ -707,7 +739,7 @@
                    'pi-caret-down': !showSections
                  }" style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"></i> -->
                     <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
-                        [ngClass]="{ 'pi-caret-up': showSections, 'pi-caret-down': !showSections }"
+                        [ngClass]="{ 'pi-caret-down': showSections, 'pi-caret-up': !showSections }"
                         style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
                         (click)="toggleSections(iconTrigger)">
                     </i>
@@ -720,7 +752,6 @@
         <div [@slideInOut]="isSectionDetailsOpen ? 'open' : 'closed'" class="mt-2">
 
             <!-- Add Risk Section Modal -->
-
             <div class="modal fade" #addRiskSection Modal id="addRiskSection" tabindex="-1" role="dialog"
                 aria-labelledby="addSectionLabel">
                 <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
@@ -881,18 +912,6 @@
                                                 <input type="text" id="scheduleInput"
                                                     class="form-control form-control-sm mb-1" style="width:300px"
                                                     formControlName="rateType">
-                                                <!-- <select class="form-select form-control-sm mb-1" id="scheduleInput"
-                                                    formControlName="rateType">
-                                                    <option value="FXD">{{'gis.quotation.fixed' | translate}}</option>
-                                                    <option value="RCU">{{'gis.quotation.recursive' | translate}}
-                                                    </option>
-                                                    <option value="RT">{{'gis.quotation.rate_table' | translate}}
-                                                    </option>
-                                                    <option value="ARG"> {{'gis.quotation.absolute_range' | translate}}
-                                                    </option>
-                                                    <option value="SRG">{{'gis.quotation.step_ranges' | translate}}
-                                                    </option>
-                                                </select> -->
 
                                             </div>
                                         </div>
@@ -906,8 +925,8 @@
                                             <div class="col-7">
                                                 <div class="col-7">
                                                     <input type="text" id="scheduleInput" style="width:300px"
-                                                        class="form-control form-control-sm mb-1"
-                                                        formControlName="sectionType">
+                                                        class="form-control form-control-sm mb-1 readonly-input"
+                                                        formControlName="sectionType" readonly>
                                                 </div>
                                             </div>
                                         </div>
@@ -918,25 +937,15 @@
                                 <!-- **ROW 3** -->
                                 <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-1">
-                                            <label class="col-5 col-form-label" id="scheduleLabel">
-                                                {{ 'gis.quotation.free_limit' | translate }} :
-                                            </label>
+                                        <div class="mb-1 ">
+                                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">
+                                                {{'gis.quotation.free_limit' | translate}} :</label>
                                             <div class="col-7">
-                                                <ng-container *ngIf="isEditable; else readOnlyInput">
-                                                    <!-- Editable number input -->
-                                                    <input type="text" class="form-control form-control-sm mb-1"
-                                                        formControlName="freeLimit" style="width:300px"
-                                                        [value]="freeLimitValue|translate" currencyMask
-                                                        [options]="currencyObj" />
-                                                </ng-container>
+                                                <input type="text" id="scheduleInput"
+                                                    class="form-control form-control-sm mb-1" style="width:300px"
+                                                    formControlName="freeLimit" [value]="freeLimitValue|translate"
+                                                    currencyMask [options]="currencyObj">
 
-                                                <!-- Read-only number input -->
-                                                <ng-template #readOnlyInput>
-                                                    <input type="text" class="form-control form-control-sm mb-1"
-                                                        [value]="freeLimitValue|translate" currencyMask
-                                                        [options]="currencyObj" style="width:300px" disabled />
-                                                </ng-template>
                                             </div>
                                         </div>
                                     </div>
@@ -1274,90 +1283,7 @@
 
             </p-table>
 
-            <!-- <p-table [value]="sectionDetails" [tableStyle]="{'min-width': '300px'}" selectionMode="single"
-                [(selection)]="selectedSection" dataKey="code" editMode="row" [paginator]="true" [rows]="2"
-                [rowsPerPageOptions]="[2, 4, 6]">
-                <ng-template pTemplate="header">
-                    <tr>
 
-
-                        <th class="flexible-header" pSortableColumn="rowNum">
-                            {{ 'gis.quotation.row_num' | translate }}
-                            <p-sortIcon field="rowNum" />
-                        </th>
-                        <th class="flexible-header" pSortableColumn="group">
-                            {{ 'gis.quotation.group' | translate }}
-                            <p-sortIcon field="group" />
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="shortDescription">
-                            {{ 'gis.quotation.code' | translate }}
-                            <p-sortIcon field="code" />
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="description">
-                            {{ 'gis.quotation.benefit' | translate }}
-                            <p-sortIcon field="benefit" />
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="limitAmount">
-                            {{ 'gis.quotation.limit_amount' | translate }}
-                            <p-sortIcon field="limitAmount" />
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="premiumRate">
-                            {{ 'gis.quotation.premium_rate' | translate }}
-                            <p-sortIcon field="premiumRate" />
-                        </th>
-
-                        <th class="flexible-header" pSortableColumn="rateType">
-                            {{ 'gis.quotation.rate_type' | translate }}
-                            <p-sortIcon field="rateType" />
-                        </th>
-                        <th class="flexible-header" pSortableColumn="actions">
-                            {{ 'gis.quotation.actions' | translate }}
-                            <p-sortIcon field="actions" />
-                        </th>
-
-
-                    </tr>
-                </ng-template>
-
-                <ng-template pTemplate="body" let-sectionArray let-editing="editing" let-ri="rowIndex">
-                    <tr (click)="onSelectSection(sectionArray)" [pEditableRow]="sectionArray">
-                        <td class="flexible-header">{{sectionArray.rowNumber}}</td>
-                        <td class="flexible-header">{{sectionArray.calcGroup}}</td>
-                        <td class="flexible-header">{{sectionArray.sectionCode}}</td>
-                        <td class="flexible-header">{{sectionArray.sectionShortDescription |sentenceCase}}</td>
-                        <td class="flexible-header">{{sectionArray.limitAmount}}</td>
-                        <td class="flexible-header">{{sectionArray.premiumRate}}</td>
-                        <td class="flexible-header">{{sectionArray.rateType}}</td>
-
-                        <td class="flexible-header">
-
-                            <button pButton pRipple type="button" pInitEditableRow
-                                class="p-button-rounded p-button-text custom-button " pTooltip="" tooltipPosition="top"
-                                (click)="onOpenEditSectionModal(sectionArray)">
-                                Edit
-                            </button>
-
-
-                            <button pButton pRipple type="button" class="p-button-rounded p-button-text custom-button  "
-                                data-bs-toggle="modal" data-bs-target="#deleteSection"
-                                (click)="setSectionToDelete(sectionArray)">
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="emptymessage">
-                    <tr>
-                        <td colspan="8" style="padding: 20px; text-align:center" id="empty">
-                            No section Click on + icon to add section</td>
-                    </tr>
-                </ng-template>
-
-            </p-table> -->
 
         </div>
     </div>
@@ -1407,29 +1333,25 @@
                         </button>
                     </div>
                     <!-- under development -->
-                    <div pTooltip="{{ isCommissionsButtonDisabled ? ('gis.quotation.agent_source_required_for_commissions' | translate) : '' }}" 
-                         tooltipPosition="top" 
-                         class="d-inline-block"
-                         style="cursor: pointer">
-                        <button class="btn btn-sm"
-                            [ngClass]="{
+                    <div pTooltip="{{ isCommissionsButtonDisabled ? ('gis.quotation.agent_source_required_for_commissions' | translate) : '' }}"
+                        tooltipPosition="top" class="d-inline-block" style="cursor: pointer">
+                        <button class="btn btn-sm" [ngClass]="{
                                 'no-border-bottom': riskActiveTab === 'commissions' && !isCommissionsButtonDisabled, 
                                 'text-primary border-0': riskActiveTab !== 'commissions' && !isCommissionsButtonDisabled,
                                 'text-muted': isCommissionsButtonDisabled
-                            }"
-                            [disabled]="isCommissionsButtonDisabled"
-                            (click)="!isCommissionsButtonDisabled && setRiskTab('commissions')"> 
+                            }" [disabled]="isCommissionsButtonDisabled"
+                            (click)="!isCommissionsButtonDisabled && setRiskTab('commissions')">
                             {{ 'gis.quotation.commissions' | translate }}
                         </button>
                     </div>
 
-                    <div pTooltip="Feature under development" tooltipPosition="top" class="d-inline-block"
+                    <!-- <div pTooltip="Feature under development" tooltipPosition="top" class="d-inline-block"
                         style="cursor: pointer">
                         <button class="btn btn-sm text-muted" disabled [ngClass]="{
                             'no-border-bottom': riskActiveTab === 'comments', 'border-0': riskActiveTab !== 'comments'
                             }" (click)="setRiskTab('comments')"> {{ 'gis.quotation.comments' | translate }}
                         </button>
-                    </div>
+                    </div> -->
 
                     <div>
                         <button class="btn btn-sm"
@@ -1527,25 +1449,26 @@
 
                     <!-- commissions action tabs -->
                     <div *ngIf="riskActiveTab === 'commissions'">
-                        <button class="btn btn-outline-primary btn-sm mb-1 me-2"
-                                [disabled]="isCommissionsButtonDisabled"
-                                [ngClass]="{'btn-outline-secondary': isCommissionsButtonDisabled}">
-                            {{'gis.quotation.save_changes' | translate}}
-                        </button>
-                        <button class="btn btn-primary btn-sm mb-1" 
-                                [disabled]="isCommissionsButtonDisabled"
-                                [ngClass]="{'btn-secondary': isCommissionsButtonDisabled}"
-                                (click)="!isCommissionsButtonDisabled && openCommissionsModal()">
+                        <!-- Commented out - inline editing not needed at the moment -->
+
+                        <!-- <button class="btn btn-outline-primary btn-sm mb-1 me-2" (click)="updateRiskCommissions()"
+                            [disabled]="isCommissionsButtonDisabled || !hasCommissionChanges()"
+                            [ngClass]="{'btn-outline-secondary': isCommissionsButtonDisabled || !hasCommissionChanges()}">
+                            {{ 'gis.quotation.save_changes' | translate }}
+                        </button> -->
+
+
+                        <button class="btn btn-primary btn-sm mb-1" [disabled]="isCommissionsButtonDisabled"
+                            [ngClass]="{'btn-secondary': isCommissionsButtonDisabled}"
+                            (click)="!isCommissionsButtonDisabled && openCommissionsModal()">
                             {{'gis.quotation.add_commission' | translate}}
                         </button>
-                        <i #iconTrigger class="pi border rounded-1 p-1"
-                            [ngClass]="{ 
+                        <i #iconTrigger class="pi border rounded-1 p-1" [ngClass]="{ 
                                 'pi-caret-up': showCommissions, 
                                 'pi-caret-down': !showCommissions,
                                 'border-black text-black': !isCommissionsButtonDisabled,
                                 'border-secondary text-muted': isCommissionsButtonDisabled
-                            }"
-                            [style.cursor]="isCommissionsButtonDisabled ? 'not-allowed' : 'pointer'"
+                            }" [style.cursor]="isCommissionsButtonDisabled ? 'not-allowed' : 'pointer'"
                             style="font-size: 15px; margin-left: 8px; padding: 4px 6px;"
                             (click)="!isCommissionsButtonDisabled && toggleCommissionsColumns(iconTrigger)">
                         </i>
@@ -1586,10 +1509,11 @@
             </div>
 
             <!-- risk clause table -->
-            <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="sessionClauses?.length > 4"
+            <p-table #riskClauseTable [value]="sessionClauses" dataKey="code" [paginator]="sessionClauses?.length > 10"
                 [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
                 [globalFilterFields]="['shortDescription', 'wording', 'heading']" [scrollable]="true"
-                responsiveLayout="scroll" class="mt-3">
+                [paginatorPosition]="'bottom'" [paginatorDropdownAppendTo]="'body'" responsiveLayout="scroll"
+                class="mt-3">
 
 
                 <ng-template pTemplate="header">
@@ -1909,10 +1833,21 @@
                 <!-- Table Header -->
 
                 <ng-template pTemplate="header">
-                    <tr>
+                    <!-- <tr>
                         <th *ngFor="let col of limitsOfLiabilityColumns" [hidden]="!col.visible" class="px-3 mb-2"
                             [pSortableColumn]="col.field">
                             <div class="d-flex align-items-center gap-1 flex-nowrap">
+                                <span class="text-truncate">{{ col.header }}</span>
+                                <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
+                            </div>
+                        </th>
+                    </tr> -->
+                    <tr>
+                        <th *ngFor="let col of limitsOfLiabilityColumns" [hidden]="!col.visible" class="px-3 mb-2"
+                            [ngClass]="{ 'text-center': col.field === 'actions' }" [pSortableColumn]="col.field">
+
+                            <div class="d-flex align-items-center gap-1 flex-nowrap"
+                                [ngClass]="{ 'justify-content-center': col.field === 'actions' }">
                                 <span class="text-truncate">{{ col.header }}</span>
                                 <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
                             </div>
@@ -1944,7 +1879,7 @@
 
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
-                                    <div class="d-flex gap-1 flex-nowrap">
+                                    <div class="flex justify-content-center " style="text-align: center;">
                                         <!-- Edit -->
                                         <span class="p-button-label fw-bold text-primary"
                                             style="cursor: pointer; display: inline-block; width: 60px; white-space: nowrap;"
@@ -1970,6 +1905,13 @@
                                             {{ sanitizeCurrency(limit[col.field]) | currency: currencyObj?.prefix :
                                             'symbol' : '1.2-2' }}
                                         </div>
+                                        <!-- <div class="text-end">
+                                            {{ sanitizeCurrency(limit[col.field]) != null
+                                            ? (sanitizeCurrency(limit[col.field]) | currency: currencyObj?.prefix :
+                                            'symbol' : '1.2-2')
+                                            : '-' }}
+                                        </div> -->
+
                                     </ng-container>
                                     <ng-template #defaultField>
                                         {{ limit[col.field] }}
@@ -2592,8 +2534,8 @@
                 [paginator]="addedCommissions?.length > 10" [rowsPerPageOptions]="[5, 10, 20]" [rows]="10"
                 [globalFilterFields]="['']" [scrollable]="true" scrollDirection="horizontal" responsiveLayout="scroll"
                 class="mt-3">
-                <!-- Table Header -->
 
+                <!-- Table Header -->
                 <ng-template pTemplate="header">
                     <tr>
                         <th *ngFor="let col of commissionsColumns" [hidden]="!col.visible" class="px-3 mb-2"
@@ -2607,12 +2549,13 @@
 
                     <tr class="filter-row">
                         <td *ngFor="let col of commissionsColumns" [hidden]="!col.visible">
-                            <input *ngIf="col.field !== 'actions'" type="text" pInputText class="form-control ms-2" style="width:95%"
+                            <input *ngIf="col.field !== 'actions'" type="text" pInputText class="form-control ms-2"
+                                style="width:95%"
                                 (input)="commissionsTable.filter($event.target['value'], col.field, 'contains')" />
                         </td>
                     </tr>
-
                 </ng-template>
+
                 <!-- Table Body -->
                 <ng-template pTemplate="body" let-commission>
                     <tr>
@@ -2621,44 +2564,56 @@
 
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
-                                    <div class="d-flex gap-1 flex-nowrap">
+                                    <div class="d-flex flex-nowrap" style="gap: 1px;">
+                                        <!-- Edit -->
+                                        <!-- <span class="p-button-label fw-bold text-primary"
+                                            style="cursor: pointer; white-space: nowrap;"
+                                            (click)="startEditing(commission)">
+                                            {{ 'gis.quotation.edit' | translate }}
+                                        </span> -->
+
                                         <!-- Delete -->
                                         <span class="p-button-label fw-bold text-primary"
                                             style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
-                                            data-bs-target="#deleteLimit" (click)="prepareDeleteLimit(commission)">
+                                            data-bs-target="#deleteCommission"
+                                            (click)="prepareDeleteCommission(commission)">
                                             {{ 'gis.quotation.delete' | translate }}
                                         </span>
-
                                     </div>
                                 </ng-container>
 
-                                <!-- Agent DTO - Display agent name -->
+                                <!-- Agent DTO -->
                                 <ng-container *ngSwitchCase="'agentDto'">
-                                    <span class="form-control-plaintext commission-readonly px-2">
+                                    <span class="commission-readonly px-2">
                                         {{ commission.agentDto?.name || '-' }}
                                     </span>
                                 </ng-container>
 
-                                <!-- Default columns added dynamically) -->
+                                <!-- Default columns with read-only check -->
                                 <ng-container *ngSwitchDefault>
-                                    <!-- Non-editable fields - display as read-only text -->
                                     <ng-container *ngIf="isCommissionFieldReadOnly(col.field); else editableField">
-                                        <span class="form-control-plaintext commission-readonly px-2">{{ commission[col.field] || '-' }}</span>
+                                        <span class="commission-readonly px-2">
+                                            {{ commission[col.field] || '-' }}
+                                        </span>
                                     </ng-container>
 
-                                    <!-- Editable fields -->
+                                    <!-- Editable field template -->
                                     <ng-template #editableField>
-                                        <ng-container *ngIf="col.field === 'value'; else defaultField">
+                                        <ng-container *ngIf="col.field === 'value'; else textField">
                                             <input type="number" class="form-control w-100 text-end"
-                                                [(ngModel)]="commission[col.field]" [ngModelOptions]="{standalone: true}"
+                                                [(ngModel)]="commission[col.field]"
+                                                [ngModelOptions]="{standalone: true}"
                                                 (blur)="commission[col.field] = sanitizeCurrency(commission[col.field])" />
                                         </ng-container>
 
-                                        <ng-template #defaultField>
+                                        <ng-template #textField>
                                             <input type="text" class="form-control w-100"
-                                                [(ngModel)]="commission[col.field]" [ngModelOptions]="{standalone: true}" />
+                                                [(ngModel)]="commission[col.field]"
+                                                [ngModelOptions]="{standalone: true}"
+                                                (input)="markCommissionDirty(commission)" />
                                         </ng-template>
                                     </ng-template>
+
                                 </ng-container>
 
                             </ng-container>
@@ -2666,6 +2621,7 @@
                     </tr>
                 </ng-template>
 
+                <!-- Empty Message -->
                 <ng-template pTemplate="emptymessage">
                     <tr>
                         <td [attr.colspan]="commissionsColumns.length" class="text-center p-4 text-muted">
@@ -2681,6 +2637,47 @@
                 </ng-template>
 
             </p-table>
+
+
+            <!-- delete commission modal -->
+            <div class="modal fade" id="deleteCommission">
+                <div class="modal-dialog modal-dialog-centered" style="min-width:600px">
+                    <div class="modal-content ps-4 pt-2 pe-4">
+
+                        <!-- Header -->
+                        <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-1">
+                            <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+                                Delete Commission
+                            </p>
+                            <button type="button" data-bs-dismiss="modal" class="btn p-0 text-danger fw-bold"
+                                style="border: none;">
+                                X
+                            </button>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="d-flex justify-content-between text-black">
+                            <p>Are you sure you want to delete this commission?</p>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 mb-3 mt-5 p-0">
+                            <button type="button" class="btn" data-bs-dismiss="modal"
+                                style="background-color: #00529B;color:white;text-decoration: none;"
+                                (click)="deleteRiskCommission(commissionToDelete.code)">
+                                {{ 'gis.quotation.delete' | translate }}
+                            </button>
+                            <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary"
+                                style="text-decoration: none;">
+                                {{ 'gis.quotation.cancel' | translate }}
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
 
             <!-- Add commissions modal -->
             <div class="modal fade" id="addCommission" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel"
@@ -3285,23 +3282,20 @@
 
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
-                                    <div class="d-flex gap-2 flex-nowrap">
-                                        <!-- Edit -->
-                                        <span class="p-button-label fw-bold text-primary"
-                                            style="cursor: pointer; display: inline-block; width: 30px; white-space: nowrap;"
+                                    <div class="d-flex flex-nowrap">
+                                        <span class="p-button-label fw-bold text-primary me-1"
+                                            style="cursor: pointer; display: inline-block; white-space: nowrap;"
                                             data-bs-toggle="modal" data-bs-target="#editExcess"
                                             (click)="populateEditExcessModal(excess)">
                                             {{ 'gis.quotation.edit' | translate }}
                                         </span>
-
-                                        <!-- Delete -->
                                         <span class="p-button-label fw-bold text-primary"
                                             style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
                                             data-bs-target="#deleteExcess" (click)="prepareDeleteExcess(excess)">
                                             {{ 'gis.quotation.delete' | translate }}
                                         </span>
-
                                     </div>
+
                                 </ng-container>
 
                                 <!-- Default columns added dynamically) -->
@@ -3519,12 +3513,11 @@
 
     </div>
 </div>
-
 <div class="mt-2 d-flex justify-content-between mx-3">
-    <button style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"
+    <button style="border: none; background: transparent; text-decoration: underline; cursor: pointer; color:#00529B"
         (click)="navigateToRiskDetails()">Back</button>
 
-    <div class="d-inline-block" pTooltip="{{ nextButtonTooltip }}" tooltipPosition="top"
+    <div class="d-inline-block" [pTooltip]="nextButtonTooltip" tooltipPosition="top"
         [tooltipDisabled]="!nextButtonDisabled" style="cursor: pointer">
         <button class="btn" [ngClass]="{'btn-primary': !nextButtonDisabled, 'btn-secondary': nextButtonDisabled}"
             [disabled]="nextButtonDisabled" (click)="computePremium()">

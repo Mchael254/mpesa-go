@@ -1,6 +1,33 @@
 
+<ng-container *ngIf="subGroups?.length > 0">
+  <ng-container *ngFor="let subGroup of subGroups">
+    <div class="my-3">
+      <ng-container *ngIf="!(subGroup.subGroupId.includes(cr12SearchSubString))">
+        <app-overview-table
+          [subGroup]="subGroup"
+          [table]="subGroup.table"
+          [language]="language"
+          (rowClicked)="handleCr12Display($event)"
+          (deleteBtnClicked)="handleWealthAmlDelete($event, subGroup)"
+        >
+        </app-overview-table>
+      </ng-container>
+      <ng-container *ngIf="(subGroup.subGroupId.includes(cr12SearchSubString)) && shouldShowCr12Details">
+        <app-overview-table
+          [subGroup]="subGroup"
+          [table]="subGroup.table"
+          [language]="language"
+          (deleteBtnClicked)="handleCr12Delete($event, subGroup)"
+        >
+        </app-overview-table>
+      </ng-container>
+  </div>
+    <!--<button class="btn btn-danger" (click)="addWealthAml()">Add AML</button>-->
+  </ng-container>
 
-<div class="row">
+
+
+<!--<div class="row">
   <div class="col-sm-2 offset-sm-10 text-end mb-3">
     <button
       class="btn btn-primary btn-primary"
@@ -13,9 +40,9 @@
         <i class="fa fa-caret-down text-primary"></i>
       </span>
   </div>
-</div>
+</div>-->
 
-<p-dialog [header]="''" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '600px'}">
+<!--<p-dialog [header]="''" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '600px'}">
   <div class="row">
     <ng-container *ngFor="let col of columns">
       <div class="col-sm-6">
@@ -28,9 +55,9 @@
       </div>
     </ng-container>
   </div>
-</p-dialog>
+</p-dialog>-->
 
-<ng-container *ngIf="wealthAmlDetails?.length >= 0">
+<!--<ng-container *ngIf="wealthAmlDetails?.length >= 0">
   <p-table
     [autoLayout]="true"
     [lazy]="true"
@@ -58,17 +85,17 @@
           </th>
         </ng-container>
         <th>
-          <!--{{ actionLabel[language] }}-->
+          &lt;!&ndash;{{ actionLabel[language] }}&ndash;&gt;
         </th>
       </tr>
-      <!--<tr>
+      &lt;!&ndash;<tr>
         <ng-container *ngFor="let col of columns">
           <th *ngIf="col.visible">
             <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, col.field)" (input)="processInput($event, col.field)">
           </th>
         </ng-container>
         <th></th>
-      </tr>-->
+      </tr>&ndash;&gt;
     </ng-template>
     <ng-template pTemplate="body" let-rowData>
       <tr [pSelectableRow]="rowData">
@@ -107,7 +134,7 @@
       </tr>
     </ng-template>
   </p-table>
-</ng-container>
+</ng-container>-->
 
 
 
@@ -123,7 +150,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-4 text-primary" id="editWealthAmlModalLabel">
-          {{ formFieldsConfig?.label[language] || '---' | titlecase }}
+<!--          {{ formFieldsConfig?.label[language] || '-&#45;&#45;' | titlecase }}-->
         </h1>
         <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -132,7 +159,7 @@
           <ng-container *ngIf=" editForm; else loadingForm">
             <form [formGroup]="editForm">
               <div class="row g-3">
-                <ng-container *ngFor="let field of formFieldsConfig.fields">
+                <ng-container *ngFor="let field of formGroupsAndFieldConfig.fields">
                   <div class="col-md-6">
                     <label [for]="field.fieldId" class="form-label">
                       {{ field?.label[language] || '---' | titlecase }}
@@ -172,12 +199,12 @@
           </ng-template>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-            {{ formFieldsConfig?.buttons?.cancel?.label[language] || '---' | titlecase }}
+          <!--<button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+            {{ formGroupsAndFieldConfig?.buttons?.cancel?.label[language] || '-&#45;&#45;' | titlecase }}
           </button>
           <button type="button" class="btn btn-primary" (click)="editWealthAmlDetails()">
-            {{ formFieldsConfig?.buttons?.save?.label[language] || '---' | titlecase }}
-          </button>
+            {{ formFieldsConfig?.buttons?.save?.label[language] || '-&#45;&#45;' | titlecase }}
+          </button>-->
         </div>
       </ng-container>
       <ng-template #showMessage>

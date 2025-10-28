@@ -91,8 +91,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   productClauseColumns: { field: string; header: string; visible: boolean, filterable: boolean, sortable: boolean }[] = [];
 
 
-
-
   quotationNum: string;
   introducers: Introducer[] = [];
   selectedIntroducer: Introducer | null = null;
@@ -211,6 +209,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   dragOffset = { x: 0, y: 0 };
   isNewClientSelected: boolean = false;
   quickQuoteConverted: boolean = false;
+  quotationProducts: any;
+  activeProductTab: any;
+  productClauses: any;
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -230,7 +231,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private cd: ChangeDetectorRef
   ) {
-    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteConvertedFlag'))
+    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
     this.quotationAction = sessionStorage.getItem('quotationAction')
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
     this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
@@ -289,10 +290,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       email: ['', [Validators.pattern(this.emailPattern)]],
       phone: ['', this.newClient ? [Validators.required] : []],
       client: ['', [Validators.minLength(2)]],
-      paymentFrequency: [this.paymentFrequencies[0].value, Validators.required]
+      paymentFrequency: [this.paymentFrequencies[0].value, Validators.required],
+      // marketer: ['']
     });
     this.loadDetailedQuotationFields();
-
     this.minDate = new Date();
     // this.todaysDate = new Date();
     // this.coverToDate = new Date(this.todaysDate);
@@ -321,14 +322,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     this.loadPersistedClauses();
     this.getUsers();
+    this.patchReusedQuotationData();
 
   }
-
-  // ngOnChanges(): void {
-  //   this.checkProducts();
-  //   this.updateProductsFromQuickQuote();
-  // }
-
 
   checkProducts() {
     if (this.productDetails && this.productDetails.length > 0) {
@@ -359,65 +355,40 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         const fields = response?.[0]?.fields || [];
 
         this.quotationFormContent = response;
-        // this.subclassFormData = fields.filter(fields => fields.scheduleLevel === 'L1');
-        this.detailedQuotationFormData = fields
+        this.detailedQuotationFormData = fields;
         log.debug(this.quotationFormContent, ' Quotation Form-content');
         log.debug(this.detailedQuotationFormData, 'Quotation formData is defined here');
-        this.fetchQuotationRelatedData()
+        this.fetchQuotationRelatedData();
 
-        // Remove existing dynamic controls
-        // Object.keys(this.riskDetailsForm.controls).forEach((controlName) => {
-        //   const control = this.riskDetailsForm.get(controlName) as any;
-        //   if (control?.metadata?.dynamic) {
-        //     this.riskDetailsForm.removeControl(controlName);
-        //     log.debug(`Removed dynamic control: ${controlName}`);
-        //   }
-        // });
-
-        // Add new dynamic controls 
-        // this.detailedQuotationFormData.forEach((field) => {
-        //   const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
-        //   const savedValue = sessionStorage.getItem(`quotation_${field.name}`);
-        //   const formControl = new FormControl(savedValue || '', validators);
-        //   (formControl as any).metadata = { dynamic: true };
-
-        //   this.quotationForm.addControl(field.name, formControl);
-        //   formControl.valueChanges.subscribe(value => {
-        //     sessionStorage.setItem(`quotation_${field.name}`, value);
-
-        //     if (field.name === 'multiUserEntry') {
-        //       if (value === 'Y') {
-        //         this.handleMultiUserYes();
-        //       } else if (value === 'N') {
-        //         this.handleMultiUserNo();
-        //       }
-        //     }
-        //   });
-
-        //   if (field.name === 'multiUserEntry' && savedValue) {
-        //     if (savedValue === 'Y') {
-        //       this.handleMultiUserYes();
-        //     } else if (savedValue === 'N') {
-        //       this.handleMultiUserNo();
-        //     }
-        //   }
-        // });
         this.detailedQuotationFormData.forEach((field) => {
           const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
 
           // Handle rfqDate separately
           let initialValue: any;
           const savedValue = sessionStorage.getItem(`quotation_${field.name}`);
+          log.debug('savedValue', savedValue);
 
           if (field.name === 'rfqDate') {
             // If sessionStorage has value, use it; otherwise, use today's date
             initialValue = savedValue ? new Date(savedValue) : new Date();
-            this.updateQuotationExpiryDate(initialValue)
+            this.updateQuotationExpiryDate(initialValue);
           }
           else if (field.name === 'multiUserEntry') {
             initialValue = savedValue || 'N';
           }
-
+          else if (field.name === 'agent' || field.name === 'marketer') {
+            // SPECIAL HANDLING: Parse stored agent/marketer objects
+            if (savedValue && savedValue !== '[object Object]' && savedValue !== '') {
+              try {
+                initialValue = JSON.parse(savedValue);
+                log.debug('initialValue', initialValue)
+              } catch (e) {
+                initialValue = '';
+              }
+            } else {
+              initialValue = '';
+            }
+          }
           else {
             initialValue = savedValue || '';
           }
@@ -427,7 +398,23 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           this.quotationForm.addControl(field.name, formControl);
 
           formControl.valueChanges.subscribe(value => {
-            sessionStorage.setItem(`quotation_${field.name}`, value);
+            // SPECIAL HANDLING: Properly serialize agent/marketer objects
+            if (field.name === 'agent' || field.name === 'marketer') {
+              if (value && typeof value === 'object') {
+                const storageValue = JSON.stringify({
+                  id: value.id,
+                  name: value.name,
+                  accountTypeId: value.accountTypeId,
+                  shortDesc: value.shortDesc
+                });
+                sessionStorage.setItem(`quotation_${field.name}`, storageValue);
+              } else {
+                sessionStorage.setItem(`quotation_${field.name}`, value || '');
+              }
+            } else {
+              // Normal field saving
+              sessionStorage.setItem(`quotation_${field.name}`, value);
+            }
 
             if (field.name === 'multiUserEntry') {
               if (value === 'Y') {
@@ -447,6 +434,17 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           }
         });
 
+        const agentValue = this.quotationForm.get('agent')?.value;
+        if (agentValue && typeof agentValue === 'object') {
+          this.selectedAgentName = agentValue.name;
+          this.selectedAgent = agentValue;
+        }
+
+        const marketerValue = this.quotationForm.get('marketer')?.value;
+        if (marketerValue && typeof marketerValue === 'object') {
+          this.selectedMarketerName = marketerValue.name;
+          this.selectedMarketer = marketerValue;
+        }
 
         log.debug(this.quotationForm.value, 'Final Form Value');
       },
@@ -455,9 +453,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-
-
 
 
   setClientType(value: 'new' | 'existing') {
@@ -568,6 +563,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   setProductClauseColumns(productClause: any) {
     const excludedFields = [
+    'clauseShortDescription',
+    'clauseHeading',
+    'clause'  
     ];
 
     this.productClauseColumns = Object.keys(productClause)
@@ -586,6 +584,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     if (saved) {
       const savedVisibility = JSON.parse(saved);
       this.productClauseColumns.forEach(col => {
+        if (col.field === 'actions') return;
         const savedCol = savedVisibility.find((s: any) => s.field === col.field);
         if (savedCol) col.visible = savedCol.visible;
       });
@@ -636,7 +635,51 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         clausesModified: false
       };
       sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+
+      // Send mandatory product clauses to database if quotationCode exists and there are mandatory clauses
+      if (this.quotationCode && this.mandatoryProductClause.length > 0) {
+        this.sendMandatoryClausesToDatabase(productCode, this.mandatoryProductClause);
+      }
     });
+  }
+
+  private sendMandatoryClausesToDatabase(productCode: number, mandatoryClauses: any[]) {
+    // Transform mandatory clauses to match the expected payload structure
+    const transformedClauses = mandatoryClauses.map((clause: any) => ({
+      clauseWording: clause.wording || '',
+      clauseHeading: clause.heading || '',
+      clauseCode: clause.code || 0,
+      clauseType: clause.type || '',
+      clauseEditable: clause.isEditable || 'N',
+      clauseShortDescription: clause.shortDescription || ''
+    }));
+
+    const productClausePayload = {
+      quotationCode: this.quotationCode,
+      productCode: productCode,
+      productClauses: transformedClauses
+    };
+
+    log.debug(`Sending mandatory clauses to database for product ${productCode}:`, productClausePayload);
+
+    // Send mandatory clauses to database using createQuotationProductClauses service
+    this.quotationService.createQuotationProductClauses([productClausePayload])
+      .subscribe({
+        next: (response) => {
+          log.debug(`Successfully saved mandatory clauses for product ${productCode}:`, response);
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            'Mandatory product clauses saved successfully'
+          );
+        },
+        error: (err) => {
+          log.error(`Error saving mandatory clauses for product ${productCode}:`, err);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Failed to save mandatory clauses to database. Please try again.'
+          );
+        }
+      });
   }
 
   private loadPersistedClauses() {
@@ -691,6 +734,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       this.globalMessagingService.displayErrorMessage('warning', 'You need to select a product first');
     }
   }
+
   closeClauseModal() {
     this.showClauseModal = false;
   }
@@ -900,9 +944,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
    */
   getuser() {
     this.user = this.authService.getCurrentUserName();
+    log.debug("Username", this.user)
     this.userDetails = this.authService.getCurrentUser();
     log.info('Login UserDetails', this.userDetails);
-
+    this.user = this.userDetails.fullName || this.authService.getCurrentUserName();
     this.userCode = this.userDetails.code;
     log.debug('User Code ', this.userCode);
     sessionStorage.setItem('userCode', JSON.stringify(this.userCode))
@@ -964,11 +1009,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   }
 
 
-  /**
-   * Saves quotation details, sets form details, and navigates based on user preferences.
-   * @method saveQuotationDetails
-   * @return {void}
-   */
+
 
   checkQuationDetailsRequiredFields(): { isValid: boolean; missingItems: string[]; tooltipMessage: string } {
     const missingItems: string[] = [];
@@ -1056,6 +1097,11 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     return this.checkQuationDetailsRequiredFields();
   }
 
+  /**
+   * Saves quotation details, sets form details, and navigates based on user preferences.
+   * @method saveQuotationDetails
+   * @return {void}
+   */
   saveQuotationDetails() {
     const validation = this.checkQuationDetailsRequiredFields();
 
@@ -1068,9 +1114,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    log.debug("Quotation form details >>>>", this.quotationForm)
-    log.debug("Selected agent >>>>", this.agentDetails)
-    log.debug("ProductDetails:", this.productDetails)
+    // log.debug("Quotation form details >>>>", this.quotationForm)
+    // log.debug("Selected agent >>>>", this.agentDetails)
+    // log.debug("ProductDetails:", this.productDetails)
     if (this.quotationForm.valid) {
       const quotationFormValues = this.quotationForm.getRawValue();
       const quotationPayload = {
@@ -1131,10 +1177,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
     return
 
-    this.spinner.show()
-
 
   }
+
   updateQuickQuoteDetails() {
     const validation = this.checkQuationDetailsRequiredFields();
 
@@ -1238,6 +1283,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         log.debug("AGENTS", data)
         log.debug("AGENTS", this.agents)
         this.marketerList = data.content.filter(agent => agent.accountTypeId == 10);
+        this.selectedMarketer = null;
+        this.selectedMarketerName = null;
         log.debug("Marketer list", this.marketerList);
       })
   }
@@ -1314,23 +1361,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
      }*/
     this.saveQuotationDetails()
     return
-    this.quotationForm.controls['branch'].setValue(this.quotationForm.value.branchCode.id);
-    sessionStorage.setItem('coverFrom', JSON.stringify(formattedCoverFromDate));
-    sessionStorage.setItem('coverTo', JSON.stringify(formattedCoverToDate));
-    //TODO check this??? client code
-    this.quotationService.getQuotations(221243911, formattedCoverFromDate, formattedCoverToDate).subscribe(data => {
-      this.quotationsList = data
-      this.clientExistingQuotations = this.quotationsList.content
-
-      if (this.clientExistingQuotations.length > 0) {
-        this.openModal.nativeElement.click();
-      } else {
-
-        this.saveQuotationDetails()
-      }
-
-    })
-
 
   }
 
@@ -1780,9 +1810,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       ) {
         this.quotationForm.get('quotationType').setValue('I'); // Set to Intermediary
         this.onQuotationTypeChange('I');
+        this.quotationForm.get('agents').setValue(null);
+        this.selectedAgentName = '';
       }
       else if (selectedSource.description === 'Campaign') {
         this.showCampaignField = true;
+        this.quotationForm.get('agents').setValue(null);
+        this.selectedAgentName = '';
       }
     }
   }
@@ -2128,53 +2162,116 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   productToDelete: any = null;
 
 
+  // deleteProduct() {
+  //   if (!this.productToDelete) return;
+
+
+  //   this.productDetails = this.productDetails.filter(
+  //     p => p.productCode.code !== this.productToDelete.productCode.code
+  //   );
+
+  //   sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+
+  //   //remove related clauses from allClausesMap
+  //   const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+  //   delete allClausesMap[this.productToDelete.productCode.code];
+  //   sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+
+
+  //   // Restore deleted product to dropdown
+  //   this.ProductDescriptionArray.push({
+  //     code: this.productToDelete.productCode.code,
+  //     description: this.productToDelete.productCode.description
+  //   });
+
+  //   // Persist the updated dropdown list again
+  //   sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+
+
+  //   if (this.productCode === this.productToDelete.productCode.code) {
+  //     const nextProduct = this.productDetails[0];
+  //     if (nextProduct) {
+  //       this.getProductClause({ code: nextProduct.productCode.code });
+  //       this.productCode = nextProduct.productCode.code;
+  //     } else {
+  //       this.productCode = null;
+  //       this.sessionClauses = [];
+  //       this.productClause = [];
+  //       this.nonMandatoryProductClause = [];
+  //       this.clausesModified = false;
+  //     }
+  //   }
+  //   if (!this.productDetails.length) {
+  //     this.columns = [];
+  //   }
+
+  //   this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
+
+  //   this.productToDelete = null;
+  // }
+
   deleteProduct() {
-    if (!this.productToDelete) return;
+  if (!this.productToDelete) return;
 
+  const quotationCodeStr = sessionStorage.getItem('quotationCode'); 
+  const quotationCode = quotationCodeStr ? Number(quotationCodeStr) : 0;
+  const quotationProductCode = this.productToDelete.productCode.code;
 
-    this.productDetails = this.productDetails.filter(
-      p => p.productCode.code !== this.productToDelete.productCode.code
-    );
+  // Call delete API before making local updates
+  this.quotationService.deleteQuotationProduct(quotationCode, quotationProductCode)
+    .subscribe({
+      next: (response) => {
+        // Proceed only if delete was successful
+        this.productDetails = this.productDetails.filter(
+          p => p.productCode.code !== this.productToDelete.productCode.code
+        );
 
-    sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+        sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
 
-    //remove related clauses from allClausesMap
-    const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
-    delete allClausesMap[this.productToDelete.productCode.code];
-    sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+        // Remove related clauses from allClausesMap
+        const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+        delete allClausesMap[this.productToDelete.productCode.code];
+        sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
 
+        // Restore deleted product to dropdown
+        this.ProductDescriptionArray.push({
+          code: this.productToDelete.productCode.code,
+          description: this.productToDelete.productCode.description
+        });
 
-    // Restore deleted product to dropdown
-    this.ProductDescriptionArray.push({
-      code: this.productToDelete.productCode.code,
-      description: this.productToDelete.productCode.description
-    });
+        // Persist updated dropdown list again
+        sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
 
-    // Persist the updated dropdown list again
-    sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+        // Handle active product switching
+        if (this.productCode === this.productToDelete.productCode.code) {
+          const nextProduct = this.productDetails[0];
+          if (nextProduct) {
+            this.getProductClause({ code: nextProduct.productCode.code });
+            this.productCode = nextProduct.productCode.code;
+          } else {
+            this.productCode = null;
+            this.sessionClauses = [];
+            this.productClause = [];
+            this.nonMandatoryProductClause = [];
+            this.clausesModified = false;
+          }
+        }
 
+        if (!this.productDetails.length) {
+          this.columns = [];
+        }
 
-    if (this.productCode === this.productToDelete.productCode.code) {
-      const nextProduct = this.productDetails[0];
-      if (nextProduct) {
-        this.getProductClause({ code: nextProduct.productCode.code });
-        this.productCode = nextProduct.productCode.code;
-      } else {
-        this.productCode = null;
-        this.sessionClauses = [];
-        this.productClause = [];
-        this.nonMandatoryProductClause = [];
-        this.clausesModified = false;
+        this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
+        this.productToDelete = null;
+      },
+      error: (err) => {
+        console.error('Error deleting product:', err);
+        this.globalMessagingService.displayErrorMessage('error', 'Failed to delete product. Please try again.');
       }
-    }
-    if (!this.productDetails.length) {
-      this.columns = [];
-    }
+    });
+}
 
-    this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
 
-    this.productToDelete = null;
-  }
 
   updateCoverTo(product: any) {
     if (product.coverFrom) {
@@ -2453,6 +2550,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.showAgentSearchModal = false
   }
 
+
   filterByMarketerName(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.selectMarketerTable.filter(input.value, 'name', 'contains');
@@ -2465,10 +2563,39 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   saveMarketer(marketer: any) {
     log.debug("Selected Marketer", marketer);
+    log.debug("Form control exists?", !!this.quotationForm.controls['marketer']);
+    log.debug("Current marketer value before set:", this.quotationForm.get('marketer')?.value);
+
+    // Explicitly save to sessionStorage
+    const storageValue = JSON.stringify({
+      id: marketer.id,
+      name: marketer.name,
+      accountTypeId: marketer.accountTypeId,
+      shortDesc: marketer.shortDesc
+    });
+    sessionStorage.setItem('quotation_marketer', storageValue);
+    log.debug("Saved to sessionStorage:", storageValue);
+
+    // Verify it was saved
+    log.debug("Retrieved from sessionStorage:", sessionStorage.getItem('quotation_marketer'));
+
     this.quotationForm.controls['marketer'].setValue(marketer);
-    this.selectedMarketer = marketer
-    this.selectedMarketerName = marketer.name
-    this.showMarketerSearchModal = false
+    log.debug("Current marketer value after set:", this.quotationForm.get('marketer')?.value);
+
+    this.selectedMarketer = marketer;
+    this.selectedMarketerName = marketer.name;
+    this.showMarketerSearchModal = false;
+  }
+  get displayAgentName(): string {
+    const agent = this.quotationForm.get('agent')?.value;
+    if (!agent) return '';
+    return typeof agent === 'object' ? (agent.name || '') : '';
+  }
+
+  get displayMarketerName(): string {
+    const marketer = this.quotationForm.get('marketer')?.value;
+    if (!marketer) return '';
+    return typeof marketer === 'object' ? (marketer.name || '') : '';
   }
 
 
@@ -2514,7 +2641,24 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       'productName'
 
     ];
-    const excludedFields = [];
+    const excludedFields = [
+      'productClauses',
+      'limitsOfLiability',
+      'riskInformation',
+      'taxInformation',
+      'binder',
+      'commission',
+      'converted',
+      'policyNumber',
+      'premium',
+      'productShortDescription',
+      'quotationCode',
+      'quotationNo',
+      'revisionNo',
+      'totalSumInsured',
+      'wet',
+      'wef'
+    ];
 
     this.columns = Object.keys(sample)
       .filter((key) => !excludedFields.includes(key))
@@ -2580,4 +2724,151 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       });
   }
 
+
+
+patchReusedQuotationData() {
+  const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+  if (!reusedQuotation) {
+    log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
+    return;
+  }
+
+  const data = JSON.parse(reusedQuotation);
+  log.debug('[QuotationDetailsComponent] Patching reused quotation data:', data);
+
+  
+  if (this.quotationForm) {
+    this.quotationForm.patchValue({
+      client: data.clientName || '',
+      email: data.emailAddress || '',
+      phone: data.phoneNumber || '',
+      source: data.source || '',
+      quotationType: data.quotationType || '',
+      branch: data.branchCode || '',
+      currency: data.currency || '',
+      introducer: data.introducerName || '',
+      paymentFrequency: data.frequencyOfPayment || '',
+      marketer: data.marketerName || '',
+      multiUserEntry: data.multiUser || 'N',
+      campaign: data.sourceCampaign || '',
+      internalComments: data.internalComments || '',
+      externalComments: data.externalComments || ''
+    });
+  }
+
+  // ✅ Handle client type
+  if (data.clientCode) {
+    this.setClientType('existing');
+    this.selectedClientName = data.clientName || '';
+  } else {
+    this.setClientType('new');
+  }
+
+  // ✅ Optional: patch dropdown selections for UI
+  this.selectedMarketerName = data.marketerName || '';
+  this.selectedIntroducerName = data.introducerName || '';
+  this.selectedAgentName = data.agentName || '';
+
+  // ✅ Patch product details + clauses + taxes
+  // if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
+  //   this.quotationProducts = data.quotationProducts;
+  //   this.products = data.quotationProducts;
+  //   this.productDetails = data.quotationProducts;
+
+  //   log.debug('[QuotationDetailsComponent] Patched product details:', this.products);
+
+    
+
+    
+
+
+    if (this.quotationForm) {
+      this.quotationForm.patchValue({
+        client: data.clientName || '',
+        email: data.emailAddress || '',
+        phone: data.phoneNumber || '',
+        source: data.source || '',
+        quotationType: data.quotationType || '',
+        branch: data.branchCode || '',
+        currency: data.currency || '',
+        introducer: data.introducerName || '',
+        paymentFrequency: data.frequencyOfPayment || '',
+        marketer: data.marketerName || '',
+        multiUserEntry: data.multiUser || 'N',
+        campaign: data.sourceCampaign || '',
+        internalComments: data.internalComments || '',
+        externalComments: data.externalComments || ''
+      });
+    }
+
+    // ✅ Handle client type
+    if (data.clientCode) {
+      this.setClientType('existing');
+      this.selectedClientName = data.clientName || '';
+    } else {
+      this.setClientType('new');
+    }
+
+    // ✅ Optional: patch dropdown selections for UI
+    this.selectedMarketerName = data.marketerName || '';
+    this.selectedIntroducerName = data.introducerName || '';
+    this.selectedAgentName = data.agentName || '';
+
+    // ✅ Patch product details + clauses + taxes
+    if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
+      this.quotationProducts = data.quotationProducts;
+      this.products = data.quotationProducts;
+      this.productDetails = data.quotationProducts;
+
+      log.debug('[QuotationDetailsComponent] Patched product details:', this.products);
+
+if (this.productDetails?.length > 0) {
+
+  
+  this.productDetails = this.productDetails.map((p: any) => ({
+    ...p,
+    coverFrom: p.wef,
+    coverTo: p.wet,
+  }));
+
+  this.setColumnsFromProductDetails(this.productDetails[0]);
 }
+
+      // ✅ Handle the first product’s clauses 
+      const firstProduct = this.products[0];
+      if (firstProduct) {
+        this.activeProductTab = firstProduct.productCode || '';
+        this.selectedProduct = firstProduct.productName || '';
+
+        // ✅ Patch product clauses
+        this.sessionClauses = firstProduct.productClauses || [];
+        if (this.sessionClauses.length > 0) {
+  this.sessionClauses = this.sessionClauses.map((c: any) => ({
+    ...c,
+    shortDescription: c.clauseShortDescription,
+    heading: c.clauseHeading,
+    wording: c.clause,
+    isEditable: c.clauseIsEditable  
+  }));
+  
+  this.setProductClauseColumns(this.sessionClauses[0]);
+}
+
+
+      }
+    } else {
+      log.debug('[QuotationDetailsComponent] No product details found in reused quotation.');
+      this.quotationProducts = [];
+      this.products = [];
+      this.productDetails = [];
+      this.productClauses = [];
+
+    }
+
+
+  }
+
+
+
+}
+

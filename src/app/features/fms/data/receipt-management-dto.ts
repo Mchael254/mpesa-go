@@ -203,3 +203,8 @@ export interface shareReceiptDTO{
   orgCode:string;
   branchReceiptCode:string;
 }
+
+export interface GLAccountDTO {
+  accountNumber: string;
+  accountName: string;
+}

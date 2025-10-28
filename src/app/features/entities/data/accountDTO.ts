@@ -574,4 +574,13 @@ export interface Cr12Detail {
   referenceNumberYear: string;      // or number if appropriate
 }
 
-
+export enum PartyType {
+  staff = 'S',
+  client = 'C',
+  intermediary = 'A',
+  service_provider = 'SP',
+  creditor = 'CRD',
+  debtoris = 'DPRS',
+  lead = 'L',
+  prospect = 'P'
+}
