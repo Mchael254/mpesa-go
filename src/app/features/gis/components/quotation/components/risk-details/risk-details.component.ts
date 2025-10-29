@@ -92,9 +92,6 @@ export class RiskDetailsComponent {
   showRiskDetailsColumnModal = false;
   riskDetailsColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
 
-
-
-
   minDate: Date | undefined;
   motorClassAllowed: string;
   showMotorSubclassFields: boolean = false;
@@ -164,9 +161,7 @@ export class RiskDetailsComponent {
   sectionDetails: any[] = [];
   sectionDetailsForm: FormGroup;
   riskSectionList: riskSection[] = [];
-  // quotationCode: any
-  // quotationRiskCode: any;
-  // quotationRiskData: any;
+
   selectedRiskSection: any;
   inputErrors: { [key: string]: boolean } = {};
   private typingTimer: any;// Timer reference
@@ -453,7 +448,6 @@ export class RiskDetailsComponent {
       const quoatationCode = this.selectedProduct?.quotationCode
       log.debug('QUOTATION CODE- NGONCHANGES', quoatationCode)
       this.fetchQuotationDetails(quoatationCode)
-      // this.fetchRisksLimits(quoatationCode)
       this.scheduleList = []
       this.sectionPremium = []
       // this.sectionDetails = []

@@ -130,6 +130,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
           this.afterRejectQuote = true
         }
       });
+
     const organization = this.sessionStorageService.getItem("organizationDetails") as OrganizationDTO;
     if (organization) {
       this.organizationId = organization.id
