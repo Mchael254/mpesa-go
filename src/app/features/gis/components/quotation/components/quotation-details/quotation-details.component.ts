@@ -215,6 +215,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   activeProductTab: any;
   productClauses: any;
   isRevision: boolean = false;
+  isRevisionMode = false;
+
 
   constructor(
     public bankService: BankService,
@@ -2902,6 +2904,8 @@ patchReusedQuotationData() {
   const isRevision = sessionStorage.getItem('isRevision') === 'true';
   if (!isRevision) return;
 
+  this.isRevisionMode = true;
+
   const revisedQuotation = sessionStorage.getItem('revisedQuotation');
   if (!revisedQuotation) return;
 
@@ -2958,7 +2962,7 @@ patchReusedQuotationData() {
 
   
   this.quotationForm.get('client')?.disable({ emitEvent: false });
-  this.quotationForm.get('agent')?.disable({ emitEvent: false });
+  
 
     if (data.clientCode) {
   log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
