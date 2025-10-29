@@ -568,6 +568,8 @@ export class QuotationManagementComponent implements OnDestroy {
       .subscribe({
         next: (response: any) => {
           sessionStorage.setItem('reusedQuotation', JSON.stringify(response));
+           sessionStorage.removeItem('isRevision');
+          
           this.router.navigate(['/home/gis/quotation/quotation-details']);
 
         },

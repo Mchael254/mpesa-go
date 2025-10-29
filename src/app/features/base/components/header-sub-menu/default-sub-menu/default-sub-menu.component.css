@@ -1,0 +1,5 @@
+.recent-searches-dropdown {
+  max-height: 120px;
+  overflow-y: auto;
+  border-radius: 4px;
+}

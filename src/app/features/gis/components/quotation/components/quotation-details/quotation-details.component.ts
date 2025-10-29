@@ -29,6 +29,8 @@ import { ClaimsService } from '../../../claim/services/claims.service';
 import * as bootstrap from 'bootstrap';
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
 import { Modal } from 'bootstrap';
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
+
 
 const log = new Logger('QuotationDetails');
 
@@ -231,7 +233,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     private globalMessagingService: GlobalMessagingService,
     public claimsService: ClaimsService,
     private renderer: Renderer2,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private clientService:ClientService
+    
   ) {
     this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
     this.quotationAction = sessionStorage.getItem('quotationAction')
@@ -295,8 +299,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       paymentFrequency: [this.paymentFrequencies[0].value, Validators.required],
       // marketer: ['']
     });
+    
 
-    this.isRevision = sessionStorage.getItem('isRevision') === 'true';
+   
     
 
     
@@ -331,8 +336,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     this.loadPersistedClauses();
     this.getUsers();
-    this.patchReusedQuotationData();
-    this.patchRevisedQuotationData();
+  
+  
 
     
 
@@ -461,6 +466,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         }
 
         log.debug(this.quotationForm.value, 'Final Form Value');
+
+         this.patchRevisedQuotationData();
+         this.patchReusedQuotationData();
       },
       error: (err) => {
         log.error(err, 'Failed to load risk fields');
@@ -2743,24 +2751,41 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
 
-  patchReusedQuotationData() {
-    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
-    if (!reusedQuotation) {
-      log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
-      return;
-    }
+patchReusedQuotationData() {
 
-    const data = JSON.parse(reusedQuotation);
-    log.debug('[QuotationDetailsComponent] Patching reused quotation data:', data);
+
+  const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+  if (!reusedQuotation) {
+    log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
+    return;
+  }
+
+  const data = JSON.parse(reusedQuotation);
+  log.debug('[QuotationDetailsComponent] Patching reused quotation data:', data);
+   
+  const sourceObject = this.quotationSources?.find(
+    (s: any) => s.code === data.source?.code || s.description === data.source?.description
+  );
+
+
+  const agentObject = data.agentCode
+    ? {
+        code: data.agentCode,
+        name: data.agentName,
+        shortDescription: data.agentShortDescription,
+        agentWithin: data.agentWithin
+      }
+    : null;
+
+  log.debug("AGENT OBJECT TO PATCH =>", agentObject);
 
   
   if (this.quotationForm) {
     this.quotationForm.patchValue({
-      client: data.clientName || '',
       email: data.emailAddress || '',
       phone: data.phoneNumber || '',
-      source: data.source.description || '',
-      quotationType: data.quotationType || '',
+      source: sourceObject || data.source ||'',
+      quotationType: data.quotationType || 'I',
       branch: data.branchCode || '',
       currency: data.currency || '',
       introducer: data.introducerName || '',
@@ -2772,65 +2797,51 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       externalComments: data.externalComments || ''
     });
   }
+      
 
-    if (this.quotationForm) {
-      this.quotationForm.patchValue({
-        client: data.clientName || '',
-        email: data.emailAddress || '',
-        phone: data.phoneNumber || '',
-        source: data.source || '',
-        quotationType: data.quotationType || '',
-        branch: data.branchCode || '',
-        currency: data.currency || '',
-        introducer: data.introducerName || '',
-        paymentFrequency: data.frequencyOfPayment || '',
-        marketer: data.marketerName || '',
-        multiUserEntry: data.multiUser || 'N',
-        campaign: data.sourceCampaign || '',
-        internalComments: data.internalComments || '',
-        externalComments: data.externalComments || ''
-      });
-    }
+  
+  if (agentObject) {
+    this.quotationForm.get('agent')?.setValue(agentObject, { emitEvent: false });
+    log.debug("✅ Patched agent successfully =>", this.quotationForm.get('agent')?.value);
+  } else {
+    log.debug("⚠️ No agent object found to patch");
+  }
 
-    // ✅ Handle client type
+
     if (data.clientCode) {
-      this.setClientType('existing');
-      this.selectedClientName = data.clientName || '';
-    } else {
-      this.setClientType('new');
+  log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
+
+  this.clientService.getClientById(data.clientCode).subscribe({
+    next: (client: any) => {
+      log.debug('[QuotationDetailsComponent] Client fetched for revision =>', client);
+
+      if (client) {
+        
+        const clientName = [client.firstName, client.lastName]
+          .filter(Boolean) 
+          .join(' ')       
+          .trim() ||        
+          client.lastName || 
+         
+          'Unknown Client';  
+
+        this.quotationForm.patchValue({
+          client: clientName
+        });
+        
+        
+        
+        log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
+      } else {
+        log.debug('[QuotationDetailsComponent] No client found for clientCode =>', data.clientCode);
+      }
+    },
+    error: (error: any) => {
+      log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
     }
+  });
+}
 
-    // ✅ Optional: patch dropdown selections for UI
-    this.selectedMarketerName = data.marketerName || '';
-    this.selectedIntroducerName = data.introducerName || '';
-    this.selectedAgentName = data.agentName || '';
-
-    // ✅ Patch product details + clauses + taxes
-    // if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
-    //   this.quotationProducts = data.quotationProducts;
-    //   this.products = data.quotationProducts;
-    //   this.productDetails = data.quotationProducts;
-
-    //   log.debug('[QuotationDetailsComponent] Patched product details:', this.products);
-
-
-
-
-
-
-
-    // ✅ Handle client type
-    if (data.clientCode) {
-      this.setClientType('existing');
-      this.selectedClientName = data.clientName || '';
-    } else {
-      this.setClientType('new');
-    }
-
-    // ✅ Optional: patch dropdown selections for UI
-    this.selectedMarketerName = data.marketerName || '';
-    this.selectedIntroducerName = data.introducerName || '';
-    this.selectedAgentName = data.agentName || '';
 
     // ✅ Patch product details + clauses + taxes
     if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
@@ -2896,14 +2907,33 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   const data = JSON.parse(revisedQuotation);
 
-  // ✅ Patch agent + client back into form
+  log.debug('[QuotationDetailsComponent] Retrieved revised quotation data =>', data);
+ 
+
+
+
+   
+  const sourceObject = this.quotationSources?.find(
+    (s: any) => s.code === data.source?.code || s.description === data.source?.description
+  );
+
+  
+  const agentObject = data.agentCode
+    ? {
+        code: data.agentCode,
+        name: data.agentName,
+        shortDescription: data.agentShortDescription,
+        agentWithin: data.agentWithin
+      }
+    : null;
+
+  log.debug("AGENT OBJECT TO PATCH =>", agentObject);
+  
   this.quotationForm.patchValue({
-      client: data.clientName || '',
-      agent: data.agentName || '',
       email: data.emailAddress || '',
       phone: data.phoneNumber || '',
-      source: data.source.description || '',
-      quotationType: data.quotationType || '',
+      source: sourceObject || data.source || null,
+      quotationType: data.quotationType || 'I',
       branch: data.branchCode || '',
       currency: data.currency || '',
       introducer: data.introducerName || '',
@@ -2915,9 +2945,54 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       externalComments: data.externalComments || ''
   });
 
+
+
+  
+  if (agentObject) {
+    this.quotationForm.get('agent')?.setValue(agentObject, { emitEvent: false });
+    log.debug("✅ Patched agent successfully =>", this.quotationForm.get('agent')?.value);
+  } else {
+    log.debug("⚠️ No agent object found to patch");
+  }
+
+
   
   this.quotationForm.get('client')?.disable({ emitEvent: false });
   this.quotationForm.get('agent')?.disable({ emitEvent: false });
+
+    if (data.clientCode) {
+  log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
+
+  this.clientService.getClientById(data.clientCode).subscribe({
+    next: (client: any) => {
+      log.debug('[QuotationDetailsComponent] Client fetched for revision =>', client);
+
+      if (client) {
+        
+        const clientName = [client.firstName, client.lastName]
+          .filter(Boolean) 
+          .join(' ')       
+          .trim() ||        
+          client.lastName || 
+         
+          'Unknown Client';  
+
+        this.quotationForm.patchValue({
+          client: clientName
+        });
+        
+        
+        
+        log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
+      } else {
+        log.debug('[QuotationDetailsComponent] No client found for clientCode =>', data.clientCode);
+      }
+    },
+    error: (error: any) => {
+      log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
+    }
+  });
+}
 
   // ✅ Patch product details
   if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
