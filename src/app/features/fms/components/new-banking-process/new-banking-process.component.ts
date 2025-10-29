@@ -3,19 +3,20 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { GlobalMessagingService } from './../../../../shared/services/messaging/global-messaging.service';
-import { Logger } from 'src/app/shared/services';
+import {Logger} from '../../../../shared/services'
 import fmsStepsData from '../../data/fms-step.json';
 import { BankingProcessService } from '../../services/banking-process.service';
 import { PaymentModesDTO } from '../../data/auth-requisition-dto';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import {
   assignedUsersDTO,
   ReceiptDTO,
   ReceiptsToBankRequest,
+  UsersDTO,
 } from '../../data/receipting-dto';
 import * as bootstrap from 'bootstrap';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import {AuthService} from '../../../../shared/services/auth.service';
 const log = new Logger('NewBankingProcessComponent');
 /**
  * @Component NewBankingProcessComponent
@@ -51,8 +52,20 @@ export class NewBankingProcessComponent implements OnInit {
   paymentModes: PaymentModesDTO[] = [];
   /** A list of users available for task assignment, populating the user selection modal. */
   users: assignedUsersDTO[] = [];
+  filteredUsers: assignedUsersDTO[] = [];
   /** Flag to control whether the receipts table is rendered in the DOM. */
   displayTable: boolean = false;
+  /** Controls visibility of the main assignment dialog. */
+  assignDialogVisible: boolean = false;
+  /** Controls visibility of the user selection dialog. */
+  userSelectDialogVisible: boolean = false;
+
+  /** Holds the user object selected from the second dialog to display in the first dialog's input. */
+  selectedUserForAssignment: assignedUsersDTO | null = null;
+
+  /** Temporarily holds the user selected in the user table before confirmation. */
+  tempSelectedUser: assignedUsersDTO | null = null;
+
   // --- Table Column Configuration ---
   /** Stores the configuration for all available columns in the receipts table. */
   columns: any[];
@@ -249,8 +262,7 @@ export class NewBankingProcessComponent implements OnInit {
       dateTo: this.rctsRetrievalForm.get('endDate')?.value,
       orgCode: this.defaultOrg?.id || this.selectedOrg?.id,
       payMode: this.rctsRetrievalForm.get('paymentMethod')?.value,
-      includeBatched: 'Y'
-     
+      includeBatched: 'Y',
     };
     this.bankingService.getReceipts(params).subscribe({
       next: (response) => {
@@ -264,28 +276,87 @@ export class NewBankingProcessComponent implements OnInit {
       },
     });
   }
+
   /**
-   * @description Opens the Bootstrap modal for assigning users to selected receipts.
+   * @description Opens the main assignment dialog.
+   * Checks if receipts have been selected first.
    */
   openAssignModal(): void {
-    const modalEl = document.getElementById('userModal');
-    let modal = bootstrap.Modal.getInstance('modalEl');
-    if (!modal) {
-      modal = new bootstrap.Modal(modalEl);
+    if (!this.selectedReceipts || this.selectedReceipts.length === 0) {
+      this.globalMessagingService.displayErrorMessage(
+        '',
+        'Please select at least one receipt to assign.'
+      );
+      return;
     }
-    modal.show();
+    this.assignDialogVisible = true;
   }
+
   /**
-   * @description Closes the Bootstrap modal for user assignment.
+   * @description Closes the main assignment dialog and resets the form and selections.
    */
   closeAssignModal(): void {
-    const modalEl = document.getElementById('userModal');
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    if (modal) {
-      modal.hide();
-      const form = this.usersForm.value;
-      console.log('users>', form);
+    this.assignDialogVisible = false;
+    this.usersForm.reset();
+    this.selectedUserForAssignment = null;
+  }
+  filterUsers(event: any, field: string) {
+    const inputValue = (event.target as HTMLInputElement).value;
+    switch (field) {
+      case 'username':
+        this.filteredUsers = this.users.filter((user) => {
+          return user.username.toLowerCase().includes(inputValue.toLowerCase());
+        });
+        break;
+      case 'name':
+        this.filteredUsers = this.users.filter((user) => {
+          return user.name.toLowerCase().includes(inputValue.toLowerCase());
+        });
+        break;
     }
+  }
+  /**
+   * @description Opens the second dialog for selecting a user from a table.
+   */
+  openUserSelectDialog(): void {
+    this.tempSelectedUser = null; // Clear previous temporary selection
+    this.userSelectDialogVisible = true;
+  }
+  /**
+   * @description Closes the user selection dialog without saving the choice.
+   */
+  closeUserSelectDialog(): void {
+    this.userSelectDialogVisible = false;
+  }
+  /**
+   * @description Called when the "Select User" button in the second dialog is clicked.
+   * It transfers the selected user to the main form and closes the selection dialog.
+   */
+  confirmUserSelection(): void {
+    if (this.tempSelectedUser) {
+      this.selectedUserForAssignment = this.tempSelectedUser;
+      // Patch the form with the selected user's ID
+      this.usersForm.patchValue({
+        user: this.selectedUserForAssignment.user_id,
+      });
+      this.closeUserSelectDialog();
+    }
+  }
+  /**
+   * @description Final submission handler for the main assignment dialog.
+   * This is where I call the endpoint to assign the users.
+   */
+  onAssignSubmit(): void {
+    this.usersForm.markAllAsTouched();
+    if (this.usersForm.invalid) {
+      return;
+    }
+    const formData = this.usersForm.value;
+    // console.log('Submitting assignment with the following data:');
+    // console.log('Selected User ID:', formData.user);
+    // console.log('Comment:', formData.comment);
+    // console.log('Selected Receipts:', this.selectedReceipts.map(r => r.receiptNo));
+    this.closeAssignModal();
   }
   /**
    * @description Fetches a list of users that the current user can assign tasks to.
@@ -295,9 +366,7 @@ export class NewBankingProcessComponent implements OnInit {
     this.bankingService.getUsers(currentUserCode).subscribe({
       next: (response) => {
         this.users = response;
-        if (this.users.length > 0) {
-          this.usersForm.patchValue({ user: this.users[0].user_id });
-        }
+        this.filteredUsers = this.users;
       },
       error: (err) => {
         this.handleApiError(err);

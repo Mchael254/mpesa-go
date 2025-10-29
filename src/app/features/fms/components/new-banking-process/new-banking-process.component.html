@@ -116,7 +116,11 @@
         </form>
       </div>
       <div class="d-flex justify-content-end pb-1">
-        <button class="btn btn-primary" (click)="onClickRetrieveRcts()">
+        <button
+          class="btn btn-primary"
+          (click)="onClickRetrieveRcts()"
+          [disabled]="!rctsRetrievalForm.valid"
+        >
           {{ "fms.banking.retrieveReceipts" | translate }}
         </button>
       </div>
@@ -144,72 +148,13 @@
         </div>
       </p-dialog>
 
-      <!-- primeng dialog for user selection -->
-      <div class="modal" id="userModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-sm" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h6 class="modal-title text-primary">Assign Task</h6>
-              <button
-                type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close"
-                (click)="closeAssignModal()"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <form [formGroup]="usersForm">
-                <div class="form-group w-75 mb-3">
-                  <label for="userselect" class="form-label required"
-                    >User</label
-                  >
-                  <select
-                    class="form-select form-select-sm"
-                    id="userselect"
-                    formControlName="user"
-                  >
-                    <option *ngFor="let user of users" value="user.user_id">
-                      {{ user.username }}
-                    </option>
-                  </select>
-                </div>
-
-                <div class="form-group w-75 mb-3">
-                  <label for="textarea" class="form-label">Comments</label>
-                  <textarea
-                    id="textarea"
-                    class="form-control form-control-sm"
-                    rows="3"
-                    formControlName="comment"
-                  ></textarea>
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal"
-                (click)="closeAssignModal()"
-              >
-                {{ "fms.receipt-management.cancel" | translate }}
-              </button>
-              <button type="button" class="btn btn-primary">
-                {{ "auth.save" | translate }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
       <!-- primeng table for displaying receipts to bank
         -->
-
       <p-table
         [value]="filteredReceipts"
         dataKey="receiptNo"
         selectionMode="multiple"
-        sortMode="multiple"
+        sortMode="single"
         [resizableColumns]="true"
         [scrollable]="true"
         [(selection)]="selectedReceipts"
@@ -252,8 +197,12 @@
         <ng-template pTemplate="header">
           <tr>
             <th><p-tableHeaderCheckbox /></th>
-            <th *ngFor="let col of selectedColumns">
+            <th
+              *ngFor="let col of selectedColumns"
+              [pSortableColumn]="col.field"
+            >
               {{ col.header | translate }}
+              <p-sortIcon [field]="col.field"></p-sortIcon>
             </th>
           </tr>
           <!-- filter row -->
@@ -310,6 +259,7 @@
           </tr>
         </ng-template>
       </p-table>
+      <!-- end of receipts to bank row -->
     </div>
   </div>
   <div class="d-flex mt-1 justify-content-end">
@@ -321,4 +271,157 @@
       {{ "fms.banking.createBatches" | translate }}
     </button>
   </div>
+  <!-- start of p dialog>Main assignment dialog -->
+  <p-dialog
+    header="Assign Task"
+    [modal]="true"
+    [(visible)]="assignDialogVisible"
+    [style]="{ width: '25rem' }"
+  >
+    <form [formGroup]="usersForm">
+      <!-- user selection input field -->
+      <div class="form-group mb-3">
+        <label for="userselect"
+          >{{ "entities.user" | translate }}<span class="required"></span
+        ></label>
+        <!-- this input is for display only.it shows the selected users's name. -->
+        <div class="input-group" style="position: relative">
+          <!-- This input is for display only. It shows the selected user's name. -->
+
+          <input
+            id="userselect"
+            type="text"
+            class="form-control"
+            placeholder="Click to select a user"
+            [value]="selectedUserForAssignment?.username"
+            readonly
+            (click)="openUserSelectDialog()"
+          />
+          <button
+            type="button"
+            (click)="openUserSelectDialog()"
+            class="btn-icon"
+          >
+            <i
+              class="pi pi-angle-double-down"
+              style="font-size: 1rem; color: #00529b"
+            ></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Comments Textarea -->
+      <div class="form-group mb-3">
+        <label for="textarea" class="form-label">{{
+          "entities.comment" | translate
+        }}</label>
+        <textarea
+          id="textarea"
+          class="form-control"
+          rows="3"
+          formControlName="comment"
+        ></textarea>
+      </div>
+      <div class="modal-footer">
+        <div class="d-flex flex-row gap-3">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="closeAssignModal()"
+          >
+            {{ "fms.receipt-management.cancel" | translate }}
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            (click)="onAssignSubmit()"
+            [disabled]="!selectedUserForAssignment"
+          >
+            Assign
+          </button>
+        </div>
+      </div>
+    </form>
+  </p-dialog>
+
+  <!-- DIALOG 2: USER SELECTION TABLE DIALOG -->
+  <!-- baseZIndex ensures this dialog appears on top of the first one -->
+  <p-dialog
+    header="Assign Task"
+    [(visible)]="userSelectDialogVisible"
+    [modal]="true"
+    [style]="{ width: '450px' }"
+    [baseZIndex]="10001"
+  >
+    <p-table
+      [value]="filteredUsers"
+      [(selection)]="tempSelectedUser"
+      selectionMode="single"
+      dataKey="user_id"
+      [paginator]="true"
+      [rows]="5"
+      sortMode="single"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [showCurrentPageReport]="true"
+      [currentPageReportTemplate]="currentReportTemplate"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="username">
+            {{ "entities.username" | translate }}
+            <p-sortIcon field="username"></p-sortIcon>
+          </th>
+          <th pSortableColumn="user">
+            {{ "entities.user" | translate }}
+            <p-sortIcon field="user"></p-sortIcon>
+          </th>
+        </tr>
+        <!-- filter row -->
+        <tr>
+          <th>
+            <input
+              type="text"
+              class="form-control"
+              (input)="filterUsers($event, 'username')"
+              (keyup.enter)="filterUsers($event, 'username')"
+            />
+          </th>
+          <th>
+            <input
+              type="text"
+              class="form-control"
+              (input)="filterUsers($event, 'name')"
+              (keyup.enter)="filterUsers($event, 'name')"
+            />
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-user>
+        <tr [pSelectableRow]="user">
+          <td>{{ user.username }}</td>
+          <td>{{ user.name }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <div class="modal-footer mt-3">
+      <div class="d-flex flex-row gap-3">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="closeUserSelectDialog()"
+        >
+          Cancel
+        </button>
+        <!-- This button confirms the selection and closes this dialog -->
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="confirmUserSelection()"
+          [disabled]="!tempSelectedUser"
+        >
+          save
+        </button>
+      </div>
+    </div>
+  </p-dialog>
 </div>
