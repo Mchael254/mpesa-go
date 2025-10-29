@@ -33,6 +33,7 @@ import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { DmsService } from '../../../../shared/services/dms/dms.service';
 import { FmsSetupService } from '../../services/fms-setup.service';
 import { TranslateService } from '@ngx-translate/core';
+
 import fmsStepsData from '../../data/fms-step.json';
 import { IntermediaryService } from '../../../../features/entities/services/intermediary/intermediary.service';
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
@@ -56,7 +57,7 @@ export class ClientAllocationComponent {
   /**
    * @description Step data for the FMS workflow.
    */
-  steps = fmsStepsData;
+  steps = fmsStepsData.receiptingSteps;
   /**
    * @description The amount received from client
    */

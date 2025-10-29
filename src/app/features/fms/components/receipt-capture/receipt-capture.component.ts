@@ -71,7 +71,7 @@ export class ReceiptCaptureComponent {
   /**
    * @description Step data for the FMS workflow.
    */
-  steps = fmsStepsData;
+  steps =fmsStepsData.receiptingSteps;
   /**
    *
    * @property isFormValid is set to false by default since form is invalid and set to true if form is invalid
