@@ -184,7 +184,7 @@
                     <!-- Agent Field -->
                     <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
                       <div class="position-relative" style="cursor: pointer;">
-                        <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
+                        <input type="text" class="form-control form-control-sm pe-5" id="quote-input" 
                           [value]="displayAgentName || ''" readonly (click)="!isRevision && (showAgentSearchModal = true)"
                           style="cursor: pointer;" />
                         <i class="pi pi-search position-absolute"

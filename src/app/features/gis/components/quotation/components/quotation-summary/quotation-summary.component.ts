@@ -393,6 +393,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.moreDetails = sessionStorage.getItem('quotationFormDetails');
 
 
+    
+
+
 
 
     // 1️⃣ Patch immediate UI from session (for instant rendering)
@@ -462,6 +465,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.loadSummaryPerils()
     this.getUsers();
 
+    
+
 
     // this.createInsurersForm();
     // this.fetchInsurers();
@@ -477,6 +482,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // this.getDocumentTypes();
 
     this.hasUnderwriterRights();
+    
 
 
 
@@ -521,6 +527,17 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       nullable: true,
       align: 'left',
     };
+
+
+  const selected = sessionStorage.getItem('selectedQuotation');
+
+  if (selected) {
+    const parsed = JSON.parse(selected);
+    const quotationCode = parsed.quotationCode;  
+
+    
+    this.getQuotationDetails(quotationCode);
+  }
   }
 
   ngAfterViewInit() {
