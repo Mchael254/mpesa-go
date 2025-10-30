@@ -2961,7 +2961,7 @@ patchReusedQuotationData() {
 
 
   
-  this.quotationForm.get('client')?.disable({ emitEvent: false });
+  
   
 
     if (data.clientCode) {
