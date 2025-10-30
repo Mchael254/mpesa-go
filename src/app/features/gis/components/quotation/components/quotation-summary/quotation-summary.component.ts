@@ -296,6 +296,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showWizardModal: boolean;
   quickQuoteQuotation: boolean;
   showCreateClientTip = false;
+  riskCommissions: any[] = [];
+  showCommissionColumnModal = false;
+  commissionColumns: { field: string; header: string; visible: boolean }[] = [];
+
 
 
   constructor(
@@ -482,6 +486,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // this.getDocumentTypes();
 
     this.hasUnderwriterRights();
+     
     
 
 
@@ -648,6 +653,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.quotationView = res;
         log.debug('QuotationView', this.quotationView)
         sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationView))
+         if (this.quotationView?.source?.description === 'Agent' && this.quotationView?.clientType === 'I') {
+      this.getCommissions();
+    }
 
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
@@ -3831,6 +3839,104 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   defaultVisibleProductClauseFields = ['clauseShortDescription', 'clauseHeading', 'clauseWording'];
+
+
+
+  getCommissions() {
+  const quotationCode = this.quotationCode; 
+
+  if (!quotationCode) {
+    this.globalMessagingService.displayErrorMessage(
+      'Error',
+      'Quotation code is missing.'
+    );
+    return;
+  }
+
+  this.quotationService.getRiskCommissions(quotationCode).subscribe({
+    next: (res: any) => {
+    
+      if (res?.status?.toUpperCase().trim() === 'SUCCESS' || res?.data) {
+        this.riskCommissions = res?._embedded || [];
+        if (this.riskCommissions.length) {
+          this.setColumnsFromCommissions(this.riskCommissions[0]);
+        }
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          res?.message || 'Commissions loaded successfully.'
+        );
+      } else {
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          res?.message || 'Failed to load commissions.'
+        );
+      }
+    },
+    error: (err: HttpErrorResponse) => {
+      log.error('Error fetching commissions:', err);
+
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        err?.error?.message || err.message || 'Failed to load commissions.'
+      );
+    }
+  });
+}
+
+  toggleCommission(iconElement: HTMLElement): void {
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop;
+    const left = iconElement.offsetLeft - 260;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showCommissionColumnModal = true;
+  }
+
+
+  setColumnsFromCommissions(sample: any) {
+  // Fields to show by default
+  const defaultVisibleFields = [
+      // for Agent Name
+    'transDescription',
+    'discRate',
+    'discType',
+    'amount',
+    'group'
+  ];
+
+  // Fields to exclude (optional)
+  const excludedFields = [
+    'quotationRiskCode',
+    'quotationCode',
+    'code',
+    'id',
+    'accountCode'
+  ];
+
+  // Get all keys from sample and filter excluded fields
+  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+  
+  keys = keys.sort((a, b) => {
+    if (a === 'transDescription') return -1;  
+    if (b === 'transDescription') return 1;
+    return 0;
+  });
+
+  // Map to column objects
+  this.commissionColumns = keys.map(key => ({
+    field: key,
+    header: this.sentenceCase(key),
+    visible: defaultVisibleFields.includes(key)
+  }));
+}
+
 
 
 }
