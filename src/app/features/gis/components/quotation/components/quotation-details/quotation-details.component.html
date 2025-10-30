@@ -85,7 +85,7 @@
                       <ng-container *ngIf="field.name === 'client' && !newClient">
                         <div class="position-relative" style="cursor: pointer;">
                           <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
-                            [value]="selectedClientName" formControlName="client" readonly (click)="!isRevision && (showClientSearchModal = true)"
+                            [value]="selectedClientName" formControlName="client" [readonly]="isRevisionMode" (click)="!isRevisionMode && (showClientSearchModal = true)"
 
                             style="cursor: pointer;" />
                           <i class="pi pi-search position-absolute"
