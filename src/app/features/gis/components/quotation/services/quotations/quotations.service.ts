@@ -1292,6 +1292,18 @@ searchQuotation(
   );
 }
 
+getRiskCommissions(quoteCode: string): Observable<any> {
+  const params = new HttpParams().set('quoteCode', quoteCode);
+
+  return this.api.GET<any>(
+    `v2/risk-commission`,
+    API_CONFIG.GIS_QUOTATION_BASE_URL,
+    params
+  ).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  );
+}
 
 
 
