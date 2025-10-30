@@ -9,7 +9,8 @@
             {{ field.label[language] }}
           </div>
           <div class="col-sm-8 text-dark fw-bold">
-            {{ field.dataValue }}
+            <span *ngIf="field.type !== 'date'">{{ field.dataValue }}</span>
+            <span *ngIf="field.type === 'date'">{{ field.dataValue | date }}</span>
           </div>
         </div>
       </div>
@@ -61,7 +62,7 @@
         [table]="table"
         [language]="language"
         (deleteBtnClicked)="handlePayeeDelete($event)"
-        (editBtnClicked)="prepareEditPayeeForm($event, Save_Action.EDIT_PAYEE)"
+        (editBtnClicked)="prepareEditPayeeForm($event)"
       >
       </app-overview-table>
     </ng-container>
