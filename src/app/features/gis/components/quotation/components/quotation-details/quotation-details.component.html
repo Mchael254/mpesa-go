@@ -8,7 +8,7 @@
       <h6 class="subheading mt-2 mb-3">{{ 'gis.quotation.quote_detailed_details' | translate }}</h6>
 
       <div class="d-flex gap-4 mb-3">
-        <div class="method-option" (click)="setClientType('new')" [class.selected]="selectedClientType === 'new'">
+        <div class="method-option" (click)="openCreateClientModal()" [class.selected]="selectedClientType === 'new'">
           <i class="far fa-circle" *ngIf="selectedClientType !== 'new'"></i>
           <i class="fas fa-dot-circle" *ngIf="selectedClientType === 'new'"></i>
           <span> {{ 'gis.quotation.new_client' | translate }}</span>
@@ -23,50 +23,6 @@
       </div>
 
       <form [formGroup]="quotationForm">
-        <!-- New Client Form -->
-        <div *ngIf="newClient" class="row mb-3">
-          <!-- Client Name -->
-          <!-- <div class="col-sm-4 col-6 mb-2">
-            <label class="quote-label">{{ 'gis.quotation.client_name' | translate }}</label>
-            <input type="text" class="form-control form-control-sm" formControlName="client" id="quote-input" />
-          </div> -->
-
-          <!-- Email Address -->
-          <!-- <div class="col-sm-4 col-6 mb-2">
-            <div class="form-group">
-              <label class="quote-label"> {{ 'gis.quotation.email_address' | translate }}</label>
-              <input type="email" id="email" class="form-control form-control-sm" formControlName="email"
-                id="quote-input" placeholder="" />
-              <div *ngIf="quotationForm.get('email')?.touched && quotationForm.get('email')?.invalid"
-                class="text-danger form-text">
-                <div *ngIf="quotationForm.get('email')?.errors?.['required']">
-                  {{ 'gis.quotation.email_is_required' | translate }}.
-                </div>
-                <div *ngIf="quotationForm.get('email')?.errors?.['pattern']">
-                  {{ 'gis.quotation.enter_valid_email_address' | translate }}
-                </div>
-              </div>
-            </div>
-          </div> -->
-
-          <!-- Phone Number -->
-          <!-- <div class="col-sm-4 col-6 mb-2">
-            <label class="quote-label"> {{ 'gis.quotation.phone_number' | translate }}</label>
-            <ngx-intl-tel-input id="phoneNumber" [cssClass]="'form-control form-control-sm mb-1'"
-              [preferredCountries]="preferredCountries" [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
-              [searchCountryFlag]="true" [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-              [selectFirstCountry]="false" [style]="{ width: '100%' }" [selectedCountryISO]="CountryISO.Kenya"
-              [phoneValidation]="true" [separateDialCode]="true" [numberFormat]="PhoneNumberFormat.National"
-              formControlName="phone">
-            </ngx-intl-tel-input>
-
-            <div *ngIf="quotationForm.get('phone')?.invalid && quotationForm.get('phone')?.touched"
-              class="form-text text-danger">
-              {{ 'gis.quotation.invalid_phone_number' | translate }}
-            </div>
-          </div> -->
-        </div>
-
         <div class="row ">
           <ng-container *ngFor="let field of detailedQuotationFormData">
             <ng-container *ngIf="field.isPriority === 'Y' && !(newClient && field.name === 'client')">
@@ -184,15 +140,14 @@
                     <!-- Agent Field -->
                     <ng-container *ngIf="field.name === 'agent' && quotationForm.get('quotationType')?.value === 'I'">
                       <div class="position-relative" style="cursor: pointer;">
-                        <input type="text" class="form-control form-control-sm pe-5" id="quote-input" 
-                            [value]="displayAgentName || ''"  [readonly]="isRevisionMode" (click)="!isRevisionMode && (showAgentSearchModal = true)"
-                          style="cursor: pointer;" />
-                           
+
+                        <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
+                          [value]="displayAgentName || ''" readonly
+                          (click)="!isRevision && (showAgentSearchModal = true)" style="cursor: pointer;" />
                         <i class="pi pi-search position-absolute"
                           style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
                       </div>
-                      <button *ngIf="showAgentSearchModal" data-bs-toggle="modal" data-bs-target="#searchAgent"
-                        style="display: none;"></button>
+                      <button *ngIf="showAgentSearchModal" data-bs-toggle="modal" data-bs-target="#searchAgent"></button>
                       <div
                         *ngIf="quotationForm.get('agent')?.hasError('required') && quotationForm.get('agent')?.touched"
                         class="form-text text-danger">
@@ -274,6 +229,7 @@
             </div>
           </ng-container>
         </div>
+
       </form>
       <p class="more mt-4" (click)="toggleDetails()" style="cursor: pointer">
         {{ show ? 'Less Details' : 'More Details' }}
@@ -360,7 +316,7 @@
             </ng-template>
 
             <!-- Table Body -->
-            <ng-template pTemplate="body" let-product  let-ri="rowIndex">
+            <ng-template pTemplate="body" let-product let-ri="rowIndex">
               <tr [pEditableRow]="product" [pEditableRowDisabled]="selectedEditRowIndex !== ri"
                 [class.p-highlight]="product === selectedRow" (click)="onRowSelect(product)"
                 class="hover:!bg-gray-50 !cursor-pointer transition-colors" title="Click to select row">
@@ -373,7 +329,7 @@
                     <!-- Only handle actions separately -->
                     <ng-container *ngSwitchCase="'actions'">
                       <div class="d-flex justify-content-center" style=" text-align: center;">
-                        <button  type="button" class="p-button-sm p-button-text p-button-info no-border"
+                        <button type="button" class="p-button-sm p-button-text p-button-info no-border"
                           data-bs-toggle="modal" data-bs-target="#editProduct"
                           (click)="openEditProductModal(product, ri)">
                           {{ 'gis.quotation.edit' | translate }}
@@ -997,8 +953,8 @@
               <ng-template pTemplate="emptymessage">
                 <tr>
                   <td [attr.colspan]="productClauseColumns.length">
-                    <div  class="d-flex align-items-center justify-content-center"
-                    style="color: #6c757d; font-size: 15px; text-align:centre;">
+                    <div class="d-flex align-items-center justify-content-center"
+                      style="color: #6c757d; font-size: 15px; text-align:centre;">
                       <ng-container *ngIf="productClause.length === 0">
 
                         {{'gis.quotation.no_clause_available_click_on_add' | translate}}
@@ -1201,6 +1157,7 @@
 
     </div>
   </div>
+
   <!-- Introducer Modal -->
   <div id="searchIntroducer" *ngIf="showIntroducerSearchModal" class="modal fade show" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="width:700px">
@@ -1403,6 +1360,36 @@
     </div>
   </div>
 
+  <!-- CREATE CLIENT CRM MODAL -->
+  <div class="modal fade" id="createClientModal" #createClientModal tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:1028px;">
+      <div class="modal-content ps-4 pt-2 pe-4">
+        <div class="d-flex justify-content-between align-items-center rounded-3 mb-1">
+          <button type="button" class="btn p-1 text-danger fw-bold ms-auto" data-bs-dismiss="modal"
+            style="border: none;">
+            X
+          </button>
+        </div>
+        <app-new-entity-v2></app-new-entity-v2>
+
+
+        <!-- <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
+              <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary" style="text-decoration: none;">{{
+                'gis.quotation.cancel' | translate
+                }}
+              </button>
+              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+                (click)="rejectQuotation(quotationDetails.code)">{{
+                'gis.quotation.save_changes' |
+                translate
+                }}
+              </button>
+            </div> -->
+      </div>
+    </div>
+  </div>
+
+  <!-- action buttons -->
   <div class="float-end mb-4">
 
     <!-- <button *ngIf="!quickQuoteConverted" class="btn btn-primary" (click)="saveQuotationDetails()">
@@ -1431,4 +1418,6 @@
     </div>
 
   </div>
+
+
 </div>

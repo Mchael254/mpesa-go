@@ -125,18 +125,9 @@
           <p class="card-titles mb-4">Client information</p>
 
           <div class="row mb-3">
-            <div *ngIf="!isNewClientSelected" class="col-md-4 d-flex">
+            <div class="col-md-4 d-flex">
               <p class="label w-50">Client</p>
               <p class="content w-50">{{clientName || quotationView?.clientName }}</p>
-            </div>
-            <div *ngIf="isNewClientSelected" class="col-md-4 d-flex">
-              <p class="label w-50">Prospect</p>
-              <!-- <p class="content w-50">{{ storedQuotationFormDetails?.client |sentenceCase}}</p> -->
-              <span class="content w-50 d-inline-block text-truncate" [pTooltip]="storedQuotationFormDetails?.client"
-                tooltipPosition="top">
-                <!-- {{ storedQuotationFormDetails?.client | sentenceCase }} -->
-                {{ storedQuotationFormDetails?.client ? (storedQuotationFormDetails.client | sentenceCase) : '' }}
-              </span>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Proposer</p>
@@ -1907,40 +1898,6 @@ class="tab-pane" id="nav-commissions" role="tabpanel"
 
 
         <div class="action-buttons">
-          <div class="position-relative">
-            <button class="btn btn-outline-primary me-2" *ngIf="isNewClientSelected" data-bs-toggle="modal"
-              data-bs-target="#createClientModal"  [disabled]="viewQuoteFlag">
-              Create Client
-            </button>
-            <div *ngIf="showClientWizzardModal" class="card shadow rounded p-3 position-absolute client-wizzard-modal"
-              [ngStyle]="{ 
-               top: wizzardClientModalPosition.top, 
-               left: wizzardClientModalPosition.left, 
-               zIndex: 1000,
-               minWidth: '250px', 
-               maxWidth: '300px',
-               backgroundColor: '#0d6efd', 
-               color: 'white'
-             }">
-
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <p class="mb-0 fw-bold" style="font-size: 14px;">Create client to continue</p>
-                <button type="button" class="btn ms-auto" (click)="showClientWizzardModal = false">
-                  <i class="pi pi-times" style="color:white"></i>
-                </button>
-              </div>
-
-              <div class="pt-2">
-                <p class="mb-0" style="font-size: 14px;">Click here to complete filling in client details</p>
-              </div>
-
-
-            </div>
-
-
-          </div>
-
-
           <div class="d-inline-block" pTooltip="{{ authorizeButtonTooltip }}" tooltipPosition="top"
             [tooltipDisabled]="!authorizeButtonDisabled" style="cursor: pointer;">
             <button *ngIf="showAuthorizeButton" type="button" class="btn"
@@ -1976,35 +1933,6 @@ class="tab-pane" id="nav-commissions" role="tabpanel"
 
         </div>
       </div>
-      <!-- CREATE CLIENT CRM MODAL -->
-      <div class="modal fade" id="createClientModal" #createClientModal tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width:1028px;">
-          <div class="modal-content ps-4 pt-2 pe-4">
-            <div class="d-flex justify-content-between align-items-center rounded-3 mb-1">
-              <button type="button" class="btn p-1 text-danger fw-bold ms-auto" data-bs-dismiss="modal"
-                style="border: none;">
-                X
-              </button>
-            </div>
-            <app-new-entity-v2></app-new-entity-v2>
-
-
-            <!-- <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
-              <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary" style="text-decoration: none;">{{
-                'gis.quotation.cancel' | translate
-                }}
-              </button>
-              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
-                (click)="rejectQuotation(quotationDetails.code)">{{
-                'gis.quotation.save_changes' |
-                translate
-                }}
-              </button>
-            </div> -->
-          </div>
-        </div>
-      </div>
-
 
     </div>
     <!-- Consent Modal -->
