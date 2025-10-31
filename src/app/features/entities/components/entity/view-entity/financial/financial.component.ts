@@ -20,6 +20,7 @@ import {
   SaveFinanceAction
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
+import {EntityUtilService} from "../../../../services/entity-util.service";
 
 const log = new Logger('FinancialComponent');
 
@@ -88,6 +89,7 @@ export class FinancialComponent implements OnInit {
     private currencyService: CurrencyService,
     private paymentModesService: PaymentModesService,
     private clientService: ClientService,
+    private entityUtilService: EntityUtilService,
   ) {
     this.utilService.currentLanguage.subscribe(lang => this.language = lang);
   }
@@ -105,31 +107,37 @@ export class FinancialComponent implements OnInit {
 
   prepareDataDisplay(): void {
     setTimeout(() => {
-      const paymentDetails = this.clientDetails.paymentDetails;
+      const paymentDetails: Payment = this.clientDetails.paymentDetails;
+      const category: string = (this.clientDetails.category).toUpperCase();
       this.paymentDetails = paymentDetails;
       this.payee = this.clientDetails.payee;
 
-      const paymentMode = this.paymentModes?.find(payment => payment.id == parseInt(paymentDetails.preferredChannel));
+      const paymentMode: PaymentModesDto = this.paymentModes?.find(payment => payment.id == parseInt(paymentDetails.preferredChannel));
 
-      const displayPaymentDetails  = {
-        overview_banking_info_bank_name: paymentDetails.bankName,
-        overview_full_name: paymentDetails.bankName,
-        overview_banking_info_branch_name: paymentDetails.bankBranchName,
-        overview_doc_id_no: null,
-        overview_banking_info_acc_no: paymentDetails.accountNumber,
-        overview_mobile_no: paymentDetails.mpayno,
-        overview_email: null,
-        overview_iban: paymentDetails.iban,
-        overview_swift_code: paymentDetails.swiftCode,
-        overview_bank_name: paymentDetails.bankName,
-        overview_pref_payment_method: this.selectedCurrency?.name,
-        overview_branch_name: paymentDetails.bankBranchName,
-        overview_acc_no: paymentDetails.accountNumber,
+      let displayPaymentDetails = {}
 
-        overview_currency: paymentDetails.currencyName,
-        overview_wef: paymentDetails.effectiveFromDate,
-        overview_wet: paymentDetails.effectiveToDate,
-        overview_mobile_money_number: paymentDetails.mpayno,
+      if (category === 'CORPORATE') {
+        displayPaymentDetails = {
+          overview_banking_info_bank_name: paymentDetails.bankName,
+          overview_banking_info_branch_name: paymentDetails.bankBranchName,
+          overview_banking_info_acc_no: paymentDetails.accountNumber,
+          overview_iban: paymentDetails.iban,
+          overview_swift_code: paymentDetails.swiftCode,
+          overview_pref_payment_method: paymentMode?.description,
+        }
+      } else if (category === 'INDIVIDUAL') {
+        displayPaymentDetails = {
+          overview_bank_name: paymentDetails.bankName,
+          overview_branch_name: paymentDetails.bankBranchName,
+          overview_acc_no: paymentDetails.accountNumber,
+          overview_currency: paymentDetails.currencyName,
+          overview_wef: paymentDetails.effectiveFromDate,
+          overview_wet: paymentDetails.effectiveToDate,
+          overview_mobile_money_number: paymentDetails.mpayno,
+          overview_iban: paymentDetails.iban,
+          overview_swift_code: paymentDetails.swiftCode,
+          overview_pref_payment_method: paymentMode?.description,
+        }
       }
 
       if (this.group.subGroup.length === 0) {
@@ -304,26 +312,33 @@ export class FinancialComponent implements OnInit {
 
   editFinancialDetails(): void {
     const formValues = this.editForm.getRawValue();
-    const paymentDetails = {
-      ...this.paymentDetails,
-      // accountNumber: formValues.overview_banking_info_acc_no,
-      bankBranchId: formValues.overview_banking_info_branch_name,
-      bankId: formValues.overview_banking_info_bank_name,
-      iban: formValues.overview_iban,
-      preferredChannel: formValues.overview_pref_payment_method,
-      swiftCode: formValues.overview_pref_swift_code,
-      mpayno: (formValues.overview_mobile_money_number?.internationalNumber)?.replace(/\s+/g, ''),
+    let paymentDetails = {};
+    const category = (this.clientDetails.category).toUpperCase();
 
-      //
-      bankName: formValues.overview_bank_name,
-      bankBranchName: formValues.overview_branch_name,
-      accountNumber: formValues.overview_acc_no,
-      currency: formValues.overview_currency,
-      currencyId: formValues.overview_currency,
-      effectiveFromDate: formValues.overview_wef ,
-      effectiveToDate: formValues.overview_wet,
-      mpayNo: formValues.overview_mobile_money_number,
-    };
+    if (category === 'CORPORATE') {
+      paymentDetails = {
+        ...this.paymentDetails,
+        accountNumber: formValues.overview_banking_info_acc_no,
+        bankBranchId: formValues.overview_banking_info_branch_name,
+        bankId: formValues.overview_banking_info_bank_name,
+        iban: formValues.overview_iban,
+        preferredChannel: formValues.overview_pref_payment_method,
+        swiftCode: formValues.overview_pref_swift_code,
+        mpayno: (formValues.overview_mobile_money_number?.internationalNumber)?.replace(/\s+/g, ''),
+      }
+    } else if (category === 'INDIVIDUAL') {
+      paymentDetails = {
+        ...this.paymentDetails,
+        bankName: formValues.overview_bank_name,
+        bankBranchName: formValues.overview_branch_name,
+        accountNumber: formValues.overview_acc_no,
+        currency: formValues.overview_currency,
+        currencyId: formValues.overview_currency,
+        effectiveFromDate: formValues.overview_wef ,
+        effectiveToDate: formValues.overview_wet,
+        mpayNo: formValues.overview_mobile_money_number,
+      }
+    }
 
     const client = {
       clientCode: this.clientDetails.clientCode,
@@ -385,7 +400,6 @@ export class FinancialComponent implements OnInit {
   }
 
   prepareEditPayeeForm(data: any) {
-    this.selectedPayee = null;
     this.formFields =  this.tableHeaders.map(field => ({...field})) ;
     const row = data.row;
     // log.info('selected row >>> ', row, this.payee);
@@ -411,7 +425,7 @@ export class FinancialComponent implements OnInit {
     this.currencyService.getCurrencies().subscribe({
       next: res => {
         this.currencies = res;
-        const index = res.findIndex(c => c.id === this.paymentDetails.currencyId);
+        const index = res.findIndex(c => c.id === this.paymentDetails?.currencyId);
         this.selectedCurrency = res[index];
       },
       error: err => {}
@@ -504,22 +518,32 @@ export class FinancialComponent implements OnInit {
     }
 
     if (this.saveAction === SaveFinanceAction.EDIT_FINANCE_DETAILS) {
-      patchData = {
-        overview_banking_info_acc_no: this.paymentDetails.accountNumber,
-        overview_banking_info_bank_name: this.paymentDetails.bankId,
-        overview_banking_info_branch_name: this.paymentDetails.bankBranchId,
-        overview_iban: this.paymentDetails.iban,
-        overview_pref_payment_method: this.paymentDetails.preferredChannel,
-        overview_swift_code: this.paymentDetails.swiftCode,
 
-        overview_bank_name: this.selectedBank?.id,
-        overview_branch_name: this.paymentDetails.bankBranchId,
-        overview_currency: this.paymentDetails.currencyId,
-        overview_wef: new Date(this.paymentDetails.effectiveFromDate).toISOString().split('T')[0],
-        overview_wet: new Date(this.paymentDetails.effectiveToDate).toISOString().split('T')[0],
-        overview_mobile_money_number: this.paymentDetails.mpayno,
-        overview_acc_no: this.paymentDetails.accountNumber,
+      const category = (this.clientDetails.category).toUpperCase();
+      if (category === 'CORPORATE') {
+        patchData = {
+          overview_banking_info_acc_no: this.paymentDetails.accountNumber,
+          overview_banking_info_bank_name: this.paymentDetails.bankId,
+          overview_banking_info_branch_name: this.paymentDetails.bankBranchId,
+          overview_iban: this.paymentDetails.iban,
+          overview_pref_payment_method: this.paymentDetails.preferredChannel,
+          overview_swift_code: this.paymentDetails.swiftCode,
+        }
+      } else if (category === 'INDIVIDUAL') {
+        patchData = {
+          overview_bank_name: this.selectedBank?.id,
+          overview_branch_name: this.paymentDetails.bankBranchId,
+          overview_currency: this.paymentDetails.currencyId,
+          overview_wef: new Date(this.paymentDetails.effectiveFromDate).toISOString().split('T')[0],
+          overview_wet: new Date(this.paymentDetails.effectiveToDate).toISOString().split('T')[0],
+          overview_mobile_money_number: this.paymentDetails.mpayno,
+          overview_acc_no: this.paymentDetails.accountNumber,
+          overview_iban: this.paymentDetails.iban,
+          overview_swift_code: this.paymentDetails.swiftCode,
+          overview_pref_payment_method: this.paymentDetails.preferredChannel,
+        }
       }
+
     } else if (this.saveAction === SaveFinanceAction.EDIT_PAYEE) {
       patchData = {
         overview_bank_name: this.selectedBank?.id,
@@ -537,7 +561,7 @@ export class FinancialComponent implements OnInit {
   }
 
   checkTelNumber(mainStr: string): boolean {
-    const subStrs: string[] = ['mobile_no', 'tel_no', 'sms_number', 'telephone_number', 'landline_number', 'mobile_money_number'];
-    return subStrs.some(subStr => mainStr.includes(subStr));
+    return this.entityUtilService.checkTelNumber(mainStr);
   }
+
 }

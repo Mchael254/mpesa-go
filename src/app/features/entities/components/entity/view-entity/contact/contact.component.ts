@@ -16,6 +16,7 @@ import {
   FormGroupsDto, FormSubGroupsDto, PresentationType, SaveAction
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {ClientDTO, ContactDetails, ContactPerson} from "../../../../data/ClientDTO";
+import {EntityUtilService} from "../../../../services/entity-util.service";
 
 const log = new Logger('ContactComponent');
 
@@ -71,6 +72,7 @@ export class ContactComponent implements OnInit {
     private accountService: AccountService,
     private globalMessagingService: GlobalMessagingService,
     private fb: FormBuilder,
+    private entityUtilService: EntityUtilService,
     ) {
     this.utilService?.currentLanguage.subscribe(lang => {this.language = lang;});
   }
@@ -430,8 +432,7 @@ export class ContactComponent implements OnInit {
 
 
   checkTelNumber(mainStr: string): boolean {
-    const subStrs: string[] = ['mobile_no', 'tel_no', 'sms_number', 'telephone_number'];
-    return subStrs.some(subStr => mainStr.includes(subStr));
+    return this.entityUtilService.checkTelNumber(mainStr);
   }
 
 }

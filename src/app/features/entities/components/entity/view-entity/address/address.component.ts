@@ -16,6 +16,7 @@ import {
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {AddressModel, Branch, ClientDTO} from "../../../../data/ClientDTO";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
+import {EntityUtilService} from "../../../../services/entity-util.service";
 
 const log = new Logger('AddressComponent');
 
@@ -30,8 +31,6 @@ export class AddressComponent implements OnInit {
   @ViewChild('closeButton') closeButton!: ElementRef<HTMLButtonElement>;
 
   @Input() clientDetails: ClientDTO;
-  // @Input() addressDetailsConfig: any
-  // @Input() formFieldsConfig: any;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() group: FormGroupsDto;
   addressDetails: AddressModel;
@@ -79,14 +78,13 @@ export class AddressComponent implements OnInit {
     private countryService: CountryService,
     private globalMessagingService: GlobalMessagingService,
     private clientService: ClientService,
+    private entityUtilService: EntityUtilService,
   ) {
     this.utilService.currentLanguage.subscribe(lang => this.language = lang);
   }
 
   ngOnInit(): void {
     this.countries$ = this.countryService.getCountries();
-    // this.fetchCountries();
-    // this.createEditForm(this.fields);
     this.prepareDataDisplay();
   }
 
@@ -573,7 +571,7 @@ export class AddressComponent implements OnInit {
   }
 
   checkTelNumber(mainStr: string): boolean {
-    const subStrs: string[] = ['mobile_no', 'tel_no', 'sms_number', 'telephone_number', 'landline_number'];
-    return subStrs.some(subStr => mainStr.includes(subStr));
+    return this.entityUtilService.checkTelNumber(mainStr);
   }
+
 }
