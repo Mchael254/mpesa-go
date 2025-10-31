@@ -125,18 +125,9 @@
           <p class="card-titles mb-4">Client information</p>
 
           <div class="row mb-3">
-            <div *ngIf="!isNewClientSelected" class="col-md-4 d-flex">
+            <div class="col-md-4 d-flex">
               <p class="label w-50">Client</p>
               <p class="content w-50">{{clientName || quotationView?.clientName }}</p>
-            </div>
-            <div *ngIf="isNewClientSelected" class="col-md-4 d-flex">
-              <p class="label w-50">Prospect</p>
-              <!-- <p class="content w-50">{{ storedQuotationFormDetails?.client |sentenceCase}}</p> -->
-              <span class="content w-50 d-inline-block text-truncate" [pTooltip]="storedQuotationFormDetails?.client"
-                tooltipPosition="top">
-                <!-- {{ storedQuotationFormDetails?.client | sentenceCase }} -->
-                {{ storedQuotationFormDetails?.client ? (storedQuotationFormDetails.client | sentenceCase) : '' }}
-              </span>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Proposer</p>
@@ -822,8 +813,8 @@
                             (click)="activeRiskDetailsTab = 'limits-liability'">Limits of liability</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link text-muted" [class.active]="activeRiskDetailsTab === 'commissions'"
-                            pTooltip="Feature under development" tooltipPosition="top">
+                          <a class="nav-link " [class.active]="activeRiskDetailsTab === 'commissions'"
+                           (click)="activeRiskDetailsTab = 'commissions'" >
                             Commissions
                           </a>
                         </li>
@@ -1487,6 +1478,111 @@
                           </p-table>
 
                         </div>
+
+                             <!-- COMMISSIONS TAB -->
+<div *ngIf="quotationView?.source?.description === 'Agent' && quotationView?.clientType === 'I'"
+class="tab-pane" id="nav-commissions" role="tabpanel"
+     [class.show]="activeRiskDetailsTab === 'commissions'"
+     [class.active]="activeRiskDetailsTab === 'commissions'"
+     aria-labelledby="nav-commissions"
+     tabindex="0">
+
+  <!-- Column Selector Toggle -->
+  <div class="d-flex justify-content-end align-items-center"
+       [hidden]="activeRiskDetailsTab !== 'commissions'">
+    <i #iconCommission class="pi border border-black p-1 rounded-1 text-black"
+       [ngClass]="{ 'pi-caret-down': !showCommissionColumnModal, 'pi-caret-up': showCommissionColumnModal }"
+       style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+       (click)="toggleCommission(iconCommission)">
+    </i>
+  </div>
+
+  <!-- Floating Column Selector Modal -->
+  <div *ngIf="showCommissionColumnModal"
+       class="card shadow rounded p-2 position-absolute bg-white border"
+       [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
+       (mousedown)="onDragStart($event)" 
+       (document:mousemove)="onDragMove($event)"
+       (document:mouseup)="onDragEnd()">
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <strong class="text-primary">Select Commission Columns</strong>
+      <button class="btn-close btn-sm" (click)="showCommissionColumnModal = false"></button>
+    </div>
+
+    <div style="max-height: 200px; max-width:250px; overflow-y: auto;">
+      <div *ngFor="let col of commissionColumns">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" [(ngModel)]="col.visible" [id]="col.field">
+          <label class="form-check-label" [for]="col.field">{{ col.header }}</label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Dynamic Table -->
+  <p-table [value]="riskCommissions" #commissionsTable 
+           *ngIf="riskCommissions?.length && commissionColumns?.length"
+           [tableStyle]="{ 'width': '100%' }"
+           [paginator]="riskCommissions?.length > 10"
+           [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
+           [scrollable]="true" responsiveLayout="scroll"
+            class="ui-datatable" [autoLayout]="true"
+           >
+
+    <!-- Table Header -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th *ngFor="let col of commissionColumns" [hidden]="!col.visible" [pSortableColumn]="col.field">
+          {{ col.header }}
+          <p-sortIcon [field]="col.field"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+
+    <!-- Table Body -->
+    <ng-template pTemplate="body" let-commission>
+      <tr [pSelectableRow]="commission" class="point">
+
+        <td *ngFor="let col of commissionColumns" [hidden]="!col.visible">
+          <ng-container [ngSwitch]="col.field">
+
+            <!-- Default branch -->
+            <ng-container *ngSwitchDefault>
+              <ng-container *ngIf="col.field === 'amount' || col.field === 'discAmount'; else defaultField">
+                <div class="text-end">
+                  {{ commission[col.field] | currency: currencyObj?.prefix : 'symbol' : '1.2-2' }}
+                </div>
+              </ng-container>
+
+              <ng-template #defaultField>
+  {{ col.field === 'agentDto' ? commission.agentDto?.name : commission[col.field] }}
+</ng-template>
+
+            </ng-container>
+
+          </ng-container>
+        </td>
+
+      </tr>
+    </ng-template>
+
+    <!-- Empty Message -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="commissionColumns.length" class="text-center text-muted py-3">
+          No commissions available for this quotation.
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+
+</div>
+
+
+
                       </div>
 
                     </div>
@@ -1802,40 +1898,6 @@
 
 
         <div class="action-buttons">
-          <div class="position-relative">
-            <button class="btn btn-outline-primary me-2" *ngIf="isNewClientSelected" data-bs-toggle="modal"
-              data-bs-target="#createClientModal"  [disabled]="viewQuoteFlag">
-              Create Client
-            </button>
-            <div *ngIf="showClientWizzardModal" class="card shadow rounded p-3 position-absolute client-wizzard-modal"
-              [ngStyle]="{ 
-               top: wizzardClientModalPosition.top, 
-               left: wizzardClientModalPosition.left, 
-               zIndex: 1000,
-               minWidth: '250px', 
-               maxWidth: '300px',
-               backgroundColor: '#0d6efd', 
-               color: 'white'
-             }">
-
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <p class="mb-0 fw-bold" style="font-size: 14px;">Create client to continue</p>
-                <button type="button" class="btn ms-auto" (click)="showClientWizzardModal = false">
-                  <i class="pi pi-times" style="color:white"></i>
-                </button>
-              </div>
-
-              <div class="pt-2">
-                <p class="mb-0" style="font-size: 14px;">Click here to complete filling in client details</p>
-              </div>
-
-
-            </div>
-
-
-          </div>
-
-
           <div class="d-inline-block" pTooltip="{{ authorizeButtonTooltip }}" tooltipPosition="top"
             [tooltipDisabled]="!authorizeButtonDisabled" style="cursor: pointer;">
             <button *ngIf="showAuthorizeButton" type="button" class="btn"
@@ -1871,35 +1933,6 @@
 
         </div>
       </div>
-      <!-- CREATE CLIENT CRM MODAL -->
-      <div class="modal fade" id="createClientModal" #createClientModal tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width:1028px;">
-          <div class="modal-content ps-4 pt-2 pe-4">
-            <div class="d-flex justify-content-between align-items-center rounded-3 mb-1">
-              <button type="button" class="btn p-1 text-danger fw-bold ms-auto" data-bs-dismiss="modal"
-                style="border: none;">
-                X
-              </button>
-            </div>
-            <app-new-entity-v2></app-new-entity-v2>
-
-
-            <!-- <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
-              <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary" style="text-decoration: none;">{{
-                'gis.quotation.cancel' | translate
-                }}
-              </button>
-              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
-                (click)="rejectQuotation(quotationDetails.code)">{{
-                'gis.quotation.save_changes' |
-                translate
-                }}
-              </button>
-            </div> -->
-          </div>
-        </div>
-      </div>
-
 
     </div>
     <!-- Consent Modal -->

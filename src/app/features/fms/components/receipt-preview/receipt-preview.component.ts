@@ -49,7 +49,7 @@ export class ReceiptPreviewComponent implements OnInit {
   /**
    * @description Step data for the FMS workflow.
    */
-  steps = fmsStepsData;
+  steps = fmsStepsData.receiptingSteps;
   // Reference to the iframe
   @ViewChild('docViewerIframe', { static: false }) docViewerIframe!: ElementRef;
 

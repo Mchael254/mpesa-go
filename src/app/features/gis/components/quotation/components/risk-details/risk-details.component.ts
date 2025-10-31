@@ -92,9 +92,6 @@ export class RiskDetailsComponent {
   showRiskDetailsColumnModal = false;
   riskDetailsColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
 
-
-
-
   minDate: Date | undefined;
   motorClassAllowed: string;
   showMotorSubclassFields: boolean = false;
@@ -164,9 +161,7 @@ export class RiskDetailsComponent {
   sectionDetails: any[] = [];
   sectionDetailsForm: FormGroup;
   riskSectionList: riskSection[] = [];
-  // quotationCode: any
-  // quotationRiskCode: any;
-  // quotationRiskData: any;
+
   selectedRiskSection: any;
   inputErrors: { [key: string]: boolean } = {};
   private typingTimer: any;// Timer reference
@@ -453,7 +448,6 @@ export class RiskDetailsComponent {
       const quoatationCode = this.selectedProduct?.quotationCode
       log.debug('QUOTATION CODE- NGONCHANGES', quoatationCode)
       this.fetchQuotationDetails(quoatationCode)
-      // this.fetchRisksLimits(quoatationCode)
       this.scheduleList = []
       this.sectionPremium = []
       // this.sectionDetails = []
@@ -2948,20 +2942,20 @@ export class RiskDetailsComponent {
 
   onOpenEditSectionModal(selectedSection: any) {
     this.openEditSectionModal();
-    this.selectedSection = selectedSection; // Track the selected section
+    this.selectedSection = selectedSection;
     log.debug("Selected section:", this.selectedSection);
 
     // Patch the form with the selected section's values, including the row number
     this.sectionDetailsForm.patchValue({
       ...this.selectedSection,
-      rowNumber: this.selectedSection.rowNumber // Preserve the row number
+      rowNumber: this.selectedSection.rowNumber
     });
 
     // Open the modal
     const modalElement: HTMLElement | null = this.editSectionModal.nativeElement;
     if (modalElement) {
-      this.renderer.addClass(modalElement, 'show'); // Add 'show' class to make it visible
-      this.renderer.setStyle(modalElement, 'display', 'block'); // Set display property to 'block'
+      this.renderer.addClass(modalElement, 'show');
+      this.renderer.setStyle(modalElement, 'display', 'block');
     }
   }
 
@@ -4096,21 +4090,34 @@ export class RiskDetailsComponent {
     const cachedData = sessionStorage.getItem(cacheKey);
     const cachedOriginal = sessionStorage.getItem(originalCacheKey);
 
+    // if (cachedData && cachedOriginal) {
+    //   this.limitsOfLiability = JSON.parse(cachedData);
+    //   this.originalLimitsOfLiability = JSON.parse(cachedOriginal);
+
+    //   // if (this.originalLimitsOfLiability.length > 0) {
+    //   //   this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
+    //   // }
+
+    //   log.debug(`Loaded limits of liability for subclass ${this.selectedRiskCode} from sessionStorage`);
+    //   return;
+    // }
     if (cachedData && cachedOriginal) {
-      this.limitsOfLiability = JSON.parse(cachedData);
-      this.originalLimitsOfLiability = JSON.parse(cachedOriginal);
+      const parsedData = JSON.parse(cachedData);
+      const parsedOriginal = JSON.parse(cachedOriginal);
 
-      // if (this.originalLimitsOfLiability.length > 0) {
-      //   this.setLimitsOfLiabilityColumns(this.originalLimitsOfLiability[0]);
-      // }
+      if (parsedData.length > 0 && parsedOriginal.length > 0) {
+        this.limitsOfLiability = parsedData;
+        this.originalLimitsOfLiability = parsedOriginal;
+        log.debug(`Loaded limits of liability for subclass ${this.selectedRiskCode} from sessionStorage`);
 
-      log.debug(`Loaded limits of liability for subclass ${this.selectedRiskCode} from sessionStorage`);
-      return;
+        return;
+      }
     }
+
 
     this.quotationService.getLimitsOfLiability(this.selectedSubclassCode, 'L').subscribe({
       next: (response) => {
-        const limits = response?._embedded || [];
+        const limits = response || [];
 
         this.originalLimitsOfLiability = [...limits];
         sessionStorage.setItem(originalCacheKey, JSON.stringify(this.originalLimitsOfLiability));
@@ -4463,18 +4470,33 @@ export class RiskDetailsComponent {
     const cachedData = sessionStorage.getItem(cacheKey);
     const cachedOriginal = sessionStorage.getItem(originalCacheKey);
 
+    // if (cachedData && cachedOriginal) {
+    //   this.excessesData = JSON.parse(cachedData);
+    //   log.debug("Excesses fetched b4 service call:", this.excessesData)
+
+    //   this.originalExcesses = JSON.parse(cachedOriginal);
+    //   if (this.originalExcesses.length > 0) {
+    //     this.setExcessesColumns(this.originalExcesses[0]);
+    //   }
+    //   return;
+    // }
     if (cachedData && cachedOriginal) {
-      this.excessesData = JSON.parse(cachedData);
-      this.originalExcesses = JSON.parse(cachedOriginal);
-      if (this.originalExcesses.length > 0) {
+      const parsedData = JSON.parse(cachedData);
+      const parsedOriginal = JSON.parse(cachedOriginal);
+
+      if (parsedData.length > 0 && parsedOriginal.length > 0) {
+        this.excessesData = parsedData;
+        this.originalExcesses = parsedOriginal;
         this.setExcessesColumns(this.originalExcesses[0]);
+        return;
       }
-      return;
     }
+
 
     this.quotationService.getExcesses(this.selectedSubclassCode, 'E').subscribe({
       next: (res) => {
-        this.excessesData = res._embedded || [];
+        this.excessesData = res || [];
+        log.debug("Excesses fetched:", this.excessesData)
         this.originalExcesses = JSON.parse(JSON.stringify(this.excessesData));
 
         sessionStorage.setItem(cacheKey, JSON.stringify(this.excessesData));
@@ -6541,7 +6563,7 @@ export class RiskDetailsComponent {
             properties: {
               reg_number: {
                 type: "string",
-                description: "Vehicle registration number (e.g., KAA 123A)"
+                description: "Vehicle registration number "
               },
               risk_description: {
                 type: "string",
@@ -6549,11 +6571,11 @@ export class RiskDetailsComponent {
               },
               vehicle_make: {
                 type: "string",
-                description: "Manufacturer or brand of the vehicle (e.g., Toyota, Nissan)"
+                description: "Manufacturer or brand of the vehicle "
               },
               vehicle_model: {
                 type: "string",
-                description: "Model of the vehicle (e.g., Corolla, X-Trail)"
+                description: "Model of the vehicle "
               },
               vehicle_value: {
                 type: "number",
@@ -6561,7 +6583,7 @@ export class RiskDetailsComponent {
               },
               body_type: {
                 type: "string",
-                description: "Type of vehicle body (e.g., saloon, pickup, lorry)"
+                description: "Type of vehicle body "
               },
               engine_number: {
                 "type": "string",
@@ -6573,7 +6595,7 @@ export class RiskDetailsComponent {
               },
               color: {
                 "type": "string",
-                "description": "Color of the vehicle (e.g., Red, Blue, White)"
+                "description": "Color of the vehicle "
               },
               seating_capacity: {
                 "type": "integer",
@@ -6585,7 +6607,7 @@ export class RiskDetailsComponent {
               },
               year_of_manufacture: {
                 "type": "integer",
-                "description": "Year the vehicle was manufactured (e.g., 2019)"
+                "description": "Year the vehicle was manufactured "
               }
             },
             required: ["reg_number", "vehicle_make", "vehicle_value", "body_type", 'chassis_number',
@@ -6637,7 +6659,7 @@ export class RiskDetailsComponent {
 
       this.quotationService.readScannedDocuments(payload).subscribe({
         next: (res) => {
-          if (res?.__error__) {
+          if (res?.__error__ || res?.evals.score < 7) {
             this.uploadProgress = 0;
             this.aiErrorMessage = "File doesn't match the required format. Please upload a logbook to continue.";
             this.selectedFile = null;
@@ -6989,6 +7011,8 @@ export class RiskDetailsComponent {
     });
   }
 
+  // Commented out - inline editing not needed at the moment
+
   markCommissionDirty(commission: any): void {
     commission._dirty = true;
   }
@@ -7004,63 +7028,63 @@ export class RiskDetailsComponent {
     this.editingRowCode = null;
   }
 
-updateRiskCommissions(): void {
-  const modified = this.addedCommissions.filter(c => c._dirty);
+  updateRiskCommissions(): void {
+    const modified = this.addedCommissions.filter(c => c._dirty);
 
-  if (!modified.length) return;
+    if (!modified.length) return;
 
-  modified.forEach(comm => {
-    const payload: RiskCommissionDto = {
-      code: comm.code,
-      quotationRiskCode: comm.quotationRiskCode,
-      quotationCode: comm.quotationCode,
+    modified.forEach(comm => {
+      const payload: RiskCommissionDto = {
+        code: comm.code,
+        quotationRiskCode: comm.quotationRiskCode,
+        quotationCode: comm.quotationCode,
 
-      
-      agentCode: comm.agentDto?.id ?? comm.agentCode,
 
-      transCode: comm.transCode,
-      transDescription: comm.transDescription,
-      accountCode: comm.accountCode,
-      trntCode: comm.trntCode,
-      group: comm.group,
+        agentCode: comm.agentDto?.id ?? comm.agentCode,
 
-  
-      usedRate: comm.usedRate,
-      setupRate: comm.setupRate,
-      discRate: comm.discRate,
-      discType: comm.discType,
-      amount: comm.amount,
-      discAmount: comm.discAmount,
-      accountType: comm.accountType,
-      commissionAmount: comm.commissionAmount,
-      withHoldingRate: comm.withHoldingRate,
-      withHoldingTax: comm.withHoldingTax
-    };
+        transCode: comm.transCode,
+        transDescription: comm.transDescription,
+        accountCode: comm.accountCode,
+        trntCode: comm.trntCode,
+        group: comm.group,
 
-    log.debug("payload to update",payload)
 
-    this.quotationService.updateRiskCommission(payload).subscribe({
-      next: (res) => {
-        this.globalMessagingService.displaySuccessMessage(
-          'Success',
-          'Commission updated successfully'
-        );
+        usedRate: comm.usedRate,
+        setupRate: comm.setupRate,
+        discRate: comm.discRate,
+        discType: comm.discType,
+        amount: comm.amount,
+        discAmount: comm.discAmount,
+        accountType: comm.accountType,
+        commissionAmount: comm.commissionAmount,
+        withHoldingRate: comm.withHoldingRate,
+        withHoldingTax: comm.withHoldingTax
+      };
 
-        // ✅ ensure row no longer marked dirty
-        comm._dirty = false;
+      log.debug("payload to update", payload)
 
-        // ✅ immediately reload data from DB so user sees persisted values
-        this.fetchAddedCommissions();
-      },
-      error: (err) => {
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          'Failed to update commission'
-        );
-      }
+      this.quotationService.updateRiskCommission(payload).subscribe({
+        next: (res) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            'Commission updated successfully'
+          );
+
+          // ✅ ensure row no longer marked dirty
+          comm._dirty = false;
+
+          // ✅ immediately reload data from DB so user sees persisted values
+          this.fetchAddedCommissions();
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Failed to update commission'
+          );
+        }
+      });
     });
-  });
-}
+  }
 
   prepareDeleteCommission(commission: any): void {
     this.commissionToDelete = commission;

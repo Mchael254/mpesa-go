@@ -311,6 +311,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   destroy$ = new Subject<void>();
   previewVisible = false;
   pdfSrc: SafeResourceUrl | null = null;
+  reportDetails: any;
 
 
   constructor(
@@ -618,9 +619,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       }),
       untilDestroyed(this)
     ).subscribe(([taxes, coverTypeSections]) => {
-      const taxList = taxes._embedded as Tax[];
+      const taxList = taxes as Tax[];
       this.taxList = taxList;
       log.debug("CoverTypeSections single subclasss", coverTypeSections)
+      log.debug("taxes single subclasss", taxList)
       const coverTypeSectionList = coverTypeSections._embedded
       log.debug("covertypesection list;", coverTypeSectionList)
       // sessionStorage.setItem("covertypeSections", JSON.stringify(coverTypeSectionList))
@@ -667,9 +669,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
 
-  // isProductSelected(product: any): boolean {
-  //   return this.selectedProducts.includes(product);
-  // }
   isProductSelected(product: any): boolean {
     return this.selectedProducts.some(p => p.code === product.code);
   }
@@ -826,26 +825,166 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   // Remove product
   deleteProduct(product: AbstractControl, productIndex: number) {
-    log.debug("Selected product>>>", product.value, this.quickQuoteForm.get('product'))
-    const deletedCode = product.value.code;
-    log.debug("PRODUCT to be deleted", deletedCode)
+    const quotationCode = Number(sessionStorage.getItem('quotationCode')) || 0;
 
-    log.debug("PRODUCT INDEX", this.previousSelected)
-    this.previousSelected = this.previousSelected.filter(value => value.code !== product.value.code)
-    this.removeProductCoverTypes(product.value.code)
-    // Remove from selectedProducts
-    this.selectedProducts = this.selectedProducts.filter(p => p.code !== deletedCode);
-    this.selectedProductCovers = this.selectedProductCovers.filter(p => p.code !== deletedCode);
-    this.quickQuoteForm.patchValue({
-      product: this.previousSelected
-    })
-    log.debug("Current computation payload >>>", this.premiumComputationResponse)
-    this.productsFormArray.removeAt(productIndex);
-    if (this.premiumComputationResponse.productLevelPremiums.length > 0) {
-      this.canMoveToNextScreen = true
-    } else {
-      this.premiumComputationResponse = null
+    const quickQuotePayloadStr = sessionStorage.getItem('quickQuotePayload');
+    const quickQuotePayload = quickQuotePayloadStr ? JSON.parse(quickQuotePayloadStr) : null;
+
+    if (!quickQuotePayload || !quickQuotePayload.products || quickQuotePayload.products.length === 0) {
+      log.debug('No products found in session quickQuotePayload');
+      return;
     }
+
+    const deletedCode = product.value.code;
+    log.debug("Selected product>>>", product.value, this.quickQuoteForm.get('product'));
+    log.debug("PRODUCT to be deleted", deletedCode);
+
+    // Get quotationDetails from sessionStorage
+    const quotationDetailsStr = sessionStorage.getItem('quotationDetails');
+    const quotationDetails = quotationDetailsStr ? JSON.parse(quotationDetailsStr) : null;
+
+    // prevent deletion if only one product exists 
+    if (quotationDetails && quotationDetails.quotationProducts && quotationDetails.quotationProducts.length === 1) {
+      log.debug("Delete not allowed - quotation only has one product");
+      this.globalMessagingService.displayErrorMessage('Error', 'Delete Not Allowed, A quotation must have at least one product.');
+      return;
+    }
+
+    let targetCode: number | null = null;
+
+    // If quotationDetails exists and has quotationProducts, find matching product
+    if (quotationDetails && quotationDetails.quotationProducts) {
+      const matchingProduct = quotationDetails.quotationProducts.find((qp: any) =>
+        qp.productCode === deletedCode
+      );
+
+      if (matchingProduct) {
+        targetCode = matchingProduct.code;
+        log.debug("Found matching product code:", targetCode);
+      } else {
+        log.debug("No matching product found in quotationDetails for productCode:", deletedCode);
+      }
+    }
+
+    // find the product to delete from the stored payload
+    const targetProduct = quickQuotePayload.products.find((p: any) => p.code === deletedCode);
+
+    if (!targetProduct) {
+      log.debug("Product not found in quickQuotePayload:", deletedCode);
+      return;
+    }
+
+    const quotationProductCode = targetCode;
+
+    this.quotationService.deleteQuotationProduct(quotationCode, quotationProductCode).subscribe({
+      next: (response: any) => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Product deleted successfully');
+
+        // Update UI state and form data locally after successful deletion
+        this.previousSelected = this.previousSelected.filter(value => value.code !== deletedCode);
+        this.removeProductCoverTypes(product.value.code);
+
+        this.selectedProducts = this.selectedProducts.filter(p => p.code !== deletedCode);
+        this.selectedProductCovers = this.selectedProductCovers.filter(p => p.code !== deletedCode);
+
+        this.quickQuoteForm.patchValue({
+          product: this.previousSelected
+        });
+
+        this.productsFormArray.removeAt(productIndex);
+
+        if (this.premiumComputationResponse?.productLevelPremiums?.length > 0) {
+          this.canMoveToNextScreen = true;
+        } else {
+          this.premiumComputationResponse = null;
+        }
+
+        // Optional: remove from session payload
+        quickQuotePayload.products = quickQuotePayload.products.filter((p: any) => p.code !== deletedCode);
+        sessionStorage.setItem('quickQuotePayload', JSON.stringify(quickQuotePayload));
+
+        // Remove from quotationDetails in sessionStorage
+        const quotationDetailsStr = sessionStorage.getItem('quotationDetails');
+        if (quotationDetailsStr) {
+          const quotationDetails = JSON.parse(quotationDetailsStr);
+          if (quotationDetails && quotationDetails.quotationProducts) {
+            quotationDetails.quotationProducts = quotationDetails.quotationProducts.filter(
+              (qp: any) => qp.productCode !== deletedCode
+            );
+            sessionStorage.setItem('quotationDetails', JSON.stringify(quotationDetails));
+            log.debug('Removed product from quotationDetails in sessionStorage:', deletedCode);
+          }
+        }
+
+        // Update savedProductsState in sessionStorage
+        const savedStateStr = sessionStorage.getItem('savedProductsState');
+        if (savedStateStr) {
+          const savedState = JSON.parse(savedStateStr);
+          if (savedState) {
+            // Update selectedProducts in saved state
+            savedState.selectedProducts = savedState.selectedProducts.filter((p: any) => p.code !== deletedCode);
+
+            // Update form array products in saved state
+            if (savedState.formArray && savedState.formArray.products) {
+              savedState.formArray.products = savedState.formArray.products.filter((p: any) => p.code !== deletedCode);
+            }
+
+            sessionStorage.setItem('savedProductsState', JSON.stringify(savedState));
+            log.debug('Updated savedProductsState in sessionStorage after product deletion:', deletedCode);
+          }
+        }
+
+        // Update selectedCovers in sessionStorage
+        const selectedCoversStr = sessionStorage.getItem('selectedCovers');
+        if (selectedCoversStr) {
+          const selectedCovers = JSON.parse(selectedCoversStr);
+          if (selectedCovers && selectedCovers.productLevelPremiums) {
+            selectedCovers.productLevelPremiums = selectedCovers.productLevelPremiums.filter(
+              (p: any) => p.code !== deletedCode
+            );
+            sessionStorage.setItem('selectedCovers', JSON.stringify(selectedCovers));
+            log.debug('Updated selectedCovers in sessionStorage after product deletion:', deletedCode);
+          }
+        }
+
+        // Remove  cover selections
+        const deletedProductRisks = this.premiumComputationResponse?.productLevelPremiums
+          ?.find(p => p.code === deletedCode)?.riskLevelPremiums || [];
+
+        deletedProductRisks.forEach(risk => {
+          // Remove default covers for each risk
+          const defaultCoverKey = `defaultCovers-${risk.code}`;
+          if (sessionStorage.getItem(defaultCoverKey)) {
+            sessionStorage.removeItem(defaultCoverKey);
+            log.debug(`Removed ${defaultCoverKey} from sessionStorage`);
+          }
+
+          // Remove selected covers for each risk
+          const selectedCoverKey = `selectedCover-${risk.code}`;
+          if (sessionStorage.getItem(selectedCoverKey)) {
+            sessionStorage.removeItem(selectedCoverKey);
+            log.debug(`Removed ${selectedCoverKey} from sessionStorage`);
+          }
+
+          // Remove cover type sections for each risk's subclass
+          const coverTypeSectionsKey = `covertypeSections-${risk.selectCoverType?.subclassCode}`;
+          if (sessionStorage.getItem(coverTypeSectionsKey)) {
+            sessionStorage.removeItem(coverTypeSectionsKey);
+            log.debug(`Removed ${coverTypeSectionsKey} from sessionStorage`);
+          }
+        });
+
+        // Update premiumComputationResponse in sessionStorage
+        if (this.premiumComputationResponse) {
+          sessionStorage.setItem('premiumComputationResponse', JSON.stringify(this.premiumComputationResponse));
+          log.debug('Updated premiumComputationResponse in sessionStorage after product deletion');
+        }
+      },
+      error: (error: any) => {
+        log.error("Failed to delete quotation product:", error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Unable to delete product. Please try again later');
+      }
+    });
   }
 
   removeProductCoverTypes(code: number) {
@@ -1881,6 +2020,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       untilDestroyed(this)
     ).subscribe(([taxes, coverTypeSections]) => {
       this.taxList = taxes._embedded as Tax[]
+      log.debug("Taxes-list:::", this.taxList)
+
       log.debug("CoverTypeSections-log", coverTypeSections)
       const coverTypeSectionList = coverTypeSections._embedded
       log.debug("covertypesection list;", coverTypeSectionList)
@@ -1889,7 +2030,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         `covertypeSections-${subClassCode}`,
         JSON.stringify(coverTypeSectionList)
       );
-      riskFormGroup.get('applicableTaxes')?.setValue(taxes._embedded)
+      riskFormGroup.get('applicableTaxes')?.setValue(taxes)
       riskFormGroup.get('applicableCoverTypes')?.setValue(coverTypeSections._embedded)
       log.debug("Taxes:::", taxes, this.applicablePremiumRates)
     })
@@ -2138,7 +2279,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
-          this.exchangeRate = response
+          this.exchangeRate = response.rate
           log.debug("Exchange rate  ", this.exchangeRate);
         },
         error: (error) => {
@@ -2443,33 +2584,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     sessionStorage.setItem("canMoveToNextScreen", JSON.stringify(this.canMoveToNextScreen));
   }
 
-  isCoverSelected() {
 
-  }
-
-
-  // removeBenefit(benefitDto: { risk: RiskLevelPremium, premiumItems: Premiums }) {
-  //   const sectionToRemove = benefitDto.premiumItems.sectCode
-  //   const dtoToProcess: { risk: RiskLevelPremium, premiumItems: Premiums[] } = {
-  //     risk: benefitDto.risk,
-  //     premiumItems: []
-  //   }
-  //   log.debug("About to remove >>>>", benefitDto, dtoToProcess, sectionToRemove)
-  //   const updatedPayload = this.modifyPremiumPayload(dtoToProcess, sectionToRemove)
-  //   setTimeout(() => {
-  //     this.performComputation(updatedPayload);
-  //     document.body.style.overflow = 'auto';
-  //   }, 100);
-  // }
-
-  // listenToBenefitsAddition(benefitDto: { risk: RiskLevelPremium, premiumItems: Premiums[] }) {
-  //   let updatedPayload = this.modifyPremiumPayload(benefitDto);
-  //   log.debug("Modified Premium Computation Payload:", updatedPayload);
-  //   setTimeout(() => {
-  //     this.performComputation(updatedPayload);
-  //     document.body.style.overflow = 'auto';
-  //   }, 100);
-  // }
   listenToBenefitsAddition(
     benefitDto: { risk: RiskLevelPremium; premiumItems: Premiums[] },
     productIndex?: number,
@@ -2712,12 +2827,20 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   onPreviewRequested() {
     this.previewVisible = false;
     this.pdfSrc = null;
+    if (this.reportDetails) {
+      this.pdfSrc = `data:application/pdf;base64,${this.reportDetails.base64}`;
 
+      setTimeout(() => {
+        this.previewVisible = true;
+      }, 0);
+      return
+    }
     const payload = this.notificationPayload();
     this.quotationService.generateQuotationReport(payload).pipe(
       untilDestroyed(this)
     ).subscribe({
       next: (response) => {
+        this.reportDetails = response
         // 👇 Just prepend the header, no sanitizer needed
         this.pdfSrc = `data:application/pdf;base64,${response.base64}`;
 
@@ -2734,10 +2857,16 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   onDownloadRequested() {
     const payload = this.notificationPayload();
+    if (this.reportDetails) {
+      this.utilService.downloadPdfFromBase64(this.reportDetails.base64, "quotation-report.pdf");
+      return
+    }
 
     this.quotationService.generateQuotationReport(payload)
       .pipe(untilDestroyed(this))
       .subscribe((response) => {
+        this.reportDetails = response
+
         // Normal download using utilService
         this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf");
       });
@@ -2745,11 +2874,36 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
 
   onPrintRequested() {
+    if (this.reportDetails) {
+      const byteCharacters = atob(this.reportDetails.base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const pdfUrl = URL.createObjectURL(blob);
+
+      // Create hidden iframe for printing
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = pdfUrl;
+      document.body.appendChild(iframe);
+
+      iframe.onload = () => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+
+      };
+      return
+    }
     const payload = this.notificationPayload();
 
     this.quotationService.generateQuotationReport(payload)
       .pipe(untilDestroyed(this))
       .subscribe((response) => {
+        this.reportDetails = response
+
         const byteCharacters = atob(response.base64);
         const byteNumbers = new Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
@@ -2784,7 +2938,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     const productLevelPremiums$ = this.premiumComputationResponse.productLevelPremiums.map((product) => {
       const riskLevelPremiums$ = product.riskLevelPremiums.map((risk) => {
         const coverTypeDetails$ = risk.coverTypeDetails.map((coverType) => {
-          const clauses$ = this.quotationService.getClauses(coverType.coverTypeCode, coverType.subclassCode);
+          const clauses$ = this.quotationService.getClauses(coverType.subclassCode, coverType.coverTypeCode,);
           const limits$ = this.quotationService.getLimitsOfLiability(coverType.subclassCode);
           const excesses$ = this.quotationService.getExcesses(coverType.subclassCode);
           return forkJoin([clauses$, limits$, excesses$]).pipe(

@@ -1,7 +1,7 @@
 
 <ng-container *ngIf="subGroups?.length > 0">
   <ng-container *ngFor="let subGroup of subGroups">
-    <div class="my-5">
+    <div class="my-3">
       <ng-container *ngIf="!(subGroup.subGroupId.includes(cr12SearchSubString))">
         <app-overview-table
           [subGroup]="subGroup"

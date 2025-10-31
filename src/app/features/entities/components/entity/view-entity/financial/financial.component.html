@@ -24,12 +24,13 @@
     <ng-container *ngIf="subGroup.presentationType===PRESENTATION_TYPE.fields">
       <div class="row my-3">
         <div class="col-sm-8">
-          <span class="text-primary lead">
+          <span class="text-primary fw-bold">
             {{ subGroup.label[language] | titlecase }}
           </span>
           <span
             id="edit-tab-btn"
             class="m-2 text-primary"
+            (click)="openEditFinancialDialog(subGroup, Save_Action.EDIT_FINANCE_DETAILS)"
           >
             <i class="fa fa-pencil"></i>
           </span>
@@ -37,7 +38,10 @@
       </div>
       <div class="row mb-3">
         <ng-container *ngFor="let field of subGroup.fields">
-          <div class="col-sm-4">
+          <div
+            class="col-sm-4"
+            *ngIf="!(field.fieldId.toLowerCase().includes('id')) && field.formSubGroupingId === subGroup.subGroupId"
+          >
             <div class="row my-2">
               <div class="col-sm-4 text-dark">
                 {{ field.label[language] }}
@@ -57,6 +61,7 @@
         [table]="table"
         [language]="language"
         (deleteBtnClicked)="handlePayeeDelete($event)"
+        (editBtnClicked)="prepareEditPayeeForm($event, Save_Action.EDIT_PAYEE)"
       >
       </app-overview-table>
     </ng-container>
@@ -90,10 +95,14 @@
         >
           <form [formGroup]="editForm">
             <div class="row g-3">
-              <ng-container *ngFor="let field of fields">
-                <div class="col-md-6">
+              <ng-container *ngFor="let field of formFields">
+                <div
+                  class="col-md-6"
+                  *ngIf="!(field.fieldId.toLowerCase().includes('businessPersonId')) && field.formSubGroupingId === selectedSubgroup?.subGroupId"
+                >
                   <label [for]="field.fieldId" class="form-label">
                     {{ field.label[language] | titlecase }}
+                    <br> {{ field.fieldId }} ++ {{ field.type }}
                   </label>
                   <!-- Text input -->
                   <input
@@ -127,6 +136,27 @@
                     [id]="field.fieldId"
                     class="form-control"
                   />
+
+                  <!--tel number-->
+                  <span *ngIf="checkTelNumber(field.fieldId)">
+                    <ngx-intl-tel-input
+                      [cssClass]="'form-control mb-1'"
+                      [id]="field.fieldId"
+                      [preferredCountries]=""
+                      [enableAutoCountrySelect]="true"
+                      [enablePlaceholder]="true"
+                      [searchCountryFlag]="true"
+                      [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                      [selectFirstCountry]="false"
+                      [selectedCountryISO]="CountryISO.Nigeria"
+                      [phoneValidation]="true"
+                      [separateDialCode]="true"
+                      [numberFormat]="PhoneNumberFormat.National"
+                      [formControlName]="field.fieldId"
+                      [style]="{ width: '100%' }"
+                    >
+                    </ngx-intl-tel-input>
+                  </span>
                 </div>
               </ng-container>
             </div>
@@ -143,10 +173,10 @@
       <div class="modal-footer border-0">
         <!--<button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
           {{ formFieldsConfig.buttons.cancel.label[language] | titlecase }}
+        </button> -->
+        <button type="button" class="btn btn-primary" (click)="saveDetails()">
+          {{ 'save' | titlecase }}
         </button>
-        <button type="button" class="btn btn-primary" (click)="editFinancialDetails()">
-          {{ formFieldsConfig.buttons.save.label[language] | titlecase }}
-        </button>-->
       </div>
     </div>
   </div>

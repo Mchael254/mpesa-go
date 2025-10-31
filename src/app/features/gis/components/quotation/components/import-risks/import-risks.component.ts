@@ -419,22 +419,22 @@ export class ImportRisksComponent {
       }
     })
 
-    this.quotationService.createQuotationRisk(this.quotationCode, riskPayload).subscribe({
-      next: (response) => {
-        log.debug('Risk added successfully:', response);
-        this.quotationRiskData = response;
-        const quotationRiskDetails = this.quotationRiskData._embedded[0];
-        if (quotationRiskDetails) {
-          this.riskCode = quotationRiskDetails.riskCode
-          this.quoteProductCode = quotationRiskDetails.quotProductCode
-        }
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
-      },
-      error: (error) => {
-        log.error('Error adding risk:', error);
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to add risks. Please try again.');
-      }
-    })
+    // this.quotationService.createQuotationRisk(this.quotationCode, riskPayload).subscribe({
+    //   next: (response) => {
+    //     log.debug('Risk added successfully:', response);
+    //     this.quotationRiskData = response;
+    //     const quotationRiskDetails = this.quotationRiskData._embedded[0];
+    //     if (quotationRiskDetails) {
+    //       this.riskCode = quotationRiskDetails.riskCode
+    //       this.quoteProductCode = quotationRiskDetails.quotProductCode
+    //     }
+    //     this.router.navigate(['/home/gis/quotation/quotation-summary']);
+    //   },
+    //   error: (error) => {
+    //     log.error('Error adding risk:', error);
+    //     this.globalMessagingService.displayErrorMessage('Error', 'Failed to add risks. Please try again.');
+    //   }
+    // })
 
 
 

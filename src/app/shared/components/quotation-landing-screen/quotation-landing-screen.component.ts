@@ -1,18 +1,25 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { SessionStorageService } from '../../services/session-storage/session-storage.service';
 import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { GroupQuotationsListDTO } from '../../../features/lms/models';
 import { MenuService } from '../../../features/base/services/menu.service';
 import { SidebarMenu } from '../../../features/base/model/sidebar.menu';
 import { untilDestroyed, UtilService } from '../../shared.module';
-import { QuotationList } from '../../../features/gis/components/quotation/data/quotationsDTO';
+import { QuotationList, Status, StatusEnum, SystemDetails } from '../../../features/gis/components/quotation/data/quotationsDTO';
 import { GlobalMessagingService } from '../../services/messaging/global-messaging.service';
 import { QuotationsService } from '../../../features/gis/components/quotation/services/quotations/quotations.service';
+import { CurrencyDTO } from '../../data/common/currency-dto';
+import { NgxCurrencyConfig } from 'ngx-currency';
+import { Menu } from 'primeng/menu';
+import { Table } from 'primeng/table';
+import { AuthService } from '../../services/auth.service';
+import { BankService } from '../../services/setups/bank/bank.service';
+import { Logger } from '../../services/logger/logger.service';
 
-// const log = new Logger('QuotationLandingScreenComponent');
+const log = new Logger('QuotationLandingScreenComponent');
 
 @Component({
   selector: 'app-quotation-landing-screen',
@@ -31,19 +38,113 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   selectedColumn: string = '';
   selectedCondition: string = '';
   filterValue: string = '';
+  // fromDate: Date | null = null;
+  // toDate: Date | null = null;
+  // minToDate: Date | null = null;
+  selectedRowIndex: number;
+  // gisQuotationList: QuotationList[] = [];
+  // tableDetails: any = {
+  //   rows: [], // Initially empty array for rows
+  //   totalElements: 0 // Default total count
+  // };
+  pageSize: number = 5;
+  // quotationSubMenuList: SidebarMenu[];
+  sortField: string = '';
+  sortOrder: number = 1;
+
+  @ViewChild('menu') menu: Menu;
+  @ViewChild('moreActionsMenu') moreActionsMenu: Menu;
+  @ViewChild('quotationTable') quotationTable!: Table;
+
+  clientsData: null;
+  isSearching: boolean;
+  filterObject: any;
+  gisQuotationList: QuotationList[] = [];
+  clientCode: number;
+  clientName: string;
+  productCode: number;
+  agentId: number;
+  selectedStatus: string;
+  selectedSource: any;
+  quotationNumber: string = '';
+  quoteNumber: string = "";
+  selectedQuotation: QuotationList;
+  originalQuotationList: QuotationList[] = [];
+  quotationSubMenuList: SidebarMenu[];
+  agentName: string;
+  selectedDateFrom: string;
+  selectedDateTo: string;
+  selectedExpiryDate: string;
   fromDate: Date | null = null;
   toDate: Date | null = null;
+  expiryDate: Date | null = null;
   minToDate: Date | null = null;
-  selectedRowIndex: number;
-  gisQuotationList: QuotationList[] = [];
   tableDetails: any = {
     rows: [], // Initially empty array for rows
     totalElements: 0 // Default total count
   };
-  pageSize: number = 5;
-  quotationSubMenuList: SidebarMenu[];
-  sortField: string = '';
-  sortOrder: number = 1;
+  dateFormat: string = 'dd-mm-yy';
+  todaysDate: string;
+  minDate: Date | undefined;
+  status: Status[] = [
+    { status: StatusEnum.Lapsed },
+    { status: StatusEnum.Confirmed },
+    { status: StatusEnum.Pending },
+    { status: StatusEnum.Rejected },
+    { status: StatusEnum.None },
+    { status: StatusEnum.Accepted },
+    { status: StatusEnum.Draft }
+  ];
+
+  menuItems: MenuItem[];
+  viewQuoteFlag: Boolean = false;
+  isClientSearchModalVisible = false;
+  remainingMenuItems: MenuItem[] = [];
+  public currencyObj: NgxCurrencyConfig;
+
+  // Tooltip descriptions for actions
+  actionDescriptions: { [key: string]: string } = {
+    'Edit': 'Change client details and process the quote',
+    'Revise': 'Create another version of this quote',
+    'Reuse': 'Use the existing quote details to create a new quote',
+    'View': 'Have a look at the quote details, without making any changes',
+    'Reassign': 'Assign to another user',
+    'Process': 'Process the quote to create a policy'
+  };
+
+  // Action icons mapping
+  actionIcons: { [key: string]: string } = {
+    'Edit': 'pi pi-pencil',
+    'Revise': 'pi pi-sync',
+    'Reuse': 'pi pi-replay',
+    'View': 'pi pi-eye',
+    'Reassign': 'pi pi-user-edit',
+    'Process': 'pi pi-cog'
+  };
+
+  // Tooltip state management
+  hoveredAction: string | null = null;
+  tooltipPosition = { x: 0, y: 0 };
+  private tooltipTimer: any;
+  currencyDelimiter: any;
+  defaultCurrencyName: string;
+  defaultCurrencySymbol: string;
+  defaultCurrency: CurrencyDTO;
+  user: any;
+  userDetails: any;
+  currency: CurrencyDTO[]
+
+  // Actions cache to prevent infinite loops
+  private actionsCache = new Map<string, MenuItem[]>();
+  userCode: number;
+  systemsAssigned: SystemDetails[] = [];
+  visibleTabs = {
+    LMS: false,
+    GIS: false,
+    LMS_ORD: false,
+    PENSION: false
+  };
+  showTabs = false;
 
 
   constructor(
@@ -57,18 +158,30 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     public quotationService: QuotationsService,
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
+    public authService: AuthService,
+    public bankService: BankService,
   ) {
+    this.menuItems = [];
+
   }
 
   ngOnInit(): void {
     this.session_service.clear_store();
     this.getParams();
     this.getGroupQuotationsList();
-    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
+    // this.quotationSubMenuList = this.menuService.quotationSubMenuList();
 
-    if (this.activeIndex === 0) {
-      this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
-    }
+    // if (this.activeIndex === 0) {
+    //   this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
+    // }
+    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
+    this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
+    this.initializeCurrency();
+    this.fetchGISQuotations();
+    this.getUser();
+    this.fetchCurrencies();
+
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -77,8 +190,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnDestroy(): void {
-  }
+
 
 
   selectLmsIndRow(i: any) {
@@ -177,9 +289,9 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
   // Function to format the date, allowing for multiple input formats
-  formatDate(value: string): string {
-    return value.replace(/-/g, '/');
-  }
+  // formatDate(value: string): string {
+  //   return value.replace(/-/g, '/');
+  // }
 
   //  method to handle changes for column, condition, and filter value
   onColumnChange(event: Event): void {
@@ -329,18 +441,18 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
 
-  clearFilters(): void {
-    this.selectedColumn = null;
-    this.selectedCondition = null;
-    this.filterValue = '';
-    this.filteredLMS_GRP = [...this.LMS_GRP];
+  // clearFilters(): void {
+  //   this.selectedColumn = null;
+  //   this.selectedCondition = null;
+  //   this.filterValue = '';
+  //   this.filteredLMS_GRP = [...this.LMS_GRP];
 
-    // Get the input element by its ID and reset its value:
-    const inputElement = document.getElementById('otherNames') as HTMLInputElement;
-    if (inputElement) {
-      inputElement.value = '';
-    }
-  }
+  //   // Get the input element by its ID and reset its value:
+  //   const inputElement = document.getElementById('otherNames') as HTMLInputElement;
+  //   if (inputElement) {
+  //     inputElement.value = '';
+  //   }
+  // }
 
   onQuotationTableRowClick(filteredLMS_GRP, index: number) {
     this.selectedRowIndex = index;
@@ -349,16 +461,16 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     }
   }
 
-  createQuote(type: string) {
-    this.utilService.clearSessionStorageData()
-    let nextPage = '/home/gis/quotation/quick-quote'
-    if (type === 'NORMAL') {
-      this.utilService.clearNormalQuoteSessionStorage()
-      nextPage = '/home/gis/quotation/quotation-details'
-    }
-    this.router.navigate([nextPage]).then(r => {
-    })
-  }
+  // createQuote(type: string) {
+  //   this.utilService.clearSessionStorageData()
+  //   let nextPage = '/home/gis/quotation/quick-quote'
+  //   if (type === 'NORMAL') {
+  //     this.utilService.clearNormalQuoteSessionStorage()
+  //     nextPage = '/home/gis/quotation/quotation-details'
+  //   }
+  //   this.router.navigate([nextPage]).then(r => {
+  //   })
+  // }
 
   onProcess() {
   }
@@ -398,51 +510,51 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   //     });
   // }
 
-fetchGISQuotations(event: any) {
-  console.log("FETCHING GIS QUOTATIONS LIST");
+  // fetchGISQuotations(event: any) {
+  //   console.log("FETCHING GIS QUOTATIONS LIST");
 
-  const pageIndex = event.first / event.rows;
-  const pageSize = event.rows;
-  const sortField = event.sortField;
-  const sortOrder = event.sortOrder; // 1 (asc), -1 (desc)
+  //   const pageIndex = event.first / event.rows;
+  //   const pageSize = event.rows;
+  //   const sortField = event.sortField;
+  //   const sortOrder = event.sortOrder; // 1 (asc), -1 (desc)
 
-  this.quotationService.searchQuotations(pageIndex, pageSize)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (response: any) => {
-        const quotations = response._embedded || [];
+  //   this.quotationService.searchQuotations(pageIndex, pageSize)
+  //     .pipe(untilDestroyed(this))
+  //     .subscribe({
+  //       next: (response: any) => {
+  //         const quotations = response._embedded || [];
 
-        // ✅ Sort manually if sortField is defined
-        if (sortField) {
-          quotations.sort((a: any, b: any) => {
-            const valueA = a[sortField];
-            const valueB = b[sortField];
+  //         // ✅ Sort manually if sortField is defined
+  //         if (sortField) {
+  //           quotations.sort((a: any, b: any) => {
+  //             const valueA = a[sortField];
+  //             const valueB = b[sortField];
 
-            if (valueA == null) return sortOrder === 1 ? -1 : 1;
-            if (valueB == null) return sortOrder === 1 ? 1 : -1;
+  //             if (valueA == null) return sortOrder === 1 ? -1 : 1;
+  //             if (valueB == null) return sortOrder === 1 ? 1 : -1;
 
-            if (typeof valueA === 'string' && typeof valueB === 'string') {
-              return valueA.localeCompare(valueB) * sortOrder;
-            }
+  //             if (typeof valueA === 'string' && typeof valueB === 'string') {
+  //               return valueA.localeCompare(valueB) * sortOrder;
+  //             }
 
-            return (valueA < valueB ? -1 : valueA > valueB ? 1 : 0) * sortOrder;
-          });
-        }
+  //             return (valueA < valueB ? -1 : valueA > valueB ? 1 : 0) * sortOrder;
+  //           });
+  //         }
 
-        this.gisQuotationList = quotations;
+  //         this.gisQuotationList = quotations;
 
-        this.tableDetails = {
-          rows: this.gisQuotationList,
-          totalElements: this.gisQuotationList.length
-        };
+  //         this.tableDetails = {
+  //           rows: this.gisQuotationList,
+  //           totalElements: this.gisQuotationList.length
+  //         };
 
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch quotations. Please try again later.');
-      }
-    });
-}
+  //         this.cdr.detectChanges();
+  //       },
+  //       error: () => {
+  //         this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch quotations. Please try again later.');
+  //       }
+  //     });
+  // }
 
 
   onRevise() {
@@ -476,10 +588,881 @@ fetchGISQuotations(event: any) {
     }
   }
 
+  // dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
+  //   if (sidebarMenu.link.length > 0) {
+  //     this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
+  //   }
+  //   this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
+  // }
+  private initializeCurrency(): void {
+    const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
+    const currencySymbol = sessionStorage.getItem('currencySymbol');
+    log.debug("currency Object:", currencySymbol);
+    log.debug("currency Delimeter:", currencyDelimiter);
+    this.currencyObj = {
+      prefix: currencySymbol + ' ',
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
+  }
+
+
+  // hide tooltip
+  immediateHideTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    this.hoveredAction = null;
+  }
+
+  ngOnDestroy(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+  }
+
+  toggleMenu(event: Event, quotation: any) {
+    this.selectedQuotation = quotation;
+
+    const items = [
+      {
+        label: 'View',
+        command: () => this.viewQuote(quotation)
+      }
+    ];
+
+    if (quotation.status === 'Draft') {
+      items.push({
+        label: 'Edit Quote',
+        command: () => this.editQuote(quotation)
+      });
+    }
+
+    // Add the rest of the items
+    items.push(
+      //  {
+      //    label: 'Revise Quote',
+      // command: () => this.reviseQuote(quotation)
+      //  },
+      // {
+      //   label: 'Reuse Quote',
+      //   command: () => this.deleteQuote(quotation)
+      // },
+      // {
+      //   label: 'Reassign Quote',
+      //   command: () => this.deleteQuote(quotation)
+      // },
+      {
+        label: 'Process',
+        command: () => this.process(quotation)
+      }
+    );
+
+    this.menuItems = items;
+    this.menu.toggle(event);
+  }
+
+  viewQuote(quotation: QuotationList): void {
+    console.log('=== viewQuote method called ===');
+    console.log('Quotation data:', quotation);
+
+    // Validate required data before proceeding
+    if (!quotation.quotationNumber || !quotation.quotationCode) {
+      console.error('Invalid quotation data:', { quotationNumber: quotation.quotationNumber, quotationCode: quotation.quotationCode });
+      this.globalMessagingService.displayErrorMessage('Error', 'Invalid quotation data. Please try again.');
+      return;
+    }
+
+    console.log('Calling setQuotationNumber with:', {
+      quotationCode: quotation.quotationCode,
+      quotationNumber: quotation.quotationNumber,
+      clientCode: quotation.clientCode
+    });
+
+    this.setQuotationNumber(
+      quotation.quotationCode,
+      quotation.quotationNumber,
+      quotation.clientCode
+    );
+  }
+  process(quotation: QuotationList): void {
+    log.debug('View quote clicked:', quotation);
+    this.processSelectedQuote(
+      quotation.quotationCode,
+      quotation.quotationNumber,
+      quotation.clientCode
+    );
+  }
+  setQuotationNumber(quotationCode: number, quotationNumber: string, clientCode: number): void {
+    log.debug('setQuotationNumber called with:', { quotationCode, quotationNumber, clientCode });
+
+    if (quotationNumber && quotationNumber.trim() !== '') {
+      sessionStorage.setItem('quotationNum', quotationNumber);
+      sessionStorage.setItem('quotationCode', JSON.stringify(quotationCode));
+
+      if (clientCode != null) {
+        sessionStorage.setItem('clientCode', clientCode.toString());
+      } else {
+        console.warn('Invalid clientCode:', clientCode);
+      }
+      console.debug(`Quotation number ${quotationNumber} has been saved to session storage.`);
+      console.debug(`ClientCode ${clientCode} has been saved to session storage.`);
+
+      this.viewQuoteFlag = true;
+      sessionStorage.setItem('viewQuoteFlag', JSON.stringify(this.viewQuoteFlag));
+
+      log.debug('Navigating to quotation-summary...');
+      this.router.navigate(['/home/gis/quotation/quotation-summary']).then(
+        (success) => log.debug('Navigation successful:', success),
+        (error) => log.error('Navigation failed:', error)
+      );
+    } else {
+      log.error('Invalid quotation number:', quotationNumber);
+    }
+  }
+  processSelectedQuote(quotationCode: number, quotationNumber: string, clientCode: number): void {
+    if (quotationNumber && quotationNumber.trim() !== '') {
+      sessionStorage.setItem('quotationNum', quotationNumber);
+      sessionStorage.setItem('quotationCode', JSON.stringify(quotationCode));
+      this.viewQuoteFlag = false;
+      sessionStorage.setItem('viewQuoteFlag', JSON.stringify(this.viewQuoteFlag));
+
+      this.router.navigate(['/home/gis/quotation/quotation-summary']);
+    }
+  }
+  onStatusSelected(selectedValue: any) {
+
+    this.selectedStatus = selectedValue;
+    log.debug('Selected Status:', this.selectedStatus);
+    this.fetchGISQuotations();
+
+  }
+
+  editQuote(quotation: any) {
+    // Implement edit quote functionality
+    log.debug('Edit quote:', quotation);
+    log.debug('View quote clicked on edit quote:', quotation);
+
+    const quoteToEdit = quotation;
+    const status = quoteToEdit.status;
+
+    if (status === "Draft") {
+      // navigate to client creation screen with quote details
+      sessionStorage.setItem("quoteToEditData", JSON.stringify(quoteToEdit));
+      this.router.navigate(['/home/gis/quotation/quotations-client-details']);
+    } else {
+      this.globalMessagingService.displayInfoMessage('Info', 'Can only edit quotes with status Draft');
+    }
+
+  }
+
+  // printQuote(quotation: any) {
+  //   log.debug('Print quote:', quotation);
+  // }
+
+  // deleteQuote(quotation: any) {
+  //   log.debug('Delete quote:', quotation);
+  // }
+
   dynamicSideBarMenu(sidebarMenu: SidebarMenu): void {
     if (sidebarMenu.link.length > 0) {
       this.router.navigate([sidebarMenu.link]); // Navigate to the specified link
     }
     this.menuService.updateSidebarMainMenu(sidebarMenu.value); // Update the sidebar menu
   }
+
+  fetchGISQuotations() {
+    log.debug("Quotation Number entered:", this.quoteNumber);
+    const clientType = null
+    const clientCode = this.clientCode || null
+    const productCode = this.productCode || null
+    const agentCode = this.agentId || null
+    const quotationNumber = this.quoteNumber
+    const status = this.selectedStatus || null;
+    const dateFrom = this.selectedDateFrom || null
+    const dateTo = this.selectedDateTo || null
+    const source = this.selectedSource
+    const clientName = (this.clientName && this.clientName.trim() !== '') ? this.clientName.trim() : null;
+
+    log.debug("clientCode", clientCode);
+    log.debug("productCode", productCode);
+    log.debug("agentCode", agentCode);
+    log.debug("status", status);
+    log.debug("quote", quotationNumber);
+    log.debug("clientName", clientName);
+
+    log.debug("Selected Date from:", this.selectedDateFrom)
+    log.debug("Selected Date to:", this.selectedDateTo)
+
+    this.quotationService
+      .searchQuotations(
+        0,
+        100,
+        clientType,
+        clientCode,
+        productCode,
+        dateFrom,
+        dateTo,
+        agentCode,
+        quotationNumber,
+        status,
+        source,
+        clientName)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+
+          this.gisQuotationList = response._embedded;
+
+          // Store a copy of the original list when first fetching
+          if (this.originalQuotationList.length === 0) {
+            this.originalQuotationList = [...this.gisQuotationList];
+          }
+
+          // Clear actions cache when quotation list is updated
+          this.actionsCache.clear();
+
+          log.debug("LIST OF GIS QUOTATIONS ", this.gisQuotationList);
+
+        },
+        error: (error) => {
+          console.error("erro fetching quotations", error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch quotation list. Try again later');
+        }
+      }
+      );
+  }
+
+  inputQuotationNo(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.quoteNumber = value;
+  }
+
+  onClientSelected(event: any) {
+    let cleanClientName = event.clientFullName;
+    if (cleanClientName) {
+      cleanClientName = cleanClientName.replace(/\bnull\b/gi, '').trim();
+      cleanClientName = cleanClientName === '' ? null : cleanClientName;
+    }
+
+    this.clientName = cleanClientName;
+    this.clientCode = event.id;
+
+    // Close the modal after selection
+    this.isClientSearchModalVisible = false;
+    this.cdr.detectChanges();
+
+    // Optional: Log for debugging
+    log.debug('Selected Client-quote management:', event);
+    log.debug('Cleaned client name:', cleanClientName);
+    this.fetchGISQuotations();
+  }
+
+  onAgentSelected(event: { agentName: string; agentId: number }) {
+    this.agentName = event.agentName;
+    this.agentId = event.agentId;
+
+    // Trigger p-table filtering when agent is selected
+    if (this.quotationTable && this.agentName) {
+      this.quotationTable.filterGlobal(this.agentName, 'contains');
+    }
+
+    // Optional: Log for debugging
+    log.debug('Selected Agent:', event);
+    log.debug("AgentId", this.agentId);
+
+    // Also fetch quotations for backend filtering
+    this.fetchGISQuotations();
+  }
+
+  formatDate(date: Date): string {
+    log.debug("Date (formatDate method):", date)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onDateFromInputChange(date: any) {
+    log.debug('selected Date from raaw', date);
+    const selectedDateFrom = date;
+    if (selectedDateFrom) {
+      const SelectedFormatedDate = this.formatDate(selectedDateFrom)
+      this.selectedDateFrom = SelectedFormatedDate
+      log.debug(" SELECTED FORMATTED DATE from:", this.selectedDateFrom)
+    } else {
+      this.selectedDateFrom = null;
+      log.debug("Date from cleared");
+      // If both dates are cleared, reset to original list
+      if (!this.selectedDateTo) {
+        this.gisQuotationList = [...this.originalQuotationList];
+      }
+    }
+    this.fetchGISQuotations();
+  }
+
+  onDateToInputChange(date: any) {
+    log.debug('selected Date To raaw', date);
+    const selectedDateTo = date;
+    if (selectedDateTo) {
+      const SelectedFormatedDateTo = this.formatDate(selectedDateTo)
+      this.selectedDateTo = SelectedFormatedDateTo
+      log.debug(" SELECTED FORMATTED DATE to:", this.selectedDateTo)
+    } else {
+      this.selectedDateTo = null;
+      log.debug("Date to cleared");
+      // If both dates are cleared, reset to original list
+      if (!this.selectedDateFrom) {
+        this.gisQuotationList = [...this.originalQuotationList];
+      }
+    }
+    this.fetchGISQuotations();
+  }
+
+  get displayAgentName(): string {
+    if (!this.agentName) return '';
+    return this.agentName.length > 10 ? this.agentName.substring(0, 15) + '...' : this.agentName;
+  }
+
+  get displayClientName(): string {
+    // this.fetchGISQuotations()
+
+    if (!this.clientName) return '';
+    return this.clientName.length > 10 ? this.clientName.substring(0, 15) + '...' : this.clientName;
+  }
+
+  clearDateFilters(): void {
+    this.fromDate = null;
+    this.toDate = null;
+    this.minToDate = null;
+    this.expiryDate = null;
+    this.selectedDateFrom = null;
+    this.selectedDateTo = null;
+
+    // Reset to original list when date filters are cleared
+    if (this.originalQuotationList.length > 0) {
+      this.gisQuotationList = [...this.originalQuotationList];
+    }
+  }
+  // reviseQuote(selectedQuotation: any) {
+  //   log.debug("Selected Quote to be revised:", selectedQuotation)
+  //   const quotationCode = selectedQuotation.quotationCode
+  //   if (quotationCode) {
+  //     this.quotationService
+  //       .reviseQuote(quotationCode)
+  //       .pipe(untilDestroyed(this))
+  //       .subscribe({
+  //         next: (response: any) => {
+  //           const revisedQuoteNumber = response._embedded.quotationNumber
+  //           log.debug("Revised Quotation number ", revisedQuoteNumber);
+  //           sessionStorage.setItem('revisedQuotationNo', revisedQuoteNumber);
+  //           if (revisedQuoteNumber) {
+
+  //             this.router.navigate(['/home/gis/quotation/quotation-summary']);
+  //           }
+
+  //         },
+  //         error: (error) => {
+  //           this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+  //         }
+  //       });
+  //   }
+
+  // }
+
+
+  reviseQuotation(selectedQuotation: any, createNew: 'Y' | 'N' = 'N') {
+    log.debug("Selected Quote to be revised:", selectedQuotation);
+
+    const quotationCode = selectedQuotation?.quotationCode;
+    if (!quotationCode) {
+      console.warn("Invalid quotation data:", selectedQuotation);
+      return;
+    }
+
+    this.quotationService
+      .reviseQuote(quotationCode, createNew)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          log.debug("Response for revise", response)
+
+          sessionStorage.setItem('revisedQuotation', JSON.stringify(response));
+          sessionStorage.setItem('isRevision', 'true');
+
+          // Navigate to quotation summary
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+
+        },
+        error: (error) => {
+          log.error("Error revising quotation:", error);
+          this.globalMessagingService.displayErrorMessage('Error', error.error?.message || 'Failed to revise quotation');
+        }
+      });
+  }
+
+  reuseQuotation(selectedQuotation: any) {
+    const quotationCode = selectedQuotation?.quotationCode;
+    if (!quotationCode) {
+      console.warn("Invalid quotation data:", selectedQuotation);
+      return;
+    }
+
+    this.quotationService
+      .reviseQuote(quotationCode, 'Y')
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response: any) => {
+          sessionStorage.setItem('reusedQuotation', JSON.stringify(response));
+          this.router.navigate(['/home/gis/quotation/quotation-details']);
+
+        },
+        error: (error) => {
+          log.error("Error revising quotation:", error);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            error.error?.message || 'Failed to revise quotation'
+          );
+        }
+      });
+  }
+
+
+  clearQuotationNo(): void {
+    // Assuming you have a variable to store the quotation number value
+    this.quotationNumber = '';
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearClientName(): void {
+    this.clientName = '';
+    this.clientCode = null;
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearAgentName(): void {
+    this.agentName = '';
+    this.agentId = null;
+
+    // Clear p-table filtering when agent is cleared
+    if (this.quotationTable) {
+      this.quotationTable.filterGlobal('', 'contains');
+    }
+
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearFromDate(): void {
+    this.fromDate = null;
+    // If you need to reset min dates for other fields
+    this.clearDateFilters();
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearToDate(): void {
+    this.toDate = null;
+    this.fetchGISQuotations();
+    this.cdr.detectChanges();
+  }
+
+  clearFilters() {
+    // Clear client
+    this.clientName = '';
+    this.clientCode = null;
+
+    // Clear agent
+    this.agentName = '';
+    this.agentId = null;
+
+    // Clear source
+    this.selectedSource = null;
+
+    // Clear dates
+    this.clearDateFilters();
+
+    // Clear quotation number
+    this.quotationNumber = '';
+    this.quoteNumber = '';
+
+    // Clear status to null
+    this.selectedStatus = null;
+
+    // Clear p-table global filtering
+    if (this.quotationTable) {
+      this.quotationTable.clear();
+    }
+
+    // Fetch quotations with cleared filters
+    this.fetchGISQuotations();
+
+    // Restore the original quotation list
+    this.gisQuotationList = [...this.originalQuotationList];
+
+    // Trigger change detection
+    this.cdr.detectChanges();
+  }
+  openClientSearchModal() {
+    // Reset modal state to ensure it works consistently
+    this.isClientSearchModalVisible = false;
+    this.cdr.detectChanges();
+    // Set to true after change detection to ensure proper modal state
+    setTimeout(() => {
+      this.isClientSearchModalVisible = true;
+      this.cdr.detectChanges();
+    }, 0);
+  }
+
+  openAgentSearchModal() {
+    log.debug('Agent input clicked - modal will open and trigger agent loading...');
+  }
+
+
+  createQuote(type: string) {
+    this.utilService.clearSessionStorageData()
+    this.utilService.clearNormalQuoteSessionStorage()
+
+    let nextPage = '/home/gis/quotation/quick-quote'
+    if (type === 'NORMAL') {
+      this.utilService.clearNormalQuoteSessionStorage()
+      nextPage = '/home/gis/quotation/quotation-details'
+    }
+    this.router.navigate([nextPage]).then(r => {
+    })
+  }
+
+  getAllActions(quotation: any): MenuItem[] {
+    const cacheKey = `${quotation.quotationNumber}-${quotation.status}`;
+
+    // Return cached actions if available
+    if (this.actionsCache.has(cacheKey)) {
+      return this.actionsCache.get(cacheKey)!;
+    }
+
+    const items = [
+      {
+        label: 'View',
+        icon: 'pi pi-eye',
+        title: this.actionDescriptions['View'],
+        command: () => {
+          this.viewQuote(quotation);
+        }
+      }
+    ];
+
+    // Only add Edit Quote if status is Draft
+    if (quotation.status === 'Draft') {
+      items.push({
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        title: this.actionDescriptions['Edit'],
+        command: () => this.editQuote(quotation)
+      });
+    }
+
+    // Add additional actions
+    items.push(
+      {
+        label: 'Revise Quote',
+        icon: 'pi pi-sync',
+        title: this.actionDescriptions['Revise'],
+        command: () => this.reviseQuotation(quotation)
+
+      },
+      {
+        label: 'Reuse Quote',
+        icon: 'pi pi-replay',
+        title: this.actionDescriptions['Reassign'],
+        command: () => this.reassignQuote(quotation)
+      },
+      {
+        label: 'Process',
+        icon: 'pi pi-cog',
+        title: 'Process the quote to create a policy',
+        command: () => this.process(quotation)
+      }
+    );
+
+    // Cache the actions
+    this.actionsCache.set(cacheKey, items);
+
+    return items;
+  }
+
+
+  updateTooltipPosition(event: MouseEvent): void {
+    const tooltipWidth = 300;
+    const tooltipHeight = 60;
+    const offset = 15;
+
+    let x = event.clientX - (tooltipWidth / 2);
+    let y = event.clientY - tooltipHeight - offset;
+
+    if (x < 10) x = 10;
+    if (x + tooltipWidth > window.innerWidth - 10) x = window.innerWidth - tooltipWidth - 10;
+    if (y < 10) y = event.clientY + offset;
+
+    this.tooltipPosition = { x, y };
+  }
+
+  getFirstThreeActions(quotation: any): MenuItem[] {
+    const allActions = this.getAllActions(quotation);
+    return allActions.slice(0, 3);
+  }
+
+  hasMoreThanThreeActions(quotation: any): boolean {
+    const allActions = this.getAllActions(quotation);
+    return allActions.length > 3;
+  }
+
+
+
+  // Legacy method - kept for compatibility if needed elsewhere
+  executeAction(action: MenuItem, quotation: any, event?: Event): void {
+    this.immediateHideTooltip();
+
+    if (action.command) {
+      action.command({ originalEvent: event, item: action });
+    }
+  }
+
+  showMoreActions(event: Event, quotation: any): void {
+    this.selectedQuotation = quotation;
+
+    // Create remaining menu items dynamically
+    this.remainingMenuItems = [];
+
+    // Add Edit if status is Draft
+    if (quotation.status === 'Draft') {
+      this.remainingMenuItems.push({
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => this.editQuote(quotation)
+      });
+    }
+
+    // Add other actions
+    this.remainingMenuItems.push(
+      {
+        label: 'Reassign',
+        icon: 'pi pi-user-edit',
+        command: () => this.reassignQuote(quotation)
+      },
+      {
+        label: 'Process',
+        icon: 'pi pi-cog',
+        command: () => this.process(quotation)
+      }
+    );
+
+    this.moreActionsMenu.toggle(event);
+  }
+
+  reuseQuote(quotation: any): void {
+    log.debug('Reuse quote:', quotation);
+    // Implement reuse functionality here
+    // For now, navigate to quotation details with the reuse flag
+    sessionStorage.setItem('quoteToReuseData', JSON.stringify(quotation));
+    sessionStorage.setItem('reuseQuoteFlag', 'true');
+    this.router.navigate(['/home/gis/quotation/quotation-details']);
+  }
+
+  reassignQuote(quotation: any): void {
+    console.log('Reassign quote:', quotation);
+
+  }
+
+  applyGlobalFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    if (this.quotationTable) {
+      this.quotationTable.filterGlobal(filterValue, 'contains');
+    }
+  }
+
+  //  getuser(): void {
+  //   this.user = this.authService.getCurrentUserName();
+  //   this.userDetails = this.authService.getCurrentUser();
+  //   log.info('Login UserDetails', this.userDetails);
+  //   this.currencyDelimiter = this.userDetails?.currencyDelimiter;
+  //   log.debug('Organization currency delimiter', this.currencyDelimiter);
+  //   sessionStorage.setItem('currencyDelimiter', this.currencyDelimiter);
+  // }
+
+
+  getActionIcon(actionLabel: string): string {
+    return this.actionIcons[actionLabel] || 'pi pi-info-circle';
+  }
+
+
+  showMenuTooltip(actionLabel: string, event: MouseEvent): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+    this.hoveredAction = actionLabel;
+    this.updateTooltipPosition(event);
+  }
+
+  hideMenuTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+
+    this.hoveredAction = null;
+    this.tooltipTimer = null;
+
+  }
+
+
+
+
+
+  fetchCurrencies() {
+    this.bankService.getCurrencies()
+      .subscribe({
+        next: (currencies: any[]) => {
+          // CURRENCIES
+          this.currency = currencies.map((value) => {
+            let capitalizedDescription = value.name.charAt(0).toUpperCase() + value.name.slice(1).toLowerCase();
+            return { ...value, name: capitalizedDescription };
+          });
+
+          log.info(this.currency, 'this is a currency list');
+
+          const defaultCurrency = this.currency.find(currency => currency.currencyDefault === 'Y');
+          if (defaultCurrency) {
+            log.debug('DEFAULT CURRENCY', defaultCurrency);
+            this.defaultCurrency = defaultCurrency;
+            this.defaultCurrencyName = defaultCurrency.name;
+            this.defaultCurrencySymbol = defaultCurrency.symbol;
+            sessionStorage.setItem('currencySymbol', this.defaultCurrencySymbol);
+
+            log.debug('DEFAULT CURRENCY Name', this.defaultCurrencyName);
+            log.debug('DEFAULT CURRENCY Symbol', this.defaultCurrencySymbol);
+          }
+        },
+        error: (error) => {
+          console.error("Error fetching group users", error);
+        }
+      });
+  }
+
+  hideTooltip(): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
+
+    this.tooltipTimer = setTimeout(() => {
+      this.hoveredAction = null;
+      this.tooltipTimer = null;
+    }, 5);
+  }
+
+
+  getTooltipDescription(actionLabel: string): string {
+    return this.actionDescriptions[actionLabel] || '';
+  }
+
+  showTooltip(actionLabel: string, event: MouseEvent): void {
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+      this.tooltipTimer = null;
+    }
+
+    this.hoveredAction = actionLabel;
+    this.updateTooltipPosition(event);
+  }
+  getUser() {
+    this.user = this.authService.getCurrentUserName();
+    log.debug("Username", this.user)
+    this.userDetails = this.authService.getCurrentUser();
+    log.info('Login UserDetails', this.userDetails);
+    this.user = this.userDetails.fullName || this.authService.getCurrentUserName();
+    this.userCode = this.userDetails.code;
+    log.debug('User Code ', this.userCode);
+    this.fetchSystemsAssignedToUser(this.userCode)
+
+  }
+
+  // fetchSystemsAssignedToUser(userId: number) {
+  //   this.quotationService.getSystemsAssignedToUser(userId)
+  //     .subscribe({
+  //       next: (systems: any[]) => {
+  //         this.systemsAssigned = systems
+  //         log.debug("Systems assigned to logged in user", this.systemsAssigned)
+  //         this.setVisibleTabs();
+  //       },
+  //       error: (error) => {
+  //         console.error("Error fetching group users", error);
+  //       }
+  //     });
+  // }
+  fetchSystemsAssignedToUser(userId: number) {
+    this.quotationService.getSystemsAssignedToUser(userId)
+      .subscribe({
+        next: (systems: any[]) => {
+          // Filter core systems
+          const coreSystems = systems.filter(s => s.isCoreSystem === 'Y');
+          this.systemsAssigned = coreSystems;
+
+          // Extract shortDesc values for easier checking
+          const assignedSystems = coreSystems.map(s => s.shortDesc);
+
+          // Set visibleTabs based on assigned systems
+          this.visibleTabs.LMS = assignedSystems.includes('LMS');
+          this.visibleTabs.LMS_ORD = assignedSystems.includes('LMS_ORD');
+          this.visibleTabs.GIS = assignedSystems.includes('GIS');
+          this.visibleTabs.PENSION = assignedSystems.includes('PENSION');
+
+          // Determine whether to show tabs (your existing logic)
+          const visibleTabKeys = Object.entries(this.visibleTabs)
+            .filter(([_, visible]) => visible)
+            .map(([key]) => key);
+
+          this.showTabs = !(visibleTabKeys.length === 1 && visibleTabKeys.includes('GIS'));
+
+          console.log('Visible Tabs:', this.visibleTabs);
+          console.log('Show Tabs:', this.showTabs);
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error("Error fetching group users", error);
+        }
+      });
+  }
+
+  // private setVisibleTabs() {
+  //   this.visibleTabs = {
+  //     LMS: this.hasSystem('LMS'),
+  //     GIS: this.hasSystem('GIS'),
+  //     LMS_ORD: this.hasSystem('LMS_ORD')
+  //   };
+  //   console.log("Visible Tabs:", this.visibleTabs);
+
+  //   const coreSystems = Object.entries(this.visibleTabs)
+  //     .filter(([_, visible]) => visible)
+  //     .map(([key]) => key);
+  //   console.log("Core Systems:", coreSystems);
+
+  //   this.showTabs = !(coreSystems.length === 1 && coreSystems.includes('GIS'));
+  //   console.log("Show Tabs:", this.showTabs);
+  // }
+
+
+  // private hasSystem(shortDesc: string): boolean {
+  //   return this.systemsAssigned.some(
+  //     s => s.shortDesc === shortDesc && s.isCoreSystem === 'Y'
+  //   );
+  // }
+
 }

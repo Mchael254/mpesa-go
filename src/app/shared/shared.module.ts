@@ -109,6 +109,7 @@ import { DialogModule } from "primeng/dialog";
 import { NgxIntlTelInputModule } from "ngx-intl-tel-input";
 import { TruncatePipe } from './pipes/truncate/truncate.pipe';
 import { AiImportProgressModalComponent } from './components/ai-import-progress-modal/ai-import-progress-modal.component';
+import { MenuModule } from 'primeng/menu';
 
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
@@ -222,8 +223,7 @@ const SERVICES = [
     DynamicReportsComponent,
     TruncatePipe,
     DynamicSetupTableComponent,
-    AiImportProgressModalComponent
-
+    AiImportProgressModalComponent,
   ],
   imports: [
     CommonModule,
@@ -251,6 +251,7 @@ const SERVICES = [
     DialogModule,
     FormsModule,
     NgxIntlTelInputModule,
+    MenuModule
   ],
   exports: [
     ErrorComponent,
@@ -304,7 +305,7 @@ const SERVICES = [
     DynamicReportsComponent,
     DynamicSetupTableComponent,
     TruncatePipe,
-    AiImportProgressModalComponent
+    AiImportProgressModalComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
