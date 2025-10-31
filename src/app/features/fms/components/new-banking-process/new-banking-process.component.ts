@@ -3,20 +3,19 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { GlobalMessagingService } from './../../../../shared/services/messaging/global-messaging.service';
-import {Logger} from '../../../../shared/services'
+import { Logger } from '../../../../shared/services';
 import fmsStepsData from '../../data/fms-step.json';
 import { BankingProcessService } from '../../services/banking-process.service';
 import { PaymentModesDTO } from '../../data/auth-requisition-dto';
-import {SessionStorageService} from '../../../../shared/services/session-storage/session-storage.service';
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import {
-  assignedUsersDTO,
   ReceiptDTO,
   ReceiptsToBankRequest,
-  UsersDTO,
-} from '../../data/receipting-dto';
+} from '../../data/banking-process-dto';
 import * as bootstrap from 'bootstrap';
-import {AuthService} from '../../../../shared/services/auth.service';
+import { AuthService } from '../../../../shared/services/auth.service';
+import { UsersDTO } from '../../data/receipting-dto';
 const log = new Logger('NewBankingProcessComponent');
 /**
  * @Component NewBankingProcessComponent
@@ -51,26 +50,28 @@ export class NewBankingProcessComponent implements OnInit {
   /** An array of `PaymentModesDTO` used to populate the payment method dropdown. */
   paymentModes: PaymentModesDTO[] = [];
   /** A list of users available for task assignment, populating the user selection modal. */
-  users: assignedUsersDTO[] = [];
-  filteredUsers: assignedUsersDTO[] = [];
+  users: UsersDTO[] = [];
+  filteredUsers: UsersDTO[] = [];
   /** Flag to control whether the receipts table is rendered in the DOM. */
   displayTable: boolean = false;
   /** Controls visibility of the main assignment dialog. */
   assignDialogVisible: boolean = false;
   /** Controls visibility of the user selection dialog. */
   userSelectDialogVisible: boolean = false;
-
+  /**controls visibility of create batches btn,it should be hidden if payment mode selected is cheque */
+  isCashSelected: boolean = false;
   /** Holds the user object selected from the second dialog to display in the first dialog's input. */
-  selectedUserForAssignment: assignedUsersDTO | null = null;
+  selectedUserForAssignment: UsersDTO | null = null;
 
   /** Temporarily holds the user selected in the user table before confirmation. */
-  tempSelectedUser: assignedUsersDTO | null = null;
+  tempSelectedUser: UsersDTO | null = null;
 
   // --- Table Column Configuration ---
   /** Stores the configuration for all available columns in the receipts table. */
   columns: any[];
   /** Stores the configuration for the columns that are currently visible in the table. */
   selectedColumns: any[] = [];
+  allColumns: any[] = [];
   // --- Session and User Data ---
   /** The default organization for the logged-in user, retrieved from session storage. */
   defaultOrg: OrganizationDTO;
@@ -106,7 +107,7 @@ export class NewBankingProcessComponent implements OnInit {
     this.initiateRctsForm();
     this.initializeUsersForm();
     this.initiateColumns();
-    this.selectedColumns = this.initiateColumns();
+    this.allColumns = this.initiateColumns();
     this.fetchPaymentsModes();
     let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
     let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
@@ -118,7 +119,8 @@ export class NewBankingProcessComponent implements OnInit {
       this.selectedOrg = null;
     }
     this.loggedInUser = this.authService.getCurrentUser();
-    this.fetchUsers(this.loggedInUser.code);
+    //this.fetchUsers(this.loggedInUser.code);
+    this.fetchActiveUsers();
   }
   /**
    * @description Initializes the `rctsRetrievalForm` with required controls and validators.
@@ -201,11 +203,9 @@ export class NewBankingProcessComponent implements OnInit {
         return formattedDateField.includes(inputValue);
       } else if (typeof fieldValue === 'number') {
         const inputNumber = String(inputValue);
-
         return fieldValue.toString().includes(inputNumber);
       } else if (typeof fieldValue === 'string') {
         fieldValue = fieldValue.toString();
-
         return fieldValue.toLowerCase().includes(inputValue.toLowerCase());
       }
       return false;
@@ -250,6 +250,18 @@ export class NewBankingProcessComponent implements OnInit {
       );
       return;
     }
+    if (formData?.paymentMethod === 'CASH') {
+      // If CASH is selected, filter out the 'actions' column
+      this.selectedColumns = this.allColumns.filter(
+        (col) => col.field !== 'actions'
+      );
+
+      this.isCashSelected = true;
+    } else {
+      this.isCashSelected = false;
+      // For any other payment mode, show all columns
+      this.selectedColumns = [...this.allColumns];
+    }
     this.fetchReceipts();
   }
   /**
@@ -282,13 +294,13 @@ export class NewBankingProcessComponent implements OnInit {
    * Checks if receipts have been selected first.
    */
   openAssignModal(): void {
-    if (!this.selectedReceipts || this.selectedReceipts.length === 0) {
-      this.globalMessagingService.displayErrorMessage(
-        '',
-        'Please select at least one receipt to assign.'
-      );
-      return;
-    }
+    // if (!this.selectedReceipts || this.selectedReceipts.length === 0) {
+    //   this.globalMessagingService.displayErrorMessage(
+    //     '',
+    //     'Please select at least one receipt to assign.'
+    //   );
+    //   return;
+    // }
     this.assignDialogVisible = true;
   }
 
@@ -337,35 +349,52 @@ export class NewBankingProcessComponent implements OnInit {
       this.selectedUserForAssignment = this.tempSelectedUser;
       // Patch the form with the selected user's ID
       this.usersForm.patchValue({
-        user: this.selectedUserForAssignment.user_id,
+        user: this.selectedUserForAssignment.id,
       });
       this.closeUserSelectDialog();
     }
   }
-  /**
-   * @description Final submission handler for the main assignment dialog.
-   * This is where I call the endpoint to assign the users.
-   */
   onAssignSubmit(): void {
     this.usersForm.markAllAsTouched();
     if (this.usersForm.invalid) {
       return;
     }
     const formData = this.usersForm.value;
-    // console.log('Submitting assignment with the following data:');
-    // console.log('Selected User ID:', formData.user);
-    // console.log('Comment:', formData.comment);
-    // console.log('Selected Receipts:', this.selectedReceipts.map(r => r.receiptNo));
+    const rctsRetrievalForm = this.rctsRetrievalForm.value;
+    const requestBody = {
+      userId: formData.user,
+      receiptNumbers: this.selectedReceipts.map((rct) => {
+        return rct.receiptNo;
+      }),
+    };
+    this.bankingService.assignUser(requestBody).subscribe({
+      next: (response) => {
+        this.selectedReceipts = [];
+        if (rctsRetrievalForm?.paymentMethod === 'CASH') {
+          this.router.navigate(['/home/fms/process-batch']);
+        } else {
+          this.fetchReceipts();
+        }
+
+        const backendResponse =
+          response?.msg || response?.error || response?.status;
+        this.globalMessagingService.displaySuccessMessage('', response.msg);
+      },
+      error: (err) => {
+        this.handleApiError(err);
+      },
+    });
     this.closeAssignModal();
   }
+
   /**
    * @description Fetches a list of users that the current user can assign tasks to.
-   * @param currentUserCode The unique code of the currently logged-in user.
+   *
    */
-  fetchUsers(currentUserCode: number): void {
-    this.bankingService.getUsers(currentUserCode).subscribe({
+  fetchActiveUsers(): any {
+    this.bankingService.getActiveUsers().subscribe({
       next: (response) => {
-        this.users = response;
+        this.users = response.content;
         this.filteredUsers = this.users;
       },
       error: (err) => {
@@ -373,6 +402,7 @@ export class NewBankingProcessComponent implements OnInit {
       },
     });
   }
+
   /**
    * @description Navigates the user to the next step in the banking process (Create Batches).
    */

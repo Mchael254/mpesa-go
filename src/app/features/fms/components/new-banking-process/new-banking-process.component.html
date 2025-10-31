@@ -184,7 +184,11 @@
             </div>
 
             <div class="justify-content-end">
-              <button class="btn btn-primary" (click)="openAssignModal()">
+              <button
+                class="btn btn-primary"
+                (click)="openAssignModal()"
+                *ngIf="selectedReceipts.length > 0"
+              >
                 {{ "fms.banking.assign" | translate }}
               </button>
               <span class="pt-2" (click)="showColumnsDialogs()">
@@ -266,7 +270,7 @@
     <button
       class="btn btn-primary"
       (click)="navigateToBatch()"
-      *ngIf="displayTable"
+      *ngIf="displayTable && isCashSelected && selectedReceipts.length > 0"
     >
       {{ "fms.banking.createBatches" | translate }}
     </button>
@@ -280,14 +284,13 @@
   >
     <form [formGroup]="usersForm">
       <!-- user selection input field -->
+      <input type="hidden" formControlName="user" />
       <div class="form-group mb-3">
         <label for="userselect"
           >{{ "entities.user" | translate }}<span class="required"></span
         ></label>
-        <!-- this input is for display only.it shows the selected users's name. -->
         <div class="input-group" style="position: relative">
           <!-- This input is for display only. It shows the selected user's name. -->
-
           <input
             id="userselect"
             type="text"
@@ -357,7 +360,7 @@
       [value]="filteredUsers"
       [(selection)]="tempSelectedUser"
       selectionMode="single"
-      dataKey="user_id"
+      dataKey="id"
       [paginator]="true"
       [rows]="5"
       sortMode="single"
