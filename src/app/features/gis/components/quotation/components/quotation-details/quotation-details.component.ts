@@ -32,7 +32,7 @@ import { Modal } from 'bootstrap';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 
 
-const log = new Logger('QuotationDetails');
+const log = new Logger('QuotationDetailsComponent');
 
 @Component({
   selector: 'app-quotation-details',
@@ -237,8 +237,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     public claimsService: ClaimsService,
     private renderer: Renderer2,
     private cd: ChangeDetectorRef,
-    private clientService:ClientService
-    
+    private clientService: ClientService
+
   ) {
     this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
     this.quotationAction = sessionStorage.getItem('quotationAction')
@@ -302,12 +302,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       paymentFrequency: [this.paymentFrequencies[0].value, Validators.required],
       // marketer: ['']
     });
-    
 
-   
-    
 
-    
+
+
+
+
+
     this.loadDetailedQuotationFields();
     this.minDate = new Date();
     // this.todaysDate = new Date();
@@ -315,7 +316,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     //  this.coverToDate.setFullYear(this.todaysDate.getFullYear() + 1);
     this.createQuotationProductForm();
 
-    
+
     if (this.productDetails?.length > 0) {
       this.setColumnsFromProductDetails(this.productDetails[0]);
       this.checkProducts()
@@ -339,14 +340,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     this.loadPersistedClauses();
     this.getUsers();
-  
-  
 
-    
+
+
+
 
   }
 
-  
+
 
   checkProducts() {
     if (this.productDetails && this.productDetails.length > 0) {
@@ -470,15 +471,15 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
         log.debug(this.quotationForm.value, 'Final Form Value');
 
-         this.patchRevisedQuotationData();
-         this.patchReusedQuotationData();
+        this.patchRevisedQuotationData();
+        this.patchReusedQuotationData();
       },
       error: (err) => {
         log.error(err, 'Failed to load risk fields');
       }
     });
   }
- 
+
 
 
   setClientType(value: 'new' | 'existing') {
@@ -1667,7 +1668,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
-          this.exchangeRate = response
+          this.exchangeRate = response.rate
           log.debug("EXCHANGE RATE", this.exchangeRate)
         },
         error: (error) => {
@@ -2246,7 +2247,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
                 if (quotationPayloadStr) {
                   const quotationPayload = JSON.parse(quotationPayloadStr);
                   if (quotationPayload && quotationPayload.quotationProducts) {
-  
+
                     quotationPayload.quotationProducts = quotationPayload.quotationProducts.filter(
                       (qp: any) => Number(qp.productCode) !== Number(productCode)
                     );
@@ -2533,7 +2534,11 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         log.debug(this.quotationForm.value);
         log.debug(this.quotationNo, 'quotation number output');
         this.quotationCode = this.quotationNo._embedded.quotationCode;
-        this.quotationNum = this.quotationNo._embedded.quotationNumber
+        this.quotationNum = this.quotationNo._embedded.quotationNumber;
+        const processFlowDetails = data._embedded.processFlowResponseDto
+        const ticketStatus = processFlowDetails.taskName
+        log.debug("Ticket status:", ticketStatus)
+        sessionStorage.setItem('ticketStatus', ticketStatus);
         sessionStorage.setItem('quotationNum', this.quotationNum);
         sessionStorage.setItem('quotationCode', this.quotationCode.toString());
         sessionStorage.setItem('quotationPayload', JSON.stringify(quotationPayload));
@@ -2765,96 +2770,96 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
 
-patchReusedQuotationData() {
+  patchReusedQuotationData() {
 
 
-  const reusedQuotation = sessionStorage.getItem('reusedQuotation');
-  if (!reusedQuotation) {
-    log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
-    return;
-  }
+    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+    if (!reusedQuotation) {
+      log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
+      return;
+    }
 
-  const data = JSON.parse(reusedQuotation);
-  log.debug('[QuotationDetailsComponent] Patching reused quotation data:', data);
-   
-  const sourceObject = this.quotationSources?.find(
-    (s: any) => s.code === data.source?.code || s.description === data.source?.description
-  );
+    const data = JSON.parse(reusedQuotation);
+    log.debug('[QuotationDetailsComponent] Patching reused quotation data:', data);
+
+    const sourceObject = this.quotationSources?.find(
+      (s: any) => s.code === data.source?.code || s.description === data.source?.description
+    );
 
 
-  const agentObject = data.agentCode
-    ? {
+    const agentObject = data.agentCode
+      ? {
         code: data.agentCode,
         name: data.agentName,
         shortDescription: data.agentShortDescription,
         agentWithin: data.agentWithin
       }
-    : null;
+      : null;
 
-  log.debug("AGENT OBJECT TO PATCH =>", agentObject);
+    log.debug("AGENT OBJECT TO PATCH =>", agentObject);
 
-  
-  if (this.quotationForm) {
-    this.quotationForm.patchValue({
-      email: data.emailAddress || '',
-      phone: data.phoneNumber || '',
-      source: sourceObject || data.source ||'',
-      quotationType: data.quotationType || 'I',
-      branch: data.branchCode || '',
-      currency: data.currency || '',
-      introducer: data.introducerName || '',
-      paymentFrequency: data.frequencyOfPayment || '',
-      marketer: data.marketerName || '',
-      multiUserEntry: data.multiUser || 'N',
-      campaign: data.sourceCampaign || '',
-      internalComments: data.internalComments || '',
-      externalComments: data.externalComments || ''
-    });
-  }
-      
 
-  
-  if (agentObject) {
-    this.quotationForm.get('agent')?.setValue(agentObject, { emitEvent: false });
-    log.debug("✅ Patched agent successfully =>", this.quotationForm.get('agent')?.value);
-  } else {
-    log.debug("⚠️ No agent object found to patch");
-  }
+    if (this.quotationForm) {
+      this.quotationForm.patchValue({
+        email: data.emailAddress || '',
+        phone: data.phoneNumber || '',
+        source: sourceObject || data.source || '',
+        quotationType: data.quotationType || 'I',
+        branch: data.branchCode || '',
+        currency: data.currency || '',
+        introducer: data.introducerName || '',
+        paymentFrequency: data.frequencyOfPayment || '',
+        marketer: data.marketerName || '',
+        multiUserEntry: data.multiUser || 'N',
+        campaign: data.sourceCampaign || '',
+        internalComments: data.internalComments || '',
+        externalComments: data.externalComments || ''
+      });
+    }
+
+
+
+    if (agentObject) {
+      this.quotationForm.get('agent')?.setValue(agentObject, { emitEvent: false });
+      log.debug("✅ Patched agent successfully =>", this.quotationForm.get('agent')?.value);
+    } else {
+      log.debug("⚠️ No agent object found to patch");
+    }
 
 
     if (data.clientCode) {
-  log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
+      log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
 
-  this.clientService.getClientById(data.clientCode).subscribe({
-    next: (client: any) => {
-      log.debug('[QuotationDetailsComponent] Client fetched for revision =>', client);
+      this.clientService.getClientById(data.clientCode).subscribe({
+        next: (client: any) => {
+          log.debug('[QuotationDetailsComponent] Client fetched for revision =>', client);
 
-      if (client) {
-        
-        const clientName = [client.firstName, client.lastName]
-          .filter(Boolean) 
-          .join(' ')       
-          .trim() ||        
-          client.lastName || 
-         
-          'Unknown Client';  
+          if (client) {
 
-        this.quotationForm.patchValue({
-          client: clientName
-        });
-        
-        
-        
-        log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
-      } else {
-        log.debug('[QuotationDetailsComponent] No client found for clientCode =>', data.clientCode);
-      }
-    },
-    error: (error: any) => {
-      log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
+            const clientName = [client.firstName, client.lastName]
+              .filter(Boolean)
+              .join(' ')
+              .trim() ||
+              client.lastName ||
+
+              'Unknown Client';
+
+            this.quotationForm.patchValue({
+              client: clientName
+            });
+
+
+
+            log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
+          } else {
+            log.debug('[QuotationDetailsComponent] No client found for clientCode =>', data.clientCode);
+          }
+        },
+        error: (error: any) => {
+          log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
+        }
+      });
     }
-  });
-}
 
 
     // ✅ Patch product details + clauses + taxes
@@ -2913,39 +2918,39 @@ patchReusedQuotationData() {
 
 
   patchRevisedQuotationData() {
-  const isRevision = sessionStorage.getItem('isRevision') === 'true';
-  if (!isRevision) return;
+    const isRevision = sessionStorage.getItem('isRevision') === 'true';
+    if (!isRevision) return;
 
-  this.isRevisionMode = true;
+    this.isRevisionMode = true;
 
-  const revisedQuotation = sessionStorage.getItem('revisedQuotation');
-  if (!revisedQuotation) return;
+    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+    if (!revisedQuotation) return;
 
-  const data = JSON.parse(revisedQuotation);
+    const data = JSON.parse(revisedQuotation);
 
-  log.debug('[QuotationDetailsComponent] Retrieved revised quotation data =>', data);
- 
-
+    log.debug('[QuotationDetailsComponent] Retrieved revised quotation data =>', data);
 
 
-   
-  const sourceObject = this.quotationSources?.find(
-    (s: any) => s.code === data.source?.code || s.description === data.source?.description
-  );
 
-  
-  const agentObject = data.agentCode
-    ? {
+
+
+    const sourceObject = this.quotationSources?.find(
+      (s: any) => s.code === data.source?.code || s.description === data.source?.description
+    );
+
+
+    const agentObject = data.agentCode
+      ? {
         code: data.agentCode,
         name: data.agentName,
         shortDescription: data.agentShortDescription,
         agentWithin: data.agentWithin
       }
-    : null;
+      : null;
 
-  log.debug("AGENT OBJECT TO PATCH =>", agentObject);
-  
-  this.quotationForm.patchValue({
+    log.debug("AGENT OBJECT TO PATCH =>", agentObject);
+
+    this.quotationForm.patchValue({
       email: data.emailAddress || '',
       phone: data.phoneNumber || '',
       source: sourceObject || data.source || null,
@@ -2959,98 +2964,101 @@ patchReusedQuotationData() {
       campaign: data.sourceCampaign || '',
       internalComments: data.internalComments || '',
       externalComments: data.externalComments || ''
-  });
+    });
 
 
 
-  
-  if (agentObject) {
-    this.quotationForm.get('agent')?.setValue(agentObject, { emitEvent: false });
-    log.debug("✅ Patched agent successfully =>", this.quotationForm.get('agent')?.value);
-  } else {
-    log.debug("⚠️ No agent object found to patch");
-  }
+
+    if (agentObject) {
+      this.quotationForm.get('agent')?.setValue(agentObject, { emitEvent: false });
+      log.debug("✅ Patched agent successfully =>", this.quotationForm.get('agent')?.value);
+    } else {
+      log.debug("⚠️ No agent object found to patch");
+    }
 
 
-  
-  
-  
+
+
+
 
     if (data.clientCode) {
-  log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
+      log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
 
-  this.clientService.getClientById(data.clientCode).subscribe({
-    next: (client: any) => {
-      log.debug('[QuotationDetailsComponent] Client fetched for revision =>', client);
+      this.clientService.getClientById(data.clientCode).subscribe({
+        next: (client: any) => {
+          log.debug('[QuotationDetailsComponent] Client fetched for revision =>', client);
 
-      if (client) {
-        
-        const clientName = [client.firstName, client.lastName]
-          .filter(Boolean) 
-          .join(' ')       
-          .trim() ||        
-          client.lastName || 
-         
-          'Unknown Client';  
+          if (client) {
 
-        this.quotationForm.patchValue({
-          client: clientName
-        });
-        
-        
-        
-        log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
-      } else {
-        log.debug('[QuotationDetailsComponent] No client found for clientCode =>', data.clientCode);
-      }
-    },
-    error: (error: any) => {
-      log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
-    }
-  });
-}
+            const clientName = [client.firstName, client.lastName]
+              .filter(Boolean)
+              .join(' ')
+              .trim() ||
+              client.lastName ||
 
-  // ✅ Patch product details
-  if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
-    this.quotationProducts = data.quotationProducts;
-    this.products = data.quotationProducts;
-    this.productDetails = data.quotationProducts;
+              'Unknown Client';
 
-    // map coverFrom / coverTo values
-    this.productDetails = this.productDetails.map((p: any) => ({
-      ...p,
-      coverFrom: p.wef,
-      coverTo: p.wet,
-    }));
+            this.quotationForm.patchValue({
+              client: clientName
+            });
 
-    // set product columns
-    if (this.productDetails?.length > 0) {
-      this.setColumnsFromProductDetails(this.productDetails[0]);
+
+
+            log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
+          } else {
+            log.debug('[QuotationDetailsComponent] No client found for clientCode =>', data.clientCode);
+          }
+        },
+        error: (error: any) => {
+          log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
+        }
+      });
     }
 
-    log.debug("productDetails for revise", this.productDetails)
+    this.quotationForm.get('client')?.disable({ emitEvent: false });
+    this.quotationForm.get('agent')?.disable({ emitEvent: false });
 
-    // ✅ Patch clauses
-    const firstProduct = this.products[0];
-    log.debug("first product", firstProduct)
-    this.sessionClauses = firstProduct.productClauses || [];
-    if (this.sessionClauses.length > 0) {
-      this.sessionClauses = this.sessionClauses.map((c: any) => ({
-        ...c,
-        shortDescription: c.clauseShortDescription,
-        heading: c.clauseHeading,
-        wording: c.clause,
-        isEditable: c.clauseIsEditable
+    // ✅ Patch product details
+    if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
+      this.quotationProducts = data.quotationProducts;
+      this.products = data.quotationProducts;
+      this.productDetails = data.quotationProducts;
+
+      // map coverFrom / coverTo values
+      this.productDetails = this.productDetails.map((p: any) => ({
+        ...p,
+        coverFrom: p.wef,
+        coverTo: p.wet,
       }));
-      this.setProductClauseColumns(this.sessionClauses[0]);
+
+      // set product columns
+      if (this.productDetails?.length > 0) {
+        this.setColumnsFromProductDetails(this.productDetails[0]);
+      }
+
+      log.debug("productDetails for revise", this.productDetails)
+
+      // ✅ Patch clauses
+      const firstProduct = this.products[0];
+      log.debug("first product", firstProduct)
+      this.sessionClauses = firstProduct.productClauses || [];
+      if (this.sessionClauses.length > 0) {
+        this.sessionClauses = this.sessionClauses.map((c: any) => ({
+          ...c,
+          shortDescription: c.clauseShortDescription,
+          heading: c.clauseHeading,
+          wording: c.clause,
+          isEditable: c.clauseIsEditable
+        }));
+        this.setProductClauseColumns(this.sessionClauses[0]);
+      }
     }
+
+    log.debug("session clauses for revise", this.sessionClauses)
   }
 
-  log.debug("session clauses for revise",this.sessionClauses)
-}
 
 
-  
 
 
 

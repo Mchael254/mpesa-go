@@ -7,7 +7,7 @@ import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
 import { MenuService } from '../../../../../base/services/menu.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
-import { MenuItem,MenuItemCommandEvent } from 'primeng/api';
+import { MenuItem, MenuItemCommandEvent } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from 'ngx-currency';
@@ -15,7 +15,7 @@ import { CurrencyDTO } from 'src/app/shared/data/common/currency-dto';
 import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 
-const log = new Logger('QuotationConcersionComponent');
+const log = new Logger('QuotationManagementComponent');
 
 @Component({
   selector: 'app-quotation-management',
@@ -74,7 +74,7 @@ export class QuotationManagementComponent implements OnDestroy {
   isClientSearchModalVisible = false;
   remainingMenuItems: MenuItem[] = [];
   public currencyObj: NgxCurrencyConfig;
-  
+
   // Tooltip descriptions for actions
   actionDescriptions: { [key: string]: string } = {
     'Edit': 'Change client details and process the quote',
@@ -99,7 +99,7 @@ export class QuotationManagementComponent implements OnDestroy {
   hoveredAction: string | null = null;
   tooltipPosition = { x: 0, y: 0 };
   private tooltipTimer: any;
-  currencyDelimiter:any;
+  currencyDelimiter: any;
   defaultCurrencyName: string;
   defaultCurrencySymbol: string;
   defaultCurrency: CurrencyDTO;
@@ -749,17 +749,17 @@ export class QuotationManagementComponent implements OnDestroy {
   }
 
 
-   updateTooltipPosition(event: MouseEvent): void {
-    const tooltipWidth = 300; 
-    const tooltipHeight = 60; 
+  updateTooltipPosition(event: MouseEvent): void {
+    const tooltipWidth = 300;
+    const tooltipHeight = 60;
     const offset = 15;
-    
+
     let x = event.clientX - (tooltipWidth / 2);
     let y = event.clientY - tooltipHeight - offset;
-    
+
     if (x < 10) x = 10;
     if (x + tooltipWidth > window.innerWidth - 10) x = window.innerWidth - tooltipWidth - 10;
-    if (y < 10) y = event.clientY + offset; 
+    if (y < 10) y = event.clientY + offset;
 
     this.tooltipPosition = { x, y };
   }
@@ -872,8 +872,8 @@ export class QuotationManagementComponent implements OnDestroy {
 
   }
 
-  
-   getuser(): void {
+
+  getuser(): void {
 
     this.user = this.authService.getCurrentUserName();
     this.userDetails = this.authService.getCurrentUser();
