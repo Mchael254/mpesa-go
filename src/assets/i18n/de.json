@@ -222,6 +222,9 @@
     "Quotation Numbers": "Angebotsnummern",
     "Dynamic Setup": "Dynamische Einrichtung",
     "isRequired": "ist erforderlich",
+    "Intermediaries": "Vermittler",
+    "Create Entity": "Entität erstellen",
+    "Prospects": "Interessenten",
     "base-fms": {
       "parameters": "Parameter",
       "defineYrs": "Jahre/Perioden definieren",

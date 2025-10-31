@@ -1,12 +1,12 @@
 import {
   ChangeDetectorRef,
   Component,
-  ElementRef,
+  HostListener,
   OnInit,
   ViewChild,
 } from '@angular/core';
 import { BreadCrumbItem } from '../../../shared/data/common/BreadCrumbItem';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ReportService } from '../../reports/services/report.service';
 import { Logger } from '../../../shared/services';
 import { SubjectArea } from '../../../shared/data/reports/subject-area';
@@ -77,7 +77,8 @@ export class CreateReportComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private sessionStorageService: SessionStorageService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   /**
@@ -181,9 +182,11 @@ export class CreateReportComponent implements OnInit {
           // log.info('dimensions >>>', dimensions);
           this.dimensions = dimensions;
           this.filteredDimensions = this.dimensions;
+          this.showSubjectAreas = true;
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', err.message);
+          this.showSubjectAreas = true;
         },
       });
   }
@@ -280,7 +283,7 @@ export class CreateReportComponent implements OnInit {
    */
   checkIfCriterionExists(criterion, measures, dimensions): boolean {
     if (
-      measures.indexOf(criterion) === -1 &&
+      measures.indexOf(criterion) === -1 ||
       dimensions.indexOf(criterion) === -1
     ) {
       return false;
@@ -308,7 +311,7 @@ export class CreateReportComponent implements OnInit {
       this.dimensions.splice(index, 1);
     }
 
-    let filterToRemove, filterToRemoveIndex;
+    /*let filterToRemove, filterToRemoveIndex;
     this.filters.forEach((filter, index) => {
       log.info(`filter >>>`, filter);
       if (filter.member === criteriaToRemove) {
@@ -317,17 +320,90 @@ export class CreateReportComponent implements OnInit {
         log.info(`found one >>> `, filterToRemove, filterToRemoveIndex);
       }
     });
-    this.filters.splice(filterToRemoveIndex, 1);
+    this.filters.splice(filterToRemoveIndex, 1);*/
   }
+  /*deleteCriteria(criteria: Criteria): void {
+    // Remove from criteria array
+    const index = this.criteria.findIndex(c =>
+      c.transaction === criteria.transaction &&
+      c.query === criteria.query
+    );
 
-  updateSubCategoryCategoryAreas(
+    if (index > -1) {
+      this.criteria.splice(index, 1);
+    }
+
+    // Remove from measures or dimensions
+    if (criteria.category === 'metrics') {
+      this.measures = this.measures.filter(m =>
+        !(m.transaction === criteria.transaction && m.query === criteria.query)
+      );
+    } else {
+      this.dimensions = this.dimensions.filter(d =>
+        !(d.transaction === criteria.transaction && d.query === criteria.query)
+      );
+    }
+
+    // Remove any associated filters
+    this.filters = this.filters.filter(filter =>
+      !(filter.queryObject?.transaction === criteria.transaction &&
+        filter.queryObject?.query === criteria.query)
+    );
+
+    this.cdr.detectChanges();
+  }*/
+
+  /*updateSubCategoryCategoryAreas(
     subCategoryElement: any[],
     subCategory: any
   ): void {
     this.subCategoryCategoryAreas = subCategoryElement;
     this.selectedSubCategory = subCategory;
+  }*/
+
+  toggleDimension(dimension: any): void {
+    dimension.isExpanded = !dimension.isExpanded;
   }
 
+  showSubcategoryQueries(subCategory: any, dimension: any, event: MouseEvent): void {
+    event.stopPropagation();
+    // Toggle the isExpanded state
+    subCategory.isExpanded = !subCategory.isExpanded;
+    this.updateSubCategoryCategoryAreas(subCategory['categoryAreas'], subCategory);
+  }
+
+  toggleSubcategory(subCategory: any, event: MouseEvent): void {
+    event.stopPropagation();
+    // Toggle the isExpanded state
+    subCategory.isExpanded = !subCategory.isExpanded;
+    if (subCategory.isExpanded) {
+      this.updateSubCategoryCategoryAreas(subCategory['categoryAreas'], subCategory);
+    } else {
+      this.selectedSubCategory = null;
+    }
+  }
+
+  updateSubCategoryCategoryAreas(subCategoryElement: any[], subCategory: any): void {
+    this.subCategoryCategoryAreas = subCategoryElement || [];
+    // Close other subcategories
+    this.filteredDimensions.forEach(dim => {
+      dim.subCategory?.forEach((sc: any) => {
+        if (sc !== subCategory) {
+          sc.isExpanded = false;
+        }
+      });
+    });
+    this.selectedSubCategory = subCategory;
+    this.cdr.detectChanges();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!(event.target as HTMLElement).closest('.subcategory-item')) {
+      this.selectedSubCategory = null;
+      this.cdr.detectChanges();
+    }
+  }
   /**
    * 1. creates a report parameters and save to session storage for use on next screen
    * 2. navigate to report-preview screen
