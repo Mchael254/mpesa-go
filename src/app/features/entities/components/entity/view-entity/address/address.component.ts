@@ -1,5 +1,5 @@
-import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {Logger, UtilService} from "../../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import {CountryDto, PostalCodesDTO, StateDto, TownDto} from "../../../../../../shared/data/common/countryDto";
@@ -9,9 +9,13 @@ import {Observable} from "rxjs";
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto, FormSubGroupsDto, PresentationType
+  FormGroupsDto,
+  FormSubGroupsDto,
+  PresentationType,
+  SaveAddressAction
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {AddressModel, Branch, ClientDTO} from "../../../../data/ClientDTO";
+import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
 
 const log = new Logger('AddressComponent');
 
@@ -26,12 +30,13 @@ export class AddressComponent implements OnInit {
   @ViewChild('closeButton') closeButton!: ElementRef<HTMLButtonElement>;
 
   @Input() clientDetails: ClientDTO;
-  @Input() addressDetailsConfig: any
-  @Input() formFieldsConfig: any;
+  // @Input() addressDetailsConfig: any
+  // @Input() formFieldsConfig: any;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
   @Input() group: FormGroupsDto;
   addressDetails: AddressModel;
   branchDetails: Branch[];
+  selectedBranch: Branch;
 
 
   countries: CountryDto[];
@@ -58,6 +63,14 @@ export class AddressComponent implements OnInit {
   table: { cols: any[], data: any[] } = { cols: [], data: [] };
 
   PRESENTATION_TYPE = PresentationType;
+  selectedSubgroup: FormSubGroupsDto = null;
+  formHeadingLabel: FormSubGroupsDto | FormGroupsDto;
+  formFields: ConfigFormFieldsDto[] = [];
+  saveAction: SaveAddressAction;
+  protected readonly Save_Action = SaveAddressAction;
+  protected readonly SearchCountryField = SearchCountryField;
+  protected readonly CountryISO = CountryISO;
+  protected readonly PhoneNumberFormat = PhoneNumberFormat;
 
 
   constructor(
@@ -71,27 +84,30 @@ export class AddressComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.countries$ = this.countryService.getCountries();
+    this.countries$ = this.countryService.getCountries();
     // this.fetchCountries();
     // this.createEditForm(this.fields);
+    this.prepareDataDisplay();
+  }
 
+  prepareDataDisplay(): void {
     setTimeout(() => {
       this.addressDetails = this.clientDetails.address;
 
       const displayAddressDetails  = {
         overview_branch_Id: null,
-        overview_head_office_address: null,
-        overview_branch_details_name: null,
+        overview_head_office_address: this.addressDetails.residentialAddress,
+        // overview_branch_details_name: null,
         overview_head_office_country: this.addressDetails.countryName,
-        overview_head_office_county: null,
+        overview_head_office_county: this.addressDetails.stateName,
         overview_country: this.addressDetails.countryName,
-        overview_head_office_city: null,
+        overview_head_office_city: this.addressDetails.townName,
         overview_county: this.addressDetails.stateName,
         overview_head_office_physical_address: this.addressDetails.physicalAddress,
         overview_city: this.addressDetails.townName,
-        overview_head_office_postal_address: null,
+        overview_head_office_postal_address: this.addressDetails.residentialAddress,
         overview_physical_address: this.addressDetails.physicalAddress,
-        overview_head_office_postal_code: null,
+        overview_head_office_postal_code: this.addressDetails.postalCode,
         overview_postal_address: this.addressDetails.residentialAddress,
         overview_postal_code: this.addressDetails.postalCode,
         overview_branch_email: null,
@@ -140,10 +156,9 @@ export class AddressComponent implements OnInit {
   createFieldDisplay(displayFields): ConfigFormFieldsDto[] {
     const fields = this.formGroupsAndFieldConfig.fields.filter((field: ConfigFormFieldsDto) => field.formGroupingId === this.group.groupId);
 
-    if (fields.length > 0) this.createEditForm(fields);
-
     for (const field of fields) {
-       field.dataValue = displayFields[field.fieldId] ?? null;
+      const value = displayFields[field.fieldId];
+      field.dataValue = value ?? null;
     }
 
     fields.sort((a, b) => a.order - b.order);
@@ -174,7 +189,7 @@ export class AddressComponent implements OnInit {
         overview_city: br.stateName,
         overview_physical_address: br.physicalAddress,
         overview_postal_address: br.postalAddress,
-        overview_postal_code: br.code,
+        overview_postal_code: br.postalCode,
         overview_branch_email: br.email,
         overview_landline_number: br.landlineNumber,
         overview_branch_mobile_no: br.mobileNumber
@@ -220,15 +235,45 @@ export class AddressComponent implements OnInit {
     });
   }
 
-  createEditForm(fields: any[]): void {
+  openEditAddressDialog(subgroup?: FormSubGroupsDto, saveAction?: SaveAddressAction): void {
+    this.saveAction = saveAction;
+    let fields: ConfigFormFieldsDto[];
+
+    if (subgroup?.fields) {
+      this.selectedSubgroup = subgroup;
+      this.formHeadingLabel = subgroup;
+      fields = subgroup.fields;
+    } else {
+      fields = this.fields;
+      this.formHeadingLabel = this.group;
+    }
+
+    this.prepareDataDisplay();
+
+    this.formFields = fields;
+    this.createEditForm(fields, saveAction);
+    this.editButton.nativeElement.click();
+    log.info('subgroup >>> ', subgroup);
+  }
+
+
+  createEditForm(fields: ConfigFormFieldsDto[], saveAction?: SaveAddressAction): void {
     const group: { [key: string]: any } = {};
     fields.forEach(field => {
       group[field.fieldId] = [
         field.defaultValue,
-        field.isMandatory ? Validators.required : []
+        // field.isMandatory ? Validators.required : []
       ];
     });
+
+    this.fetchCountries();
     this.editForm = this.fb.group(group);
+
+    if (
+      saveAction === SaveAddressAction.EDIT_ADDRESS_DETAILS ||
+      saveAction === SaveAddressAction.EDIT_BRANCH
+    ) this.patchFormValues(fields);
+
   }
 
   fetchCountries(): void {
@@ -277,6 +322,8 @@ export class AddressComponent implements OnInit {
     this.countryService.getPostalCodes(townId).subscribe({
       next: (postalCodes: PostalCodesDTO[]) => {
         this.postalCodes = postalCodes;
+        this.setSelectOptions();
+        this.patchFormValues(this.formFields);
       },
       error: (err) => {
         this.postalCodes = [];
@@ -285,49 +332,100 @@ export class AddressComponent implements OnInit {
     });
   }
 
-  openEditAddressDialog(): void {
-    this.editButton.nativeElement.click();
-    this.setSelectOptions();
-    setTimeout(() => {this.patchFormValues()}, 500)
+
+  patchFormValues(fields): void {
+
+    let patchData = {};
+
+    if (this.group.subGroup.length > 0) {
+      this.formFields.forEach(field => { // corporate
+        patchData[field.fieldId] = field.dataValue;
+        log.info('patch data >>> ', field.fieldId, field.dataValue);
+      });
+    } else if (this.group.subGroup.length === 0) { // individual
+      fields.forEach(field => {
+        patchData[field.fieldId] = field.dataValue;
+      });
+    }
+
+    let patchDropdowns = {};
+    if (this.saveAction === SaveAddressAction.EDIT_ADDRESS_DETAILS) {
+      patchDropdowns = {
+        overview_country: this.clientDetails.address.countryId,
+        overview_head_office_country: this.clientDetails.address.countryId,
+        overview_head_office_county: this.clientDetails.address.stateId,
+        overview_county: this.clientDetails.address.stateId,
+        overview_city: this.clientDetails.address.townId,
+        overview_head_office_city: this.clientDetails.address.townId,
+        overview_postal_code: this.clientDetails.address.postalCode,
+        overview_head_office_postal_code: this.clientDetails.address.postalCode,
+      };
+    } else if (this.saveAction === SaveAddressAction.EDIT_BRANCH) {
+      patchDropdowns = {
+        overview_country: this.selectedBranch?.countryId,
+        overview_county: this.selectedBranch?.stateId,
+        overview_city: this.selectedBranch?.townId,
+        overview_postal_code: this.selectedBranch?.postalCode,
+      };
+    } else if (this.saveAction === SaveAddressAction.SAVE_BRANCH) {
+      patchDropdowns = {};
+    }
+
+    patchData = { // patch dropdown values
+      ...patchData,
+      ...patchDropdowns,
+    }
+
+    this.editForm?.patchValue(patchData);
+    log.info('patchFormValues ->', this.editForm.value);
   }
 
-  patchFormValues(): void {
-    const patchData = {
-      address: '',
-      country: this.clientCountry?.id,
-      county: this.clientState?.id,
-      city: this.clientTown?.id,
-      physicalAddress: this.addressDetails?.physicalAddress,
-      postalAddress: this.addressDetails?.residentialAddress,
-      postalCode: this.addressDetails?.postalCode,
-      town: this.clientTown?.id,
-      road: this.addressDetails?.road,
-      houseNumber: this.addressDetails?.houseNumber,
+  saveDetails() {
+    switch (this.saveAction) {
+      case SaveAddressAction.EDIT_ADDRESS_DETAILS:
+        this.editAddressDetails();
+        break;
+      case SaveAddressAction.EDIT_BRANCH:
+        this.addEditBranch();
+        break;
+      case SaveAddressAction.SAVE_BRANCH:
+        this.editForm.reset();
+        this.addEditBranch();
+        break;
+      default:
+      // do something
     }
-    this.editForm.patchValue(patchData);
   }
 
   editAddressDetails(): void {
     const formValues = this.editForm.getRawValue();
-    const addressDetails = {
+    log.info('form values ->', formValues, formValues.overview_head_office_country);
+    const address = {
       ...this.addressDetails,
-      countryId: formValues.country,
-      stateId: formValues.county,
-      townId: formValues.city,
-      physicalAddress: formValues.physicalAddress,
-      residentialAddress: formValues.postalAddress,
+      countryId: /*formValues.overview_country || */formValues.overview_head_office_country,
+      stateId: /*formValues.overview_county*/ formValues.overview_head_office_county,
+      townId: formValues.overview_head_office_city,
+      physicalAddress: formValues.overview_head_office_physical_address,
+      residentialAddress: formValues.overview_postal_address,
       // postalAddress: formValues.residentialAddress || formValues.postalAddress,
-      postalCode: formValues.postalCode,
+      postalCode: formValues.overview_head_office_postal_code,
       // townId: formValues.town,
       road: formValues.road,
       houseNumber: formValues.houseNumber,
     }
 
-    this.clientService.updateClientSection(this.clientDetails.clientCode, {address: addressDetails}).subscribe({
+    const client = {
+      clientCode: this.clientDetails.clientCode,
+      partyAccountCode: this.clientDetails.partyAccountCode,
+      partyId: this.clientDetails.partyId,
+      address
+    };
+
+    this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
-        this.addressDetails = data.address;
-        this.fetchCountries();
+        this.clientDetails = data;
+        this.prepareDataDisplay();
       },
       error: err => {
         const errorMessage = err?.error?.message ?? err.message;
@@ -337,24 +435,91 @@ export class AddressComponent implements OnInit {
     this.closeButton.nativeElement.click();
   }
 
+  prepareEditBranchForm(data: any, saveAction: SaveAddressAction) {
+    log.info('selected row ', data)
+    this.saveAction = saveAction;
+    this.formFields =  this.tableHeaders.map(field => ({...field})) ;
+    const row = data.row;
+    this.selectedBranch = this.branchDetails.find(branch => branch.code = row.branchAddressId);
+    this.selectedSubgroup = data.subGroup;
+
+    this.formFields.forEach((field: ConfigFormFieldsDto) => {
+      field.dataValue = row[field.fieldId];
+      if (field.type === 'date') {
+        field.dataValue = row[field.fieldId]?.split('T')[0];
+      }
+    });
+
+    this.createEditForm(this.formFields, saveAction);
+    this.editButton.nativeElement.click();
+  }
+
+  addEditBranch(): void {
+    const formValues = this.editForm.getRawValue();
+    log.info('form values ->', this.editForm.value);
+
+    const branch = {
+      ...this.selectedBranch,
+      // code: null,
+      // clientCode: null,
+      countryId: formValues.overview_country,
+      stateId: formValues.overview_county,
+      // townId: null,
+      physicalAddress: formValues.overview_physical_address,
+      postalAddress: formValues.overview_postal_address,
+      postalCode: formValues.overview_postal_code,
+      email: formValues.overview_branch_email,
+      landlineNumber: (formValues?.overview_landline_number?.internationalNumber)?.replace(/\s+/g, ''),
+      mobileNumber: (formValues?.overview_branch_mobile_no?.internationalNumber)?.replace(/\s+/g, ''),
+      // countryName: null,
+      // townName: null,
+      // stateName: null,
+      branchName: formValues.overview_branch_details_name,
+    };
+
+    const client = {
+      clientCode: this.clientDetails.clientCode,
+      partyAccountCode: this.clientDetails.partyAccountCode,
+      partyId: this.clientDetails.partyId,
+      branches: [branch]
+    }
+
+    this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
+      next: data => {
+        this.clientDetails = data;
+        this.prepareDataDisplay();
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated branch');
+        this.closeButton.nativeElement.click();
+      },
+      error: err => {
+        this.globalMessagingService.displayErrorMessage('Error', err?.error?.message);
+        this.closeButton.nativeElement.click();
+      }
+    });
+  }
+
   setSelectOptions(): void {
   // &&
   //   this.states?.length > 0 &&
   //   this.towns?.length > 0
     if (this.countries?.length > 0) {
-      this.formFieldsConfig.fields.forEach(field => {
+      this.formFields.forEach(field => {
         switch (field.fieldId) {
-          case 'country':
+          case 'overview_country':
+          case 'overview_head_office_country':
             field.options = this.countries;
             break;
-          case 'county':
+          case 'overview_head_office_county':
+          case 'overview_county':
             field.options = this.states;
             break;
-          case 'city':
-          case 'town':
+          case 'overview_city':
+          case 'overview_head_office_city':
+          // case 'town':
             field.options = this.towns;
             break;
-          case 'postalCode':
+          case 'overview_postal_code':
+          case 'overview_head_office_postal_code':
             field.options = this.postalCodes;
             break;
           default:
@@ -370,33 +535,35 @@ export class AddressComponent implements OnInit {
     log.info(`processSelectOption >>> `, fieldId, selectedOption);
 
     switch (fieldId) {
-      case 'country':
+      case 'overview_country':
+      case 'overview_head_office_country':
         this.countryService.getMainCityStatesByCountry(selectedOption).subscribe({
           next: states => {
-            this.formFieldsConfig.fields.forEach(field => {
-              if (field.fieldId === 'county') field.options = states;
+            this.formFields.forEach(field => {
+              if (field.fieldId === 'overview_head_office_county' || field.fieldId === 'overview_county') field.options = states;
             });
           },
           error: err => {},
         })
         break;
 
-      case 'county': // update list of towns/cities by selected state/county
+      case 'overview_county': // update list of towns/cities by selected state/county
+      case 'overview_head_office_county':
         this.countryService.getTownsByMainCityState(selectedOption).subscribe({
           next: towns => {
-            this.formFieldsConfig.fields.forEach(field => {
-              if (field.fieldId === 'city' || field.fieldId === 'town') field.options = towns;
+            this.formFields.forEach(field => {
+              if (field.fieldId === 'overview_city' || field.fieldId === 'overview_head_office_city') field.options = towns;
             })
           }
         })
         break;
 
-      case 'city':
+      case 'overview_city':
+      case 'overview_head_office_city':
         this.countryService.getPostalCodes(selectedOption).subscribe({
           next: postalCodes => {
-            this.formFieldsConfig.fields.forEach(field => {
-              if (field.fieldId === 'postalCode') field.options = postalCodes;
-              log.info(`postalCode >>> `, field);
+            this.formFields.forEach(field => {
+              if (field.fieldId === 'overview_postal_code' || field.fieldId === 'overview_head_office_postal_code') field.options = postalCodes;
             })
           },
           error: err => {},
@@ -405,4 +572,8 @@ export class AddressComponent implements OnInit {
     }
   }
 
+  checkTelNumber(mainStr: string): boolean {
+    const subStrs: string[] = ['mobile_no', 'tel_no', 'sms_number', 'telephone_number', 'landline_number'];
+    return subStrs.some(subStr => mainStr.includes(subStr));
+  }
 }

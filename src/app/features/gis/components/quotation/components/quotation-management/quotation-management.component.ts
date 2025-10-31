@@ -7,7 +7,7 @@ import { SidebarMenu } from '../../../../../base/model/sidebar.menu';
 import { MenuService } from '../../../../../base/services/menu.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
-import { MenuItem,MenuItemCommandEvent } from 'primeng/api';
+import { MenuItem, MenuItemCommandEvent } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from 'ngx-currency';
@@ -15,7 +15,7 @@ import { CurrencyDTO } from 'src/app/shared/data/common/currency-dto';
 import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 
-const log = new Logger('QuotationConcersionComponent');
+const log = new Logger('QuotationManagementComponent');
 
 @Component({
   selector: 'app-quotation-management',
@@ -74,14 +74,15 @@ export class QuotationManagementComponent implements OnDestroy {
   isClientSearchModalVisible = false;
   remainingMenuItems: MenuItem[] = [];
   public currencyObj: NgxCurrencyConfig;
-  
+
   // Tooltip descriptions for actions
   actionDescriptions: { [key: string]: string } = {
     'Edit': 'Change client details and process the quote',
     'Revise': 'Create another version of this quote',
     'Reuse': 'Use the existing quote details to create a new quote',
     'View': 'Have a look at the quote details, without making any changes',
-    'Reassign': 'Assign to another user'
+    'Reassign': 'Assign to another user',
+    'Process': 'Process the quote to create a policy'
   };
 
   // Action icons mapping
@@ -90,20 +91,24 @@ export class QuotationManagementComponent implements OnDestroy {
     'Revise': 'pi pi-sync',
     'Reuse': 'pi pi-replay',
     'View': 'pi pi-eye',
-    'Reassign': 'pi pi-user-edit'
+    'Reassign': 'pi pi-user-edit',
+    'Process': 'pi pi-cog'
   };
 
   // Tooltip state management
   hoveredAction: string | null = null;
   tooltipPosition = { x: 0, y: 0 };
   private tooltipTimer: any;
-  currencyDelimiter:any;
+  currencyDelimiter: any;
   defaultCurrencyName: string;
   defaultCurrencySymbol: string;
   defaultCurrency: CurrencyDTO;
   user: any;
   userDetails: any;
   currency: CurrencyDTO[]
+
+  // Actions cache to prevent infinite loops
+  private actionsCache = new Map<string, MenuItem[]>();
 
 
 
@@ -212,7 +217,22 @@ export class QuotationManagementComponent implements OnDestroy {
   }
 
   viewQuote(quotation: QuotationList): void {
-    log.debug('View quote clicked:', quotation);
+    console.log('=== viewQuote method called ===');
+    console.log('Quotation data:', quotation);
+
+    // Validate required data before proceeding
+    if (!quotation.quotationNumber || !quotation.quotationCode) {
+      console.error('Invalid quotation data:', { quotationNumber: quotation.quotationNumber, quotationCode: quotation.quotationCode });
+      this.globalMessagingService.displayErrorMessage('Error', 'Invalid quotation data. Please try again.');
+      return;
+    }
+
+    console.log('Calling setQuotationNumber with:', {
+      quotationCode: quotation.quotationCode,
+      quotationNumber: quotation.quotationNumber,
+      clientCode: quotation.clientCode
+    });
+
     this.setQuotationNumber(
       quotation.quotationCode,
       quotation.quotationNumber,
@@ -228,6 +248,8 @@ export class QuotationManagementComponent implements OnDestroy {
     );
   }
   setQuotationNumber(quotationCode: number, quotationNumber: string, clientCode: number): void {
+    log.debug('setQuotationNumber called with:', { quotationCode, quotationNumber, clientCode });
+
     if (quotationNumber && quotationNumber.trim() !== '') {
       sessionStorage.setItem('quotationNum', quotationNumber);
       sessionStorage.setItem('quotationCode', JSON.stringify(quotationCode));
@@ -243,8 +265,13 @@ export class QuotationManagementComponent implements OnDestroy {
       this.viewQuoteFlag = true;
       sessionStorage.setItem('viewQuoteFlag', JSON.stringify(this.viewQuoteFlag));
 
-
-      this.router.navigate(['/home/gis/quotation/quotation-summary']);
+      log.debug('Navigating to quotation-summary...');
+      this.router.navigate(['/home/gis/quotation/quotation-summary']).then(
+        (success) => log.debug('Navigation successful:', success),
+        (error) => log.error('Navigation failed:', error)
+      );
+    } else {
+      log.error('Invalid quotation number:', quotationNumber);
     }
   }
   processSelectedQuote(quotationCode: number, quotationNumber: string, clientCode: number): void {
@@ -253,9 +280,6 @@ export class QuotationManagementComponent implements OnDestroy {
       sessionStorage.setItem('quotationCode', JSON.stringify(quotationCode));
       this.viewQuoteFlag = false;
       sessionStorage.setItem('viewQuoteFlag', JSON.stringify(this.viewQuoteFlag));
-
-
-
 
       this.router.navigate(['/home/gis/quotation/quotation-summary']);
     }
@@ -348,6 +372,9 @@ export class QuotationManagementComponent implements OnDestroy {
           if (this.originalQuotationList.length === 0) {
             this.originalQuotationList = [...this.gisQuotationList];
           }
+
+          // Clear actions cache when quotation list is updated
+          this.actionsCache.clear();
 
           log.debug("LIST OF GIS QUOTATIONS ", this.gisQuotationList);
 
@@ -515,6 +542,8 @@ export class QuotationManagementComponent implements OnDestroy {
           log.debug("Response for revise", response)
 
           sessionStorage.setItem('revisedQuotation', JSON.stringify(response));
+          sessionStorage.setItem('isRevision', 'true');
+
           // Navigate to quotation summary
           this.router.navigate(['/home/gis/quotation/quotation-summary']);
 
@@ -539,6 +568,8 @@ export class QuotationManagementComponent implements OnDestroy {
       .subscribe({
         next: (response: any) => {
           sessionStorage.setItem('reusedQuotation', JSON.stringify(response));
+           sessionStorage.removeItem('isRevision');
+          
           this.router.navigate(['/home/gis/quotation/quotation-details']);
 
         },
@@ -660,12 +691,21 @@ export class QuotationManagementComponent implements OnDestroy {
   }
 
   getAllActions(quotation: any): MenuItem[] {
+    const cacheKey = `${quotation.quotationNumber}-${quotation.status}`;
+
+    // Return cached actions if available
+    if (this.actionsCache.has(cacheKey)) {
+      return this.actionsCache.get(cacheKey)!;
+    }
+
     const items = [
       {
         label: 'View',
         icon: 'pi pi-eye',
         title: this.actionDescriptions['View'],
-        command: () => this.viewQuote(quotation)
+        command: () => {
+          this.viewQuote(quotation);
+        }
       }
     ];
 
@@ -682,56 +722,44 @@ export class QuotationManagementComponent implements OnDestroy {
     // Add additional actions
     items.push(
       {
-        label: 'Revise',
-        icon: 'pi pi-refresh',
+        label: 'Revise Quote',
+        icon: 'pi pi-sync',
         title: this.actionDescriptions['Revise'],
         command: () => this.reviseQuotation(quotation)
 
       },
       {
-
-        label: 'Reuse',
-        icon: 'pi pi-copy',
-        title: this.actionDescriptions['Reuse'],
-        command: () => this.reuseQuotation(quotation)
-      },
-      {
-        label: 'Reassign',
-        icon: 'pi pi-user-edit',
+        label: 'Reuse Quote',
+        icon: 'pi pi-replay',
         title: this.actionDescriptions['Reassign'],
         command: () => this.reassignQuote(quotation)
       },
       {
-        label: 'Edit',
-        icon: 'pi pi-pencil',
-        title: this.actionDescriptions['Edit'],
+        label: 'Process',
+        icon: 'pi pi-cog',
+        title: 'Process the quote to create a policy',
         command: () => this.process(quotation)
       }
-      // {
-      //   label: 'Print',
-      //   command: () => this.printQuote(quotation)
-      // },
-      // {
-      //   label: 'Delete',
-      //   command: () => this.deleteQuote(quotation)
-      // }
     );
+
+    // Cache the actions
+    this.actionsCache.set(cacheKey, items);
 
     return items;
   }
 
 
-   updateTooltipPosition(event: MouseEvent): void {
-    const tooltipWidth = 300; 
-    const tooltipHeight = 60; 
+  updateTooltipPosition(event: MouseEvent): void {
+    const tooltipWidth = 300;
+    const tooltipHeight = 60;
     const offset = 15;
-    
+
     let x = event.clientX - (tooltipWidth / 2);
     let y = event.clientY - tooltipHeight - offset;
-    
+
     if (x < 10) x = 10;
     if (x + tooltipWidth > window.innerWidth - 10) x = window.innerWidth - tooltipWidth - 10;
-    if (y < 10) y = event.clientY + offset; 
+    if (y < 10) y = event.clientY + offset;
 
     this.tooltipPosition = { x, y };
   }
@@ -747,7 +775,11 @@ export class QuotationManagementComponent implements OnDestroy {
   }
 
 
+
+  // Legacy method - kept for compatibility if needed elsewhere
   executeAction(action: MenuItem, quotation: any, event?: Event): void {
+    this.immediateHideTooltip();
+
     if (action.command) {
       action.command({ originalEvent: event, item: action });
     }
@@ -755,13 +787,43 @@ export class QuotationManagementComponent implements OnDestroy {
 
   showMoreActions(event: Event, quotation: any): void {
     this.selectedQuotation = quotation;
-    const allActions = this.getAllActions(quotation);
-    this.remainingMenuItems = allActions.slice(3);
+
+    // Create remaining menu items dynamically
+    this.remainingMenuItems = [];
+
+    // Add Edit if status is Draft
+    if (quotation.status === 'Draft') {
+      this.remainingMenuItems.push({
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => this.editQuote(quotation)
+      });
+    }
+
+    // Add other actions
+    this.remainingMenuItems.push(
+      {
+        label: 'Reassign',
+        icon: 'pi pi-user-edit',
+        command: () => this.reassignQuote(quotation)
+      },
+      {
+        label: 'Process',
+        icon: 'pi pi-cog',
+        command: () => this.process(quotation)
+      }
+    );
+
     this.moreActionsMenu.toggle(event);
   }
 
   reuseQuote(quotation: any): void {
-    console.log('Reuse quote:', quotation);
+    log.debug('Reuse quote:', quotation);
+    // Implement reuse functionality here
+    // For now, navigate to quotation details with the reuse flag
+    sessionStorage.setItem('quoteToReuseData', JSON.stringify(quotation));
+    sessionStorage.setItem('reuseQuoteFlag', 'true');
+    this.router.navigate(['/home/gis/quotation/quotation-details']);
   }
 
   reassignQuote(quotation: any): void {
@@ -810,8 +872,8 @@ export class QuotationManagementComponent implements OnDestroy {
 
   }
 
-  
-   getuser(): void {
+
+  getuser(): void {
 
     this.user = this.authService.getCurrentUserName();
     this.userDetails = this.authService.getCurrentUser();

@@ -1,4 +1,5 @@
-[
+{
+"receiptingSteps":[
   {
     "number": 1,
     "title": "Receipt capture",
@@ -20,4 +21,17 @@
     "title": "Receipt summary",
     "link": "/home/fms/"
   }
+],
+"bankingSteps":[
+  {
+    "number": 1,
+    "title": "Banking Process",
+    "link": "/home/fms/new-banking-process"
+  },
+  {
+    "number": 2,
+    "title": "Process Batch",
+    "link": "/home/fms/process-batch"
+  }
 ]
+}

@@ -1,39 +1,36 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { StaffDto } from '../../../data/StaffDto';
-import { AgentDTO } from '../../../data/AgentDTO';
-import { PartyTypeDto } from '../../../data/partyTypeDto';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {StaffDto} from '../../../data/StaffDto';
+import {AgentDTO} from '../../../data/AgentDTO';
+import {PartyTypeDto} from '../../../data/partyTypeDto';
 import {
   AccountReqPartyId,
-  EntityDto, IdentityModeDTO,
+  EntityDto,
+  IdentityModeDTO,
   PoliciesDTO,
   ReqPartyById,
   Roles,
 } from '../../../data/entityDto';
-import { Pagination } from '../../../../../shared/data/common/pagination';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {ReplaySubject, finalize, takeUntil, take, forkJoin} from 'rxjs';
-import { PartyAccountsDetails } from '../../../data/accountDTO';
-import { ActivatedRoute, Router } from '@angular/router';
-import { EntityService } from '../../../services/entity/entity.service';
-import { AccountService } from '../../../services/account/account.service';
-import { DatePipe } from '@angular/common';
+import {Pagination} from '../../../../../shared/data/common/pagination';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {finalize, ReplaySubject, take, takeUntil} from 'rxjs';
+import {PartyAccountsDetails} from '../../../data/accountDTO';
+import {ActivatedRoute, Router} from '@angular/router';
+import {EntityService} from '../../../services/entity/entity.service';
+import {AccountService} from '../../../services/account/account.service';
+import {DatePipe} from '@angular/common';
 import {Logger, UtilService} from '../../../../../shared/services';
-import { ClientDTO } from '../../../data/ClientDTO';
-import { ServiceProviderRes } from '../../../data/ServiceProviderDTO';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { QuotationsDTO } from '../../../../gis/data/quotations-dto';
-import { ClaimsDTO } from '../../../../gis/data/claims-dto';
+import {ClientDTO} from '../../../data/ClientDTO';
+import {ServiceProviderRes} from '../../../data/ServiceProviderDTO';
+import {NgxSpinnerService} from 'ngx-spinner';
+import {QuotationsDTO} from '../../../../gis/data/quotations-dto';
+import {ClaimsDTO} from '../../../../gis/data/claims-dto';
 
-import { EntityTransactionsComponent } from './entity-transactions/entity-transactions.component';
-import { CountryService } from '../../../../../shared/services/setups/country/country.service';
-import {
-  CountryDto,
-  StateDto,
-} from '../../../../../shared/data/common/countryDto';
-import { BankService } from '../../../../../shared/services/setups/bank/bank.service';
-import { BankBranchDTO } from '../../../../../shared/data/common/bank-dto';
-import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
-import {HttpClient} from "@angular/common/http";
+import {EntityTransactionsComponent} from './entity-transactions/entity-transactions.component';
+import {CountryService} from '../../../../../shared/services/setups/country/country.service';
+import {CountryDto, StateDto,} from '../../../../../shared/data/common/countryDto';
+import {BankService} from '../../../../../shared/services/setups/bank/bank.service';
+import {BankBranchDTO} from '../../../../../shared/data/common/bank-dto';
+import {GlobalMessagingService} from '../../../../../shared/services/messaging/global-messaging.service';
 import {PrimeIdentityComponent} from "./prime-identity/prime-identity.component";
 import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
 import {ContactComponent} from "./contact/contact.component";
@@ -47,7 +44,11 @@ import {
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto, FormSubGroupsDto, SubModulesDto
+  FormGroupsDto,
+  FormSubGroupsDto,
+  SaveAction,
+  SaveAddressAction, SaveFinanceAction,
+  SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
 
 const log = new Logger('ViewEntityComponent');
@@ -67,7 +68,7 @@ export class ViewEntityComponent implements OnInit {
   @ViewChild('financialRef') financialComponent!: FinancialComponent;
   @ViewChild('wealthAmlRef') wealthAmlComponent!: WealthAmlComponent;
 
-  entityTransactions: EntityTransactionsComponent;
+  // entityTransactions: EntityTransactionsComponent;
 
   public entityDetails: StaffDto | ClientDTO | ServiceProviderRes | AgentDTO;
 
@@ -82,7 +83,7 @@ export class ViewEntityComponent implements OnInit {
   page = 0;
   pageSize = 5;
   checked: boolean;
-  showRelatedAccountsTab: boolean = false;
+  // showRelatedAccountsTab: boolean = false;
 
   entitySummaryForm: FormGroup;
   selectRoleModalForm: FormGroup;
@@ -114,7 +115,7 @@ export class ViewEntityComponent implements OnInit {
   states: StateDto[] = [];
 
   wealthAmlDetails: any;
-  bankDetails: any;
+  // bankDetails: any;
   nokDetails: any[] = [];
   bankBranchDetails: BankBranchDTO;
 
@@ -129,11 +130,11 @@ export class ViewEntityComponent implements OnInit {
 
   language: string = 'en';
 
-  editPrimeDetailsFormConfig: any;
-  editContactFormConfig: any;
-  editAddressFormConfig: any;
-  editFinancialFormConfig: any;
-  editWealthAmlFormConfig: any;
+  // editPrimeDetailsFormConfig: any;
+  // editContactFormConfig: any;
+  // editAddressFormConfig: any;
+  // editFinancialFormConfig: any;
+  // editWealthAmlFormConfig: any;
 
   selectOptions: {
     idTypes: IdentityModeDTO[],
@@ -147,6 +148,10 @@ export class ViewEntityComponent implements OnInit {
   moduleId: string = 'account_management';
   subModules: SubModulesDto[];
 
+  Save_Action = SaveAction;
+  // saveAction: SaveAction;
+
+  // protected readonly SaveAction = SaveAction;
 
   constructor(
     private fb: FormBuilder,
@@ -160,7 +165,6 @@ export class ViewEntityComponent implements OnInit {
     private bankService: BankService,
     private globalMessagingService: GlobalMessagingService,
     private utilService: UtilService,
-    private http: HttpClient,
     private clientService: ClientService,
     private dynamicScreenSetupService: DynamicScreensSetupService,
   ) {
@@ -737,13 +741,13 @@ export class ViewEntityComponent implements OnInit {
         this.primeIdentityComponent.openEditPrimeIdentityDialog();
         break;
       case 'contact details':
-        this.contactComponent.openEditContactDialog();
+        this.contactComponent.openEditContactDialog(subgroup, SaveAction.EDIT_CONTACT_DETAILS);
         break;
       case 'address details':
-        this.addressComponent.openEditAddressDialog();
+        this.addressComponent.openEditAddressDialog(subgroup, SaveAddressAction.EDIT_ADDRESS_DETAILS);
         break;
       case 'financial details':
-        this.financialComponent.openEditFinancialDialog();
+        this.financialComponent.openEditFinancialDialog(subgroup, SaveFinanceAction.EDIT_FINANCE_DETAILS);
         break;
       case 'wealth_aml':
         this.wealthAmlComponent.openEditWealthAmlDialog(false);

@@ -752,7 +752,6 @@
         <div [@slideInOut]="isSectionDetailsOpen ? 'open' : 'closed'" class="mt-2">
 
             <!-- Add Risk Section Modal -->
-
             <div class="modal fade" #addRiskSection Modal id="addRiskSection" tabindex="-1" role="dialog"
                 aria-labelledby="addSectionLabel">
                 <div class="modal-dialog modal-dialog-centered" style="min-width: 708px;" role="document">
@@ -913,18 +912,6 @@
                                                 <input type="text" id="scheduleInput"
                                                     class="form-control form-control-sm mb-1" style="width:300px"
                                                     formControlName="rateType">
-                                                <!-- <select class="form-select form-control-sm mb-1" id="scheduleInput"
-                                                    formControlName="rateType">
-                                                    <option value="FXD">{{'gis.quotation.fixed' | translate}}</option>
-                                                    <option value="RCU">{{'gis.quotation.recursive' | translate}}
-                                                    </option>
-                                                    <option value="RT">{{'gis.quotation.rate_table' | translate}}
-                                                    </option>
-                                                    <option value="ARG"> {{'gis.quotation.absolute_range' | translate}}
-                                                    </option>
-                                                    <option value="SRG">{{'gis.quotation.step_ranges' | translate}}
-                                                    </option>
-                                                </select> -->
 
                                             </div>
                                         </div>
@@ -950,25 +937,15 @@
                                 <!-- **ROW 3** -->
                                 <div class="row mb-0" id="scheduleRows">
                                     <div class="col-xl-6">
-                                        <div class="mb-1">
-                                            <label class="col-5 col-form-label" id="scheduleLabel">
-                                                {{ 'gis.quotation.free_limit' | translate }} :
-                                            </label>
+                                        <div class="mb-1 ">
+                                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">
+                                                {{'gis.quotation.free_limit' | translate}} :</label>
                                             <div class="col-7">
-                                                <ng-container *ngIf="isEditable; else readOnlyInput">
-                                                    <!-- Editable number input -->
-                                                    <input type="text" class="form-control form-control-sm mb-1"
-                                                        formControlName="freeLimit" style="width:300px"
-                                                        [value]="freeLimitValue|translate" currencyMask
-                                                        [options]="currencyObj" />
-                                                </ng-container>
+                                                <input type="text" id="scheduleInput"
+                                                    class="form-control form-control-sm mb-1" style="width:300px"
+                                                    formControlName="freeLimit" [value]="freeLimitValue|translate"
+                                                    currencyMask [options]="currencyObj">
 
-                                                <!-- Read-only number input -->
-                                                <ng-template #readOnlyInput>
-                                                    <input type="text" class="form-control form-control-sm mb-1"
-                                                        [value]="freeLimitValue|translate" currencyMask
-                                                        [options]="currencyObj" style="width:300px" disabled />
-                                                </ng-template>
                                             </div>
                                         </div>
                                     </div>
@@ -2527,7 +2504,7 @@
             class="mt-0 w-100">
 
             <!-- Floating Column Selector For Limits of Liability -->
-            <div *ngIf="showCommissionsColumnModal" class="card shadow rounded p-2 position-absolute bg-white border"
+            <div *ngIf="showCommissionsColumnModal" class="card shadow rounded p-2 position-absolute bg-white border cursor-pointer"
                 [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
                 (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
                 (document:mouseup)="onDragEnd()">
@@ -2585,7 +2562,12 @@
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
                                     <div class="d-flex flex-nowrap" style="gap: 1px;">
-                                        
+                                        <!-- Edit -->
+                                        <!-- <span class="p-button-label fw-bold text-primary"
+                                            style="cursor: pointer; white-space: nowrap;"
+                                            (click)="startEditing(commission)">
+                                            {{ 'gis.quotation.edit' | translate }}
+                                        </span> -->
 
                                         <!-- Delete -->
                                         <span class="p-button-label fw-bold text-primary"
@@ -2599,38 +2581,36 @@
 
                                 <!-- Agent DTO -->
                                 <ng-container *ngSwitchCase="'agentDto'">
-                                    <span class="form-control-plaintext commission-readonly px-2">
+                                    <span class="commission-readonly px-2">
                                         {{ commission.agentDto?.name || '-' }}
                                     </span>
                                 </ng-container>
 
-                                <!-- Default editable/read-only columns -->
+                                <!-- Default columns with read-only check -->
                                 <ng-container *ngSwitchDefault>
                                     <ng-container *ngIf="isCommissionFieldReadOnly(col.field); else editableField">
-                                        <span class="form-control-plaintext commission-readonly px-2">
+                                        <span class="commission-readonly px-2">
                                             {{ commission[col.field] || '-' }}
                                         </span>
                                     </ng-container>
 
                                     <!-- Editable field template -->
-                                <ng-template #editableField>
-    <ng-container *ngIf="col.field === 'value'; else textField">
-        <input type="number"
-               class="form-control w-100 text-end"
-               [(ngModel)]="commission[col.field]"
-               [ngModelOptions]="{standalone: true}"
-               (blur)="commission[col.field] = sanitizeCurrency(commission[col.field])" />
-    </ng-container>
+                                    <ng-template #editableField>
+                                        <ng-container *ngIf="col.field === 'value'; else textField">
+                                            <input type="number" class="form-control w-100 text-end"
+                                                [(ngModel)]="commission[col.field]"
+                                                [ngModelOptions]="{standalone: true}"
+                                                (blur)="commission[col.field] = sanitizeCurrency(commission[col.field])" />
+                                        </ng-container>
 
-    <ng-template #textField>
-        <input type="text"
-               class="form-control w-100"
-               [(ngModel)]="commission[col.field]"
-               [ngModelOptions]="{standalone: true}"
-               (input)="markCommissionDirty(commission)" />
-    </ng-template>
-</ng-template>
- 
+                                        <ng-template #textField>
+                                            <input type="text" class="form-control w-100"
+                                                [(ngModel)]="commission[col.field]"
+                                                [ngModelOptions]="{standalone: true}"
+                                                (input)="markCommissionDirty(commission)" />
+                                        </ng-template>
+                                    </ng-template>
+
                                 </ng-container>
 
                             </ng-container>
@@ -3299,23 +3279,20 @@
 
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
-                                    <div class="d-flex gap-2 flex-nowrap">
-                                        <!-- Edit -->
-                                        <span class="p-button-label fw-bold text-primary"
-                                            style="cursor: pointer; display: inline-block; width: 30px; white-space: nowrap;"
+                                    <div class="d-flex flex-nowrap">
+                                        <span class="p-button-label fw-bold text-primary me-1"
+                                            style="cursor: pointer; display: inline-block; white-space: nowrap;"
                                             data-bs-toggle="modal" data-bs-target="#editExcess"
                                             (click)="populateEditExcessModal(excess)">
                                             {{ 'gis.quotation.edit' | translate }}
                                         </span>
-
-                                        <!-- Delete -->
                                         <span class="p-button-label fw-bold text-primary"
                                             style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
                                             data-bs-target="#deleteExcess" (click)="prepareDeleteExcess(excess)">
                                             {{ 'gis.quotation.delete' | translate }}
                                         </span>
-
                                     </div>
+
                                 </ng-container>
 
                                 <!-- Default columns added dynamically) -->

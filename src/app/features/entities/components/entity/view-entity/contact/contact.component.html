@@ -1,5 +1,3 @@
-<!--{{ selectedSubgroup | json }}-->
-
 
 <ng-container *ngIf="group.subGroup?.length === 0">
   <div class="row">
@@ -31,7 +29,7 @@
           </span>
           <span
             class="m-2 text-primary edit-tab-btn"
-            (click)="openEditContactDialog(subGroup, SaveAction.EDIT_CONTACT_DETAILS)"
+            (click)="openEditContactDialog(subGroup, Save_Action.EDIT_CONTACT_DETAILS)"
           >
             <i class="fa fa-pencil"></i>
           </span>
@@ -39,7 +37,7 @@
       </div>
       <div class="row mb-3">
         <ng-container *ngFor="let field of subGroup.fields">
-          <div class="col-sm-4" *ngIf="!(field.fieldId.toLowerCase().includes('id'))">
+          <div class="col-sm-4" *ngIf="!(field.fieldId.toLowerCase().includes('id')) && field.formSubGroupingId === subGroup.subGroupId">
             <div class="row my-2">
               <div class="col-sm-4 text-dark">
                 {{ field.label[language] }}
@@ -59,7 +57,7 @@
         [table]="table"
         [language]="language"
         (deleteBtnClicked)="handleContactPersonDelete($event)"
-        (editBtnClicked)="prepareEditContactPersonForm($event, SaveAction.EDIT_CONTACT_PERSON)"
+        (editBtnClicked)="prepareEditContactPersonForm($event, Save_Action.EDIT_CONTACT_PERSON)"
       >
       </app-overview-table>
     </ng-container>
@@ -87,7 +85,7 @@
           <form [formGroup]="editForm">
             <div class="row g-3">
               <ng-container *ngFor="let field of formFields">
-                <div class="col-md-6" *ngIf="!(field.fieldId.toLowerCase().includes('personid'))">
+                <div class="col-md-6" *ngIf="!(field.fieldId.toLowerCase().includes('personid')) && field.formSubGroupingId === selectedSubgroup?.subGroupId">
                   <label [for]="field.fieldId" class="form-label">
                     {{ field?.label[language] || '---' | titlecase }}
                   </label>

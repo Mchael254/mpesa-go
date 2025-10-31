@@ -1,11 +1,10 @@
-
 <p class="titleMain mt-3 ms-4">{{ 'gis.quotation.quotation_management' | translate }}</p>
 <div class=" mx-4 mt-n1" (click)="immediateHideTooltip()">
   <div class="card mb-3" style=" position: relative;">
     <div class="card-body">
       <div class="row mb-2">
         <div class="col-7">
-         
+
         </div>
 
         <div class="col-5">
@@ -160,20 +159,22 @@
                   (mouseleave)="hideTooltip()" (mousemove)="updateTooltipPosition($event)">
                   View
                 </button>
-          
+
                 <!-- Revise Action -->
                 <button type="button"
                   class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1"
-                  (click)="immediateHideTooltip(); reviseQuotation(quotation)" (mouseenter)="showTooltip('Revise', $event)"
-                  (mouseleave)="hideTooltip()" (mousemove)="updateTooltipPosition($event)">
+                  (click)="immediateHideTooltip(); reviseQuotation(quotation)"
+                  (mouseenter)="showTooltip('Revise', $event)" (mouseleave)="hideTooltip()"
+                  (mousemove)="updateTooltipPosition($event)">
                   Revise
                 </button>
 
                 <!-- Reuse Action -->
                 <button type="button"
                   class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1"
-                  (click)="immediateHideTooltip(); reuseQuotation(quotation)" (mouseenter)="showTooltip('Reuse', $event)"
-                  (mouseleave)="hideTooltip()" (mousemove)="updateTooltipPosition($event)">
+                  (click)="immediateHideTooltip(); reuseQuotation(quotation)"
+                  (mouseenter)="showTooltip('Reuse', $event)" (mouseleave)="hideTooltip()"
+                  (mousemove)="updateTooltipPosition($event)">
                   Reuse
                 </button>
 
@@ -221,6 +222,7 @@
     <i [class]="getActionIcon(hoveredAction)" class="tooltip-icon"></i>
     <span class="tooltip-text">{{ getTooltipDescription(hoveredAction) }}</span>
   </div>
+</div>
 
-  <br>
-  <br><br><br><br>
+<br>
+<br><br><br><br>

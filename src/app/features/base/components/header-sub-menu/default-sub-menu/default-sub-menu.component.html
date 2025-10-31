@@ -178,16 +178,18 @@
               translate | uppercase }}
             </a>
             <ul class="dropdown-menu" style="width: 300px; padding: 1em 2em 1em 0.5em">
-              <div class="d-flex justify-content-between">
-                <label class="label-text" (click)="dynamicSideBarMenu(quotationSubMenuList[0])">
-                  {{ "base.quotation" | translate }}
-                </label>
+                <!-- Header Buttons -->
+             <div class="d-flex justify-content-between">
+            <label class="label-text"
+            (click)="dynamicSideBarMenu(quotationSubMenuList[0]); navLink('/home/gis/quotation/quotation-details')">
+            {{ "base.new_quotation" | translate }}
+             </label>
 
-                <label data-bs-toggle="modal" data-bs-target="#NewQuoteModal" class="label-text"
-                  (click)="navLink('/home/gis/quotation/quotation-management');">
-                  {{ "base.new_quotation" | translate }}
-                  <i class="fa-solid fa-plus"></i></label>
-              </div>
+            <label class="label-text"
+             (click)="dynamicSideBarMenu(quotationSubMenuList[0]); navLink('/home/gis/quotation/quick-quote')">
+              {{ "base.new_quick_quote" | translate }}
+             </label>
+             </div>
               <div class="my-2"></div>
               <div class="row">
                 <div class="col-3 d-flex justify-content-start align-items-center">
@@ -196,10 +198,22 @@
                     {{ "base.policy_id" | translate }}:
                   </label>
                 </div>
-                <div class="col-9" style="padding: 0.5rem 0">
-                  <input [(ngModel)]="idSearchTerm" (keyup.enter)="onSearch()"
-                    style="border-radius: 0.3rem; font-size: 10px" type="text" class="form-control" />
-                </div>
+                 <div class="col-9" style="padding: 0.5rem 0">
+                <div class="input-group input-group-sm">
+               <input [(ngModel)]="idSearchTermPolicy"
+               (keyup.enter)="onSearch()"
+               (focus)="showRecentSearches()"
+                type="text"
+                class="form-control"
+                style="font-size: 10px; border-top-right-radius: 0; border-bottom-right-radius: 0;" />
+
+                <button class="input-group-text"
+                 style="cursor: pointer; border-top-left-radius: 0; border-bottom-left-radius: 0;"
+              (click)="onSearch()">
+             <i class="fa-solid fa-magnifying-glass"></i>
+             </button>
+           </div>
+           </div>
               </div>
 
               <div class="row">
@@ -210,23 +224,55 @@
                   </label>
                 </div>
                 <div class="col-9" style="padding: 0.5rem 0">
-                  <input [(ngModel)]="idSearchTerm" (keyup.enter)="onSearch()"
-                    style="border-radius: 0.3rem; font-size: 10px" type="text" class="form-control" id="input2" />
-                </div>
+                 <div class="input-group input-group-sm">
+                <input [(ngModel)]="idSearchTerm"
+                  (keyup.enter)="onSearch()"
+                  (focus)="showRecentSearches()"
+                type="text"
+                 class="form-control"
+                style="border-radius: 0.3rem 0 0 0.3rem; font-size: 10px" />
+
+                <button class="input-group-text"
+              style="cursor: pointer; border-radius: 0 0.3rem 0.3rem 0;"
+              (click)="onSearch()">
+             <i class="fa-solid fa-magnifying-glass"></i>
+               </button>
+           </div>
+           </div>
               </div>
+
+             
+
               <div class="my-4"></div>
 
               <div class="d-flex justify-content-end">
-                <!-- <label
-                    (click)="navLink('/home/lms/quotation/list'); dynamicSideBarMenu(quotationSubMenuList[2])"
-                    class="text-plain"
-                >
-                    View Quotations
-                </label> -->
-                <label (click)="navLink('/home/gis/quotation/quotation-management');" class="text-plain">
+                <label (click)="navLink('/home/lms/quotation/list'); dynamicSideBarMenu(quotationSubMenuList[2])"
+                  class="text-plain">
                   View Quotations
                 </label>
+                <!-- <label (click)="navLink('/home/gis/quotation/quotation-management');" class="text-plain">
+                  View Quotations
+                </label> -->
               </div>
+                      <!-- ✅ RECENT SEARCHES DROPDOWN -->
+<div *ngIf="showRecents" class="mt-2 recent-searches-dropdown">
+  <div class="results-header">Recent searches</div>
+
+  <div *ngIf="recentSearches.length; else noRecentFound">
+    <div *ngFor="let recent of recentSearches"
+         class="p-2 quotation-result-item"
+         style="cursor: pointer; font-size: 11px;"
+         (click)="onSelectQuotation(recent)">
+      {{ recent.quotationNumber }}
+    </div>
+  </div>
+
+  <ng-template #noRecentFound>
+    <div class="p-2 text-muted" style="font-size: 11px;">No recent searches</div>
+  </ng-template>
+</div>
+
+
 
 
               <!-- Add space at the bottom -->

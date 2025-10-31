@@ -24,156 +24,102 @@
 
   <div class="card">
     <div class="card-body">
-      <h6 class="pt-4 pb-1">Banking Process</h6>
+      <h5 class="pt-2 pb-2 text-primary">
+        {{ "fms.banking.bankingProcess" | translate }}
+      </h5>
       <div class="d-flex justify-content-end pb-1">
         <button class="btn btn-primary" (click)="navigateToBanking()">
-          New Banking Process
+          {{ "fms.banking.newBankingProcess" | translate }}
         </button>
+        <span class="pt-2" (click)="showColumnsDialogs()">
+          <i class="fa-regular fa-square-caret-down"></i>
+        </span>
       </div>
+      <!-- PrimeNG Dialog for Column Selection -->
+
+      <p-dialog
+        header="Select Columns"
+        [(visible)]="displayColumnDialog"
+        [modal]="true"
+        [style]="{ width: '400px' }"
+      >
+        <div class="p-fluid">
+          <div *ngFor="let col of cols" class="flex items-center gap-2 mb-2">
+            <p-checkbox
+              name="col"
+              [value]="col"
+              [(ngModel)]="selectedColumns"
+              [label]="col.header"
+            ></p-checkbox>
+          </div>
+        </div>
+      </p-dialog>
+
       <div class="card">
         <p-table
           [value]="filteredReceipts"
           [resizableColumns]="true"
           [scrollable]="true"
           selectionMode="single"
+          dataKey="batchNo"
           scrollHeight="500px"
-          (onRowSelect)="onRowSelect($event)"
+          sortMode="multiple"
+          [(selection)]="selectedrct"
+          [paginator]="true"
+          [rows]="5"
+          [rowsPerPageOptions]="[10, 25, 50]"
+          [showCurrentPageReport]="true"
+          [currentPageReportTemplate]="currentPageReportTemplate"
         >
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="batchNo">
-                <div class="flex items-center gap-2">
-                  Batch number
-                  <p-sortIcon field="batchNo" />
+              <th *ngFor="let col of selectedColumns">
+                <div
+                  class="flex items-center gap-2"
+                  [pSortableColumn]="col.field"
+                >
+                  {{ col.header | translate }}
+                  <p-sortIcon
+                    *ngIf="col.field !== 'actions'"
+                    [field]="col.field"
+                  ></p-sortIcon>
                 </div>
-              </th>
-              <th pSortableColumn="slipNo">
-                <div class="flex items-center gap-2">
-                  Slip number
-                  <p-sortIcon field="slipNo" />
-                </div>
-              </th>
-              <th pSortableColumn="date">
-                <div class="flex items-center gap-2">
-                  Date
-                  <p-sortIcon field="date" />
-                </div>
-              </th>
-              <th pSortableColumn="assignee">
-                <div class="flex items-center gap-2">
-                  Assignee
-                  <p-sortIcon field="assignee" />
-                </div>
-              </th>
-
-              <th pSortableColumn="amount">
-                <div class="flex items-center gap-2">
-                  Amount
-                  <p-sortIcon field="amount" />
-                </div>
-              </th>
-              <th pSortableColumn="bankAcc">
-                <div class="flex items-center gap-2">
-                  Bank account
-                  <p-sortIcon field="bankAcc" />
-                </div>
-              </th>
-              <th pSortableColumn="status">
-                <div class="flex items-center gap-2">
-                  Status
-                  <p-sortIcon field="status" />
-                </div>
-              </th>
-              <th>
-                <div class="flex items-center gap-2">Actions</div>
               </th>
             </tr>
+            <!-- filter row -->
             <tr>
-              <!-- Filter row -->
-              <th>
+              <th *ngFor="let col of selectedColumns">
                 <input
-                  type="text"
+                  [type]="col.field === 'amount' ? 'number' : 'text'"
+                  *ngIf="col.field !== 'actions'"
                   class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'batchNo')"
-                  (input)="filter($event, 'batchNo')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
+                  (keyup.enter)="filter($event, col.field)"
+                  (input)="filter($event, col.field)"
                 />
-              </th>
-
-              <th>
                 <input
-                  type="text"
+                  *ngIf="col.field == 'actions'"
                   class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'slipNo')"
-                  (input)="filter($event, 'slipNo')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
+                  disabled
                 />
-              </th>
-              <th>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'date')"
-                  (input)="filter($event, 'date')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
-                />
-              </th>
-              <th>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'assignee')"
-                  (input)="filter($event, 'assignee')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
-                />
-              </th>
-              <th>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'amount')"
-                  (input)="filter($event, 'amount')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
-                />
-              </th>
-              <th>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'bankAcc')"
-                  (input)="filter($event, 'bankAcc')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
-                />
-              </th>
-              <th>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  (keyup.enter)="filter($event, 'status')"
-                  (input)="filter($event, 'status')"
-                  placeholder="{{ 'fms.receipting.filter' | translate }}"
-                />
-              </th>
-              <th>
-                <button
-                  class="btn btn-outline-primary btn-sm"
-                  (click)="clearFilter()"
-                >
-                  clear filters
-                </button>
               </th>
             </tr>
           </ng-template>
+          <!-- Use ngSwitch to handle special cases -->
           <ng-template pTemplate="body" let-receipt>
-            <tr [pSelectableRow]="receipt">
-              <td>{{ receipt.batchNo }}</td>
-              <td>{{ receipt.slipNo }}</td>
-              <td>{{ receipt.date | date : "yyyy-MM-dd" }}</td>
-              <td>{{ receipt.assignee }}</td>
-              <td>{{ receipt.amount }}</td>
-              <td>{{ receipt.bankAcc }}</td>
-              <td>{{ receipt.status }}</td>
-              <td><a class="btn">deposit</a></td>
+            <tr [pSelectableRow]="receipt" (click)="onRow()">
+              <td *ngFor="let col of selectedColumns">
+                <ng-container [ngSwitch]="col.field">
+                  <ng-container *ngSwitchCase="'date'">
+                    {{ receipt[col.field] | date : "yyyy-MM-dd" }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'actions'">
+                    <a class="btn">deposit</a>
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    {{ receipt[col.field] }}
+                  </ng-container>
+                </ng-container>
+              </td>
             </tr>
           </ng-template>
         </p-table>
