@@ -39,10 +39,10 @@ export const environment = {
     [API_CONFIG.GIS_SETUPS_BASE_URL, '/gis/setups'],
     [API_CONFIG.GIS_CLAIMS_BASE_URL, '/gis/claims'],
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices'],
-    [API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis/quotation/api'],
+    [API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis-new/quotation/api'],
     [API_CONFIG.NONE_BASE_URL, 'assets'],
     [API_CONFIG.FMS_SETUPS_SERVICE_BASE_URL, '/fms/setups/api/v1'],
-    [API_CONFIG.FMS_GENERAL_LEDGER_SERVICE_BASE_URL,'/fms/ledger/api/v1'],
+    [API_CONFIG.FMS_GENERAL_LEDGER_SERVICE_BASE_URL, '/fms/ledger/api/v1'],
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL, '/fms/payment/api/v1'], //before fms refactoring
     [API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL2, '/fms/api/v1/payments'], //after fms refactoring
     [API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL, '/fms/receipting/api/v1'],
