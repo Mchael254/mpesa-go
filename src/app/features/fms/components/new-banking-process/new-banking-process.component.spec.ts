@@ -1,67 +1,111 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-
 import { NewBankingProcessComponent } from './new-banking-process.component';
-import { GlobalMessagingService } from './../../../../shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { BankingProcessService } from '../../services/banking-process.service';
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { AuthService } from '../../../../shared/services/auth.service';
+import { ReceiptDTO } from '../../data/banking-process-dto';
+import { UsersDTO } from '../../data/receipting-dto';
+import { EventEmitter, NO_ERRORS_SCHEMA } from '@angular/core';
 
+// --- Mock Data ---
+const mockReceipts: ReceiptDTO[] = [
+  { receiptNo: 101, receivedFrom: 'Customer A', receiptAmount: 100 } as ReceiptDTO,
+  { receiptNo: 102, receivedFrom: 'Customer B', receiptAmount: 200 } as ReceiptDTO,
+];
+
+const mockUsers: UsersDTO[] = [
+  { id: 1, username: 'user_one', name: 'User One' } as UsersDTO,
+  { id: 2, username: 'user_two', name: 'User Two' } as UsersDTO,
+];
+
+// --- Jest Mocks ---
+
+jest.mock('../../data/fms-step.json', () => ({
+  __esModule: true, 
+  default: {
+    bankingSteps: [
+      { number: 1, title: 'Mock Banking Step 1' },
+      { number: 2, title: 'Mock Banking Step 2' },
+    ],
+    receiptingSteps: [] 
+  }
+}));
+// --- Test Suite ---
 describe('NewBankingProcessComponent', () => {
   let component: NewBankingProcessComponent;
   let fixture: ComponentFixture<NewBankingProcessComponent>;
-
-  let mockTranslateService: any;
-  let mockRouter: any;
-  let mockGlobalMessagingService: any;
   let mockBankingService: any;
-  let mockSessionStorage: any;
+  let mockGlobalMessagingService: any;
+  let mockRouter: any;
+  let mockTranslateService: any;
+  let mockSessionStorageService: any;
   let mockAuthService: any;
 
   beforeEach(async () => {
-    mockTranslateService = {
-      instant: jest.fn((key: string) => key)
-    };
+    // --- Mock Definitions ---
+   const mockTranslateService = {
+  instant: jest.fn((key) => key),
+  get: jest.fn((key) => of(key)),
+  onLangChange: new EventEmitter(),
+  onTranslationChange: new EventEmitter(),
+  onDefaultLangChange: new EventEmitter()
+};
     mockRouter = {
-      navigate: jest.fn()
+      navigate: jest.fn(),
     };
     mockGlobalMessagingService = {
-      displayErrorMessage: jest.fn()
+      displayErrorMessage: jest.fn(),
+      displaySuccessMessage: jest.fn(),
     };
-    mockBankingService = {
-      getPaymentMethods: jest.fn().mockReturnValue(of({ data: [] })),
-      getReceipts: jest.fn().mockReturnValue(of([])),
-      getUsers: jest.fn().mockReturnValue(of([]))
-    };
-    mockSessionStorage = {
-      getItem: jest.fn()
+   const mockBankingService = {
+  getPaymentMethods: jest.fn().mockReturnValue(of({ data: [{ code: 'CASH' }] })),
+  getReceipts: jest.fn().mockReturnValue(of({
+    success: true,
+    data: {
+      content: mockReceipts 
+    }
+  })),
+
+  getActiveUsers: jest.fn().mockReturnValue(of({ content: mockUsers })),
+  assignUser: jest.fn().mockReturnValue(of({ msg: 'Assigned successfully' })),
+};
+    mockSessionStorageService = {
+      getItem: jest.fn((key) => {
+        if (key === 'defaultOrg') return JSON.stringify({ id: 1, name: 'Default Org' });
+        return null;
+      }),
     };
     mockAuthService = {
-      getCurrentUser: jest.fn().mockReturnValue({ code: 123 })
+      getCurrentUser: jest.fn().mockReturnValue({ code: 999 }),
     };
 
     await TestBed.configureTestingModule({
       declarations: [NewBankingProcessComponent],
-      imports: [ReactiveFormsModule, RouterTestingModule, TranslateModule.forRoot()],
+      imports: [
+        ReactiveFormsModule,
+        TranslateModule.forRoot(),
+      ],
       providers: [
         FormBuilder,
         { provide: TranslateService, useValue: mockTranslateService },
         { provide: Router, useValue: mockRouter },
         { provide: GlobalMessagingService, useValue: mockGlobalMessagingService },
         { provide: BankingProcessService, useValue: mockBankingService },
-        { provide: SessionStorageService, useValue: mockSessionStorage },
-        { provide: AuthService, useValue: mockAuthService }
+        { provide: SessionStorageService, useValue: mockSessionStorageService },
+        { provide: AuthService, useValue: mockAuthService },
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA], 
     }).compileComponents();
 
     fixture = TestBed.createComponent(NewBankingProcessComponent);
     component = fixture.componentInstance;
+    jest.clearAllMocks();
+    
     fixture.detectChanges();
   });
 
@@ -69,90 +113,100 @@ describe('NewBankingProcessComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize forms and call fetchPaymentsModes on ngOnInit', () => {
-    jest.spyOn(component, 'fetchPaymentsModes');
-    component.ngOnInit();
-    expect(component.rctsRetrievalForm).toBeDefined();
-    expect(component.usersForm).toBeDefined();
-    expect(component.fetchPaymentsModes).toHaveBeenCalled();
-  });
-
-  it('should fetch payment modes successfully', () => {
-    const mockModes = [{ code: 'PM01', desc: 'Cash' }];
-    mockBankingService.getPaymentMethods.mockReturnValue(of({ data: mockModes }));
-    component.fetchPaymentsModes();
-    expect(component.paymentModes.length).toBe(1);
-    expect(component.rctsRetrievalForm.get('paymentMethod')?.value).toBe('PM01');
-  });
-
-  it('should handle error when fetching payment modes fails', () => {
-    const errorResponse = { error: { msg: 'Network Error' } };
-    mockBankingService.getPaymentMethods.mockReturnValue(throwError(() => errorResponse));
-    component.fetchPaymentsModes();
-    expect(mockGlobalMessagingService.displayErrorMessage)
-      .toHaveBeenCalledWith('fms.errorMessage', 'Network Error');
-  });
-
-  it('should display error if required fields missing on receipt retrieval', () => {
-    component.onClickRetrieveRcts();
-    expect(mockGlobalMessagingService.displayErrorMessage)
-      .toHaveBeenCalledWith('', 'Please fill the required fields');
-  });
-
-  it('should fetch receipts successfully', () => {
-    component.rctsRetrievalForm.setValue({
-      startDate: '2024-01-01',
-      endDate: '2024-01-02',
-      paymentMethod: 'PM01'
+  describe('Initialization (ngOnInit)', () => {
+    it('should initialize forms and fetch initial data', () => {
+      expect(component.rctsRetrievalForm).toBeDefined();
+      expect(component.usersForm).toBeDefined();
+      expect(mockBankingService.getPaymentMethods).toHaveBeenCalledTimes(1);
+      expect(mockBankingService.getActiveUsers).toHaveBeenCalledTimes(1);
     });
-    const mockReceipts = [{ receiptNo: 'R001' }];
-    mockBankingService.getReceipts.mockReturnValue(of(mockReceipts));
 
-    component.fetchReceipts();
-
-    expect(component.displayTable).toBe(true);
-    expect(component.filteredReceipts.length).toBe(1);
+    it('should fetch active users and populate the users array', () => {
+      expect(component.users).toEqual(mockUsers);
+      expect(component.filteredUsers).toEqual(mockUsers);
+    });
   });
 
-  it('should open assign modal only if receipts selected', () => {
-    component.selectedReceipts = [];
-    component.openAssignModal();
-    expect(mockGlobalMessagingService.displayErrorMessage)
-      .toHaveBeenCalledWith('', 'Please select at least one receipt to assign.');
+  describe('Receipt Retrieval Logic', () => {
+    beforeEach(() => {
+        component.rctsRetrievalForm.setValue({
+            startDate: '2023-01-01',
+            endDate: '2023-01-31',
+            paymentMethod: 'CASH',
+        });
+    });
+
+    it('should filter out the "actions" column when payment mode is CASH', () => {
+        component.onClickRetrieveRcts();
+        expect(component.selectedColumns.find(c => c.field === 'actions')).toBeUndefined();
+        expect(mockBankingService.getReceipts).toHaveBeenCalled();
+    });
+
+    it('should include the "actions" column for non-CASH payment modes', () => {
+        component.rctsRetrievalForm.patchValue({ paymentMethod: 'CHEQUE' });
+        component.onClickRetrieveRcts();
+        expect(component.selectedColumns.find(c => c.field === 'actions')).toBeDefined();
+        expect(mockBankingService.getReceipts).toHaveBeenCalled();
+    });
   });
 
-  it('should open assign modal when receipts selected', () => {
-    component.selectedReceipts = [{ receiptNo: 'R001' }] as any;
-    component.openAssignModal();
-    expect(component.assignDialogVisible).toBe(true);
+ 
+describe('onAssignSubmit', () => {
+  beforeEach(() => {
+    component.selectedReceipts = [mockReceipts[0], mockReceipts[1]];
+    component.usersForm.patchValue({ 
+      user: mockUsers[0].id, 
+      comment: 'Assigning this' 
+    });
+component.assignDialogVisible = true;
+    fixture.detectChanges(); 
+  });
+    it('should not submit if the form is invalid', () => {
+        component.usersForm.get('user')?.setValue(''); 
+        component.onAssignSubmit();
+        expect(mockBankingService.assignUser).not.toHaveBeenCalled();
+    });
+
+    it('should call bankingService.assignUser with the correct payload', () => {
+        component.onAssignSubmit();
+        const expectedPayload = {
+            userId: mockUsers[0].id,
+            receiptNumbers: [101, 102],
+        };
+        expect(mockBankingService.assignUser).toHaveBeenCalledWith(expectedPayload);
+    });
+
+    it('should navigate, show success message, and close modal on successful assignment', () => {
+        component.onAssignSubmit();
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/process-batch']);
+        expect(mockGlobalMessagingService.displaySuccessMessage).toHaveBeenCalledWith('', 'Assigned successfully');
+        expect(component.assignDialogVisible).toBe(false); // Modal closes on success
+    });
+
+    it('should handle API errors during assignment and keep the modal open', () => {
+        const errorResponse = { error: { msg: 'Assignment failed' } };
+        mockBankingService.assignUser.mockReturnValue(throwError(() => errorResponse));
+
+        component.onAssignSubmit();
+
+        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('fms.errorMessage', 'Assignment failed');
+        expect(component.assignDialogVisible).toBe(true); 
+    });
   });
 
-  it('should close assign modal and reset form', () => {
-    component.assignDialogVisible = true;
-    component.selectedUserForAssignment = { user_id: 5 } as any;
-    component.usersForm = component['fb'].group({ user: ['test'], comment: ['note'] });
-    component.closeAssignModal();
-    expect(component.assignDialogVisible).toBe(false);
-    expect(component.selectedUserForAssignment).toBeNull();
-  });
+  describe('Dialog Workflow', () => {
+      it('should open the user selection dialog', () => {
+          component.openUserSelectDialog();
+          expect(component.userSelectDialogVisible).toBe(true);
+      });
 
-  it('should fetch users successfully', () => {
-    const mockUsers = [{ user_id: 1, username: 'john', name: 'John Doe' }];
-    mockBankingService.getUsers.mockReturnValue(of(mockUsers));
-    component.fetchUsers(123);
-    expect(component.users.length).toBe(1);
-  });
-
-  it('should handle API error when fetching users fails', () => {
-    const error = { error: { msg: 'Unauthorized' } };
-    mockBankingService.getUsers.mockReturnValue(throwError(() => error));
-    component.fetchUsers(123);
-    expect(mockGlobalMessagingService.displayErrorMessage)
-      .toHaveBeenCalledWith('fms.errorMessage', 'Unauthorized');
-  });
-
-  it('should navigate to batch page', () => {
-    component.navigateToBatch();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/process-batch']);
+      it('should confirm user selection and patch the form', () => {
+        const selectedUser = mockUsers[1];
+        component.tempSelectedUser = selectedUser;
+        component.confirmUserSelection();
+        expect(component.selectedUserForAssignment).toEqual(selectedUser);
+        expect(component.usersForm.get('user')?.value).toBe(selectedUser.id);
+        expect(component.userSelectDialogVisible).toBe(false);
+      });
   });
 });
