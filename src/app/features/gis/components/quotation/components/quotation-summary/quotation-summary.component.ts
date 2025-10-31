@@ -92,9 +92,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   showWizzardModal = false;
-  showClientWizzardModal = false;
   wizzardModalPosition = { top: '-40px', left: '430px' };
-  wizzardClientModalPosition = { top: '-140px', left: '-70px' };
   userInstructionsModalInstance: any;
   hasOpened = false;
 
@@ -283,7 +281,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   public currencyObj: NgxCurrencyConfig;
   dragging = false;
   dragOffset = { x: 0, y: 0 };
-  isNewClientSelected: boolean = false;
   storedQuotationFormDetails: any = null
   zoomLevel = 1;
   quickQuoteConvertedFlag: any;
@@ -295,7 +292,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   fileUrl: SafeResourceUrl;
   showWizardModal: boolean;
   quickQuoteQuotation: boolean;
-  showCreateClientTip = false;
 
 
   constructor(
@@ -373,11 +369,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.quotationNumber = sessionStorage.getItem('quotationNumber') || sessionStorage.getItem('quotationNum');
     log.debug('quotationCode', this.quotationCodeString)
     log.debug("quick Quotation number", this.quotationNumber);
-    this.isNewClientSelected = JSON.parse(sessionStorage.getItem('isNewClientSelected'))
-    if (this.isNewClientSelected) {
-      setTimeout(() => this.openClientWizzard(), 300);
-
-    }
     this.storedQuotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
     log.debug("QUOTATION FORM DETAILS", this.storedQuotationFormDetails)
     this.conversionFlagString = sessionStorage.getItem("conversionFlag");
@@ -434,7 +425,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.clientDetails = JSON.parse(
       sessionStorage.getItem('clientFormData') ||
       sessionStorage.getItem('clientDetails') ||
-      sessionStorage.getItem('newClientDetails') ||
       'null'
     );
 
@@ -528,15 +518,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.modals['reassignQuotation'] = new bootstrap.Modal(this.reassignQuotationModalElement.nativeElement);
     this.modals['clientConsentModal'] = new bootstrap.Modal(this.clientConsentModalElement.nativeElement);
     this.modals['rejectQuotation'] = new bootstrap.Modal(this.rejectQuotationModalElement.nativeElement);
-    if (this.isNewClientSelected) {
-      setTimeout(() => this.openClientWizzard(), 300);
-
-    }
   }
 
-  hideCreateClientTip() {
-    this.showCreateClientTip = false;
-  }
   openModals(modalName: string) {
     this.modals[modalName]?.show();
   }
@@ -3036,7 +3019,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   get authorizeButtonDisabled(): boolean {
-    return this.hasExceptionsData() || this.hasEmptySchedules() || this.isNewClientSelected;
+    return this.hasExceptionsData() || this.hasEmptySchedules();
   }
 
   authorizeQuote() {
@@ -3581,10 +3564,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.showWizzardModal = true;
   }
 
-  openClientWizzard() {
-    log.debug("openClientWizzard called")
-    this.showClientWizzardModal = true;
-  }
   /**
    * Gets the full payment frequency label based on the abbreviation
    * @param frequencyValue - The frequency abbreviation (A, S, Q, M, O)
