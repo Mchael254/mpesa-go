@@ -9,6 +9,7 @@
           [language]="language"
           (rowClicked)="handleCr12Display($event)"
           (deleteBtnClicked)="handleWealthAmlDelete($event, subGroup)"
+          (editBtnClicked)="prepareEditAmlForm($event, subGroup)"
         >
         </app-overview-table>
       </ng-container>
@@ -18,6 +19,7 @@
           [table]="subGroup.table"
           [language]="language"
           (deleteBtnClicked)="handleCr12Delete($event, subGroup)"
+          (editBtnClicked)="prepareEditAmlForm($event, subGroup)"
         >
         </app-overview-table>
       </ng-container>
@@ -150,7 +152,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-4 text-primary" id="editWealthAmlModalLabel">
-<!--          {{ formFieldsConfig?.label[language] || '-&#45;&#45;' | titlecase }}-->
+          {{ selectedSubgroup?.label[language] | titlecase }}
         </h1>
         <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -159,10 +161,14 @@
           <ng-container *ngIf=" editForm; else loadingForm">
             <form [formGroup]="editForm">
               <div class="row g-3">
-                <ng-container *ngFor="let field of formGroupsAndFieldConfig.fields">
-                  <div class="col-md-6">
+                <ng-container *ngFor="let field of formFields">
+                  <div
+                    *ngIf="!(excludedKeys.includes(field.fieldId))"
+                    class="col-md-6"
+                  >
                     <label [for]="field.fieldId" class="form-label">
-                      {{ field?.label[language] || '---' | titlecase }}
+                      {{ field?.label[language] }}
+                      <br> {{ field.fieldId }} + {{ field.type }}
                     </label>
                     <!-- Text input -->
                     <input
@@ -173,6 +179,37 @@
                       type="text"
                       class="form-control"
                     />
+
+                    <!--Date-->
+                    <input
+                      *ngIf="field.type === 'date'"
+                      type="date"
+                      [formControlName]="field.fieldId"
+                      [placeholder]="field.placeholder"
+                      [id]="field.fieldId"
+                      class="form-control"
+                    />
+
+                    <!--tel number-->
+                    <span *ngIf="checkTelNumber(field.fieldId)">
+                    <ngx-intl-tel-input
+                      [cssClass]="'form-control mb-1'"
+                      [id]="field.fieldId"
+                      [preferredCountries]=""
+                      [enableAutoCountrySelect]="true"
+                      [enablePlaceholder]="true"
+                      [searchCountryFlag]="true"
+                      [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
+                      [selectFirstCountry]="false"
+                      [selectedCountryISO]="CountryISO.Nigeria"
+                      [phoneValidation]="true"
+                      [separateDialCode]="true"
+                      [numberFormat]="PhoneNumberFormat.National"
+                      [formControlName]="field.fieldId"
+                      [style]="{ width: '100%' }"
+                    >
+                    </ngx-intl-tel-input>
+                  </span>
 
                     <!--select input-->
                     <select
@@ -199,12 +236,12 @@
           </ng-template>
         </div>
         <div class="modal-footer">
-          <!--<button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-            {{ formGroupsAndFieldConfig?.buttons?.cancel?.label[language] || '-&#45;&#45;' | titlecase }}
+          <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+<!--            {{ formGroupsAndFieldConfig?.buttons?.cancel?.label[language] || '-&#45;&#45;' | titlecase }}-->
           </button>
-          <button type="button" class="btn btn-primary" (click)="editWealthAmlDetails()">
-            {{ formFieldsConfig?.buttons?.save?.label[language] || '-&#45;&#45;' | titlecase }}
-          </button>-->
+          <button type="button" class="btn btn-primary" (click)="saveDetails()">
+            {{ 'Save' }}
+          </button>
         </div>
       </ng-container>
       <ng-template #showMessage>
@@ -213,7 +250,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- Delete wealth/aml modal-->
 <button style="display: none" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteWealthAmlModal">
