@@ -52,6 +52,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   @ViewChild(Table) private dataTable: Table;
   @ViewChild('reassignProductModal') reassignProductModalElement!: ElementRef;
   @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
+  @ViewChild('createClientModal') createClientModalElement!: ElementRef;
 
   private modals: { [key: string]: bootstrap.Modal } = {};
 
@@ -474,10 +475,21 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.selectedClientType = value;
     this.newClient = value === 'new';
 
-    this.newClient && (this.isNewClientSelected = true);
-    sessionStorage.setItem('isNewClientSelected', JSON.stringify(this.isNewClientSelected))
-    log.debug("New client status", this.newClient)
+    this.isNewClientSelected = (value === 'new');
+    sessionStorage.setItem('isNewClientSelected', JSON.stringify(this.isNewClientSelected));
+    log.debug("New client status", this.newClient);
   }
+
+  openCreateClientModal() {
+    this.setClientType('new');
+
+    if (this.createClientModalElement) {
+      const modalElement = this.createClientModalElement.nativeElement;
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
   handleSaveClient(eventData: any) {
     log.debug('Event received from Client search comp', eventData);
     const clientCode = eventData.id;
