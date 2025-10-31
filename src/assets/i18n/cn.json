@@ -224,6 +224,9 @@
     "Quotation Numbers": "报价号码",
     "Dynamic Setup": "动态设置",
     "isRequired": "是必填项",
+    "Intermediaries": "中介",
+    "Create Entity": "创建实体",
+    "Prospects": "准客户",
     "base-fms": {
       "parameters": "参数",
       "defineYrs": "定义年份/期间",

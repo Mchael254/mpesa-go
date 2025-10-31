@@ -226,6 +226,9 @@
     "Quotation Numbers": "Números de cotización",
     "Dynamic Setup": "Configuración dinámica",
     "isRequired": "es requerido",
+    "Intermediaries": "Intermediarios",
+    "Create Entity": "Crear entidad",
+    "Prospects": "Prospectos",
     "base-fms": {
       "parameters": "Parámetros",
       "defineYrs": "Definir años/períodos",
