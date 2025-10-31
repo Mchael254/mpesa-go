@@ -1,9 +1,13 @@
 <div class="mx-4 mt-3">
     <p class="screenTitle"> {{'gis.quotation.quotation_risk_detail' | translate}} </p>
     <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
-
-    <div class="card" style="background-color:#f5f6f8;border: none;border-radius: 5px;box-shadow: none;">
-        <div class="card-body my-4 mx-4">
+    <p class=" mx-4 text-primary ps-5" style="font-weight: 500;">Ticket status:<span
+            style="color: black;">{{ticketStatus |sentenceCase}}
+        </span>
+    </p>
+    <div class="card"
+        style="margin-top:-20px;background-color:#f5f6f8;border: none;border-radius: 5px;box-shadow: none;">
+        <div class="card-body  mx-4">
             <p class="section-title  pb-4 pt-4 ps-5" style="background-color: #fff;">
                 {{ 'gis.quotation.risk_details' | translate }}
             </p>

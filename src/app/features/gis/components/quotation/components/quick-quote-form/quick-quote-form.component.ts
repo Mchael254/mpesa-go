@@ -311,6 +311,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   destroy$ = new Subject<void>();
   previewVisible = false;
   pdfSrc: SafeResourceUrl | null = null;
+  reportDetails: any;
 
 
   constructor(
@@ -618,9 +619,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       }),
       untilDestroyed(this)
     ).subscribe(([taxes, coverTypeSections]) => {
-      const taxList = taxes._embedded as Tax[];
+      const taxList = taxes as Tax[];
       this.taxList = taxList;
       log.debug("CoverTypeSections single subclasss", coverTypeSections)
+      log.debug("taxes single subclasss", taxList)
       const coverTypeSectionList = coverTypeSections._embedded
       log.debug("covertypesection list;", coverTypeSectionList)
       // sessionStorage.setItem("covertypeSections", JSON.stringify(coverTypeSectionList))
@@ -2018,6 +2020,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       untilDestroyed(this)
     ).subscribe(([taxes, coverTypeSections]) => {
       this.taxList = taxes._embedded as Tax[]
+      log.debug("Taxes-list:::", this.taxList)
+
       log.debug("CoverTypeSections-log", coverTypeSections)
       const coverTypeSectionList = coverTypeSections._embedded
       log.debug("covertypesection list;", coverTypeSectionList)
@@ -2026,7 +2030,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         `covertypeSections-${subClassCode}`,
         JSON.stringify(coverTypeSectionList)
       );
-      riskFormGroup.get('applicableTaxes')?.setValue(taxes._embedded)
+      riskFormGroup.get('applicableTaxes')?.setValue(taxes)
       riskFormGroup.get('applicableCoverTypes')?.setValue(coverTypeSections._embedded)
       log.debug("Taxes:::", taxes, this.applicablePremiumRates)
     })
@@ -2275,7 +2279,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
-          this.exchangeRate = response
+          this.exchangeRate = response.rate
           log.debug("Exchange rate  ", this.exchangeRate);
         },
         error: (error) => {
@@ -2823,12 +2827,20 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   onPreviewRequested() {
     this.previewVisible = false;
     this.pdfSrc = null;
+    if (this.reportDetails) {
+      this.pdfSrc = `data:application/pdf;base64,${this.reportDetails.base64}`;
 
+      setTimeout(() => {
+        this.previewVisible = true;
+      }, 0);
+      return
+    }
     const payload = this.notificationPayload();
     this.quotationService.generateQuotationReport(payload).pipe(
       untilDestroyed(this)
     ).subscribe({
       next: (response) => {
+        this.reportDetails = response
         // 👇 Just prepend the header, no sanitizer needed
         this.pdfSrc = `data:application/pdf;base64,${response.base64}`;
 
@@ -2845,10 +2857,16 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   onDownloadRequested() {
     const payload = this.notificationPayload();
+    if (this.reportDetails) {
+      this.utilService.downloadPdfFromBase64(this.reportDetails.base64, "quotation-report.pdf");
+      return
+    }
 
     this.quotationService.generateQuotationReport(payload)
       .pipe(untilDestroyed(this))
       .subscribe((response) => {
+        this.reportDetails = response
+
         // Normal download using utilService
         this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf");
       });
@@ -2856,11 +2874,36 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
 
   onPrintRequested() {
+    if (this.reportDetails) {
+      const byteCharacters = atob(this.reportDetails.base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const pdfUrl = URL.createObjectURL(blob);
+
+      // Create hidden iframe for printing
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = pdfUrl;
+      document.body.appendChild(iframe);
+
+      iframe.onload = () => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+
+      };
+      return
+    }
     const payload = this.notificationPayload();
 
     this.quotationService.generateQuotationReport(payload)
       .pipe(untilDestroyed(this))
       .subscribe((response) => {
+        this.reportDetails = response
+
         const byteCharacters = atob(response.base64);
         const byteNumbers = new Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
@@ -2895,7 +2938,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     const productLevelPremiums$ = this.premiumComputationResponse.productLevelPremiums.map((product) => {
       const riskLevelPremiums$ = product.riskLevelPremiums.map((risk) => {
         const coverTypeDetails$ = risk.coverTypeDetails.map((coverType) => {
-          const clauses$ = this.quotationService.getClauses(coverType.coverTypeCode, coverType.subclassCode);
+          const clauses$ = this.quotationService.getClauses(coverType.subclassCode, coverType.coverTypeCode,);
           const limits$ = this.quotationService.getLimitsOfLiability(coverType.subclassCode);
           const excesses$ = this.quotationService.getExcesses(coverType.subclassCode);
           return forkJoin([clauses$, limits$, excesses$]).pipe(
