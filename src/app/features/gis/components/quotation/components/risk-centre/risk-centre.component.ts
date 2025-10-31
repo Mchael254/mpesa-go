@@ -41,7 +41,7 @@ export class RiskCentreComponent {
   selectedProduct: any;
   isCollapsed = false;
   riskDetailscolumns = false
-
+  ticketStatus: string
   constructor(
     public subclassService: SubclassesService,
     public sharedService: SharedQuotationsService,
@@ -62,6 +62,7 @@ export class RiskCentreComponent {
     public cdr: ChangeDetectorRef,
 
   ) {
+    this.ticketStatus = sessionStorage.getItem('ticketStatus');
     this.quotationCode = sessionStorage.getItem('quotationCode');
     this.quotationNumber = sessionStorage.getItem('quotationNum');
 

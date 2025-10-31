@@ -1415,22 +1415,22 @@ export interface IntroducerDto {
   introducerTown: string | null;
   pin: string | null;
   idRegistration: string | null;
-  dateOfBirth: string | null; 
+  dateOfBirth: string | null;
   remarks: string | null;
   introducerZip: string | null;
   introducerZipName: string | null;
   userID: string | null;
   bruCode: string | null;
   email: string | null;
-  WEF: string | null; 
-  WET: string | null; 
+  WEF: string | null;
+  WET: string | null;
   agentCode: string | null;
   type: string;
   feeAllowed: string;
   mobileNumber: string | null;
   telephoneNumber: string | null;
-  wef: string | null; 
-  wet: string | null; 
+  wef: string | null;
+  wet: string | null;
 }
 
 export interface CreateRiskCommission {
@@ -1444,26 +1444,34 @@ export interface CreateRiskCommission {
 }
 
 
-export interface RiskCommissionDto{
-  code:number;
-  quotationRiskCode:number;
-  quotationCode:number;
-  agentCode:number;
-  transCode:string;
-  accountCode:number;
+export interface RiskCommissionDto {
+  code: number;
+  quotationRiskCode: number;
+  quotationCode: number;
+  agentCode: number;
+  transCode: string;
+  accountCode: number;
   trntCode: string;
   group: string;
-  transDescription?: string; 
-  usedRate?: number ;
-  setupRate?: number ;
-  discRate?: number ;
+  transDescription?: string;
+  usedRate?: number;
+  setupRate?: number;
+  discRate?: number;
   discType?: string;
   amount?: number;
-  discAmount?: number ;
+  discAmount?: number;
   accountType?: string;
   commissionAmount?: number;
-  withHoldingRate?: number ;
-  withHoldingTax?: number ;
+  withHoldingRate?: number;
+  withHoldingTax?: number;
+}
+export interface SystemDetails {
+  id: number;
+  shortDesc: string;
+  systemName: string;
+  isCoreSystem: string;
+  organizationId?: number;
+  organizationGroupId?: number;
 }
 
 

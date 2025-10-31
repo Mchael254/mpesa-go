@@ -18,8 +18,10 @@ import { HttpParams } from "@angular/common/http";
 import { DatePipe } from "@angular/common";
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { BehaviorSubject } from "rxjs";
-import { Logger } from "../logger/logger.service";
 import { ConfigFormFieldsDto } from "../../data/common/dynamic-screens-dto";
+import { Logger } from '../logger/logger.service';
+
+const log = new Logger('UtilService');
 
 // import { format, subYears } from 'date-fns';
 
@@ -35,7 +37,6 @@ export interface DynamicNormalizedOption {
   original?: any;
 }
 
-const log = new Logger('UtilService');
 
 /**
  * Utility service class to provide common utility methods
