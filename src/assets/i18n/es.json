@@ -92,6 +92,7 @@
     "policy_id": "ID de Póliza",
     "quot_id": "ID de Cotización",
     "view_quotations": "Ver Cotizaciones",
+    "new_quick_quote":"Nueva cotización rápida",
     "sun": "Dom",
     "mon": "Lun",
     "tue": "Mar",

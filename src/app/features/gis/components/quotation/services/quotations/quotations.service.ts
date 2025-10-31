@@ -1272,6 +1272,39 @@ export class QuotationsService {
     );
   }
 
+searchQuotation(
+  quotationNumber: string,
+  pageNo: number = 0,
+  pageSize: number = 10
+): Observable<any> {
+  const params = new HttpParams()
+    .set('quotationNumber', quotationNumber)
+    .set('pageNo', pageNo.toString())
+    .set('pageSize', pageSize.toString());
+
+  return this.api.GET<any>(
+    `v2/quotation/search`,
+    API_CONFIG.GIS_QUOTATION_BASE_URL,  
+    params
+  ).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  );
+}
+
+getRiskCommissions(quoteCode: string): Observable<any> {
+  const params = new HttpParams().set('quoteCode', quoteCode);
+
+  return this.api.GET<any>(
+    `v2/risk-commission`,
+    API_CONFIG.GIS_QUOTATION_BASE_URL,
+    params
+  ).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  );
+}
+
 
 
 
