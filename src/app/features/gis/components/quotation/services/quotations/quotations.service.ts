@@ -469,7 +469,7 @@ export class QuotationsService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.api.GET<RegexPattern[]>(`v2/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.GET<RegexPattern[]>(`v1/regex/risk-id-format?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
 
   }
 
@@ -604,7 +604,7 @@ export class QuotationsService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.api.GET(`v2/taxes?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.GET(`api/v1/product-taxes?`, API_CONFIG.GIS_SETUPS_BASE_URL, params);
   }
 
 
@@ -733,17 +733,17 @@ export class QuotationsService {
 
 
   getClauses(
-    covertypeCode: number,
-    subclassCode: number,): Observable<any> {
+
+    subclassCode: number, covertypeCode: number): Observable<any> {
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     // Add the mandatory parameter
-    paramsObj['coverTypeCode'] = covertypeCode?.toString();
     paramsObj['subclassCode'] = subclassCode?.toString();
+    paramsObj['coverTypeCode'] = covertypeCode?.toString();
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.api.GET<any>(`v2/clauses?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.GET<any>(`api/v1/subclass-clauses/mandatory-clauses?`, API_CONFIG.GIS_SETUPS_BASE_URL, params);
 
   }
 
@@ -758,7 +758,7 @@ export class QuotationsService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.api.GET<Observable<any>>(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.GET<Observable<any>>(`api/v1/schedule-values/with-scheduleType?scheduleType=${scheduleType}&subClassCode=${subclassCode}`, API_CONFIG.GIS_SETUPS_BASE_URL);
   }
 
   addExcesses(newQpCode: number, excessesPayload: CreateLimitsOfLiability[]): Observable<any> {
@@ -795,7 +795,7 @@ export class QuotationsService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.api.GET<Observable<any>>(`v2/limits-of-liability/subclass?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
+    return this.api.GET<Observable<any>>(`api/v1/schedule-values/with-scheduleType?scheduleType=${scheduleType}&subClassCode=${subclassCode}`, API_CONFIG.GIS_SETUPS_BASE_URL);
   }
 
   addLimitsOfLiability(newQpCode: number, limitPayload: CreateLimitsOfLiability[]): Observable<any> {
@@ -881,8 +881,8 @@ export class QuotationsService {
     )
   }
 
-  createQuotationRisk(quotationCode, data: quotationRisk[]): Observable<any> {
-    return this.api.POST<any>(`v2/quotationRisks?quotationCode=${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
+  createQuotationRisk(quotationCode: number, newQpCode: number, quotationNumber: number, data: quotationRisk[]): Observable<any> {
+    return this.api.POST<any>(`v2/quotationRisks?quotationCode=${quotationCode}&newQpCode=${newQpCode}&quotationNumber=${quotationNumber}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
 
@@ -890,8 +890,8 @@ export class QuotationsService {
     return this.api.GET<Observable<any>>(`users/${userId}`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL)
   }
 
-  getExchangeRates(quotCurrencyId: number, orgId: number): Observable<any> {
-    return this.api.GET<Observable<any>>(`v2/exchange-rates?quotCurrencyId=${quotCurrencyId}&orgId=${orgId}`, API_CONFIG.GIS_QUOTATION_BASE_URL,).pipe(
+  getExchangeRates(quotCurrencyId: number, organizationId: number): Observable<any> {
+    return this.api.GET<Observable<any>>(`currency-rates/exchange-rate?QuoteCurrencyId=${quotCurrencyId}&organizationId=${organizationId}`, API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -1272,41 +1272,62 @@ export class QuotationsService {
     );
   }
 
-searchQuotation(
-  quotationNumber: string,
-  pageNo: number = 0,
-  pageSize: number = 10
-): Observable<any> {
-  const params = new HttpParams()
-    .set('quotationNumber', quotationNumber)
-    .set('pageNo', pageNo.toString())
-    .set('pageSize', pageSize.toString());
+  searchQuotation(
+    quotationNumber: string,
+    pageNo: number = 0,
+    pageSize: number = 10
+  ): Observable<any> {
+    const params = new HttpParams()
+      .set('quotationNumber', quotationNumber)
+      .set('pageNo', pageNo.toString())
+      .set('pageSize', pageSize.toString());
 
-  return this.api.GET<any>(
-    `v2/quotation/search`,
-    API_CONFIG.GIS_QUOTATION_BASE_URL,  
-    params
-  ).pipe(
-    retry(1),
-    catchError(this.errorHandl)
-  );
-}
+    return this.api.GET<any>(
+      `v2/quotation/search`,
+      API_CONFIG.GIS_QUOTATION_BASE_URL,
+      params
+    ).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
 
-getRiskCommissions(quoteCode: string): Observable<any> {
-  const params = new HttpParams().set('quoteCode', quoteCode);
+  getRiskCommissions(quoteCode: string): Observable<any> {
+    const params = new HttpParams().set('quoteCode', quoteCode);
 
-  return this.api.GET<any>(
-    `v2/risk-commission`,
-    API_CONFIG.GIS_QUOTATION_BASE_URL,
-    params
-  ).pipe(
-    retry(1),
-    catchError(this.errorHandl)
-  );
-}
+    return this.api.GET<any>(
+      `v2/risk-commission`,
+      API_CONFIG.GIS_QUOTATION_BASE_URL,
+      params
+    ).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+  // searchQuotation(
+  //   quotationNumber: string,
+  //   pageNo: number = 0,
+  //   pageSize: number = 10
+  // ): Observable<any> {
+  //   const params = new HttpParams()
+  //     .set('quotationNumber', quotationNumber)
+  //     .set('pageNo', pageNo.toString())
+  //     .set('pageSize', pageSize.toString());
+
+  //   return this.api.GET<any>(
+  //     `v2/quotation/search`,
+  //     API_CONFIG.GIS_QUOTATION_BASE_URL,
+  //     params
+  //   ).pipe(
+  //     retry(1),
+  //     catchError(this.errorHandl)
+  //   );
+  // }
 
 
-
+  getSystemsAssignedToUser(userId: number): Observable<any> {
+    return this.api.GET<Observable<any>>(`users/${userId}/systems`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL)
+  }
 
 
 

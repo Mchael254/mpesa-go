@@ -200,7 +200,7 @@
                 </div>
                  <div class="col-9" style="padding: 0.5rem 0">
                 <div class="input-group input-group-sm">
-               <input [(ngModel)]="idSearchTerm"
+               <input [(ngModel)]="idSearchTermPolicy"
                (keyup.enter)="onSearch()"
                (focus)="showRecentSearches()"
                 type="text"
@@ -246,15 +246,13 @@
               <div class="my-4"></div>
 
               <div class="d-flex justify-content-end">
-                <!-- <label
-                    (click)="navLink('/home/lms/quotation/list'); dynamicSideBarMenu(quotationSubMenuList[2])"
-                    class="text-plain"
-                >
-                    View Quotations
-                </label> -->
-                <label (click)="navLink('/home/gis/quotation/quotation-management');" class="text-plain">
+                <label (click)="navLink('/home/lms/quotation/list'); dynamicSideBarMenu(quotationSubMenuList[2])"
+                  class="text-plain">
                   View Quotations
                 </label>
+                <!-- <label (click)="navLink('/home/gis/quotation/quotation-management');" class="text-plain">
+                  View Quotations
+                </label> -->
               </div>
                       <!-- ✅ RECENT SEARCHES DROPDOWN -->
 <div *ngIf="showRecents" class="mt-2 recent-searches-dropdown">

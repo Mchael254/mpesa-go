@@ -73,6 +73,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   previewVisible = false;
   pdfSrc: SafeResourceUrl | null = null;
   public currencyObj: NgxCurrencyConfig;
+  reportDetails: any;
 
   constructor(
     private quotationService: QuotationsService,
@@ -314,7 +315,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy(): void {
   }
-  
+
   convertQuoteToNormalQuote() {
     const quotationCode = this.quotationDetails?.code;
     if (!quotationCode) {
@@ -590,12 +591,21 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   onPreviewRequested() {
     this.previewVisible = false;
     this.pdfSrc = null;
+    if (this.reportDetails) {
+      this.pdfSrc = `data:application/pdf;base64,${this.reportDetails.base64}`;
 
+      setTimeout(() => {
+        this.previewVisible = true;
+      }, 0);
+      return
+    }
     const payload = this.notificationPayload();
     this.quotationService.generateQuotationReport(payload).pipe(
       untilDestroyed(this)
     ).subscribe({
       next: (response) => {
+        this.reportDetails = response
+
         // 👇 Just prepend the header, no sanitizer needed
         this.pdfSrc = `data:application/pdf;base64,${response.base64}`;
 
@@ -608,25 +618,27 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
-onDownloadRequested() {
-  const payload = this.notificationPayload();
+  onDownloadRequested() {
+    if (this.reportDetails) {
+      this.utilService.downloadPdfFromBase64(this.reportDetails.base64, "quotation-report.pdf");
+      return
+    }
+    const payload = this.notificationPayload();
 
-  this.quotationService.generateQuotationReport(payload)
-    .pipe(untilDestroyed(this))
-    .subscribe((response) => {
-      // Normal download using utilService
-      this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf");
-    });
-}
+    this.quotationService.generateQuotationReport(payload)
+      .pipe(untilDestroyed(this))
+      .subscribe((response) => {
+        this.reportDetails = response
+
+        // Normal download using utilService
+        this.utilService.downloadPdfFromBase64(response.base64, "quotation-report.pdf");
+      });
+  }
 
 
-onPrintRequested() {
-  const payload = this.notificationPayload();
-
-  this.quotationService.generateQuotationReport(payload)
-    .pipe(untilDestroyed(this))
-    .subscribe((response) => {
-      const byteCharacters = atob(response.base64);
+  onPrintRequested() {
+    if (this.reportDetails) {
+      const byteCharacters = atob(this.reportDetails.base64);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
@@ -644,10 +656,39 @@ onPrintRequested() {
       iframe.onload = () => {
         iframe.contentWindow?.focus();
         iframe.contentWindow?.print();
-       
+
       };
-    });
-}
+      return
+    }
+    const payload = this.notificationPayload();
+
+    this.quotationService.generateQuotationReport(payload)
+      .pipe(untilDestroyed(this))
+      .subscribe((response) => {
+        this.reportDetails = response
+
+        const byteCharacters = atob(response.base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        const pdfUrl = URL.createObjectURL(blob);
+
+        // Create hidden iframe for printing
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = pdfUrl;
+        document.body.appendChild(iframe);
+
+        iframe.onload = () => {
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
+
+        };
+      });
+  }
 
 
 

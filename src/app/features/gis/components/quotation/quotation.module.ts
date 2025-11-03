@@ -32,7 +32,6 @@ import { QuotationConversionComponent } from './components/quotation-conversion/
 import { QuotationInquiryComponent } from './components/quotation-inquiry/quotation-inquiry.component';
 import { QuotationSourcesComponent } from './components/quotation-sources/quotation-sources.component';
 import { CheckboxModule } from 'primeng/checkbox';
-import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
 import { TagModule } from 'primeng/tag';
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 import { RiskCentreComponent } from './components/risk-centre/risk-centre.component';
@@ -45,6 +44,7 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { QuotationOtherDetailsComponent } from './components/quotation-other-details/quotation-other-details.component';
 import { QuotationReportComponent } from './components/quotation-report/quotation-report.component';
+import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
 
 
 
@@ -107,8 +107,7 @@ import { QuotationReportComponent } from './components/quotation-report/quotatio
     CardModule,
     BreadcrumbModule,
     OverlayPanelModule,
-    MultiSelectModule
-
+    MultiSelectModule,
   ],
   providers: [DatePipe],
 
