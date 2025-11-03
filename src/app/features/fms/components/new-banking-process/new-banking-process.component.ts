@@ -15,7 +15,8 @@ import {
 } from '../../data/banking-process-dto';
 import * as bootstrap from 'bootstrap';
 import { AuthService } from '../../../../shared/services/auth.service';
-import { UsersDTO } from '../../data/receipting-dto';
+import { StaffService } from 'src/app/features/entities/services/staff/staff.service';
+import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 const log = new Logger('NewBankingProcessComponent');
 /**
  * @Component NewBankingProcessComponent
@@ -50,8 +51,8 @@ export class NewBankingProcessComponent implements OnInit {
   /** An array of `PaymentModesDTO` used to populate the payment method dropdown. */
   paymentModes: PaymentModesDTO[] = [];
   /** A list of users available for task assignment, populating the user selection modal. */
-  users: UsersDTO[] = [];
-  filteredUsers: UsersDTO[] = [];
+  users: StaffDto[] = [];
+  filteredUsers:StaffDto[] = [];
   /** Flag to control whether the receipts table is rendered in the DOM. */
   displayTable: boolean = false;
   /** Controls visibility of the main assignment dialog. */
@@ -61,10 +62,10 @@ export class NewBankingProcessComponent implements OnInit {
   /**controls visibility of create batches btn,it should be hidden if payment mode selected is cheque */
   isCashSelected: boolean = false;
   /** Holds the user object selected from the second dialog to display in the first dialog's input. */
-  selectedUserForAssignment: UsersDTO | null = null;
+  selectedUserForAssignment:  StaffDto | null = null;
 
   /** Temporarily holds the user selected in the user table before confirmation. */
-  tempSelectedUser: UsersDTO | null = null;
+  tempSelectedUser:  StaffDto | null = null;
 
   // --- Table Column Configuration ---
   /** Stores the configuration for all available columns in the receipts table. */
@@ -79,6 +80,7 @@ export class NewBankingProcessComponent implements OnInit {
   selectedOrg: OrganizationDTO;
   /** Information about the currently logged-in user. */
   loggedInUser: any;
+   staffPageSize = 5;
   /**
    * @constructor
    * @param translate Service for handling internationalization (i18n).
@@ -96,7 +98,8 @@ export class NewBankingProcessComponent implements OnInit {
     private globalMessagingService: GlobalMessagingService,
     private bankingService: BankingProcessService,
     private sessionStorage: SessionStorageService,
-    private authService: AuthService
+    private authService: AuthService,
+    private staffService:StaffService
   ) {}
   /**
    * @description Angular lifecycle hook that runs on component initialization.
@@ -108,6 +111,7 @@ export class NewBankingProcessComponent implements OnInit {
     this.initializeUsersForm();
     this.initiateColumns();
     this.allColumns = this.initiateColumns();
+this.fetchActiveUsers(0, this.staffPageSize);
     this.fetchPaymentsModes();
     let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
     let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
@@ -119,8 +123,6 @@ export class NewBankingProcessComponent implements OnInit {
       this.selectedOrg = null;
     }
     this.loggedInUser = this.authService.getCurrentUser();
-    //this.fetchUsers(this.loggedInUser.code);
-    this.fetchActiveUsers();
   }
   /**
    * @description Initializes the `rctsRetrievalForm` with required controls and validators.
@@ -187,6 +189,7 @@ export class NewBankingProcessComponent implements OnInit {
   showColumnsDialogs(): void {
     this.visible = true;
   }
+  
   /**
    * @description Filters the `filteredReceipts` array based on user input in the table's filter row.
    * Handles filtering for string, number, and date fields.
@@ -391,17 +394,36 @@ export class NewBankingProcessComponent implements OnInit {
    * @description Fetches a list of users that the current user can assign tasks to.
    *
    */
-  fetchActiveUsers(): any {
-    this.bankingService.getActiveUsers().subscribe({
-      next: (response) => {
-        this.users = response.content;
+  fetchActiveUsers(pageIndex: number,
+               pageSize: number,
+               sortList: any = 'dateCreated',
+               order: string = 'desc'):void{
+    this.staffService.getStaff(pageIndex,
+                pageSize, 
+                
+                 'U',
+                 sortList,
+                order, null,'A').subscribe({
+      next:(response)=>{
+         this.users = response.content;
         this.filteredUsers = this.users;
       },
-      error: (err) => {
+      error:(err)=>{
         this.handleApiError(err);
-      },
-    });
+      }
+    })
   }
+  // fetchActiveUsers(): any {
+  //   this.bankingService.getActiveUsers().subscribe({
+  //     next: (response) => {
+  //       this.users = response.content;
+  //       this.filteredUsers = this.users;
+  //     },
+  //     error: (err) => {
+  //       this.handleApiError(err);
+  //     },
+  //   });
+  // }
 
   /**
    * @description Navigates the user to the next step in the banking process (Create Batches).
