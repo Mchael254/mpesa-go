@@ -4,7 +4,7 @@ import {Logger, UtilService} from "../../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import {BankService} from "../../../../../../shared/services/setups/bank/bank.service";
 import {Observable} from "rxjs";
-import {BankDTO} from "../../../../../../shared/data/common/bank-dto";
+import {BankBranchDTO, BankDTO} from "../../../../../../shared/data/common/bank-dto";
 import {CurrencyService} from "../../../../../../shared/services/setups/currency/currency.service";
 import {PaymentModesService} from "../../../../../../shared/services/setups/payment-modes/payment-modes.service";
 import {ClientService} from "../../../../services/client/client.service";
@@ -16,7 +16,7 @@ import {
   DynamicScreenSetupDto,
   FormGroupsDto,
   FormSubGroupsDto,
-  PresentationType, SaveAddressAction,
+  PresentationType,
   SaveFinanceAction
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
@@ -48,9 +48,13 @@ export class FinancialComponent implements OnInit {
 
   // countries$: Observable<Country[]>;
   banks$: Observable<BankDTO[]>;
+  bankBranches$: Observable<BankBranchDTO[]>;
   banks: BankDTO[];
-  bankBranches: any[];
-  selectedBankBranch: any;
+  selectedBank: BankDTO;
+  bankBranches: BankBranchDTO[];
+  selectedBankBranch: BankBranchDTO
+
+  payee: Payee[];
   selectedPayee: Payee;
 
   currencies: CurrencyDTO[];
@@ -91,6 +95,9 @@ export class FinancialComponent implements OnInit {
 
   ngOnInit(): void {
     this.banks$ = this.bankService.getBanks(this.countryId);
+    this.banks$.subscribe((banks: BankDTO[]) => {
+      this.banks = banks;
+    })
     this.fetchCurrencies();
     this.fetchPaymentChannels();
     this.prepareDataDisplay();
@@ -100,6 +107,9 @@ export class FinancialComponent implements OnInit {
     setTimeout(() => {
       const paymentDetails = this.clientDetails.paymentDetails;
       this.paymentDetails = paymentDetails;
+      this.payee = this.clientDetails.payee;
+
+      const paymentMode = this.paymentModes?.find(payment => payment.id == parseInt(paymentDetails.preferredChannel));
 
       const displayPaymentDetails  = {
         overview_banking_info_bank_name: paymentDetails.bankName,
@@ -107,14 +117,19 @@ export class FinancialComponent implements OnInit {
         overview_banking_info_branch_name: paymentDetails.bankBranchName,
         overview_doc_id_no: null,
         overview_banking_info_acc_no: paymentDetails.accountNumber,
-        overview_mobile_no: null,
+        overview_mobile_no: paymentDetails.mpayno,
         overview_email: null,
         overview_iban: paymentDetails.iban,
         overview_swift_code: paymentDetails.swiftCode,
         overview_bank_name: paymentDetails.bankName,
-        overview_pref_payment_method: paymentDetails.preferredChannel,
+        overview_pref_payment_method: this.selectedCurrency?.name,
         overview_branch_name: paymentDetails.bankBranchName,
         overview_acc_no: paymentDetails.accountNumber,
+
+        overview_currency: paymentDetails.currencyName,
+        overview_wef: paymentDetails.effectiveFromDate,
+        overview_wet: paymentDetails.effectiveToDate,
+        overview_mobile_money_number: paymentDetails.mpayno,
       }
 
       if (this.group.subGroup.length === 0) {
@@ -181,7 +196,7 @@ export class FinancialComponent implements OnInit {
       const payee = {
         businessPersonIdCorporate: pay.code,
         overview_full_name: pay.name,
-        overview_doc_id_no: null,
+        overview_doc_id_no: pay.idNo,
         overview_mobile_no: pay.mobileNo,
         overview_email: pay.email,
         overview_bank_name: pay.bankName,
@@ -218,7 +233,6 @@ export class FinancialComponent implements OnInit {
    * @param row
    */
   handlePayeeDelete(row: any): void {
-    log.info('handlePayeeDelete...' );
     this.clientService.deletePayee(row.businessPersonIdCorporate).subscribe({
       next: () => {
         this.table.data = this.table.data.filter(person => person.businessPersonIdCorporate != row.businessPersonIdCorporate);
@@ -242,15 +256,19 @@ export class FinancialComponent implements OnInit {
     this.setSelectOptions();
 
     if (
-      saveAction === SaveFinanceAction.EDIT_FINANCE_DETAILS ||
-      saveAction === SaveFinanceAction.EDIT_PAYEE
-    ) this.patchFormValues(fields);
+      saveAction === SaveFinanceAction.EDIT_FINANCE_DETAILS || saveAction === SaveFinanceAction.EDIT_PAYEE) {
+      this.patchFormValues(fields);
+    } else if (saveAction === SaveFinanceAction.SAVE_PAYEE) {
+      this.editForm.reset();
+    }
   }
 
 
   openEditFinancialDialog(subgroup?: FormSubGroupsDto, saveAction?: SaveFinanceAction): void {
     this.saveAction = saveAction;
     let fields: ConfigFormFieldsDto[];
+
+    this.selectedBank = this.banks.find(bank => bank.name === this.paymentDetails.bankName);
 
     if (subgroup?.fields) {
       this.selectedSubgroup = subgroup;
@@ -266,7 +284,6 @@ export class FinancialComponent implements OnInit {
     this.formFields = fields;
     this.createEditForm(fields, saveAction);
     this.editButton.nativeElement.click();
-    log.info('subgroup >>> ', subgroup)
   }
 
   saveDetails() {
@@ -278,7 +295,6 @@ export class FinancialComponent implements OnInit {
         this.addEditPayee();
         break;
       case SaveFinanceAction.SAVE_PAYEE:
-        this.editForm.reset();
         this.addEditPayee();
         break;
       default:
@@ -288,19 +304,25 @@ export class FinancialComponent implements OnInit {
 
   editFinancialDetails(): void {
     const formValues = this.editForm.getRawValue();
-    log.info('payee details >>> ', formValues);
     const paymentDetails = {
       ...this.paymentDetails,
-      accountNumber: formValues.overview_banking_info_acc_no,
+      // accountNumber: formValues.overview_banking_info_acc_no,
       bankBranchId: formValues.overview_banking_info_branch_name,
       bankId: formValues.overview_banking_info_bank_name,
-      // currencyId: formValues.currency,
-      // effectiveFromDate: formValues.wef,
-      // effectiveToDate: formValues.wet,
       iban: formValues.overview_iban,
       preferredChannel: formValues.overview_pref_payment_method,
       swiftCode: formValues.overview_pref_swift_code,
-      // mpayno: formValues.mpayno
+      mpayno: (formValues.overview_mobile_money_number?.internationalNumber)?.replace(/\s+/g, ''),
+
+      //
+      bankName: formValues.overview_bank_name,
+      bankBranchName: formValues.overview_branch_name,
+      accountNumber: formValues.overview_acc_no,
+      currency: formValues.overview_currency,
+      currencyId: formValues.overview_currency,
+      effectiveFromDate: formValues.overview_wef ,
+      effectiveToDate: formValues.overview_wet,
+      mpayNo: formValues.overview_mobile_money_number,
     };
 
     const client = {
@@ -327,30 +349,17 @@ export class FinancialComponent implements OnInit {
 
   addEditPayee(): void {
     const formValues = this.editForm.getRawValue();
-    log.info('form values ->', this.editForm.value);
 
     const payee = {
       ...this.selectedPayee,
       accountNumber: formValues.overview_acc_no,
-      // address: null,
-      // agentCode: null,
-      bankBranchCode: formValues.overview_branch_name,
-      bankBranchName: formValues.overview_branch_name,
-      bankName: formValues.overview_bank_name,
-      // countryCode: null,
-      // countryName: null,
-      // createdBy: null,
-      // createdDate: null,
+      bankBranchCode: formValues.overview_branch_name ?? null,
+      bankBranchName: formValues.overview_branch_name ?? null,
+      bankName: formValues.overview_bank_name ?? null,
       email: formValues.overview_email,
       idNo: formValues.overview_doc_id_no,
       mobileNo: (formValues?.overview_mobile_no?.internationalNumber)?.replace(/\s+/g, ''),
-      // modifiedBy: null,
-      // modifiedDate: null,
       name: formValues.overview_full_name,
-      // serviceProviderCode: null,
-      // town: null,
-      // type: null,
-      // zip: null
     };
 
     const client = {
@@ -359,6 +368,7 @@ export class FinancialComponent implements OnInit {
       partyId: this.clientDetails.partyId,
       payee: [payee]
     }
+
 
     this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
       next: data => {
@@ -374,13 +384,17 @@ export class FinancialComponent implements OnInit {
     });
   }
 
-  prepareEditPayeeForm(data: any, saveAction: SaveFinanceAction) {
-    this.saveAction = saveAction;
+  prepareEditPayeeForm(data: any) {
+    this.selectedPayee = null;
     this.formFields =  this.tableHeaders.map(field => ({...field})) ;
     const row = data.row;
-    this.selectedPayee = this.clientDetails.payee.find(payee => payee.code = row.businessPersonIdCorporate);
+    // log.info('selected row >>> ', row, this.payee);
+
+    this.selectedPayee = this.payee.find(payee => payee.code === row.businessPersonIdCorporate);
+    this.saveAction = this.selectedPayee == undefined ? SaveFinanceAction.SAVE_PAYEE : SaveFinanceAction.EDIT_PAYEE;
+
+    this.selectedBank = this.banks.find(bank => bank.name === this.selectedPayee?.bankName);
     this.selectedSubgroup = data.subGroup;
-    log.info('selected payee >>> ', this.selectedPayee, row)
 
     this.formFields.forEach((field: ConfigFormFieldsDto) => {
       field.dataValue = row[field.fieldId];
@@ -389,7 +403,7 @@ export class FinancialComponent implements OnInit {
       }
     });
 
-    this.createEditForm(this.formFields, saveAction);
+    this.createEditForm(this.formFields, this.saveAction);
     this.editButton.nativeElement.click();
   }
 
@@ -397,8 +411,8 @@ export class FinancialComponent implements OnInit {
     this.currencyService.getCurrencies().subscribe({
       next: res => {
         this.currencies = res;
-        // const index = res.findIndex(c => c.id === this.financialDetails.currencyId);
-        // this.selectedCurrency = res[index];
+        const index = res.findIndex(c => c.id === this.paymentDetails.currencyId);
+        this.selectedCurrency = res[index];
       },
       error: err => {}
     });
@@ -428,9 +442,9 @@ export class FinancialComponent implements OnInit {
           });
           break;
 
-        case 'overview_branch_name ':
+        case 'overview_branch_name':
         case 'overview_banking_info_branch_name':
-          const bankId = this.paymentDetails.bankBranchId; // todo: get and use bankID
+          const bankId = this.selectedBank?.id; // todo: get and use bankID
           this.bankService.getBankBranchesByBankId(bankId).subscribe({
             next: res => {
               field.options = res;
@@ -440,6 +454,7 @@ export class FinancialComponent implements OnInit {
           break;
 
         case 'currency':
+        case 'overview_currency':
           field.options = this.currencies;
           break;
 
@@ -493,18 +508,27 @@ export class FinancialComponent implements OnInit {
         overview_banking_info_acc_no: this.paymentDetails.accountNumber,
         overview_banking_info_bank_name: this.paymentDetails.bankId,
         overview_banking_info_branch_name: this.paymentDetails.bankBranchId,
-        // currency: this.paymentDetails.currencyId,
-        // wef: new Date(this.paymentDetails.effectiveFromDate).toISOString().split('T')[0],
-        // wet: new Date(this.paymentDetails.effectiveToDate).toISOString().split('T')[0],
         overview_iban: this.paymentDetails.iban,
         overview_pref_payment_method: this.paymentDetails.preferredChannel,
         overview_swift_code: this.paymentDetails.swiftCode,
-        // mpayno: this.paymentDetails.mpayno,
+
+        overview_bank_name: this.selectedBank?.id,
+        overview_branch_name: this.paymentDetails.bankBranchId,
+        overview_currency: this.paymentDetails.currencyId,
+        overview_wef: new Date(this.paymentDetails.effectiveFromDate).toISOString().split('T')[0],
+        overview_wet: new Date(this.paymentDetails.effectiveToDate).toISOString().split('T')[0],
+        overview_mobile_money_number: this.paymentDetails.mpayno,
+        overview_acc_no: this.paymentDetails.accountNumber,
       }
     } else if (this.saveAction === SaveFinanceAction.EDIT_PAYEE) {
       patchData = {
-        overview_bank_name: this.selectedPayee.bankName,
-        overview_bank_branch: this.selectedPayee.bankBranchName,
+        overview_bank_name: this.selectedBank?.id,
+        overview_branch_name : this.selectedPayee?.bankBranchCode,
+        overview_full_name: this.selectedPayee?.name,
+        overview_doc_id_no: this.selectedPayee.idNo,
+        overview_mobile_no: this.selectedPayee.mobileNo,
+        overview_email: this.selectedPayee.email,
+        overview_acc_no: this.selectedPayee.accountNumber,
       }
     }
 
@@ -513,7 +537,7 @@ export class FinancialComponent implements OnInit {
   }
 
   checkTelNumber(mainStr: string): boolean {
-    const subStrs: string[] = ['mobile_no', 'tel_no', 'sms_number', 'telephone_number', 'landline_number'];
+    const subStrs: string[] = ['mobile_no', 'tel_no', 'sms_number', 'telephone_number', 'landline_number', 'mobile_money_number'];
     return subStrs.some(subStr => mainStr.includes(subStr));
   }
 }

@@ -193,7 +193,8 @@
                                     </button>
 
                                     <button type="button" class="btn btn-link btn-sm fw-bold text-primary px-2"
-                                        data-bs-toggle="modal" data-bs-target="#deleteClientDocModal">
+                                        data-bs-toggle="modal" data-bs-target="#deleteClientDocModal"
+                                        (click)="onDeleteClientDoc(clientDoc)">
                                         {{ 'gis.quotation.delete' | translate }}
                                     </button>
 
@@ -292,7 +293,8 @@
                                     {{ 'gis.quotation.cancel' | translate }}
                                 </button>
 
-                                <button type="button" class="btn btn-primary" id="deleteYes" data-bs-dismiss="modal">
+                                <button type="button" class="btn btn-primary" id="deleteYes" data-bs-dismiss="modal"
+                                    (click)="deleteClientDoc()">
                                     {{ 'gis.quotation.delete' | translate }}
                                 </button>
 

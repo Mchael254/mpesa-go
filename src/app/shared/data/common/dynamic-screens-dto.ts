@@ -110,7 +110,7 @@ export interface ConfigFormFieldsDto {
   formSubGroupingId?: string,
   screenId?: string,
   subModuleId?: string,
-  dataValue?: string | number | object | null | undefined;
+  dataValue?: any;
 }
 
 export interface MultilingualText {

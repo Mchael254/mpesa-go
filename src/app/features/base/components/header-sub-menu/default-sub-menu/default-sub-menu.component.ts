@@ -31,6 +31,7 @@ export class DefaultSubMenuComponent implements OnInit {
   searchAccountForm: FormGroup;
   nameSearchTerm: string;
   idSearchTerm: string;
+  idSearchTermPolicy: string = '';
   searchTerm: string;
   searchResults: any[] = [];
   showResults: boolean = false;

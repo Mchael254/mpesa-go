@@ -619,5 +619,31 @@ export class QuotationReportComponent {
     log.info("Document downloaded:", fileName);
   }
 
+  onDeleteClientDoc(event: any) {
+    this.selectedClientDoc = event;
+    log.info("Selected client doc", this.selectedClientDoc);
+
+
+  }
+  deleteClientDoc() {
+    const docId = this.selectedClientDoc.id;
+
+    this.dmsService.deleteDocumentById(docId).subscribe({
+      next: (res: any) => {
+        log.info(`Response after deleting  Document details`, res);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Document deleted successfully');
+        // Remove the deleted doc from the clientDocuments array
+        const index = this.clientDocuments.findIndex(doc => doc.id === this.selectedClientDoc.id);
+        if (index !== -1) {
+          this.clientDocuments.splice(index, 1);
+        }
+        this.selectedClientDoc = null
+
+      },
+      error: (err) => {
+        log.error(`Download failed!`, err);
+      },
+    });
+  }
 
 }
