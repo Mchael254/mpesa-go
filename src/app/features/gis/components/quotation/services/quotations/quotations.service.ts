@@ -5,6 +5,7 @@ import {
   CreateLimitsOfLiability,
   CreateRiskCommission,
   EditRisk,
+  ExceptionPayload,
   OtpPayload,
   premiumPayloadData,
   QuotationComment,
@@ -641,13 +642,14 @@ export class QuotationsService {
   //       catchError(this.errorHandl)
   //     )
   // }
-  getExceptions(quotationCode: number): Observable<any> {
+  getExceptions(quotationCode: number, transNo: number): Observable<any> {
     const params = new HttpParams()
-      .set('batchNumber', quotationCode.toString())
-      .set('level', 'Q');
+      .set('quotationCode', quotationCode.toString())
+      .set('transNo', transNo.toString())
+      .set('def', 'QUOTE');
 
     return this.api.GET(
-      `v2/uw-exceptions?${params.toString()}`,
+      `v2/quotation-exceptions/manage-exceptions?${params.toString()}`,
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
     );
   }
@@ -668,14 +670,11 @@ export class QuotationsService {
 
 
 
-  AuthoriseExceptions(quotationCode: number, user: string): Observable<any> {
-    const params = new HttpParams()
-      .set('quotationCode', quotationCode.toString())
-      .set('user', user);
+  authoriseExceptions(exception: ExceptionPayload): Observable<any> {
 
     return this.api.POST(
-      `v2/authorise?${params.toString()}`,
-      null,
+      `v2/quotation-exceptions/authorise`,
+      JSON.stringify(exception),
       API_CONFIG.GIS_QUOTATION_BASE_URL
     );
   }
@@ -1136,7 +1135,7 @@ export class QuotationsService {
     )
   }
   getScheduleLevels(screenCode: string): Observable<any> {
-    return this.api.GET<any>(`v1/schedule-screen-levels?screenCode=${screenCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+    return this.api.GET<any>(`api/v1/screen-schedule-levels?screenId=${screenCode}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -1261,9 +1260,9 @@ export class QuotationsService {
       catchError(this.errorHandl)
     );
   }
-  reviseQuote(quotationCode: number, createNewQuotation: 'Y' | 'N' = 'N'): Observable<any> {
+  reviseQuote(quotationCode: number, newQuote: 'Y' | 'N' = 'N'): Observable<any> {
     return this.api.POST<any>(
-      `v1/quotation/revise/${quotationCode}?createNewQuotation=${createNewQuotation}`,
+      `v2/quotation/revise?quotCode=${quotationCode}&newQuote=${newQuote}`,
       null,
       API_CONFIG.GIS_QUOTATION_BASE_URL
     ).pipe(

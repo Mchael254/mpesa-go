@@ -1473,6 +1473,34 @@ export interface SystemDetails {
   organizationId?: number;
   organizationGroupId?: number;
 }
+export interface ExceptionPayload {
+  code: number;
+  gisExceptionCode: string;
+  policyBatchNumber: number;
+  policyNumber: string;
+  exceptionBy: string;
+  isAuthorized: string;
+  authorizedBy: string;
+  authorizedDate: string; // or Date if you parse it
+  riskCode: number;
+  transactionDate: string; // or Date
+  transactionNumber: number;
+  transactionType: string;
+  agentCode: number;
+  agentShortDescription: string;
+  setStandard: number;
+  usedStandard: number;
+  description: string;
+  systemModule: string;
+  decision: string;
+  quotationCode: number;
+  quotationNumber: string;
+  sectionCode: number;
+  reiCode: number;
+  claimNumber: string;
+  mtranNumber: number;
+  accountBalance: number;
+}
 
 
 
