@@ -37,6 +37,7 @@ export interface Tax {
   divisionFactor: string;
   applicationLevel: string;
   taxRateType: string;
+  transactionCode: string
 }
 
 export interface Risk {
@@ -67,7 +68,7 @@ export interface Risk {
 
 export interface CoverType {
   subclassCode: number;
-  description:string;
+  description: string;
   coverTypeCode: number;
   minimumAnnualPremium: number;
   minimumPremium: number | null;
@@ -116,7 +117,7 @@ export interface ProductPremium {
   code: number
   coverFrom?: string,
   coverTo?: string,
-  quotationNo?:string,
+  quotationNo?: string,
 }
 
 export interface RiskLevelPremium {
@@ -132,7 +133,7 @@ export interface RiskLevelPremium {
 
 export interface CoverTypeDetail {
   subclassCode: number;
-  description:string;
+  description: string;
   coverTypeCode: number;
   minimumAnnualPremium: number | null;
   minimumPremium: number | null;
