@@ -2242,7 +2242,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   getExceptions(quotationCode: number) {
-    this.quotationService.getExceptions(quotationCode).subscribe({
+    this.quotationService.getExceptions(quotationCode, null).subscribe({
       next: (res) => {
         log.debug('exceptions', res);
         this.exceptionsData = res._embedded;
@@ -2329,7 +2329,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       log.debug('Authorizing as underwriter:', selected);
 
       this.quotationService
-        .AuthoriseExceptions(this.quotationView.code, this.quotationView.preparedBy)
+        .authoriseExceptions(selected)
         .subscribe({
           next: (res) => {
             if (res.status === 'SUCCESS') {
