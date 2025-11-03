@@ -182,9 +182,17 @@ export enum SaveAction {
 
   SAVE_OWNERSHIP_DETAILS = 'SAVE_OWNERSHIP_DETAILS',
   EDIT_OWNERSHIP_DETAILS = 'EDIT_OWNERSHIP_DETAILS',
+
+  EDIT_ADDRESS_DETAILS = 'EDIT_ADDRESS_DETAILS',
+  EDIT_BRANCH = 'EDIT_BRANCH',
+  SAVE_BRANCH = 'SAVE_BRANCH',
+
+  EDIT_FINANCE_DETAILS = 'EDIT_FINANCE_DETAILS',
+  EDIT_PAYEE = 'EDIT_PAYEE',
+  SAVE_PAYEE = 'SAVE_PAYEE',
 }
 
-export enum SaveAddressAction {
+/*export enum SaveAddressAction {
   EDIT_ADDRESS_DETAILS = 'EDIT_ADDRESS_DETAILS',
   EDIT_BRANCH = 'EDIT_BRANCH',
   SAVE_BRANCH = 'SAVE_BRANCH',
@@ -194,7 +202,7 @@ export enum SaveFinanceAction {
   EDIT_FINANCE_DETAILS = 'EDIT_FINANCE_DETAILS',
   EDIT_PAYEE = 'EDIT_PAYEE',
   SAVE_PAYEE = 'SAVE_PAYEE',
-}
+}*/
 
 export enum FieldType {
   text = "text",
@@ -214,4 +222,9 @@ export enum FieldType {
   button = "button",
   table_select = "table_select",
   multiple_document_uploads = "multiple_document_uploads",
+}
+
+export enum UserCategory {
+  INDIVIDUAL = "INDIVIDUAL",
+  CORPORATE = "CORPORATE",
 }

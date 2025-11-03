@@ -158,7 +158,7 @@ export class ContactComponent implements OnInit {
     this.contactPersons.forEach(person => {
       const p = {
         contactPersonId: person.code,
-        overview_title: person.clientTitle,
+        overview_title: person.clientTitle.description,
         overview_contact_person_full_name: person.name,
         overview_contact_person_doc_id_no: person.idNumber,
         overview_contact_person_email: person.email,
@@ -215,10 +215,15 @@ export class ContactComponent implements OnInit {
       next: data => {
         this.branches = data.branches;
         this.contactChannels = data.contactChannels;
+
+        this.contactChannels.forEach((channel, index) => {
+          channel.code = index;
+        });
+
         this.clientTitles = data.clientTitles;
         this.setSelectOptions(
           data.branches,
-          data.contactChannels,
+          this.contactChannels,
           data.clientTitles,
         );
       },
@@ -272,26 +277,17 @@ export class ContactComponent implements OnInit {
   }
 
   createEditForm(fields: ConfigFormFieldsDto[], saveAction?: SaveAction): void {
-    const group: { [key: string]: any } = {};
-    fields.forEach(field => {
-      group[field.fieldId] = [
-        field.defaultValue,
-        // field.isMandatory ? Validators.required : []
-      ];
-    });
-
     this.fetchSelectOptions();
-    this.editForm = this.fb.group(group);
+    this.editForm = this.entityUtilService.createEditForm(fields);
 
     if (
       saveAction === SaveAction.EDIT_CONTACT_DETAILS ||
       saveAction === SaveAction.EDIT_CONTACT_PERSON
     ) this.patchFormValues(fields);
-
   }
 
   patchFormValues(fields): void {
-    let patchData = {};
+    let patchData: {} = {};
 
     if (this.group.subGroup.length > 0) {
       this.formFields.forEach(field => { // corporate
@@ -306,7 +302,7 @@ export class ContactComponent implements OnInit {
     patchData = { // patch dropdown values
       ...patchData,
       overview_title: this.clientDetails.contactDetails.titleId,
-      overview_pref_contact_channel: this.clientDetails.contactChannel,
+      overview_pref_contact_channel: this.clientDetails.contactDetails.contactChannel,
       overview_branch: this.clientDetails.organizationBranchId,
     }
 
