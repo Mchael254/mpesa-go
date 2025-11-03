@@ -32,7 +32,7 @@ export interface ContactPerson {
   code: number;
   clientCode: number;
   clientTitleCode: number;
-  clientTitle: string | null;
+  clientTitle: ClientTitlesDto;
   name: string;
   idNumber: string;
   email: string;

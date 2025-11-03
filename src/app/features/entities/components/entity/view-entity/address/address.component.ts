@@ -11,8 +11,7 @@ import {
   DynamicScreenSetupDto,
   FormGroupsDto,
   FormSubGroupsDto,
-  PresentationType,
-  SaveAddressAction
+  PresentationType, SaveAction
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {AddressModel, Branch, ClientDTO} from "../../../../data/ClientDTO";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
@@ -65,8 +64,8 @@ export class AddressComponent implements OnInit {
   selectedSubgroup: FormSubGroupsDto = null;
   formHeadingLabel: FormSubGroupsDto | FormGroupsDto;
   formFields: ConfigFormFieldsDto[] = [];
-  saveAction: SaveAddressAction;
-  protected readonly Save_Action = SaveAddressAction;
+  saveAction: SaveAction;
+  protected readonly Save_Action = SaveAction;
   protected readonly SearchCountryField = SearchCountryField;
   protected readonly CountryISO = CountryISO;
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
@@ -233,7 +232,7 @@ export class AddressComponent implements OnInit {
     });
   }
 
-  openEditAddressDialog(subgroup?: FormSubGroupsDto, saveAction?: SaveAddressAction): void {
+  openEditAddressDialog(subgroup?: FormSubGroupsDto, saveAction?: SaveAction): void {
     this.saveAction = saveAction;
     let fields: ConfigFormFieldsDto[];
 
@@ -255,23 +254,13 @@ export class AddressComponent implements OnInit {
   }
 
 
-  createEditForm(fields: ConfigFormFieldsDto[], saveAction?: SaveAddressAction): void {
-    const group: { [key: string]: any } = {};
-    fields.forEach(field => {
-      group[field.fieldId] = [
-        field.defaultValue,
-        // field.isMandatory ? Validators.required : []
-      ];
-    });
-
+  createEditForm(fields: ConfigFormFieldsDto[], saveAction?: SaveAction): void {
     this.fetchCountries();
-    this.editForm = this.fb.group(group);
-
+    this.editForm = this.entityUtilService.createEditForm(fields);
     if (
-      saveAction === SaveAddressAction.EDIT_ADDRESS_DETAILS ||
-      saveAction === SaveAddressAction.EDIT_BRANCH
+      saveAction === SaveAction.EDIT_ADDRESS_DETAILS ||
+      saveAction === SaveAction.EDIT_BRANCH
     ) this.patchFormValues(fields);
-
   }
 
   fetchCountries(): void {
@@ -347,7 +336,7 @@ export class AddressComponent implements OnInit {
     }
 
     let patchDropdowns = {};
-    if (this.saveAction === SaveAddressAction.EDIT_ADDRESS_DETAILS) {
+    if (this.saveAction === SaveAction.EDIT_ADDRESS_DETAILS) {
       patchDropdowns = {
         overview_country: this.clientDetails.address.countryId,
         overview_head_office_country: this.clientDetails.address.countryId,
@@ -358,14 +347,14 @@ export class AddressComponent implements OnInit {
         overview_postal_code: this.clientDetails.address.postalCode,
         overview_head_office_postal_code: this.clientDetails.address.postalCode,
       };
-    } else if (this.saveAction === SaveAddressAction.EDIT_BRANCH) {
+    } else if (this.saveAction === SaveAction.EDIT_BRANCH) {
       patchDropdowns = {
         overview_country: this.selectedBranch?.countryId,
         overview_county: this.selectedBranch?.stateId,
         overview_city: this.selectedBranch?.townId,
         overview_postal_code: this.selectedBranch?.postalCode,
       };
-    } else if (this.saveAction === SaveAddressAction.SAVE_BRANCH) {
+    } else if (this.saveAction === SaveAction.SAVE_BRANCH) {
       patchDropdowns = {};
     }
 
@@ -380,13 +369,13 @@ export class AddressComponent implements OnInit {
 
   saveDetails() {
     switch (this.saveAction) {
-      case SaveAddressAction.EDIT_ADDRESS_DETAILS:
+      case SaveAction.EDIT_ADDRESS_DETAILS:
         this.editAddressDetails();
         break;
-      case SaveAddressAction.EDIT_BRANCH:
+      case SaveAction.EDIT_BRANCH:
         this.addEditBranch();
         break;
-      case SaveAddressAction.SAVE_BRANCH:
+      case SaveAction.SAVE_BRANCH:
         this.editForm.reset();
         this.addEditBranch();
         break;
@@ -397,7 +386,7 @@ export class AddressComponent implements OnInit {
 
   editAddressDetails(): void {
     const formValues = this.editForm.getRawValue();
-    log.info('form values ->', formValues, formValues.overview_head_office_country);
+
     const address = {
       ...this.addressDetails,
       countryId: /*formValues.overview_country || */formValues.overview_head_office_country,
@@ -419,7 +408,13 @@ export class AddressComponent implements OnInit {
       address
     };
 
-    this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
+    this.updateClientSection(this.clientDetails.clientCode, client);
+
+    this.closeButton.nativeElement.click();
+  }
+
+  updateClientSection(clientCode, client): void {
+    this.clientService.updateClientSection(clientCode, client).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
         this.clientDetails = data;
@@ -430,23 +425,17 @@ export class AddressComponent implements OnInit {
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
       }
     });
-    this.closeButton.nativeElement.click();
   }
 
-  prepareEditBranchForm(data: any, saveAction: SaveAddressAction) {
+  prepareEditBranchForm(data: any, saveAction: SaveAction) {
     log.info('selected row ', data)
     this.saveAction = saveAction;
-    this.formFields =  this.tableHeaders.map(field => ({...field})) ;
+    const fields =  this.tableHeaders.map(field => ({...field})) ;
     const row = data.row;
     this.selectedBranch = this.branchDetails.find(branch => branch.code = row.branchAddressId);
     this.selectedSubgroup = data.subGroup;
 
-    this.formFields.forEach((field: ConfigFormFieldsDto) => {
-      field.dataValue = row[field.fieldId];
-      if (field.type === 'date') {
-        field.dataValue = row[field.fieldId]?.split('T')[0];
-      }
-    });
+    this.formFields = this.entityUtilService.addDataToFormFields(fields, row);
 
     this.createEditForm(this.formFields, saveAction);
     this.editButton.nativeElement.click();
@@ -454,24 +443,17 @@ export class AddressComponent implements OnInit {
 
   addEditBranch(): void {
     const formValues = this.editForm.getRawValue();
-    log.info('form values ->', this.editForm.value);
 
     const branch = {
       ...this.selectedBranch,
-      // code: null,
-      // clientCode: null,
       countryId: formValues.overview_country,
       stateId: formValues.overview_county,
-      // townId: null,
       physicalAddress: formValues.overview_physical_address,
       postalAddress: formValues.overview_postal_address,
       postalCode: formValues.overview_postal_code,
       email: formValues.overview_branch_email,
       landlineNumber: (formValues?.overview_landline_number?.internationalNumber)?.replace(/\s+/g, ''),
       mobileNumber: (formValues?.overview_branch_mobile_no?.internationalNumber)?.replace(/\s+/g, ''),
-      // countryName: null,
-      // townName: null,
-      // stateName: null,
       branchName: formValues.overview_branch_details_name,
     };
 
@@ -482,24 +464,10 @@ export class AddressComponent implements OnInit {
       branches: [branch]
     }
 
-    this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
-      next: data => {
-        this.clientDetails = data;
-        this.prepareDataDisplay();
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated branch');
-        this.closeButton.nativeElement.click();
-      },
-      error: err => {
-        this.globalMessagingService.displayErrorMessage('Error', err?.error?.message);
-        this.closeButton.nativeElement.click();
-      }
-    });
+    this.updateClientSection(this.clientDetails.clientCode, client);
   }
 
   setSelectOptions(): void {
-  // &&
-  //   this.states?.length > 0 &&
-  //   this.towns?.length > 0
     if (this.countries?.length > 0) {
       this.formFields.forEach(field => {
         switch (field.fieldId) {
@@ -530,7 +498,6 @@ export class AddressComponent implements OnInit {
 
   processSelectOption(event: any, fieldId: string): void {
     const selectedOption = event.target.value;
-    log.info(`processSelectOption >>> `, fieldId, selectedOption);
 
     switch (fieldId) {
       case 'overview_country':
