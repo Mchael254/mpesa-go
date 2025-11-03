@@ -729,6 +729,7 @@ export class ViewEntityComponent implements OnInit {
 
 
   selectTab(tab: any): void {
+    log.info('selectTab', tab);
     this.selectedTab = this.primaryTabs.includes(tab.originalLabel) ? tab.originalLabel : this.selectedTab;
     this.selectedSubTab = this.secondaryTabs.includes(tab.originalLabel) ? tab.originalLabel : this.selectedSubTab;
   }
@@ -749,7 +750,7 @@ export class ViewEntityComponent implements OnInit {
       case 'financial details':
         this.financialComponent.openEditFinancialDialog(subgroup, SaveFinanceAction.EDIT_FINANCE_DETAILS);
         break;
-      case 'wealth_aml':
+      case 'Wealth And Anti-money Laundering Details':
         this.wealthAmlComponent.openEditWealthAmlDialog(false);
         break;
       default:
