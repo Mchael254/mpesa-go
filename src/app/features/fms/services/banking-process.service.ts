@@ -6,7 +6,7 @@ import {API_CONFIG} from '../../../../environments/api_service_config';
 import { GenericResponseFMS } from 'src/app/shared/data/common/genericResponseDTO';
 import { PaymentModesDTO } from '../data/auth-requisition-dto';
 import { HttpParams } from '@angular/common/http';
-import { GenericResponse, UsersDTO } from '../data/receipting-dto';
+import { GenericResponse } from '../data/receipting-dto';
 import {
   assignUserRctsDTO,
   ReceiptDTO,
@@ -33,7 +33,7 @@ export class BankingProcessService {
       .set('orgCode', request.orgCode.toString())
       .set('payMode', request.payMode)
       .set('page', 0)
-      .set('size', 5)
+      .set('size', 10)
       .set('sort', 'ASC');
 
     if (request.includeBatched) {
@@ -45,10 +45,8 @@ export class BankingProcessService {
     if (request.brhCode) {
       params = params.set('brhCode', request.brhCode.toString());
     }
-    const endpoint = `receipts/receipts-to-bank`;
-    const baseUrl = API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL;
     return this.api
-      .GET<GenericResponse<Pagination<ReceiptDTO>>>(endpoint, baseUrl, params)
+      .GET<GenericResponse<Pagination<ReceiptDTO>>>( `receipts/receipts-to-bank`, API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL, params)
       .pipe(
         map((response) => {
           // Check if the response and its nested properties exist before returning
@@ -65,20 +63,7 @@ export class BankingProcessService {
         })
       );
   }
-  getActiveUsers(): Observable<Pagination<UsersDTO>> {
-    const baseUrl = API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL;
-    const endpoint = '/users';
-    let params = new HttpParams()
-      .set('page', 0)
-      .set('size', 6)
-      .set('sort', 'desc')
-      .set('sortList', 'dateCreated')
-      .set('status', 'A');
-    return this.api.GET<Pagination<UsersDTO>>(endpoint, baseUrl, params);
-  }
   assignUser(requestBody: assignUserRctsDTO): Observable<any> {
-    const baseUrl = API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL;
-    const endpoint = `receipts/assign`;
-    return this.api.POST<any>(endpoint, requestBody, baseUrl);
+    return this.api.POST<any>(`receipts/assign`, requestBody, API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL);
   }
 }
