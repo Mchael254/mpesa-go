@@ -72,11 +72,13 @@ export class ClientService {
 
   searchClients(
     page: number,
-    size: number = 5,
+    size: number = 10,
     name: string,
     modeOfIdentity: string = null,
     idNumber: string = null,
-    clientTypeName: string = null
+    clientTypeName: string = null,
+    columnName: string = null,
+    columnValue: string = null
   ): Observable<Pagination<ClientDTO>> {
     const params = new HttpParams()
       .set('page', `${page}`)
@@ -84,7 +86,9 @@ export class ClientService {
       .set('name', `${name}`)
       .set('modeOfIdentity', `${modeOfIdentity}`)
       .set('idNumber', `${idNumber}`)
-      .set('clientTypeName', `${clientTypeName}`);
+      .set('clientTypeName', `${clientTypeName}`)
+      .set('columnName', `${columnName}`)
+      .set('columnValue', `${columnValue}`);
 
     /*if (organizationId !== undefined && organizationId !== null) {
       params['organizationId'] = organizationId.toString();

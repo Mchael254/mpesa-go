@@ -251,7 +251,9 @@
     "Quotation Management": "Quotation Management",
     "Dynamic Setup": "Dynamic Setup",
     "isRequired": "is required",
-    "base-fms":{
+    "Intermediaries": "Intermediaries",
+    "Create Entity": "Create Entity",
+    "base-fms": {
       "parameters": "Parameters",
       "defineYrs": "Define Years/Periods",
       "closeYrs": "Close Years / Period",
