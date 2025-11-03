@@ -3120,4 +3120,40 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     this.filterObject.accountName = event?.target?.value || '';
     this.filter();
   }
+
+  /**
+   * Gets the maximum date by subtracting years from today's date based on field validations
+   * @param field The field object containing validations
+   * @returns The maximum allowed date string in 'YYYY-MM-DD' format or undefined if no max validation found
+   */
+  getMaxDateValidation(field: ConfigFormFieldsDto): string | undefined {
+    if (!field?.validations?.length) {
+      return undefined;
+    }
+
+    const maxValidation = field.validations.find(
+      (validation: any) => validation.type?.toLowerCase() === 'max' && validation.value
+    );
+
+    if (!maxValidation) {
+      return undefined;
+    }
+
+    const yearsToSubtract = Number(maxValidation.value);
+    if (isNaN(yearsToSubtract)) {
+      return undefined;
+    }
+
+    const today = new Date();
+    const maxDate = new Date(today.getFullYear() - yearsToSubtract, today.getMonth(), today.getDate());
+
+    const groupForm = this.entityForm.get(field.formGroupingId) as FormGroup;
+    const control = groupForm?.get(field.fieldId);
+
+    if (control) {
+      control.setValidators([Validators.max(maxDate.getTime())]);
+      control.updateValueAndValidity();
+    }
+    return maxDate.toISOString().split('T')[0];
+  }
 }

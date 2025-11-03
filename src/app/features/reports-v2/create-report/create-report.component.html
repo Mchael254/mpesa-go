@@ -112,7 +112,7 @@
                 style="width: 94%; border-radius: 8px;"
                 (keyup)="filterMetricsAndDimensions($event, dimensions, 'dimensions')"
               >
-              <ng-container *ngFor="let dimension of filteredDimensions">
+              <!--<ng-container *ngFor="let dimension of filteredDimensions">
                 <p
                   data-bs-toggle="collapse"
                   [attr.data-bs-target]="'#'+dimension.description"
@@ -157,6 +157,45 @@
                     </ul>
 
                   </ng-container>
+                </div>
+              </ng-container>-->
+              <ng-container *ngFor="let dimension of filteredDimensions; let i = index">
+                <div class="dimension-item">
+                  <p class="dimension-header"
+                     (click)="toggleDimension(dimension)"
+                     [class.dimension-expanded]="dimension.isExpanded"
+                     style="font-size: 16px; color: #000; padding-left: 0.9em; width: 100%">
+                    {{ dimension?.name }}
+                    <i class="fa"
+                       [class.fa-caret-right]="!dimension.isExpanded"
+                       [class.fa-caret-down]="dimension.isExpanded"
+                       style="font-size: 13px;"></i>
+                  </p>
+
+                  <div class="subcategories" *ngIf="dimension.isExpanded">
+                    <div *ngFor="let subCategory of dimension.subCategory; let j = index"
+                         class="subcategory-item"
+                         (mouseenter)="showSubcategoryQueries(subCategory, dimension, $event)"
+                         (click)="toggleSubcategory(subCategory, $event)">
+                      <div class="subcategory-header"
+                           (click)="toggleSubcategory(subCategory, $event)"
+                           style="font-size: 14px; list-style-type:none; padding-left: 1.5em; cursor: pointer;">
+                        {{ subCategory.name }}
+                        <i class="fa"
+                           [class.fa-angle-double-right]="!subCategory.isExpanded"
+                           [class.fa-angle-double-down]="subCategory.isExpanded"
+                           style="font-size: 13px;"></i>
+                      </div>
+                      <div class="custom-dropdown"
+                           *ngIf="selectedSubCategory?.id === subCategory.id && subCategory.isExpanded">
+                        <div *ngFor="let query of subCategoryCategoryAreas"
+                             class="dropdown-item"
+                             (click)="selectCriteria(dimension, selectedSubCategory, query); $event.stopPropagation()">
+                          {{ query.name }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </ng-container>
             </div>

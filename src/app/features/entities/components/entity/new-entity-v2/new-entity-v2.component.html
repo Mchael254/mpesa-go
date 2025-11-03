@@ -717,6 +717,7 @@
         type="date"
         [formControlName]="field.fieldId"
         class="form-control"
+        [max]="getMaxDateValidation(field)"
         [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"/>
     </ng-container>
 

@@ -36,7 +36,7 @@ export class MenuService {
           { name: 'Entities', link: '/home/entity/list' },
           { name: 'Staff', link: '/home/entity/staff/list' },
           { name: 'Clients', link: '/home/entity/client/list' },
-          { name: 'Agents', link: '/home/entity/intermediary/list' },
+          { name: 'Intermediaries', link: '/home/entity/intermediary/list' },
           { name: 'Leads', link: '/home/entity/lead/list' },
           { name: 'Prospects', link: '/home/entity/prospect/list' },
           {
