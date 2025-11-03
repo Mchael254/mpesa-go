@@ -389,7 +389,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.moreDetails = sessionStorage.getItem('quotationFormDetails');
 
 
-    
+
 
 
 
@@ -460,7 +460,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.loadSummaryPerils()
     this.getUsers();
 
-    
+
 
 
     // this.createInsurersForm();
@@ -477,8 +477,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // this.getDocumentTypes();
 
     this.hasUnderwriterRights();
-     
-    
+
+
 
 
 
@@ -525,15 +525,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     };
 
 
-  const selected = sessionStorage.getItem('selectedQuotation');
+    const selected = sessionStorage.getItem('selectedQuotation');
 
-  if (selected) {
-    const parsed = JSON.parse(selected);
-    const quotationCode = parsed.quotationCode;  
+    if (selected) {
+      const parsed = JSON.parse(selected);
+      const quotationCode = parsed.quotationCode;
 
-    
-    this.getQuotationDetails(quotationCode);
-  }
+
+      this.getQuotationDetails(quotationCode);
+    }
   }
 
   ngAfterViewInit() {
@@ -637,9 +637,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.quotationView = res;
         log.debug('QuotationView', this.quotationView)
         sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationView))
-         if (this.quotationView?.source?.description === 'Agent' && this.quotationView?.clientType === 'I') {
-      this.getCommissions();
-    }
+        if (this.quotationView?.source?.description === 'Agent' && this.quotationView?.clientType === 'I') {
+          this.getCommissions();
+        }
 
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
@@ -2257,7 +2257,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   getExceptions(quotationCode: number) {
-    this.quotationService.getExceptions(quotationCode).subscribe({
+    this.quotationService.getExceptions(quotationCode, null).subscribe({
       next: (res) => {
         log.debug('exceptions', res);
         this.exceptionsData = res._embedded;
@@ -2344,7 +2344,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       log.debug('Authorizing as underwriter:', selected);
 
       this.quotationService
-        .AuthoriseExceptions(this.quotationView.code, this.quotationView.preparedBy)
+        .authoriseExceptions(selected)
         .subscribe({
           next: (res) => {
             if (res.status === 'SUCCESS') {
@@ -3236,18 +3236,18 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             }
           }
         },
-       error: (err: any) => {
-  let backendMessage = "An error occurred while verifying OTP";
-  
-  if (typeof err === 'string') {
-    
-    backendMessage = "Invalid, expired or already used OTP";
-  } else {
-    backendMessage = err?.error?.message || err?.message || backendMessage;
-  }
-  
-  this.globalMessagingService.displayErrorMessage("Error", backendMessage);
-}
+        error: (err: any) => {
+          let backendMessage = "An error occurred while verifying OTP";
+
+          if (typeof err === 'string') {
+
+            backendMessage = "Invalid, expired or already used OTP";
+          } else {
+            backendMessage = err?.error?.message || err?.message || backendMessage;
+          }
+
+          this.globalMessagingService.displayErrorMessage("Error", backendMessage);
+        }
       });
   }
 
@@ -3823,45 +3823,45 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   getCommissions() {
-  const quotationCode = this.quotationCode; 
+    const quotationCode = this.quotationCode;
 
-  if (!quotationCode) {
-    this.globalMessagingService.displayErrorMessage(
-      'Error',
-      'Quotation code is missing.'
-    );
-    return;
-  }
-
-  this.quotationService.getRiskCommissions(quotationCode).subscribe({
-    next: (res: any) => {
-    
-      if (res?.status?.toUpperCase().trim() === 'SUCCESS' || res?.data) {
-        this.riskCommissions = res?._embedded || [];
-        if (this.riskCommissions.length) {
-          this.setColumnsFromCommissions(this.riskCommissions[0]);
-        }
-        this.globalMessagingService.displaySuccessMessage(
-          'Success',
-          res?.message || 'Commissions loaded successfully.'
-        );
-      } else {
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          res?.message || 'Failed to load commissions.'
-        );
-      }
-    },
-    error: (err: HttpErrorResponse) => {
-      log.error('Error fetching commissions:', err);
-
+    if (!quotationCode) {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        err?.error?.message || err.message || 'Failed to load commissions.'
+        'Quotation code is missing.'
       );
+      return;
     }
-  });
-}
+
+    this.quotationService.getRiskCommissions(quotationCode).subscribe({
+      next: (res: any) => {
+
+        if (res?.status?.toUpperCase().trim() === 'SUCCESS' || res?.data) {
+          this.riskCommissions = res?._embedded || [];
+          if (this.riskCommissions.length) {
+            this.setColumnsFromCommissions(this.riskCommissions[0]);
+          }
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            res?.message || 'Commissions loaded successfully.'
+          );
+        } else {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            res?.message || 'Failed to load commissions.'
+          );
+        }
+      },
+      error: (err: HttpErrorResponse) => {
+        log.error('Error fetching commissions:', err);
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          err?.error?.message || err.message || 'Failed to load commissions.'
+        );
+      }
+    });
+  }
 
   toggleCommission(iconElement: HTMLElement): void {
 
@@ -3880,42 +3880,42 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   setColumnsFromCommissions(sample: any) {
-  // Fields to show by default
-  const defaultVisibleFields = [
+    // Fields to show by default
+    const defaultVisibleFields = [
       // for Agent Name
-    'transDescription',
-    'discRate',
-    'discType',
-    'amount',
-    'group'
-  ];
+      'transDescription',
+      'discRate',
+      'discType',
+      'amount',
+      'group'
+    ];
 
-  // Fields to exclude (optional)
-  const excludedFields = [
-    'quotationRiskCode',
-    'quotationCode',
-    'code',
-    'id',
-    'accountCode'
-  ];
+    // Fields to exclude (optional)
+    const excludedFields = [
+      'quotationRiskCode',
+      'quotationCode',
+      'code',
+      'id',
+      'accountCode'
+    ];
 
-  // Get all keys from sample and filter excluded fields
-  let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+    // Get all keys from sample and filter excluded fields
+    let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
 
-  
-  keys = keys.sort((a, b) => {
-    if (a === 'transDescription') return -1;  
-    if (b === 'transDescription') return 1;
-    return 0;
-  });
 
-  // Map to column objects
-  this.commissionColumns = keys.map(key => ({
-    field: key,
-    header: this.sentenceCase(key),
-    visible: defaultVisibleFields.includes(key)
-  }));
-}
+    keys = keys.sort((a, b) => {
+      if (a === 'transDescription') return -1;
+      if (b === 'transDescription') return 1;
+      return 0;
+    });
+
+    // Map to column objects
+    this.commissionColumns = keys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleFields.includes(key)
+    }));
+  }
 
 
 

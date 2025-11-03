@@ -1313,6 +1313,157 @@
             <!-- tab buttons -->
             <div class="d-flex justify-content-between align-items-end m-0">
 
+                <!-- SCROLLABLE TAB BUTTONS -->
+                <div class="tab-scroll-container px-1 flex-nowrap" style="width: 75%;">
+                    <div class="d-flex flex-nowrap">
+                        <div>
+                            <button class="btn btn-sm"
+                                [ngClass]="{'no-border-bottom': riskActiveTab === 'riskClauses', 'text-primary border-0': riskActiveTab !== 'riskClauses'}"
+                                (click)="setRiskTab('riskClauses')">
+                                {{ 'gis.quotation.risk_clauses' | translate }}
+                            </button>
+                        </div>
+
+                        <div>
+                            <button class="btn btn-sm"
+                                [ngClass]="{'no-border-bottom': riskActiveTab === 'riskLimits', 'text-primary border-0': riskActiveTab !== 'riskLimits'}"
+                                (click)="setRiskTab('riskLimits')">
+                                {{ 'gis.quotation.limits_of_liability' | translate }}
+                            </button>
+                        </div>
+
+                        <div>
+                            <button class="btn btn-sm"
+                                [ngClass]="{'no-border-bottom': riskActiveTab === 'riskPerils', 'text-primary border-0': riskActiveTab !== 'riskPerils'}"
+                                (click)="setRiskTab('riskPerils')">
+                                {{ 'gis.quotation.perils' | translate }}
+                            </button>
+                        </div>
+
+                        <div pTooltip="{{ isCommissionsButtonDisabled ? ('gis.quotation.agent_source_required_for_commissions' | translate) : '' }}"
+                            tooltipPosition="top" class="d-inline-block" style="cursor: pointer">
+                            <button class="btn btn-sm" [ngClass]="{
+                        'no-border-bottom': riskActiveTab === 'commissions' && !isCommissionsButtonDisabled, 
+                        'text-primary border-0': riskActiveTab !== 'commissions' && !isCommissionsButtonDisabled,
+                        'text-muted': isCommissionsButtonDisabled
+                      }" [disabled]="isCommissionsButtonDisabled"
+                                (click)="!isCommissionsButtonDisabled && setRiskTab('commissions')">
+                                {{ 'gis.quotation.commissions' | translate }}
+                            </button>
+                        </div>
+
+                        <div>
+                            <button class="btn btn-sm"
+                                [ngClass]="{'no-border-bottom': riskActiveTab === 'riskExcesses', 'text-primary border-0': riskActiveTab !== 'riskExcesses'}"
+                                (click)="setRiskTab('riskExcesses')">
+                                {{ 'gis.quotation.excesses' | translate }}
+                            </button>
+                        </div>
+
+                        <div>
+                            <button class="btn btn-sm"
+                                [ngClass]="{'no-border-bottom': riskActiveTab === 'riskTaxes', 'text-primary border-0': riskActiveTab !== 'riskTaxes'}"
+                                (click)="setRiskTab('riskTaxes'); loadTaxDetails(); getProductTaxes();">
+                                Taxes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FIXED ACTION BUTTONS -->
+                <div class="d-flex align-items-center ms-2 mb-1">
+
+                    <!-- Clause actions -->
+                    <div *ngIf="riskActiveTab === 'riskClauses'">
+                        <button class="btn btn-primary btn-sm mb-1" (click)="openClauseModal()">
+                            {{ 'gis.quotation.add_risk_clause' | translate }}
+                        </button>
+                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                            [ngClass]="{ 'pi-caret-up': showClauses, 'pi-caret-down': !showClauses }"
+                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                            (click)="toggleClauseColumns(iconTrigger)">
+                        </i>
+                    </div>
+
+                    <!-- Limits actions -->
+                    <div *ngIf="riskActiveTab === 'riskLimits'">
+                        <button class="btn btn-primary btn-sm mb-1" (click)="openLimitModal()">
+                            {{ 'gis.quotation.add_risk_limit' | translate }}
+                        </button>
+                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                            [ngClass]="{ 'pi-caret-up': showLimitsOfLiability, 'pi-caret-down': !showLimitsOfLiability }"
+                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                            (click)="toggleLimitsOfLiabilityColumns(iconTrigger)">
+                        </i>
+                    </div>
+
+                    <!-- Perils actions -->
+                    <div *ngIf="riskActiveTab === 'riskPerils'">
+                        <button class="btn btn-primary btn-sm mb-1" (click)="openChoosePerilsModal()">
+                            {{ 'gis.quotation.add_perils' | translate }}
+                        </button>
+                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                            [ngClass]="{ 'pi-caret-up': showExcesses, 'pi-caret-down': !showExcesses }"
+                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                            (click)="togglePerilColumns(iconTrigger)">
+                        </i>
+                    </div>
+
+                    <!-- Excesses actions -->
+                    <div *ngIf="riskActiveTab === 'riskExcesses'">
+                        <button class="btn btn-primary btn-sm mb-1" (click)="openExcessModal()">
+                            {{ 'gis.quotation.add_risk_excess' | translate }}
+                        </button>
+                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                            [ngClass]="{ 'pi-caret-up': showExcesses, 'pi-caret-down': !showExcesses }"
+                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                            (click)="toggleExcessesColumns(iconTrigger)">
+                        </i>
+                    </div>
+
+                    <!-- Taxes actions -->
+                    <div *ngIf="riskActiveTab === 'riskTaxes'">
+                        <button class="btn btn-primary btn-sm mb-1" type="button" (click)="handleAddTaxClick()">
+                            {{ 'gis.quotation.add_tax' | translate }}
+                        </button>
+                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
+                            [ngClass]="{ 'pi-caret-up': showExcesses, 'pi-caret-down': !showExcesses }"
+                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
+                            (click)="toggleTaxesColumns(iconTrigger)">
+                        </i>
+                    </div>
+
+                    <!-- Commissions actions -->
+                    <div *ngIf="riskActiveTab === 'commissions'">
+                        <button class="btn btn-outline-primary btn-sm mb-1 me-2" (click)="updateRiskCommissions()"
+                            [disabled]="isCommissionsButtonDisabled || !hasCommissionChanges()"
+                            [ngClass]="{'btn-outline-secondary': isCommissionsButtonDisabled || !hasCommissionChanges()}">
+                            {{ 'gis.quotation.save_changes' | translate }}
+                        </button>
+
+                        <button class="btn btn-primary btn-sm mb-1" [disabled]="isCommissionsButtonDisabled"
+                            [ngClass]="{'btn-secondary': isCommissionsButtonDisabled}"
+                            (click)="!isCommissionsButtonDisabled && openCommissionsModal()">
+                            {{ 'gis.quotation.add_commission' | translate }}
+                        </button>
+
+                        <i #iconTrigger class="pi border rounded-1 p-1" [ngClass]="{ 
+                      'pi-caret-up': showCommissions, 
+                      'pi-caret-down': !showCommissions,
+                      'border-black text-black': !isCommissionsButtonDisabled,
+                      'border-secondary text-muted': isCommissionsButtonDisabled
+                    }" [style.cursor]="isCommissionsButtonDisabled ? 'not-allowed' : 'pointer'"
+                            style="font-size: 15px; margin-left: 8px; padding: 4px 6px;"
+                            (click)="!isCommissionsButtonDisabled && toggleCommissionsColumns(iconTrigger)">
+                        </i>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 
+            <div class="d-flex justify-content-between align-items-end m-0">
+
                 <div class="d-flex justify-content-between px-1" style="width:75%">
                     <div>
                         <button class="btn btn-sm"
@@ -1332,7 +1483,7 @@
                             (click)="setRiskTab('riskPerils')"> {{'gis.quotation.perils' | translate}}
                         </button>
                     </div>
-                    <!-- under development -->
+                    
                     <div pTooltip="{{ isCommissionsButtonDisabled ? ('gis.quotation.agent_source_required_for_commissions' | translate) : '' }}"
                         tooltipPosition="top" class="d-inline-block" style="cursor: pointer">
                         <button class="btn btn-sm" [ngClass]="{
@@ -1345,13 +1496,7 @@
                         </button>
                     </div>
 
-                    <!-- <div pTooltip="Feature under development" tooltipPosition="top" class="d-inline-block"
-                        style="cursor: pointer">
-                        <button class="btn btn-sm text-muted" disabled [ngClass]="{
-                            'no-border-bottom': riskActiveTab === 'comments', 'border-0': riskActiveTab !== 'comments'
-                            }" (click)="setRiskTab('comments')"> {{ 'gis.quotation.comments' | translate }}
-                        </button>
-                    </div> -->
+                    
 
                     <div>
                         <button class="btn btn-sm"
@@ -1368,10 +1513,10 @@
 
                 </div>
 
-                <!-- action buttons -->
+                
                 <div class="d-flex align-items-center ms-2 mb-1">
 
-                    <!-- clause action tabs -->
+                    
                     <div *ngIf="riskActiveTab === 'riskClauses'">
                         <button class="btn btn-primary btn-sm mb-1" (click)="openClauseModal()">
 
@@ -1384,7 +1529,7 @@
                         </i>
                     </div>
 
-                    <!-- limits action tabs -->
+                    
                     <div *ngIf="riskActiveTab === 'riskLimits'">
                         <button class="btn btn-primary btn-sm mb-1" (click)="openLimitModal()">
 
@@ -1397,7 +1542,7 @@
                         </i>
                     </div>
 
-                    <!-- perils action tabs -->
+                    
                     <div *ngIf="riskActiveTab === 'riskPerils'">
                         <button class="btn btn-primary btn-sm mb-1" (click)="openChoosePerilsModal()">
 
@@ -1411,7 +1556,7 @@
                         </i>
                     </div>
 
-                    <!-- excess action tabs -->
+                 
                     <div *ngIf="riskActiveTab === 'riskExcesses'">
                         <button class="btn btn-primary btn-sm mb-1" (click)="openExcessModal()">
 
@@ -1424,7 +1569,7 @@
                         </i>
                     </div>
 
-                    <!-- taxes action tabs -->
+                   
                     <div *ngIf="riskActiveTab === 'riskTaxes'">
                         <button class="btn btn-primary btn-sm mb-1" type="button" (click)="handleAddTaxClick()">
 
@@ -1438,16 +1583,9 @@
                         </i>
                     </div>
 
-                    <!-- comments action tabs -->
-                    <!-- <div *ngIf="riskActiveTab === 'riskComments'">
-                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
-                            [ngClass]="{ 'pi-caret-up': showExcesses, 'pi-caret-down': !showExcesses }"
-                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                            (click)="toggleCommentsColumns(iconTrigger)">
-                        </i>
-                    </div> -->
+                 
 
-                    <!-- commissions action tabs -->
+                    
                     <div *ngIf="riskActiveTab === 'commissions'">
                         <button class="btn btn-outline-primary btn-sm mb-1 me-2" (click)="updateRiskCommissions()"
                             [disabled]="isCommissionsButtonDisabled || !hasCommissionChanges()"
@@ -1473,7 +1611,7 @@
                     </div>
 
                 </div>
-            </div>
+            </div> -->
         </div>
 
 
@@ -2504,7 +2642,8 @@
             class="mt-0 w-100">
 
             <!-- Floating Column Selector For Limits of Liability -->
-            <div *ngIf="showCommissionsColumnModal" class="card shadow rounded p-2 position-absolute bg-white border cursor-pointer"
+            <div *ngIf="showCommissionsColumnModal"
+                class="card shadow rounded p-2 position-absolute bg-white border cursor-pointer"
                 [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
                 (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
                 (document:mouseup)="onDragEnd()">
