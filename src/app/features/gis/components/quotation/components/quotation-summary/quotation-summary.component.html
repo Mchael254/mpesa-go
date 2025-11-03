@@ -1,36 +1,7 @@
 <div class="mx-4 mt-3">
   <p class="title">Quotations:Quotation Summary</p>
 
-  <!-- <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper> -->
-  <div class="position-relative">
-    <app-stepper [currentStep]="3" [stepperData]="steps" [disabled]="viewQuoteFlag"></app-stepper>
-
-    <div *ngIf="showWizzardModal" class="card shadow rounded p-3 position-absolute wizzard-modal" [ngStyle]="{ 
-             top: wizzardModalPosition.top, 
-             left: wizzardModalPosition.left, 
-             zIndex: 1000,
-             minWidth: '250px', 
-             maxWidth: '300px',
-             backgroundColor: '#0d6efd', 
-             color: 'white'
-           }">
-
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="mb-0 fw-bold">Follow the steps to finish</h6>
-        <button type="button" class="btn ms-auto" (click)="showWizzardModal = false">
-          <i class="pi pi-times" style="color:white"></i>
-        </button>
-      </div>
-
-      <div class="pt-2">
-        <p class="mb-0">Click here to return and complete the missing details</p>
-      </div>
-
-
-    </div>
-
-  </div>
-
+  <app-stepper [currentStep]="3" [stepperData]="steps" [disabled]="viewQuoteFlag"></app-stepper>
 
   <div class="card mb-3">
     <div class="header mx-4 mt-2 mb-2">
@@ -257,7 +228,6 @@
             </div>
           </div>
           <div *ngIf="isCollapsibleOpen" class="mt-4" id="productDetails">
-
 
             <div class="row mb-1">
               <div class="col-12 d-flex justify-content-end" style="margin-bottom: 0;">
@@ -1906,9 +1876,6 @@ class="tab-pane" id="nav-commissions" role="tabpanel"
               Authorize quote 
             </button>
           </div>
-          <!-- <div>
-            <button (click)="openUserInstructionsModal()">checkWizard</button>
-          </div> -->
 
           <div>
             <button class="btn btn-outline-primary me-2" *ngIf="showViewDocumentsButton" (click)="fetchReports()">
@@ -2114,11 +2081,7 @@ class="tab-pane" id="nav-commissions" role="tabpanel"
                     <div class="text-muted">No document selected. Check a report on the left to load the PDF.</div>
                   </div>
 
-
-
                 </div>
-
-
 
                 <!-- RIGHT NAV ICON (centered vertically on right side) -->
                 <button class="btn position-absolute p-0 border-0 bg-transparent"
@@ -2214,36 +2177,6 @@ class="tab-pane" id="nav-commissions" role="tabpanel"
         </div>
       </div>
 
-    </div>
-
-    <!-- user instructions modal wizard after converting from quick quote -->
-    <div class="modal fade" id="userInstructionsModal" #userInstructionsModal tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-
-          <!-- Header with icon and title -->
-          <div class="d-flex align-items-center px-3 py-2 text-white rounded-top" style="background-color: #00529B;">
-            <i class="pi pi-exclamation-triangle me-2" style="font-size: 1.2rem;"></i>
-            <h6 class="mb-0 fw-bold">{{ modalTitle }}</h6>
-            <button type="button" (click)="closeInstructionsModal()" class="btn ms-auto">
-              <i class="pi pi-times" style="color:white"></i>
-            </button>
-          </div>
-
-          <!-- Body -->
-          <div class="modal-body px-4 py-3">
-            <p class="fw-bold mb-2 text-dark">{{ modalSubtitle }}</p>
-            <p class="mb-0 text-muted">{{ modalMessage }}</p>
-          </div>
-
-          <!-- Footer with single button -->
-          <div class="modal-footer border-0 d-flex justify-content-end">
-            <button type="button" class="btn btn-primary px-4" (click)="closeInstructionsModal()">{{ modalButtonLabel ||
-              'Close'
-              }}</button>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- quotation other details -->
