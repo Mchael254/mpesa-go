@@ -1437,7 +1437,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           divisionFactor: tax.divisionFactor,
           applicationLevel: tax.applicationLevel,
           taxRateType: tax.taxRateType,
-          rateDescription: tax.description
+          rateDescription: tax.description,
+          transactionCode: tax.trntCode
         })),
         itemDescription: risk.description,
         noClaimDiscountLevel: 0,
@@ -2433,7 +2434,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         rateDescription: original.description,
         rateType: original?.taxRateType,
         quotationCode: null,
-        transactionCode: original.taxCode,
+        transactionCode: original.trntCode,
         renewalEndorsement: null,
         taxRateCode: null,//original?.taxCode,
         levelCode: original?.applicationLevel,

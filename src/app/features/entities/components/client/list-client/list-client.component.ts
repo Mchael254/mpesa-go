@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {TableDetail} from "../../../../../shared/data/table-detail";
 import {Router} from "@angular/router";
 import {FormBuilder} from "@angular/forms";
@@ -6,14 +6,21 @@ import {ClientService} from "../../../services/client/client.service";
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
 import {Pagination} from "../../../../../shared/data/common/pagination";
 import {ClientDTO} from "../../../data/ClientDTO";
-import {Logger, untilDestroyed} from "../../../../../shared/shared.module";
+import {Logger, untilDestroyed, UtilService} from "../../../../../shared/shared.module";
 import {LazyLoadEvent} from "primeng/api";
-import {TableLazyLoadEvent} from "primeng/table";
+import {Table, TableLazyLoadEvent} from "primeng/table";
 import {map, tap} from "rxjs/operators";
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AccountService } from '../../../services/account/account.service';
 import { PartyAccountsDetails } from '../../../data/accountDTO';
 import { SortFilterService } from 'src/app/shared/services/sort-filter.service';
+import {DynamicScreenSetupDto} from "../../../../../shared/data/common/dynamic-screens-dto";
+import {
+  DynamicScreensSetupService
+} from "../../../../../shared/services/setups/dynamic-screen-config/dynamic-screens-setup.service";
+import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
+import {DynamicColumns} from "../../../../../shared/data/dynamic-columns";
+import {Observable} from "rxjs";
 
 const log = new Logger('ListClientComponent');
 
@@ -57,7 +64,28 @@ export class ListClientComponent implements OnInit {
   } = {
     name:'', modeOfIdentity:'', idNumber:'', clientTypeName:''
   };
+  language: string = 'en'
+  columnDialogVisible: boolean = false;
+  columns: DynamicColumns[] = [];
+  dynamicSetupData: DynamicScreenSetupDto;
+  screenId: string = "entities_records_clients";
+  @ViewChild('dt2') dt2: Table | undefined;
 
+  fieldMappings: { [key: string]: string } = {
+    'records_individual_name': 'name',
+    'records_individual_identity_type': 'modeOfIdentity',
+    'records_individual_identity_number': 'idNumber',
+    'records_individual_client_type': 'clientTypeName',
+    'records_individual_email': 'emailAddress',
+    'records_individual_pin_no': 'pinNumber',
+    'records_individual_tel': 'phoneNumber',
+    'records_corporate_name': 'name',
+    'records_corporate_identity_number': 'idNumber',
+    'records_corporate_identity_type': 'clientTypeName',
+    'records_corporate_email': 'emailAddress',
+    'records_corporate_pin_no': 'pinNumber',
+    'records_corporate_tel': 'phoneNumber',
+  };
   constructor(
     private router: Router,
     private fb: FormBuilder,
@@ -66,7 +94,10 @@ export class ListClientComponent implements OnInit {
     private sortFilterService: SortFilterService,
     private accountService: AccountService,
     private cdr: ChangeDetectorRef,
-    private spinner:NgxSpinnerService
+    private spinner:NgxSpinnerService,
+    private dynamicScreenSetupService: DynamicScreensSetupService,
+    private globalMessagingService: GlobalMessagingService,
+    private utilService: UtilService,
   ) {
     this.tableDetails = {
       cols: this.cols,
@@ -84,6 +115,10 @@ export class ListClientComponent implements OnInit {
    * The ngOnInit function initializes the tableDetails object with various properties and shows a spinner.
    */
   ngOnInit(): void {
+    this.fetchDynamicScreenSetup();
+    this.utilService.currentLanguage.subscribe(lang => {
+      this.language = lang;
+    });
     this.tableDetails = {
       cols: this.cols,
       rows: this.clientsData?.content,
@@ -101,7 +136,7 @@ export class ListClientComponent implements OnInit {
 
   }
 
-  viewDetailsWithId(rowId: number) {
+  viewDetailsWithId(rowId: number, category: string) {
     let partyId: number;
 
     // fetch account details to fetch party id before routing to 360 view
@@ -109,15 +144,19 @@ export class ListClientComponent implements OnInit {
       .getAccountDetailsByAccountCode(rowId)
       .pipe(
         map((data: PartyAccountsDetails) => {
-            this.accountService.setCurrentAccounts(data); // set this current as current account.
-            return data?.partyId;
-          },
-          untilDestroyed(this)
-        ))
-          .subscribe( (_x) => {
-            partyId = _x;
-            this.router.navigate([ `/home/entity/view/${partyId}`]);
-          });
+          this.accountService.setCurrentAccounts(data); // set this current as current account.
+          return data?.partyId;
+      }),
+        untilDestroyed(this))
+      .subscribe({
+        next: (_x) => {
+          partyId = _x;
+          this.router.navigate([ `/home/entity/view/${partyId}`], { queryParams: { category } });
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        }
+      });
   }
 
   /**
@@ -160,7 +199,8 @@ export class ListClientComponent implements OnInit {
       const searchEvent = {
         target: {value: this.searchTerm}
       };
-      this.filter(searchEvent, pageIndex, pageSize);
+      // this.filter(searchEvent, pageIndex, pageSize);
+      this.filter2(searchEvent, null, pageIndex, pageSize);
     }
     else {
       this.getClients(pageIndex, pageSize, sortField, sortOrder)
@@ -168,8 +208,8 @@ export class ListClientComponent implements OnInit {
           untilDestroyed(this),
           tap((data) => log.info(`Fetching Clients>>>`, data))
         )
-        .subscribe(
-          (data: Pagination<ClientDTO>) => {
+        .subscribe({
+          next: (data: Pagination<ClientDTO>) => {
             data.content.forEach( client => {
               client.clientTypeName = client.clientType.clientTypeName;
               client.clientFullName = client.firstName + ' ' + (client.lastName || ''); //the client.clientFullName will be set to just firstName,
@@ -181,10 +221,11 @@ export class ListClientComponent implements OnInit {
             this.cdr.detectChanges();
             this.spinner.hide();
           },
-          error => {
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
             this.spinner.hide();
           }
-        );
+        });
     }
   }
 
@@ -248,13 +289,16 @@ export class ListClientComponent implements OnInit {
           this.filterObject?.modeOfIdentity,
           this.filterObject?.idNumber,
           this.filterObject?.clientTypeName)
-        .subscribe((data) => {
-          this.clientsData = data;
-          this.spinner.hide();
-        },
-          error => {
+        .subscribe({
+          next: (data) => {
+            this.clientsData = data;
             this.spinner.hide();
-          });
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+            this.spinner.hide();
+          }
+        });
   }
 
   inputName(event) {
@@ -279,5 +323,142 @@ export class ListClientComponent implements OnInit {
 
     const value = (event.target as HTMLInputElement).value;
     this.filterObject['clientTypeName'] = value;
+  }
+
+  fetchDynamicScreenSetup(): void {
+    this.dynamicScreenSetupService.fetchDynamicSetupByScreen(
+      null,
+      this.screenId,
+      null,
+      null,
+      null
+    ).subscribe({
+      next: (res: DynamicScreenSetupDto) => {
+        this.dynamicSetupData = res;
+        this.filterFormFields();
+        log.info('DynamicScreenSetupDto', res)
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', err.error.message)
+      },
+    })
+  }
+
+  filterFormFields($event?: any) {
+    log.info('field:', this.dynamicSetupData);
+    if (this.dynamicSetupData) {
+      /*const category = "entities_records_corporate";*/
+      this.columns = this.dynamicSetupData.fields.filter(field => field.formId.includes('individual'))
+        .map(field => ({
+          field: field.fieldId,
+          header: field.label,
+          visible: field.visible !== false,
+        }));
+
+      if ($event?.target?.value === 'Corporate') {
+        this.columns = this.dynamicSetupData.fields.filter(field => field.formId.includes('corporate'))
+          .map(field => ({
+            field: field.fieldId,
+            header: field.label,
+            visible: field.visible !== false,
+          }));
+      }
+      log.info('columns:', this.columns);
+    }
+  }
+
+  inputDetails($event: any, field: string) {
+    log.info("input", $event.target.value, field)
+  }
+
+  filter2(event: any, field: string | null = null, pageIndex: number = 0, pageSize: number = event.rows) {
+    const isEnterKey = event.key === 'Enter' || event.key === undefined;
+    if (!isEnterKey) return;
+
+    const searchValue = (event.target as HTMLInputElement)?.value?.trim() || '';
+    const apiField = field ? (this.fieldMappings[field] || field) : null;
+    log.info('searchValue', searchValue)
+    log.info('field', field)
+
+    // If no search value and not called from lazyLoad, return
+    if (!searchValue && !field) {
+      this.getClients(pageIndex, pageSize);
+      return;
+    }
+
+    // If no search value but called from lazyLoad with a field, it's a pagination/sort
+    if (searchValue == undefined && field) {
+      this.getClients(pageIndex, pageSize);
+      return;
+    }
+
+    this.clientsData = null;
+    this.isSearching = true;
+
+    const executeSearch = (
+      name: string | null = null,
+      modeOfIdentity: string | null = null,
+      idNumber: string | null = null,
+      clientTypeName: string | null = null,
+      columnName: string | null = null,
+      columnValue: string | null = null
+    ) => {
+      return this.clientService.searchClients(
+        pageIndex, pageSize,
+        name,
+        modeOfIdentity,
+        idNumber,
+        clientTypeName,
+        columnName,
+        columnValue
+      ).pipe(untilDestroyed(this));
+    };
+
+    let search$: Observable<Pagination<ClientDTO>>;
+
+    if (['name', 'modeOfIdentity', 'idNumber', 'clientTypeName'].includes(apiField)) {
+      const params: any = {
+        name: null,
+        modeOfIdentity: null,
+        idNumber: null,
+        clientTypeName: null
+      };
+      params[apiField] = searchValue;
+
+      search$ = executeSearch(
+        params.name,
+        params.modeOfIdentity,
+        params.idNumber,
+        params.clientTypeName
+      );
+    } else {
+      search$ = executeSearch(
+        null, null, null, null, apiField, searchValue
+      );
+    }
+
+    search$.subscribe({
+      next: (data) => {
+        this.clientsData = data;
+        this.isSearching = false;
+      },
+      error: (err) => {
+        log.error('Error searching clients:', err);
+        this.isSearching = false;
+        this.globalMessagingService.displayErrorMessage('Error', err.error?.message || 'Failed to search clients');
+      }
+    });
+  }
+
+  clearFilters() {
+    this.filterObject = {
+      name: '',
+      modeOfIdentity: '',
+      idNumber: '',
+      clientTypeName: ''
+    };
+    const searchInputs = document.querySelectorAll<HTMLInputElement>('.search-input');
+    searchInputs.forEach(input => input.value = '');
+    this.dt2.reset();
   }
 }
