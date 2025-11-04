@@ -4,14 +4,14 @@
   </app-dynamic-breadcrumb>
 </div>
 
-<div class="bg-white mx-4">
+<!--<div class="bg-white mx-4">
   <div class="d-flex justify-content-between my-4 ms-4">
     <div class="mr-auto p-2">
       <h4 class="htxt page-header">{{ 'entities.client' | translate }}</h4>
     </div>
   </div>
 
-  <!-- Top Buttons !-->
+  &lt;!&ndash; Top Buttons !&ndash;&gt;
   <div class="d-flex my-4 ms-4">
     <button type="button" class="btn btn-primary rounded-1 px-4 me-3" id="btn-new-client" (click)="gotoEntityPage()">
       {{ 'entities.new_client' | translate }}
@@ -24,10 +24,10 @@
 
     <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
 
-    <!--<app-dynamic-table
+    &lt;!&ndash;<app-dynamic-table
       [tableDetails]="tableDetails"
       (onLazyLoad)="lazyLoadClients($event)">
-    </app-dynamic-table>-->
+    </app-dynamic-table>&ndash;&gt;
 
    <p-table
             (onLazyLoad)="lazyLoadClients($event)"
@@ -103,6 +103,172 @@
         </tr>
       </ng-template>
     </p-table>
+  </div>
+</div>-->
+
+<div class="bg-white mt-4 mx-4">
+  <div class="row mb-3 mx-md-1">
+    <div class="col-sm-12 col-md-6">
+      <h5 class="my-3 text-dark">
+        {{ 'entities.client' | translate }}
+      </h5>
+      <div class="d-flex">
+        <button type="button" class="btn btn-primary rounded-1 px-4 me-3" id="btn-new-client" (click)="gotoEntityPage()">
+          {{ 'entities.new_client' | translate }}
+        </button>
+        <button type="button" class="btn btn-outline-primary px-4 me-3">{{ 'entities.import_client' | translate }}</button>
+        <label for="" class="text-dark fw-bold my-auto me-2">Filter by</label>
+        <select class="form-select w-25" (change)="filterFormFields($event)">
+          <option value="Individual" selected>Individual</option>
+          <option value="Corporate">Corporate</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-end gap-2">
+      <!-- Caret Dropdown-style Button -->
+      <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-2 columnDialogBtn"
+              (click)="columnDialogVisible = true">
+        <i class="fa-solid fa-caret-down fs-5 text-dark"></i>
+      </button>
+
+      <p-dialog header="{{ 'crm.columns' | translate }}" [(visible)]="columnDialogVisible" [modal]="true" [style]="{width: '330px'}">
+        <div *ngFor="let col of columns">
+          <div class="form-check form-check-inline float-start">
+            <input class="form-check-input" type="checkbox" value="" id="checkChecked" [checked]="col.visible" [(ngModel)]="col.visible">
+            <label class="form-check-label" for="checkChecked">
+              {{ col.header[language] | titlecase }}
+            </label>
+          </div>
+        </div>
+      </p-dialog>
+
+    </div>
+    <div class="mt-3">
+      <p-table
+        #dt2
+        [value]="clientsData?.content"
+        [paginator]="true"
+        [rows]="pageSize || 10"
+        [totalRecords]="clientsData?.totalElements"
+        [rowsPerPageOptions]="[10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        scrollHeight="400px"
+        [scrollable]="true"
+        [resizableColumns]="true"
+        [globalFilterFields]="['label']"
+        (onLazyLoad)="lazyLoadClients($event)"
+        [lazy]="true"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <ng-container *ngFor="let col of columns">
+              <th *ngIf="col.visible"
+                  [pSortableColumn]="col.field">
+                {{ col.header[language] | titlecase }}
+                <p-sortIcon [field]="col.field"></p-sortIcon>
+              </th>
+            </ng-container>
+          </tr>
+          <tr>
+            <ng-container *ngFor="let col of columns">
+              <th *ngIf="col.visible">
+                <input
+                  type="text" class="form-control w-75 search-input"
+                  (keyup.enter)="filter2($event, col.field, 0, dt2.rows);"
+                  (input)="inputDetails($event, col.field)"
+                  *ngIf="col.field.indexOf('action') === -1">
+                <button
+                  class="btn btn-outline-primary"
+                  *ngIf="col.field.indexOf('action') !== -1"
+                  (click)="clearFilters()">
+                  Clear filters
+                </button>
+              </th>
+            </ng-container>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-rowData>
+          <tr [pSelectableRow]="rowData">
+            <ng-container *ngFor="let col of columns">
+              <td *ngIf="col.visible">
+                <ng-container [ngSwitch]="col.field">
+                  <span *ngSwitchCase="'records_individual_name'">
+                    {{ rowData.firstName | titlecase }} {{ rowData.lastName | titlecase }}
+                  </span>
+                  <span *ngSwitchCase="'records_individual_identity_type'">
+                    {{ rowData?.modeOfIdentity | titlecase }}
+                  </span>
+                  <span *ngSwitchCase="'records_individual_identity_number'">
+                    {{ rowData?.idNumber }}
+                  </span>
+                  <span *ngSwitchCase="'records_individual_client_type'">
+                    {{ rowData?.clientType?.clientTypeName | titlecase }}
+                  </span>
+                  <span *ngSwitchCase="'records_individual_email'">
+                    {{ rowData?.emailAddress }}
+                  </span>
+                  <span *ngSwitchCase="'records_individual_pin_no'">
+                    {{ rowData?.pinNumber }}
+                  </span>
+                  <span *ngSwitchCase="'records_individual_tel'">
+                    {{ rowData?.phoneNumber }}
+                  </span>
+                  <span *ngSwitchCase="'records_individual_action'">
+                    <div class="actions">
+                      <button type="button" class="btn btn-link text-primary" (click)="viewDetailsWithId(rowData.id, rowData.categoryName)">
+                        <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>{{ 'entities.view' | translate }}
+                      </button>
+                    </div>
+                  </span>
+                  <span *ngSwitchCase="'records_corporate_name'">
+                    {{ rowData.firstName | titlecase }} {{ rowData.lastName | titlecase }}
+                  </span>
+                  <span *ngSwitchCase="'records_corporate_identity_number'">
+                    {{ rowData?.idNumber }}
+                  </span>
+                  <span *ngSwitchCase="'records_corporate_pin_no'">
+                    {{ rowData?.pinNumber }}
+                  </span>
+                  <span *ngSwitchCase="'records_corporate_identity_type'">
+                    {{ rowData?.clientType?.clientTypeName | titlecase }}
+                  </span>
+                  <span *ngSwitchCase="'records_corporate_email'">
+                    {{ rowData?.emailAddress }}
+                  </span>
+                  <span *ngSwitchCase="'records_corporate_tel'">
+                    {{ rowData?.phoneNumber }}
+                  </span>
+                  <span *ngSwitchCase="'records_corporate_incorporation_date'">
+                    {{ rowData?.dateOfBirth | date: 'dd-MM-yyyy' }}
+                  </span>
+                  <span *ngSwitchCase="'records_corporate_action'">
+                    <div class="actions">
+                      <button type="button" class="btn btn-link text-primary" (click)="viewDetailsWithId(rowData.id, rowData.categoryName)">
+                        <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>{{ 'entities.view' | translate }}
+                      </button>
+                    </div>
+                  </span>
+                  <span *ngSwitchDefault>
+                    {{ rowData[col.field] }}
+                  </span>
+                </ng-container>
+              </td>
+            </ng-container>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td [attr.colspan]="columns?.length + 1" class="text-center">
+              {{'crm.noRecordsFound' | translate}}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
   </div>
 </div>
 
