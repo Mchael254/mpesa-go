@@ -14,6 +14,7 @@ export class OverviewTableComponent {
   @Input() subGroup: FormSubGroupsDto;
   @Input() table;
   @Input() language: string;
+  @Input() category: string
   @Output() rowClicked = new EventEmitter<any>();
   @Output() deleteBtnClicked = new EventEmitter<any>();
   @Output() editBtnClicked = new EventEmitter<any>();
@@ -22,10 +23,14 @@ export class OverviewTableComponent {
   selectedRow: any;
 
   visible: boolean = false;
+  shouldShowTableLabel: boolean = true;
 
   constructor(
     private cdr: ChangeDetectorRef,
   ) {
+    setTimeout(() => {
+      if (this.category?.toLowerCase() === 'individual') this.shouldShowTableLabel = false
+    }, 1000)
   }
 
   onRowClick(row: any) {

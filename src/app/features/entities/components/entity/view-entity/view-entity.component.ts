@@ -47,7 +47,7 @@ import {
   FormGroupsDto,
   FormSubGroupsDto,
   SaveAction,
-  SaveAddressAction, SaveFinanceAction,
+  // SaveAddressAction, SaveFinanceAction,
   SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
 
@@ -729,6 +729,7 @@ export class ViewEntityComponent implements OnInit {
 
 
   selectTab(tab: any): void {
+    log.info('selectTab', tab);
     this.selectedTab = this.primaryTabs.includes(tab.originalLabel) ? tab.originalLabel : this.selectedTab;
     this.selectedSubTab = this.secondaryTabs.includes(tab.originalLabel) ? tab.originalLabel : this.selectedSubTab;
   }
@@ -744,12 +745,12 @@ export class ViewEntityComponent implements OnInit {
         this.contactComponent.openEditContactDialog(subgroup, SaveAction.EDIT_CONTACT_DETAILS);
         break;
       case 'address details':
-        this.addressComponent.openEditAddressDialog(subgroup, SaveAddressAction.EDIT_ADDRESS_DETAILS);
+        this.addressComponent.openEditAddressDialog(subgroup, SaveAction.EDIT_ADDRESS_DETAILS);
         break;
       case 'financial details':
-        this.financialComponent.openEditFinancialDialog(subgroup, SaveFinanceAction.EDIT_FINANCE_DETAILS);
+        this.financialComponent.openEditFinancialDialog(subgroup, SaveAction.EDIT_FINANCE_DETAILS);
         break;
-      case 'wealth_aml':
+      case 'Wealth And Anti-money Laundering Details':
         this.wealthAmlComponent.openEditWealthAmlDialog(false);
         break;
       default:
