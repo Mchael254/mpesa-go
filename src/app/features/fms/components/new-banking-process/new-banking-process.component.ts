@@ -3,19 +3,20 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { GlobalMessagingService } from './../../../../shared/services/messaging/global-messaging.service';
-import { Logger } from 'src/app/shared/services';
+import { Logger } from '../../../../shared/services';
 import fmsStepsData from '../../data/fms-step.json';
 import { BankingProcessService } from '../../services/banking-process.service';
 import { PaymentModesDTO } from '../../data/auth-requisition-dto';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import {
-  assignedUsersDTO,
   ReceiptDTO,
   ReceiptsToBankRequest,
-} from '../../data/receipting-dto';
+} from '../../data/banking-process-dto';
 import * as bootstrap from 'bootstrap';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { AuthService } from '../../../../shared/services/auth.service';
+import { StaffService } from 'src/app/features/entities/services/staff/staff.service';
+import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 const log = new Logger('NewBankingProcessComponent');
 /**
  * @Component NewBankingProcessComponent
@@ -50,14 +51,28 @@ export class NewBankingProcessComponent implements OnInit {
   /** An array of `PaymentModesDTO` used to populate the payment method dropdown. */
   paymentModes: PaymentModesDTO[] = [];
   /** A list of users available for task assignment, populating the user selection modal. */
-  users: assignedUsersDTO[] = [];
+  users: StaffDto[] = [];
+  filteredUsers:StaffDto[] = [];
   /** Flag to control whether the receipts table is rendered in the DOM. */
   displayTable: boolean = false;
+  /** Controls visibility of the main assignment dialog. */
+  assignDialogVisible: boolean = false;
+  /** Controls visibility of the user selection dialog. */
+  userSelectDialogVisible: boolean = false;
+  /**controls visibility of create batches btn,it should be hidden if payment mode selected is cheque */
+  isCashSelected: boolean = false;
+  /** Holds the user object selected from the second dialog to display in the first dialog's input. */
+  selectedUserForAssignment:  StaffDto | null = null;
+
+  /** Temporarily holds the user selected in the user table before confirmation. */
+  tempSelectedUser:  StaffDto | null = null;
+
   // --- Table Column Configuration ---
   /** Stores the configuration for all available columns in the receipts table. */
   columns: any[];
   /** Stores the configuration for the columns that are currently visible in the table. */
   selectedColumns: any[] = [];
+  allColumns: any[] = [];
   // --- Session and User Data ---
   /** The default organization for the logged-in user, retrieved from session storage. */
   defaultOrg: OrganizationDTO;
@@ -65,6 +80,7 @@ export class NewBankingProcessComponent implements OnInit {
   selectedOrg: OrganizationDTO;
   /** Information about the currently logged-in user. */
   loggedInUser: any;
+   staffPageSize = 5;
   /**
    * @constructor
    * @param translate Service for handling internationalization (i18n).
@@ -82,7 +98,8 @@ export class NewBankingProcessComponent implements OnInit {
     private globalMessagingService: GlobalMessagingService,
     private bankingService: BankingProcessService,
     private sessionStorage: SessionStorageService,
-    private authService: AuthService
+    private authService: AuthService,
+    private staffService:StaffService
   ) {}
   /**
    * @description Angular lifecycle hook that runs on component initialization.
@@ -93,7 +110,8 @@ export class NewBankingProcessComponent implements OnInit {
     this.initiateRctsForm();
     this.initializeUsersForm();
     this.initiateColumns();
-    this.selectedColumns = this.initiateColumns();
+    this.allColumns = this.initiateColumns();
+this.fetchActiveUsers(0, this.staffPageSize);
     this.fetchPaymentsModes();
     let storedSelectedOrg = this.sessionStorage.getItem('selectedOrg');
     let storedDefaultOrg = this.sessionStorage.getItem('defaultOrg');
@@ -105,7 +123,6 @@ export class NewBankingProcessComponent implements OnInit {
       this.selectedOrg = null;
     }
     this.loggedInUser = this.authService.getCurrentUser();
-    this.fetchUsers(this.loggedInUser.code);
   }
   /**
    * @description Initializes the `rctsRetrievalForm` with required controls and validators.
@@ -172,6 +189,7 @@ export class NewBankingProcessComponent implements OnInit {
   showColumnsDialogs(): void {
     this.visible = true;
   }
+  
   /**
    * @description Filters the `filteredReceipts` array based on user input in the table's filter row.
    * Handles filtering for string, number, and date fields.
@@ -188,11 +206,9 @@ export class NewBankingProcessComponent implements OnInit {
         return formattedDateField.includes(inputValue);
       } else if (typeof fieldValue === 'number') {
         const inputNumber = String(inputValue);
-
         return fieldValue.toString().includes(inputNumber);
       } else if (typeof fieldValue === 'string') {
         fieldValue = fieldValue.toString();
-
         return fieldValue.toLowerCase().includes(inputValue.toLowerCase());
       }
       return false;
@@ -237,6 +253,18 @@ export class NewBankingProcessComponent implements OnInit {
       );
       return;
     }
+    if (formData?.paymentMethod === 'CASH') {
+      // If CASH is selected, filter out the 'actions' column
+      this.selectedColumns = this.allColumns.filter(
+        (col) => col.field !== 'actions'
+      );
+
+      this.isCashSelected = true;
+    } else {
+      this.isCashSelected = false;
+      // For any other payment mode, show all columns
+      this.selectedColumns = [...this.allColumns];
+    }
     this.fetchReceipts();
   }
   /**
@@ -249,8 +277,7 @@ export class NewBankingProcessComponent implements OnInit {
       dateTo: this.rctsRetrievalForm.get('endDate')?.value,
       orgCode: this.defaultOrg?.id || this.selectedOrg?.id,
       payMode: this.rctsRetrievalForm.get('paymentMethod')?.value,
-      includeBatched: 'Y'
-     
+      includeBatched: 'Y',
     };
     this.bankingService.getReceipts(params).subscribe({
       next: (response) => {
@@ -264,46 +291,140 @@ export class NewBankingProcessComponent implements OnInit {
       },
     });
   }
+
   /**
-   * @description Opens the Bootstrap modal for assigning users to selected receipts.
+   * @description Opens the main assignment dialog.
+   * Checks if receipts have been selected first.
    */
   openAssignModal(): void {
-    const modalEl = document.getElementById('userModal');
-    let modal = bootstrap.Modal.getInstance('modalEl');
-    if (!modal) {
-      modal = new bootstrap.Modal(modalEl);
-    }
-    modal.show();
+    // if (!this.selectedReceipts || this.selectedReceipts.length === 0) {
+    //   this.globalMessagingService.displayErrorMessage(
+    //     '',
+    //     'Please select at least one receipt to assign.'
+    //   );
+    //   return;
+    // }
+    this.assignDialogVisible = true;
   }
+
   /**
-   * @description Closes the Bootstrap modal for user assignment.
+   * @description Closes the main assignment dialog and resets the form and selections.
    */
   closeAssignModal(): void {
-    const modalEl = document.getElementById('userModal');
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    if (modal) {
-      modal.hide();
-      const form = this.usersForm.value;
-      console.log('users>', form);
+    this.assignDialogVisible = false;
+    this.usersForm.reset();
+    this.selectedUserForAssignment = null;
+  }
+  filterUsers(event: any, field: string) {
+    const inputValue = (event.target as HTMLInputElement).value;
+    switch (field) {
+      case 'username':
+        this.filteredUsers = this.users.filter((user) => {
+          return user.username.toLowerCase().includes(inputValue.toLowerCase());
+        });
+        break;
+      case 'name':
+        this.filteredUsers = this.users.filter((user) => {
+          return user.name.toLowerCase().includes(inputValue.toLowerCase());
+        });
+        break;
     }
   }
   /**
-   * @description Fetches a list of users that the current user can assign tasks to.
-   * @param currentUserCode The unique code of the currently logged-in user.
+   * @description Opens the second dialog for selecting a user from a table.
    */
-  fetchUsers(currentUserCode: number): void {
-    this.bankingService.getUsers(currentUserCode).subscribe({
+  openUserSelectDialog(): void {
+    this.tempSelectedUser = null; // Clear previous temporary selection
+    this.userSelectDialogVisible = true;
+  }
+  /**
+   * @description Closes the user selection dialog without saving the choice.
+   */
+  closeUserSelectDialog(): void {
+    this.userSelectDialogVisible = false;
+  }
+  /**
+   * @description Called when the "Select User" button in the second dialog is clicked.
+   * It transfers the selected user to the main form and closes the selection dialog.
+   */
+  confirmUserSelection(): void {
+    if (this.tempSelectedUser) {
+      this.selectedUserForAssignment = this.tempSelectedUser;
+      // Patch the form with the selected user's ID
+      this.usersForm.patchValue({
+        user: this.selectedUserForAssignment.id,
+      });
+      this.closeUserSelectDialog();
+    }
+  }
+  onAssignSubmit(): void {
+    this.usersForm.markAllAsTouched();
+    if (this.usersForm.invalid) {
+      return;
+    }
+    const formData = this.usersForm.value;
+    const rctsRetrievalForm = this.rctsRetrievalForm.value;
+    const requestBody = {
+      userId: formData.user,
+      receiptNumbers: this.selectedReceipts.map((rct) => {
+        return rct.receiptNo;
+      }),
+    };
+    this.bankingService.assignUser(requestBody).subscribe({
       next: (response) => {
-        this.users = response;
-        if (this.users.length > 0) {
-          this.usersForm.patchValue({ user: this.users[0].user_id });
+        this.selectedReceipts = [];
+        if (rctsRetrievalForm?.paymentMethod === 'CASH') {
+          this.router.navigate(['/home/fms/process-batch']);
+        } else {
+          this.fetchReceipts();
         }
+
+        const backendResponse =
+          response?.msg || response?.error || response?.status;
+        this.globalMessagingService.displaySuccessMessage('', response.msg);
       },
       error: (err) => {
         this.handleApiError(err);
       },
     });
+    this.closeAssignModal();
   }
+
+  /**
+   * @description Fetches a list of users that the current user can assign tasks to.
+   *
+   */
+  fetchActiveUsers(pageIndex: number,
+               pageSize: number,
+               sortList: any = 'dateCreated',
+               order: string = 'desc'):void{
+    this.staffService.getStaff(pageIndex,
+                pageSize, 
+                
+                 'U',
+                 sortList,
+                order, null,'A').subscribe({
+      next:(response)=>{
+         this.users = response.content;
+        this.filteredUsers = this.users;
+      },
+      error:(err)=>{
+        this.handleApiError(err);
+      }
+    })
+  }
+  // fetchActiveUsers(): any {
+  //   this.bankingService.getActiveUsers().subscribe({
+  //     next: (response) => {
+  //       this.users = response.content;
+  //       this.filteredUsers = this.users;
+  //     },
+  //     error: (err) => {
+  //       this.handleApiError(err);
+  //     },
+  //   });
+  // }
+
   /**
    * @description Navigates the user to the next step in the banking process (Create Batches).
    */

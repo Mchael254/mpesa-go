@@ -280,7 +280,7 @@ export interface ReceiptParticularDetail {
 }
 
 export interface GroupBusinessAccount {
-  accountNumber: string; 
+  accountNumber: string;
   accountName: string;
   businessUnit: string;
   balance: number;
@@ -639,54 +639,13 @@ export interface Period {
   closedByUser?: number | null;
   closedByUserName?: string | null;
 }
-
 export interface acknowledgementSlipDTO {
   receiptNumbers: number[];
   userCode: number;
 }
-
 export interface SharePreviewDataDTO {
   shareType: string;
   recipientEmail: string | null;
   recipientPhone: string | null;
   clientName: string;
-}
-export interface ReceiptsToBankRequest {
-  dateFrom: string;
-  dateTo: string;
-  orgCode: number;
-  payMode: string;
-  includeBatched?: string;
-  bctCode?: number;
-  brhCode?: number;
-  
-}
-export interface ReceiptDTO {
-  receiptNo: number;
-  receiptDate: string;
-  receiptCaptureDate: string;
-  receiptCapturedByCode: number;
-  receiptAmount: number;
-  paymentMode: string;
-  description: string;
-  printed: string;
-  accountCode: number;
-  branchCode: number;
-  status: string;
-  paidBy: string;
-  receivedFrom: string;
-  capturedByUser: string;
-  userEmail: string;
-  allocationStatus: string;
-}
-
-export interface assignedUsersDTO{
-   user_id: number;
-    username: string;
-    name: string;
-    email: string;
-    personnel_rank: string;
-    date_created: Date;
-    user_type: string;
-    status: string;
 }

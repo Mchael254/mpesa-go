@@ -63,7 +63,8 @@ export class StaffService {
     userType: string,
     sortList: string = 'dateCreated',
     order: string = 'desc',
-    supervisor: number
+    supervisor: number,
+    status:string = null,
   ): Observable<Pagination<StaffDto>> {
     const params = new HttpParams()
       .set('page', `${page}`)
@@ -72,7 +73,7 @@ export class StaffService {
       // .set('groupId', 1) /*TODO: Find proper way to fetch groupId*/
       .set('sortList', `${sortList}`)
       .set('order', `${order}`)
-      .set('supervisor', `${supervisor}`);
+      .set('supervisor', `${supervisor}`).set('status',`${status}`);
 
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
 
