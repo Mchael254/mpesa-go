@@ -67,7 +67,8 @@ export class AddressComponent implements OnInit {
   saveAction: SaveAction;
   protected readonly Save_Action = SaveAction;
   protected readonly SearchCountryField = SearchCountryField;
-  protected readonly CountryISO = CountryISO;
+  // protected readonly CountryISO = CountryISO;
+  countryISO: CountryISO;
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
 
 
@@ -268,6 +269,7 @@ export class AddressComponent implements OnInit {
       next: (countries: CountryDto[]) => {
         this.countries = countries;
         this.clientCountry = countries.find(country => country.id === this.addressDetails.countryId);
+        this.countryISO = this.clientCountry?.short_description as CountryISO;
         this.fetchStates(this.clientCountry?.id);
       },
       error: (err) => {
@@ -327,7 +329,6 @@ export class AddressComponent implements OnInit {
     if (this.group.subGroup.length > 0) {
       this.formFields.forEach(field => { // corporate
         patchData[field.fieldId] = field.dataValue;
-        log.info('patch data >>> ', field.fieldId, field.dataValue);
       });
     } else if (this.group.subGroup.length === 0) { // individual
       fields.forEach(field => {
