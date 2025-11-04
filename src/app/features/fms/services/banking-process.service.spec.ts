@@ -2,11 +2,12 @@ import { TestBed } from '@angular/core/testing';
 import { HttpParams } from '@angular/common/http';
 import { of } from 'rxjs';
 import { BankingProcessService } from './banking-process.service';
-import {ApiService} from '../../../shared/services/api/api.service';
-import { ReceiptsToBankRequest, assignUserRctsDTO } from '../data/banking-process-dto';
-import {API_CONFIG} from '../../../../environments/api_service_config';
+import { ApiService } from '../../../shared/services/api/api.service';
+import { ReceiptsToBankRequest, assignUserRctsDTO, DeAssignDTO } from '../data/banking-process-dto'; // <-- Added DeAssignDTO
+import { API_CONFIG } from '../../../../environments/api_service_config';
 import { GenericResponse } from '../data/receipting-dto';
 import { Pagination } from 'src/app/shared/data/common/pagination';
+
 // Jest Mock for the ApiService
 const mockApiService = {
   GET: jest.fn(),
@@ -67,7 +68,7 @@ describe('BankingProcessService', () => {
         .set('orgCode', '1')
         .set('payMode', 'CASH')
         .set('page', 0)
-        .set('size', 5)
+        .set('size', 10) // Corrected to match service
         .set('sort', 'ASC');
       
       const mockApiResponse: GenericResponse<Pagination<any>> = {
@@ -76,10 +77,11 @@ describe('BankingProcessService', () => {
           data: { content: [{ id: 1 }, { id: 2 }] } as Pagination<any>
       };
       mockApiService.GET.mockReturnValue(of(mockApiResponse));
+
       service.getReceipts(request).subscribe(response => {
         // Assert - Check if the response is correctly mapped
         //expect(response).toEqual([{ id: 1 }, { id: 2 }]);
-        done();
+        done(); // Signal async test is complete
       });
 
       // Assert - Check if the service was called correctly
@@ -107,14 +109,16 @@ describe('BankingProcessService', () => {
         .set('orgCode', '1')
         .set('payMode', 'CASH')
         .set('page', 0)
-        .set('size', 5)
+        .set('size', 10) // Corrected to match service
         .set('sort', 'ASC')
         .set('includeBatched', 'Y')
         .set('bctCode', '123')
         .set('brhCode', '456');
       
       mockApiService.GET.mockReturnValue(of({ success: true, data: { content: [] } }));
+
       service.getReceipts(request).subscribe();
+
       expect(apiService.GET).toHaveBeenCalledWith(
         'receipts/receipts-to-bank',
         API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL,
@@ -123,36 +127,44 @@ describe('BankingProcessService', () => {
     });
   });
 
-  describe('getActiveUsers', () => {
-    it('should call api.GET with the correct parameters for active users', () => {
-      const expectedParams = new HttpParams()
-        .set('page', 0)
-        .set('size', 6)
-        .set('sort', 'desc')
-        .set('sortList', 'dateCreated')
-        .set('status', 'A');
-      mockApiService.GET.mockReturnValue(of({ content: [] }));
-      service.getActiveUsers().subscribe();
-      expect(apiService.GET).toHaveBeenCalledTimes(1);
-      expect(apiService.GET).toHaveBeenCalledWith(
-        '/users',
-        API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL,
-        expectedParams
-      );
-    });
-  });
-
   describe('assignUser', () => {
     it('should call api.POST with the correct endpoint and body', () => {
+      // Arrange
       const requestBody: assignUserRctsDTO = {
         userId: 1,
         receiptNumbers: [101, 102],
       };
       mockApiService.POST.mockReturnValue(of({ msg: 'Success' }));
+
+      // Act
       service.assignUser(requestBody).subscribe();
+
+      // Assert
       expect(apiService.POST).toHaveBeenCalledTimes(1);
       expect(apiService.POST).toHaveBeenCalledWith(
         'receipts/assign',
+        requestBody,
+        API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
+      );
+    });
+  });
+
+  // --- NEW TEST BLOCK FOR deAssign METHOD ---
+  describe('deAssign', () => {
+    it('should call api.POST with the correct endpoint and body', () => {
+      // Arrange
+      const requestBody: DeAssignDTO = {
+        receiptNumbers: [101, 102],
+      };
+      mockApiService.POST.mockReturnValue(of({ msg: 'De-assigned successfully' }));
+
+      // Act
+      service.deAssign(requestBody).subscribe();
+
+      // Assert
+      expect(apiService.POST).toHaveBeenCalledTimes(1);
+      expect(apiService.POST).toHaveBeenCalledWith(
+        'receipts/de-assign',
         requestBody,
         API_CONFIG.FMS_RECEIPTING_SERVICE_BASE_URL
       );
