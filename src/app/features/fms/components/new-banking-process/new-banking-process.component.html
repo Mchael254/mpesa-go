@@ -140,14 +140,13 @@
         </ng-template>
         <div *ngFor="let col of columns" class="field-checkbox">
           <p-checkbox
-            [(ngModel)]="selectedColumns"
+            [(ngModel)]="allColumns"
             name="col"
             [label]="col.header"
             [value]="col"
           />
         </div>
       </p-dialog>
-
       <!-- primeng table for displaying receipts to bank
         -->
       <p-table
@@ -201,10 +200,7 @@
         <ng-template pTemplate="header">
           <tr>
             <th><p-tableHeaderCheckbox /></th>
-            <th
-              *ngFor="let col of selectedColumns"
-              [pSortableColumn]="col.field"
-            >
+            <th *ngFor="let col of allColumns" [pSortableColumn]="col.field">
               {{ col.header | translate }}
               <p-sortIcon [field]="col.field"></p-sortIcon>
             </th>
@@ -213,7 +209,7 @@
 
           <tr>
             <th></th>
-            <th *ngFor="let col of selectedColumns">
+            <th *ngFor="let col of allColumns">
               <ng-container [ngSwitch]="col.field">
                 <ng-container *ngSwitchCase="'actions'">
                   <button
@@ -241,15 +237,39 @@
             <td>
               <p-tableCheckbox [value]="receipt" />
             </td>
-            <td *ngFor="let col of selectedColumns">
+            <td *ngFor="let col of allColumns">
               <ng-container [ngSwitch]="col.field">
                 <ng-container *ngSwitchCase="'date'">
                   {{ receipt.receiptDate | date : "dd/MM/yyyy" }}
                 </ng-container>
                 <ng-container *ngSwitchCase="'actions'">
                   <div class="d-flex gap-1">
-                    <button class="btn btn-link btn-sm">Deposit</button>
-                    <button class="btn btn-link btn-sm">Re-assign</button>
+                    <button
+                      class="btn btn-link btn-sm"
+                      *ngIf="paymentMode === 'CHEQUE'"
+                    >
+                      Deposit
+                    </button>
+                    <!-- <button
+                      class="btn btn-link btn-sm"
+                      *ngIf="receipt.batchAssignedUser == null || ''"
+                      (click)="openAssignModal()"
+                    >
+                      Assign
+                    </button> -->
+                    <button
+                      class="btn btn-link btn-sm"
+                      *ngIf="receipt.batchAssignedUser != null || ''"
+                    >
+                      Re-assign
+                    </button>
+                    <button
+                      class="btn btn-link btn-sm"
+                      *ngIf="receipt.batchAssignedUser != null || ''"
+                      (click)="deAssign(receipt)"
+                    >
+                      De-assign
+                    </button>
                   </div>
                 </ng-container>
                 <ng-container *ngSwitchCase="'batchAssignedUser'">
@@ -270,9 +290,16 @@
     <button
       class="btn btn-primary"
       (click)="navigateToBatch()"
-      *ngIf="displayTable && isCashSelected && selectedReceipts.length > 0"
+      *ngIf="displayTable && isCashSelected"
     >
-      {{ "fms.banking.createBatches" | translate }}
+      {{ "fms.receipting.next" | translate }}
+    </button>
+    <button
+      class="btn btn-primary"
+      (click)="navigateToDashboard()"
+      *ngIf="displayTable && !isCashSelected"
+    >
+      {{ "fms.banking.goToDashboard" | translate }}
     </button>
   </div>
   <!-- start of p dialog>Main assignment dialog -->
