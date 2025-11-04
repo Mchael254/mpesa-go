@@ -109,7 +109,7 @@ export class WealthAmlComponent implements OnInit {
 
 
   constructor(
-    private fb: FormBuilder,
+    // private fb: FormBuilder,
     private utilService: UtilService,
     private globalMessagingService: GlobalMessagingService,
     private bankService: BankService,
@@ -149,7 +149,6 @@ export class WealthAmlComponent implements OnInit {
     this.sectors$.subscribe({
       next: res => {
         this.sectors = res;
-        log.info('Sectors loaded', this.sectors);
       },
       error: err => {}
     })

@@ -48,7 +48,8 @@ export class ContactComponent implements OnInit {
   selectedBranch: OrganizationBranchDto;
   contactChannels: AccountsEnum[];
 
-  protected readonly CountryISO = CountryISO;
+  // protected readonly CountryISO = CountryISO;
+  countryISO: CountryISO = 'ng' as CountryISO;
   protected readonly SearchCountryField = SearchCountryField;
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
 
