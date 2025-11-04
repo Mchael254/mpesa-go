@@ -42,6 +42,9 @@ export const environment = {
     [API_CONFIG.PAYMENT_SERVICE_BASE_URL, '/gis/payment/api'],
     [API_CONFIG.NONE_BASE_URL, 'assets'],
     [API_CONFIG.AI_DOCUMENT_SERVICE, '/aireader'],
+    [API_CONFIG.GIS_TICKETING_SERVICE, '/ticketing/api'],
+    [API_CONFIG.GIS_COMMONS_SERVICE, '/commons/api'],
+
 
   ]),
   // PAYSTACK_BASE_URL: process.env['PAYSTACK_BASE_URL'],

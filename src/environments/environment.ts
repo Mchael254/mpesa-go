@@ -51,5 +51,8 @@ export const environment = {
     [API_CONFIG.CHART_SERVICE_BASE_URL, '/crm/chart'],
     [API_CONFIG.CRM_SERVICE_REQUEST, '/crm/requests/api/v1'],
     [API_CONFIG.AI_DOCUMENT_SERVICE, '/aireader'],
+    [API_CONFIG.GIS_TICKETING_SERVICE, '/gis/ticketing/api'],
+    [API_CONFIG.GIS_COMMONS_SERVICE, '/gis/commons/api'],
+
   ]),
 };

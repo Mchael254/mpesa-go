@@ -5547,6 +5547,115 @@ export class RiskDetailsComponent {
     });
   }
 
+  // generatePremiumComputationPayload(quotationData: QuotationDetails): any {
+  //   return {
+  //     entityUniqueCode: 0,
+  //     interfaceType: "QUOTATION",
+  //     frequencyOfPayment: quotationData.frequencyOfPayment || "A",
+  //     transactionStatus: "NB",
+  //     quotationStatus: "Draft",
+  //     products: quotationData.quotationProducts?.map(product => ({
+  //       code: product.productCode,
+  //       expiryPeriod: "Y",
+  //       description: product.productName,
+  //       withEffectFrom: product.wef,
+  //       withEffectTo: product.wet,
+  //       risks: product.riskInformation?.map(risk => ({
+  //         code: risk.code.toString(),
+  //         propertyId: risk.propertyId,
+  //         binderDto: {
+  //           code: risk.binderCode || 0,
+  //           maxExposure: 0,
+  //           currencyCode: quotationData.currencyCode,
+  //           currencyRate: quotationData.currencyRate || 1
+  //         },
+  //         baseCurrencyCode: quotationData.currencyCode,
+  //         prorata: 'S',
+  //         itemDescription: risk.itemDesc,
+  //         emlBasedOn: null,
+  //         noClaimDiscountLevel: risk.ncdLevel || 0,
+  //         subclassCoverTypeDto: [{
+  //           subclassCode: risk.subclassCode,
+  //           description: risk.subclass?.description || '',
+  //           coverTypeCode: risk.coverTypeCode,
+  //           minimumPremium: risk.riskLimits[0]?.minimumPremium || 0,
+  //           coverTypeShortDescription: risk.coverTypeShortDescription,
+  //           coverTypeDescription: risk.coverTypeDescription,
+  //           limits: risk.riskLimits?.map(limit => ({
+  //             description: limit.sectionShortDescription,
+  //             code: limit.code,
+  //             riskCode: risk.code,
+  //             calculationGroup: limit.calcGroup,
+  //             rowNumber: limit.rowNumber,
+  //             rateDivisionFactor: limit.rateDivisionFactor,
+  //             premiumRate: limit.premiumRate,
+  //             rateType: limit.rateType,
+  //             sectionType: limit.sectionType,
+  //             limitAmount: risk.value,
+  //             freeLimit: limit.freeLimit,
+  //             compute: limit.compute,
+  //             section: {
+  //               code: limit.sectionCode,
+  //               description: limit.sectionShortDescription,
+  //               limitAmount: risk.value,
+  //               isMandatory: null
+  //             },
+  //             multiplierRate: 1,
+  //             multiplierDivisionFactor: limit.multiplierDivisionFactor,
+  //             dualBasis: limit.dualBasis,
+  //             shortDescription: limit.sectionShortDescription
+  //           })) || [],
+  //           limitPremium: risk.riskLimits?.map(limit => ({
+  //             sectCode: limit.sectionCode,
+  //             premium: limit.premiumAmount || 0,
+  //             description: limit.sectionShortDescription,
+  //             limitAmount: risk.value,
+  //             isMandatory: null,
+  //             calculationGroup: limit.calcGroup,
+  //             compute: limit.compute,
+  //             dualBasis: limit.dualBasis,
+  //             rateDivisionFactor: limit.rateDivisionFactor,
+  //             rateType: limit.rateType,
+  //             rowNumber: limit.rowNumber,
+  //             premiumRate: limit.premiumRate,
+  //             freeLimit: limit.freeLimit,
+  //             sectionType: limit.sectionType,
+  //             multiplierRate: 1,
+  //             shortDescription: limit.sectionShortDescription
+  //           })) || []
+  //         }],
+  //         enforceCovertypeMinimumPremium: "Y",
+  //         commissionRate: risk.commissionRate || 0,
+  //         sumInsured: risk.value,
+  //         useOfProperty: risk.subclass.description, // Default value
+  //         taxes: product.taxInformation?.map(tax => ({
+  //           taxRateType: tax.taxType || tax.rateType,
+  //           applicationLevel: null,
+  //           code: tax.code || 0,
+  //           divisionFactor: 0,
+  //           taxRate: tax.rate || 0,
+  //           rangeTo: 0,
+  //           rangeFrom: 0,
+  //           rateDescription: tax.rateDescription || "",
+  //           taxCode: tax.code || "",
+  //           minPremium: 0,
+  //           sumInsured: 0,
+  //           premium: 0,
+  //           quotationProductCode: 0
+  //         })) || [],
+  //         subclassSection: { code: risk.subclassCode },
+  //         age: 0 // Hardcoded as requested
+  //       })) || []
+  //     })) || [],
+  //     currency: { rate: quotationData.currencyRate || 1 },
+  //     dateWithEffectTo: quotationData.coverTo,
+  //     dateWithEffectFrom: quotationData.coverFrom,
+  //     underwritingYear: new Date().getFullYear(),
+  //     coinsuranceLeader: "N",
+  //     coinsurancePercentage: 0
+  //   };
+  // }
+
   generatePremiumComputationPayload(quotationData: QuotationDetails): any {
     return {
       entityUniqueCode: 0,
@@ -5554,80 +5663,103 @@ export class RiskDetailsComponent {
       frequencyOfPayment: quotationData.frequencyOfPayment || "A",
       transactionStatus: "NB",
       quotationStatus: "Draft",
+
       products: quotationData.quotationProducts?.map(product => ({
         code: product.productCode,
         expiryPeriod: "Y",
         description: product.productName,
         withEffectFrom: product.wef,
         withEffectTo: product.wet,
+
         risks: product.riskInformation?.map(risk => ({
           code: risk.code.toString(),
           propertyId: risk.propertyId,
+
           binderDto: {
             code: risk.binderCode || 0,
             maxExposure: 0,
             currencyCode: quotationData.currencyCode,
             currencyRate: quotationData.currencyRate || 1
           },
+
           baseCurrencyCode: quotationData.currencyCode,
-          prorata: 'S',
+          prorata: "S",
           itemDescription: risk.itemDesc,
           emlBasedOn: null,
           noClaimDiscountLevel: risk.ncdLevel || 0,
+
           subclassCoverTypeDto: [{
             subclassCode: risk.subclassCode,
-            description: risk.subclass?.description || '',
+            description: risk.subclass?.description || "",
             coverTypeCode: risk.coverTypeCode,
-            minimumPremium: risk.riskLimits[0]?.minimumPremium || 0,
+            minimumPremium: risk.riskLimits?.[0]?.minimumPremium || 0,
             coverTypeShortDescription: risk.coverTypeShortDescription,
             coverTypeDescription: risk.coverTypeDescription,
-            limits: risk.riskLimits?.map(limit => ({
-              description: limit.sectionShortDescription,
-              code: limit.code,
-              riskCode: risk.code,
-              calculationGroup: limit.calcGroup,
-              rowNumber: limit.rowNumber,
-              rateDivisionFactor: limit.rateDivisionFactor,
-              premiumRate: limit.premiumRate,
-              rateType: limit.rateType,
-              sectionType: limit.sectionType,
-              limitAmount: risk.value,
-              freeLimit: limit.freeLimit,
-              compute: limit.compute,
-              section: {
-                code: limit.sectionCode,
+
+            // ✅ limitAmount uses risk.value if freeLimit = 0
+            limits: risk.riskLimits?.map(limit => {
+              const limitAmount =
+                (limit?.freeLimit || 0) === 0 ? risk?.value : limit?.limitAmount;
+
+              return {
                 description: limit.sectionShortDescription,
-                limitAmount: risk.value,
-                isMandatory: null
-              },
-              multiplierRate: 1,
-              multiplierDivisionFactor: limit.multiplierDivisionFactor,
-              dualBasis: limit.dualBasis,
-              shortDescription: limit.sectionShortDescription
-            })) || [],
-            limitPremium: risk.riskLimits?.map(limit => ({
-              sectCode: limit.sectionCode,
-              premium: limit.premiumAmount || 0,
-              description: limit.sectionShortDescription,
-              limitAmount: risk.value,
-              isMandatory: null,
-              calculationGroup: limit.calcGroup,
-              compute: limit.compute,
-              dualBasis: limit.dualBasis,
-              rateDivisionFactor: limit.rateDivisionFactor,
-              rateType: limit.rateType,
-              rowNumber: limit.rowNumber,
-              premiumRate: limit.premiumRate,
-              freeLimit: limit.freeLimit,
-              sectionType: limit.sectionType,
-              multiplierRate: 1,
-              shortDescription: limit.sectionShortDescription
-            })) || []
+                code: limit.code,
+                riskCode: risk.code,
+                calculationGroup: limit.calcGroup,
+                rowNumber: limit.rowNumber,
+                rateDivisionFactor: limit.rateDivisionFactor,
+                premiumRate: limit.premiumRate,
+                rateType: limit.rateType,
+                sectionType: limit.sectionType,
+                limitAmount,
+                freeLimit: limit.freeLimit,
+                compute: limit.compute,
+                section: {
+                  code: limit.sectionCode,
+                  description: limit.sectionShortDescription,
+                  limitAmount,
+                  isMandatory: null
+                },
+                multiplierRate: 1,
+                multiplierDivisionFactor: limit.multiplierDivisionFactor,
+                dualBasis: limit.dualBasis,
+                shortDescription: limit.sectionShortDescription
+              };
+            }) || [],
+
+            // ✅ match logic in limitPremium
+            limitPremium: risk.riskLimits?.map(limit => {
+              const limitAmount =
+                (limit?.freeLimit || 0) === 0 ? risk?.value : limit?.limitAmount;
+
+              return {
+                sectCode: limit.sectionCode,
+                premium: limit.premiumAmount || 0,
+                description: limit.sectionShortDescription,
+                limitAmount,
+                isMandatory: null,
+                calculationGroup: limit.calcGroup,
+                compute: limit.compute,
+                dualBasis: limit.dualBasis,
+                rateDivisionFactor: limit.rateDivisionFactor,
+                rateType: limit.rateType,
+                rowNumber: limit.rowNumber,
+                premiumRate: limit.premiumRate,
+                freeLimit: limit.freeLimit,
+                sectionType: limit.sectionType,
+                multiplierRate: 1,
+                shortDescription: limit.sectionShortDescription
+              };
+            }) || []
           }],
+
           enforceCovertypeMinimumPremium: "Y",
           commissionRate: risk.commissionRate || 0,
           sumInsured: risk.value,
-          useOfProperty: risk.subclass.description, // Default value
+          useOfProperty: risk.subclass?.description || "",
+          subclassSection: { code: risk.subclassCode },
+          age: 0, // static as before
+
           taxes: product.taxInformation?.map(tax => ({
             taxRateType: tax.taxType || tax.rateType,
             applicationLevel: null,
@@ -5642,11 +5774,10 @@ export class RiskDetailsComponent {
             sumInsured: 0,
             premium: 0,
             quotationProductCode: 0
-          })) || [],
-          subclassSection: { code: risk.subclassCode },
-          age: 0 // Hardcoded as requested
+          })) || []
         })) || []
       })) || [],
+
       currency: { rate: quotationData.currencyRate || 1 },
       dateWithEffectTo: quotationData.coverTo,
       dateWithEffectFrom: quotationData.coverFrom,
@@ -5655,6 +5786,7 @@ export class RiskDetailsComponent {
       coinsurancePercentage: 0
     };
   }
+
   prepareUpdatePremiumPayload(computeResponse: any): any {
     const product = computeResponse.productLevelPremiums?.[0];
 
