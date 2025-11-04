@@ -2504,7 +2504,8 @@
             class="mt-0 w-100">
 
             <!-- Floating Column Selector For Limits of Liability -->
-            <div *ngIf="showCommissionsColumnModal" class="card shadow rounded p-2 position-absolute bg-white border cursor-pointer"
+            <div *ngIf="showCommissionsColumnModal"
+                class="card shadow rounded p-2 position-absolute bg-white border cursor-pointer"
                 [ngStyle]="{ top: columnModalPosition.top, left: columnModalPosition.left, zIndex: 1000 }"
                 (mousedown)="onDragStart($event)" (document:mousemove)="onDragMove($event)"
                 (document:mouseup)="onDragEnd()">
@@ -3279,20 +3280,20 @@
 
                                 <!-- Actions -->
                                 <ng-container *ngSwitchCase="'actions'">
-                                    <div class="d-flex flex-nowrap">
-                                        <span class="p-button-label fw-bold text-primary me-1"
-                                            style="cursor: pointer; display: inline-block; white-space: nowrap;"
-                                            data-bs-toggle="modal" data-bs-target="#editExcess"
-                                            (click)="populateEditExcessModal(excess)">
-                                            {{ 'gis.quotation.edit' | translate }}
-                                        </span>
+                                    <div class="d-flex flex-nowrap justify-content-center">
                                         <span class="p-button-label fw-bold text-primary"
-                                            style="cursor: pointer; white-space: nowrap;" data-bs-toggle="modal"
-                                            data-bs-target="#deleteExcess" (click)="prepareDeleteExcess(excess)">
-                                            {{ 'gis.quotation.delete' | translate }}
+                                            style="cursor: pointer; white-space: nowrap;">
+                                            <span data-bs-toggle="modal" data-bs-target="#editExcess"
+                                                (click)="populateEditExcessModal(excess)">
+                                                {{ 'gis.quotation.edit' | translate }}
+                                            </span>
+                                            &nbsp; &nbsp;
+                                            <span data-bs-toggle="modal" data-bs-target="#deleteExcess"
+                                                (click)="prepareDeleteExcess(excess)">
+                                                {{ 'gis.quotation.delete' | translate }}
+                                            </span>
                                         </span>
                                     </div>
-
                                 </ng-container>
 
                                 <!-- Default columns added dynamically) -->
@@ -3419,6 +3420,7 @@
                                 <button type="button" class="btn btn-outline-primary me-2"
                                     data-bs-dismiss="modal">Cancel</button>
                                 <button type="button" class="btn btn-primary" id="saveDetails" data-bs-dismiss="modal"
+                                    [disabled]="!excessesData?.length || !selectedExcessess?.length"
                                     (click)="addExcesses()">
                                     Save
                                 </button>
