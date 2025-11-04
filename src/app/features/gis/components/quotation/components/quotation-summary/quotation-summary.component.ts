@@ -352,7 +352,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     if (!quickQuoteProductClausesFetched) {
       this.fetchQuickQuoteProductClauses();
     }
-    
+
     this.quotationCodeString = sessionStorage.getItem('quotationCode');
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'));
     log.debug("two codes", this.quotationCode, this.quotationCodeString)
@@ -2242,7 +2242,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   getExceptions(quotationCode: number) {
-    this.quotationService.getExceptions(quotationCode, null).subscribe({
+    this.quotationService.getExceptions('Q', quotationCode).subscribe({
       next: (res) => {
         log.debug('exceptions', res);
         this.exceptionsData = res._embedded;
