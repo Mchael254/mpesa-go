@@ -364,31 +364,34 @@
 
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-ticket>
-          <tr>
-            <td class="body">
-              <p-tableCheckbox [value]="ticket"></p-tableCheckbox>
-            </td>
-            <td class="body">{{ticket.ticket.date | date: 'YYYY-MM-dd'}}</td>
-            <td class="body" style="cursor:pointer;">{{ ticket?.task?.activityName }}</td>
-            <td class="body">
-              {{ ticket?.ticket?.sysModule === 'Q' ? ticket?.ticket.quotationNo :
-              ticket?.ticket.sysModule === 'C' ? ticket?.ticket.claimNo :
-                ticket?.ticket.sysModule === 'P' ? ticket?.ticket.policyNo : ''
-                === '' ? ticket?.ticket.policyNo : '' }}
-            <td class="body">{{ ticket.clientName }}</td>
-            <td class="body">{{ ticket.agentName }}</td>
-            <td class="body">
-<!--              {{ ticket.ticket.reporter }}-->
-              PMUTUA
-            </td>
-            <td class="body">{{ ticket.ticket.assignee === 'JMMUSYOKI' ? 'WADUVAGA' : ticket.ticket.assignee }}</td>
-            <td class="body ticket-button" (click)="goToTicketDetails(ticket)">
-              <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
-              <!-- Details -->
-            </td>
-          </tr>
-        </ng-template>
+            <ng-template pTemplate="body" let-ticket>
+  <tr>
+    <td class="body">
+      <p-tableCheckbox [value]="ticket"></p-tableCheckbox>
+    </td>
+    <td class="body">{{ ticket.createdDate | date: 'yyyy-MM-dd' }}</td>
+    <td class="body" style="cursor:pointer;">{{ ticket.ticketName }}</td>
+    <td class="body">
+      {{
+        ticket.systemModule === 'Q' ? ticket.quotationNumber :
+        ticket.systemModule === 'C' ? ticket.claimNumber :
+        ticket.systemModule === 'P' ? ticket.policyNumber : ''
+      }}
+    </td>
+    <td class="body">{{ ticket.clientName }}</td>
+    <td class="body">{{ ticket.agentName }}</td>
+    <td class="body">
+      PMUTUA
+    </td>
+    <td class="body">
+      {{ ticket.ticketTo === 'JMMUSYOKI' ? 'WADUVAGA' : ticket.ticketTo }}
+    </td>
+    <td class="body ticket-button" (click)="goToTicketDetails(ticket)">
+      <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
+    </td>
+  </tr>
+</ng-template>
+
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="9">No tickets found.</td>
