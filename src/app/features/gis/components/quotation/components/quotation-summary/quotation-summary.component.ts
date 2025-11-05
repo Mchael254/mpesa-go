@@ -287,6 +287,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   riskCommissions: any[] = [];
   showCommissionColumnModal = false;
   commissionColumns: { field: string; header: string; visible: boolean }[] = [];
+  ticketStatus: string
 
 
 
@@ -322,6 +323,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       { label: 'Monthly', value: 'M' },
       { label: 'One-off', value: 'O' }
     ];
+    this.ticketStatus = sessionStorage.getItem('ticketStatus');
+
   }
 
   public isCollapsibleOpen = false;
@@ -636,7 +639,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           this.showViewDocumentsButton = true;
           this.showConfirmButton = true;
         }
-        this.getExceptions(this.quotationView.code);
+        // this.getExceptions(this.quotationView.code);
         if (!this.moreDetails) {
           this.quotationDetails = this.quotationView;
           log.debug("MORE DETAILS TEST quotationView", this.quotationDetails)
@@ -2242,7 +2245,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   getExceptions(quotationCode: number) {
-    this.quotationService.getExceptions('Q', quotationCode).subscribe({
+    this.quotationService.getExceptions(quotationCode).subscribe({
       next: (res) => {
         log.debug('exceptions', res);
         this.exceptionsData = res._embedded;
