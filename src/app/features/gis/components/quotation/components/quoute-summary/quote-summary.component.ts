@@ -74,6 +74,8 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   pdfSrc: SafeResourceUrl | null = null;
   public currencyObj: NgxCurrencyConfig;
   reportDetails: any;
+  comment: boolean = false
+  noUserChosen: boolean = false
 
   constructor(
     private quotationService: QuotationsService,
@@ -277,9 +279,6 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   //reassign quotation
-  comment: boolean = false
-  noUserChosen: boolean = false
-
   reassignQuotation() {
     if (!this.reassignComment) {
       this.comment = true;
@@ -301,13 +300,56 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
     }
     const reassignPayload = {
-      user: this.selectedUser.id,
+      user: this.selectedUser.name,
       comment: this.reassignComment
     }
-    this.globalMessagingService.displaySuccessMessage('Success', 'reassigning...')
-    this.closeReassignButton.nativeElement.click();
-
-    this.onUserUnselect()
+    
+    // Get quotation code from session storage
+    const quotationCode = JSON.parse(sessionStorage.getItem('quotationCode'));
+    
+    if (quotationCode) {
+      // Call getTaskById service to get the taskId
+      this.quotationService.getTaskById(quotationCode).pipe(
+        switchMap((response) => {
+          log.debug('Task details from getTaskById:', response);
+          console.log('Task details from getTaskById:', response);
+          
+          // Extract taskId from response
+          const taskId = response?.taskId;
+          const newAssignee = this.selectedUser.name;
+          
+          if (!taskId) {
+            throw new Error('Task ID not found in response');
+          }
+          
+          log.debug('Extracted taskId:', taskId);
+          console.log('Extracted taskId:', taskId);
+          log.debug('New assignee:', newAssignee);
+          console.log('New assignee:', newAssignee);
+          
+          // Call reassignTicket service with the extracted taskId
+          return this.quotationService.reassignTicket(taskId, newAssignee);
+        })
+      ).subscribe({
+        next: (reassignResponse) => {
+          log.debug('Ticket reassigned successfully:', reassignResponse);
+          console.log('Ticket reassigned successfully:', reassignResponse);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Quotation reassigned successfully');
+          this.closeReassignButton.nativeElement.click();
+          this.onUserUnselect();
+        },
+        error: (error) => {
+          log.error('Error during reassignment:', error);
+          console.error('Error during reassignment:', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to reassign quotation');
+        }
+      });
+    } else {
+      log.warn('No quotation code found in session storage');
+      console.warn('No quotation code found in session storage');
+      this.globalMessagingService.displayWarningMessage('Warning', 'No quotation code found');
+    }
+    
     log.debug('reassign Payload', reassignPayload)
 
   }
