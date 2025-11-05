@@ -1501,6 +1501,50 @@ export interface ExceptionPayload {
   mtranNumber: number;
   accountBalance: number;
 }
+export interface RiskLimitPayload {
+  riskSections: RiskSection[];
+  addOrEdit: string;
+  quotationRiskCode: number;
+}
+
+export interface RiskSection {
+  code: number;
+  description: string;
+  riskCode: number;
+  sectionCode: number;
+  sectionType: string;
+  sectionShortDescription: string;
+  quotationRiskCode: number;
+  quotationCode: number;
+  limitAmount: number;
+  premiumRate: number;
+  premiumAmount: number;
+  productCode: number;
+  quotationProCode: number;
+  minimumPremium: number;
+  rateType: string;
+  rateDescription: string;
+  rateDivisionFactor: number;
+  multiplierRate: number;
+  multiplierDivisionFactor: number;
+  rowNumber: number;
+  calcGroup: number;
+  compute: string;
+  annualPremium: number;
+  usedLimit: number;
+  dualBasis: string;
+  freeLimit: number;
+  setupPremiumRate: number;
+  indemnityRemainingPeriodPct: number;
+  indemnityFirstPeriodPct: number;
+  indemnityFirstPeriod: number;
+  periodType: string;
+  indemnityPeriod: number;
+  minimumPremiumRate: number;
+  maxPremiumRate: number;
+  sumInsuredRate: number;
+}
+
 
 
 
