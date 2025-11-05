@@ -18,6 +18,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { HttpErrorResponse } from '@angular/common/http';
 import { QuotationDetails, QuotationProduct } from '../../data/quotationsDTO';
 import { RiskDetailsComponent } from '../risk-details/risk-details.component'
+import { NgxCurrencyConfig } from "ngx-currency";
 
 const log = new Logger('RiskCentreComponent');
 
@@ -42,6 +43,9 @@ export class RiskCentreComponent {
   isCollapsed = false;
   riskDetailscolumns = false
   ticketStatus: string
+  premiums: { net: number; gross: number; };
+  public currencyObj: NgxCurrencyConfig;
+
   constructor(
     public subclassService: SubclassesService,
     public sharedService: SharedQuotationsService,
@@ -68,6 +72,25 @@ export class RiskCentreComponent {
 
   }
   ngOnInit(): void {
+    const stored = sessionStorage.getItem('premiums');
+    if (stored) {
+      this.premiums = JSON.parse(stored);
+    }
+    const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
+    const currencySymbol = sessionStorage.getItem('currencySymbol')
+    log.debug("currency Object:", currencySymbol)
+    log.debug("currency Delimeter:", currencyDelimiter)
+    this.currencyObj = {
+      prefix: currencySymbol + ' ',
+      allowNegative: false,
+      allowZero: false,
+      decimal: '.',
+      precision: 0,
+      thousands: currencyDelimiter,
+      suffix: ' ',
+      nullable: true,
+      align: 'left',
+    };
     if (this.quotationCode) {
       this.fetchQuotationDetails(this.quotationCode)
     }
@@ -129,6 +152,9 @@ export class RiskCentreComponent {
     }
 
     this.RiskDetailsComponent.openAddRiskModal();
+  }
+  handlePremiumChange(updatedPremiums: any) {
+    this.premiums = updatedPremiums;
   }
 
 }

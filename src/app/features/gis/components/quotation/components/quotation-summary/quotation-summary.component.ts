@@ -396,6 +396,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         log.debug("Quotation details>>>", response)
         this.quotationDetails = response
         sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationDetails))
+        const ticketStatus = response.processFlowResponseDto.taskName
+        log.debug("Ticket status:", ticketStatus)
+        sessionStorage.setItem('ticketStatus', ticketStatus);
 
         if ('Rejected' === response.status) {
           this.afterRejectQuote = true
@@ -628,7 +631,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         if (this.quotationView?.source?.description === 'Agent' && this.quotationView?.clientType === 'I') {
           this.getCommissions();
         }
-
+        const ticketStatus = res.processFlowResponseDto.taskName
+        log.debug("Ticket status:", ticketStatus)
+        sessionStorage.setItem('ticketStatus', ticketStatus);
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
         this.user = this.quotationView.preparedBy;
@@ -2245,7 +2250,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   getExceptions(quotationCode: number) {
-    this.quotationService.getExceptions(quotationCode).subscribe({
+    this.quotationService.generateExceptions(quotationCode).subscribe({
       next: (res) => {
         log.debug('exceptions', res);
         this.exceptionsData = res._embedded;
@@ -3872,7 +3877,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }));
   }
 
+  isEditDisabled(): boolean {
 
+    if (this.viewQuoteFlag) return true;
+    if (this.ticketStatus === 'AUTHORIZED') return true;
+
+
+
+    return false;
+  }
 
 }
 

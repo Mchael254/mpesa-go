@@ -86,17 +86,18 @@ export class QuotationsService {
   }
 
   // Error handling
+  // Error handling
   errorHandl(error: HttpErrorResponse) {
-    let errorMessage = '';
     if (error.error instanceof ErrorEvent) {
-      // Get client-side error
-      errorMessage = error.error.message;
+      // Client-side error
+      console.error('Client Error:', error.error.message);
     } else {
-      // Get server-side error
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+      // Server-side error
+      console.error('Server Error:', error);
     }
-    console.log(errorMessage);
-    return throwError(errorMessage);
+
+    // ✅ Re-throw the original error object
+    return throwError(() => error);
   }
 
   /**
@@ -334,29 +335,7 @@ export class QuotationsService {
     return this.api.POST(`v1/quotation/authorise/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
-  getExternalClaimsExperience(
-    clientCode: number
-  ) {
-    return this.api.GET(`v2/external-claims-experience?clientCode=${clientCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
-  }
 
-  addExternalClaimExp(data: ExternalClaimExp) {
-    return this.api.POST(`v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL);
-  }
-
-  editExternalClaimExp(data: ExternalClaimExp) {
-    return this.api.PUT(`v2/external-claims-experience`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL);
-  }
-
-  deleteExternalClaimExp(code: number) {
-    return this.api.DELETE(`v2/external-claims-experience?code=${code}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
-  }
-
-  getInternalClaimsExperience(
-    clientCode: number
-  ) {
-    return this.api.GET(`v2/internal-claims-experiences?clientCode=${clientCode}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
-  }
 
 
   getAgents(
@@ -642,7 +621,7 @@ export class QuotationsService {
   //       catchError(this.errorHandl)
   //     )
   // }
-  getExceptions(quotationCode: number): Observable<any> {
+  generateExceptions(quotationCode: number): Observable<any> {
     const params = new HttpParams()
 
       .set('quotationCode', quotationCode.toString())
@@ -659,7 +638,7 @@ export class QuotationsService {
       .set('user', user);
 
     return this.api.POST(
-      `v2/authorise?${params.toString()}`,
+      `v2/quotation/authorise?${params.toString()}`,
       null,
       API_CONFIG.GIS_QUOTATION_BASE_URL
     );
@@ -1339,6 +1318,14 @@ export class QuotationsService {
       API_CONFIG.GIS_TICKETING_SERVICE,
       params
     );
+  }
+  fetchExceptions(systemModule: string = 'Q', quotationCode: Number) {
+
+    return this.api.GET<Observable<any>>(`v1/gis-exceptions?systemModule=${systemModule}&quotationCode=${quotationCode}`, API_CONFIG.GIS_COMMONS_SERVICE).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+
   }
 
 

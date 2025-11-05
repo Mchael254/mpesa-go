@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
@@ -20,7 +20,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Clause, CreateLimitsOfLiability, DynamicRiskField, Excesses, QuotationDetails, quotationRisk, RiskCommissionDto, RiskInformation, RiskLimit, riskSection, scheduleDetails, ScheduleLevels, ScheduleTab, TaxInformation, TaxPayload } from '../../data/quotationsDTO';
 import { Premiums, subclassClauses, SubclassCoverTypes, Subclasses, territories, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { debounceTime, distinctUntilChanged, firstValueFrom, forkJoin, map, Observable, switchMap, tap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, firstValueFrom, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 import { Table } from 'primeng/table';
 import { NgxCurrencyConfig } from "ngx-currency";
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -29,6 +29,7 @@ import { riskClause, riskPeril } from 'src/app/features/gis/data/quotations-dto'
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { TerritoriesService } from '../../../setups/services/perils-territories/territories/territories.service';
+import { RiskCentreComponent } from '../risk-centre/risk-centre.component';
 
 
 const log = new Logger('RiskDetailsComponent');
@@ -63,6 +64,7 @@ export class RiskDetailsComponent {
     throw new Error('Method not implemented.');
   }
   @Input() selectedProduct!: any;
+  @Output() premiumsChange = new EventEmitter<any>();
   @ViewChild('sectionTable') sectionTable!: Table;
   @ViewChild('limitTable') limitTable!: Table;
   @ViewChild('addedlimitTable') addedlimitTable!: Table;
@@ -78,6 +80,7 @@ export class RiskDetailsComponent {
   @ViewChild('addotherScheduleModal') addotherScheduleModalRef!: ElementRef;
   @ViewChild('addedCommissionTable') addedCommissionTable!: Table;
   @ViewChild('commissionTable') commissionTable!: Table;
+  @ViewChild(RiskCentreComponent) RiskCentreComponent!: RiskCentreComponent;
 
 
 
@@ -211,6 +214,7 @@ export class RiskDetailsComponent {
     label: string;
     scheduleLevel: number
     selectOptions?: { label: string; value: any }[];
+    applicableLevel: string
   }[];
   dynamicSubclassFormFields: {
     type: string;
@@ -225,6 +229,7 @@ export class RiskDetailsComponent {
     label: string;
     scheduleLevel: number
     selectOptions?: { label: string; value: any }[]
+    applicableLevel: string
   }[];
   existingPropertyIds: string[] = [];
   dynamicRegexPattern: string;
@@ -397,6 +402,8 @@ export class RiskDetailsComponent {
 
   aiErrorMessage: string | null = null;
   exceptionsData: any;
+  premiumComputed: boolean = false;
+  premiums: { net: number; gross: number; };
 
   constructor(
     public subclassService: SubclassesService,
@@ -1532,7 +1539,7 @@ export class RiskDetailsComponent {
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (response: any) => {
-          this.taxList = response._embedded;
+          this.taxList = response;
           log.debug('Tax List ', this.taxList);
         },
         error: (error) => {
@@ -1647,9 +1654,27 @@ export class RiskDetailsComponent {
           const selectedProduct = quotationProducts.find(product => product.code === this.selectedProduct.code);
           log.debug("Quotation full details:", quoteDetails);
           log.debug("Matched product from quotation:", selectedProduct);
-          const matchedRisk: RiskInformation = selectedProduct?.riskInformation?.find(risk =>
-            risk.propertyId === this.riskDetailsForm.value.registrationNumber || this.riskDetailsForm.value.riskId
-          );
+          log.debug("Current state of risk details form:", this.riskDetailsForm.value);
+          // const matchedRisk: RiskInformation = selectedProduct?.riskInformation?.find(risk =>
+          //   risk.propertyId === this.riskDetailsForm.value.registrationNumber || this.riskDetailsForm.value.riskId
+          // );
+          // log.debug("Matched risk from quotation:", matchedRisk);
+          const formValue = this.riskDetailsForm.value;
+
+          let matchedRisk: RiskInformation | undefined;
+
+          if (formValue.registrationNumber) {
+            // Motor-type risks
+            matchedRisk = selectedProduct?.riskInformation?.find(
+              risk => risk.propertyId === formValue.registrationNumber
+            );
+          } else if (formValue.riskId) {
+            // Property or non-motor risks
+            matchedRisk = selectedProduct?.riskInformation?.find(
+              risk => risk.propertyId === formValue.riskId
+            );
+          }
+
           log.debug("Matched risk from quotation:", matchedRisk);
           this.selectedRisk = matchedRisk
           this.sectionDetails = this.selectedRisk.riskLimits;
@@ -1786,6 +1811,7 @@ export class RiskDetailsComponent {
           const quotationNo = data._embedded.quotationNo
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk edited succesfully');
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
+          sessionStorage.setItem('riskFormDetails', JSON.stringify(this.riskDetailsForm.value));
 
           if (this.quickQuoteConverted) {
             this.createScheduleL1(this.quotationRiskCode)
@@ -2124,41 +2150,80 @@ export class RiskDetailsComponent {
   //   this.cdr.detectChanges();
   // }
   updateSchedule() {
+    // const schedule = this.scheduleDetailsForm.value;
+    // const riskform = this.riskDetailsForm.value;
+
+
+
+    // schedule.details = schedule.details || {};
+    // schedule.details.level1 = {
+    //   bodyType: riskform.bodyType,
+    //   yearOfManufacture: riskform.yearOfManufacture,
+    //   color: riskform.color,
+    //   engineNumber: riskform.engineNumber,
+    //   cubicCapacity: riskform.cubicCapacity,
+    //   make: riskform.vehicleMake,
+    //   model: riskform.vehicleModel,
+    //   coverType: this.selectedRisk.coverTypeDescription,
+    //   registrationNumber: riskform.registrationNumber,
+    //   chasisNumber: riskform.chasisNumber,
+    //   tonnage: null,
+    //   carryCapacity: riskform.seatingCapacity,
+    //   logBook: null,
+    //   value: riskform.value
+    // };
+
+    // schedule.riskCode = this.quotationRiskCode;
+    // schedule.transactionType = "Q";
+    // schedule.version = this.selectedRisk?.scheduleDetails?.[0].version || 0;
+
+    // // Remove unnecessary fields
+    // const removeFields = [
+    //   "terrorismApplicable", "securityDevice1", "motorAccessories",
+    //   "securityDevice", "regularDriverName", "schActive",
+    //   "licenceNo", "driverLicenceDate", "driverSmsNo",
+    //   "driverRelationInsured", "driverEmailAddress"
+    // ];
+    // removeFields.forEach(field => delete schedule.details.level1[field]);
+
+    const scheduleFields = this.subclassFormData.filter(
+      field => field.applicableLevel === 'S'
+    );
+    log.debug("Schedule dynamic fields", scheduleFields);
+
     const schedule = this.scheduleDetailsForm.value;
-    const riskform = this.riskDetailsForm.value;
+    const riskform =
+      JSON.parse(sessionStorage.getItem('riskFormDetails')) ||
+      this.riskDetailsForm.value;
 
     log.debug('SELECTED RISK:', this.selectedRisk);
-    log.debug("Risk form updated:", riskform);
+    log.debug("Risk form-session storage:", riskform);
 
-    schedule.details = schedule.details || {};
+    const level1: any = {};
+
+    scheduleFields.forEach(field => {
+      const fieldName = field.name;
+      const fieldValue =
+        riskform?.[fieldName] ??
+        this.scheduleDetailsForm.get(fieldName)?.value ??
+        null;
+
+      level1[fieldName] = fieldValue;
+    });
+
     schedule.details.level1 = {
-      bodyType: riskform.bodyType,
-      yearOfManufacture: riskform.yearOfManufacture,
-      color: riskform.color,
-      engineNumber: riskform.engineNumber,
-      cubicCapacity: riskform.cubicCapacity,
-      make: riskform.vehicleMake,
-      model: riskform.vehicleModel,
+      ...level1,
       coverType: this.selectedRisk.coverTypeDescription,
-      registrationNumber: riskform.registrationNumber,
-      chasisNumber: riskform.chasisNumber,
-      tonnage: null,
-      carryCapacity: riskform.seatingCapacity,
-      logBook: null,
-      value: riskform.value
     };
 
     schedule.riskCode = this.quotationRiskCode;
-    schedule.transactionType = "Q";
-    schedule.version = this.selectedRisk?.scheduleDetails?.[0].version || 0;
+    schedule.transactionType = 'Q';
+    schedule.version = this.selectedRisk?.scheduleDetails?.[0].version || 0
 
-    // Remove unnecessary fields
     const removeFields = [
-      "terrorismApplicable", "securityDevice1", "motorAccessories",
-      "securityDevice", "regularDriverName", "schActive",
-      "licenceNo", "driverLicenceDate", "driverSmsNo",
-      "driverRelationInsured", "driverEmailAddress"
+
     ];
+
     removeFields.forEach(field => delete schedule.details.level1[field]);
 
     this.quotationService.updateSchedule(schedule).subscribe({
@@ -2262,39 +2327,87 @@ export class RiskDetailsComponent {
       )
     );
   }
-  prepareSchedulePayload() {
-    const schedule = this.scheduleDetailsForm.value;
-    const riskform = JSON.parse(sessionStorage.getItem('riskFormDetails')) || this.riskDetailsForm.value;
+  // prepareSchedulePayload() {
+  //   log.debug("Dynamic fields", this.subclassFormData)
+  //   const scheduleFields = this.subclassFormData.filter(schedule => schedule.applicableLevel == 'S')
+  //   log.debug("Schedule dynamic fields", scheduleFields)
+  //   const schedule = this.scheduleDetailsForm.value;
+  //   const riskform = JSON.parse(sessionStorage.getItem('riskFormDetails')) || this.riskDetailsForm.value;
 
-    log.debug('SELECTED RISK:', this.selectedRisk)
-    log.debug("Risk form-session storage:", riskform)
+  //   log.debug('SELECTED RISK:', this.selectedRisk)
+  //   log.debug("Risk form-session storage:", riskform)
+  //   schedule.details.level1 = {
+  //     bodyType: riskform?.bodyType,
+  //     yearOfManufacture: riskform.yearOfManufacture,
+  //     color: riskform.color,
+  //     engineNumber: riskform.engineNumber,
+  //     cubicCapacity: riskform.cubicCapacity,
+  //     make: riskform.vehicleMake,
+  //     model: riskform.vehicleModel,
+  //     coverType: this.selectedRisk.coverTypeDescription,
+  //     registrationNumber: riskform.registrationNumber,
+  //     chasisNumber: riskform.chasisNumber,
+  //     tonnage: null,
+  //     carryCapacity: riskform.seatingCapacity,
+  //     logBook: null,
+  //     value: riskform.value
+  //   };
+
+  //   schedule.riskCode = this.quotationRiskCode;
+  //   schedule.transactionType = "Q";
+  //   schedule.version = 0;
+
+  //   // Remove unnecessary fields
+  //   const removeFields = [
+  //     "terrorismApplicable", "securityDevice1", "motorAccessories",
+  //     , "securityDevice", "regularDriverName", "schActive",
+  //     "licenceNo", "driverLicenceDate", "driverSmsNo",
+  //     "driverRelationInsured", "driverEmailAddress"
+  //   ];
+
+  //   removeFields.forEach(field => delete schedule.details.level1[field]);
+
+  //   return schedule;
+  // }
+  prepareSchedulePayload() {
+    log.debug("Dynamic fields", this.subclassFormData);
+
+    const scheduleFields = this.subclassFormData.filter(
+      field => field.applicableLevel === 'S'
+    );
+    log.debug("Schedule dynamic fields", scheduleFields);
+
+    const schedule = this.scheduleDetailsForm.value;
+    const riskform =
+      JSON.parse(sessionStorage.getItem('riskFormDetails')) ||
+      this.riskDetailsForm.value;
+
+    log.debug('SELECTED RISK:', this.selectedRisk);
+    log.debug("Risk form-session storage:", riskform);
+
+    const level1: any = {};
+
+    scheduleFields.forEach(field => {
+      const fieldName = field.name;
+      const fieldValue =
+        riskform?.[fieldName] ??
+        this.scheduleDetailsForm.get(fieldName)?.value ??
+        null;
+
+      level1[fieldName] = fieldValue;
+    });
+
     schedule.details.level1 = {
-      bodyType: riskform?.bodyType,
-      yearOfManufacture: riskform.yearOfManufacture,
-      color: riskform.color,
-      engineNumber: riskform.engineNumber,
-      cubicCapacity: riskform.cubicCapacity,
-      make: riskform.vehicleMake,
-      model: riskform.vehicleModel,
+      ...level1,
       coverType: this.selectedRisk.coverTypeDescription,
-      registrationNumber: riskform.registrationNumber,
-      chasisNumber: riskform.chasisNumber,
-      tonnage: null,
-      carryCapacity: riskform.seatingCapacity,
-      logBook: null,
-      value: riskform.value
     };
 
     schedule.riskCode = this.quotationRiskCode;
-    schedule.transactionType = "Q";
+    schedule.transactionType = 'Q';
     schedule.version = 0;
 
-    // Remove unnecessary fields
     const removeFields = [
-      "terrorismApplicable", "securityDevice1", "motorAccessories",
-      , "securityDevice", "regularDriverName", "schActive",
-      "licenceNo", "driverLicenceDate", "driverSmsNo",
-      "driverRelationInsured", "driverEmailAddress"
+
     ];
 
     removeFields.forEach(field => delete schedule.details.level1[field]);
@@ -2451,8 +2564,18 @@ export class RiskDetailsComponent {
             columns = level1PreferredColumns;
           } else {
             // Dynamically generate columns from subclass form fields
+            // columns = this.dynamicSubclassFormFields
+            //   .filter(field => Number(field.scheduleLevel) === levelNumber)
+            //   .map(field => ({
+            //     field: field.name,
+            //     header: field.label
+            //   }));
             columns = this.dynamicSubclassFormFields
-              .filter(field => Number(field.scheduleLevel) === levelNumber)
+              .filter(
+                field =>
+                  Number(field.scheduleLevel) === levelNumber &&
+                  field.applicableLevel === 'S'
+              )
               .map(field => ({
                 field: field.name,
                 header: field.label
@@ -3942,12 +4065,23 @@ export class RiskDetailsComponent {
                   columns = level1PreferredColumns;
                 } else {
                   // Dynamically generate columns from subclass form fields
+                  // columns = this.dynamicSubclassFormFields
+                  //   .filter(field => Number(field.scheduleLevel) === levelNumber)
+                  //   .map(field => ({
+                  //     field: field.name,
+                  //     header: field.label
+                  //   }));
                   columns = this.dynamicSubclassFormFields
-                    .filter(field => Number(field.scheduleLevel) === levelNumber)
+                    .filter(
+                      field =>
+                        Number(field.scheduleLevel) === levelNumber &&
+                        field.applicableLevel === 'S'
+                    )
                     .map(field => ({
                       field: field.name,
                       header: field.label
                     }));
+
 
                   // Add "Actions" column for levels 2 and above
                   if (levelNumber >= 2) {
@@ -5548,6 +5682,10 @@ export class RiskDetailsComponent {
     if (!this.sectionDetails || this.sectionDetails.length === 0) {
       missingItems.push('Section Details');
     }
+    if (!this.premiumComputed) {
+      missingItems.push('Premium not computed');
+
+    }
 
     return {
       isValid: missingItems.length === 0,
@@ -5584,17 +5722,75 @@ export class RiskDetailsComponent {
     return `Add ${allButLast}, and ${last} to proceed`;
   }
 
+  checkMakeReadyRequiredDataDetailed(): { isValid: boolean; missingItems: string[] } {
+    const missingItems: string[] = [];
+
+    // Check schedule details with more detail
+    const hasScheduleData = this.levelDataMap &&
+      Object.keys(this.levelDataMap).some(levelName =>
+        this.levelDataMap[levelName] && this.levelDataMap[levelName].length > 0
+      );
+
+    if (!hasScheduleData) {
+      missingItems.push('Schedule Details');
+    }
+
+    // Check risk details
+    if (!this.riskDetails || this.riskDetails.length === 0) {
+      missingItems.push('Risk Details');
+    }
+
+    // Check section details
+    if (!this.sectionDetails || this.sectionDetails.length === 0) {
+      missingItems.push('Section Details');
+    }
+
+
+    return {
+      isValid: missingItems.length === 0,
+      missingItems
+    };
+  }
+
+  get makeReadyValidation() {
+    return this.checkMakeReadyRequiredDataDetailed();
+  }
+
+  get computePremiumButtonDisabled(): boolean {
+    return !this.makeReadyValidation.isValid;
+  }
+
+  get computePremiumButtonTooltip(): string {
+    const missingItems = this.makeReadyValidation.missingItems;
+
+    if (missingItems.length === 0) {
+      return '';
+    }
+
+    if (missingItems.length === 1) {
+      return `Add ${missingItems[0].toLowerCase()} to proceed`;
+    }
+
+    if (missingItems.length === 2) {
+      return `Add ${missingItems[0].toLowerCase()} and ${missingItems[1].toLowerCase()} to proceed`;
+    }
+
+    // More than 2 missing
+    const allButLast = missingItems.slice(0, -1).map(i => i.toLowerCase()).join(', ');
+    const last = missingItems[missingItems.length - 1].toLowerCase();
+    return `Add ${allButLast}, and ${last} to proceed`;
+  }
 
 
   computePremium() {
-    const validation = this.checkComputePremiumRequiredDataDetailed();
-    if (!validation.isValid) {
-      const missingItemsList = validation.missingItems.join(', ');
-      const errorMessage = `The following required data is missing: ${missingItemsList}. Please ensure all tables contain at least one entry before computing premium.`;
+    // const validation = this.checkComputePremiumRequiredDataDetailed();
+    // if (!validation.isValid) {
+    //   const missingItemsList = validation.missingItems.join(', ');
+    //   const errorMessage = `The following required data is missing: ${missingItemsList}. Please ensure all tables contain at least one entry before computing premium.`;
 
-      this.globalMessagingService.displayErrorMessage('Validation Error', errorMessage);
-      return;
-    }
+    //   this.globalMessagingService.displayErrorMessage('Validation Error', errorMessage);
+    //   return;
+    // }
 
     const payload = this.generatePremiumComputationPayload(this.quotationDetails);
 
@@ -5602,7 +5798,34 @@ export class RiskDetailsComponent {
       switchMap((response) => {
         log.debug("Response after computing premium:", response);
 
-        // Prepare update data from compute response
+        const data = response?.productLevelPremiums || [];
+
+        let totalNetPremium = 0;
+        let totalGrossPremium = 0;
+
+        data.forEach(group => {
+          group.riskLevelPremiums?.forEach(risk => {
+            risk.coverTypeDetails?.forEach(detail => {
+              const computed = detail.computedPremium || 0;
+              totalNetPremium += computed;
+
+              const taxes = detail.taxComputation?.reduce(
+                (sum, t) => sum + (t?.premium || 0),
+                0
+              ) || 0;
+
+              totalGrossPremium += computed + taxes;
+            });
+          });
+        });
+
+        this.premiums = {
+          net: totalNetPremium,
+          gross: totalGrossPremium
+        };
+
+
+
         const updatePayload = this.prepareUpdatePremiumPayload(response);
 
         return this.quotationService.updatePremium(this.quotationCode, updatePayload);
@@ -5611,7 +5834,14 @@ export class RiskDetailsComponent {
       next: (updateResponse) => {
         log.debug("Premium updated successfully:", updateResponse);
         // this.router.navigate(['/home/gis/quotation/quotation-summary']);
-        this.getExceptions(this.quotationCode)
+        this.premiumComputed = true
+        const quotationCode = this.quotationDetails.code
+        log.debug("QuotationCode-after update", quotationCode)
+        quotationCode && this.fetchQuotationDetails(quotationCode)
+        log.debug("Premiums computed:", this.premiums);
+
+        sessionStorage.setItem('premiums', JSON.stringify(this.premiums));
+        this.premiumsChange.emit(this.premiums);
 
 
       },
@@ -5621,6 +5851,12 @@ export class RiskDetailsComponent {
     });
   }
 
+  generateExceptions() {
+    if (this.quotationCode) {
+      this.makeReadyExceptions(this.quotationCode)
+
+    }
+  }
   // generatePremiumComputationPayload(quotationData: QuotationDetails): any {
   //   return {
   //     entityUniqueCode: 0,
@@ -6270,7 +6506,7 @@ export class RiskDetailsComponent {
     if (productCode && subClassCode) {
       this.quotationService.getTaxes(productCode, subClassCode).subscribe(res => {
 
-        this.taxes = res._embedded;
+        this.taxes = res;
         log.debug('Taxes', this.taxes)
         // if (this.taxes.length > 0) {
         //   this.setTaxesColumns(this.taxes[0]);
@@ -7348,22 +7584,52 @@ export class RiskDetailsComponent {
     return diffInDays;
   }
 
-  getExceptions(quotationCode: number) {
-    this.quotationService.getExceptions(quotationCode).subscribe({
+  makeReadyExceptions(quotationCode: number) {
+    this.quotationService.generateExceptions(quotationCode).subscribe({
       next: (res) => {
-        log.debug('exceptions', res);
-        this.exceptionsData = res._embedded;
-        log.debug('exceptionData', this.exceptionsData);
-        const ticketStatus = this.exceptionsData.taskName
+        const hasExceptions = res._embedded.taskName
+        const ticketStatus = res._embedded.taskName
         log.debug("Ticket status:", ticketStatus)
         sessionStorage.setItem('ticketStatus', ticketStatus);
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        if (hasExceptions == 'Authorize Exception') {
+          this.quotationService.fetchExceptions('Q', quotationCode).subscribe({
+            next: (res: any) => {
+              this.exceptionsData = res._embedded;
+              log.debug('exceptionData', this.exceptionsData);
+              this.router.navigate(['/home/gis/quotation/quotation-summary']);
+              this.globalMessagingService.displaySuccessMessage(
+                'Success:',
+                'Exceptions fetched successfully'
+              );
+            },
+            error: (err) => {
+              log.error('fetch exception error:', err);
+
+              this.globalMessagingService.displayErrorMessage(
+                'Error:',
+                'Failed to fetch  exceptions'
+              );
+            }
+          });
+        } else {
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+
+        }
+
+
 
       },
       error: (error) => {
-        log.error('Error fetching exceptions:', error);
-        // this.error = 'Something went wrong while fetching exceptions.';
+        log.debug("error", error)
+        const apiError = error.error;
+        const message =
+          apiError?.errors?.[0] ??
+          apiError?.developerMessage ??
+          'Failed to send message';
+
+        this.globalMessagingService.displayErrorMessage('error', message);
       }
     });
+
   }
 }

@@ -41,8 +41,8 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
 
   shareMethods: { label: string; value: ShareMethod; disabled: boolean; tooltip?: string }[] = [
     { label: 'Email', value: 'email', disabled: false },
-    { label: 'SMS', value: 'sms', disabled: true, tooltip: 'SMS sharing coming soon' },
-    { label: 'WhatsApp', value: 'whatsapp', disabled: true, tooltip: 'WhatsApp sharing coming soon' }
+    { label: 'SMS', value: 'sms', disabled: false },
+    { label: 'WhatsApp', value: 'whatsapp', disabled: false }
   ];
 
 
@@ -64,6 +64,7 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
     this.shareForm = this.fb.group({
       clientName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
+      phone: ['', []]
 
     });
 
@@ -78,21 +79,48 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
     this.display = false;
   }
 
+  // onSend() {
+  //   if (this.shareForm.invalid) {
+  //     this.shareForm.markAllAsTouched();
+  //     return;
+  //   }
+
+  //   this.shareQuoteData.clientName = this.shareForm.value.clientName;
+  //   this.shareQuoteData.email = this.shareForm.value.email;
+
+  //   this.sendEvent.emit({ mode: this.shareQuoteData });
+
+
+  //   this.closeButton.nativeElement.click();
+  // }
+
   onSend() {
     if (this.shareForm.invalid) {
       this.shareForm.markAllAsTouched();
       return;
     }
 
-    this.shareQuoteData.clientName = this.shareForm.value.clientName;
-    this.shareQuoteData.email = this.shareForm.value.email;
+    // Extract current selected method
+    const method = this.shareQuoteData.selectedMethod;
 
+    // Common fields
+    this.shareQuoteData.clientName = this.shareForm.value.clientName;
+
+    // Handle fields based on the selected method
+    if (method === 'email') {
+      this.shareQuoteData.email = this.shareForm.value.email;
+    } else if (method === 'whatsapp') {
+      this.shareQuoteData.whatsappNumber = this.shareForm.value.phone;
+    } else if (method === 'sms') {
+      this.shareQuoteData.smsNumber = this.shareForm.value.phone;
+    }
+
+    // Emit the event for the parent to handle (your listenToSendEvent)
     this.sendEvent.emit({ mode: this.shareQuoteData });
 
-
+    // Close the modal
     this.closeButton.nativeElement.click();
   }
-
 
 
   sendEmail(payload: EmailDto) {
@@ -124,8 +152,28 @@ export class ShareQuotesComponent implements OnInit, OnDestroy {
   }
 
   onPrint() {
-  this.printRequested.emit();
-}
+    this.printRequested.emit();
+  }
+  onMethodChange(method: 'email' | 'whatsapp' | 'sms') {
+    this.shareQuoteData.selectedMethod = method;
+
+    const emailControl = this.shareForm.get('email');
+    const phoneControl = this.shareForm.get('phone');
+
+    if (method === 'email') {
+      // Email required, phone not required
+      emailControl?.setValidators([Validators.required, Validators.email]);
+      phoneControl?.clearValidators();
+    } else {
+      // Phone required, email not required
+      phoneControl?.setValidators([Validators.required]);
+      emailControl?.clearValidators();
+    }
+
+    // Update the validation state
+    emailControl?.updateValueAndValidity();
+    phoneControl?.updateValueAndValidity();
+  }
 
 
 }

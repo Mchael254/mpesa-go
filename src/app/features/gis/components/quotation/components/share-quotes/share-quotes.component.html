@@ -4,7 +4,7 @@
 
 
     <!-- Share method -->
-    <div class="method-options">
+    <!-- <div class="method-options">
       <div class="method-option" *ngFor="let method of shareMethods"
         (click)="!method.disabled && (shareQuoteData.selectedMethod = method.value)"
         [class.selected]="shareQuoteData.selectedMethod === method.value" [class.disabled]="method.disabled">
@@ -13,8 +13,18 @@
         <span class="ps-2">{{ method.label }}</span>
         <span class="custom-tooltip" *ngIf="method.disabled">{{ method.tooltip }}</span>
       </div>
-    </div>
+    </div> -->
 
+    <div class="method-options">
+      <div class="method-option" *ngFor="let method of shareMethods"
+        (click)="!method.disabled && onMethodChange(method.value)"
+        [class.selected]="shareQuoteData.selectedMethod === method.value" [class.disabled]="method.disabled">
+        <i class="far fa-circle" *ngIf="shareQuoteData.selectedMethod !== method.value"></i>
+        <i class="fas fa-dot-circle" *ngIf="shareQuoteData.selectedMethod === method.value"></i>
+        <span class="ps-2">{{ method.label }}</span>
+        <span class="custom-tooltip" *ngIf="method.disabled">{{ method.tooltip }}</span>
+      </div>
+    </div>
 
 
     <!-- Buttons Container -->
@@ -32,11 +42,11 @@
         <span class="text-primary">Download</span>
       </div>
 
-       <!-- Print -->
-  <div (click)="onPrint()" role="button" tabindex="0">
-    <i class="pi pi-print me-2 text-primary"></i>
-    <span class="text-primary">Print</span>
-  </div>
+      <!-- Print -->
+      <div (click)="onPrint()" role="button" tabindex="0">
+        <i class="pi pi-print me-2 text-primary"></i>
+        <span class="text-primary">Print</span>
+      </div>
 
     </div>
 
@@ -58,6 +68,25 @@
       <div *ngIf="shareForm.get('email')?.touched && shareForm.get('email')?.invalid" class="text-danger mt-1">
         <small *ngIf="shareForm.get('email')?.errors?.['required']">Email is required.</small>
         <small *ngIf="shareForm.get('email')?.errors?.['email']">Please enter a valid email address.</small>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="shareQuoteData.selectedMethod === 'whatsapp';else soonComingChannels">
+      <div class="p-field p-mb-3">
+        <label for="clientName">Client name</label>
+        <input pInputText id="clientName" formControlName="clientName" class="p-inputtext" placeholder="" />
+        <div *ngIf="shareForm.get('clientName')?.touched && shareForm.get('clientName')?.invalid" class="text-danger">
+          <small>Client name is required.</small>
+        </div>
+
+      </div>
+      <label for="phoneNumber" class="label">
+        Phone number<span class="required"></span>
+      </label>
+      <input pInputText id="whatsappNumber" type="email" formControlName="phone" class="p-inputtext"
+        (blur)="shareForm.get('phone')?.markAsTouched()" />
+      <div *ngIf="shareForm.get('phone')?.touched && shareForm.get('phone')?.invalid" class="text-danger mt-1">
+        <small *ngIf="shareForm.get('phone')?.errors?.['required']">Phone number is required.</small>
+        <!-- <small *ngIf="shareForm.get('whatsappNumber')?.errors?.['whatsappNumber']">Please enter a valid email address.</small> -->
       </div>
     </ng-container>
     <ng-template #soonComingChannels>
@@ -86,8 +115,7 @@
     <div class="d-flex justify-content-end  mt-4">
       <button type="button" class="btn btn-outline-primary me-4" data-bs-dismiss="modal" (click)="cancel()">Cancel
       </button>
-      <button type="button" [disabled]="shareForm.get('email')?.invalid" class="btn btn-primary" (click)="onSend()"
-        *ngIf="shareQuoteData.selectedMethod === 'email'">Send
+      <button type="button" class="btn btn-primary" (click)="onSend()">Send
       </button>
       <button #closeButton type="button" class="btn btn-primary" data-bs-dismiss="modal"
         style="display: none;"></button>
@@ -98,26 +126,26 @@
 
 </form>
 <p-dialog [(visible)]="previewVisible" [modal]="true" [style]="{ width: '40vw', height: '95vh' }"
-   class="custom-pdf-modal">
- <ng-template pTemplate="header">
-  <div class="dialog-header-column">
-    <span class="dialog-title">Preview report</span>
+  class="custom-pdf-modal">
+  <ng-template pTemplate="header">
+    <div class="dialog-header-column">
+      <span class="dialog-title">Preview report</span>
 
-    <div class="actions">
-      <!-- Download -->
-      <div (click)="onDownload()" role="button" tabindex="0" class="me-3">
-        <i class="pi pi-download me-2 text-primary"></i>
-        <span class="text-primary">Download</span>
-      </div>
+      <div class="actions">
+        <!-- Download -->
+        <div (click)="onDownload()" role="button" tabindex="0" class="me-3">
+          <i class="pi pi-download me-2 text-primary"></i>
+          <span class="text-primary">Download</span>
+        </div>
 
-      <!-- Print -->
-      <div (click)="onPrint()" role="button" tabindex="0" class="me-3">
-        <i class="pi pi-print me-2 text-primary"></i>
-        <span class="text-primary">Print</span>
+        <!-- Print -->
+        <div (click)="onPrint()" role="button" tabindex="0" class="me-3">
+          <i class="pi pi-print me-2 text-primary"></i>
+          <span class="text-primary">Print</span>
+        </div>
       </div>
     </div>
-  </div>
-</ng-template>
+  </ng-template>
 
   <div style="height: calc(100% - 40px); background: #fff;  margin: 0; padding: 0;">
     <pdf-viewer [src]="pdfSrc" [render-text]="true" [original-size]="false"
