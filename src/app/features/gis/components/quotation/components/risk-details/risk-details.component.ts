@@ -158,6 +158,7 @@ export class RiskDetailsComponent {
 
   selectedSections: Premiums[] = [];
   selectedSection: any;
+  updatedSelectedSections: riskSection[] = [];
   sectionDetails: any[] = [];
   sectionDetailsForm: FormGroup;
   riskSectionList: riskSection[] = [];
@@ -395,6 +396,7 @@ export class RiskDetailsComponent {
   editingRowCode: number | null = null;
 
   aiErrorMessage: string | null = null;
+  exceptionsData: any;
 
   constructor(
     public subclassService: SubclassesService,
@@ -2856,11 +2858,11 @@ export class RiskDetailsComponent {
 
   riskLimitPayload() {
     let limitsToSave: any[] = [];
-
+    log.debug("Slected section-coming up with the payload:", this.selectedSections)
     for (let section of this.selectedSections) {
       limitsToSave.push({
+        code: section.code || null,
         calcGroup: 1,
-
         compute: "Y",
         description: section.sectionDescription,
         freeLimit: section.freeLimit || 0,
@@ -2870,7 +2872,35 @@ export class RiskDetailsComponent {
         premiumRate: section.rate || 0,
         rateDivisionFactor: section.divisionFactor || 1,
         rateType: section.rateType || "FXD",
-        rowNumber: 1, // Assuming unique rowNumber per section
+        rowNumber: 1,
+        sectionType: section.sectionType,
+        sumInsuredLimitType: section.sumInsuredLimitType || null,
+        sumInsuredRate: section.sumInsuredRate,
+        sectionShortDescription: section.sectionShortDescription,
+        sectionCode: section.sectionCode,
+        limitAmount: section.limitAmount,
+      });
+    }
+
+    return limitsToSave;
+  }
+  updateRiskLimitPayload() {
+    let limitsToSave: any[] = [];
+    log.debug("Slected section-coming up with the payload:", this.updatedSelectedSections)
+    for (let section of this.updatedSelectedSections) {
+      limitsToSave.push({
+        code: section.code || null,
+        calcGroup: 1,
+        compute: "Y",
+        description: section.description || section.sectionShortDescription,
+        freeLimit: section.freeLimit || 0,
+        multiplierDivisionFactor: section.multiplierDivisionFactor,
+        multiplierRate: section.multiplierRate,
+        premiumAmount: section.premiumAmount || 0,
+        premiumRate: section.premiumRate || 0,
+        rateDivisionFactor: section.rateDivisionFactor || 1,
+        rateType: section.rateType || "FXD",
+        rowNumber: 1,
         sectionType: section.sectionType,
         sumInsuredLimitType: section.sumInsuredLimitType || null,
         sumInsuredRate: section.sumInsuredRate,
@@ -2926,6 +2956,7 @@ export class RiskDetailsComponent {
     return limitsToSave;
   }
 
+
   openEditSectionModal() {
     this.openModals('editSection');
   }
@@ -2963,24 +2994,54 @@ export class RiskDetailsComponent {
     const section = this.sectionDetailsForm.value;
     log.debug("Selected Section(UpdateRiskSection):", this.selectedSection)
     log.debug("Section Details(UpdateRiskSection):", this.sectionDetails)
+    log.debug("Section Details(UpdateRiskSection): form ", section)
 
+    const formValue = this.sectionDetailsForm.value;
+    const selected = this.selectedSection;
+
+    const payload = {
+      ...selected, // start with original section
+      ...formValue, // override with updated form values
+      // ensure required backend fields remain intact
+      quotationRiskCode: selected.quotationRiskCode,
+      quotationCode: selected.quotationCode,
+      quotationProCode: selected.quotationProCode,
+      productCode: selected.productCode,
+      riskCode: selected.riskCode,
+      code: selected.code,
+      sectionCode: selected.sectionCode,
+      sectionType: selected.sectionType,
+      sectionShortDescription: selected.sectionShortDescription,
+      calcGroup: selected.calcGroup,
+      rowNumber: selected.rowNumber,
+      compute: selected.compute
+    };
+    this.selectedSection = [payload]
     if (!this.selectedSection) {
       console.error('No section selected for update.');
       this.globalMessagingService.displayErrorMessage('Error', 'No section selected for update');
       return;
     }
+    log.debug("Selected Section(after patching):", this.selectedSection)
 
-    const index = this.sectionDetails.findIndex(s => s.sectionCode === this.selectedSection.sectionCode);
+    // const index = this.sectionDetails.findIndex(s => s.sectionCode === this.selectedSection.sectionCode);
 
-    if (index !== -1) {
-      this.sectionDetails[index] = { ...this.sectionDetails[index], ...section };
-      this.sectionDetails = [...this.sectionDetails]; // Trigger change detection
+    if (this.selectedSection) {
+      this.updatedSelectedSections = [...this.selectedSection];
+      const limitsToSave = this.updateRiskLimitPayload();
 
-      // Log the updated section
-      log.debug("Updated section:", this.sectionDetails[index]);
+      const limitsPayLoad = {
+        addOrEdit: 'E',
+        quotationRiskCode: this.quotationRiskCode,
+        riskSections: limitsToSave.map(value => ({
+          ...value,
+          quotationCode: Number(this.quotationCode),
+          quotRiskCode: this.quotationRiskCode
+        }))
+      };
 
       // Send the updated section to the service
-      this.quotationService.updateRiskSection(this.quotationRiskCode, [this.sectionDetails[index]]).subscribe((data) => {
+      this.quotationService.createRiskLimits(limitsPayLoad).subscribe((data) => {
         try {
           // Reset the form and selected section
           this.sectionDetailsForm.reset();
@@ -3019,7 +3080,18 @@ export class RiskDetailsComponent {
     const index = this.sectionDetails.findIndex(s => s.sectionCode === this.selectedSection.sectionCode);
 
     if (index !== -1) {
-      // Update the section in the array with the new values
+      const limitsToSave = this.riskLimitPayload();
+
+      const limitsPayLoad = {
+        addOrEdit: 'E',
+        quotationRiskCode: this.quotationRiskCode,
+        riskSections: limitsToSave.map(value => ({
+          ...value,
+          quotationCode: Number(this.quotationCode),
+          quotRiskCode: this.quotationRiskCode
+        }))
+      };
+
       this.sectionDetails[index] = { ...this.sectionDetails[index], ...section };
       this.sectionDetails = [...this.sectionDetails]; // Trigger change detection
 
@@ -3027,7 +3099,7 @@ export class RiskDetailsComponent {
       log.debug("Updated section:", this.sectionDetails[index]);
 
       // Send the updated section to the service
-      this.quotationService.updateRiskSection(this.quotationRiskCode, [this.sectionDetails[index]]).subscribe((data) => {
+      this.quotationService.createRiskLimits(limitsPayLoad).subscribe((data) => {
         try {
 
           // sessionStorage.setItem('limitAmount', section.limitAmount);
@@ -5538,7 +5610,9 @@ export class RiskDetailsComponent {
     ).subscribe({
       next: (updateResponse) => {
         log.debug("Premium updated successfully:", updateResponse);
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        // this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        this.getExceptions(this.quotationCode)
+
 
       },
       error: (err) => {
@@ -7274,4 +7348,22 @@ export class RiskDetailsComponent {
     return diffInDays;
   }
 
+  getExceptions(quotationCode: number) {
+    this.quotationService.getExceptions(quotationCode).subscribe({
+      next: (res) => {
+        log.debug('exceptions', res);
+        this.exceptionsData = res._embedded;
+        log.debug('exceptionData', this.exceptionsData);
+        const ticketStatus = this.exceptionsData.taskName
+        log.debug("Ticket status:", ticketStatus)
+        sessionStorage.setItem('ticketStatus', ticketStatus);
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+
+      },
+      error: (error) => {
+        log.error('Error fetching exceptions:', error);
+        // this.error = 'Something went wrong while fetching exceptions.';
+      }
+    });
+  }
 }
