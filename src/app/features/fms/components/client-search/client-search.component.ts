@@ -521,7 +521,7 @@ export class ClientSearchComponent implements OnInit {
               (detail) => detail.premiumAmount > 0
             )
           );
-          if (response.data.length > 0) {
+          if (this.getAllocation.length > 0) {
             this.canShowNextBtn = true;
           } else {
             this.canShowNextBtn = false;
