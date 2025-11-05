@@ -259,38 +259,57 @@ export class ViewTicketsComponent implements OnInit {
 }
 
 
-  lazyLoadTickets(event:LazyLoadEvent | TableLazyLoadEvent) {
+ lazyLoadTickets(event: LazyLoadEvent | TableLazyLoadEvent) {
+  const ticketFilter: any = this.ticketsService.ticketFilterObject();
 
-    const ticketFilter:any = this.ticketsService.ticketFilterObject();
+  if (!ticketFilter?.fromDashboardScreen) {
+    const pageIndex = event.first / event.rows;
+    const queryColumn = event.sortField;
+    const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
+    const pageSize = event.rows;
+    log.info('Sort field:', queryColumn);
 
-    if(!ticketFilter?.fromDashboardScreen) {
-      const pageIndex = event.first / event.rows;
-      const queryColumn = event.sortField;
-      const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
-      const pageSize = event.rows;
-      log.info('sortorder',queryColumn);
+    this.getAllTickets(pageIndex, pageSize, sort?.toString())
+      .pipe(untilDestroyed(this))
+      .subscribe(
+        (data: any[]) => {
+          // Wrap data into a Pagination<TicketsDTO> object
+          this.springTickets = {
+            content: data,
+            totalElements: data.length,
+            totalPages: 1,
+            size: data.length,
+            number: pageIndex,
+            first: true,
+            last: true,
+            numberOfElements: data.length,
+          };
 
-      this.getAllTickets(pageIndex, pageSize,sort?.toString())
-        .pipe(untilDestroyed(this))
-        .subscribe((data:Pagination<TicketsDTO>) => {
-          this.springTickets = data;
+          // Notify Angular of data changes
           this.cdr.detectChanges();
+
+          // Update shared ticket state
           this.ticketsService.setCurrentTickets(this.springTickets.content);
+
+          // Hide spinner
           this.spinner.hide();
 
-          // Extracting all the code values from the tickets
+          // ✅ Extract sysModule values from nested ticket object
           const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
 
-          // Passing the code values to the getCodeValue method
-          const result = codeValues.map(code => this.getTicketCode(code));
+          // ✅ Process the codes as needed
+          const result = codeValues.map((code) => this.getTicketCode(code));
 
+          log.info('Ticket Codes Extracted:', result);
         },
-          error => {
-            this.spinner.hide();
-          })
-    }
-
+        (error) => {
+          log.error('Error fetching tickets:', error);
+          this.spinner.hide();
+        }
+      );
   }
+}
+
 
   /*lazyLoadTickets(event: LazyLoadEvent | TableLazyLoadEvent) {
     const ticketFilter: any = this.ticketsService.ticketFilterObject();
