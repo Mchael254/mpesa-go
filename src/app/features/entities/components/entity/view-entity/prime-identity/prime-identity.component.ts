@@ -16,8 +16,9 @@ import {ClientDTO} from "../../../../data/ClientDTO";
 import {
   ConfigFormFieldsDto,
   DynamicScreenSetupDto,
-  FormGroupsDto
+  FormGroupsDto, UserCategory
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
+import {EntityUtilService} from "../../../../services/entity-util.service";
 
 const log = new Logger('PrimeIdentityComponent');
 
@@ -34,14 +35,14 @@ export class PrimeIdentityComponent implements OnInit {
   @Input() partyAccountDetails: PartyAccountsDetails;
   @Input() entityPartyIdDetails: ReqPartyById;
   @Input() formGroupsAndFieldConfig: DynamicScreenSetupDto;
-  @Input() clientDetails: any;
+  @Input() clientDetails: ClientDTO;
+
   selectOptions: {
     idTypes: IdentityModeDTO[],
     countries: CountryDto[],
     maritalStatuses: MaritalStatus[]
   };
 
-  primaryDetailsConfig: any;
   language: string = '';
   editForm: FormGroup;
 
@@ -59,13 +60,14 @@ export class PrimeIdentityComponent implements OnInit {
 
   constructor(
     private utilService: UtilService,
-    private fb: FormBuilder,
+    // private fb: FormBuilder,
     private entityService: EntityService,
     private countryService: CountryService,
     private maritalStatusService: MaritalStatusService,
     private clientService: ClientService,
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef,
+    private entityUtilService: EntityUtilService,
   ) {
     this.utilService.currentLanguage.subscribe(lang => {
       this.language = lang;
@@ -73,17 +75,17 @@ export class PrimeIdentityComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fetchSelectOptions();
-    setTimeout(() => {
-      // this.primaryDetailsConfig = this.primeDetailsConfig.primary_details;
-      this.createEditForm(this.formGroupsAndFieldConfig?.fields)
+    this.initData();
+  }
 
+  initData(): void {
+    setTimeout(() => {
       this.primeDetails = {
         overview_business_reg_no: this.clientDetails.idNumber,
         overview_pin_number: this.clientDetails.pinNumber,
-        overview_date_of_incorporation: this.clientDetails.dateOfBirth,
-        overview_client_type: this.clientDetails.clientTyeName,
-        overview_primary_id_type: this.clientDetails.modeOfIdentity,
+        overview_date_of_incorporation: this.clientDetails?.dateOfBirth,
+        overview_client_type: this.clientDetails?.clientType?.clientTypeName,
+        overview_primary_id_type: this.clientDetails.modeOfIdentity?.name,
         overview_id_number: this.clientDetails.idNumber,
         overview_date_of_birth: this.clientDetails.dateOfBirth,
         overview_citizenship: this.clientDetails.citizenshipCountryName,
@@ -97,8 +99,10 @@ export class PrimeIdentityComponent implements OnInit {
         field.dataValue = this.primeDetails[field.fieldId] ?? null;
       }
 
-      // sort fields in ascending order
       this.fields.sort((a, b) => a.order - b.order);
+
+      this.editForm = this.entityUtilService.createEditForm(this.fields);
+      this.fetchSelectOptions();
     }, 1000);
   }
 
@@ -113,7 +117,7 @@ export class PrimeIdentityComponent implements OnInit {
         this.idTypes = data.idTypes;
         this.countries = data.countries;
         this.maritalStatuses = data.maritalStatuses
-        if (this.primaryDetailsConfig) this.setSelectOptions(data.idTypes, data.countries, data.maritalStatuses);
+        this.setSelectOptions(data.idTypes, data.countries, data.maritalStatuses);
       },
       error: err => {
         const errorMessage = err?.error?.message ?? err.message;
@@ -130,16 +134,16 @@ export class PrimeIdentityComponent implements OnInit {
   ): void {
     this.formGroupsAndFieldConfig.fields.forEach((field) => {
       switch (field.fieldId) {
-        case 'id_type':
+        case 'overview_primary_id_type':
           field.options = idTypes;
           break;
-        case 'citizenship':
+        case 'overview_citizenship':
           field.options = countries;
           break;
-        case 'marital_status':
+        case 'overview_marital_status':
           field.options = maritalStatuses;
           break;
-        case 'gender':
+        case 'overview_gender':
           field.options = this.genders;
           break;
         default:
@@ -149,41 +153,35 @@ export class PrimeIdentityComponent implements OnInit {
     });
   }
 
-
-
-  createEditForm(fields: any[]): void {
-    const group: { [key: string]: any } = {};
-    fields.forEach(field => {
-      group[field.fieldId] = [
-        field.defaultValue,
-        field.isMandatory ? Validators.required : []
-      ];
-    });
-    this.editForm = this.fb.group(group);
-  }
-
   patchFormValues(): void {
-    const dob = this.clientDetails?.dateOfBirth; // from api >>> "2007-04-10T00:00:00.000+00:00"
-    // const gender = (this.primeDetails?.gender[0]).toUpperCase() === 'M' ? 'male' : 'female';
-    const genderIndex =
-      this.genders.findIndex(gender => gender.shtDesc === this.primeDetails.overview_gender.toLowerCase());
+    let patchData: {};
+    const category = this.clientDetails.category;
+    const dob = this.clientDetails?.dateOfBirth;
 
-    const patchData = {
-      id_type: this.primeDetails?.modeOfIdentity,
-      id_number: this.primeDetails?.modeOfIdentityNumber,
-      pin_number: this.primeDetails?.pinNumber,
-      dob: new Date(dob).toISOString().split('T')[0],
-      citizenship: this.primeDetails.citizenshipCountryId,
-      gender: this.genders[genderIndex].id,
-      marital_status: this.primeDetails.maritalStatus // todo: not available from backend
+    if (category.toUpperCase() === UserCategory.CORPORATE) {
+      patchData = {
+        overview_business_reg_no: this.clientDetails.idNumber,
+        overview_date_of_incorporation: new Date(dob).toISOString().split('T')[0],
+        overview_pin_number: this.clientDetails?.pinNumber,
+      }
+    } else if (category.toUpperCase() === UserCategory.INDIVIDUAL) {
+      const gender = this.genders.find(g => (g.shtDesc).toUpperCase() === this.clientDetails.gender);
+      patchData = {
+        overview_client_type: this.clientDetails?.clientType?.clientTypeName,
+        overview_primary_id_type: this.clientDetails.modeOfIdentity?.id,
+        overview_id_number: this.clientDetails.idNumber,
+        overview_pin_number: this.clientDetails.pinNumber,
+        overview_date_of_birth: new Date(dob).toISOString().split('T')[0],
+        overview_citizenship: this.clientDetails?.citizenshipCountryId,
+        overview_gender: gender.id,
+        overview_marital_status: this.clientDetails.maritalStatus,
+      }
     }
     this.editForm.patchValue(patchData)
-    log.info(`patched form values >>> `, this.editForm.value);
   }
 
 
   openEditPrimeIdentityDialog(): void {
-    // log.info(`openEditPrimeIdentityDialog >>> `, this.idTypes, this.countries, this.maritalStatuses);
     this.editButton.nativeElement.click();
     this.patchFormValues();
   }
@@ -191,44 +189,40 @@ export class PrimeIdentityComponent implements OnInit {
 
   editPrimeDetails(): void {
     const formValues = this.editForm.value;
+    const category = this.clientDetails?.category;
+    let primeDetails: {};
 
-    const modeOfIdentityIndex =
-      this.idTypes.findIndex((item) => item.name === formValues.id_type);
-
-    const genderIndex =this.genders.findIndex((item) => item.id == formValues.gender);
-
-
-    const partyAccountDetails = {
-      // ...this.partyAccountDetails,
-      idNumber: formValues.id_number,
-      modeOfIdentity: this.idTypes[modeOfIdentityIndex],
-      pinNumber: formValues.pin_number,
-      dateOfBirth: formValues.dob,
-      citizenshipCountryId: formValues.citizenship,
-      gender: this.genders[genderIndex].shtDesc,
-      maritalStatus: formValues.marital_status,
+    if (category.toUpperCase() === UserCategory.CORPORATE) {
+      primeDetails = {
+        pinNumber: formValues.overview_pin_number,
+        dateOfBirth: formValues.overview_date_of_incorporation,
+        idNumber: formValues.overview_business_reg_no,
+      }
+    } else if (category.toUpperCase() === UserCategory.INDIVIDUAL) {
+      const gender = this.genders.find(g => g.id === parseInt(formValues.overview_gender));
+      primeDetails = {
+        clientType: formValues.overview_client_type,
+        modeOfIdentity: formValues.overview_primary_id_type,
+        idNumber: formValues.overview_id_number,
+        pinNumber: formValues.overview_pin_number,
+        dateOfBirth: formValues.overview_date_of_birth,
+        citizenshipCountryName: formValues.overview_citizenshipCountryName,
+        gender: gender.name,
+      }
     }
 
+    const client = {
+      clientCode: this.clientDetails.clientCode,
+      partyAccountCode: this.clientDetails.partyAccountCode,
+      partyId: this.clientDetails.partyId,
+      ...primeDetails,
+    };
 
-    log.info(`client details to post >>> `, partyAccountDetails, formValues);
-    this.clientService.updateClientSection(this.partyAccountDetails.accountCode, {...partyAccountDetails}).subscribe({
+    this.clientService.updateClientSection(this.clientDetails.clientCode, client).subscribe({
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
-        this.primeDetails = {
-          ...this.primeDetails,
-          modeOfIdentityNumber: data.idNumber,
-          modeOfIdentity: data.modeOfIdentity,
-          pinNumber: data.pinNumber,
-          dateOfBirth: data.dateOfBirth,
-          gender: data.gender.toUpperCase() === 'M' ? 'male' : 'female',
-          maritalStatus: data.maritalStatus,
-          citizenshipCountryName: data.citizenshipCountryName,
-        }
-
         this.clientDetails = data;
-
-        log.info('edited prime details', data);
-
+        this.initData();
       },
       error: err => {
         const errorMessage = err?.error?.message ?? err.message;

@@ -244,7 +244,13 @@ export interface ClientDTO {
   id: number,
   idNumber: string,
   lastName: string,
-  modeOfIdentity: string,
+  modeOfIdentity: {
+    id: number;
+    organizationId: number;
+    name: string;
+    identityFormat: string;
+    identityFormatError: string;
+  },
   occupation: {
     id: number,
     name: string,
