@@ -15,6 +15,7 @@ import {
   RegexPattern,
   ReportPayload,
   RiskCommissionDto,
+  RiskLimitPayload,
   riskSection, RiskValidationDto,
   scheduleDetails,
   Sources,
@@ -213,7 +214,7 @@ export class QuotationsService {
   }
 
 
-  createRiskLimits(data: any): Observable<any> {
+  createRiskLimits(data: RiskLimitPayload): Observable<any> {
     return this.api.POST<any>(`v2/risk-limits`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
@@ -641,14 +642,14 @@ export class QuotationsService {
   //       catchError(this.errorHandl)
   //     )
   // }
-  getExceptions(systemModule: string, quotationCode: number): Observable<any> {
+  getExceptions(quotationCode: number): Observable<any> {
     const params = new HttpParams()
-      .set('systemModule ', 'Q')
+
       .set('quotationCode', quotationCode.toString())
 
-    return this.api.GET(
-      `v1/gis-exceptions?systemModule?${params.toString()}`,
-      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    return this.api.POST(
+      `v2/quotation-exceptions/make-ready?${params.toString()}`, null,
+      API_CONFIG.GIS_QUOTATIONS_BASE_URL
     );
   }
 
