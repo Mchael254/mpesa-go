@@ -63,6 +63,8 @@ export class NewBankingProcessComponent implements OnInit {
   userSelectDialogVisible: boolean = false;
   /**controls visibility of create batches btn,it should be hidden if payment mode selected is cheque */
   isCashSelected: boolean = false;
+  /**controls the visibility of assign buttons */
+  reAssign:boolean=false;
   /**it controls the visibility of deposit button which should only be visible if the payment mode is cheque */
   paymentMode:string;
   /** Holds the user object selected from the second dialog to display in the first dialog's input. */
@@ -84,6 +86,7 @@ export class NewBankingProcessComponent implements OnInit {
   /** Information about the currently logged-in user. */
   loggedInUser: any;
    staffPageSize = 5;
+   selectedRctObj:ReceiptDTO;
   /**
    * @constructor
    * @param translate Service for handling internationalization (i18n).
@@ -301,6 +304,7 @@ this.fetchActiveUsers(0, this.staffPageSize);
    */
   openAssignModal(): void {
     this.assignDialogVisible = true;
+    this.reAssign=false;
   }
  /**
    * @description Closes the main assignment dialog and resets the form and selections.
@@ -339,7 +343,7 @@ this.fetchActiveUsers(0, this.staffPageSize);
     this.userSelectDialogVisible = false;
   }
   /**
-   * @description Called when the "Select User" button in the second dialog is clicked.
+   * @description Called when the "save" button in the second dialog is clicked.
    * It transfers the selected user to the main form and closes the selection dialog.
    */
   confirmUserSelection(): void {
@@ -376,14 +380,14 @@ this.fetchActiveUsers(0, this.staffPageSize);
     this.bankingService.assignUser(requestBody).subscribe({
       next: (response) => {
         this.selectedReceipts = [];
-    this.fetchReceipts();
+         this.fetchReceipts();
         this.globalMessagingService.displaySuccessMessage('', response.msg);
       },
       error: (err) => {
         this.handleApiError(err);
       },
     });
-    this.closeAssignModal();
+   this.closeAssignModal();
   }
 
   /**
@@ -438,7 +442,43 @@ deAssignRct(body:DeAssignDTO):void{
     }
   })
 }
+/**
+   * @description Opens the main assignment dialog.
+   * it sers reAssign flag to true so as to call reAssignUser() once the Assign button is clicked
+   * rather than calling  onAssignSubmit() to does assigning
+   */
+openReAssignModal(receipt:any){
+  this.selectedRctObj = receipt;
+ this.assignDialogVisible = true; 
+ this.reAssign=true;
 
+}
+/**
+ * 
+ * @description it calls the reAssign() to post the request body,if successfull we recall fetchReceipts() 
+ * to show the newly re-assigned receipts
+ */
+reAssignUser():void{
+ this.usersForm.markAllAsTouched();
+    if (this.usersForm.invalid) {
+      return;
+    }
+    const formData = this.usersForm.value;
+    const requestBody = {
+      fromUserId:this.selectedRctObj.batchAssignmentUserId,
+      toUserId: formData.user,
+      receiptNumbers: [this.selectedRctObj.receiptNo]
+    };
+    this.bankingService.reAssignUser(requestBody).subscribe({
+      next:(response)=>{
+this.globalMessagingService.displaySuccessMessage('',response.msg);
+      },
+      error:(err)=>{
+        this.handleApiError(err);
+      }
+    });
+     this.closeAssignModal();
+}
   /**
    * @description Navigates the user to the next step in the banking process (Create Batches).
    */

@@ -92,7 +92,7 @@
     "policy_id": "政策ID",
     "quot_id": "报价ID",
     "view_quotations": "查看报价",
-    "new_quick_quote":"新快速报价",
+    "new_quick_quote": "新快速报价",
     "sun": "周日",
     "mon": "周一",
     "tue": "周二",
@@ -361,7 +361,7 @@
       "cheques": "支票",
       "pettyCash": "小额现金",
       "receipts": "收据",
-       "banking": "银行流程",
+      "banking": "银行流程",
       "receiptingPoints": "收款点",
       "narration": "叙述",
       "manageReceipt": "管理收据",
@@ -2571,9 +2571,13 @@
       "receiptManagement": "收据管理",
       "pageReport": "显示第 {first} 至 {last} 条，共 {totalRecords} 条"
     },
-     "banking": {
+    "banking": {
       "bankingProcess": "银行流程",
       "newBankingProcess": "新银行流程",
+      "processBatch": "处理批次",
+      "deposit": "存款",
+      "reAassign": "重新分配",
+      "deAssign": "取消分配",
       "slipNumber": "凭证号",
       "date": "日期",
       "amount": "金额",

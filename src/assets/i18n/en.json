@@ -3287,10 +3287,13 @@
       "receiptManagement": "Receipt management",
       "pageReport": "Showing {first} to {last} of {totalRecords} entries"
     },
-    "banking":
-    {
+    "banking":{
 "bankingProcess":"Banking Process",
 "newBankingProcess":"New Banking Process",
+"processBatch":"Process Batch",
+"deposit":"Deposit",
+"reAssign":"Re-assign",
+"deAssign":"De-assign",
 "slipNumber":"Slip number",
 "date":"Date",
 "amount":"Amount",
