@@ -1,10 +1,13 @@
 
 
 <div class="row my-3">
-  <div class="col-sm-8">
-          <span class="text-primary fw-bold">
-          {{ subGroup.label[language] | titlecase }}
-        </span>
+  <div class="col-sm-8" >
+    <span
+      class="text-primary fw-bold"
+      *ngIf="shouldShowTableLabel"
+    >
+      {{ subGroup.label[language] | titlecase }}
+    </span>
   </div>
   <div class="col-sm-4 text-end">
     <button

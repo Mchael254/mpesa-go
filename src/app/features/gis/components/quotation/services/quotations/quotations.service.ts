@@ -15,6 +15,7 @@ import {
   RegexPattern,
   ReportPayload,
   RiskCommissionDto,
+  RiskLimitPayload,
   riskSection, RiskValidationDto,
   scheduleDetails,
   Sources,
@@ -213,7 +214,7 @@ export class QuotationsService {
   }
 
 
-  createRiskLimits(data: any): Observable<any> {
+  createRiskLimits(data: RiskLimitPayload): Observable<any> {
     return this.api.POST<any>(`v2/risk-limits`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
@@ -424,15 +425,14 @@ export class QuotationsService {
   }
 
   getRiskClauses(code: number): Observable<riskClauses[]> {
-    let page = 0;
-    let size = 1000
+
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
 
     })
 
-    return this.api.GET<riskClauses[]>(`v1/riskClauses?riskCode=${code}&page=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+    return this.api.GET<riskClauses[]>(`v2/quotation-risk-clauses/by-riskCode?riskCode=${code}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -642,15 +642,14 @@ export class QuotationsService {
   //       catchError(this.errorHandl)
   //     )
   // }
-  getExceptions(quotationCode: number, transNo: number): Observable<any> {
+  getExceptions(quotationCode: number): Observable<any> {
     const params = new HttpParams()
-      .set('quotationCode', quotationCode.toString())
-      .set('transNo', transNo.toString())
-      .set('def', 'QUOTE');
 
-    return this.api.GET(
-      `v2/quotation-exceptions/manage-exceptions?${params.toString()}`,
-      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+      .set('quotationCode', quotationCode.toString())
+
+    return this.api.POST(
+      `v2/quotation-exceptions/make-ready?${params.toString()}`, null,
+      API_CONFIG.GIS_QUOTATIONS_BASE_URL
     );
   }
 
@@ -1113,7 +1112,7 @@ export class QuotationsService {
 
   //comments
   getQuotationComments(clientCode: number): Observable<any> {
-    const url = `/v2/quotation/comments?clientCode=${clientCode}`;
+    const url = `v2/quotation/comments?clientCode=${clientCode}`;
     return this.api.GET<any[]>(url, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
@@ -1135,7 +1134,7 @@ export class QuotationsService {
     )
   }
   getScheduleLevels(screenCode: string): Observable<any> {
-    return this.api.GET<any>(`api/v1/screen-schedule-levels?screenId=${screenCode}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<any>(`api/v1/screen-schedule-levels/screen-code?screenCode=${screenCode}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -1327,6 +1326,21 @@ export class QuotationsService {
   getSystemsAssignedToUser(userId: number): Observable<any> {
     return this.api.GET<Observable<any>>(`users/${userId}/systems`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL)
   }
+  getAllTickets(): Observable<any> {
+    const params = {
+      pageNo: 0,
+      pageSize: 10,
+      sortField: 'createdDate',
+      sortOrder: 'asc'
+    };
+
+    return this.api.GET<any>(
+      'v1/tickets',
+      API_CONFIG.GIS_TICKETING_SERVICE,
+      params
+    );
+  }
+
 
 
 

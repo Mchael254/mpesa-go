@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
-import {ClientBranchesDto, ClientDTO, ClientTitlesDto, ClientTypeDTO,} from '../../data/ClientDTO';
+import {ClientBranchesDto, ClientDTO, ClientTitlesDto, ClientTypeDTO, Cr12Detail,} from '../../data/ClientDTO';
 import {Pagination} from '../../../../shared/data/common/pagination';
 import {ApiService} from '../../../../shared/services/api/api.service';
 import {API_CONFIG} from '../../../../../environments/api_service_config';
@@ -175,6 +175,14 @@ export class ClientService {
     return this.api.POST<ClientDTO>(
       `v2/api/clients/${client_id}`,
       JSON.stringify(client),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  updateCr12Record(cr12: Cr12Detail): Observable<Cr12Detail> {
+    return this.api.POST<Cr12Detail>(
+      `cr12/`,
+      JSON.stringify(cr12),
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
