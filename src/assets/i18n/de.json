@@ -92,7 +92,7 @@
     "policy_id": "Pol. ID",
     "quot_id": "Angebot ID",
     "view_quotations": "Angebote anzeigen",
-    "new_quick_quote":"Neues Schnellangebot",
+    "new_quick_quote": "Neues Schnellangebot",
     "sun": "So",
     "mon": "Mo",
     "tue": "Di",
@@ -359,7 +359,7 @@
       "cheques": "Schecks",
       "pettyCash": "Barkasse",
       "receipts": "Eingänge",
-       "banking": "Bankprozess",
+      "banking": "Bankprozess",
       "receiptingPoints": "Eingangspunkte",
       "narration": "Erzählungen",
       "manageReceipt": "Eingang verwalten",
@@ -2589,9 +2589,13 @@
       "receiptManagement": "Quittungsverwaltung",
       "pageReport": "Zeige {first} bis {last} von {totalRecords} Einträgen"
     },
-     "banking": {
+    "banking": {
       "bankingProcess": "Bankprozess",
       "newBankingProcess": "Neuer Bankprozess",
+      "processBatch": "Stapel verarbeiten",
+      "deposit": "Einzahlung",
+      "reAssign": "Neu zuweisen",
+      "deAssign": "Zuweisung aufheben",
       "slipNumber": "Beleg-Nummer",
       "date": "Datum",
       "amount": "Betrag",

@@ -13,7 +13,11 @@
       },
       {
         label: this.translate.instant('base.base-fms.banking'),
-        url: '/home/fms/',
+        url: '/home/fms/new-banking-process',
+      },
+      {
+        label: this.translate.instant('fms.banking.processBatch'),
+        url: '',
       }
      
     ]"
@@ -21,7 +25,7 @@
       </app-dynamic-breadcrumb>
     </div>
   </div>
-  <app-steper [currentStep]="1" [stepperData]="steps"></app-steper>
+  <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
   <div class="card">
     <div class="card-body">
       <h5 class="pt-2 pb-2 text-primary">
@@ -141,7 +145,6 @@
         <div *ngFor="let col of columns" class="field-checkbox">
           <p-checkbox
             [(ngModel)]="allColumns"
-            name="col"
             [label]="col.header"
             [value]="col"
           />
@@ -248,7 +251,7 @@
                       class="btn btn-link btn-sm"
                       *ngIf="paymentMode === 'CHEQUE'"
                     >
-                      Deposit
+                      {{ "fms.banking.deposit" | translate }}
                     </button>
                     <!-- <button
                       class="btn btn-link btn-sm"
@@ -259,21 +262,22 @@
                     </button> -->
                     <button
                       class="btn btn-link btn-sm"
-                      *ngIf="receipt.batchAssignedUser != null || ''"
+                      *ngIf="receipt.batchAssignmentUserName != null || ''"
+                      (click)="openReAssignModal(receipt)"
                     >
-                      Re-assign
+                      {{ "fms.banking.reAssign" | translate }}
                     </button>
                     <button
                       class="btn btn-link btn-sm"
-                      *ngIf="receipt.batchAssignedUser != null || ''"
+                      *ngIf="receipt.batchAssignmentUserName != null || ''"
                       (click)="deAssign(receipt)"
                     >
-                      De-assign
+                      {{ "fms.banking.deAssign" | translate }}
                     </button>
                   </div>
                 </ng-container>
                 <ng-container *ngSwitchCase="'batchAssignedUser'">
-                  {{ receipt.batchAssignedUser ?? "unassigned" }}
+                  {{ receipt.batchAssignmentUserName ?? "unassigned" }}
                 </ng-container>
                 <ng-container *ngSwitchDefault>
                   {{ receipt[col.field] }}
@@ -366,8 +370,18 @@
             class="btn btn-primary"
             (click)="onAssignSubmit()"
             [disabled]="!selectedUserForAssignment"
+            *ngIf="!reAssign"
           >
-            Assign
+            {{ "fms.banking.assign" | translate }}
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            (click)="reAssignUser()"
+            [disabled]="!selectedUserForAssignment"
+            *ngIf="reAssign"
+          >
+            {{ "fms.banking.assign" | translate }}
           </button>
         </div>
       </div>
@@ -440,7 +454,7 @@
           class="btn btn-secondary"
           (click)="closeUserSelectDialog()"
         >
-          Cancel
+          {{ "crm.cancel" | translate }}
         </button>
         <!-- This button confirms the selection and closes this dialog -->
         <button
@@ -449,7 +463,7 @@
           (click)="confirmUserSelection()"
           [disabled]="!tempSelectedUser"
         >
-          save
+          {{ "auth.save" | translate }}
         </button>
       </div>
     </div>

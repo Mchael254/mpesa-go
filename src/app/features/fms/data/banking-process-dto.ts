@@ -29,7 +29,8 @@ export interface ReceiptDTO {
   batchAssignmentRefNo: any;
   totalAllocatedKnown: number;
   totalAllocatedUnknown: number;
-  batchAssignedUser: string | null;
+  batchAssignmentUserName: string | null;
+  batchAssignmentUserId:number | null;
 }
 export interface assignUserRctsDTO {
   userId: number;
@@ -37,4 +38,9 @@ export interface assignUserRctsDTO {
 }
 export interface DeAssignDTO {
   receiptNumbers: number[];
+}
+export interface ReAssignUserDTO{
+    fromUserId: number;
+  toUserId: number;
+  receiptNumbers: number[]
 }
