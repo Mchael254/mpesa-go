@@ -177,10 +177,15 @@
             </a>
 
 
-            <button class="btn btn-outline-primary custom-outline-btn" style="margin-right: 10px; margin-left: 20px"
+            <!-- <button class="btn btn-outline-primary custom-outline-btn" style="margin-right: 10px; margin-left: 20px"
               (click)="editQuotationDetails()" [disabled]="viewQuoteFlag">
               Edit details
+            </button> -->
+            <button class="btn btn-outline-primary custom-outline-btn" style="margin-right: 10px; margin-left: 20px"
+              (click)="editQuotationDetails()" [disabled]="isEditDisabled()">
+              Edit details
             </button>
+
           </div>
         </div>
       </div>
