@@ -97,7 +97,6 @@ export class TicketsService {
 
     return this.api.GET<TicketTypesDTO[]>(`api/v1/ticket-types`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
-
   // get all tickets for the logged in user
   getAllTickets(
     pageNo: number = 0,
@@ -137,7 +136,6 @@ export class TicketsService {
 
     return this.api.GET<Pagination<TicketsDTO>>(`api/v1/tickets?${params}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
-
   searchAllTickets(
     pageNo: number = 0,
     pageSize: number,

@@ -219,6 +219,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   isRevisionMode = false;
 
 
+
   constructor(
     public bankService: BankService,
     public branchService: BranchService,
@@ -243,6 +244,35 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
     this.quotationAction = sessionStorage.getItem('quotationAction')
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
+
+    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+    if (!reusedQuotation) {
+      log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
+      return;
+    }
+
+    const data = JSON.parse(reusedQuotation);
+    const quotationCode=data._embedded.newQuotationCode;
+    if(quotationCode){
+      this.quotationCode=quotationCode
+    }
+
+    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+    if (revisedQuotation) {
+    const data = JSON.parse(revisedQuotation);
+    const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
+    if (quotationCode) {
+    this.quotationCode = quotationCode;
+    }
+    }
+
+
+
+
+
+
+
+
     this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
     this.storedQuotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
     log.debug("QUOTATION FORM DETAILS", this.storedQuotationFormDetails)
@@ -2770,21 +2800,19 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
 
-  patchReusedQuotationData() {
+patchReusedQuotationData() {
+ 
+  
+
+    if(this.quotationDetails){
+
+      const data= this.quotationDetails
 
 
-    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
-    if (!reusedQuotation) {
-      log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
-      return;
-    }
 
-    const data = JSON.parse(reusedQuotation);
     log.debug('[QuotationDetailsComponent] Patching reused quotation data:', data);
 
-    const sourceObject = this.quotationSources?.find(
-      (s: any) => s.code === data.source?.code || s.description === data.source?.description
-    );
+   
 
 
     const agentObject = data.agentCode
@@ -2801,19 +2829,17 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
     if (this.quotationForm) {
       this.quotationForm.patchValue({
-        email: data.emailAddress || '',
-        phone: data.phoneNumber || '',
-        source: sourceObject || data.source || '',
-        quotationType: data.quotationType || 'I',
+        source: data.source || '',
+        quotationType: data.clientType || 'I',
         branch: data.branchCode || '',
         currency: data.currency || '',
-        introducer: data.introducerName || '',
+        introducer: data.introducerCode || '',
         paymentFrequency: data.frequencyOfPayment || '',
-        marketer: data.marketerName || '',
+        marketer: data.marketerAgentCode || '',
         multiUserEntry: data.multiUser || 'N',
         campaign: data.sourceCampaign || '',
         internalComments: data.internalComments || '',
-        externalComments: data.externalComments || ''
+        externalComments: data.comments || ''
       });
     }
 
@@ -2862,13 +2888,19 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
 
 
+    // ✅ Optional: patch dropdown selections for UI
+    this.selectedMarketerName = data.marketerAgentCode || '';
+    this.selectedIntroducerName = data.introducerCode || '';
+    this.selectedAgentName = data.agentName || '';
+
+
     // ✅ Patch product details + clauses + taxes
     if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
       this.quotationProducts = data.quotationProducts;
-      this.products = data.quotationProducts;
+      // this.products = data.quotationProducts;
       this.productDetails = data.quotationProducts;
 
-      log.debug('[QuotationDetailsComponent] Patched product details:', this.products);
+      log.debug('[QuotationDetailsComponent] Patched product details:', this.productDetails);
 
       if (this.productDetails?.length > 0) {
 
@@ -2914,60 +2946,49 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
 
 
+    }
+    
+   
+
   }
 
 
+
   patchRevisedQuotationData() {
-    const isRevision = sessionStorage.getItem('isRevision') === 'true';
-    if (!isRevision) return;
+  const isRevision = sessionStorage.getItem('isRevision') === 'true';
+  if (!isRevision) return;
 
-    this.isRevisionMode = true;
+  this.isRevisionMode = true;
 
-    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
-    if (!revisedQuotation) return;
-
-    const data = JSON.parse(revisedQuotation);
+  if (this.quotationDetails) {
+    const data = this.quotationDetails;
 
     log.debug('[QuotationDetailsComponent] Retrieved revised quotation data =>', data);
 
-
-
-
-
-    const sourceObject = this.quotationSources?.find(
-      (s: any) => s.code === data.source?.code || s.description === data.source?.description
-    );
-
-
     const agentObject = data.agentCode
       ? {
-        code: data.agentCode,
-        name: data.agentName,
-        shortDescription: data.agentShortDescription,
-        agentWithin: data.agentWithin
-      }
+          code: data.agentCode,
+          name: data.agentName,
+          shortDescription: data.agentShortDescription,
+          agentWithin: data.agentWithin
+        }
       : null;
 
     log.debug("AGENT OBJECT TO PATCH =>", agentObject);
 
     this.quotationForm.patchValue({
-      email: data.emailAddress || '',
-      phone: data.phoneNumber || '',
-      source: sourceObject || data.source || null,
-      quotationType: data.quotationType || 'I',
+      source: data.source || null,
+      quotationType: data.clientType || 'I',
       branch: data.branchCode || '',
       currency: data.currency || '',
-      introducer: data.introducerName || '',
+      introducer: data.introducerCode || '',
       paymentFrequency: data.frequencyOfPayment || '',
-      marketer: data.marketerName || '',
+      marketer: data.marketerAgentCode || '',
       multiUserEntry: data.multiUser || 'N',
       campaign: data.sourceCampaign || '',
       internalComments: data.internalComments || '',
-      externalComments: data.externalComments || ''
+      externalComments: data.comments || ''
     });
-
-
-
 
     if (agentObject) {
       this.quotationForm.get('agent')?.setValue(agentObject, { emitEvent: false });
@@ -2976,11 +2997,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       log.debug("⚠️ No agent object found to patch");
     }
 
-
-
-
-
-
+    // ✅ Fetch and patch client
     if (data.clientCode) {
       log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
 
@@ -2989,20 +3006,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           log.debug('[QuotationDetailsComponent] Client fetched for revision =>', client);
 
           if (client) {
-
             const clientName = [client.firstName, client.lastName]
               .filter(Boolean)
               .join(' ')
               .trim() ||
               client.lastName ||
-
               'Unknown Client';
 
             this.quotationForm.patchValue({
               client: clientName
             });
-
-
 
             log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
           } else {
@@ -3012,16 +3025,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         error: (error: any) => {
           log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
         }
-      });
-    }
+      }); // ✅ Close subscribe here
+    } // ✅ Close if (data.clientCode) here
 
+    // ✅ These should be OUTSIDE the client fetch block
     this.quotationForm.get('client')?.disable({ emitEvent: false });
     this.quotationForm.get('agent')?.disable({ emitEvent: false });
 
     // ✅ Patch product details
     if (Array.isArray(data.quotationProducts) && data.quotationProducts.length > 0) {
       this.quotationProducts = data.quotationProducts;
-      this.products = data.quotationProducts;
       this.productDetails = data.quotationProducts;
 
       // map coverFrom / coverTo values
@@ -3036,12 +3049,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.setColumnsFromProductDetails(this.productDetails[0]);
       }
 
-      log.debug("productDetails for revise", this.productDetails)
+      log.debug("productDetails for revise", this.productDetails);
 
       // ✅ Patch clauses
       const firstProduct = this.products[0];
-      log.debug("first product", firstProduct)
-      this.sessionClauses = firstProduct.productClauses || [];
+      log.debug("first product", firstProduct);
+      
+      this.sessionClauses = firstProduct?.productClauses || [];
       if (this.sessionClauses.length > 0) {
         this.sessionClauses = this.sessionClauses.map((c: any) => ({
           ...c,
@@ -3052,15 +3066,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         }));
         this.setProductClauseColumns(this.sessionClauses[0]);
       }
+    } else {
+      log.debug('[QuotationDetailsComponent] No product details found in revised quotation.');
+      this.quotationProducts = [];
+      this.products = [];
+      this.productDetails = [];
     }
 
-    log.debug("session clauses for revise", this.sessionClauses)
-  }
-
-
-
-
+    log.debug("session clauses for revise", this.sessionClauses);
+  } 
+} 
 
 
 }
-
