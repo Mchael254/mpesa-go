@@ -23,4 +23,17 @@ interface Attachment {
   disposition: string;
   contentId: string;
 }
+export interface WhatsappDto {
+  recipientPhone: string;
+  message: string;
+  templateName: string;
+  templateParams: string[];
+  attachments: {
+    fileName: string;
+    mimeType: string;
+    data: string;
+    caption: string;
+  }[];
+}
+
 
