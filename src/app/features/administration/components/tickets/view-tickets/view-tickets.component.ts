@@ -14,7 +14,7 @@ import {GlobalMessagingService} from "../../../../../shared/services/messaging/g
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {Logger} from "../../../../../shared/services/logger/logger.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {ReplaySubject, takeUntil, tap} from "rxjs";
+import {finalize, ReplaySubject, takeUntil, tap} from "rxjs";
 import {Pagination} from "../../../../../shared/data/common/pagination";
 import {LazyLoadEvent} from "primeng/api";
 import {TableLazyLoadEvent} from "primeng/table";
@@ -22,6 +22,7 @@ import {TableDetail} from "../../../../../shared/data/table-detail";
 import {PoliciesService} from "../../../../gis/services/policies/policies.service";
 import {AuthorizePolicyModalComponent} from "../authorize-policy-modal/authorize-policy-modal.component";
 import {PolicyDetailsDTO} from "../../../data/policy-details-dto";
+import { QuotationsService } from 'src/app/features/gis/components/quotation/services/quotations/quotations.service';
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -102,6 +103,7 @@ export class ViewTicketsComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private fb: FormBuilder,
     private policiesService: PoliciesService,
+    private quotationService:QuotationsService,
   )
   {
 
@@ -235,25 +237,27 @@ export class ViewTicketsComponent implements OnInit {
   }
 
   getAllTickets(
-    pageIndex: number,
-    pageSize: number,
-    sort: string = '',
-    query: string = '',
-    queryColumn: string = '') {
-    this.spinner.show();
-    if (this.filterObject[this.filterKey]) {
-        return this.searchTicketsDup(this.filterKey, pageIndex, pageSize);
-    }
-    else {
-      return this.ticketsService.getAllTickets(pageIndex, pageSize, "", "", sort, '', query, queryColumn, )
-        .pipe(
-          takeUntil(this.destroyed$),
-          tap((data) => log.info('Fetch Tickets data>> ', data))
-        );
-    }
-    log.info('>>',this.filterObject[this.filterKey])
+  pageIndex: number,
+  pageSize: number,
+  sort: string = 'createdDate',
+  sortOrder: string = 'asc'
+) {
+  this.spinner.show();
 
+  if (this.filterObject[this.filterKey]) {
+    return this.searchTicketsDup(this.filterKey, pageIndex, pageSize);
+  } else {
+    return this.quotationService.getAllTickets().pipe(
+      takeUntil(this.destroyed$),
+      tap((data) => {
+        log.info('Fetched Tickets data >>', data);
+        this.spinner.hide();
+      }),
+      finalize(() => this.spinner.hide())
+    );
   }
+}
+
 
   lazyLoadTickets(event:LazyLoadEvent | TableLazyLoadEvent) {
 
