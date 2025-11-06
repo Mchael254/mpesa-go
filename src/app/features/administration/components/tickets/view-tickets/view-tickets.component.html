@@ -38,12 +38,14 @@
 </div>
 
 
-<div  class="d-flex my-4 mx-4">
-<!--  <button class="btn btn-success" (click)="generateAuthorizeOtp()" style="margin-right: 1rem;">Authorize</button>-->
-  <button class="btn btn-primary border-radius-none" (click)="processReassignTask()" id="btn-reassign-task" style="margin-right: 1rem;">
+<div class="d-flex my-4 mx-4">
+  <!--  <button class="btn btn-success" (click)="generateAuthorizeOtp()" style="margin-right: 1rem;">Authorize</button>-->
+  <button class="btn btn-primary border-radius-none" (click)="processReassignTask()" id="btn-reassign-task"
+    style="margin-right: 1rem;">
     {{'mngt_wrkflw.tickets.reassign' | translate }}
   </button>
-  <button class="btn btn-success" (click)="authorizePolicy()" style="margin-right: 1rem;">{{'mngt_wrkflw.tickets.authorize' | translate }}</button>
+  <button class="btn btn-success" (click)="authorizePolicy()"
+    style="margin-right: 1rem;">{{'mngt_wrkflw.tickets.authorize' | translate }}</button>
   <button class="btn btn-outline-primary" (click)="goToDispatch()">{{'base.dispatch' | translate | titlecase }}</button>
 </div>
 
@@ -63,7 +65,8 @@
         <select class="form-control form-select" formControlName="ticketTypes" id="type" (change)="sortTickets()">
           <option value="" disabled selected>Select option</option>
           <option value="">All</option>
-          <option *ngFor="let ticketTypes of ticketTypesData" value="{{ ticketTypes.shortDescription }}">{{ ticketTypes.description }}
+          <option *ngFor="let ticketTypes of ticketTypesData" value="{{ ticketTypes.shortDescription }}">{{
+            ticketTypes.description }}
           </option>
         </select>
       </div>
@@ -73,9 +76,7 @@
         <select class="form-control form-select" formControlName="ticketModules" id="module" (change)="sortTickets()">
           <option value="" selected>Select option</option>
           <option value="">All</option>
-          <option *ngFor="let ticketModule of ticketModules"
-                  [ngValue]="ticketModule.shortDescription"
-          >
+          <option *ngFor="let ticketModule of ticketModules" [ngValue]="ticketModule.shortDescription">
             {{ ticketModule.description }}
           </option>
         </select>
@@ -285,27 +286,15 @@
   <div class="card">
     <div class="card-body" style="position: relative;">
 
-      <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+      <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium"
+        bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
 
-      <p-table #dt
-               (onLazyLoad)="lazyLoadTickets($event)"
-               [lazy]="true"
-               [value]="springTickets.content"
-               [(selection)]="selectedSpringTickets"
-               [tableStyle]="{ 'min-width': '50rem' }"
-               [paginator]="true"
-               [rows]="10"
-               [rowHover]="true"
-               [autoLayout]="true"
-               [totalRecords]="springTickets.totalElements"
-               [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-               currentPageReportTemplate="{first} - {last} of {totalRecords}"
-               [scrollable]="true"
-               scrollHeight="400px"
-               responsiveLayout="scroll"
-               [resizableColumns]="true"
-               [globalFilterFields]="globalFilterFields"
-      >
+      <p-table #dt (onLazyLoad)="lazyLoadTickets($event)" [lazy]="true" [value]="springTickets.content"
+        [(selection)]="selectedSpringTickets" [tableStyle]="{ 'min-width': '50rem' }" [paginator]="true" [rows]="10"
+        [rowHover]="true" [autoLayout]="true" [totalRecords]="springTickets.totalElements"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]" currentPageReportTemplate="{first} - {last} of {totalRecords}"
+        [scrollable]="true" scrollHeight="400px" responsiveLayout="scroll" [resizableColumns]="true"
+        [globalFilterFields]="globalFilterFields">
         <ng-template pTemplate="header">
           <tr>
             <th class="head">
@@ -332,65 +321,94 @@
             <th class="head" pSortableColumn="assignee">
               {{'mngt_wrkflw.tickets.ticketAssignee' | translate }} <p-sortIcon field="assignee"></p-sortIcon>
             </th>
-            <th></th>
+            <th class="head">
+              Actions
+            </th>
           </tr>
           <tr>
             <th class="head">
               <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
             </th>
             <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('createdOn');" (input)="getInputs($event, 'createdOn')" >
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('createdOn');"
+                (input)="getInputs($event, 'createdOn')">
             </th>
             <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('activityName');" (input)="getInputs($event, 'activityName')">
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('activityName');"
+                (input)="getInputs($event, 'activityName')">
             </th>
             <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('referenceNo');" (input)="getInputs($event, 'referenceNo')">
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('referenceNo');"
+                (input)="getInputs($event, 'referenceNo')">
             </th>
             <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('clientName');" (input)="getInputs($event, 'clientName')">
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('clientName');"
+                (input)="getInputs($event, 'clientName')">
             </th>
             <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('agentName');" (input)="getInputs($event, 'agentName')">
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('agentName');"
+                (input)="getInputs($event, 'agentName')">
             </th>
             <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('reporter');" (input)="getInputs($event, 'reporter')">
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('reporter');"
+                (input)="getInputs($event, 'reporter')">
             </th>
             <th>
-              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('assignee');" (input)="getInputs($event, 'assignee')">
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('assignee');"
+                (input)="getInputs($event, 'assignee')">
             </th>
-            <th>
-            </th>
+
 
           </tr>
         </ng-template>
-            <ng-template pTemplate="body" let-ticket>
-  <tr>
-    <td class="body">
-      <p-tableCheckbox [value]="ticket"></p-tableCheckbox>
-    </td>
-    <td class="body">{{ ticket.createdDate | date: 'yyyy-MM-dd' }}</td>
-    <td class="body" style="cursor:pointer;">{{ ticket.ticketName }}</td>
-    <td class="body">
-      {{
-        ticket.systemModule === 'Q' ? ticket.quotationNumber :
-        ticket.systemModule === 'C' ? ticket.claimNumber :
-        ticket.systemModule === 'P' ? ticket.policyNumber : ''
-      }}
-    </td>
-    <td class="body">{{ ticket.clientName }}</td>
-    <td class="body">{{ ticket.agentName }}</td>
-    <td class="body">
-      PMUTUA
-    </td>
-    <td class="body">
-      {{ ticket.ticketTo === 'JMMUSYOKI' ? 'WADUVAGA' : ticket.ticketTo }}
-    </td>
-    <td class="body ticket-button" (click)="goToTicketDetails(ticket)">
-      <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
-    </td>
-  </tr>
-</ng-template>
+        <ng-template pTemplate="body" let-ticket>
+          <tr>
+            <td class="body">
+              <p-tableCheckbox [value]="ticket"></p-tableCheckbox>
+            </td>
+            <td class="body">{{ ticket.createdDate | date: 'yyyy-MM-dd' }}</td>
+            <td class="body" style="cursor:pointer;">{{ ticket.ticketName }}</td>
+            <td class="body">
+              {{
+              ticket.systemModule === 'Q' ? ticket.quotationNumber :
+              ticket.systemModule === 'C' ? ticket.claimNumber :
+              ticket.systemModule === 'P' ? ticket.policyNumber : ''
+              }}
+            </td>
+            <td class="body">{{ ticket.clientName }}</td>
+            <td class="body">{{ ticket.agentName }}</td>
+            <td class="body">
+              PMUTUA
+            </td>
+            <td class="body">
+              {{ ticket.ticketTo === 'JMMUSYOKI' ? 'WADUVAGA' : ticket.ticketTo }}
+            </td>
+            <!-- <td class="body ticket-button" (click)="goToTicketDetails(ticket)">
+              <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
+            </td> -->
+            <td class="text-end" style="padding-top: 0; padding-bottom: 0;">
+              <!-- DEBUG: Direct test button (remove after testing) -->
+              <!-- <button class="btn btn-xs btn-outline-success me-2" (click)="viewQuote(quotation)" style="font-size: 10px; padding: 2px 4px;">DEBUG VIEW</button> -->
+
+              <div class="action-buttons-container d-flex align-items-center justify-content-end gap-1">
+                <!-- Display first 3 actions as text links -->
+                <!-- Process Action -->
+                <button type="button"
+                  class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1">
+                  Process
+                </button>
+
+                <!-- Reassign Action -->
+                <button type="button"
+                  class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1">
+                  Reassign
+                </button>
+
+
+              </div>
+            </td>
+          </tr>
+        </ng-template>
 
         <ng-template pTemplate="emptymessage">
           <tr>
@@ -404,15 +422,10 @@
 
 </div>
 
-<app-reassign-ticket-modal
-  [reassignModalVisible]="showReassignTicketsModal"
-  [selectedTickets]="selectedSpringTickets"
-  (actionReassignEmitter)="handleAction($event)"
-  (reassignedTickets)="reassignSubmitted($event)">
+<app-reassign-ticket-modal [reassignModalVisible]="showReassignTicketsModal" [selectedTickets]="selectedSpringTickets"
+  (actionReassignEmitter)="handleAction($event)" (reassignedTickets)="reassignSubmitted($event)">
 </app-reassign-ticket-modal>
 
-<app-authorize-policy-modal
-  [policyDetails]="policyDetails">
+<app-authorize-policy-modal [policyDetails]="policyDetails">
 </app-authorize-policy-modal>
 <div class="mobile-bottom"></div>
-
