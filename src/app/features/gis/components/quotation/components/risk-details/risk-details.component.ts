@@ -202,6 +202,7 @@ export class RiskDetailsComponent {
   }[];
   subclassFormContent: any
   subclassFormData: {
+    options: any[];
     type: string;
     name: string;
     max: number
@@ -648,9 +649,11 @@ export class RiskDetailsComponent {
           sessionStorage.setItem('newQuotationProductCode', this.quoteProductCode);
           this.selectedSubclassCode = this.quotationDetails?.quotationProducts?.[0].riskInformation?.[0]?.subclassCode;
           sessionStorage.setItem('selectedSubclasscode', this.selectedSubclassCode);
+
           this.insuredCode = this.quotationDetails.clientCode || this.clientCode
           log.debug("Insured code:", this.insuredCode)
           this.clientCode = this.quotationDetails.clientCode
+          sessionStorage.setItem('insuredCode', this.insuredCode)
           if (this.insuredCode) {
             this.loadClientDetails();
             this.loadAllClients();
@@ -802,6 +805,8 @@ export class RiskDetailsComponent {
   defaultVisibleRiskDetailsFields = ['wef', 'wet', 'actions', 'propertyId', 'coverTypeDescription', 'binderCode'];
 
   openAddRiskModal() {
+    log.debug("isNewClientSelected;", this.isNewClientSelected)
+    log.debug("insuredCode;", this.insuredCode)
     if (!this.isNewClientSelected && !this.insuredCode) {
       this.globalMessagingService.displayErrorMessage('Error', 'No insured selected');
       return;
@@ -851,19 +856,59 @@ export class RiskDetailsComponent {
       });
 
       // Add new dynamic controls
+      // this.subclassFormData.forEach(field => {
+      //   if (!this.riskDetailsForm.get(field.name)) {
+      //     const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
+      //     const control = new FormControl(this.getDefaultValue(field), validators);
+      //     (control as any).metadata = { dynamicSubclass: true };
+      //     this.riskDetailsForm.addControl(field.name, control);
+      //     log.debug(`Added new dynamicSubclass control: ${field.name}`);
+      //   }
+      //   let defaultValue = '';
+      //   if (field.name === 'ncdStatus') {
+      //     defaultValue = 'N';
+      //   }
+      // });
       this.subclassFormData.forEach(field => {
         if (!this.riskDetailsForm.get(field.name)) {
           const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
           const control = new FormControl(this.getDefaultValue(field), validators);
           (control as any).metadata = { dynamicSubclass: true };
+
+          // ✅ Add control to the form
           this.riskDetailsForm.addControl(field.name, control);
           log.debug(`Added new dynamicSubclass control: ${field.name}`);
         }
-        let defaultValue = '';
+
+        // ✅ Handle default value logic (like ncdStatus)
         if (field.name === 'ncdStatus') {
-          defaultValue = 'N';
+          this.riskDetailsForm.get(field.name)?.setValue('N');
         }
+
+        if (field.options && field.options.length > 0) {
+          let optionsList = field.options;
+
+          // ✅ Parse JSON safely if options come as a string
+          if (typeof field.options === 'string') {
+            try {
+              optionsList = JSON.parse(field.options);
+            } catch {
+              optionsList = [];
+            }
+          }
+
+          // ✅ Use your helper to populate selectOptions
+          this.safePopulateSelectOptions(
+            this.subclassFormData,
+            field.name,
+            optionsList,
+            'description', // labelKey
+            'code'         // valueKey
+          );
+        }
+
       });
+
       log.debug(" risk details Value:", this.riskDetailsForm.value)
 
       const coverFromStr = this.quotationDetails.coverFrom;
@@ -977,6 +1022,8 @@ export class RiskDetailsComponent {
           (formControl as any).metadata = { dynamic: true };
           this.riskDetailsForm.addControl(field.name, formControl);
         });
+
+
 
         log.debug(this.riskDetailsForm.value, 'Final Form Value');
       },
