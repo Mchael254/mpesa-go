@@ -23,7 +23,7 @@ export const environment = {
     [API_CONFIG.MNGT_WORKFLOW_BASE_URL, '/turnquest/workflow'],
     [API_CONFIG.GIS_SETUPS_BASE_URL, '/gis/setups'],
     [API_CONFIG.GIS_CLAIMS_BASE_URL, '/gis/claims'],
-    [API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis-new/quotation/api'],
+    [API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis/quotation/api'],
     [API_CONFIG.GIS_QUOTATION_BASE_URL, '/gis/quotation/api'],
     [API_CONFIG.NOTIFICATION_BASE_URL, '/turnquest/notification'],
 
