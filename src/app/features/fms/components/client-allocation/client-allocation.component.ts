@@ -356,6 +356,14 @@ export class ClientAllocationComponent {
    */
   showAcknowledgeBtn: boolean = false;
   /**
+   *@description a string that stores the cheque type,if it is a pd cheque,we set the 
+   field receiptChequeType with the value of 'Y', if it is a normal cheque we set as 'N' 
+   *
+   * @type {string}
+   * @memberof ClientAllocationComponent
+   */
+  pdCheque:string;
+  /**
    * @description message
    */
   message: string;
@@ -587,6 +595,7 @@ export class ClientAllocationComponent {
     if (this.selectedClient.code !== null) {
       this.getAgentById(this.selectedClient.code);
     }
+    this.checkChequeType();
   }
   /**
    * Initializes the receipt capture form with default values and validators.
@@ -1705,6 +1714,18 @@ export class ClientAllocationComponent {
     }
   }
   /**
+   * @description function to set the chequeType by checking the type of cheque selected
+   */
+  checkChequeType(){
+    if(this.paymentMode==='CHEQUE' &&
+      this.chequeType === 'post_dated_cheque'){
+        this.pdCheque='Y'
+      }else if(this.paymentMode==='CHEQUE' &&
+      this.chequeType === 'open_cheque'){
+        this.pdCheque='N'
+      }
+  }
+  /**
    * Submits the receipt data to the backend.
    */
   submitReceipt(): any {
@@ -1801,17 +1822,17 @@ export class ClientAllocationComponent {
       receiptCode: this.receiptCode,
       receiptDate: this.receiptDate
         ? this.receiptDate.toISOString().split('T')[0]
-        : null, // Ensure it's a valid Date before calling toISOString()
+        : null, 
       amount: String(this.storedData?.amountIssued || 0), // Add decimal points for BigDecimal fields
       paidBy: this.receivedFrom,
-      currencyCode: String(this.currency), // Add quotes to ensure it's treated as string before conversion
+      currencyCode: String(this.currency),
 
-      branchCode: String(this.defaultBranch?.id || this.selectedBranch?.id), // Add quotes to ensure it's treated as string before conversion
+      branchCode: String(this.defaultBranch?.id || this.selectedBranch?.id), 
       paymentMode: this.paymentMode,
       paymentMemo: this.paymentRef || null,
       docDate: this.documentDate
         ? this.documentDate.toISOString().split('T')[0]
-        : null, // Ensure it's a valid Date before calling toISOString()
+        : null, 
       //drawerBank: formValues.drawersBank || 'N/A',
       drawerBank: this.drawersBank || null,
       userCode: this.loggedInUser.code,
@@ -1830,7 +1851,7 @@ export class ClientAllocationComponent {
       chequeNo: null,
       ipfFinancier: null,
       receiptSms: 'Y',
-      receiptChequeType: null,
+      receiptChequeType:  this.pdCheque || null,
       vatInclusive: null,
       //rctbbrCode: Number(this.defaultBranch?.id || this.selectedBranch?.id) ,
       rctbbrCode: null,
@@ -1868,7 +1889,6 @@ export class ClientAllocationComponent {
           this.receiptResponse.message
         );
         this.openReceiptShareModal();
-        // remove only the items you set for this specific workflow.
         this.sessionStorage.removeItem('receiptCode');
         this.sessionStorage.removeItem('branchReceiptNumber');
         this.sessionStorage.removeItem('receiptingPoint');
@@ -2217,7 +2237,7 @@ export class ClientAllocationComponent {
       chequeNo: null,
       ipfFinancier: null,
       receiptSms: 'Y',
-      receiptChequeType: null,
+      receiptChequeType: this.pdCheque || null,
       vatInclusive: null,
       //rctbbrCode: Number(this.defaultBranch?.id || this.selectedBranch?.id) ,
       rctbbrCode: null,
