@@ -1311,7 +1311,7 @@ export class QuotationsService {
       pageNo: 0,
       pageSize: 10,
       sortField: 'createdDate',
-      sortOrder: 'asc'
+      sortOrder: 'desc'
     };
 
     return this.api.GET<any>(

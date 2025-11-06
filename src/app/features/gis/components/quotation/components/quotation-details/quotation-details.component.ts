@@ -217,6 +217,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   productClauses: any;
   isRevision: boolean = false;
   isRevisionMode = false;
+  ticketStatus: string
+  quickQuoteFlag: boolean = false;
 
 
 
@@ -241,7 +243,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     private clientService: ClientService
 
   ) {
-    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
+    this.ticketStatus = sessionStorage.getItem('ticketStatus');
+    this.quickQuoteFlag = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'));
+
+    // this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
     this.quotationAction = sessionStorage.getItem('quotationAction')
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
 
@@ -535,6 +540,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   handleSaveClient(eventData: any) {
     log.debug('Event received from Client search comp', eventData);
+    sessionStorage.setItem("SelectedClientDetails", eventData);
+
     const clientCode = eventData.id;
     this.selectedClientCode = clientCode;
     this.selectedClientName =
@@ -2568,9 +2575,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.quotationCode = this.quotationNo._embedded.quotationCode;
         this.quotationNum = this.quotationNo._embedded.quotationNumber;
         const processFlowDetails = data._embedded.processFlowResponseDto
-        const ticketStatus = processFlowDetails.taskName
+        const ticketStatus = processFlowDetails?.taskName
+        this.ticketStatus = this.ticketStatus || ticketStatus
         log.debug("Ticket status:", ticketStatus)
-        sessionStorage.setItem('ticketStatus', ticketStatus);
+        sessionStorage.setItem('ticketStatus', this.ticketStatus);
         sessionStorage.setItem('quotationNum', this.quotationNum);
         sessionStorage.setItem('quotationCode', this.quotationCode.toString());
         sessionStorage.setItem('quotationPayload', JSON.stringify(quotationPayload));
