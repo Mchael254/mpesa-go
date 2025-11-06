@@ -172,14 +172,11 @@
             class="d-flex align-items-center justify-content-between bg-white"
           >
             <div class="div">
-              <h5 class="text">
+              <h5 class="fw-bold">
                 {{ "fms.banking.retrievedReceipts" | translate }}
               </h5>
 
-              <p
-                class="text text-body-secondary"
-                *ngIf="filteredReceipts.length != 0"
-              >
+              <p class="fw-normal" *ngIf="filteredReceipts.length != 0">
                 Found {{ totalRecord }} records.Please select record to assign
                 and create batches
               </p>
