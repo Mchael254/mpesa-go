@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -26,7 +31,7 @@ jest.mock('../../data/fms-step.json', () => ({
 describe('ReceiptCaptureComponent', () => {
   let component: ReceiptCaptureComponent;
   let fixture: ComponentFixture<ReceiptCaptureComponent>;
-  
+
   let mockGlobalMessagingService: any;
   let mockReceiptService: any;
   let mockCurrencyService: any;
@@ -42,11 +47,19 @@ describe('ReceiptCaptureComponent', () => {
       displayWarningMessage: jest.fn(),
     };
     mockReceiptService = {
-      getReceiptNumber: jest.fn().mockReturnValue(of({ receiptNumber: 'REC-001', branchReceiptNumber: 1 })),
+      getReceiptNumber: jest
+        .fn()
+        .mockReturnValue(
+          of({ receiptNumber: 'REC-001', branchReceiptNumber: 1 })
+        ),
       getNarrations: jest.fn().mockReturnValue(of({ data: [] })),
       getCharges: jest.fn().mockReturnValue(of({ data: [] })),
       getExistingCharges: jest.fn().mockReturnValue(of({ data: [] })),
-      getReceiptingPoints: jest.fn().mockReturnValue(of({ data: [{ id: 1, name: 'Main Counter', autoManual: 'A' }] })),
+      getReceiptingPoints: jest
+        .fn()
+        .mockReturnValue(
+          of({ data: [{ id: 1, name: 'Main Counter', autoManual: 'A' }] })
+        ),
       postChargeManagement: jest.fn().mockReturnValue(of({})),
       postManualExchangeRate: jest.fn().mockReturnValue(of({})),
       getBanks: jest.fn().mockReturnValue(of({ data: [] })),
@@ -55,7 +68,11 @@ describe('ReceiptCaptureComponent', () => {
       getBanks: jest.fn().mockReturnValue(of([])),
     };
     mockCurrencyService = {
-      getCurrencies: jest.fn().mockReturnValue(of([{ id: 1, symbol: 'KES', currencyDefault: 'Y' } as CurrencyDTO])),
+      getCurrencies: jest
+        .fn()
+        .mockReturnValue(
+          of([{ id: 1, symbol: 'KES', currencyDefault: 'Y' } as CurrencyDTO])
+        ),
       getCurrenciesRate: jest.fn().mockReturnValue(of([])),
     };
     mockFmsService = {
@@ -77,23 +94,31 @@ describe('ReceiptCaptureComponent', () => {
       navigate: jest.fn(),
     };
     const mockSessionStorageService = {
-      getItem: jest.fn((key: string) => {
+      getItem: jest.fn().mockImplementation((key: string) => {
+        if (key === 'user') {
+          return JSON.stringify({ code: 1, name: 'Test user' });
+        }
         if (key === 'selectedOrg' || key === 'defaultOrg') {
           return JSON.stringify({ id: 1, country: { id: 1 } });
+        }
+        if (key === 'defaultBranch') {
+          return JSON.stringify({ id: 1 });
         }
         return null;
       }),
       setItem: jest.fn(),
     };
     const mockAuthService = {
-      getCurrentUser: jest.fn().mockReturnValue({ code: 'testUser' }),
+      getCurrentUser: jest
+        .fn()
+        .mockReturnValue({ code: 'testUser', userName: 'FMSADMIN' }),
     };
     const mockTranslateService = {
-        instant: jest.fn(key => key),
-        get: jest.fn(key => of(key)),
-        onLangChange: new EventEmitter(),
-        onTranslationChange: new EventEmitter(),
-        onDefaultLangChange: new EventEmitter(),
+      instant: jest.fn((key) => key),
+      get: jest.fn((key) => of(key)),
+      onLangChange: new EventEmitter(),
+      onTranslationChange: new EventEmitter(),
+      onDefaultLangChange: new EventEmitter(),
     };
 
     await TestBed.configureTestingModule({
@@ -102,7 +127,10 @@ describe('ReceiptCaptureComponent', () => {
       providers: [
         FormBuilder,
         { provide: StaffService, useValue: {} },
-        { provide: GlobalMessagingService, useValue: mockGlobalMessagingService },
+        {
+          provide: GlobalMessagingService,
+          useValue: mockGlobalMessagingService,
+        },
         { provide: ReceiptService, useValue: mockReceiptService },
         { provide: OrganizationService, useValue: {} },
         { provide: BankService, useValue: mockBankService },
@@ -130,230 +158,280 @@ describe('ReceiptCaptureComponent', () => {
 
   describe('Form Interaction and Validation', () => {
     beforeEach(() => {
-        fixture.detectChanges();
+      fixture.detectChanges();
     });
 
     it('should display an error if form is invalid onNextClick', () => {
-        component.onNextClick();
-        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
-            'Validation Error',
-            'Please fill all required fields marked with an asterisk (*).'
-        );
-        expect(mockRouter.navigate).not.toHaveBeenCalled();
+      component.onNextClick();
+      expect(
+        mockGlobalMessagingService.displayErrorMessage
+      ).toHaveBeenCalledWith(
+        'Validation Error',
+        'Please fill all required fields marked with an asterisk (*).'
+      );
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
     });
 
     it('should save state and navigate if form is valid onNextClick', () => {
-        component.receiptingDetailsForm.patchValue({
-            selectedBranch: 1, organization: 1, amountIssued: 100, receiptingPoint: 'Main',
-            bankAccountType: 'Current', bankAccount: 123, receiptNumber: 'REC-001',
-            receivedFrom: 'Test Customer', narration: 'Test payment', currency: 1,
-            receiptDate: '2023-01-01', paymentMode: 'CASH',
-        });
-        
-        component.onNextClick();
-        expect(mockReceiptDataService.setFormState).toHaveBeenCalled();
-        expect(mockReceiptDataService.setReceiptData).toHaveBeenCalled();
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/client-search']);
+      component.receiptingDetailsForm.patchValue({
+        selectedBranch: 1,
+        organization: 1,
+        amountIssued: 100,
+        receiptingPoint: 'Main',
+        bankAccountType: 'Current',
+        bankAccount: 123,
+        receiptNumber: 'REC-001',
+        receivedFrom: 'Test Customer',
+        narration: 'Test payment',
+        currency: 1,
+        receiptDate: '2023-01-01',
+        paymentMode: 'CASH',
+      });
+
+      component.onNextClick();
+      expect(mockReceiptDataService.setFormState).toHaveBeenCalled();
+      expect(mockReceiptDataService.setReceiptData).toHaveBeenCalled();
+      expect(mockRouter.navigate).toHaveBeenCalledWith([
+        '/home/fms/client-search',
+      ]);
     });
   });
 
   describe('Payment Mode Logic', () => {
     beforeEach(() => {
-        fixture.detectChanges();
+      fixture.detectChanges();
     });
 
     it('should disable fields for CASH payment mode', () => {
-        component.updatePaymentModeFields('CASH');
-        expect(component.receiptingDetailsForm.get('drawersBank')?.disabled).toBe(true);
-        expect(component.receiptingDetailsForm.get('paymentRef')?.disabled).toBe(true);
+      component.updatePaymentModeFields('CASH');
+      expect(component.receiptingDetailsForm.get('drawersBank')?.disabled).toBe(
+        true
+      );
+      expect(component.receiptingDetailsForm.get('paymentRef')?.disabled).toBe(
+        true
+      );
     });
 
     it('should enable fields for non-CASH payment modes', () => {
-        component.updatePaymentModeFields('CHEQUE');
-        expect(component.receiptingDetailsForm.get('drawersBank')?.enabled).toBe(true);
-        expect(component.receiptingDetailsForm.get('paymentRef')?.enabled).toBe(true);
+      component.updatePaymentModeFields('CHEQUE');
+      expect(component.receiptingDetailsForm.get('drawersBank')?.enabled).toBe(
+        true
+      );
+      expect(component.receiptingDetailsForm.get('paymentRef')?.enabled).toBe(
+        true
+      );
     });
   });
 
   describe('Currency and Exchange Rates', () => {
     beforeEach(() => {
-        fixture.detectChanges();
+      fixture.detectChanges();
     });
 
     it('should fetch currency rate when a non-default currency is selected', () => {
-        const event = { target: { value: '2' } } as any; 
-        component.defaultCurrencyId = 1; // Assume default is 1
-        component.currencies = [
-            { id: 1, symbol: 'KES', currencyDefault: 'Y' },
-            { id: 2, symbol: 'USD', currencyDefault: 'N' },
-        ] as CurrencyDTO[];
-        
-        jest.spyOn(component, 'fetchCurrencyRate');
-        component.onCurrencyChanged(event);
+      const event = { target: { value: '2' } } as any;
+      component.defaultCurrencyId = 1; // Assume default is 1
+      component.currencies = [
+        { id: 1, symbol: 'KES', currencyDefault: 'Y' },
+        { id: 2, symbol: 'USD', currencyDefault: 'N' },
+      ] as CurrencyDTO[];
 
-        expect(component.selectedCurrencyCode).toBe(2);
-        expect(component.fetchCurrencyRate).toHaveBeenCalled();
+      jest.spyOn(component, 'fetchCurrencyRate');
+      component.onCurrencyChanged(event);
+
+      expect(component.selectedCurrencyCode).toBe(2);
+      expect(component.fetchCurrencyRate).toHaveBeenCalled();
     });
- it('should NOT fetch currency rate when the default currency is selected', () => {
-        const event = { target: { value: '1' } } as any;
-        component.defaultCurrencyId = 1;
-        
-        jest.spyOn(component, 'fetchCurrencyRate');
-        component.onCurrencyChanged(event);
+    it('should NOT fetch currency rate when the default currency is selected', () => {
+      const event = { target: { value: '1' } } as any;
+      component.defaultCurrencyId = 1;
 
-        expect(component.fetchCurrencyRate).not.toHaveBeenCalled();
+      jest.spyOn(component, 'fetchCurrencyRate');
+      component.onCurrencyChanged(event);
+
+      expect(component.fetchCurrencyRate).not.toHaveBeenCalled();
     });
-
-   
     it('should successfully post a manual exchange rate', () => {
-    // Arrange
-    fixture.detectChanges(); // Initialize the form
-    component.receiptingDetailsForm.patchValue({ manualExchangeRate: 120 });
-    component.selectedCurrencyCode = 2; // Example currency code
-
-    // Act
-    component.confirmExchangeRateValue();
-    expect(mockReceiptService.postManualExchangeRate).toHaveBeenCalledWith(2, 1, 'FMSADMIN', 120);
-    expect(mockGlobalMessagingService.displaySuccessMessage).toHaveBeenCalled();
-});
+      fixture.detectChanges();
+      component.receiptingDetailsForm.patchValue({ manualExchangeRate: 120 });
+      component.selectedCurrencyCode = 2;
+      component.confirmExchangeRateValue();
+      expect(mockReceiptService.postManualExchangeRate).toHaveBeenCalledWith(
+        2,
+        1,
+        'FMSADMIN',
+        120
+      );
+      expect(
+        mockGlobalMessagingService.displaySuccessMessage
+      ).toHaveBeenCalled();
+    });
   });
-describe('Bank and Receipting Point Workflow', () => {
+  describe('Bank and Receipting Point Workflow', () => {
     beforeEach(() => {
-        fixture.detectChanges(); 
-        component.bankAccounts = [{ code: 123, type: 'SAVINGS' }] as any;
-        component.loggedInUser = { code: 'testUser' };
-        component.defaultBranch = { id: 1 } as any;
+      fixture.detectChanges();
+      component.bankAccounts = [{ code: 123, type: 'SAVINGS' }] as any;
+      component.loggedInUser = { code: 'testUser' };
+      component.defaultBranch = { id: 1 } as any;
     });
 
     it('should do nothing if the "Select" option is chosen', () => {
-        const event = { target: { value: '' } } as any; // Empty value for "Select"
-        component.onBank(event);
+      const event = { target: { value: '' } } as any; // Empty value for "Select"
+      component.onBank(event);
 
-        expect(component.selectedBankCode).toBeNull();
-        expect(component.onBankSelected).toBe(false);
-        // Ensure no further API calls were made
-        expect(mockReceiptService.getReceiptingPoints).not.toHaveBeenCalled();
-        expect(mockReceiptService.getReceiptNumber).not.toHaveBeenCalled();
+      expect(component.selectedBankCode).toBeNull();
+      expect(component.onBankSelected).toBe(false);
+      // Ensure no further API calls were made
+      expect(mockReceiptService.getReceiptingPoints).not.toHaveBeenCalled();
+      expect(mockReceiptService.getReceiptNumber).not.toHaveBeenCalled();
     });
 
     it('should fetch receipting points and receipt number when a valid bank is selected', () => {
-        const event = { target: { value: '123' } } as any; // Valid bank code
-        component.onBank(event);
+      const event = { target: { value: '123' } } as any; // Valid bank code
+      component.onBank(event);
 
-        expect(component.selectedBankCode).toBe(123);
-        expect(component.onBankSelected).toBe(true);
-        expect(component.receiptingDetailsForm.get('bankAccountType')?.value).toBe('SAVINGS');
+      expect(component.selectedBankCode).toBe(123);
+      expect(component.onBankSelected).toBe(true);
+      expect(
+        component.receiptingDetailsForm.get('bankAccountType')?.value
+      ).toBe('SAVINGS');
 
-        // Verify that the chained API calls were triggered
-        expect(mockReceiptService.getReceiptingPoints).toHaveBeenCalledWith(1, 'testUser');
-        expect(mockReceiptService.getReceiptNumber).toHaveBeenCalledWith(1, 'testUser');
+      // Verify that the chained API calls were triggered
+      expect(mockReceiptService.getReceiptingPoints).toHaveBeenCalledWith(
+        1,
+        'testUser'
+      );
+      expect(mockReceiptService.getReceiptNumber).toHaveBeenCalledWith(
+        1,
+        'testUser'
+      );
     });
 
     it('should patch the form with the fetched receipting point and receipt number', () => {
-        const event = { target: { value: '123' } } as any;
-        component.onBank(event);
-        expect(component.receiptingDetailsForm.get('receiptingPoint')?.value).toBe('Main Counter');
-        expect(component.receiptingDetailsForm.get('receiptNumber')?.value).toBe('REC-001');
+      const event = { target: { value: '123' } } as any;
+      component.onBank(event);
+      expect(
+        component.receiptingDetailsForm.get('receiptingPoint')?.value
+      ).toBe('Main Counter');
+      expect(component.receiptingDetailsForm.get('receiptNumber')?.value).toBe(
+        'REC-001'
+      );
     });
-});
+  });
 
-describe('Narration Logic', () => {
+  describe('Narration Logic', () => {
     beforeEach(() => {
-        fixture.detectChanges(); 
-        component.narrations = [
-            { narration: 'Narration A' },
-            { narration: 'Narration B' },
-        ] as any;
-        component.filteredNarrations = [...component.narrations];
+      fixture.detectChanges();
+      component.narrations = [
+        { narration: 'Narration A' },
+        { narration: 'Narration B' },
+      ] as any;
+      component.filteredNarrations = [...component.narrations];
     });
 
     it('should populate the narration field and filter the list when a narration is selected from dropdown', () => {
-        const event = { target: { value: 'Narration A' } } as any;
-        component.onNarrationDropdownChange(event);
-expect(component.receiptingDetailsForm.get('narration')?.value).toBe('Narration A');
-        expect(component.isNarrationFromLov).toBe(true);
-        // Check that "Narration A" was removed from the filtered list
-        expect(component.filteredNarrations.length).toBe(1);
-        expect(component.filteredNarrations[0].narration).toBe('Narration B');
+      const event = { target: { value: 'Narration A' } } as any;
+      component.onNarrationDropdownChange(event);
+      expect(component.receiptingDetailsForm.get('narration')?.value).toBe(
+        'Narration A'
+      );
+      expect(component.isNarrationFromLov).toBe(true);
+      // Check that "Narration A" was removed from the filtered list
+      expect(component.filteredNarrations.length).toBe(1);
+      expect(component.filteredNarrations[0].narration).toBe('Narration B');
     });
 
     it('should restore the filtered list when narration text is cleared', () => {
-        // First, select a narration to set the state
-        component.originalNarration = 'Narration A';
-        component.isNarrationFromLov = true;
-        component.filteredNarrations = [{ narration: 'Narration B' }] as any;
-        // Now, simulate the user clearing the text field
-        component.receiptingDetailsForm.patchValue({ narration: '' });
-        component.onNarrationTextChange();
-        expect(component.filteredNarrations).toEqual(component.narrations);
-        expect(component.originalNarration).toBeNull();
-        expect(component.isNarrationFromLov).toBe(false);
+      // First, select a narration to set the state
+      component.originalNarration = 'Narration A';
+      component.isNarrationFromLov = true;
+      component.filteredNarrations = [{ narration: 'Narration B' }] as any;
+      // Now, simulate the user clearing the text field
+      component.receiptingDetailsForm.patchValue({ narration: '' });
+      component.onNarrationTextChange();
+      expect(component.filteredNarrations).toEqual(component.narrations);
+      expect(component.originalNarration).toBeNull();
+      expect(component.isNarrationFromLov).toBe(false);
     });
-});
-describe('Navigation', () => {
+  });
+  describe('Navigation', () => {
     beforeEach(() => {
-        fixture.detectChanges(); 
+      fixture.detectChanges();
     });
 
     it('should navigate to the home page on onBack()', () => {
-        component.onBack();
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/']);
+      component.onBack();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/']);
     });
 
     it('should clear the form when clearForm() is called', () => {
-        component.receiptingDetailsForm.patchValue({
-            amountIssued: 100,
-            receivedFrom: 'Test Customer',
-            // Preserve some fields
-            currency: 'KES',
-            organization: 'Org A',
-        });
-        jest.spyOn(component.receiptingDetailsForm, 'reset');
-        component.clearForm();
-        expect(component.receiptingDetailsForm.reset).toHaveBeenCalled();
-        // Check that the preserved fields were patched back
-        expect(component.receiptingDetailsForm.get('currency')?.value).toBe('KES');
-        expect(component.receiptingDetailsForm.get('organization')?.value).toBe('Org A');
+      component.receiptingDetailsForm.patchValue({
+        amountIssued: 100,
+        receivedFrom: 'Test Customer',
+        // Preserve some fields
+        currency: 'KES',
+        organization: 'Org A',
+      });
+      jest.spyOn(component.receiptingDetailsForm, 'reset');
+      component.clearForm();
+      expect(component.receiptingDetailsForm.reset).toHaveBeenCalled();
+      // Check that the preserved fields were patched back
+      expect(component.receiptingDetailsForm.get('currency')?.value).toBe(
+        'KES'
+      );
+      expect(component.receiptingDetailsForm.get('organization')?.value).toBe(
+        'Org A'
+      );
     });
-});
+  });
   describe('Charges Logic', () => {
     beforeEach(() => {
-        fixture.detectChanges();
+      fixture.detectChanges();
     });
 
     it('should fetch existing charges and show modal when charges are enabled', fakeAsync(() => {
-        const modalEl = document.createElement('div');
-        modalEl.id = 'chargesModal';
-        document.body.appendChild(modalEl);
-        component.onChargesChange('yes');
-        tick(1000); 
-        expect(component.chargesEnabled).toBe(true);
-        expect(mockReceiptService.getCharges).toHaveBeenCalled();
-        expect(mockReceiptService.getExistingCharges).toHaveBeenCalled();
-document.body.removeChild(modalEl);
+      const modalEl = document.createElement('div');
+      modalEl.id = 'chargesModal';
+      document.body.appendChild(modalEl);
+      component.onChargesChange('yes');
+      tick(1000);
+      expect(component.chargesEnabled).toBe(true);
+      expect(mockReceiptService.getCharges).toHaveBeenCalled();
+      expect(mockReceiptService.getExistingCharges).toHaveBeenCalled();
+      document.body.removeChild(modalEl);
     }));
-it('should call postChargeManagement with "A" when saving a new charge', () => {
-    component.receiptingDetailsForm.patchValue({ selectedChargeType: 'Admin Fee', chargeAmount: 50 });
-    component.charges = [{ id: 1, name: 'Admin Fee' }] as any;
-component.saveCharges();
-    expect(mockReceiptService.postChargeManagement).toHaveBeenCalledWith(
+    it('should call postChargeManagement with "A" when saving a new charge', () => {
+      component.receiptingDetailsForm.patchValue({
+        selectedChargeType: 'Admin Fee',
+        chargeAmount: 50,
+      });
+      component.charges = [{ id: 1, name: 'Admin Fee' }] as any;
+      component.saveCharges();
+      expect(mockReceiptService.postChargeManagement).toHaveBeenCalledWith(
         (expect as any).objectContaining({ addEdit: 'A' })
-    );
-});
+      );
+    });
 
-it('should call postChargeManagement with "D" when deleting a charge', () => {
-    component.chargeList = [{ id: 123, receiptChargeId: 1 }] as any;
-    component.deleteCharge(0);
-    expect(mockReceiptService.postChargeManagement).toHaveBeenCalledWith(
-        (expect as any).objectContaining({ addEdit: 'D', receiptExpenseId: 123 })
-    );
-});
+    it('should call postChargeManagement with "D" when deleting a charge', () => {
+      component.chargeList = [{ id: 123, receiptChargeId: 1 }] as any;
+      component.deleteCharge(0);
+      expect(mockReceiptService.postChargeManagement).toHaveBeenCalledWith(
+        (expect as any).objectContaining({
+          addEdit: 'D',
+          receiptExpenseId: 123,
+        })
+      );
+    });
   });
-describe('API Error Handling', () => {
+  describe('API Error Handling', () => {
     it('should display an error if fetching currencies fails', () => {
-        mockCurrencyService.getCurrencies.mockReturnValue(throwError(() => ({ error: { msg: 'Currency service down' } })));
-        fixture.detectChanges(); 
-        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('fms.errorMessage', 'Currency service down');
+      mockCurrencyService.getCurrencies.mockReturnValue(
+        throwError(() => ({ error: { msg: 'Currency service down' } }))
+      );
+      fixture.detectChanges();
+      expect(
+        mockGlobalMessagingService.displayErrorMessage
+      ).toHaveBeenCalledWith('fms.errorMessage', 'Currency service down');
     });
   });
 });
