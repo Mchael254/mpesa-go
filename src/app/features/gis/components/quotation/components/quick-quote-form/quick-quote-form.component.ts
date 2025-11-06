@@ -825,6 +825,67 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
   // Remove product
   deleteProduct(product: AbstractControl, productIndex: number) {
+    const deletedCode = product.value.code;
+    log.debug("Selected product>>>", product.value, this.quickQuoteForm.get('product'));
+    log.debug("PRODUCT to be deleted", deletedCode);
+
+    // Check if product exists in productsFormArray
+    const existsInFormArray = this.productsFormArray.at(productIndex)?.value?.code === deletedCode;
+    log.debug("Product exists in FormArray:", existsInFormArray);
+
+    // Get quotationObject from sessionStorage
+    const quotationDetailsStr = sessionStorage.getItem('quotationObject');
+    const quotationObject = quotationDetailsStr ? JSON.parse(quotationDetailsStr) : null;
+    log.debug('quotationObject from session storage:', quotationObject);
+
+    // Check if product exists in quotationObject
+    let existsInQuotationObject = false;
+    let targetCode: number | null = null;
+
+    if (quotationObject && quotationObject.quotationProducts) {
+      const matchingProduct = quotationObject.quotationProducts.find((qp: any) =>
+        qp.productCode === deletedCode
+      );
+      existsInQuotationObject = !!matchingProduct;
+      if (matchingProduct) {
+        targetCode = matchingProduct.code;
+        log.debug("Found matching product code in quotationObject:", targetCode);
+      }
+    }
+    log.debug("Product exists in quotationObject:", existsInQuotationObject);
+
+    // If product exists only in FormArray, remove it locally
+    if (existsInFormArray && !existsInQuotationObject) {
+      log.debug("Product exists only in FormArray, removing locally...");
+      
+      // Remove from UI state
+      this.previousSelected = this.previousSelected.filter(value => value.code !== deletedCode);
+      this.removeProductCoverTypes(product.value.code);
+      this.selectedProducts = this.selectedProducts.filter(p => p.code !== deletedCode);
+      this.selectedProductCovers = this.selectedProductCovers.filter(p => p.code !== deletedCode);
+
+      // Update form
+      this.quickQuoteForm.patchValue({
+        product: this.previousSelected
+      });
+
+      // Remove from FormArray
+      this.productsFormArray.removeAt(productIndex);
+
+      this.globalMessagingService.displaySuccessMessage('Success', 'Product removed successfully');
+      log.debug("Product removed from FormArray and cover types cleared");
+      return;
+    }
+
+    // If product doesn't exist in FormArray, log error and return
+    if (!existsInFormArray) {
+      log.debug("Product not found in FormArray");
+      this.globalMessagingService.displayErrorMessage('Error', 'Product not found in form');
+      return;
+    }
+
+    // If we reach here, product exists in both FormArray and quotationObject
+    // Continue with the original deletion logic
     const quotationCode = Number(sessionStorage.getItem('quotationCode')) || 0;
 
     const quickQuotePayloadStr = sessionStorage.getItem('quickQuotePayload');
@@ -835,35 +896,17 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       return;
     }
 
-    const deletedCode = product.value.code;
-    log.debug("Selected product>>>", product.value, this.quickQuoteForm.get('product'));
-    log.debug("PRODUCT to be deleted", deletedCode);
-
-    // Get quotationDetails from sessionStorage
-    const quotationDetailsStr = sessionStorage.getItem('quotationDetails');
-    const quotationDetails = quotationDetailsStr ? JSON.parse(quotationDetailsStr) : null;
-
-    // prevent deletion if only one product exists 
-    if (quotationDetails && quotationDetails.quotationProducts && quotationDetails.quotationProducts.length === 1) {
-      log.debug("Delete not allowed - quotation only has one product");
-      this.globalMessagingService.displayErrorMessage('Error', 'Delete Not Allowed, A quotation must have at least one product.');
+    if (!quotationObject) {
+      this.globalMessagingService.displayErrorMessage('Error', 'No products found in session quickQuotePayload');
+      log.debug('No products found in session quickQuotePayload');
       return;
     }
 
-    let targetCode: number | null = null;
-
-    // If quotationDetails exists and has quotationProducts, find matching product
-    if (quotationDetails && quotationDetails.quotationProducts) {
-      const matchingProduct = quotationDetails.quotationProducts.find((qp: any) =>
-        qp.productCode === deletedCode
-      );
-
-      if (matchingProduct) {
-        targetCode = matchingProduct.code;
-        log.debug("Found matching product code:", targetCode);
-      } else {
-        log.debug("No matching product found in quotationDetails for productCode:", deletedCode);
-      }
+    // prevent deletion if only one product exists 
+    if (quotationObject && quotationObject.quotationProducts && quotationObject.quotationProducts.length === 1) {
+      log.debug("Delete not allowed - quotation only has one product");
+      this.globalMessagingService.displayErrorMessage('Error', 'Delete Not Allowed, A quotation must have at least one product.');
+      return;
     }
 
     // find the product to delete from the stored payload
@@ -903,16 +946,16 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         quickQuotePayload.products = quickQuotePayload.products.filter((p: any) => p.code !== deletedCode);
         sessionStorage.setItem('quickQuotePayload', JSON.stringify(quickQuotePayload));
 
-        // Remove from quotationDetails in sessionStorage
-        const quotationDetailsStr = sessionStorage.getItem('quotationDetails');
+        // Remove from quotationObject in sessionStorage
+        const quotationDetailsStr = sessionStorage.getItem('quotationObject');
         if (quotationDetailsStr) {
-          const quotationDetails = JSON.parse(quotationDetailsStr);
-          if (quotationDetails && quotationDetails.quotationProducts) {
-            quotationDetails.quotationProducts = quotationDetails.quotationProducts.filter(
+          const quotationObject = JSON.parse(quotationDetailsStr);
+          if (quotationObject && quotationObject.quotationProducts) {
+            quotationObject.quotationProducts = quotationObject.quotationProducts.filter(
               (qp: any) => qp.productCode !== deletedCode
             );
-            sessionStorage.setItem('quotationDetails', JSON.stringify(quotationDetails));
-            log.debug('Removed product from quotationDetails in sessionStorage:', deletedCode);
+            sessionStorage.setItem('quotationObject', JSON.stringify(quotationObject));
+            log.debug('Removed product from quotationObject in sessionStorage:', deletedCode);
           }
         }
 
@@ -2307,6 +2350,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         }
       })
     }
+
     log.debug("Computation response after mutation >>>", premiumToSave)
     sessionStorage.setItem("selectedCovers", JSON.stringify(premiumToSave))
     sessionStorage.setItem('premiumComputationResponse', JSON.stringify(this.premiumComputationResponse));
