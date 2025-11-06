@@ -5,6 +5,33 @@
             style="color: black;">{{ticketStatus |sentenceCase}}
         </span>
     </p>
+    <div class="mx-3" *ngIf="premiums">
+        <div class="card mb-4 mx-4 shadow-none" style="border-radius: 5px; border: none;">
+            <div class="card-body mx-4 d-flex justify-content-start align-items-center gap-5 flex-wrap">
+
+                <div class="d-flex align-items-baseline gap-2">
+                    <small class="text-muted">Gross Premium:</small>
+                    <span class="text-dark fs-5 fw-semibold">
+                        {{ currencyObj.prefix }}{{ premiums?.gross | number:'1.2-2' }}
+                    </span>
+                </div>
+
+
+
+                <div class="d-flex align-items-baseline gap-2">
+                    <small class="text-muted">Net Premium:</small>
+                    <span class="text-dark fs-5 fw-semibold">
+                        {{ currencyObj.prefix }}{{ premiums?.net | number:'1.2-2' }}
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
     <div class="card"
         style="margin-top:-20px;background-color:#f5f6f8;border: none;border-radius: 5px;box-shadow: none;">
         <div class="card-body  mx-4">
@@ -49,7 +76,8 @@
 
             <!-- Dynamic Content -->
             <div class="tab-content">
-                <app-risk-details [selectedProduct]="selectedProduct"></app-risk-details>
+                <app-risk-details [selectedProduct]="selectedProduct"
+                    (premiumsChange)="handlePremiumChange($event)"></app-risk-details>
             </div>
         </div>
     </div>

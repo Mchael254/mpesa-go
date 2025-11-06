@@ -83,7 +83,7 @@
     <div class="modal-content">
       <div class="modal-header border-0">
         <h1 class="modal-title fs-4 text-primary" id="editFinancialModalLabel">
-<!--          {{ formFieldsConfig.label[language] | titlecase }}-->
+          {{ selectedSubgroup?.label[language] | titlecase }}
         </h1>
         <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -103,7 +103,6 @@
                 >
                   <label [for]="field.fieldId" class="form-label">
                     {{ field.label[language] | titlecase }}
-                    <br> {{ field.fieldId }} ++ {{ field.type }}
                   </label>
                   <!-- Text input -->
                   <input

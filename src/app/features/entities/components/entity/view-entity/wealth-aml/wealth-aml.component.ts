@@ -104,8 +104,9 @@ export class WealthAmlComponent implements OnInit {
   ];
 
   protected readonly PhoneNumberFormat = PhoneNumberFormat;
-  protected readonly CountryISO = CountryISO;
+  // protected readonly CountryISO = CountryISO;
   protected readonly SearchCountryField = SearchCountryField;
+  countryISO: CountryISO = 'ng' as CountryISO;
 
 
   constructor(
@@ -379,7 +380,7 @@ export class WealthAmlComponent implements OnInit {
       case '360_overview_corporate_ownership_details':
         this.saveAction = Object.keys(data).length > 0 ? SaveAction.EDIT_OWNERSHIP_DETAILS : SaveAction.SAVE_OWNERSHIP_DETAILS;
         this.selectedOwnershipDetail = this.ownershipDetails.find(owner => owner.code === row.ownershipIdCorporate);
-        this.editForm.reset();
+        this.editForm?.reset();
         break;
     }
 
