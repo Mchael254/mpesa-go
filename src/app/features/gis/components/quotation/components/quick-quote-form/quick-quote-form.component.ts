@@ -53,7 +53,7 @@ import { GlobalMessagingService } from '../../../../../../shared/services/messag
 import { Router } from '@angular/router';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
-import { firstValueFrom, forkJoin, mergeMap, Observable, Subject, tap } from 'rxjs';
+import { firstValueFrom, forkJoin, mergeMap, Observable, Subject, tap, throwError } from 'rxjs';
 import { NgxCurrencyConfig } from 'ngx-currency';
 import { OccupationService } from '../../../../../../shared/services/setups/occupation/occupation.service';
 import { OccupationDTO } from '../../../../../../shared/data/common/occupation-dto';
@@ -79,7 +79,7 @@ import {
 import { QuotationDetailsRequestDto } from "../../data/quotation-details";
 import { differenceInCalendarDays, format, parseISO } from 'date-fns';
 import { ShareQuotesComponent } from '../share-quotes/share-quotes.component';
-import { EmailDto } from "../../../../../../shared/data/common/email-dto";
+import { EmailDto, WhatsappDto } from "../../../../../../shared/data/common/email-dto";
 import { NotificationService } from "../../services/notification/notification.service";
 import { SessionStorageService } from "../../../../../../shared/services/session-storage/session-storage.service";
 import { OrganizationDTO } from "../../../../../crm/data/organization-dto";
@@ -2979,58 +2979,159 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     });
   }
 
-  listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
-    const emailPayload = this.notificationPayload()
-    this.quotationService.generateQuotationReport(emailPayload).pipe(
-      mergeMap((response) => {
-        const payload: EmailDto = {
-          code: null,
-          address: [sendEvent.mode.email],
-          subject: 'Quotation Report',
-          message: `Dear ${sendEvent.mode.clientName},\nPlease find the attached quotation report.`,
-          status: 'D',
-          emailAggregator: 'N',
-          response: '524L',
-          systemModule: 'NB for New Business',
-          systemCode: 0,
-          attachments: [
-            {
-              name: 'quote-report.pdf',
-              content: response.base64,
-              type: 'application/pdf',
-              disposition: 'attachment',
-              contentId: 'quote-report'
-            }
-          ],
-          sendOn: new Date().toISOString(),
-          clientCode: 0,
-          agentCode: 0
-        };
-        return this.notificationService.sendEmail(payload)
+  // listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
+  //   const emailPayload = this.notificationPayload()
+  //   this.quotationService.generateQuotationReport(emailPayload).pipe(
+  //     mergeMap((response) => {
+  //       const payload: EmailDto = {
+  //         code: null,
+  //         address: [sendEvent.mode.email],
+  //         subject: 'Quotation Report',
+  //         message: `Dear ${sendEvent.mode.clientName},\nPlease find the attached quotation report.`,
+  //         status: 'D',
+  //         emailAggregator: 'N',
+  //         response: '524L',
+  //         systemModule: 'NB for New Business',
+  //         systemCode: 0,
+  //         attachments: [
+  //           {
+  //             name: 'quote-report.pdf',
+  //             content: response.base64,
+  //             type: 'application/pdf',
+  //             disposition: 'attachment',
+  //             contentId: 'quote-report'
+  //           }
+  //         ],
+  //         sendOn: new Date().toISOString(),
+  //         clientCode: 0,
+  //         agentCode: 0
+  //       };
+  //       return this.notificationService.sendEmail(payload)
 
+  //     })
+  //   )
+  //     .subscribe({
+  //       next: (response) => {
+  //         if (response) {
+  //           this.globalMessagingService.displaySuccessMessage('success', 'Email sent successfully')
+  //           log.debug("Response after sending email:", response)
+  //           log.debug("Email sent:", response.sent)
+  //           const emailSent = response.sent
+  //           // if (emailSent == false) {
+  //           //   this.globalMessagingService.displayErrorMessage('Error', 'This email adrress does not exist')
+  //           // } else {
+  //           //   const modal = bootstrap.Modal.getInstance(this.shareQuoteModal.nativeElement);
+  //           //   modal.hide();
+  //           // }
+  //         }
+  //       },
+  //       error: (error) => {
+  //         this.globalMessagingService.displayErrorMessage('error', error.error.message);
+  //         log.debug(error);
+  //       }
+  //     })
+  // }
+  listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
+    const reportPayload = this.notificationPayload();
+
+    this.quotationService.generateQuotationReport(reportPayload).pipe(
+      mergeMap((response) => {
+        const base64Report = response.base64;
+
+        // Common attachment object for re-use
+        const attachment = {
+          fileName: 'quote-report.pdf',
+          mimeType: 'application/pdf',
+          data: base64Report,
+          caption: 'Quotation Report'
+        };
+
+        const { selectedMethod, clientName, email, smsNumber, whatsappNumber } = sendEvent.mode;
+
+        // --- EMAIL MODE ---
+        if (selectedMethod === 'email') {
+          const emailPayload: EmailDto = {
+            code: null,
+            address: [email],
+            subject: 'Quotation Report',
+            message: `Dear ${clientName},\nPlease find the attached quotation report.`,
+            status: 'D',
+            emailAggregator: 'N',
+            response: '524L',
+            systemModule: 'NB for New Business',
+            systemCode: 0,
+            attachments: [
+              {
+                name: attachment.fileName,
+                content: attachment.data,
+                type: attachment.mimeType,
+                disposition: 'attachment',
+                contentId: 'quote-report'
+              }
+            ],
+            sendOn: new Date().toISOString(),
+            clientCode: 0,
+            agentCode: 0
+          };
+          return this.notificationService.sendEmail(emailPayload);
+        }
+
+        // --- WHATSAPP MODE ---
+        else if (selectedMethod === 'whatsapp') {
+          const whatsappPayload: WhatsappDto = {
+            recipientPhone: whatsappNumber,
+            message: `Dear ${clientName}, please find your quotation report attached.`,
+            templateName: 'receipt_dispatch_v1',
+            templateParams: [clientName, 'quote test'],
+            attachments: [attachment]
+          };
+          return this.notificationService.sendWhatsapp(whatsappPayload);
+        }
+
+        // --- SMS MODE ---
+        else if (selectedMethod === 'sms') {
+          const smsPayload: any = {
+            recipientPhone: smsNumber,
+            message: `Dear ${clientName}, your quotation report is ready. Please check your email or contact support.`,
+            senderId: 'Turnkey', // or your SMS sender name
+            systemModule: 'NB for New Business',
+            sendOn: new Date().toISOString()
+          };
+          return this.notificationService.sendWhatsapp(smsPayload);
+        }
+
+        // --- UNSUPPORTED MODE ---
+        else {
+          return throwError(() => new Error('Unsupported send mode'));
+        }
       })
     )
       .subscribe({
         next: (response) => {
-          if (response) {
-            this.globalMessagingService.displaySuccessMessage('success', 'Email sent successfully')
-            log.debug("Response after sending email:", response)
-            log.debug("Email sent:", response.sent)
-            const emailSent = response.sent
-            // if (emailSent == false) {
-            //   this.globalMessagingService.displayErrorMessage('Error', 'This email adrress does not exist')
-            // } else {
-            //   const modal = bootstrap.Modal.getInstance(this.shareQuoteModal.nativeElement);
-            //   modal.hide();
-            // }
-          }
+          const channelLabel =
+            sendEvent.mode.selectedMethod === 'email'
+              ? 'Email'
+              : sendEvent.mode.selectedMethod === 'whatsapp'
+                ? 'WhatsApp'
+                : 'SMS';
+          this.globalMessagingService.displaySuccessMessage('success', `${channelLabel} sent successfully`);
+          log.debug('Response after sending:', response);
         },
         error: (error) => {
-          this.globalMessagingService.displayErrorMessage('error', error.error.message);
-          log.debug(error);
+          log.debug("error", error)
+          const apiError = error.error;
+          const message =
+            apiError?.errors?.[0] ??
+            apiError?.developerMessage ??
+            'Failed to send message';
+
+          this.globalMessagingService.displayErrorMessage('error', message);
         }
-      })
+
+
+      });
   }
+
   toggleProductSelection(product: any) {
     const selected = this.isProductSelected(product);
 

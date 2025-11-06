@@ -349,7 +349,8 @@
                                             <!-- PERIOD RATES -->
                                             <ng-container *ngIf="field.name === 'periodRates'">
                                                 <p-dropdown formControlName="periodRates" [options]="periodRates"
-                                                    placeholder="" [filter]="true" optionLabel="label">
+                                                    optionValue="label" placeholder="" [filter]="true"
+                                                    optionLabel="label">
                                                 </p-dropdown>
                                             </ng-container>
                                             <!-- CONVEYANCE TYPE -->
@@ -368,7 +369,8 @@
                                             <!-- TERRITORIES -->
                                             <ng-container *ngIf="field.name === 'territory'">
                                                 <p-dropdown formControlName="territory" [options]="territories"
-                                                    placeholder="" [filter]="true" optionLabel="description">
+                                                    placeholder="" [filter]="true" optionLabel="description"
+                                                    optionValue="description">
                                                 </p-dropdown>
                                             </ng-container>
                                             <!-- DATE -->
@@ -395,7 +397,7 @@
 
 
                                             <!-- number -->
-                                            <input *ngIf="field.type === 'number'" type="text" class="form-control"
+                                            <input *ngIf="field.type === 'number'" type="number" class="form-control"
                                                 [formControlName]="field.name"
                                                 [attr.placeholder]="field.label | translate" />
 
@@ -3310,7 +3312,7 @@
 
                                             <td>
                                                 <input type="text" pInputText placeholder="" class="form-control w-70"
-                                                    (input)="filterTable($event, 'taxCode', selectTaxTable)" />
+                                                    (input)="filterTable($event, 'trntCode', selectTaxTable)" />
                                             </td>
                                             <td>
                                                 <input type="text" pInputText placeholder="" class="form-control w-70"
@@ -3321,7 +3323,7 @@
                                         </tr>
                                     </ng-container>
                                     <tr [pSelectableRow]="data">
-                                        <td>{{ data.taxCode }}</td>
+                                        <td>{{ data.trntCode }}</td>
 
                                         <td>{{ data.description | sentenceCase }}</td>
                                     </tr>
@@ -3654,11 +3656,19 @@
     <button style="border: none; background: transparent; text-decoration: underline; cursor: pointer; color:#00529B"
         (click)="navigateToRiskDetails()">Back</button>
 
-    <div class="d-inline-block" [pTooltip]="nextButtonTooltip" tooltipPosition="top"
-        [tooltipDisabled]="!nextButtonDisabled" style="cursor: pointer">
-        <button class="btn" [ngClass]="{'btn-primary': !nextButtonDisabled, 'btn-secondary': nextButtonDisabled}"
-            [disabled]="nextButtonDisabled" (click)="computePremium()">
-            Next
+    <div class="d-flex justify-content-end mx-3">
+        <button class="btn me-2"
+            [ngClass]="{'btn-primary': !computePremiumButtonDisabled, 'btn-secondary': computePremiumButtonDisabled}"
+            [disabled]="computePremiumButtonDisabled" (click)="computePremium()">
+            Compute Premium
         </button>
+        <div class="d-inline-block" [pTooltip]="nextButtonTooltip" tooltipPosition="top"
+            [tooltipDisabled]="!nextButtonDisabled" style="cursor: pointer">
+            <button class="btn" [ngClass]="{'btn-primary': !nextButtonDisabled, 'btn-secondary': nextButtonDisabled}"
+                [disabled]="nextButtonDisabled" (click)="generateExceptions()">
+                Next
+            </button>
+        </div>
     </div>
+
 </div>
