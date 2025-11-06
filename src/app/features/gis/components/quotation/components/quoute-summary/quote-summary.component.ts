@@ -12,8 +12,8 @@ import { ClaimsService } from '../../../claim/services/claims.service';
 import { ProductLevelPremium } from "../../data/premium-computation";
 import { ShareQuotesComponent } from '../share-quotes/share-quotes.component';
 import { format } from "date-fns";
-import { concatMap, mergeMap, switchMap } from "rxjs";
-import { EmailDto } from "../../../../../../shared/data/common/email-dto";
+import { concatMap, mergeMap, switchMap, throwError } from "rxjs";
+import { EmailDto, WhatsappDto } from "../../../../../../shared/data/common/email-dto";
 import { NotificationService } from "../../services/notification/notification.service";
 import { StringManipulation } from "../../../../../lms/util/string_manipulation";
 import { SESSION_KEY } from "../../../../../lms/util/session_storage_enum";
@@ -722,48 +722,148 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
 
-  listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
-    const emailPayload = this.notificationPayload()
-    this.quotationService.generateQuotationReport(emailPayload).pipe(
-      mergeMap((response) => {
-        const payload: EmailDto = {
-          code: null,
-          address: [sendEvent.mode.email],
-          subject: 'Quotation Report',
-          message: 'Please find the attached quotation report.',
-          status: 'D',
-          emailAggregator: 'N',
-          response: '524L',
-          systemModule: 'NB for New Business',
-          systemCode: 0,
-          attachments: [
-            {
-              name: 'quote-report.pdf',
-              content: response.base64,
-              type: 'application/pdf',
-              disposition: 'attachment',
-              contentId: 'quote-report'
-            }
-          ],
-          sendOn: new Date().toISOString(),
-          clientCode: 0,
-          agentCode: 0
-        };
-        return this.notificationService.sendEmail(payload)
+  // listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
+  //   const emailPayload = this.notificationPayload()
+  //   this.quotationService.generateQuotationReport(emailPayload).pipe(
+  //     mergeMap((response) => {
+  //       const payload: EmailDto = {
+  //         code: null,
+  //         address: [sendEvent.mode.email],
+  //         subject: 'Quotation Report',
+  //         message: 'Please find the attached quotation report.',
+  //         status: 'D',
+  //         emailAggregator: 'N',
+  //         response: '524L',
+  //         systemModule: 'NB for New Business',
+  //         systemCode: 0,
+  //         attachments: [
+  //           {
+  //             name: 'quote-report.pdf',
+  //             content: response.base64,
+  //             type: 'application/pdf',
+  //             disposition: 'attachment',
+  //             contentId: 'quote-report'
+  //           }
+  //         ],
+  //         sendOn: new Date().toISOString(),
+  //         clientCode: 0,
+  //         agentCode: 0
+  //       };
+  //       return this.notificationService.sendEmail(payload)
 
+  //     })
+  //   )
+  //     .subscribe({
+  //       next: (response) => {
+  //         if (response) {
+  //           this.globalMessagingService.displaySuccessMessage('success', 'Email sent successfully')
+  //         }
+  //       },
+  //       error: (error) => {
+  //         this.globalMessagingService.displayErrorMessage('error', error.error.message);
+  //         log.debug(error);
+  //       }
+  //     })
+  // }
+  listenToSendEvent(sendEvent: { mode: ShareQuoteDTO }) {
+    const reportPayload = this.notificationPayload();
+
+    this.quotationService.generateQuotationReport(reportPayload).pipe(
+      mergeMap((response) => {
+        const base64Report = response.base64;
+
+        // Common attachment object for re-use
+        const attachment = {
+          fileName: 'quote-report.pdf',
+          mimeType: 'application/pdf',
+          data: base64Report,
+          caption: 'Quotation Report'
+        };
+
+        const { selectedMethod, clientName, email, smsNumber, whatsappNumber } = sendEvent.mode;
+
+        // --- EMAIL MODE ---
+        if (selectedMethod === 'email') {
+          const emailPayload: EmailDto = {
+            code: null,
+            address: [email],
+            subject: 'Quotation Report',
+            message: `Dear ${clientName},\nPlease find the attached quotation report.`,
+            status: 'D',
+            emailAggregator: 'N',
+            response: '524L',
+            systemModule: 'NB for New Business',
+            systemCode: 0,
+            attachments: [
+              {
+                name: attachment.fileName,
+                content: attachment.data,
+                type: attachment.mimeType,
+                disposition: 'attachment',
+                contentId: 'quote-report'
+              }
+            ],
+            sendOn: new Date().toISOString(),
+            clientCode: 0,
+            agentCode: 0
+          };
+          return this.notificationService.sendEmail(emailPayload);
+        }
+
+        // --- WHATSAPP MODE ---
+        else if (selectedMethod === 'whatsapp') {
+          const whatsappPayload: WhatsappDto = {
+            recipientPhone: whatsappNumber,
+            message: `Dear ${clientName}, please find your quotation report attached.`,
+            templateName: 'receipt_dispatch_v1',
+            templateParams: [clientName, 'quote test'],
+            attachments: [attachment]
+          };
+          return this.notificationService.sendWhatsapp(whatsappPayload);
+        }
+
+        // --- SMS MODE ---
+        else if (selectedMethod === 'sms') {
+          const smsPayload: any = {
+            recipientPhone: smsNumber,
+            message: `Dear ${clientName}, your quotation report is ready. Please check your email or contact support.`,
+            senderId: 'Turnkey', // or your SMS sender name
+            systemModule: 'NB for New Business',
+            sendOn: new Date().toISOString()
+          };
+          return this.notificationService.sendWhatsapp(smsPayload);
+        }
+
+        // --- UNSUPPORTED MODE ---
+        else {
+          return throwError(() => new Error('Unsupported send mode'));
+        }
       })
     )
       .subscribe({
         next: (response) => {
-          if (response) {
-            this.globalMessagingService.displaySuccessMessage('success', 'Email sent successfully')
-          }
+          const channelLabel =
+            sendEvent.mode.selectedMethod === 'email'
+              ? 'Email'
+              : sendEvent.mode.selectedMethod === 'whatsapp'
+                ? 'WhatsApp'
+                : 'SMS';
+          this.globalMessagingService.displaySuccessMessage('success', `${channelLabel} sent successfully`);
+          log.debug('Response after sending:', response);
         },
         error: (error) => {
-          this.globalMessagingService.displayErrorMessage('error', error.error.message);
-          log.debug(error);
+          log.debug("error", error)
+          const apiError = error.error;
+          const message =
+            apiError?.errors?.[0] ??
+            apiError?.developerMessage ??
+            'Failed to send message';
+
+          this.globalMessagingService.displayErrorMessage('error', message);
         }
-      })
+
+
+      });
   }
   openClientSearchModal() {
     this.isClientSearchModalVisible = true;
