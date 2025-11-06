@@ -1346,9 +1346,6 @@ export class QuotationsService {
       `v1/tickets/reassign?taskId=${taskId}&newAssignee=${newAssignee}`,
       null,
       API_CONFIG.GIS_TICKETING_SERVICE
-    ).pipe(
-      retry(1),
-      catchError(this.errorHandl)
     );
   }
 
