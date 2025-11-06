@@ -303,30 +303,30 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       user: this.selectedUser.name,
       comment: this.reassignComment
     }
-    
+
     // Get quotation code from session storage
     const quotationCode = JSON.parse(sessionStorage.getItem('quotationCode'));
-    
+
     if (quotationCode) {
       // Call getTaskById service to get the taskId
       this.quotationService.getTaskById(quotationCode).pipe(
         switchMap((response) => {
           log.debug('Task details from getTaskById:', response);
           console.log('Task details from getTaskById:', response);
-          
+
           // Extract taskId from response
           const taskId = response?.taskId;
           const newAssignee = this.selectedUser.name;
-          
+
           if (!taskId) {
             throw new Error('Task ID not found in response');
           }
-          
+
           log.debug('Extracted taskId:', taskId);
           console.log('Extracted taskId:', taskId);
           log.debug('New assignee:', newAssignee);
           console.log('New assignee:', newAssignee);
-          
+
           // Call reassignTicket service with the extracted taskId
           return this.quotationService.reassignTicket(taskId, newAssignee);
         })
@@ -339,9 +339,18 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
           this.onUserUnselect();
         },
         error: (error) => {
-          log.error('Error during reassignment:', error);
-          console.error('Error during reassignment:', error);
-          this.globalMessagingService.displayErrorMessage('Error', 'Failed to reassign quotation');
+          // temporaty fix because the response returns text
+          if (error.status === 200 && error.error?.text?.includes('Task reassigned')) {
+            log.debug('Ticket reassigned (text response):', error.error.text);
+            this.globalMessagingService.displaySuccessMessage('Success', 'Quotation reassigned successfully');
+            this.closeReassignButton.nativeElement.click();
+            this.onUserUnselect();
+            this.router.navigate(['/home/gis/quotation/quotation-management']);
+          } else {
+            log.error('Error during reassignment:', error);
+            console.error('Error during reassignment:', error);
+            this.globalMessagingService.displayErrorMessage('Error', 'Failed to reassign quotation');
+          }
         }
       });
     } else {
@@ -349,7 +358,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       console.warn('No quotation code found in session storage');
       this.globalMessagingService.displayWarningMessage('Warning', 'No quotation code found');
     }
-    
+
     log.debug('reassign Payload', reassignPayload)
 
   }
@@ -607,29 +616,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  //  onPreviewRequested() {
 
-  //   this.previewVisible = false;
-  //   this.pdfSrc = null;
-
-  //   const payload = this.notificationPayload();
-  //   this.quotationService.generateQuotationReport(payload).pipe(
-  //     untilDestroyed(this)
-  //   ).subscribe({
-  //     next: (response) => {
-  //       const pdfData = `data:application/pdf;base64,${response.base64}#toolbar=0`;
-  //       this.pdfSrc = this.sanitizer.bypassSecurityTrustResourceUrl(pdfData);
-
-
-  //       setTimeout(() => {
-  //         this.previewVisible = true;
-  //       }, 0);
-  //     },
-  //     error: (err) => {
-  //       console.error('Failed to preview quotation report', err);
-  //     }
-  //   });
-  // }
   onPreviewRequested() {
     this.previewVisible = false;
     this.pdfSrc = null;
