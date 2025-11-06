@@ -3090,6 +3090,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         // --- SMS MODE ---
         else if (selectedMethod === 'sms') {
+
           const smsPayload: any = {
             recipientPhone: smsNumber,
             message: `Dear ${clientName}, your quotation report is ready. Please check your email or contact support.`,

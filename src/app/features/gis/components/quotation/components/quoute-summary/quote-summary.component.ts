@@ -405,8 +405,21 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe({
         next: (data: any) => {
           log.debug("Quote successfully converted:", data);
+          this.quotationService.getQuotationDetails(JSON.parse(sessionStorage.getItem('quotationCode')))
+            .pipe(untilDestroyed(this)).subscribe((response: any) => {
+              log.debug("Quotation details>>>", response)
+              this.quotationDetails = response
+              const ticketStatus = response.processFlowResponseDto.taskName
+              log.debug("Ticket status:", ticketStatus)
+              sessionStorage.setItem('ticketStatus', ticketStatus);
+              const quickQuoteFlag = true
+              sessionStorage.setItem('quickQuoteFlag', JSON.stringify(quickQuoteFlag));
 
-          this.router.navigate(['/home/gis/quotation/quotation-details']);
+              this.router.navigate(['/home/gis/quotation/quotation-details']);
+
+            });
+
+
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', 'Failed to convert quote.');
