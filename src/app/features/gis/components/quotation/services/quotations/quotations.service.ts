@@ -1305,6 +1305,7 @@ export class QuotationsService {
   getSystemsAssignedToUser(userId: number): Observable<any> {
     return this.api.GET<Observable<any>>(`users/${userId}/systems`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL)
   }
+
   getAllTickets(): Observable<any> {
     const params = {
       pageNo: 0,
@@ -1327,6 +1328,26 @@ export class QuotationsService {
     );
 
   }
+
+  reassignTicket(taskId: string, newAssignee: string) {
+    return this.api.PUT<any>(
+      `v1/tickets/reassign?taskId=${taskId}&newAssignee=${newAssignee}`,
+      null,
+      API_CONFIG.GIS_TICKETING_SERVICE
+    );
+  }
+
+  getTaskById(quotationCode: string) {
+    return this.api.GET<any>(
+      `v1/process-flow/bySourceCodeAndSystemModule?sourceCode=${quotationCode}&systemModule=Q`,
+      API_CONFIG.GIS_TICKETING_SERVICE
+    ).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
+
+
 
 
 

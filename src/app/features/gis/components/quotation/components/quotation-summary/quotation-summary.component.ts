@@ -2023,23 +2023,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   }
 
-  // selectClient() {
-  //   if (!this.selectedUser) {
-  //     this.noUserChosen = true;
-  //     setTimeout(() => {
-  //       this.noUserChosen = false
-  //     }, 3000);
-  //     return;
-  //   }
-
-  //   this.clientToReassignQuotation = this.selectedUser.name;
-  //   this.closeChooseClientReassignModal();
-  //   this.openReassignQuotationModal();
-
-  // }
 
   //reassign quotation
-
   reassignQuotation() {
     if (!this.clientToReassignQuotation) {
       this.noUserChosen = true;
@@ -2059,12 +2044,66 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
 
     const reassignPayload = {
-      user: this.clientToReassignQuotation.id,
+      user: this.clientToReassignQuotation.name,
+      comment: this.reassignQuotationComment
     }
-    this.closeReassignQuotationModal();
-    this.onUserUnselect();
-    this.reassignQuotationComment = null;
-    this.globalMessagingService.displaySuccessMessage('Success', 'Quote reassigned successfully')
+
+    // Get quotation code from session storage or component property
+    const quotationCode = this.quotationCode;
+
+    if (quotationCode) {
+      // Call getTaskById service to get the taskId
+      this.quotationService.getTaskById(quotationCode).pipe(
+        switchMap((response) => {
+          log.debug('Task details from getTaskById:', response);
+          console.log('Task details from getTaskById:', response);
+
+          // Extract taskId from response
+          const taskId = response?.taskId;
+          const newAssignee = this.clientToReassignQuotation.name;
+
+          if (!taskId) {
+            throw new Error('Task ID not found in response');
+          }
+
+          log.debug('Extracted taskId:', taskId);
+          console.log('Extracted taskId:', taskId);
+          log.debug('New assignee:', newAssignee);
+          console.log('New assignee:', newAssignee);
+
+          // Call reassignTicket service with the extracted taskId
+          return this.quotationService.reassignTicket(taskId, newAssignee);
+        })
+      ).subscribe({
+        next: (reassignResponse) => {
+          log.debug('Ticket reassigned successfully:', reassignResponse);
+          console.log('Ticket reassigned successfully:', reassignResponse);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Quotation reassigned successfully');
+          this.closeReassignQuotationModal();
+          this.onUserUnselect();
+          this.reassignQuotationComment = null;
+        },
+        error: (error) => {
+          // temporary fix because the response returns text
+          if (error.status === 200 && error.error?.text?.includes('Task reassigned')) {
+            log.debug('Ticket reassigned (text response):', error.error.text);
+            this.globalMessagingService.displaySuccessMessage('Success', 'Quotation reassigned successfully');
+            this.closeReassignQuotationModal();
+            this.onUserUnselect();
+            this.reassignQuotationComment = null;
+            this.router.navigate(['/home/gis/quotation/quotation-management']);
+          } else {
+            log.error('Error during reassignment:', error);
+            console.error('Error during reassignment:', error);
+            this.globalMessagingService.displayErrorMessage('Error', 'Failed to reassign quotation');
+          }
+        }
+      });
+    } else {
+      log.warn('No quotation code found');
+      console.warn('No quotation code found');
+      this.globalMessagingService.displayWarningMessage('Warning', 'No quotation code found');
+    }
 
     log.debug('reassign Payload', reassignPayload)
 
