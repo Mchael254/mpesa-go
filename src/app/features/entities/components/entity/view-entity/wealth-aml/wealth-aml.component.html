@@ -57,7 +57,6 @@
                   >
                     <label [for]="field.fieldId" class="form-label">
                       {{ field?.label[language] }}
-                      <br> {{ field.fieldId }} + {{ field.type }}
                     </label>
                     <!-- Text input -->
                     <input
@@ -90,7 +89,7 @@
                       [searchCountryFlag]="true"
                       [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
                       [selectFirstCountry]="false"
-                      [selectedCountryISO]="CountryISO.Nigeria"
+                      [selectedCountryISO]="countryISO"
                       [phoneValidation]="true"
                       [separateDialCode]="true"
                       [numberFormat]="PhoneNumberFormat.National"

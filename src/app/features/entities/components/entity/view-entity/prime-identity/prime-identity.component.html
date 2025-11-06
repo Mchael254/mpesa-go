@@ -8,7 +8,8 @@
             {{ field.label[language] }}
           </div>
           <div class="col-sm-8 text-dark fw-bold">
-            {{ field.dataValue }}
+            <span *ngIf="field.type!=='date'">{{ field.dataValue }}</span>
+            <span *ngIf="field.type==='date'">{{ field.dataValue | date }}</span>
           </div>
         </div>
       </div>
@@ -28,7 +29,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-4 text-primary" id="editPrimeIdentityModalLabel">
-<!--          {{ formFieldsConfig?.label[language] | titlecase }}-->
+          {{ group?.label[language] | titlecase }}
         </h1>
         <button #closeButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -42,6 +43,7 @@
                 <div class="col-md-6">
                   <label [for]="field.fieldId" class="form-label">
                     {{ field.label[language] | titlecase }}
+                    <br> {{ field.fieldId }}
                   </label>
                   <!--Text input-->
                   <input
@@ -90,14 +92,14 @@
           </div>
         </ng-template>
       </div>
-      <!--<div class="modal-footer">
+      <div class="modal-footer">
         <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-          {{ formFieldsConfig?.buttons?.cancel?.label[language] | sentenceCase }}
+          {{ '' | titlecase }}
         </button>
         <button type="button" class="btn btn-primary" (click)="editPrimeDetails()">
-          {{ formFieldsConfig?.buttons?.save?.label[language] | sentenceCase }}
+          {{ 'save' | titlecase }}
         </button>
-      </div>-->
+      </div>
     </div>
   </div>
 </div>
