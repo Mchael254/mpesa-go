@@ -79,7 +79,7 @@ import {
 import { QuotationDetailsRequestDto } from "../../data/quotation-details";
 import { differenceInCalendarDays, format, parseISO } from 'date-fns';
 import { ShareQuotesComponent } from '../share-quotes/share-quotes.component';
-import { EmailDto, WhatsappDto } from "../../../../../../shared/data/common/email-dto";
+import { EmailDto, SmsDto, WhatsappDto } from "../../../../../../shared/data/common/email-dto";
 import { NotificationService } from "../../services/notification/notification.service";
 import { SessionStorageService } from "../../../../../../shared/services/session-storage/session-storage.service";
 import { OrganizationDTO } from "../../../../../crm/data/organization-dto";
@@ -3090,15 +3090,19 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         // --- SMS MODE ---
         else if (selectedMethod === 'sms') {
-
-          const smsPayload: any = {
-            recipientPhone: smsNumber,
-            message: `Dear ${clientName}, your quotation report is ready. Please check your email or contact support.`,
-            senderId: 'Turnkey', // or your SMS sender name
-            systemModule: 'NB for New Business',
-            sendOn: new Date().toISOString()
+          const message = this.buildQuotationMessage(reportPayload, clientName);
+          const smsPayload: SmsDto = {
+             scheduledDate: null,
+             smsMessages: [
+                  {
+               message: message,
+               sendDate: new Date().toISOString(),
+               systemCode: 0,
+               telephoneNumber: smsNumber
+                   }
+                         ]
           };
-          return this.notificationService.sendWhatsapp(smsPayload);
+          return this.notificationService.sendSms(smsPayload);
         }
 
         // --- UNSUPPORTED MODE ---
@@ -3138,6 +3142,30 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     const fakeEvent = { target: { checked: !selected } };
     this.onCheckboxChange(fakeEvent as any, product);
+  }
+
+    buildQuotationMessage(data: any, clientName: string): string {
+    let message = `Dear ${clientName}, find your attached quotation.\n\n`;
+
+    data.products.forEach((product: any) => {
+      message += `${product.description.toUpperCase()}\n`;
+
+      product.riskLevelPremiums.forEach((risk: any) => {
+        message += `  ${risk.propertyId}\n`;
+
+        risk.coverTypeDetails.forEach((cover: any) => {
+          const premium = cover.computedPremium.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          });
+          message += `    - ${cover.coverTypeDescription} (${cover.coverTypeShortDescription}) – ${premium}\n`;
+        });
+
+        message += '\n';
+      });
+    });
+
+    return message.trim();
   }
 
 }

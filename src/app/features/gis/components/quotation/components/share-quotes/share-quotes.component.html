@@ -51,7 +51,7 @@
     </div>
 
 
-    <ng-container *ngIf="shareQuoteData.selectedMethod === 'email';else soonComingChannels">
+    <ng-container *ngIf="shareQuoteData.selectedMethod === 'email'">
       <div class="p-field p-mb-3">
         <label for="clientName">Client name</label>
         <input pInputText id="clientName" formControlName="clientName" class="p-inputtext" placeholder="" />
@@ -70,7 +70,7 @@
         <small *ngIf="shareForm.get('email')?.errors?.['email']">Please enter a valid email address.</small>
       </div>
     </ng-container>
-    <ng-container *ngIf="shareQuoteData.selectedMethod === 'whatsapp';else soonComingChannels">
+    <ng-container *ngIf="shareQuoteData.selectedMethod === 'whatsapp'">
       <div class="p-field p-mb-3">
         <label for="clientName">Client name</label>
         <input pInputText id="clientName" formControlName="clientName" class="p-inputtext" placeholder="" />
@@ -89,19 +89,39 @@
         <!-- <small *ngIf="shareForm.get('whatsappNumber')?.errors?.['whatsappNumber']">Please enter a valid email address.</small> -->
       </div>
     </ng-container>
-    <ng-template #soonComingChannels>
+
+    <ng-container *ngIf="shareQuoteData.selectedMethod === 'sms'">
+  <div class="p-field p-mb-3">
+    <label for="clientName">Client name</label>
+    <input pInputText id="clientName" formControlName="clientName" class="p-inputtext" placeholder="" />
+    <div *ngIf="shareForm.get('clientName')?.touched && shareForm.get('clientName')?.invalid" class="text-danger">
+      <small>Client name is required.</small>
+    </div>
+  </div>
+  
+  <label for="smsNumber" class="label">
+    Phone number<span class="required"></span>
+  </label>
+  <input pInputText id="smsNumber" type="tel" formControlName="phone" class="p-inputtext"
+    placeholder="e.g. 0712345678"
+    (blur)="shareForm.get('phone')?.markAsTouched()" />
+  <div *ngIf="shareForm.get('phone')?.touched && shareForm.get('phone')?.invalid" class="text-danger mt-1">
+    <small *ngIf="shareForm.get('phone')?.errors?.['required']">Phone number is required.</small>
+  </div>
+</ng-container>
+    <!-- <ng-template #soonComingChannels>
       <br>
       <br><br>
       <p>Communication channel coming soon</p>
-    </ng-template>
+    </ng-template> -->
 
-    <!--  &lt;!&ndash; SMS input field &ndash;&gt;-->
+     <!-- &lt;!&ndash; SMS input field &ndash;&gt;-->
     <!--  <div class="p-field p-mb-3" *ngIf="shareQuoteData.selectedMethod === 'sms'">-->
     <!--    <label for="smsNumber">-->
     <!--      Phone number<span class="required"></span>-->
     <!--    </label>-->
     <!--    <input pInputText id="smsNumber" [(ngModel)]="shareQuoteData.smsNumber" class="p-inputtext" placeholder="" />-->
-    <!--  </div>-->
+    <!--  </div> -->
 
     <!--  &lt;!&ndash; WhatsApp input field &ndash;&gt;-->
     <!--  <div class="p-field p-mb-3" *ngIf="shareQuoteData.selectedMethod === 'whatsapp'">-->
