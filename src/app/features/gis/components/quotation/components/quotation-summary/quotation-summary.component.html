@@ -1991,10 +1991,21 @@
               <p class="text-muted mt-3">Functionality to be worked on</p>
             </div>
           </div>
-          <div *ngIf="otpGenerated" class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
+          <!-- <div *ngIf="otpGenerated" class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
             <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary fw-bold">Cancel</button>
             <button type="button" class="btn btn-primary fw-bold" (click)="verifyOTP()">Verify</button>
+          </div> -->
+          <div class="d-flex justify-content-between align-items-center rounded-3 my-3 p-0">
+            <div *ngIf="otpGenerated" class="d-flex flex-row-reverse gap-3">
+              <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary fw-bold">Cancel</button>
+              <button type="button" class="btn btn-primary fw-bold" (click)="verifyOTP()">Verify</button>
+            </div>
+
+            <div *ngIf="confirmQuote">
+              <button type="button" class="btn btn-success fw-bold">Confirm Quote</button>
+            </div>
           </div>
+
 
         </div>
       </div>

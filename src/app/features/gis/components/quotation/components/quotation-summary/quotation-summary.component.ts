@@ -281,12 +281,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   quotationFormDetails: any;
   quotationAuthorized: boolean;
   fileUrl: SafeResourceUrl;
-  quickQuoteQuotation: boolean;
   showCreateClientTip = false;
   riskCommissions: any[] = [];
   showCommissionColumnModal = false;
   commissionColumns: { field: string; header: string; visible: boolean }[] = [];
   ticketStatus: string
+  confirmQuote: boolean = false;
+  ticketData:any;
 
 
 
@@ -375,7 +376,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.moreDetails = sessionStorage.getItem('quotationFormDetails');
 
-    // 1️⃣ Patch immediate UI from session (for instant rendering)    
+
+    // 1️⃣ Patch immediate UI from session (for instant rendering)
+
+
     this.patchQuotationData();
 
     if (this.quotationCodeString) {
@@ -389,6 +393,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationDetails))
         const ticketStatus = response.processFlowResponseDto.taskName
         log.debug("Ticket status:", ticketStatus)
+        this.ticketStatus = ticketStatus
+
         sessionStorage.setItem('ticketStatus', ticketStatus);
 
         if ('Rejected' === response.status) {
@@ -506,6 +512,19 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
       this.getQuotationDetails(quotationCode);
     }
+
+    const ticketJson = sessionStorage.getItem('activeTicket');
+
+    if(ticketJson){
+      this.ticketData = JSON.parse(ticketJson);
+      const quotationCode = this.ticketData.quotationCode;
+      if(quotationCode){
+      this.quotationCode=quotationCode
+      }
+      this.getQuotationDetails(quotationCode);
+
+      
+    }
   }
 
   ngAfterViewInit() {
@@ -614,6 +633,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         }
         const ticketStatus = res.processFlowResponseDto.taskName
         log.debug("Ticket status:", ticketStatus)
+        this.ticketStatus = ticketStatus
         sessionStorage.setItem('ticketStatus', ticketStatus);
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
@@ -796,15 +816,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     const data = JSON.parse(revisedQuotation);
     log.debug('[QuotationSummaryComponent] Patching from revisedQuotation session data:', data);
 
-     const quotationCode = data._embedded.newQuotationCode; 
-  
+    const quotationCode = data._embedded.newQuotationCode;
+
     if (quotationCode) {
-    log.debug('[QuotationSummaryComponent] Quotation code:', quotationCode);
-    this.quotationCode=quotationCode
-    this.getQuotationDetails(quotationCode); 
-  } else {
-    log.debug('[QuotationSummaryComponent] No quotation code found in data');
-  }
+      log.debug('[QuotationSummaryComponent] Quotation code:', quotationCode);
+      this.quotationCode = quotationCode
+      this.getQuotationDetails(quotationCode);
+    } else {
+      log.debug('[QuotationSummaryComponent] No quotation code found in data');
+    }
 
 
 
@@ -3108,8 +3128,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
                 { once: true } // remove listener automatically
               );
 
-              modal.hide();
+              // modal.hide();
             }
+            this.confirmQuote = true
             this.otpGenerated = false
             this.changeToPolicyButtons = true
             if (this.changeToPolicyButtons) {

@@ -36,4 +36,16 @@ export interface WhatsappDto {
   }[];
 }
 
+export interface SmsMessage {
+  message: string;
+  sendDate: string;
+  systemCode: number;
+  telephoneNumber: string;
+}
+
+export interface SmsDto {
+  scheduledDate: string | null;
+  smsMessages: SmsMessage[];
+}
+
 

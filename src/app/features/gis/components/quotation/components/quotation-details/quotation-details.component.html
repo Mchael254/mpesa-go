@@ -1,7 +1,10 @@
 <div class="mx-4 mt-3">
   <p class="title">{{ 'gis.quotation.quote_details_title' | translate }} </p>
   <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
-
+  <p class="text-primary ps-5" style="font-weight: 500;">Ticket status:<span style="color: black;">{{ticketStatus
+      |sentenceCase}}
+    </span>
+  </p>
   <!-- quotation section -->
   <div class="card mb-4">
     <div class="card-body my-4 mx-4">
@@ -1399,7 +1402,7 @@
 
     <div class="d-inline-block" pTooltip="{{ validationStatus.tooltipMessage }}" tooltipPosition="top"
       [tooltipDisabled]="validationStatus.isValid" style="cursor: pointer">
-      <button *ngIf="!quickQuoteConverted" class="btn" [ngClass]="{ 'btn-primary': validationStatus.isValid,
+      <button *ngIf="!quickQuoteFlag" class="btn" [ngClass]="{ 'btn-primary': validationStatus.isValid,
         'btn-secondary': !validationStatus.isValid
         }" [disabled]="!validationStatus.isValid" (click)="saveQuotationDetails()">
         {{ 'gis.quotation.next' | translate }}
@@ -1411,7 +1414,7 @@
     </button> -->
     <div class="d-inline-block" pTooltip="{{ validationStatus.tooltipMessage }}" tooltipPosition="top"
       [tooltipDisabled]="validationStatus.isValid">
-      <button *ngIf="quickQuoteConverted" class="btn" [ngClass]="{'btn-primary': validationStatus.isValid,
+      <button *ngIf="quickQuoteFlag" class="btn" [ngClass]="{'btn-primary': validationStatus.isValid,
         'btn-secondary': !validationStatus.isValid
         }" [disabled]="!validationStatus.isValid" (click)="updateQuickQuoteDetails()">
         {{ 'gis.quotation.next' | translate }}
