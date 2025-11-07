@@ -288,6 +288,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   commissionColumns: { field: string; header: string; visible: boolean }[] = [];
   ticketStatus: string
   confirmQuote: boolean = false;
+  ticketData:any;
 
 
 
@@ -528,6 +529,19 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
       this.getQuotationDetails(quotationCode);
+    }
+
+    const ticketJson = sessionStorage.getItem('activeTicket');
+
+    if(ticketJson){
+      this.ticketData = JSON.parse(ticketJson);
+      const quotationCode = this.ticketData.quotationCode;
+      if(quotationCode){
+      this.quotationCode=quotationCode
+      }
+      this.getQuotationDetails(quotationCode);
+
+      
     }
   }
 

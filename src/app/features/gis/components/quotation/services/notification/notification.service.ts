@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError } from 'rxjs';
 import { AppConfigService } from 'src/app/core/config/app-config-service';
-import { EmailDto, WhatsappDto } from 'src/app/shared/data/common/email-dto';
+import { EmailDto, SmsDto, WhatsappDto } from 'src/app/shared/data/common/email-dto';
 import { UtilService } from 'src/app/shared/services';
 import { ApiService } from 'src/app/shared/services/api/api.service';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
@@ -55,4 +55,16 @@ export class NotificationService {
       catchError(this.errorHandl)
     )
   }
+
+  sendSms(data: SmsDto): Observable<any> {
+  return this.api.POST<any>(
+    `api/v2/sms/send`,
+    JSON.stringify(data),
+    API_CONFIG.NOTIFICATION_BASE_URL
+  ).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  );
+}
+
 }
