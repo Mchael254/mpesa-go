@@ -1374,7 +1374,10 @@
             X
           </button>
         </div>
-        <app-new-entity-v2></app-new-entity-v2>
+        <app-new-entity-v2 (clientSaved)="onClientSaved($event)"></app-new-entity-v2>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeCreateClientModal()">Close</button>
+        </div>
 
       </div>
     </div>
