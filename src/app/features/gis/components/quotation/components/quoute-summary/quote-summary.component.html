@@ -3,6 +3,11 @@
   </app-dynamic-breadcrumb>
 </div>
 <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+<p *ngIf="ticketStatus" class=" mx-4 text-primary ps-5" style="font-weight: 500;">Ticket status:<span
+    style="color: black;">{{ticketStatus
+    |sentenceCase}}
+  </span>
+</p>
 <!-- Subcard: Quotation Details & Table -->
 <div class="card mb-4 mx-4" style=" position: relative; border: none; border-radius: 5px;">
 
@@ -190,9 +195,9 @@
           <button type="button" class="btn-close custom-close-style" data-bs-dismiss="modal"
             aria-label="Close"></button>
         </div>
-        <app-share-quotes (sendEvent)="listenToSendEvent($event)" (downloadRequested)="onDownloadRequested()" (printRequested)="onPrintRequested()"
-          (previewRequested)="onPreviewRequested()" [previewVisible]="previewVisible"
-          [pdfSrc]="pdfSrc"></app-share-quotes>
+        <app-share-quotes (sendEvent)="listenToSendEvent($event)" (downloadRequested)="onDownloadRequested()"
+          (printRequested)="onPrintRequested()" (previewRequested)="onPreviewRequested()"
+          [previewVisible]="previewVisible" [pdfSrc]="pdfSrc"></app-share-quotes>
 
 
       </div>

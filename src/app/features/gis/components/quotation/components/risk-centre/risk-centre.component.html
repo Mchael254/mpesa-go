@@ -1,7 +1,7 @@
 <div class="mx-4 mt-3">
     <p class="screenTitle"> {{'gis.quotation.quotation_risk_detail' | translate}} </p>
     <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
-    <p class=" mx-4 text-primary ps-5" style="font-weight: 500;">Ticket status:<span
+    <p *ngIf="ticketStatus" class=" mx-4 text-primary ps-5" style="font-weight: 500;">Ticket status:<span
             style="color: black;">{{ticketStatus |sentenceCase}}
         </span>
     </p>
@@ -10,7 +10,7 @@
             <div class="card-body mx-4 d-flex justify-content-start align-items-center gap-5 flex-wrap">
 
                 <div class="d-flex align-items-baseline gap-2">
-                    <small class="text-muted">Gross Premium:</small>
+                    <small class="text-muted">Gross premium:</small>
                     <span class="text-dark fs-5 fw-semibold">
                         {{ currencyObj.prefix }}{{ premiums?.gross | number:'1.2-2' }}
                     </span>
@@ -19,7 +19,7 @@
 
 
                 <div class="d-flex align-items-baseline gap-2">
-                    <small class="text-muted">Net Premium:</small>
+                    <small class="text-muted">Net premium:</small>
                     <span class="text-dark fs-5 fw-semibold">
                         {{ currencyObj.prefix }}{{ premiums?.net | number:'1.2-2' }}
                     </span>

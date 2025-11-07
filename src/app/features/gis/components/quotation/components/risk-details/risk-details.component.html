@@ -3386,9 +3386,17 @@
 
                 <ng-template pTemplate="header">
                     <tr>
-                        <th *ngFor="let col of excessesColumns" [hidden]="!col.visible" class="px-3 mb-2"
+                        <!-- <th *ngFor="let col of excessesColumns" [hidden]="!col.visible" class="px-3 mb-2"
                             [pSortableColumn]="col.field">
                             <div class="d-flex align-items-center gap-1 flex-nowrap">
+                                <span class="text-truncate">{{ col.header }}</span>
+                                <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
+                            </div>
+                        </th> -->
+                        <th *ngFor="let col of excessesColumns" [hidden]="!col.visible" class="px-3 mb-2"
+                            [pSortableColumn]="col.field" [ngClass]="{'text-center': col.field === 'actions'}">
+                            <div class="d-flex align-items-center gap-1 flex-nowrap"
+                                [ngClass]="{'justify-content-center': col.field === 'actions'}">
                                 <span class="text-truncate">{{ col.header }}</span>
                                 <p-sortIcon *ngIf="col.sortable !== false" [field]="col.field"></p-sortIcon>
                             </div>
@@ -3422,7 +3430,7 @@
                                 <ng-container *ngSwitchCase="'actions'">
                                     <div class="d-flex flex-nowrap justify-content-center">
                                         <span class="p-button-label fw-bold text-primary"
-                                            style="cursor: pointer; white-space: nowrap;">
+                                            style="cursor: pointer; white-space: nowrap; text-align: center;">
                                             <span data-bs-toggle="modal" data-bs-target="#editExcess"
                                                 (click)="populateEditExcessModal(excess)">
                                                 {{ 'gis.quotation.edit' | translate }}

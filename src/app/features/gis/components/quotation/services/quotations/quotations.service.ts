@@ -1008,9 +1008,9 @@ export class QuotationsService {
   }
 
   //perils
-  getSubclassSectionPeril(subclassCode: number, pageNumber: number = 0, pageSize: number = 20): Observable<any> {
+  getSubclassSectionPeril(subclassCode: number, pageNo: number = 1, pageSize: number = 20): Observable<any> {
 
-    return this.api.GET<any[]>(`/v2/subclass-section-perils?subclassCode=${subclassCode}&pageNumber=${pageNumber}&pageSize=${pageSize}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+    return this.api.GET<any[]>(`api/v1/subclass-section-perils/${subclassCode}?pageNo=${pageNo}&pageSize=${pageSize}`, API_CONFIG.GIS_SETUPS_BASE_URL);
 
   }
 
@@ -1033,12 +1033,6 @@ export class QuotationsService {
   deleteSubclassSectionPeril(id: string | number): Observable<any> {
     return this.api.DELETE<any>(`v2/quotation-risk-excesses/${id}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
-
-
-
-  // reviseQuotation(quotCode: number, newQuote: string = "N"): Observable<any> {
-  //   return this.api.POST<any[]>(`v2/revise?quotCode=${quotCode}&newQuote=${newQuote}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL,);
-  // }
 
   updateQuotationComment(payload: QuotationComment): Observable<any> {
     return this.api.PUT<any>(`v2/quotation/comment`, JSON.stringify(payload), API_CONFIG.GIS_QUOTATION_BASE_URL);
@@ -1082,7 +1076,7 @@ export class QuotationsService {
 
   //revisions
   getQuotationRevision(quotationCode: number): Observable<any> {
-    const url = `/v1/quotation/revisions?parentQuotationCode=${quotationCode}`;
+    const url = `v2/quotation/revisions?parentQuotationCode=${quotationCode}`;
     return this.api.GET<any[]>(url, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)

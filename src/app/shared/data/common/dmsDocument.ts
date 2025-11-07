@@ -1,7 +1,7 @@
 /**
  * Represents of Dms Document Object fetched when listing documents
  */
-export interface DmsDocument{
+export interface DmsDocument {
   actualName?: string;
   agentCode?: string;
   batchNo?: string;
@@ -66,6 +66,68 @@ export interface DmsDoc {
   empty?: boolean;
   url?: string;
 }
-export interface SingleDmsDocument extends Partial<DmsDoc>{
+export interface SingleDmsDocument extends Partial<DmsDoc> {
 }
+export interface RiskDmsDocument {
+  agentCode?: string;
+  agentName?: string;
+  brokerCode?: string;
+  brokerName?: string;
+  brokerType?: string;
+  caseNo?: string;
+  cbpCode?: string;
+  cbpName?: string;
+  claimNo?: string;
+  claimantNo?: string;
+  clientCode?: string;
+  clientFullname?: string;
+  clientId?: string;
+  clientName?: string;
+  dateReceived?: string;
+  department?: string;
+  deptName?: string;
+  docData?: string;
+  docDescription?: string;
+  docId?: string;
+  docReceivedDate?: string;
+  docRefNo?: string;
+  docRemark?: string;
+  docType?: string;
+  document?: string;
+  documentName?: string;
+  documentType?: string;
+  endorsementNo?: string;
+  fileName?: string;
+  folderId?: string;
+  memberName?: string;
+  memberNo?: string;
+  module?: string;
+  originalFileName?: string;
+  paymentType?: string;
+  policyNo?: string;
+  policyNumber?: string;
+  processName?: string;
+  productCode?: string;
+  proposalNo?: string;
+  providerCode?: string;
+  providerName?: string;
+  qouteCode?: string;
+  quoteDate?: string;
+  rdCode?: string;
+  referenceNo?: string;
+  riskID?: string;
+  spCode?: string;
+  spName?: string;
+  subject?: string;
+  transNo?: string;
+  transType?: string;
+  userName?: string;
+  username?: string;
+  valuerDate?: string;
+  valuerName?: string;
+  voucherNo?: string;
+}
+
+
+
 

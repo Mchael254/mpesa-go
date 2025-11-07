@@ -94,6 +94,7 @@ export interface riskSection {
   rowNumber: number;
   code: number;
   quotationCode: number;
+  minimumPremium: number
 }
 
 export interface QuotationDetails {
@@ -112,6 +113,7 @@ export interface QuotationDetails {
   expiryDate: string;
   ok: string;
   premium: number;
+  premiumComputed: string;
   commissionAmount?: any;
   internalComments?: any;
   authorisedBy?: any;

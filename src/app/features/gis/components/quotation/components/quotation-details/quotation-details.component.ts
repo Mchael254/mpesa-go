@@ -219,7 +219,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   isRevisionMode = false;
   ticketStatus: string
   quickQuoteFlag: boolean = false;
-  ticketData:any;
+  ticketData: any;
   isTicketQuotation: boolean = false;
 
 
@@ -253,14 +253,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.quotationAction = sessionStorage.getItem('quotationAction')
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
 
-  
 
+    this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
 
-
-
-
-     this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
-   
     this.storedQuotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
     log.debug("QUOTATION FORM DETAILS", this.storedQuotationFormDetails)
     const StoredQuotationPayload = JSON.parse(sessionStorage.getItem('quotationPayload'));
@@ -310,17 +305,17 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
 
-      const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
     if (reusedQuotation) {
 
-    const data = JSON.parse(reusedQuotation);
-    const quotationCode = data._embedded.newQuotationCode;
-    if (quotationCode) {
-      this.quotationCode = quotationCode
+      const data = JSON.parse(reusedQuotation);
+      const quotationCode = data._embedded.newQuotationCode;
+      if (quotationCode) {
+        this.quotationCode = quotationCode
 
-      this.fetchQuotationDetails(quotationCode);
-    }
-      
+        this.fetchQuotationDetails(quotationCode);
+      }
+
     }
 
 
@@ -336,25 +331,25 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }
     }
 
-   const ticketJson = sessionStorage.getItem('activeTicket');
-if (ticketJson) {
-  this.ticketData = JSON.parse(ticketJson);
-  log.debug("[QuotationDetailsComponent] Using ticket data:", this.ticketData);
+    const ticketJson = sessionStorage.getItem('activeTicket');
+    if (ticketJson) {
+      this.ticketData = JSON.parse(ticketJson);
+      log.debug("[QuotationDetailsComponent] Using ticket data:", this.ticketData);
 
-  this.quotationCode = this.ticketData?.quotationCode || this.quotationCode;
+      this.quotationCode = this.ticketData?.quotationCode || this.quotationCode;
 
-  // fetch details from backend if not in session
-  if (this.quotationCode) {
-    this.isTicketQuotation=true;
-    this.fetchQuotationDetails(this.quotationCode);
-  }
-  return;
-}
-
-
+      // fetch details from backend if not in session
+      if (this.quotationCode) {
+        this.isTicketQuotation = true;
+        this.fetchQuotationDetails(this.quotationCode);
+      }
+      return;
+    }
 
 
-    
+
+
+
 
   }
 
@@ -539,12 +534,12 @@ if (ticketJson) {
         log.debug(this.quotationForm.value, 'Final Form Value');
 
         if (this.isTicketQuotation) {
-         log.debug('[QuotationDetailsComponent] Ticket detected — patching reused quotation data.');
-        this.patchReusedQuotationData();
+          log.debug('[QuotationDetailsComponent] Ticket detected — patching reused quotation data.');
+          this.patchReusedQuotationData();
         } else {
-        this.patchRevisedQuotationData();
-        this.patchReusedQuotationData();
-         }
+          this.patchRevisedQuotationData();
+          this.patchReusedQuotationData();
+        }
 
       },
       error: (err) => {
