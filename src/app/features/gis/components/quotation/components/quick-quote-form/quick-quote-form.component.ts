@@ -3151,8 +3151,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           const whatsappPayload: WhatsappDto = {
             recipientPhone: whatsappNumber,
             message: `Dear ${clientName}, please find your quotation report attached.`,
-            templateName: 'receipt_dispatch_v1',
-            templateParams: [clientName, 'quote test'],
+            templateName: 'report_sharing_template_v1',
+            templateParams: [clientName],
             attachments: [attachment]
           };
           return this.notificationService.sendWhatsapp(whatsappPayload);

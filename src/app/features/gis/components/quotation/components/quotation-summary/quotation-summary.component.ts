@@ -49,6 +49,10 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NotificationService } from '../../services/notification/notification.service';
 import { NgxCurrencyConfig } from 'ngx-currency';
 
+import { Modal } from 'bootstrap';
+import { left } from '@popperjs/core';
+import { DmsDocument, RiskDmsDocument } from 'src/app/shared/data/common/dmsDocument';
+import { DmsService } from 'src/app/shared/services/dms/dms.service';
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
 
@@ -82,6 +86,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('riskClausesTable') riskClausesTable: any;
   @ViewChild('clientConsentModal') clientConsentModalElement!: ElementRef;
   @ViewChild('viewDocumentsModal') viewDocumentsModal!: ElementRef;
+  @ViewChild('addRiskDocumentModal') addRiskDocModalRef!: ElementRef;
 
   @Input() modalTitle: string = 'Action required';
   @Input() modalSubtitle: string = 'Required details missing.';
@@ -163,7 +168,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   source: string;
   quickQuoteData: any;
   expiryDate: string;
-  selectedRisk: any;
+  selectedRisk: RiskInformation;
   fetchedQuoteNum: string;
   viewQuoteFlag: boolean;
   revisedQuotationNumber: string;
@@ -287,7 +292,23 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showCommissionColumnModal = false;
   commissionColumns: { field: string; header: string; visible: boolean }[] = [];
   ticketStatus: string
+  confirmQuote: boolean = false;
+  ticketData: any;
+  zoomRiskDocLevel = 1
+  showRiskDocColumnModal = false;
+  showRiskDoc: boolean = true;
 
+  riskDocColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
+  selectedFile: File | null = null;
+  isDragging = false;
+  uploading = false;
+  errorMessage = '';
+  successMessage = '';
+  loggedInUser: string;
+
+  riskDocuments: DmsDocument[];
+  selectedRiskDoc: DmsDocument;
+  previewRiskDoc: { name: string; mimeType: string; dataUrl: string } | null = null;
 
 
   constructor(
@@ -308,6 +329,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     public claimsService: ClaimsService,
     public utilService: UtilService,
     private notificationService: NotificationService,
+    private dmsService: DmsService,
 
 
   ) {
@@ -505,6 +527,19 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
       this.getQuotationDetails(quotationCode);
+    }
+
+    const ticketJson = sessionStorage.getItem('activeTicket');
+
+    if (ticketJson) {
+      this.ticketData = JSON.parse(ticketJson);
+      const quotationCode = this.ticketData.quotationCode;
+      if (quotationCode) {
+        this.quotationCode = quotationCode
+      }
+      this.getQuotationDetails(quotationCode);
+
+
     }
   }
 
@@ -796,15 +831,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     const data = JSON.parse(revisedQuotation);
     log.debug('[QuotationSummaryComponent] Patching from revisedQuotation session data:', data);
 
-     const quotationCode = data._embedded.newQuotationCode; 
-  
+    const quotationCode = data._embedded.newQuotationCode;
+
     if (quotationCode) {
-    log.debug('[QuotationSummaryComponent] Quotation code:', quotationCode);
-    this.quotationCode=quotationCode
-    this.getQuotationDetails(quotationCode); 
-  } else {
-    log.debug('[QuotationSummaryComponent] No quotation code found in data');
-  }
+      log.debug('[QuotationSummaryComponent] Quotation code:', quotationCode);
+      this.quotationCode = quotationCode
+      this.getQuotationDetails(quotationCode);
+    } else {
+      log.debug('[QuotationSummaryComponent] No quotation code found in data');
+    }
 
 
 
@@ -1429,93 +1464,93 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.fileInput.nativeElement.click();
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      for (let i = 0; i < input.files.length; i++) {
-        const file = input.files[i];
-        // Read the file as a data URL
-        const reader = new FileReader();
-        reader.onload = () => {
-          // Convert the file to Base64 string
-          const base64String = reader.result?.toString().split(',')[1];
+  // onFileSelected(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files && input.files.length > 0) {
+  //     for (let i = 0; i < input.files.length; i++) {
+  //       const file = input.files[i];
+  //       // Read the file as a data URL
+  //       const reader = new FileReader();
+  //       reader.onload = () => {
+  //         // Convert the file to Base64 string
+  //         const base64String = reader.result?.toString().split(',')[1];
 
-          // Add the file to your files array with additional properties
-          this.files.push({
-            file,
-            name: file.name,
-            selected: false,
-            documentType: this.selectedDocumentType,
-            base64: base64String
-          });
-          log.debug("File:", this.clientDetails)
-          let payload = {
-            agentCode: "",
-            agentName: "",
-            brokerCode: "",
-            brokerName: "",
-            brokerType: "",
-            cbpCode: "",
-            cbpName: "",
-            claimNo: "",
-            claimantNo: "",
-            clientCode: this.clientDetails.id,
-            clientFullname: this.clientDetails.firstName + this.clientDetails.lastName,
-            clientName: this.clientDetails.firstName,
-            dateReceived: "",
-            department: "",
-            deptName: "",
-            docData: "",
-            docDescription: "",
-            docId: "",
-            docReceivedDate: "",
-            docRefNo: "",
-            docRemark: "",
-            docType: this.selectedDocumentType,
-            document: base64String,
-            documentName: file.name,
-            documentType: this.selectedDocumentType,
-            endorsementNo: "",
-            fileName: file.name,
-            folderId: "",
-            memberName: "",
-            memberNo: "",
-            module: "",
-            originalFileName: "",
-            paymentType: "",
-            policyNo: "",
-            policyNumber: "",
-            processName: "",
-            proposalNo: "",
-            providerCode: "",
-            providerName: "",
-            qouteCode: "",
-            rdCode: "",
-            referenceNo: "",
-            riskID: "",
-            spCode: "",
-            spName: "",
-            subject: "",
-            transNo: "",
-            transType: "",
-            userName: "",
-            username: "",
-            valuerDate: "",
-            valuerName: "",
-            voucherNo: ""
-          }
-          this.quotationService.postDocuments(payload).subscribe({
-            next: (res) => {
-              this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
-            }
-          })
-        };
-        // Read the file as data URL
-        reader.readAsDataURL(file);
-        // this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType });
-      }
-    }
-  }
+  //         // Add the file to your files array with additional properties
+  //         this.files.push({
+  //           file,
+  //           name: file.name,
+  //           selected: false,
+  //           documentType: this.selectedDocumentType,
+  //           base64: base64String
+  //         });
+  //         log.debug("File:", this.clientDetails)
+  //         let payload = {
+  //           agentCode: "",
+  //           agentName: "",
+  //           brokerCode: "",
+  //           brokerName: "",
+  //           brokerType: "",
+  //           cbpCode: "",
+  //           cbpName: "",
+  //           claimNo: "",
+  //           claimantNo: "",
+  //           clientCode: this.clientDetails.id,
+  //           clientFullname: this.clientDetails.firstName + this.clientDetails.lastName,
+  //           clientName: this.clientDetails.firstName,
+  //           dateReceived: "",
+  //           department: "",
+  //           deptName: "",
+  //           docData: "",
+  //           docDescription: "",
+  //           docId: "",
+  //           docReceivedDate: "",
+  //           docRefNo: "",
+  //           docRemark: "",
+  //           docType: this.selectedDocumentType,
+  //           document: base64String,
+  //           documentName: file.name,
+  //           documentType: this.selectedDocumentType,
+  //           endorsementNo: "",
+  //           fileName: file.name,
+  //           folderId: "",
+  //           memberName: "",
+  //           memberNo: "",
+  //           module: "",
+  //           originalFileName: "",
+  //           paymentType: "",
+  //           policyNo: "",
+  //           policyNumber: "",
+  //           processName: "",
+  //           proposalNo: "",
+  //           providerCode: "",
+  //           providerName: "",
+  //           qouteCode: "",
+  //           rdCode: "",
+  //           referenceNo: "",
+  //           riskID: "",
+  //           spCode: "",
+  //           spName: "",
+  //           subject: "",
+  //           transNo: "",
+  //           transType: "",
+  //           userName: "",
+  //           username: "",
+  //           valuerDate: "",
+  //           valuerName: "",
+  //           voucherNo: ""
+  //         }
+  //         this.quotationService.postDocuments(payload).subscribe({
+  //           next: (res) => {
+  //             this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
+  //           }
+  //         })
+  //       };
+  //       // Read the file as data URL
+  //       reader.readAsDataURL(file);
+  //       // this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType });
+  //     }
+  //   }
+  // }
 
   downloadFile(fileItem: FileItem): void {
     const url = window.URL.createObjectURL(fileItem.file);
@@ -2343,22 +2378,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
 
-  onDragStart(event: MouseEvent): void {
-    this.dragging = true;
-    this.dragOffset.x = event.clientX - parseInt(this.columnModalPosition.left, 10);
-    this.dragOffset.y = event.clientY - parseInt(this.columnModalPosition.top, 10);
-  }
 
-  onDragMove(event: MouseEvent): void {
-    if (this.dragging) {
-      this.columnModalPosition.top = `${event.clientY - this.dragOffset.y}px`;
-      this.columnModalPosition.left = `${event.clientX - this.dragOffset.x}px`;
-    }
-  }
-
-  onDragEnd(): void {
-    this.dragging = false;
-  }
 
 
   toggleClauses(iconElement: HTMLElement): void {
@@ -2538,19 +2558,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       visible: defaultVisibleFields.includes(key),
     }));
   }
-
-
-
-
-
-
-  sentenceCase(text: string): string {
-    return text
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, (str) => str.toUpperCase());
-  }
-
-
 
   setColumnsFromTaxesDetails(sample: TaxDetails) {
     const defaultVisibleFields = [
@@ -3771,9 +3778,346 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     if (this.viewQuoteFlag) return true;
     if (this.ticketStatus === 'AUTHORIZED') return true;
 
-
-
     return false;
+  }
+  onDragStart(event: MouseEvent): void {
+    this.dragging = true;
+    this.dragOffset.x = event.clientX - parseInt(this.columnModalPosition.left, 10);
+    this.dragOffset.y = event.clientY - parseInt(this.columnModalPosition.top, 10);
+  }
+
+  onDragMove(event: MouseEvent): void {
+    if (this.dragging) {
+      this.columnModalPosition.top = `${event.clientY - this.dragOffset.y}px`;
+      this.columnModalPosition.left = `${event.clientX - this.dragOffset.x}px`;
+    }
+  }
+
+  onDragEnd(): void {
+    this.dragging = false;
+  }
+  toggleClientCard(iconElement: HTMLElement): void {
+    this.showRiskDoc = true;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + 30;
+    const left = iconElement.offsetLeft - 260;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showRiskDocColumnModal = true;
+  }
+
+  setRiskDocColumns(doc: any) {
+    const excludedFields = [
+    ];
+    const defaultVisibleClientDocFields = ['name', 'docType', 'dateCreated', 'modifiedBy', 'actions'];
+
+    const keys = Object.keys(doc).filter(key => !excludedFields.includes(key));
+
+    // Separate default fields and the rest
+    const defaultFields = defaultVisibleClientDocFields.filter(f => keys.includes(f));
+    const otherFields = keys.filter(k => !defaultVisibleClientDocFields.includes(k));
+
+    // Strictly order = defaults first, then others
+    const orderedKeys = [...defaultFields, ...otherFields];
+
+    this.riskDocColumns = orderedKeys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleClientDocFields.includes(key),
+      truncate: defaultVisibleClientDocFields.includes(key),
+      filterable: true,
+      sortable: true
+    }));
+
+    this.riskDocColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false });
+    log.debug("Client doc Columns", this.riskDocColumns)
+    // Restore from sessionStorage if exists
+    const saved = sessionStorage.getItem('clientDocColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.riskDocColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
+  }
+
+
+  sentenceCase(text: string): string {
+    return text
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (str) => str.toUpperCase());
+  }
+  fetchRiskDoc(riskId: any) {
+    log.debug("Selected Risk code:", riskId)
+    this.dmsService.fetchRiskDocs(riskId)
+      .subscribe({
+        next: (res: DmsDocument[]) => {
+          log.debug('Response after fetching clients DOCS:', res)
+          this.riskDocuments = res
+          if (this.riskDocuments && this.riskDocuments.length > 0) {
+            this.setRiskDocColumns(this.riskDocuments[0]);
+          }
+        },
+        error: (err: any) => {
+          const backendMsg = err.error?.message || err.message || 'An unexpected error occurred'; console.error("OTP Verification Error:", backendMsg);
+          this.globalMessagingService.displayErrorMessage("Error", backendMsg);
+        }
+      });
+  }
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    this.validateAndSetFile(file);
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = false;
+
+    if (event.dataTransfer?.files) {
+      const file = event.dataTransfer.files[0];
+      this.validateAndSetFile(file);
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = false;
+  }
+
+  validateAndSetFile(file: File): void {
+    // Reset messages
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    // Check if file exists
+    if (!file) {
+      return;
+    }
+
+    // Check file size (10MB = 10 * 1024 * 1024 bytes)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      this.errorMessage = 'File size exceeds the maximum limit of 10MB';
+      return;
+    }
+
+    // Check file type (optional - you can customize accepted types)
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+      'image/jpeg',
+      'image/png'
+    ];
+
+
+    if (!allowedTypes.includes(file.type)) {
+      this.errorMessage =
+        'Please upload a valid document type (PDF, DOC, DOCX, TXT, PNG, JPG, JPEG)';
+      return;
+    }
+
+    this.selectedFile = file;
+  }
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+  getFileIcon(fileName: string): string {
+    const ext = fileName.split('.').pop()?.toLowerCase();
+
+    switch (ext) {
+      case 'pdf':
+        return 'pi pi-file-pdf';
+      case 'doc':
+      case 'docx':
+        return 'pi pi-file-word';
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return 'pi pi-image';
+      case 'txt':
+      case 'log':
+        return 'pi pi-file';
+      default:
+        return 'pi pi-file'; // fallback
+    }
+  }
+  removeFile(): void {
+    this.selectedFile = null;
+    this.errorMessage = '';
+
+    ;
+  }
+  addRiskDocuments(selectedFile: any) {
+    log.debug("Selected risk", this.selectedRisk)
+    const selectedRiskCode = this.selectedRisk.code
+    const file = selectedFile
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      // Convert to base64 string (remove prefix like "data:application/pdf;base64,")
+      const base64String = (reader.result as string).split(',')[1];
+      const clientName = (this.clientDetails?.firstName ?? '') + ' ' + (this.clientDetails?.lastName ?? '')
+      let riskDocPayload: RiskDmsDocument = {
+
+        docType: file.type,
+        docData: base64String,
+        originalFileName: file.name,
+        riskID: selectedRiskCode.toLocaleString(),
+
+      }
+
+      this.dmsService.uploadRiskDocs(riskDocPayload).subscribe({
+        next: (res: any) => {
+          log.info(`document uploaded successfully!`, res);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
+          this.fetchRiskDoc(this.selectedRisk?.code)
+          const modal = bootstrap.Modal.getInstance(this.addRiskDocModalRef.nativeElement);
+          modal.hide();
+        },
+        error: (err) => {
+          log.info(`upload failed!`, err)
+        }
+      });
+    }
+    reader.readAsDataURL(file);
+  }
+  saveRiskDoc() {
+    this.selectedFile && this.addRiskDocuments(this.selectedFile);
+
+  }
+
+  onPreviewRiskDoc(event: any) {
+    this.selectedRiskDoc = event;
+    log.info("Selected client doc", this.selectedRiskDoc)
+    this.fetchDocById(this.selectedRiskDoc)
+  }
+  fetchDocById(selectedRiskDoc: DmsDocument) {
+    const docId = selectedRiskDoc.id
+
+    this.dmsService.getDocumentById(docId).subscribe({
+      next: (res: any) => {
+        log.info(`Selected Document details`, res);
+        // Construct the preview-friendly object
+        this.previewRiskDoc = {
+          name: res.docName,
+          mimeType: res.docMimetype,
+          dataUrl: `data:${res.docMimetype};base64,${res.byteData}`
+        };
+
+        const modal = new bootstrap.Modal(document.getElementById('previewDocModal'));
+        modal.show();
+      },
+      error: (err) => {
+        log.info(`upload failed!`, err)
+      }
+    });
+  }
+  private documentBlobs: { [id: string]: Blob } = {};
+
+  onDownloadRiskDoc(event: any) {
+    this.selectedRiskDoc = event;
+    log.info("Selected client doc", this.selectedRiskDoc);
+
+    const docId = this.selectedRiskDoc.id;
+
+    // If we already have it cached, download directly
+    if (this.documentBlobs[docId]) {
+      this.downloadRiskDocument(docId, this.selectedRiskDoc.actualName);
+      return;
+    }
+
+    // Otherwise, fetch from backend
+    this.dmsService.getDocumentById(docId).subscribe({
+      next: (res: any) => {
+        log.info(`Selected Document details`, res);
+
+        if (!res || res.empty || !res.byteData) {
+          log.warn("Document data is empty or invalid");
+          return;
+        }
+
+        const byteCharacters = atob(res.byteData);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+
+        const blob = new Blob([byteArray], { type: res.docMimetype });
+        this.documentBlobs[docId] = blob; // cache it
+
+        this.downloadRiskDocument(docId, res.docName);
+      },
+      error: (err) => {
+        log.error(`Download failed!`, err);
+      },
+    });
+  }
+
+  downloadRiskDocument(docId: string, fileName?: string) {
+    const blob = this.documentBlobs[docId];
+    if (!blob) {
+      log.warn("No cached blob found for document:", docId);
+      return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName || 'document';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    log.info("Document downloaded:", fileName);
+  }
+
+  onDeleteRiskDoc(event: any) {
+    this.selectedRiskDoc = event;
+    log.info("Selected risk doc", this.selectedRiskDoc);
+
+
+  }
+  deleteRiskDoc() {
+    const docId = this.selectedRiskDoc.id;
+
+    this.dmsService.deleteDocumentById(docId).subscribe({
+      next: (res: any) => {
+        log.info(`Response after deleting  Document details`, res);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Document deleted successfully');
+        // Remove the deleted doc from the clientDocuments array
+        const index = this.riskDocuments.findIndex(doc => doc.id === this.selectedRiskDoc.id);
+        if (index !== -1) {
+          this.riskDocuments.splice(index, 1);
+        }
+        this.selectedRiskDoc = null
+
+      },
+      error: (err) => {
+        log.error(`Download failed!`, err);
+      },
+    });
   }
 
 }
