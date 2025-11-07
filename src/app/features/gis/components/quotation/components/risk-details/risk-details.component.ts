@@ -639,6 +639,8 @@ export class RiskDetailsComponent {
         next: (res: any) => {
           this.quotationDetails = res;
           log.debug("Quotation details-risk details", this.quotationDetails);
+          const premiumComputed = this.quotationDetails.premiumComputed
+          this.premiumComputed = true
 
           // Reset commissions tab if currently active but agent source is not selected
           if (this.riskActiveTab === 'commissions' && this.isCommissionsButtonDisabled) {
@@ -3040,6 +3042,7 @@ export class RiskDetailsComponent {
         multiplierRate: section.multiplierRate,
         premiumAmount: section.premiumMinimumAmount || 0,
         premiumRate: section.rate || 0,
+        minimumPremium: section.premiumMinimumAmount,
         rateDivisionFactor: section.divisionFactor || 1,
         rateType: section.rateType || "FXD",
         rowNumber: 1,
@@ -3077,6 +3080,7 @@ export class RiskDetailsComponent {
         sectionShortDescription: section.sectionShortDescription,
         sectionCode: section.sectionCode,
         limitAmount: section.limitAmount,
+        minimumPremium: section.minimumPremium
       });
     }
 
@@ -3216,6 +3220,7 @@ export class RiskDetailsComponent {
           // Reset the form and selected section
           this.sectionDetailsForm.reset();
           this.selectedSection = null;
+          this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
 
           this.globalMessagingService.displaySuccessMessage('Success', 'Section Updated');
           this.closeEditSectionModal();
@@ -3279,6 +3284,8 @@ export class RiskDetailsComponent {
           // Reset the form and selected section
           this.sectionDetailsForm.reset();
           this.selectedSection = null;
+          this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
+
 
           this.globalMessagingService.displaySuccessMessage('Success', 'Section Updated');
         } catch (error) {
@@ -5067,7 +5074,7 @@ export class RiskDetailsComponent {
       }
 
     } else {
-      this.quotationService.getSubclassSectionPeril(subclassCode, 0, 10)
+      this.quotationService.getSubclassSectionPeril(subclassCode, 1, 10)
         .subscribe({
           next: (data) => {
             this.perils = data?._embedded || [];
@@ -5881,7 +5888,6 @@ export class RiskDetailsComponent {
       next: (updateResponse) => {
         log.debug("Premium updated successfully:", updateResponse);
         // this.router.navigate(['/home/gis/quotation/quotation-summary']);
-        this.premiumComputed = true
         const quotationCode = this.quotationDetails.code
         log.debug("QuotationCode-after update", quotationCode)
         quotationCode && this.fetchQuotationDetails(quotationCode)
@@ -6014,6 +6020,7 @@ export class RiskDetailsComponent {
   // }
 
   generatePremiumComputationPayload(quotationData: QuotationDetails): any {
+    log.debug("Quotation details-compute premium", quotationData)
     return {
       entityUniqueCode: 0,
       interfaceType: "QUOTATION",
