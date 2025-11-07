@@ -750,6 +750,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * create payload for prime identity (primeIdentityPayload)
    */
   saveDetails() : void {
+    alert('saving details')
     // this.uploadDocumentToDms();
 
     const formValues = this.entityForm.getRawValue();
