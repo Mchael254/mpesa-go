@@ -48,8 +48,7 @@ import { riskClauses } from '../../../setups/data/gisDTO';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NotificationService } from '../../services/notification/notification.service';
 import { NgxCurrencyConfig } from 'ngx-currency';
-import { Modal } from 'bootstrap';
-import { left } from '@popperjs/core';
+
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
 
@@ -376,18 +375,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.moreDetails = sessionStorage.getItem('quotationFormDetails');
 
-
-
-
-
-
-
-    // 1️⃣ Patch immediate UI from session (for instant rendering)
-    
-
+    // 1️⃣ Patch immediate UI from session (for instant rendering)    
     this.patchQuotationData();
-
-
 
     if (this.quotationCodeString) {
       this.quotationCode = Number(this.quotationCodeString);
@@ -422,7 +411,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
 
 
-
     this.clientDetails = JSON.parse(
       sessionStorage.getItem('clientFormData') ||
       sessionStorage.getItem('clientDetails') ||
@@ -454,11 +442,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.getUsers();
 
 
-
-
-    // this.createInsurersForm();
-    // this.fetchInsurers();
-
     log.debug("MORE DETAILS TEST", this.quotationDetails)
 
     this.limitAmount = Number(sessionStorage.getItem('limitAmount'));
@@ -470,10 +453,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // this.getDocumentTypes();
 
     this.hasUnderwriterRights();
-
-
-
-
 
     // Add this to your existing ngOnInit
     const modal = document.getElementById('addExternalClaimExperienceModal');
@@ -1937,9 +1916,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
 
-
-
-
   //reassign
   openReassignQuotationModal() {
     this.openModals('reassignQuotation');
@@ -2048,7 +2024,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       comment: this.reassignQuotationComment
     }
 
-    // Get quotation code from session storage or component property
     const quotationCode = this.quotationCode;
 
     if (quotationCode) {
@@ -2056,52 +2031,34 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.quotationService.getTaskById(quotationCode).pipe(
         switchMap((response) => {
           log.debug('Task details from getTaskById:', response);
-          console.log('Task details from getTaskById:', response);
 
           // Extract taskId from response
           const taskId = response?.taskId;
           const newAssignee = this.clientToReassignQuotation.name;
+          const comment = this.reassignQuotationComment;
 
           if (!taskId) {
             throw new Error('Task ID not found in response');
           }
 
-          log.debug('Extracted taskId:', taskId);
-          console.log('Extracted taskId:', taskId);
-          log.debug('New assignee:', newAssignee);
-          console.log('New assignee:', newAssignee);
-
-          // Call reassignTicket service with the extracted taskId
-          return this.quotationService.reassignTicket(taskId, newAssignee);
+          return this.quotationService.reassignTicket(taskId, newAssignee, comment);
         })
       ).subscribe({
         next: (reassignResponse) => {
           log.debug('Ticket reassigned successfully:', reassignResponse);
-          console.log('Ticket reassigned successfully:', reassignResponse);
           this.globalMessagingService.displaySuccessMessage('Success', 'Quotation reassigned successfully');
           this.closeReassignQuotationModal();
           this.onUserUnselect();
           this.reassignQuotationComment = null;
+          this.router.navigate(['/home/gis/quotation/quotation-management']);
         },
         error: (error) => {
-          // temporary fix because the response returns text
-          if (error.status === 200 && error.error?.text?.includes('Task reassigned')) {
-            log.debug('Ticket reassigned (text response):', error.error.text);
-            this.globalMessagingService.displaySuccessMessage('Success', 'Quotation reassigned successfully');
-            this.closeReassignQuotationModal();
-            this.onUserUnselect();
-            this.reassignQuotationComment = null;
-            this.router.navigate(['/home/gis/quotation/quotation-management']);
-          } else {
-            log.error('Error during reassignment:', error);
-            console.error('Error during reassignment:', error);
-            this.globalMessagingService.displayErrorMessage('Error', 'Failed to reassign quotation');
-          }
+          log.error('Error during reassignment:', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to reassign quotation');
         }
       });
     } else {
       log.warn('No quotation code found');
-      console.warn('No quotation code found');
       this.globalMessagingService.displayWarningMessage('Warning', 'No quotation code found');
     }
 

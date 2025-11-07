@@ -1,28 +1,32 @@
-import {ChangeDetectorRef, Component, OnInit, signal, ViewChild} from '@angular/core';
-import {NewTicketDto, TicketModuleDTO, TicketsDTO, TicketTypesDTO} from "../../../data/ticketsDTO";
-import {AuthService} from "../../../../../shared/services/auth.service";
-import {catchError} from "rxjs/internal/operators/catchError";
-import {TicketsService} from "../../../services/tickets.service";
-import cubejs, {Query} from "@cubejs-client/core";
-import {ActivatedRoute, Router} from '@angular/router';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
+import { NewTicketDto, TicketModuleDTO, TicketsDTO, TicketTypesDTO } from "../../../data/ticketsDTO";
+import { AuthService } from "../../../../../shared/services/auth.service";
+import { catchError } from "rxjs/internal/operators/catchError";
+import { TicketsService } from "../../../services/tickets.service";
+import cubejs, { Query } from "@cubejs-client/core";
+import { ActivatedRoute, Router } from '@angular/router';
 import { throwError } from 'rxjs/internal/observable/throwError';
-import {Table} from "primeng/table/table";
-import {LocalStorageService} from "../../../../../shared/services/local-storage/local-storage.service";
+import { Table } from "primeng/table/table";
+import { LocalStorageService } from "../../../../../shared/services/local-storage/local-storage.service";
 import { NgxSpinnerService } from 'ngx-spinner';
-import {AppConfigService} from "../../../../../core/config/app-config-service";
-import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
-import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
-import {Logger} from "../../../../../shared/services/logger/logger.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {finalize, ReplaySubject, takeUntil, tap} from "rxjs";
-import {Pagination} from "../../../../../shared/data/common/pagination";
-import {LazyLoadEvent} from "primeng/api";
-import {TableLazyLoadEvent} from "primeng/table";
-import {TableDetail} from "../../../../../shared/data/table-detail";
-import {PoliciesService} from "../../../../gis/services/policies/policies.service";
-import {AuthorizePolicyModalComponent} from "../authorize-policy-modal/authorize-policy-modal.component";
-import {PolicyDetailsDTO} from "../../../data/policy-details-dto";
+import { AppConfigService } from "../../../../../core/config/app-config-service";
+import { GlobalMessagingService } from "../../../../../shared/services/messaging/global-messaging.service";
+import { untilDestroyed } from "../../../../../shared/services/until-destroyed";
+import { Logger } from "../../../../../shared/services/logger/logger.service";
+import { FormBuilder, FormGroup } from "@angular/forms";
+import { finalize, ReplaySubject, takeUntil, tap } from "rxjs";
+import { Pagination } from "../../../../../shared/data/common/pagination";
+import { LazyLoadEvent } from "primeng/api";
+import { TableLazyLoadEvent } from "primeng/table";
+import { TableDetail } from "../../../../../shared/data/table-detail";
+import { PoliciesService } from "../../../../gis/services/policies/policies.service";
+import { AuthorizePolicyModalComponent } from "../authorize-policy-modal/authorize-policy-modal.component";
+import { PolicyDetailsDTO } from "../../../data/policy-details-dto";
 import { QuotationsService } from 'src/app/features/gis/components/quotation/services/quotations/quotations.service';
+import * as bootstrap from 'bootstrap';
+import { GroupedUser } from 'src/app/features/gis/components/quotation/data/quotationsDTO';
+import { ClaimsService } from 'src/app/features/gis/components/claim/services/claims.service';
+
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -32,14 +36,20 @@ const log = new Logger('ViewTicketsComponent');
 })
 export class ViewTicketsComponent implements OnInit {
   @ViewChild('dt') dt: Table | undefined;
+  @ViewChild('reassignTable') reassignTable!: any;
+  @ViewChild(AuthorizePolicyModalComponent) authorizePolicyComponent: AuthorizePolicyModalComponent;
+  @ViewChild('reassignTicketModal') reassignTicketModalElement!: ElementRef;
+  @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
+
   public filteredTickets: NewTicketDto[] = [];
   private allTickets: NewTicketDto[] = [];
   selectedTickets: NewTicketDto[] = [];
 
-  public springTickets: Pagination<TicketsDTO> =  <Pagination<TicketsDTO>>{};
+  public springTickets: Pagination<TicketsDTO> = <Pagination<TicketsDTO>>{};
   selectedSpringTickets: TicketsDTO[] = [];
   public filteredSpringTickets: TicketsDTO[] = [];
   private allSpringTickets: TicketsDTO[] = [];
+  private modals: { [key: string]: bootstrap.Modal } = {};
 
   pageSize: 10;
   ticketModules: TicketModuleDTO[] = [];
@@ -47,7 +57,7 @@ export class ViewTicketsComponent implements OnInit {
   showReassignTicketsModal: boolean;
 
   public sortingForm: FormGroup;
-  ticketTypesData : TicketTypesDTO[];
+  ticketTypesData: TicketTypesDTO[];
 
   today = new Date();
   year = this.today.getFullYear(); // Get the current year
@@ -55,23 +65,37 @@ export class ViewTicketsComponent implements OnInit {
   day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
-  dateFrom = `${this.year-4}-${this.month}-${this.day}`;
+  dateFrom = `${this.year - 4}-${this.month}-${this.day}`;
 
   tableDetails: TableDetail;
 
   filterObject: {
-    createdOn:string, ticketName:string, refNo:string, clientName:string, intermediaryName:string, ticketFrom:string, ticketAssignee:string
+    createdOn: string, ticketName: string, refNo: string, clientName: string, intermediaryName: string, ticketFrom: string, ticketAssignee: string
   } = {
-    createdOn:'', ticketName:'', refNo:'', clientName:'' , intermediaryName:'', ticketFrom:'', ticketAssignee:''
-  };
+      createdOn: '', ticketName: '', refNo: '', clientName: '', intermediaryName: '', ticketFrom: '', ticketAssignee: ''
+    };
 
   isSearching = false;
 
-  searchData : Pagination<TicketsDTO> =  <Pagination<any>>{};
+  searchData: Pagination<TicketsDTO> = <Pagination<any>>{};
   activityName: string;
   totalTickets: number;
-  filterPayload: any[]= [];
+  filterPayload: any[] = [];
   policyDetails: PolicyDetailsDTO;
+
+  departmentSelected: boolean = false;
+  userToReassignTicket: any;
+  reassignComment: string = '';
+  globalSearch: string = '';
+  selectedUser: any;
+  users: any;
+  fullNameSearch: string = '';
+  noUserChosen: boolean = false;
+  groupUsers: GroupedUser[] = [];
+  selectedGroupUserId!: number;
+  groupLeaderName: string = '';
+  reassignTicketComment: string;
+  noCommentleft: boolean = false;
 
   globalFilterFields = [
     'createdOn',
@@ -89,7 +113,7 @@ export class ViewTicketsComponent implements OnInit {
   });
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   private filterKey: string = '';
-  @ViewChild(AuthorizePolicyModalComponent) authorizePolicyComponent: AuthorizePolicyModalComponent;
+
 
   constructor(
     private authService: AuthService,
@@ -103,9 +127,9 @@ export class ViewTicketsComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private fb: FormBuilder,
     private policiesService: PoliciesService,
-    private quotationService:QuotationsService,
-  )
-  {
+    private quotationService: QuotationsService,
+    public claimsService: ClaimsService,
+  ) {
 
   }
   ngOnInit(): void {
@@ -114,18 +138,18 @@ export class ViewTicketsComponent implements OnInit {
     this.getAllTicketTypes();
     this.getAllTicketModules();
 
-    log.info("ticket obj",this.ticketsService.ticketFilterObject());
+    log.info("ticket obj", this.ticketsService.ticketFilterObject());
 
-    const ticketFilter:any = this.ticketsService.ticketFilterObject();
+    const ticketFilter: any = this.ticketsService.ticketFilterObject();
 
-    if(ticketFilter?.fromDashboardScreen) {
+    if (ticketFilter?.fromDashboardScreen) {
       this.ticketsService
         .getAllTickets(0, ticketFilter?.totalTickets, this.dateFrom || null, this.dateToday || null, '', '', 'name', ticketFilter?.activityName)
         .subscribe({
           next: (data) => {
             this.springTickets = data;
             this.spinner.hide();
-            log.info("ticket subsc",this.ticketsService.ticketFilterObject());
+            log.info("ticket subsc", this.ticketsService.ticketFilterObject());
             this.ticketsService.ticketFilterObject = signal({});
           },
           error: (err) => {
@@ -134,16 +158,25 @@ export class ViewTicketsComponent implements OnInit {
         });
     }
     const queryParams = this.router.parseUrl(this.router.url).queryParams;
-    /*if (Object.keys(queryParams).length > 0) {
-      // Remove query parameters
-      const navigationExtras: NavigationExtras = {
-        queryParams: {}  // Empty object to clear all query parameters
-      };
-      // Navigate to the same route without query parameters
-      this.router.navigate([], navigationExtras);
-    }*/
     this.localStorageService.removeItem('policyDetails');
+
   }
+
+  ngAfterViewInit() {
+    this.modals['reassignTicket'] = new bootstrap.Modal(this.reassignTicketModalElement.nativeElement);
+    this.modals['chooseClientReassign'] = new bootstrap.Modal(this.chooseClientReassignModal.nativeElement);
+  }
+
+
+  openModals(modalName: string) {
+    this.modals[modalName]?.show();
+  }
+
+  closeModals(modalName: string) {
+    this.modals[modalName]?.hide();
+
+  }
+
 
   getAllTicketsFromCubeJs() {
     this.spinner.show();
@@ -176,7 +209,7 @@ export class ViewTicketsComponent implements OnInit {
         "General_Ticket_Details.usrCode"
       ],
       filters: [
-        {member:"General_Ticket_Details.ticketAssignee","operator":"contains","values": ['IBRAHIM']},
+        { member: "General_Ticket_Details.ticketAssignee", "operator": "contains", "values": ['IBRAHIM'] },
       ]
     }
 
@@ -227,147 +260,88 @@ export class ViewTicketsComponent implements OnInit {
       })
 
       this.filteredTickets = this.allTickets;
-        log.info(`allTickets >>>`, this.allTickets);
-        this.cdr.detectChanges();
-        this.spinner.hide();
-    }).catch(() =>{
+      log.info(`allTickets >>>`, this.allTickets);
+      this.cdr.detectChanges();
+      this.spinner.hide();
+    }).catch(() => {
       this.spinner.hide();
     })
 
   }
 
   getAllTickets(
-  pageIndex: number,
-  pageSize: number,
-  sort: string = 'createdDate',
-  sortOrder: string = 'asc'
-) {
-  this.spinner.show();
+    pageIndex: number,
+    pageSize: number,
+    sort: string = 'createdDate',
+    sortOrder: string = 'asc'
+  ) {
+    this.spinner.show();
 
-  if (this.filterObject[this.filterKey]) {
-    return this.searchTicketsDup(this.filterKey, pageIndex, pageSize);
-  } else {
-    return this.quotationService.getAllTickets().pipe(
-      takeUntil(this.destroyed$),
-      tap((data) => {
-        log.info('Fetched Tickets data >>', data);
-        this.spinner.hide();
-      }),
-      finalize(() => this.spinner.hide())
-    );
-  }
-}
-
-
- lazyLoadTickets(event: LazyLoadEvent | TableLazyLoadEvent) {
-  const ticketFilter: any = this.ticketsService.ticketFilterObject();
-
-  if (!ticketFilter?.fromDashboardScreen) {
-    const pageIndex = event.first / event.rows;
-    const queryColumn = event.sortField;
-    const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
-    const pageSize = event.rows;
-    log.info('Sort field:', queryColumn);
-
-    this.getAllTickets(pageIndex, pageSize, sort?.toString())
-      .pipe(untilDestroyed(this))
-      .subscribe(
-        (data: any[]) => {
-          // Wrap data into a Pagination<TicketsDTO> object
-          this.springTickets = {
-            content: data,
-            totalElements: data.length,
-            totalPages: 1,
-            size: data.length,
-            number: pageIndex,
-            first: true,
-            last: true,
-            numberOfElements: data.length,
-          };
-
-          // Notify Angular of data changes
-          this.cdr.detectChanges();
-
-          // Update shared ticket state
-          this.ticketsService.setCurrentTickets(this.springTickets.content);
-
-          // Hide spinner
+    if (this.filterObject[this.filterKey]) {
+      return this.searchTicketsDup(this.filterKey, pageIndex, pageSize);
+    } else {
+      return this.quotationService.getAllTickets().pipe(
+        takeUntil(this.destroyed$),
+        tap((data) => {
+          log.info('Fetched Tickets data >>', data);
           this.spinner.hide();
-
-          // ✅ Extract sysModule values from nested ticket object
-          const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
-
-          // ✅ Process the codes as needed
-          const result = codeValues.map((code) => this.getTicketCode(code));
-
-          log.info('Ticket Codes Extracted:', result);
-        },
-        (error) => {
-          log.error('Error fetching tickets:', error);
-          this.spinner.hide();
-        }
+        }),
+        finalize(() => this.spinner.hide())
       );
+    }
   }
-}
 
 
-  /*lazyLoadTickets(event: LazyLoadEvent | TableLazyLoadEvent) {
+  lazyLoadTickets(event: LazyLoadEvent | TableLazyLoadEvent) {
     const ticketFilter: any = this.ticketsService.ticketFilterObject();
 
     if (!ticketFilter?.fromDashboardScreen) {
       const pageIndex = event.first / event.rows;
       const queryColumn = event.sortField;
-      const sortDirection = event.sortOrder === -1 ? 'DESCENDING' : 'ASCENDING';
+      const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
       const pageSize = event.rows;
+      log.info('Sort field:', queryColumn);
 
-      // Determine sortItem based on queryColumn and sortDirection
-      let sortItem = '';
-      if (queryColumn === 'agentName' || queryColumn === 'clientName') {
-        sortItem = sortDirection;
-      }
-
-      // Remove agentName and clientName from the parameters if they are empty
-      const params: any = {
-        pageIndex,
-        pageSize,
-        sort: queryColumn === 'agentName' || queryColumn === 'clientName' ? '' : queryColumn,
-        query: '',
-        queryColumn: '',
-        agentName: queryColumn === 'agentName' ? event.multiSortMeta : '',
-        clientName: queryColumn === 'clientName' ? event.multiSortMeta : '',
-        sortItem: sortItem
-      };
-
-      this.getAllTickets(pageIndex,
-        pageSize,
-        params.sort,
-        params.query,
-        params.queryColumn,
-        params.agentName,
-        params.clientName,
-        params.sortItem)
+      this.getAllTickets(pageIndex, pageSize, sort?.toString())
         .pipe(untilDestroyed(this))
         .subscribe(
-          (data: Pagination<TicketsDTO>) => {
-            this.springTickets = data;
+          (data: any[]) => {
+            // Wrap data into a Pagination<TicketsDTO> object
+            this.springTickets = {
+              content: data,
+              totalElements: data.length,
+              totalPages: 1,
+              size: data.length,
+              number: pageIndex,
+              first: true,
+              last: true,
+              numberOfElements: data.length,
+            };
+
+            // Notify Angular of data changes
             this.cdr.detectChanges();
+
+            // Update shared ticket state
             this.ticketsService.setCurrentTickets(this.springTickets.content);
+
+            // Hide spinner
             this.spinner.hide();
 
-            // Extracting all the code values from the tickets
+            // ✅ Extract sysModule values from nested ticket object
             const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
 
-            // Passing the code values to the getCodeValue method
-            const result = codeValues.map(code => this.getTicketCode(code));
+            // ✅ Process the codes as needed
+            const result = codeValues.map((code) => this.getTicketCode(code));
 
+            log.info('Ticket Codes Extracted:', result);
           },
-          error => {
+          (error) => {
+            log.error('Error fetching tickets:', error);
             this.spinner.hide();
           }
         );
     }
-  }*/
-
+  }
 
 
   /**
@@ -382,18 +356,18 @@ export class ViewTicketsComponent implements OnInit {
     let ticketCode: string;
 
     if (ticket) {
-      ticketCode = ticket?.ticket?.sysModule === 'Q' ?  ticket?.ticket.quotationNo :
-        (ticket?.ticket.sysModule === 'C' ? ticket?.ticket.claimNo: ticket?.ticket.policyNo);
+      ticketCode = ticket?.ticket?.sysModule === 'Q' ? ticket?.ticket.quotationNo :
+        (ticket?.ticket.sysModule === 'C' ? ticket?.ticket.claimNo : ticket?.ticket.policyNo);
     }
     return ticketCode;
   }
 
-/**
- * The function `onTicketSelect` takes a selected ticket as input and performs various operations based
- * on the ticket's properties.
- * @param {NewTicketDto} selectedTicket - The selectedTicket parameter is of type NewTicketDto, which
- * is an object containing information about a ticket. It has the following properties:
- */
+  /**
+   * The function `onTicketSelect` takes a selected ticket as input and performs various operations based
+   * on the ticket's properties.
+   * @param {NewTicketDto} selectedTicket - The selectedTicket parameter is of type NewTicketDto, which
+   * is an object containing information about a ticket. It has the following properties:
+   */
   onTicketSelect(selectedTicket: NewTicketDto) {
     // this.ticketsService.setSelectedTicket(selectedTickets);
     const systemModule = selectedTicket.systemModule;
@@ -406,116 +380,116 @@ export class ViewTicketsComponent implements OnInit {
     // this.otpRequestCheck(selectedTicketCodes);
   }
 
-/**
- * The function `generateAuthorizeOtp()` checks if any tickets are selected, and if so, it checks if an
- * OTP (One-Time Password) needs to be generated for authorization. If an OTP is required, it sends the
- * OTP to the user's email address.
- * @returns The function does not explicitly return anything.
- */
+  /**
+   * The function `generateAuthorizeOtp()` checks if any tickets are selected, and if so, it checks if an
+   * OTP (One-Time Password) needs to be generated for authorization. If an OTP is required, it sends the
+   * OTP to the user's email address.
+   * @returns The function does not explicitly return anything.
+   */
   generateAuthorizeOtp() {
     // Get the selected tickets from the table
-      const selectedTickets = this.selectedSpringTickets;
+    const selectedTickets = this.selectedSpringTickets;
 
     // Check if any products are selected
-      if (selectedTickets.length === 0) {
-        this.globalMessagingService.displayWarningMessage('Warning', 'Please select at least one ticket to authorize');
+    if (selectedTickets.length === 0) {
+      this.globalMessagingService.displayWarningMessage('Warning', 'Please select at least one ticket to authorize');
       return;
+    }
+
+    const selectedTicketCodes = this.selectedSpringTickets.map(ticket => ticket.ticket.sysModule);
+    this.otpRequestCheck(selectedTicketCodes)
+      .then((results) => {
+
+        if (results && results.length > 0) {
+          const generateOtp = results.some((result) => {
+            const matchingModule = this.ticketModules.find(module => module.shortDescription === result.sysModule);
+            return matchingModule && result.response.premium !== null &&
+              result.response.premium > matchingModule.maximumAuthorizationAmount;
+          });
+
+
+
+          if (!generateOtp) {
+            // Authorize without OTP
+            this.authorizeTickets();
+            return;
+          }
+
+          const loggedInUser = this.authService.getCurrentUser();
+          if (loggedInUser !== null) {
+            const username = loggedInUser.emailAddress;
+            const channel = 'email';
+            log.info('Username:', username);
+
+            this.sendVerificationOtp(username, channel);
+            // this.openModal(); // Open the modal programmatically
+          }
+        } else {
+          log.info('No compareMethod results found');
+          // Handle the scenario where compareMethod does not provide any results
+          // Display an appropriate message or take necessary action
+        }
+      })
+      .catch((error) => {
+        log.error('compareMethod error:', error);
+        // Handle the error occurred in compareMethod
+        // Display an error message or take necessary action
+      });
+  }
+  /**
+   * The `otpRequestCheck` function takes an array of ticket codes, retrieves corresponding ticket
+   * information, and makes different API calls based on the ticket's system module.
+   * @param {string[]} ticketCodes - An array of string values representing ticket codes.
+   * @returns The `otpRequestCheck` function returns a promise that resolves to an array of objects. Each
+   * object in the array contains the `sysModule` and `response` properties.
+   */
+  otpRequestCheck(ticketCodes: string[]) {
+    log.info('Value from selectedTickets:', ticketCodes);
+
+    const ticketPromises = ticketCodes.map((sysModule) => {
+      const ticket = this.selectedSpringTickets.find(t => t.ticket.sysModule === sysModule);
+      if (!ticket) {
+        return Promise.resolve(null);
       }
 
-      const selectedTicketCodes = this.selectedSpringTickets.map(ticket => ticket.ticket.sysModule);
-      this.otpRequestCheck(selectedTicketCodes)
-        .then((results) => {
+      if (sysModule === 'Q') {
+        log.info('Calling quotation method...');
+        const quotationNo = ticket?.ticket.quotationNo;
+        return this.ticketsService.getQuotation(quotationNo)
+          .toPromise()
+          .then((response) => {
+            log.info('Quotation Method Response:', response);
+            return { sysModule, response };
+          });
+      } else if (sysModule === 'C') {
+        log.info('Calling claim Method...');
+        const claimNo = ticket?.ticket.claimNo;
+        return this.ticketsService.getClaims(claimNo)
+          .toPromise()
+          .then((response) => {
+            log.info('Claim Method Response:', response);
+            return { sysModule, response };
+          });
+      } else {
+        log.info('Calling default method...');
+        const policyCode = ticket?.ticket.policyCode.toString();
+        return this.policiesService.getPolicyByBatchNo(policyCode)
+          .toPromise()
+          .then((response) => {
+            log.info('Default Method Response:', response);
+            return { sysModule, response };
+          });
+      }
+    });
 
-          if (results && results.length > 0) {
-            const generateOtp = results.some((result) => {
-              const matchingModule = this.ticketModules.find(module => module.shortDescription === result.sysModule);
-              return matchingModule && result.response.premium !== null &&
-                result.response.premium > matchingModule.maximumAuthorizationAmount;
-            });
-
-
-
-            if (!generateOtp) {
-              // Authorize without OTP
-              this.authorizeTickets();
-              return;
-            }
-
-            const loggedInUser = this.authService.getCurrentUser();
-            if (loggedInUser !== null) {
-              const username = loggedInUser.emailAddress;
-              const channel = 'email';
-              log.info('Username:', username);
-
-              this.sendVerificationOtp(username, channel);
-              // this.openModal(); // Open the modal programmatically
-            }
-          } else {
-            log.info('No compareMethod results found');
-            // Handle the scenario where compareMethod does not provide any results
-            // Display an appropriate message or take necessary action
-          }
-        })
-        .catch((error) => {
-          log.error('compareMethod error:', error);
-          // Handle the error occurred in compareMethod
-          // Display an error message or take necessary action
-        });
-    }
-/**
- * The `otpRequestCheck` function takes an array of ticket codes, retrieves corresponding ticket
- * information, and makes different API calls based on the ticket's system module.
- * @param {string[]} ticketCodes - An array of string values representing ticket codes.
- * @returns The `otpRequestCheck` function returns a promise that resolves to an array of objects. Each
- * object in the array contains the `sysModule` and `response` properties.
- */
-  otpRequestCheck(ticketCodes: string[]) {
-      log.info('Value from selectedTickets:', ticketCodes);
-
-      const ticketPromises = ticketCodes.map((sysModule) => {
-        const ticket = this.selectedSpringTickets.find(t => t.ticket.sysModule === sysModule);
-        if (!ticket) {
-          return Promise.resolve(null);
-        }
-
-        if (sysModule === 'Q') {
-          log.info('Calling quotation method...');
-          const quotationNo = ticket?.ticket.quotationNo;
-          return this.ticketsService.getQuotation(quotationNo)
-            .toPromise()
-            .then((response) => {
-              log.info('Quotation Method Response:', response);
-              return { sysModule, response };
-            });
-        } else if (sysModule === 'C') {
-          log.info('Calling claim Method...');
-          const claimNo = ticket?.ticket.claimNo;
-          return this.ticketsService.getClaims(claimNo)
-            .toPromise()
-            .then((response) => {
-              log.info('Claim Method Response:', response);
-              return { sysModule, response };
-            });
-        } else {
-          log.info('Calling default method...');
-          const policyCode = ticket?.ticket.policyCode.toString();
-          return this.policiesService.getPolicyByBatchNo(policyCode)
-            .toPromise()
-            .then((response) => {
-              log.info('Default Method Response:', response);
-              return { sysModule, response };
-            });
-        }
-      });
-
-      return Promise.all(ticketPromises);
+    return Promise.all(ticketPromises);
 
   }
 
-/**
- * The `authorizeTickets` function is responsible for authorizing selected tickets and displaying
- * success or failure messages based on the response.
- */
+  /**
+   * The `authorizeTickets` function is responsible for authorizing selected tickets and displaying
+   * success or failure messages based on the response.
+   */
   authorizeTickets() {
     this.cdr.detectChanges();
 
@@ -550,21 +524,21 @@ export class ViewTicketsComponent implements OnInit {
             }
           });
 
-            if (successCount > 0 && failedCount > 0) {
-              const successMessage = successCount > 1 ? `${successCount} tickets have been authorized` : `Selected ticket has been authorized`;
-              const failedMessage = failedCount > 1 ? `${failedCount} tickets have failed to be authorized` : `Selected ticket has failed to be authorized`;
-              this.globalMessagingService.displaySuccessMessage('Success', successMessage);
-              this.globalMessagingService.displayErrorMessage('Failed', failedMessage);
-            } else if (successCount > 0) {
-              const successMessage = successCount > 1 ? `${successCount} tickets have been authorized` : `Selected ticket has been authorized`;
-              this.globalMessagingService.displaySuccessMessage('Success', successMessage);
-            } else if (failedCount > 0) {
-              const failedMessage = failedCount > 1 ? `${failedCount} tickets have failed to be authorized` : `Selected ticket has failed to be authorized`;
-              this.globalMessagingService.displayErrorMessage('Failed', failedMessage);
-            } else {
-              this.globalMessagingService.displayErrorMessage('Failed', `All ${totalCount} tickets have failed to be authorized`);
-            }
-            // Clear the selected tickets after authorizing
+          if (successCount > 0 && failedCount > 0) {
+            const successMessage = successCount > 1 ? `${successCount} tickets have been authorized` : `Selected ticket has been authorized`;
+            const failedMessage = failedCount > 1 ? `${failedCount} tickets have failed to be authorized` : `Selected ticket has failed to be authorized`;
+            this.globalMessagingService.displaySuccessMessage('Success', successMessage);
+            this.globalMessagingService.displayErrorMessage('Failed', failedMessage);
+          } else if (successCount > 0) {
+            const successMessage = successCount > 1 ? `${successCount} tickets have been authorized` : `Selected ticket has been authorized`;
+            this.globalMessagingService.displaySuccessMessage('Success', successMessage);
+          } else if (failedCount > 0) {
+            const failedMessage = failedCount > 1 ? `${failedCount} tickets have failed to be authorized` : `Selected ticket has failed to be authorized`;
+            this.globalMessagingService.displayErrorMessage('Failed', failedMessage);
+          } else {
+            this.globalMessagingService.displayErrorMessage('Failed', `All ${totalCount} tickets have failed to be authorized`);
+          }
+          // Clear the selected tickets after authorizing
           this.selectedSpringTickets = [];
           this.cdr.detectChanges();
 
@@ -578,33 +552,33 @@ export class ViewTicketsComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
- /**
-  * The function `sendVerificationOtp` sends a verification OTP (One-Time Password) to a specified
-  * username through a specified channel.
-  * @param {string} username - The username is a string that represents the user's username or email
-  * address.
-  * @param {string} channel - The channel parameter specifies the method through which the verification
-  * OTP (One-Time Password) will be sent. It could be an email, SMS, or any other communication
-  * channel.
-  */
+  /**
+   * The function `sendVerificationOtp` sends a verification OTP (One-Time Password) to a specified
+   * username through a specified channel.
+   * @param {string} username - The username is a string that represents the user's username or email
+   * address.
+   * @param {string} channel - The channel parameter specifies the method through which the verification
+   * OTP (One-Time Password) will be sent. It could be an email, SMS, or any other communication
+   * channel.
+   */
   sendVerificationOtp(username: string, channel: string) {
     this.authService.sentVerificationOtp(username, channel)
       .pipe(untilDestroyed(this))
       .subscribe(response => {
         log.info("my otp >>>", response);
-        if(response){
+        if (response) {
           this.globalMessagingService.displaySuccessMessage('Success', 'OTP successfully sent');
         }
       })
   }
 
- /**
-  * The function `goToTicketDetails` sets the ticket details in local storage, navigates to the ticket
-  * details page, sets the current ticket detail in the tickets service, and navigates to the ticket
-  * details page with query parameters.
-  * @param {NewTicketDto} ticket - The parameter `ticket` is of type `NewTicketDto`, which is an object
-  * containing information about a new ticket.
-  */
+  /**
+   * The function `goToTicketDetails` sets the ticket details in local storage, navigates to the ticket
+   * details page, sets the current ticket detail in the tickets service, and navigates to the ticket
+   * details page with query parameters.
+   * @param {NewTicketDto} ticket - The parameter `ticket` is of type `NewTicketDto`, which is an object
+   * containing information about a new ticket.
+   */
   goToTicketDetails(ticket: TicketsDTO) {
     this.localStorageService.setItem('ticketDetails', ticket);
     this.router.navigate([`home/administration/ticket/details/${ticket.ticket.code}`]);
@@ -613,8 +587,8 @@ export class ViewTicketsComponent implements OnInit {
     let ticketId = ticket?.ticket?.code;
     let module = ticket?.ticket?.sysModule;
     this.router.navigate([`home/administration/ticket/details/`],
-      {queryParams: { ticketId, module}}).then(r => {
-    });
+      { queryParams: { ticketId, module } }).then(r => {
+      });
   }
 
   toggleReassignModal(visible: boolean) {
@@ -634,22 +608,62 @@ export class ViewTicketsComponent implements OnInit {
     return true
   }
 
-  processReassignTask(){
-    if(this.checkSelectedTickets()){
-      this.toggleReassignModal(true)
+  // For multiple tickets 
+  processReassignTask() {
+    if (this.checkSelectedTickets()) {
+      this.openReassignTicketModal();
     }
   }
 
   handleAction(event: void) {
-    this.toggleReassignModal(false); // Close the modal after performing the action
+    this.toggleReassignModal(false); 
   }
 
   reassignSubmitted(event) {
-    if(event){
+    if (event) {
       this.dt.reset();
       this.toggleReassignModal(false);
       log.info('Reassign dto received: ', event);
     }
+  }
+
+  /**
+   * Common validation for reassignment
+   * @returns true if validation passes, false otherwise
+   */
+  private validateReassignment(): boolean {
+    if (!this.userToReassignTicket) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false;
+      }, 3000);
+      return false;
+    }
+
+    if (!this.reassignTicketComment) {
+      this.noCommentleft = true;
+      setTimeout(() => {
+        this.noCommentleft = false;
+      }, 3000);
+      return false;
+    }
+
+    if (this.selectedSpringTickets.length === 0) {
+      this.globalMessagingService.displayWarningMessage('Warning', 'No tickets selected');
+      this.closeReassignTicketModal();
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Common cleanup after successful reassignment
+   */
+  private cleanupAfterReassignment(): void {
+    this.selectedSpringTickets = [];
+    this.dt?.reset();
+    this.closeReassignTicketModal();
   }
 
   createSortForm() {
@@ -687,7 +701,7 @@ export class ViewTicketsComponent implements OnInit {
       payload.ticketTypes,
       payload.ticketModules,
       null
-      )
+    )
       .subscribe(data => {
         this.springTickets = data;
         this.cdr.detectChanges();
@@ -706,7 +720,7 @@ export class ViewTicketsComponent implements OnInit {
       )
   }
 
-  getAllTicketModules(){
+  getAllTicketModules() {
     this.ticketsService.getTicketModules()
       .pipe(untilDestroyed(this),
       )
@@ -722,7 +736,7 @@ export class ViewTicketsComponent implements OnInit {
     this.springTickets = null; // Initialize with an empty array or appropriate structure
 
     let data = this.filterObject[keyData];
-    console.log('datalog>>',data, keyData)
+    console.log('datalog>>', data, keyData)
 
     this.isSearching = true;
     this.spinner.show();
@@ -734,9 +748,9 @@ export class ViewTicketsComponent implements OnInit {
           this.dateFrom, this.dateToday,
           keyData, data)
         .subscribe((data) => {
-            this.springTickets = data;
-            this.spinner.hide();
-          },
+          this.springTickets = data;
+          this.spinner.hide();
+        },
           error => {
             this.spinner.hide();
           });
@@ -788,7 +802,7 @@ export class ViewTicketsComponent implements OnInit {
 
   searchTickets(key: string, pageNo = 0) {
     let filterValue = {
-      createdOn:'', ticketName:'', refNo:'', clientName:'' , intermediaryName:'', ticketFrom:'', ticketAssignee:''
+      createdOn: '', ticketName: '', refNo: '', clientName: '', intermediaryName: '', ticketFrom: '', ticketAssignee: ''
     };
 
     let temp = this.filterObject[key];
@@ -817,7 +831,7 @@ export class ViewTicketsComponent implements OnInit {
       };
       log.info('searchdatapayload>>', payload);
       this.ticketsService.searchTickets(pageNo, 10, payload)
-        .subscribe((data) =>{
+        .subscribe((data) => {
           this.springTickets = data;
           log.info('searchdata>>', this.springTickets);
         })
@@ -829,7 +843,7 @@ export class ViewTicketsComponent implements OnInit {
 
   searchTicketsDup(key: string, pageNo = 0, pageSize: number) {
     let filterValue = {
-      createdOn:'', ticketName:'', refNo:'', clientName:'' , intermediaryName:'', ticketFrom:'', ticketAssignee:''
+      createdOn: '', ticketName: '', refNo: '', clientName: '', intermediaryName: '', ticketFrom: '', ticketAssignee: ''
     };
 
     let temp = this.filterObject[key];
@@ -907,6 +921,197 @@ export class ViewTicketsComponent implements OnInit {
   goToDispatch() {
     this.router.navigate([`home/administration/document-dispatch`]);
   }
+
+  //reassign ticket
+  fetchGroupedUserDetails(selectedUser: any) {
+    const groupedUserId = selectedUser.id;
+    this.quotationService.getGroupedUserDetails(groupedUserId)
+      .subscribe({
+        next: (res: GroupedUser[]) => {
+          this.groupUsers = res;
+
+          // Find the team leader
+          const groupLeader = res.find(user => user.isTeamLeader === "Y");
+          if (groupLeader) {
+            this.selectedGroupUserId = groupLeader.id;
+            this.groupLeaderName = groupLeader.userDetails.name;
+          }
+        },
+        error: (error) => {
+          console.error("Error fetching group users", error);
+        }
+      });
+  }
+
+  openReassignTicketModal() {
+    // Only open if tickets are selected
+    if (this.selectedSpringTickets.length === 0) {
+      this.globalMessagingService.displayErrorMessage('Warning', 'Please select at least one ticket to reassign');
+      return;
+    }
+    this.openModals('reassignTicket');
+  }
+
+  closeReassignTicketModal() {
+    this.closeModals('reassignTicket');
+    // Reset all properties
+    this.reassignComment = null;
+    this.reassignTicketComment = null;
+    this.userToReassignTicket = null;
+    this.selectedUser = null;
+    this.departmentSelected = false;
+    this.selectedGroupUserId = null;
+    this.groupUsers = [];
+    this.noUserChosen = false;
+    this.noCommentleft = false;
+  }
+
+  openChooseClientReassignModal() {
+    this.getUsers();
+    this.openModals('chooseClientReassign');
+    this.closeReassignTicketModal();
+  }
+
+  closeChooseClientReassignModal(): void {
+    this.closeModals('chooseClientReassign');
+    // Reset user selection
+    this.onUserUnselect();
+    this.selectedUser = null;
+    this.globalSearch = '';
+    this.fullNameSearch = '';
+    this.noUserChosen = false;
+  }
+
+  getUsers() {
+    this.claimsService.getUsers(0, 1000).subscribe({
+      next: (res => {
+        this.users = res;
+        this.users = this.users.content;
+        log.debug('users>>>', this.users)
+
+      }),
+      error: (error => {
+        log.debug('error', error)
+        this.globalMessagingService.displayErrorMessage('Error', 'failed to feth users')
+      })
+    })
+  }
+
+
+  //search member to reassign
+  filterGlobal(event: any): void {
+    const value = event.target.value;
+    this.globalSearch = value;
+    this.reassignTable.filterGlobal(value, 'contains');
+  }
+
+
+  filterByFullName(event: any): void {
+    const value = event.target.value;
+    this.reassignTable.filter(value, 'name', 'contains');
+  }
+  onUserSelect(): void {
+    if (this.selectedUser) {
+      log.debug("Selected user>>>", this.selectedUser);
+      this.globalSearch = this.selectedUser.id;
+      this.fullNameSearch = this.selectedUser.name;
+      this.fetchGroupedUserDetails(this.selectedUser)
+
+    }
+  }
+
+  onUserUnselect(): void {
+    this.selectedUser = null;
+    this.globalSearch = '';
+    this.fullNameSearch = '';
+  }
+  selectClient() {
+    if (!this.selectedUser) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false
+      }, 3000);
+      return;
+    }
+
+    this.userToReassignTicket = this.selectedUser.name;
+    if (this.selectedUser.userType == "G") {
+      this.departmentSelected = true;
+      this.fetchGroupedUserDetails(this.selectedUser);
+    }
+    this.closeChooseClientReassignModal();
+    this.openModals('reassignTicket');
+
+  }
+
+  /**
+   * Reassign single ticket using table action button
+   * @param ticket - The ticket to reassign
+   */
+  reassignSingleTicket(ticket: TicketsDTO) {
+    this.selectedSpringTickets = [ticket];
+    this.openReassignTicketModal();
+  }
+
+  /**
+   * Main reassignment method - handles both single and multiple tickets
+   */
+  reassignTicket() {
+    if (!this.validateReassignment()) {
+      return;
+    }
+
+    // Extract selected ticket codes
+    const selectedTicketIds = this.selectedSpringTickets.map(ticket => ticket['ticketCode']);
+    const isSingleTicket = selectedTicketIds.length === 1;
+
+    log.debug('Selected Ticket IDs:', selectedTicketIds);
+    log.debug('Number of tickets selected:', selectedTicketIds.length);
+    log.debug('Reassigning to user:', this.userToReassignTicket);
+    log.debug('Comment:', this.reassignTicketComment);
+
+    this.spinner.show();
+
+    // Choose the appropriate service method based on ticket count
+    const reassignObservable = isSingleTicket
+      ? this.quotationService.reassignTicket(selectedTicketIds[0], this.userToReassignTicket, this.reassignTicketComment)
+      : this.quotationService.reassignMultipleTickets(selectedTicketIds, this.userToReassignTicket, this.reassignTicketComment);
+
+    // Execute reassignment
+    reassignObservable
+      .pipe(
+        untilDestroyed(this),
+        catchError(error => {
+          this.spinner.hide();
+          log.error('Error reassigning ticket(s):', error);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            `Failed to reassign ${isSingleTicket ? 'ticket' : 'tickets'}`
+          );
+          return throwError(error);
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.spinner.hide();
+          log.debug('Reassign response:', response);
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            `${isSingleTicket ? 'Ticket' : 'Tickets'} reassigned successfully`
+          );
+
+          // Clean up
+          this.cleanupAfterReassignment();
+        },
+        error: (error) => {
+          this.spinner.hide();
+          log.error('Error in reassignment subscription:', error);
+        }
+      });
+  }
+
+
+
 }
 
 enum filterSortEnums {

@@ -126,7 +126,8 @@
 
                 <i class="fa-solid fa-trash-can"
                   style="font-size:17px; color:#EE3945; cursor: pointer; margin-right: 8px;" title="Delete product"
-                  data-bs-toggle="modal" data-bs-target="#deleteProduct" (click)="$event.stopPropagation()">
+                  data-bs-toggle="modal" data-bs-target="#deleteProduct" 
+                  (click)="prepareProductForDeletion(productGroup, i); $event.stopPropagation()">
                 </i>
               </div>
             </div>
@@ -170,7 +171,7 @@
                         }}
                       </button>
                       <button type="button" class="btn btn-primary px-5" data-bs-dismiss="modal"
-                        (click)="deleteProduct(productGroup, i)">
+                        (click)="deleteProduct()">
                         {{ 'gis.quotation.delete'| translate }}
                       </button>
                     </div>
