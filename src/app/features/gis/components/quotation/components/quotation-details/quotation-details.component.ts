@@ -356,10 +356,15 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getuser();
     this.getAgents();
+    
+    // Initialize client form control with the client code from session storage if exists
+    const storedClientCode = sessionStorage.getItem('SelectedClientCode');
+    const initialClientValue = storedClientCode ? JSON.parse(storedClientCode) : '';
+    
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
       phone: ['', this.newClient ? [Validators.required] : []],
-      client: ['', [Validators.minLength(2)]],
+      client: [initialClientValue, [Validators.minLength(2)]],
       paymentFrequency: [this.paymentFrequencies[0].value, Validators.required],
       // marketer: ['']
     });
@@ -652,7 +657,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   handleSaveClient(eventData: any) {
     log.debug('Event received from Client search comp', eventData);
-    sessionStorage.setItem("SelectedClientDetails", eventData);
+    sessionStorage.setItem("SelectedClientDetails", JSON.stringify(eventData));
 
     const clientCode = eventData.id;
     this.selectedClientCode = clientCode;
@@ -661,6 +666,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         ? `${eventData.firstName} ${eventData.lastName}`
         : eventData.firstName || eventData.lastName || '';
     sessionStorage.setItem("SelectedClientName", this.selectedClientName);
+    sessionStorage.setItem("SelectedClientCode", JSON.stringify(clientCode));
     this.quotationForm.controls['client'].setValue(this.selectedClientCode);
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
