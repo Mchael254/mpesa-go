@@ -305,6 +305,8 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   selectedRiskGroup: AbstractControl<any, any>;
   quotationObject: QuotationDetails;
   currentExpandedIndex: number | null = null;
+  productToDelete: AbstractControl<any, any> = null;
+  productIndexToDelete: number = null;
   productSearch: string = '';
   filteredProducts: Products[] = [];
   searchChanged = new Subject<string>();
@@ -823,10 +825,23 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     log.debug("FORM ARRAY:", this.productsFormArray)
   }
 
-  // Remove product
-  deleteProduct(product: AbstractControl, productIndex: number) {
+  // Prepare product for deletion
+  prepareProductForDeletion(product: AbstractControl, productIndex: number) {
+    this.productToDelete = product;
+    this.productIndexToDelete = productIndex;
+    log.debug("Product prepared for deletion:", product.value, "at index:", productIndex);
+  }
+
+  //delete product
+  deleteProduct() {
+    if (this.productToDelete === null || this.productIndexToDelete === null) {
+      log.debug("No product selected for deletion");
+      return;
+    }
+
+    const product = this.productToDelete;
+    const productIndex = this.productIndexToDelete;
     const deletedCode = product.value.code;
-    log.debug("Selected product>>>", product.value, this.quickQuoteForm.get('product'));
     log.debug("PRODUCT to be deleted", deletedCode);
 
     // Check if product exists in productsFormArray
@@ -874,6 +889,10 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
       this.globalMessagingService.displaySuccessMessage('Success', 'Product removed successfully');
       log.debug("Product removed from FormArray and cover types cleared");
+      
+      // Clear the stored references after successful local deletion
+      this.productToDelete = null;
+      this.productIndexToDelete = null;
       return;
     }
 
@@ -884,8 +903,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       return;
     }
 
-    // If we reach here, product exists in both FormArray and quotationObject
-    // Continue with the original deletion logic
+    // product exists in both FormArray and quotationObject and ready for deletion
     const quotationCode = Number(sessionStorage.getItem('quotationCode')) || 0;
 
     const quickQuotePayloadStr = sessionStorage.getItem('quickQuotePayload');
@@ -942,7 +960,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           this.premiumComputationResponse = null;
         }
 
-        // Optional: remove from session payload
+        //remove from session payload
         quickQuotePayload.products = quickQuotePayload.products.filter((p: any) => p.code !== deletedCode);
         sessionStorage.setItem('quickQuotePayload', JSON.stringify(quickQuotePayload));
 
@@ -1022,10 +1040,18 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           sessionStorage.setItem('premiumComputationResponse', JSON.stringify(this.premiumComputationResponse));
           log.debug('Updated premiumComputationResponse in sessionStorage after product deletion');
         }
+
+        // Clear the stored references after successful deletion
+        this.productToDelete = null;
+        this.productIndexToDelete = null;
       },
       error: (error: any) => {
         log.error("Failed to delete quotation product:", error);
         this.globalMessagingService.displayErrorMessage('Error', 'Unable to delete product. Please try again later');
+        
+        // Clear the stored references on error
+        this.productToDelete = null;
+        this.productIndexToDelete = null;
       }
     });
   }

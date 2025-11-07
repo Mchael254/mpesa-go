@@ -1329,13 +1329,34 @@ export class QuotationsService {
 
   }
 
-  reassignTicket(taskId: string, newAssignee: string) {
+  reassignTicket(taskId: string, newAssignee: string, comment?: string) {
+    const payload = {
+      taskId,
+      newAssignee,
+      comment
+    };
+
     return this.api.PUT<any>(
-      `v1/tickets/reassign?taskId=${taskId}&newAssignee=${newAssignee}`,
-      null,
+      `v1/tickets/reassign`,
+      payload,
       API_CONFIG.GIS_TICKETING_SERVICE
     );
   }
+
+  reassignMultipleTickets(taskIds: string[], newAssignee: string, comment?: string) {
+    const payload = {
+      taskIds,
+      newAssignee,
+      comment
+    };
+
+    return this.api.PUT<any>(
+      `v1/tickets/assign-multiple`,
+      payload,
+      API_CONFIG.GIS_TICKETING_SERVICE
+    );
+  }
+
 
   getTaskById(quotationCode: string) {
     return this.api.GET<any>(
