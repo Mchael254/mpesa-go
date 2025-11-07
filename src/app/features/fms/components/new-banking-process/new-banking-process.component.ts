@@ -1,3 +1,4 @@
+import { ReceiptManagementService } from './../../services/receipt-management.service';
 import { receipt } from './../banking-dashboard/banking-dashboard.component';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -19,6 +20,7 @@ import {
 } from '../../data/banking-process-dto';
 import * as bootstrap from 'bootstrap';
 import { AuthService } from '../../../../shared/services/auth.service';
+import { GLAccountDTO } from '../../data/receipt-management-dto';
 const log = new Logger('NewBankingProcessComponent');
 /**
  * @Component NewBankingProcessComponent
@@ -37,6 +39,7 @@ export class NewBankingProcessComponent implements OnInit {
   rctsRetrievalForm!: FormGroup;
   /** Manages the form controls for assigning receipts to a user (user selection, comment). */
   usersForm!: FormGroup;
+  depositForm!:FormGroup;
   // --- UI State and Data ---
   /** Static data for the stepper component, indicating the current stage of the process. */
   steps = fmsStepsData.bankingSteps;
@@ -87,6 +90,11 @@ export class NewBankingProcessComponent implements OnInit {
   loggedInUser: any;
    staffPageSize = 5;
    selectedRctObj:ReceiptDTO;
+   page:number=0;
+   size:number=50;
+   sortBy:string='accNumber';
+   direction:string='asc';
+   glAccounts:GLAccountDTO[]=[];
   /**
    * @constructor
    * @param translate Service for handling internationalization (i18n).
@@ -105,7 +113,8 @@ export class NewBankingProcessComponent implements OnInit {
     private bankingService: BankingProcessService,
     private sessionStorage: SessionStorageService,
     private authService: AuthService,
-    private staffService:StaffService
+    private staffService:StaffService,
+    private receiptManagementService:ReceiptManagementService
   ) {}
   /**
    * @description Angular lifecycle hook that runs on component initialization.
@@ -115,6 +124,7 @@ export class NewBankingProcessComponent implements OnInit {
   ngOnInit() {
     this.initiateRctsForm();
     this.initializeUsersForm();
+    this.initializeDepositForm();
     this.initiateColumns();
     this.allColumns = this.initiateColumns();
 this.fetchActiveUsers(0, this.staffPageSize);
@@ -129,6 +139,7 @@ this.fetchActiveUsers(0, this.staffPageSize);
       this.selectedOrg = null;
     }
     this.loggedInUser = this.authService.getCurrentUser();
+    this.fetchGlAccounts();
   }
   /**
    * @description Initializes the `rctsRetrievalForm` with required controls and validators.
@@ -148,6 +159,14 @@ this.fetchActiveUsers(0, this.staffPageSize);
       user: ['', Validators.required],
       comment: [''],
     });
+  }
+  initializeDepositForm():void{
+this.depositForm = this.fb.group({
+  bankAccount:['',Validators.required],
+  slipNumber:['',Validators.required],
+  amount:['',Validators.required],
+  remarks:['']
+})
   }
   /**
    * @description A getter that provides a translated string for the PrimeNG table's paginator report.
@@ -478,6 +497,32 @@ this.globalMessagingService.displaySuccessMessage('',response.msg);
       }
     });
      this.closeAssignModal();
+}
+openDepositModal(receipt:any):void{
+ const modalEl= new bootstrap.Modal(document.getElementById('depositModal'));
+  if(modalEl){
+    modalEl.show();
+  }
+  this.selectedRctObj = receipt;
+}
+closeDepositModal(){
+  const modal = document.getElementById('depositModal');
+  if(modal){
+  const modalEl = bootstrap.Modal.getInstance(modal);
+  if(modalEl){
+    modalEl.hide();
+  }
+  }
+}
+fetchGlAccounts():void{
+  this.receiptManagementService.getGlAccounts(this.page,this.size,this.sortBy,this.direction).subscribe({
+    next:(response)=>{
+     this.glAccounts=response.data.content;
+    },
+    error:(err)=>{
+      this.handleApiError(err);
+    }
+  })
 }
   /**
    * @description Navigates the user to the next step in the banking process (Create Batches).

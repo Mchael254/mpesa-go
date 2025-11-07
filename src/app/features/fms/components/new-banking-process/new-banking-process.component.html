@@ -34,7 +34,7 @@
       <div class="mb-3">
         <form [formGroup]="rctsRetrievalForm">
           <div class="row">
-            <div class="col col-4">
+            <div class="col-12 col-lg-4 col-md-4">
               <label for="sdate">{{
                 "fms.banking.fromDate" | translate
               }}</label>
@@ -60,7 +60,7 @@
                 </div>
               </div>
             </div>
-            <div class="col col-4">
+            <div class="col-12 col-lg-4 col-md-4">
               <label for="edate">{{ "fms.banking.toDate" | translate }}</label>
               <span class="required"></span>
               <input
@@ -84,7 +84,7 @@
                 </div>
               </div>
             </div>
-            <div class="col col-4">
+            <div class="col-12 col-lg-4 col-md-4">
               <label for="paymentMode">{{
                 "mngt_wrkflw.claimDetails.paymentMode" | translate
               }}</label>
@@ -246,7 +246,12 @@
                   <div class="d-flex gap-1">
                     <button
                       class="btn btn-link btn-sm"
-                      *ngIf="paymentMode === 'CHEQUE'"
+                      *ngIf="
+                        (paymentMode === 'CHEQUE' &&
+                          receipt.batchAssignmentUserName != null) ||
+                        ''
+                      "
+                      (click)="openDepositModal(receipt)"
                     >
                       {{ "fms.banking.deposit" | translate }}
                     </button>
@@ -465,4 +470,108 @@
       </div>
     </div>
   </p-dialog>
+  <!-- start of deposit modal -->
+  <div
+    class="modal fade"
+    id="depositModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-primary" id="exampleModalLabel">
+            Deposit details
+          </h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="depositForm">
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group mb-3">
+                  <label for="bank" class="form-label required">{{
+                    "fms.banking.bankAccount" | translate
+                  }}</label>
+                  <select
+                    id="bank"
+                    class="form-select"
+                    formControlName="bankAccount"
+                  >
+                    <option
+                      *ngFor="let accounts of glAccounts"
+                      [value]="accounts.accountNumber"
+                    >
+                      {{ accounts.accountName }} {{ accounts.accountNumber }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-6">
+                <label for="bankingSlip" class="form-label required">{{
+                  "fms.banking.bankingSipNumber" | translate
+                }}</label>
+                <div class="form-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="bankingSlip"
+                    formControlName="slipNumber"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group mb-3">
+                  <label for="amount" class="form-label">{{
+                    "fms.banking.amountBanked" | translate
+                  }}</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="amount"
+                    formControlName="amount"
+                  />
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group mb-3">
+                  <label for="remarks" class="form-label">{{
+                    "fms.banking.remarksComments" | translate
+                  }}</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="remarks"
+                    formControlName="remarks"
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="closeDepositModal()"
+          >
+            {{ "fms.receipt-management.cancel" | translate }}
+          </button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end of deposit modal -->
 </div>
