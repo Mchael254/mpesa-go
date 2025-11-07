@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { ChangeDetectorRef, Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
-=======
-import { ChangeDetectorRef, Component, OnInit, signal, ViewChild } from '@angular/core';
->>>>>>> origin/develop
 import { NewTicketDto, TicketModuleDTO, TicketsDTO, TicketTypesDTO } from "../../../data/ticketsDTO";
 import { AuthService } from "../../../../../shared/services/auth.service";
 import { catchError } from "rxjs/internal/operators/catchError";
@@ -132,10 +128,7 @@ export class ViewTicketsComponent implements OnInit {
     private fb: FormBuilder,
     private policiesService: PoliciesService,
     private quotationService: QuotationsService,
-<<<<<<< HEAD
     public claimsService: ClaimsService,
-=======
->>>>>>> origin/develop
   ) {
 
   }
@@ -280,11 +273,7 @@ export class ViewTicketsComponent implements OnInit {
     pageIndex: number,
     pageSize: number,
     sort: string = 'createdDate',
-<<<<<<< HEAD
-    sortOrder: string = 'asc'
-=======
     sortOrder: string = 'desc'
->>>>>>> origin/develop
   ) {
     this.spinner.show();
 
@@ -300,62 +289,8 @@ export class ViewTicketsComponent implements OnInit {
         finalize(() => this.spinner.hide())
       );
     }
-<<<<<<< HEAD
-=======
   }
 
-
-  lazyLoadTickets(event: LazyLoadEvent | TableLazyLoadEvent) {
-    const ticketFilter: any = this.ticketsService.ticketFilterObject();
-
-    if (!ticketFilter?.fromDashboardScreen) {
-      const pageIndex = event.first / event.rows;
-      const queryColumn = event.sortField;
-      const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
-      const pageSize = event.rows;
-      log.info('Sort field:', queryColumn);
-
-      this.getAllTickets(pageIndex, pageSize, sort?.toString())
-        .pipe(untilDestroyed(this))
-        .subscribe(
-          (data: any[]) => {
-            // Wrap data into a Pagination<TicketsDTO> object
-            this.springTickets = {
-              content: data,
-              totalElements: data.length,
-              totalPages: 1,
-              size: data.length,
-              number: pageIndex,
-              first: true,
-              last: true,
-              numberOfElements: data.length,
-            };
-
-            // Notify Angular of data changes
-            this.cdr.detectChanges();
-
-            // Update shared ticket state
-            this.ticketsService.setCurrentTickets(this.springTickets.content);
-
-            // Hide spinner
-            this.spinner.hide();
-
-            // ✅ Extract sysModule values from nested ticket object
-            const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
-
-            // ✅ Process the codes as needed
-            const result = codeValues.map((code) => this.getTicketCode(code));
-
-            log.info('Ticket Codes Extracted:', result);
-          },
-          (error) => {
-            log.error('Error fetching tickets:', error);
-            this.spinner.hide();
-          }
-        );
-    }
->>>>>>> origin/develop
-  }
 
 
   lazyLoadTickets(event: LazyLoadEvent | TableLazyLoadEvent) {
@@ -674,16 +609,10 @@ export class ViewTicketsComponent implements OnInit {
     return true
   }
 
-<<<<<<< HEAD
   // For multiple tickets 
   processReassignTask() {
     if (this.checkSelectedTickets()) {
       this.openReassignTicketModal();
-=======
-  processReassignTask() {
-    if (this.checkSelectedTickets()) {
-      this.toggleReassignModal(true)
->>>>>>> origin/develop
     }
   }
 
@@ -994,7 +923,6 @@ export class ViewTicketsComponent implements OnInit {
     this.router.navigate([`home/administration/document-dispatch`]);
   }
 
-<<<<<<< HEAD
   //reassign ticket
   fetchGroupedUserDetails(selectedUser: any) {
     const groupedUserId = selectedUser.id;
@@ -1184,7 +1112,6 @@ export class ViewTicketsComponent implements OnInit {
   }
 
 
-=======
    processTicket(ticket: any): void {
   const ticketName = ticket.ticketName?.trim();
   log.debug("Ticket chosen", ticket);
@@ -1212,7 +1139,6 @@ export class ViewTicketsComponent implements OnInit {
       break;
   }
 }
->>>>>>> origin/develop
 
 }
 
