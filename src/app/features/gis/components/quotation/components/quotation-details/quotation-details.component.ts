@@ -219,7 +219,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   isRevisionMode = false;
   ticketStatus: string
   quickQuoteFlag: boolean = false;
-
   ticketData:any;
 
 

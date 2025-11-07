@@ -3090,15 +3090,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         // --- SMS MODE ---
         else if (selectedMethod === 'sms') {
-<<<<<<< Updated upstream
-
-          const smsPayload: any = {
-            recipientPhone: smsNumber,
-            message: `Dear ${clientName}, your quotation report is ready. Please check your email or contact support.`,
-            senderId: 'Turnkey', // or your SMS sender name
-            systemModule: 'NB for New Business',
-            sendOn: new Date().toISOString()
-=======
           const message = this.buildQuotationMessage(reportPayload, clientName);
           const smsPayload: SmsDto = {
              scheduledDate: null,
@@ -3110,7 +3101,6 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
                telephoneNumber: smsNumber
                    }
                          ]
->>>>>>> Stashed changes
           };
           return this.notificationService.sendSms(smsPayload);
         }
