@@ -287,7 +287,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showCommissionColumnModal = false;
   commissionColumns: { field: string; header: string; visible: boolean }[] = [];
   ticketStatus: string
+<<<<<<< Updated upstream
   confirmQuote: boolean = false;
+=======
+  ticketData:any;
+>>>>>>> Stashed changes
 
 
 
@@ -528,6 +532,19 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
       this.getQuotationDetails(quotationCode);
+    }
+
+    const ticketJson = sessionStorage.getItem('activeTicket');
+
+    if(ticketJson){
+      this.ticketData = JSON.parse(ticketJson);
+      const quotationCode = this.ticketData.quotationCode;
+      if(quotationCode){
+      this.quotationCode=quotationCode
+      }
+      this.getQuotationDetails(quotationCode);
+
+      
     }
   }
 

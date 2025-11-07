@@ -569,6 +569,8 @@ export class QuotationManagementComponent implements OnDestroy {
         next: (response: any) => {
           sessionStorage.setItem('reusedQuotation', JSON.stringify(response));
            sessionStorage.removeItem('isRevision');
+            sessionStorage.removeItem('revisedQuotation');
+           
           
           this.router.navigate(['/home/gis/quotation/quotation-details']);
 
