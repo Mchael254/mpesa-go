@@ -217,6 +217,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   productClauses: any;
   isRevision: boolean = false;
   isRevisionMode = false;
+  ticketStatus: string
+  quickQuoteFlag: boolean = false;
+  ticketData:any;
 
 
 
@@ -241,9 +244,51 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     private clientService: ClientService
 
   ) {
-    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
+    this.ticketStatus = sessionStorage.getItem('ticketStatus');
+    this.quickQuoteFlag = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'));
+
+    // this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
     this.quotationAction = sessionStorage.getItem('quotationAction')
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
+
+    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+    if (!reusedQuotation) {
+      log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
+      return;
+    }
+
+
+
+    const data = JSON.parse(reusedQuotation);
+    const quotationCode = data._embedded.newQuotationCode;
+    if (quotationCode) {
+      this.quotationCode = quotationCode
+    }
+
+    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+    if (revisedQuotation) {
+      const data = JSON.parse(revisedQuotation);
+      const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
+      if (quotationCode) {
+        this.quotationCode = quotationCode;
+      }
+    }
+
+    const ticketJson = sessionStorage.getItem('activeTicket');
+     log.debug("ticket data", ticketJson)
+
+    if(ticketJson){
+      this.ticketData = JSON.parse(ticketJson);
+      const quotationCode = this.ticketData.quotationCode;
+      if(quotationCode){
+      this.quotationCode=quotationCode
+      }
+
+     
+      
+
+      
+    }
 
 
 
@@ -301,26 +346,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     ]
     this.selectedClient = JSON.parse(sessionStorage.getItem('client'))
     log.debug("product Form details", this.productDetails)
-    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
-    if (!reusedQuotation) {
-      log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
-      return;
-    }
+    
 
-    const data = JSON.parse(reusedQuotation);
-    const quotationCode = data._embedded.newQuotationCode;
-    if (quotationCode) {
-      this.quotationCode = quotationCode
-    }
-
-    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
-    if (revisedQuotation) {
-      const data = JSON.parse(revisedQuotation);
-      const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
-      if (quotationCode) {
-        this.quotationCode = quotationCode;
-      }
-    }
   }
 
   ngOnInit(): void {
@@ -535,6 +562,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   handleSaveClient(eventData: any) {
     log.debug('Event received from Client search comp', eventData);
+    sessionStorage.setItem("SelectedClientDetails", eventData);
+
     const clientCode = eventData.id;
     this.selectedClientCode = clientCode;
     this.selectedClientName =
@@ -2568,9 +2597,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.quotationCode = this.quotationNo._embedded.quotationCode;
         this.quotationNum = this.quotationNo._embedded.quotationNumber;
         const processFlowDetails = data._embedded.processFlowResponseDto
-        const ticketStatus = processFlowDetails.taskName
+        const ticketStatus = processFlowDetails?.taskName
+        this.ticketStatus = this.ticketStatus || ticketStatus
         log.debug("Ticket status:", ticketStatus)
-        sessionStorage.setItem('ticketStatus', ticketStatus);
+        sessionStorage.setItem('ticketStatus', this.ticketStatus);
         sessionStorage.setItem('quotationNum', this.quotationNum);
         sessionStorage.setItem('quotationCode', this.quotationCode.toString());
         sessionStorage.setItem('quotationPayload', JSON.stringify(quotationPayload));
