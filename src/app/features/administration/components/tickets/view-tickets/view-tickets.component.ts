@@ -273,7 +273,7 @@ export class ViewTicketsComponent implements OnInit {
     pageIndex: number,
     pageSize: number,
     sort: string = 'createdDate',
-    sortOrder: string = 'desc'
+    sortOrder: string = 'asc'
   ) {
     this.spinner.show();
 
@@ -290,7 +290,6 @@ export class ViewTicketsComponent implements OnInit {
       );
     }
   }
-
 
 
   lazyLoadTickets(event: LazyLoadEvent | TableLazyLoadEvent) {
@@ -1094,15 +1093,18 @@ export class ViewTicketsComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
-          this.spinner.hide();
           log.debug('Reassign response:', response);
           this.globalMessagingService.displaySuccessMessage(
             'Success',
             `${isSingleTicket ? 'Ticket' : 'Tickets'} reassigned successfully`
           );
 
-          // Clean up
+          // Clean up and refresh tickets
           this.cleanupAfterReassignment();
+          
+          // Reload tickets to reflect the reassignment
+          this.dt?.reset();
+          this.spinner.hide();
         },
         error: (error) => {
           this.spinner.hide();
@@ -1112,33 +1114,6 @@ export class ViewTicketsComponent implements OnInit {
   }
 
 
-   processTicket(ticket: any): void {
-  const ticketName = ticket.ticketName?.trim();
-  log.debug("Ticket chosen", ticket);
-
-  // Save the whole ticket in session storage
-  sessionStorage.setItem('activeTicket', JSON.stringify(ticket));
-
-  switch (ticketName) {
-    case 'Quotation Data Entry':
-      this.router.navigate(['/home/gis/quotation/quotation-details']);
-      break;
-
-    case 'Authorize':
-    case 'Confirm Quote':
-      this.router.navigate(['/home/gis/quotation/quotation-summary']);
-      break;
-
-    case 'Authorize Exceptions':
-      sessionStorage.setItem('showExceptions', 'true');
-      this.router.navigate(['/home/gis/quotation/quotation-summary']);
-      break;
-
-    default:
-      console.warn('Unknown ticket type:', ticketName);
-      break;
-  }
-}
 
 }
 
