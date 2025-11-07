@@ -44,9 +44,10 @@
                       <ng-container *ngIf="field.name === 'client' && !newClient">
                         <div class="position-relative" style="cursor: pointer;">
                           <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
-                            [value]="selectedClientName" formControlName="client" [readonly]="isRevisionMode"
+                            [(ngModel)]="selectedClientName" [ngModelOptions]="{standalone: true}" [readonly]="isRevisionMode"
                             autocomplete="off" (click)="!isRevisionMode && (showClientSearchModal = true)"
                             style="cursor: pointer;" />
+                          <input type="hidden" formControlName="client" />
                           <i class="pi pi-search position-absolute"
                             style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
                         </div>
