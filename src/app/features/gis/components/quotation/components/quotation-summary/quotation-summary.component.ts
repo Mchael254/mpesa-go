@@ -287,11 +287,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showCommissionColumnModal = false;
   commissionColumns: { field: string; header: string; visible: boolean }[] = [];
   ticketStatus: string
-<<<<<<< Updated upstream
   confirmQuote: boolean = false;
-=======
   ticketData:any;
->>>>>>> Stashed changes
 
 
 
