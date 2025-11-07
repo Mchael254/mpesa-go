@@ -220,6 +220,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   ticketStatus: string
   quickQuoteFlag: boolean = false;
   ticketData:any;
+  isTicketQuotation: boolean = false;
+
 
 
 
@@ -251,55 +253,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.quotationAction = sessionStorage.getItem('quotationAction')
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
 
-    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
-    if (!reusedQuotation) {
-      log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
-      return;
-    }
-
-
-
-    const data = JSON.parse(reusedQuotation);
-    const quotationCode = data._embedded.newQuotationCode;
-    if (quotationCode) {
-      this.quotationCode = quotationCode
-    }
-
-    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
-    if (revisedQuotation) {
-      const data = JSON.parse(revisedQuotation);
-      const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
-      if (quotationCode) {
-        this.quotationCode = quotationCode;
-      }
-    }
-
-    const ticketJson = sessionStorage.getItem('activeTicket');
-     log.debug("ticket data", ticketJson)
-
-    if(ticketJson){
-      this.ticketData = JSON.parse(ticketJson);
-      const quotationCode = this.ticketData.quotationCode;
-      if(quotationCode){
-      this.quotationCode=quotationCode
-      }
-
-     
-      
-
-      
-    }
+  
 
 
 
 
 
-
-
-
-
-
-    this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
+     this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
+   
     this.storedQuotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
     log.debug("QUOTATION FORM DETAILS", this.storedQuotationFormDetails)
     const StoredQuotationPayload = JSON.parse(sessionStorage.getItem('quotationPayload'));
@@ -346,6 +307,53 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     ]
     this.selectedClient = JSON.parse(sessionStorage.getItem('client'))
     log.debug("product Form details", this.productDetails)
+
+
+
+      const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+    if (reusedQuotation) {
+
+    const data = JSON.parse(reusedQuotation);
+    const quotationCode = data._embedded.newQuotationCode;
+    if (quotationCode) {
+      this.quotationCode = quotationCode
+
+      this.fetchQuotationDetails(quotationCode);
+    }
+      
+    }
+
+
+
+
+    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+    if (revisedQuotation) {
+      const data = JSON.parse(revisedQuotation);
+      const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
+      if (quotationCode) {
+        this.quotationCode = quotationCode;
+        this.fetchQuotationDetails(quotationCode);
+      }
+    }
+
+   const ticketJson = sessionStorage.getItem('activeTicket');
+if (ticketJson) {
+  this.ticketData = JSON.parse(ticketJson);
+  log.debug("[QuotationDetailsComponent] Using ticket data:", this.ticketData);
+
+  this.quotationCode = this.ticketData?.quotationCode || this.quotationCode;
+
+  // fetch details from backend if not in session
+  if (this.quotationCode) {
+    this.isTicketQuotation=true;
+    this.fetchQuotationDetails(this.quotationCode);
+  }
+  return;
+}
+
+
+
+
     
 
   }
@@ -530,8 +538,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
         log.debug(this.quotationForm.value, 'Final Form Value');
 
+        if (this.isTicketQuotation) {
+         log.debug('[QuotationDetailsComponent] Ticket detected — patching reused quotation data.');
+        this.patchReusedQuotationData();
+        } else {
         this.patchRevisedQuotationData();
         this.patchReusedQuotationData();
+         }
+
       },
       error: (err) => {
         log.error(err, 'Failed to load risk fields');
