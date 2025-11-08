@@ -10,8 +10,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { MenuItem } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
-import { Subject, throwError } from 'rxjs';
-import { catchError, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { Observable, of, Subject, throwError } from 'rxjs';
+import { catchError, filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { IntermediaryService } from "../../../../../entities/services/intermediary/intermediary.service";
 import { ProductService } from "../../../../services/product/product.service";
 import { AuthService } from "../../../../../../shared/services/auth.service";
@@ -239,6 +239,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showAuthorizeButton = true;
   showViewDocumentsButton = false;
   showConfirmButton = false;
+  showVerifyButton = false;
 
 
 
@@ -292,7 +293,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showCommissionColumnModal = false;
   commissionColumns: { field: string; header: string; visible: boolean }[] = [];
   ticketStatus: string
-  confirmQuote: boolean = false;
   ticketData: any;
   zoomRiskDocLevel = 1
   showRiskDocColumnModal = false;
@@ -309,6 +309,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   riskDocuments: DmsDocument[];
   selectedRiskDoc: DmsDocument;
   previewRiskDoc: { name: string; mimeType: string; dataUrl: string } | null = null;
+  ticketPayload: any;
+  authorizedQuoteFlag: boolean = false;
 
 
   constructor(
@@ -344,7 +346,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       { label: 'Monthly', value: 'M' },
       { label: 'One-off', value: 'O' }
     ];
+    // this.authorizedQuoteFlag = JSON.parse(sessionStorage.getItem('authorizedQuoteFlag'));
     this.ticketStatus = sessionStorage.getItem('ticketStatus');
+    this.showVerifyButton = JSON.parse(sessionStorage.getItem('showVerifyButton'));
+    this.showViewDocumentsButton = JSON.parse(sessionStorage.getItem('showViewDocumentsButton'));
+    this.showConfirmButton = JSON.parse(sessionStorage.getItem('showConfirmButton'));
+    this.otpGenerated = JSON.parse(sessionStorage.getItem('otpGenerated'));
+    this.changeToPolicyButtons = JSON.parse(sessionStorage.getItem('changeToPolicyButtons'));
+    this.showAuthorizeButton = JSON.parse(sessionStorage.getItem('showAuthorizeButton'));
 
   }
 
@@ -411,6 +420,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationDetails))
         const ticketStatus = response.processFlowResponseDto.taskName
         log.debug("Ticket status:", ticketStatus)
+        this.ticketStatus = ticketStatus
         sessionStorage.setItem('ticketStatus', ticketStatus);
 
         if ('Rejected' === response.status) {
@@ -424,12 +434,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     if (this.quotationAuthorized) {
       this.showAuthorizeButton = false;
-      this.showViewDocumentsButton = true;
-      this.showConfirmButton = true;
+      // this.showViewDocumentsButton = true;
+      // this.showVerifyButton = true;
     } else {
       this.showAuthorizeButton = true;
-      this.showViewDocumentsButton = false;
-      this.showConfirmButton = false;
+      // this.showViewDocumentsButton = false;
+      // this.showVerifyButton = false;
     }
 
 
@@ -649,6 +659,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         }
         const ticketStatus = res.processFlowResponseDto.taskName
         log.debug("Ticket status:", ticketStatus)
+        this.ticketStatus = ticketStatus
         sessionStorage.setItem('ticketStatus', ticketStatus);
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
@@ -657,8 +668,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.quotationAuthorized = JSON.parse(sessionStorage.getItem('quotationHasBeenAuthorzed'))
         if (this.quotationAuthorized) {
           this.showAuthorizeButton = false;
-          this.showViewDocumentsButton = true;
-          this.showConfirmButton = true;
+          // this.showViewDocumentsButton = true;
+          // this.showVerifyButton = true;
         }
         // this.getExceptions(this.quotationView.code);
         if (!this.moreDetails) {
@@ -934,6 +945,33 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
 
   }
+  fetchTicketPayload(): Observable<any> {
+    if (this.quotationCode) {
+      return this.quotationService.getTaskById(this.quotationCode).pipe(
+        map((ticketData) => {
+          log.debug('Ticket details:', ticketData);
+          return {
+            processDefinitionId: ticketData.processDefinitionId,
+            processInstanceId: ticketData.processInstanceId,
+            previousActivityId: ticketData.processDefinitionKey,
+            processAttributeRequestDto: {
+              quotationNumber: this.quotationNumber,
+              quotationCode: this.quotationCode,
+              processId: ticketData.taskId,
+              ticketTo: 'Quotation Data Entry'
+            }
+          };
+        }),
+        catchError((error) => {
+          log.error('Error during reassignment:', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch ticket');
+          return throwError(() => error);
+        })
+      );
+    } else {
+      return of(null);
+    }
+  }
 
 
   /**
@@ -941,10 +979,71 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
    * @method editDetails
    * @return {void}
    */
+  // editQuotationDetails() {
+  //   const action = "E";
+  //   sessionStorage.setItem("quotationAction", action);
+  //   this.fetchTicketPayload().subscribe(res => {
+  //     console.log('Ticket Payload:', res);
+  //     this.ticketPayload = res
+  //   });
+
+  //   this.quotationService.changeTicketStatus(this.ticketPayload).subscribe(
+  //     {
+  //       next: (res) => {
+  //         log.debug("RESPONSE AFTER CHANGING TICKET STATUS:", res)
+  //         this.makeQuotationReady = !this.makeQuotationReady;
+  //         this.authoriseQuotation = !this.authoriseQuotation;
+  //         this.getQuotationDetails(this.quotationCode);
+  //         this.messageService.displaySuccessMessage('Success', 'Quotation Made Ready, Authorise to proceed')
+  //       },
+  //       error: (e) => {
+  //         log.debug(e)
+  //         this.messageService.displayErrorMessage('error', 'Failed to make ready')
+  //       }
+  //     }
+  //   )
+  //   // this.router.navigate(['/home/gis/quotation/quotation-details']);
+  // }
   editQuotationDetails() {
     const action = "E";
     sessionStorage.setItem("quotationAction", action);
-    this.router.navigate(['/home/gis/quotation/quotation-details']);
+    log.debug('qUOTATIONcODE', this.quotationCode)
+    this.quotationService.undoMakeReady(this.quotationCode).subscribe(
+      {
+        next: (res) => {
+          log.debug("RESPONSE AFTER UNDO MAKE READY:", res)
+          const ticketStatus = res._embedded.taskName
+          log.debug("Ticket status:", ticketStatus)
+          this.ticketStatus = ticketStatus
+          sessionStorage.setItem('ticketStatus', ticketStatus);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully undone make ready.')
+          this.router.navigate(['/home/gis/quotation/quotation-details']);
+        },
+        error: (e) => {
+          log.debug(e)
+          this.globalMessagingService.displayErrorMessage('error', 'Failed to make ready')
+        }
+      }
+    )
+    // this.fetchTicketPayload().pipe(
+    //   switchMap((payload) => {
+    //     this.ticketPayload = payload;
+    //     return this.quotationService.undoMakeReady(this.quotationCode);
+    //   })
+    // ).subscribe({
+    //   next: (response) => {
+    //     log.debug("RESPONSE AFTER Undoing make ready:", response);
+    //     this.makeQuotationReady = !this.makeQuotationReady;
+    //     this.authoriseQuotation = !this.authoriseQuotation;
+    //     this.getQuotationDetails(this.quotationCode);
+    //     // this.router.navigate(['/home/gis/quotation/quotation-details']);
+
+    //   },
+    //   error: (err) => {
+    //     log.error(err);
+    //     this.messageService.displayErrorMessage('Error', 'Failed to make ready');
+    //   }
+    // });
   }
 
   /**
@@ -1023,7 +1122,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   makeReady() {
-    this.quotationService.makeReady(this.quotationCode, this.user).subscribe(
+    this.quotationService.makeReady(this.quotationCode).subscribe(
       {
         next: (res) => {
           this.makeQuotationReady = !this.makeQuotationReady;
@@ -1056,14 +1155,25 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     )
   }
 
-  confirm() {
+  confirmQuote() {
     this.quotationService.confirmQuotation(this.quotationCode, this.user).subscribe(
       {
         next: (res) => {
           this.authoriseQuotation = !this.authoriseQuotation;
           this.confirmQuotation = !this.confirmQuotation;
           this.getQuotationDetails(this.quotationCode);
-          this.messageService.displaySuccessMessage('Success', 'Quotation Authorization Confirmed')
+          this.globalMessagingService.displaySuccessMessage('Success', 'Quotation  Confirmed')
+          this.changeToPolicyButtons = true
+          sessionStorage.setItem('changeToPolicyButtons', JSON.stringify(this.changeToPolicyButtons))
+          if (this.changeToPolicyButtons) {
+            this.showViewDocumentsButton = false
+            this.showVerifyButton = false
+            this.showConfirmButton = false
+            sessionStorage.setItem('showViewDocumentsButton', JSON.stringify(this.showViewDocumentsButton))
+            sessionStorage.setItem('showVerifyButton', JSON.stringify(this.showVerifyButton))
+            sessionStorage.setItem('showConfirmButton', JSON.stringify(this.showConfirmButton))
+
+          }
         },
         error: (e) => {
           log.debug(e.message)
@@ -1350,6 +1460,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     log.debug("Matching product ", matchingProduct);
 
     if (matchingProduct) {
+      this.riskDetails = matchingProduct.riskInformation
       this.handleRowClick(matchingProduct.riskInformation[0])
       this.isRiskCollapsibleOpen = true
       this.taxDetails = matchingProduct.taxInformation;
@@ -1438,8 +1549,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.quotationService.getRiskClauses(riskCode)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
-        next: (res) => {
-          this.riskClauses = res;
+        next: (res: any) => {
+          this.riskClauses = res._embedded || [];
           log.debug("RISK CLAUSES", this.riskClauses);
 
           if (this.riskClauses.length) {
@@ -1584,7 +1695,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   fetchInsurers() {
     this.quotationService.getInsurers().subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.insurersList = res.content; // Ensure you're accessing the `content` array
         log.debug("INSURERS", this.insurersList);
       }
@@ -2130,7 +2241,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
 
     this.quotationService.updateQuotationStatus(this.quotationCode, status, reasonCancelled).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.globalMessagingService.displaySuccessMessage('success', 'quote rejected successfully')
         log.debug(response);
         this.afterRejectQuote = true;
@@ -2175,7 +2286,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   getExceptions(quotationCode: number) {
     this.quotationService.generateExceptions(quotationCode).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         log.debug('exceptions', res);
         this.exceptionsData = res._embedded;
         log.debug('exceptionData', this.exceptionsData);
@@ -2193,7 +2304,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   getLimitsofLiability(subClassCode: number, quotationProductCode: number, scheduleType: 'L' | 'E') {
     this.quotationService.getRiskLimitsOfLiability(subClassCode, quotationProductCode, scheduleType)
       .subscribe({
-        next: (res) => {
+        next: (res: any) => {
           log.debug(`limits of liability (${scheduleType})`, res);
 
           if (scheduleType === 'L') {
@@ -2263,7 +2374,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.quotationService
         .authoriseExceptions(selected)
         .subscribe({
-          next: (res) => {
+          next: (res: any) => {
             if (res.status === 'SUCCESS') {
               this.globalMessagingService.displaySuccessMessage(
                 'Success',
@@ -2670,9 +2781,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   setColumnsFromRiskClausesDetails(sample: riskClauses) {
     const defaultVisibleFields = [
-      'clauseCode',
+      'clauseShortDescription',
       'clause',
-      'shortDescription'
+
     ];
 
     const excludedFields = [
@@ -2697,43 +2808,78 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }));
   }
 
+  // setColumnsFromScheduleDetails(sample: any) {
+  //   const defaultVisibleFields = ['sectionShortDescription',
+  //     'make',
+  //     'cubicCapacity',
+  //     'yearOfManufacture',
+  //     'carryCapacity',
+  //     'value',
+  //     'bodyType'
+
+
+
+
+
+
+  //   ];
+
+  //   const excludedFields = [
+
+  //   ];
+
+
+  //   let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+
+  //   keys = keys.sort((a, b) => {
+  //     if (a === 'productName') return -1;
+  //     if (b === 'productName') return 1;
+  //     return 0;
+  //   });
+
+
+  //   this.scheduleColumns = keys.map(key => ({
+  //     field: key,
+  //     header: this.sentenceCase(key),
+  //     visible: defaultVisibleFields.includes(key),
+  //   }));
+  // }
   setColumnsFromScheduleDetails(sample: any) {
-    const defaultVisibleFields = ['sectionShortDescription',
-      'make',
-      'cubicCapacity',
-      'yearOfManufacture',
-      'carryCapacity',
-      'value',
-      'bodyType'
+    if (!sample) {
+      this.scheduleColumns = [];
+      return;
+    }
 
-
-
-
-
+    const excludedFields: string[] = [
 
     ];
 
-    const excludedFields = [
-
-    ];
-
-
+    // Step 1: Get all keys from the sample
     let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
 
-
+    // Step 2: Sort keys so important ones (like productName) appear first if needed
     keys = keys.sort((a, b) => {
       if (a === 'productName') return -1;
       if (b === 'productName') return 1;
       return 0;
     });
 
+    // Step 3: Choose which fields to show by default — for example:
+    // - show all non-null or non-empty fields from the sample
+    // - or show only the first few
+    const defaultVisibleFields = keys.filter(
+      key => sample[key] !== null && sample[key] !== '' && sample[key] !== undefined
+    ).slice(0, 7); // show first 7 non-empty fields
 
+    // Step 4: Map into column definitions
     this.scheduleColumns = keys.map(key => ({
       field: key,
       header: this.sentenceCase(key),
       visible: defaultVisibleFields.includes(key),
     }));
   }
+
   setColumnsFromPerilDetails(sample: any) {
     const defaultVisibleFields = ['sectionShortDescription',
       'description',
@@ -2960,6 +3106,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           );
 
           sessionStorage.setItem(`quotationAuthorized_${quotationCode}`, 'true');
+          if (res) {
+            this.viewQuoteFlag = true
+            sessionStorage.setItem(`viewQuoteFlag`, JSON.stringify(this.viewQuoteFlag));
+
+          }
 
 
           // Step 2: Update Status
@@ -2977,7 +3128,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
                 this.showAuthorizeButton = false;
                 this.showViewDocumentsButton = true;
-                this.showConfirmButton = true;
+                this.showVerifyButton = true;
+
+                sessionStorage.setItem('showAuthorizeButton', JSON.stringify(this.showAuthorizeButton))
+                sessionStorage.setItem('showViewDocumentsButton', JSON.stringify(this.showViewDocumentsButton))
+                sessionStorage.setItem('showVerifyButton', JSON.stringify(this.showVerifyButton))
+
               },
               error: (err: HttpErrorResponse) => {
                 log.error('Error updating quotation status', err);
@@ -3009,10 +3165,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             'This quotation is already authorized.'
           );
           this.quotationAuthorized = true;
-          sessionStorage.setItem(`quotationAuthorized_${quotationCode}`, 'true');
           this.showAuthorizeButton = false;
           this.showViewDocumentsButton = true;
-          this.showConfirmButton = true;
+          this.showVerifyButton = true;
+          sessionStorage.setItem('showAuthorizeButton', JSON.stringify(this.showAuthorizeButton))
+          sessionStorage.setItem('showViewDocumentsButton', JSON.stringify(this.showViewDocumentsButton))
+          sessionStorage.setItem('showVerifyButton', JSON.stringify(this.showVerifyButton))
+
         } else {
           this.globalMessagingService.displayErrorMessage(
             'Error',
@@ -3049,6 +3208,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
         this.otpResponse = res._embedded;
         this.otpGenerated = true;
+        sessionStorage.setItem('otpGenerated', JSON.stringify(this.otpGenerated))
+
+        log.debug("otp generated:", this.otpGenerated)
 
       },
       error: (error) => {
@@ -3118,10 +3280,17 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
               modal.hide();
             }
             this.otpGenerated = false
-            this.changeToPolicyButtons = true
-            if (this.changeToPolicyButtons) {
+            sessionStorage.setItem('otpGenerated', JSON.stringify(this.otpGenerated))
+
+            this.showConfirmButton = true
+            if (this.showConfirmButton) {
               this.showViewDocumentsButton = false
-              this.showConfirmButton = false
+              this.showVerifyButton = false
+
+              sessionStorage.setItem('showConfirmButton', JSON.stringify(this.showConfirmButton))
+              sessionStorage.setItem('showViewDocumentsButton', JSON.stringify(this.showViewDocumentsButton))
+              sessionStorage.setItem('showVerifyButton', JSON.stringify(this.showVerifyButton))
+
             }
           }
         },
@@ -3697,10 +3866,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           if (this.riskCommissions.length) {
             this.setColumnsFromCommissions(this.riskCommissions[0]);
           }
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            res?.message || 'Commissions loaded successfully.'
-          );
+          // this.globalMessagingService.displaySuccessMessage(
+          //   'Success',
+          //   res?.message || 'Commissions loaded successfully.'
+          // );
         } else {
           this.globalMessagingService.displayErrorMessage(
             'Error',

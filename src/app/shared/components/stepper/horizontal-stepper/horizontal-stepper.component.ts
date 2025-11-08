@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -6,11 +6,11 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './horizontal-stepper.component.html',
   styleUrls: ['./horizontal-stepper.component.css'],
   encapsulation: ViewEncapsulation.None,
-  standalone : false
+  standalone: false
 })
 export class HorizontalStepperComponent {
 
-  constructor(private router: Router, private route: ActivatedRoute){}
+  constructor(private router: Router, private route: ActivatedRoute) { }
 
   @Input() stepperData: any[];
   @Input() currentStep: number;
@@ -18,7 +18,7 @@ export class HorizontalStepperComponent {
   @Input() stepType: string = 'link';
   @Input() disabled: boolean = false;
   @Output() stepChange = new EventEmitter<number>();  // EventEmitter for step changes
-
+  @Input() disableNavigation = false;
   stepperItems: any[] = [
     {
       number: 1,
@@ -63,14 +63,20 @@ export class HorizontalStepperComponent {
   //   };
   // }
 
+  // setCurrentStep(stepNumber: number) {
+  //   if (this.disabled) return;
+  //   if (stepNumber <= this.dbStep && stepNumber !== this.currentStep) {
+  //     this.stepChange.emit(stepNumber);  // Emit the step number
+  //   }
+  // }
   setCurrentStep(stepNumber: number) {
-    if (this.disabled) return;
+    if (this.disableNavigation || (!this.disableNavigation && this.disabled)) return;
     if (stepNumber <= this.dbStep && stepNumber !== this.currentStep) {
       this.stepChange.emit(stepNumber);  // Emit the step number
     }
   }
 
-  navigateToPage(link: string){
+  navigateToPage(link: string) {
     this.router.navigate([link], { relativeTo: this.route });
   }
 

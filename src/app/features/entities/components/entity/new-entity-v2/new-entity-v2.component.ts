@@ -993,26 +993,26 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         log.info(`client saved >>> `, response);
         const clientCode = response.clientCode;
         sessionStorage.setItem('newClientCode', JSON.stringify(clientCode))
-        
+
         // Upload profile picture only if it exists
         if (this.profilePicture) {
           this.uploadImage(this.profilePicture, response.partyId);
         }
-        
+
         this.entityName = response.firstName + ' ' + response.lastName;
         this.entityCode = response.clientCode;
         sessionStorage.setItem('newClientCode', JSON.stringify(this.entityCode));
-        
+
         // Upload documents to DMS
         this.uploadDocumentToDms();
-        
+
         // Emit event to close the modal in the parent component
         this.clientSaved.emit({
           success: true,
           clientCode: clientCode,
           clientName: this.entityName
         });
-        
+
         // Show success message
         this.globalMessagingService.displaySuccessMessage(
           'Success',

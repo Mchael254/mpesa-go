@@ -217,6 +217,22 @@ export class RiskDetailsComponent {
     selectOptions?: { label: string; value: any }[];
     applicableLevel: string
   }[];
+  allSubclassFormData: {
+    options: any[];
+    type: string;
+    name: string;
+    max: number
+    min: number
+    isMandatory: string;
+    disabled: boolean;
+    readonly: boolean;
+    regexPattern: string;
+    placeholder: string;
+    label: string;
+    scheduleLevel: number
+    selectOptions?: { label: string; value: any }[];
+    applicableLevel: string
+  }[];
   dynamicSubclassFormFields: {
     type: string;
     name: string;
@@ -405,6 +421,7 @@ export class RiskDetailsComponent {
   exceptionsData: any;
   premiumComputed: boolean = false;
   premiums: { net: number; gross: number; };
+  levelNumber: number;
 
   constructor(
     public subclassService: SubclassesService,
@@ -640,7 +657,11 @@ export class RiskDetailsComponent {
           this.quotationDetails = res;
           log.debug("Quotation details-risk details", this.quotationDetails);
           const premiumComputed = this.quotationDetails.premiumComputed
-          this.premiumComputed = true
+          if (premiumComputed === 'Y') {
+            this.premiumComputed = true
+          } else {
+            this.premiumComputed = false
+          }
 
           // Reset commissions tab if currently active but agent source is not selected
           if (this.riskActiveTab === 'commissions' && this.isCommissionsButtonDisabled) {
@@ -779,7 +800,7 @@ export class RiskDetailsComponent {
   }
 
   setRiskDetailsColumns(risk: any) {
-    const excludedFields = ['riskLimits', 'clauseCodes', 'sectionsDetails', 'sectionsDetails', 'location', 'ncdLevel', 'fp',
+    const excludedFields = ['riskLimits', 'clauseCodes', 'sectionsDetails', 'sectionsDetails', 'location', 'ncdLevel',
       'subclass',
     ];
     this.riskDetailsColumns = Object.keys(risk)
@@ -845,17 +866,33 @@ export class RiskDetailsComponent {
     try {
       const response = await firstValueFrom(this.quotationService.getFormFields(riskFieldDescription));
       const fields = response?.[0]?.fields || [];
+      this.dynamicSubclassFormFields = fields
       this.subclassFormContent = response;
       sessionStorage.setItem('dynamicSubclassFormField', JSON.stringify(fields));
       this.subclassFormData = fields.filter(field => Number(field.scheduleLevel) === 1);
+      this.allSubclassFormData = fields.filter(field => field.applicableLevel === 'S');
 
       // Remove old dynamic controls
+      // Object.keys(this.riskDetailsForm.controls).forEach(controlName => {
+      //   const control = this.riskDetailsForm.get(controlName) as any;
+      //   if (control?.metadata?.dynamicSubclass) {
+      //     this.riskDetailsForm.removeControl(controlName);
+      //   }
+      // });
       Object.keys(this.riskDetailsForm.controls).forEach(controlName => {
         const control = this.riskDetailsForm.get(controlName) as any;
+
+        // Remove if it has dynamicSubclass metadata
         if (control?.metadata?.dynamicSubclass) {
           this.riskDetailsForm.removeControl(controlName);
         }
+
+        // Additionally, remove 'butcharge' if not in edit mode
+        if (!this.isEditMode && controlName === 'butCharge') {
+          this.riskDetailsForm.removeControl('butCharge');
+        }
       });
+
 
       // Add new dynamic controls
       // this.subclassFormData.forEach(field => {
@@ -885,6 +922,10 @@ export class RiskDetailsComponent {
         // ✅ Handle default value logic (like ncdStatus)
         if (field.name === 'ncdStatus') {
           this.riskDetailsForm.get(field.name)?.setValue('N');
+        }
+        if (!this.isEditMode && field.name === 'butCharge') {
+          this.riskDetailsForm.removeControl('butCharge');
+          this.subclassFormData = this.subclassFormData.filter(f => f.name !== 'butCharge');
         }
 
         if (field.options && field.options.length > 0) {
@@ -947,27 +988,77 @@ export class RiskDetailsComponent {
     }
   }
 
+  // private patchEditValues(): void {
+  //   if (!this.selectedRisk) return;
+  //   log.debug("Selected risk", this.selectedRisk)
+  //   this.riskDetailsForm.patchValue({
+  //     registrationNumber: this.selectedRisk.propertyId,
+  //     riskDescription: this.selectedRisk.itemDesc,
+  //     coverType: this.selectedRisk.coverTypeCode,
+  //     premiumBand: this.selectedRisk.binderCode,
+  //     value: this.selectedRisk.value,
+  //     vehicleMake: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.vehicleMake,
+  //     vehicleModel: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.vehicleModel,
+  //     yearOfManufacture: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.yearOfManufacture,
+  //     cubicCapacity: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.cubicCapacity,
+  //     seatingCapacity: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.seatingCapacity,
+  //     bodyType: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.bodyType,
+  //     color: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.color,
+  //     chasisNumber: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.chasisNumber,
+  //     engineNumber: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.engineNumber
+  //   });
+
+  //   log.debug("Patched form with selectedRisk:", this.riskDetailsForm.value);
+  // }
   private patchEditValues(): void {
     if (!this.selectedRisk) return;
-    log.debug("Selected risk", this.selectedRisk)
-    this.riskDetailsForm.patchValue({
-      registrationNumber: this.selectedRisk.propertyId,
-      riskDescription: this.selectedRisk.itemDesc,
-      coverType: this.selectedRisk.coverTypeCode,
-      premiumBand: this.selectedRisk.binderCode,
-      value: this.selectedRisk.value,
-      vehicleMake: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.make,
-      vehicleModel: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.model,
-      yearOfManufacture: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.yearOfManufacture,
-      cubicCapacity: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.cubicCapacity,
-      seatingCapacity: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.carryCapacity,
-      bodyType: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.bodyType,
-      color: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.color,
-      chasisNumber: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.chasisNumber,
-      engineNumber: this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.engineNumber
+
+    // Explicit fields mapping (excluding value-related form controls)
+    const explicitFields: Record<string, string> = {
+      coverType: 'coverTypeCode',
+      premiumBand: 'binderCode',
+      registrationNumber: 'propertyId',
+      riskDescription: 'itemDesc',
+      riskId: 'propertyId'
+    };
+
+    // Patch explicit fields
+    Object.keys(explicitFields).forEach(formControl => {
+      const riskKey = explicitFields[formControl];
+      if (this.selectedRisk[riskKey] !== undefined && this.riskDetailsForm.contains(formControl)) {
+        this.riskDetailsForm.get(formControl)?.setValue(this.selectedRisk[riskKey]);
+      }
     });
 
-    log.debug("Patched form with selectedRisk:", this.selectedRisk);
+    const valueControls = ['value', 'Value', 'SumInsured'];
+    valueControls.forEach(controlName => {
+      if (this.riskDetailsForm.contains(controlName)) {
+        this.riskDetailsForm.get(controlName)?.setValue(this.selectedRisk?.value);
+      }
+    });
+
+    const flatten = (obj: any) => {
+      Object.keys(obj).forEach(key => {
+        const value = obj[key];
+
+        if (value && typeof value === 'object') {
+          if (Array.isArray(value)) {
+            if (value.length > 0) flatten(value[0]); // recurse into first item
+          } else {
+            flatten(value); // recurse into object
+          }
+        } else {
+          // patch only if a control with this field name exists
+          if (this.riskDetailsForm.contains(key)) {
+            this.riskDetailsForm.get(key)?.setValue(value);
+          }
+        }
+      });
+    };
+
+    flatten(this.selectedRisk);
+
+    log.debug('Patched form with selectedRisk:', this.riskDetailsForm.value);
   }
 
   getDefaultValue(field: any): any {
@@ -1211,9 +1302,9 @@ export class RiskDetailsComponent {
 
   }
   /**
- * Load cover types by subclass code
- * @param code {number} subclass code
- */
+  * Load cover types by subclass code
+  * @param code {number} subclass code
+  */
   loadCovertypeBySubclassCode(code: number) {
     this.subclassCoverTypesService.getSubclassCovertypeBySCode(code).subscribe(data => {
       this.subclassCoverType = data.map(value => ({
@@ -1458,7 +1549,7 @@ export class RiskDetailsComponent {
     if (this.selectedSubclassCode) {
       try {
         await this.loadSelectedSubclassRiskFields(this.selectedSubclassCode);
-        const selectedVehicleMake = Number(this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.make)
+        const selectedVehicleMake = Number(this.selectedRisk?.scheduleDetails?.[0]?.details?.level1?.vehicleMake)
         this.fetchTaxes();
         this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
         this.loadAllBinders();
@@ -1698,6 +1789,13 @@ export class RiskDetailsComponent {
         next: ([quoteDetails, premiumRates]: any) => {
 
           this.quotationDetails = quoteDetails
+          const premiumComputed = quoteDetails.premiumComputed
+          if (premiumComputed === 'Y') {
+            this.premiumComputed = true
+          } else {
+            this.premiumComputed = false
+          }
+
           const quotationProducts = quoteDetails.quotationProducts || [];
           // Find the selected product
           const selectedProduct = quotationProducts.find(product => product.code === this.selectedProduct.code);
@@ -1732,7 +1830,7 @@ export class RiskDetailsComponent {
           this.quotationRiskCode = currentQuotationRiskCode
           const result = premiumRates;
           // this.sectionPremium = result
-          this.sumInsured = matchedRisk.value
+          this.sumInsured = matchedRisk.value || this.riskDetailsForm.value.SumInsured
           log.debug("Sum insured:", this.sumInsured)
           const sectionPremiums = result
             .filter(premium => !this.sectionDetails.some(detail => detail.sectionCode === premium.sectionCode))
@@ -1956,7 +2054,7 @@ export class RiskDetailsComponent {
       coverTypeDescription: selectedCoverType?.description ?? '',
       productCode: this.selectedProductCode,
       premium: null,
-      value: this.riskDetailsForm.value.value,
+      value: this.riskDetailsForm.value.value || this.riskDetailsForm.value.SumInsured,
       clientType: "I",
       itemDesc: this.riskDetailsForm.value.riskDescription,
       wef: FormCoverFrom,
@@ -1976,7 +2074,7 @@ export class RiskDetailsComponent {
         productCode: this.selectedProductCode,
       },
       coverDays: null,
-      fp: 0
+      fp: this.riskDetailsForm.value.butCharge || 0
     };
 
     // let risk = {
@@ -2419,10 +2517,10 @@ export class RiskDetailsComponent {
   //   return schedule;
   // }
   prepareSchedulePayload() {
-    log.debug("Dynamic fields", this.subclassFormData);
+    log.debug("Dynamic fields for schedules", this.allSubclassFormData);
 
-    const scheduleFields = this.subclassFormData.filter(
-      field => field.applicableLevel === 'S'
+    const scheduleFields = this.allSubclassFormData.filter(
+      field => Number(field.scheduleLevel) === 1
     );
     log.debug("Schedule dynamic fields", scheduleFields);
 
@@ -2527,12 +2625,13 @@ export class RiskDetailsComponent {
     }
     const subclassCode = riskSelectedData.subclassCode;
     this.selectedSubclassCode = subclassCode
+    this.selectedSubclassCode && this.fetchsubclassDynamicFields(this.selectedSubclassCode)
     this.quoteProductCode = riskSelectedData.quotationProductCode
     const binderCode = riskSelectedData.binderCode;
     const covertypeCode = riskSelectedData.coverTypeCode;
 
     this.selectedSubclassObject = this.allMatchingSubclasses?.find(subclass => subclass.code == subclassCode)
-    log.debug("selected subclass object:", this.selectedSubclassObject)
+    log.debug("selected subclass object handle row click:", this.selectedSubclassObject)
     const screenCode = this.selectedSubclassObject?.underwritingScreenCode
     this.getProductTaxes();
     if (this.selectedRiskCode) {
@@ -2590,7 +2689,7 @@ export class RiskDetailsComponent {
           { field: 'make', header: 'Make' },
           { field: 'cubicCapacity', header: 'Cubic Capacity' },
           { field: 'yearOfManufacture', header: 'Year Of Manufacture' },
-          { field: 'carryCapacity', header: 'Seating Capacity' },
+          { field: 'seatingCapacity', header: 'Seating Capacity' },
           { field: 'value', header: 'Value' },
           { field: 'bodyType', header: 'Body Type' },
           { field: 'coverType', header: 'Cover Type' }
@@ -2619,6 +2718,9 @@ export class RiskDetailsComponent {
             //     field: field.name,
             //     header: field.label
             //   }));
+
+            log.debug("dynamicSubclassFormFields:Handle row click", this.dynamicSubclassFormFields)
+
             columns = this.dynamicSubclassFormFields
               .filter(
                 field =>
@@ -2629,7 +2731,7 @@ export class RiskDetailsComponent {
                 field: field.name,
                 header: field.label
               }));
-
+            log.debug("ScheduleColumns:Handle row click", columns)
             // Add "Actions" column for levels 2 and above
             if (levelNumber >= 2) {
               columns.push({
@@ -2752,7 +2854,8 @@ export class RiskDetailsComponent {
       sectionShortDescription: [''],
       sectionType: [''],
       sumInsuredLimitType: [''],
-      sumInsuredRate: ['']
+      sumInsuredRate: [''],
+      minimumPremium: ['']
     });
   }
   onKeyUp(event: any, section: any): void {
@@ -3153,7 +3256,8 @@ export class RiskDetailsComponent {
     // Patch the form with the selected section's values, including the row number
     this.sectionDetailsForm.patchValue({
       ...this.selectedSection,
-      rowNumber: this.selectedSection.rowNumber
+      rowNumber: this.selectedSection.rowNumber,
+      minimumPremium: this.selectedSection.selectedSection
     });
 
     // Open the modal
@@ -4096,7 +4200,7 @@ export class RiskDetailsComponent {
                 { field: 'make', header: 'Make' },
                 { field: 'cubicCapacity', header: 'Cubic Capacity' },
                 { field: 'yearOfManufacture', header: 'Year Of Manufacture' },
-                { field: 'carryCapacity', header: 'Seating Capacity' },
+                { field: 'seatingCapacity', header: 'Seating Capacity' },
                 { field: 'value', header: 'Value' },
                 { field: 'bodyType', header: 'Body Type' },
                 { field: 'coverType', header: 'Cover Type' }
@@ -4136,7 +4240,7 @@ export class RiskDetailsComponent {
                       header: field.label
                     }));
 
-
+                  log.debug("ScheduleColumns:Create Schedule", columns)
                   // Add "Actions" column for levels 2 and above
                   if (levelNumber >= 2) {
                     columns.push({
@@ -5006,13 +5110,14 @@ export class RiskDetailsComponent {
 
   loadQuotationPerils(): void {
     const riskCode = this.quotationRiskCode;
+    const subclassCode = this.selectedRisk?.subclassCode
 
     if (!riskCode) {
       log.debug('Risk code is missing');
       return;
     }
 
-    this.quotationService.getQuotationPerils(riskCode).subscribe({
+    this.quotationService.getQuotationPerils(subclassCode, riskCode).subscribe({
       next: (res) => {
         log.debug('DBperils:', res?._embedded || []);
         this.addedPerils = res?._embedded || [];
@@ -5675,7 +5780,7 @@ export class RiskDetailsComponent {
     this.activeFormFields = this.dynamicSubclassFormFields.filter(
       field => Number(field.scheduleLevel) === tab.levelNumber
     );
-
+    this.levelNumber = tab.levelNumber
     // Build reactive form
     const group: { [key: string]: any } = {};
     this.activeFormFields.forEach(field => {
@@ -5684,11 +5789,16 @@ export class RiskDetailsComponent {
 
     this.scheduleOtherDetailsForm = this.fb.group(group);
     log.debug("Schedule other details client before", this.scheduleOtherDetailsForm.value)
+    const authorisedDriverFieldPresent = this.dynamicSubclassFormFields.some(
+      field => field.name === 'authorisedDriver'
+    );
 
-    if (!this.scheduleOtherDetailsForm.contains('authorisedDriver')) {
+    if (!this.scheduleOtherDetailsForm.contains('authorisedDriver') && authorisedDriverFieldPresent) {
       this.scheduleOtherDetailsForm.addControl('authorisedDriver', new FormControl('', Validators.required));
+      this.scheduleOtherDetailsForm.patchValue({ authorisedDriver: this.clientName });
+
     }
-    this.scheduleOtherDetailsForm.patchValue({ authorisedDriver: this.clientName });
+
     log.debug("Schedule other details client", this.scheduleOtherDetailsForm.value)
     // Show Bootstrap modal
     setTimeout(() => {
@@ -5698,7 +5808,10 @@ export class RiskDetailsComponent {
         bsModal.show();
       }
     });
-    this.fetchLimitationOfUse();
+    if (!this.scheduleOtherDetailsForm.contains('authorisedDriver')) {
+      this.fetchLimitationOfUse();
+
+    }
 
   }
   // computePremium() {
@@ -6420,32 +6533,124 @@ export class RiskDetailsComponent {
 
       })
   }
+  // prepareSchedulePayloadL2() {
+  //   const schedule = this.scheduleOtherDetailsForm.value;
+  //   log.debug("schedule form values", schedule)
+  //   log.debug("selectedSchedule", this.selectedSchedule)
+  //   const selectedSchedule = this.selectedSchedule[0]
+  //   log.debug("selectedSchedule", selectedSchedule)
+
+  //   // const schedulePayloadL2: scheduleDetails = {
+  //   //   details: {
+  //   //     level2: {
+
+  //   //       geographicalLimits: schedule.geographicalLimits,
+  //   //       deductibleDesc: schedule.deductibleDescription,
+  //   //       limitationUse: schedule.limitationsUse,
+  //   //       authorisedDriver: schedule.authorisedDriver,
+  //   //       garageCapacity: schedule.garageCapacity
+  //   //     }
+  //   //   },
+  //   //   code: selectedSchedule?.code,
+  //   //   riskCode: this.quotationRiskCode,
+  //   //   transactionType: 'Q',
+  //   //   version: selectedSchedule?.version
+  //   // };
+  //   const levelNumber = this.levelNumber
+  //   const scheduleFields = this.allSubclassFormData.filter(
+  //     field => Number(field.scheduleLevel) === levelNumber
+  //   );
+
+  //   log.debug("Schedule dynamic fields", scheduleFields);
+
+  //   // const schedule = this.scheduleDetailsForm.value;
+  //   const riskform =
+  //     JSON.parse(sessionStorage.getItem('riskFormDetails')) ||
+  //     this.riskDetailsForm.value;
+
+  //   log.debug('SELECTED RISK:', this.selectedRisk);
+  //   log.debug("Risk form-session storage:", riskform);
+
+  //   const level2: any = {};
+
+  //   scheduleFields.forEach(field => {
+  //     const fieldName = field.name;
+  //     const fieldValue =
+  //       riskform?.[fieldName] ??
+  //       this.scheduleDetailsForm.get(fieldName)?.value ??
+  //       null;
+
+  //     level2[fieldName] = fieldValue;
+  //   });
+
+  //   schedule.details.level2 = {
+  //     ...level2,
+  //     coverType: this.selectedRisk.coverTypeDescription,
+  //   };
+  //   schedule.code = selectedSchedule?.code,
+  //     schedule.riskCode = this.quotationRiskCode;
+  //   schedule.transactionType = 'Q';
+  //   schedule.version = selectedSchedule?.version;
+
+  //   const removeFields = [
+
+  //   ];
+
+  //   removeFields.forEach(field => delete schedule.details.level2[field]);
+
+
+
+  //   return schedule;
+  // }
   prepareSchedulePayloadL2() {
     const schedule = this.scheduleOtherDetailsForm.value;
-    log.debug("schedule form values", schedule)
-    log.debug("selectedSchedule", this.selectedSchedule)
-    const selectedSchedule = this.selectedSchedule[0]
-    log.debug("selectedSchedule", selectedSchedule)
+    const selectedSchedule = this.selectedSchedule?.[0];
+    const levelNumber = this.levelNumber; // e.g. 2, 3, 4, etc.
+    const levelKey = `level${levelNumber}`; // e.g. "level2"
 
-    const schedulePayloadL2: scheduleDetails = {
-      details: {
-        level2: {
+    log.debug("Schedule form values", schedule);
+    log.debug("Selected Schedule", selectedSchedule);
 
-          geographicalLimits: schedule.geographicalLimits,
-          deductibleDesc: schedule.deductibleDescription,
-          limitationUse: schedule.limitationsUse,
-          authorisedDriver: schedule.authorisedDriver,
-          garageCapacity: schedule.garageCapacity
-        }
-      },
-      code: selectedSchedule?.code,
-      riskCode: this.quotationRiskCode,
-      transactionType: 'Q',
-      version: selectedSchedule?.version
+    // Filter the fields belonging to this schedule level
+    const scheduleFields = this.allSubclassFormData.filter(
+      field => Number(field.scheduleLevel) === levelNumber
+    );
+
+    log.debug("Schedule dynamic fields", scheduleFields);
+
+    // Ensure schedule.details exists
+    if (!schedule.details) {
+      schedule.details = {};
+    }
+
+    // Build the dynamic level data from the schedule form
+    const levelData: any = {};
+
+    scheduleFields.forEach(field => {
+      const fieldName = field.name;
+      const fieldValue = this.scheduleOtherDetailsForm.get(fieldName)?.value ?? null;
+      levelData[fieldName] = fieldValue;
+    });
+
+    // ✅ Assign everything under dynamic level key (e.g. level2)
+    schedule.details[levelKey] = {
+      ...levelData,
+      coverType: this.selectedRisk?.coverTypeDescription, // keep coverType included
     };
 
-    return schedulePayloadL2;
+    // ✅ Add extra info at the root level
+    schedule.code = selectedSchedule?.code;
+    schedule.riskCode = this.quotationRiskCode;
+    schedule.transactionType = 'Q';
+    schedule.version = selectedSchedule?.version;
+
+    // Optionally remove unwanted fields
+    const removeFields: string[] = [];
+    removeFields.forEach(field => delete schedule.details[levelKey][field]);
+
+    return schedule;
   }
+
 
 
   //taxes
@@ -6978,22 +7183,32 @@ export class RiskDetailsComponent {
 
     this.scheduleOtherDetailsForm = this.fb.group(group);
 
-    // Add driver if missing
-    if (!this.scheduleOtherDetailsForm.contains('authorisedDriver')) {
-      this.scheduleOtherDetailsForm.addControl(
-        'authorisedDriver',
-        new FormControl('', Validators.required)
-      );
-    }
+    // // Add driver if missing
+    // if (!this.scheduleOtherDetailsForm.contains('authorisedDriver')) {
+    //   this.scheduleOtherDetailsForm.addControl(
+    //     'authorisedDriver',
+    //     new FormControl('', Validators.required)
+    //   );
+    // }
+    const authorisedDriverFieldPresent = this.dynamicSubclassFormFields.some(
+      field => field.name === 'authorisedDriver'
+    );
 
+    if (!this.scheduleOtherDetailsForm.contains('authorisedDriver') && authorisedDriverFieldPresent) {
+      this.scheduleOtherDetailsForm.addControl('authorisedDriver', new FormControl('', Validators.required));
+      this.scheduleOtherDetailsForm.patchValue({ authorisedDriver: this.clientName });
+
+    }
     // ✅ Pick the correct level's details
     const levelKey = `level${tab.levelNumber}`;
+    this.levelNumber = tab.levelNumber
     const rawLevelData = this.selectedSchedule[0]?.[0]?.details?.[levelKey] || {};
     log.debug("Level key:", levelKey);
     log.debug("Raw Level data:", rawLevelData);
 
     // Normalize before patch
-    const levelData = this.normalizeLevelData(rawLevelData);
+    // const levelData = this.normalizeLevelData(rawLevelData);
+    const levelData = this.normalizeLevelData(rawLevelData, tab.levelNumber);
     log.debug("Normalized Level data:", levelData);
     this.scheduleOtherDetailsForm.patchValue(levelData);
 
@@ -7013,13 +7228,34 @@ export class RiskDetailsComponent {
 
   }
 
-  normalizeLevelData = (data: any) => ({
-    geographicalLimits: data.geographicalLimits,
-    deductibleDescription: data.deductibleDesc,
-    limitationsUse: data.limitationUse,
-    authorisedDriver: data.authorisedDriver,
-    garageCapacity: data.garageCapacity,
-  });
+  // normalizeLevelData = (data: any) => ({
+  //   geographicalLimits: data.geographicalLimits,
+  //   deductibleDescription: data.deductibleDesc,
+  //   limitationsUse: data.limitationUse,
+  //   authorisedDriver: data.authorisedDriver,
+  //   garageCapacity: data.garageCapacity,
+  // });
+  normalizeLevelData(data: any, levelNumber: number): any {
+    // Get the fields defined for this level from allSubclassFormData
+    log.debug("levelNumber", levelNumber)
+    log.debug("levelNumber", this.allSubclassFormData)
+    const scheduleFields = this.allSubclassFormData.filter(
+      field => Number(field.scheduleLevel) === levelNumber
+    );
+
+    const normalizedData: any = {};
+
+    // Loop through only the fields for this level
+    scheduleFields.forEach(field => {
+      const fieldName = field.name;
+      if (data.hasOwnProperty(fieldName)) {
+        normalizedData[fieldName] = data[fieldName];
+      }
+    });
+
+    return normalizedData;
+  }
+
 
   onOtherDetailUpdate() {
     log.debug("Editing schedules form values:", this.scheduleOtherDetailsForm.value)
@@ -7645,6 +7881,8 @@ export class RiskDetailsComponent {
         const ticketStatus = res._embedded.taskName
         log.debug("Ticket status:", ticketStatus)
         sessionStorage.setItem('ticketStatus', ticketStatus);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully made ready.')
+
         if (hasExceptions == 'Authorize Exception') {
           this.quotationService.fetchExceptions('Q', quotationCode).subscribe({
             next: (res: any) => {
@@ -7670,6 +7908,35 @@ export class RiskDetailsComponent {
 
         }
 
+
+
+      },
+      error: (error) => {
+        log.debug("error", error)
+        const apiError = error.error;
+        const message =
+          apiError?.errors?.[0] ??
+          apiError?.developerMessage ??
+          'Failed to send message';
+
+        this.globalMessagingService.displayErrorMessage('error', message);
+      }
+    });
+
+  }
+  fetchsubclassDynamicFields(subclassCode: number) {
+    const riskFieldDescription = `detailed-risk-subclass-form-${subclassCode}`;
+    this.quotationService.getFormFields(riskFieldDescription).subscribe({
+      next: (res) => {
+        const fields = res?.[0]?.fields || [];
+        this.dynamicSubclassFormFields = fields
+        this.subclassFormContent = res;
+        this.subclassFormData = fields.filter(field => Number(field.scheduleLevel) === 1);
+        this.allSubclassFormData = fields.filter(field => field.applicableLevel === 'S');
+
+
+        sessionStorage.setItem('dynamicSubclassFormField', JSON.stringify(fields));
+        log.debug("Dynamic subclass fields on mynew method", fields)
 
 
       },
