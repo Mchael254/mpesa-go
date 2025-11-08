@@ -221,6 +221,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   quickQuoteFlag: boolean = false;
   ticketData: any;
   isTicketQuotation: boolean = false;
+  productToDelete: any = null;
 
 
 
@@ -247,10 +248,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   ) {
     this.ticketStatus = sessionStorage.getItem('ticketStatus');
-    this.quickQuoteFlag = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'));
+    this.quickQuoteFlag = JSON.parse(sessionStorage.getItem('quickQuoteFlag'));
 
     // this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
     this.quotationAction = sessionStorage.getItem('quotationAction')
+    if (this.quotationAction === 'E') {
+      this.quickQuoteFlag = true
+    }
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
 
 
@@ -2289,6 +2293,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.getProductClause({ code: selectedProductCode });
     this.setColumnsFromProductDetails(this.productDetails[0]);
     this.checkProducts();
+    this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
 
     const closeBtn = document.querySelector('.btn-close') as HTMLElement;
     closeBtn?.click();
@@ -2336,7 +2341,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   openProductDeleteModal(product: any) {
     this.productToDelete = product;
-    if (!product || !product.productCode?.code) {
+    if (!product || !(product.productCode?.code ?? product.productCode)) {
       this.globalMessagingService.displayInfoMessage('Error', 'Select a product to continue');
       return;
     }
@@ -2352,36 +2357,96 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       console.error("❌ Modal with ID 'deleteProduct' not found in DOM.");
     }
   }
-
-  productToDelete: any = null;
-
   deleteProduct() {
+    log.debug('Product to delete', this.productToDelete);
+
     if (!this.productToDelete) return;
+
     const quotationCode = Number(sessionStorage.getItem('quotationCode')) || 0;
+    const deleteCode = this.productToDelete.productCode?.code ?? this.productToDelete.productCode;
 
-    const productCode = this.productToDelete.productCode.code;
-    log.debug('productCodes', productCode)
+    log.debug('productCodes', deleteCode);
 
-    this.quotationService.getQuotationDetails(quotationCode)
-      .subscribe({
+    const performDeletion = () => {
+      // Remove from productDetails
+      this.productDetails = this.productDetails.filter(p => {
+        const code = p.productCode?.code ?? p.productCode;
+        return code !== deleteCode;
+      });
+      sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+
+      // Update quotationPayload in sessionStorage
+      const quotationPayloadStr = sessionStorage.getItem('quotationPayload');
+      if (quotationPayloadStr) {
+        const quotationPayload = JSON.parse(quotationPayloadStr);
+        if (quotationPayload?.quotationProducts) {
+          quotationPayload.quotationProducts = quotationPayload.quotationProducts.filter(
+            (qp: any) => Number(qp.productCode) !== Number(deleteCode)
+          );
+          sessionStorage.setItem('quotationPayload', JSON.stringify(quotationPayload));
+          log.debug('Updated quotationPayload in sessionStorage after product deletion:', deleteCode);
+        }
+      }
+
+      // Remove related clauses from allClausesMap
+      const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+      delete allClausesMap[deleteCode];
+      sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+      log.debug('Updated allClausesMap in sessionStorage after product deletion:', deleteCode);
+
+      // Restore deleted product to dropdown
+      this.ProductDescriptionArray.push({
+        code: deleteCode,
+        description: this.productToDelete.productCode?.description ?? this.productToDelete.productName
+      });
+      sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+
+      // Handle active product switching
+      if (this.productCode === deleteCode) {
+        const nextProduct = this.productDetails[0];
+        if (nextProduct) {
+          const nextCode = nextProduct.productCode?.code ?? nextProduct.productCode;
+          this.getProductClause({ code: nextCode });
+          this.productCode = nextCode;
+        } else {
+          this.productCode = null;
+          this.sessionClauses = [];
+          this.productClause = [];
+          this.nonMandatoryProductClause = [];
+          this.clausesModified = false;
+        }
+      }
+
+      if (!this.productDetails.length) this.columns = [];
+
+      this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
+      this.productToDelete = null;
+    };
+
+    if (quotationCode) {
+      // Fetch quotation details first
+      this.quotationService.getQuotationDetails(quotationCode).subscribe({
         next: (res: any) => {
           this.quotationDetails = res;
           log.debug("Quotation details", this.quotationDetails);
 
-          // Check if this is the only product - prevent deletion
-          if (this.quotationDetails.quotationProducts && this.quotationDetails.quotationProducts.length === 1) {
+          // Prevent deletion if only one product
+          if (this.quotationDetails.quotationProducts?.length === 1) {
             log.debug("Delete not allowed - quotation only has one product");
-            this.globalMessagingService.displayErrorMessage('Error', ' quotation must have at least one product.');
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Quotation must have at least one product.'
+            );
             return;
           }
 
-          // Find the matching product to get quotationProductCode
-          const matchingProduct = this.quotationDetails.quotationProducts.find((qp: any) => {
-            return Number(qp.productCode) === Number(productCode);
-          });
+          // Find matching product
+          const matchingProduct = this.quotationDetails.quotationProducts.find(
+            (qp: any) => Number(qp.productCode) === Number(deleteCode)
+          );
 
           if (!matchingProduct) {
-            log.debug("No matching product found for productCode:", productCode);
+            log.debug("No matching product found for productCode:", deleteCode);
             this.globalMessagingService.displayErrorMessage('Error', 'Product not found in quotation');
             return;
           }
@@ -2389,85 +2454,225 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           const quotationProductCode = matchingProduct.code;
           log.debug("Found quotationProductCode:", quotationProductCode);
 
-          this.quotationService.deleteQuotationProduct(quotationCode, quotationProductCode)
-            .subscribe({
-              next: (response) => {
-                // Proceed only if delete was successful
-                this.productDetails = this.productDetails.filter(
-                  p => p.productCode.code !== this.productToDelete.productCode.code
-                );
-
-                sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
-
-                // Update quotationPayload in sessionStorage
-                const quotationPayloadStr = sessionStorage.getItem('quotationPayload');
-                if (quotationPayloadStr) {
-                  const quotationPayload = JSON.parse(quotationPayloadStr);
-                  if (quotationPayload && quotationPayload.quotationProducts) {
-
-                    quotationPayload.quotationProducts = quotationPayload.quotationProducts.filter(
-                      (qp: any) => Number(qp.productCode) !== Number(productCode)
-                    );
-                    sessionStorage.setItem('quotationPayload', JSON.stringify(quotationPayload));
-                    log.debug('Updated quotationPayload in sessionStorage after product deletion:', productCode);
-                  }
-                }
-
-                // Remove related clauses from allClausesMap
-                const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
-                delete allClausesMap[this.productToDelete.productCode.code];
-                sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
-                log.debug('Updated allClausesMap in sessionStorage after product deletion:', this.productToDelete.productCode.code);
-
-                // Restore deleted product to dropdown
-                this.ProductDescriptionArray.push({
-                  code: this.productToDelete.productCode.code,
-                  description: this.productToDelete.productCode.description
-                });
-
-                // Persist updated dropdown list again
-                sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
-
-                // Handle active product switching
-                if (this.productCode === this.productToDelete.productCode.code) {
-                  const nextProduct = this.productDetails[0];
-                  if (nextProduct) {
-                    this.getProductClause({ code: nextProduct.productCode.code });
-                    this.productCode = nextProduct.productCode.code;
-                  } else {
-                    this.productCode = null;
-                    this.sessionClauses = [];
-                    this.productClause = [];
-                    this.nonMandatoryProductClause = [];
-                    this.clausesModified = false;
-                  }
-                }
-
-                if (!this.productDetails.length) {
-                  this.columns = [];
-                }
-
-                this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
-                this.productToDelete = null;
-              },
-              error: (err) => {
-                console.error('Error deleting product:', err);
-                this.globalMessagingService.displayErrorMessage('error', 'Failed to delete product. Please try again.');
-              }
-            });
+          // Delete product from quotation via API
+          this.quotationService.deleteQuotationProduct(quotationCode, quotationProductCode).subscribe({
+            next: () => {
+              performDeletion();
+              this.fetchQuotationDetails(quotationCode);
+            },
+            error: (err) => {
+              console.error('Error deleting product:', err);
+              this.globalMessagingService.displayErrorMessage('Error', 'Failed to delete product. Please try again.');
+            }
+          });
         },
         error: (error: HttpErrorResponse) => {
           log.debug("Error log", error.error.message);
-
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
-        },
-
-      })
-
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        }
+      });
+    } else {
+      // No quotation code — perform deletion locally
+      performDeletion();
+    }
   }
+
+
+  // deleteProduct() {
+  //   log.debug('Product to delete', this.productToDelete)
+
+  //   if (!this.productToDelete) return;
+  //   const quotationCode = Number(sessionStorage.getItem('quotationCode')) || 0;
+
+  //   const productCode = this.productToDelete.productCode.code || this.productToDelete.productCode;
+  //   log.debug('productCodes', productCode)
+  //   if (quotationCode) {
+  //     this.quotationService.getQuotationDetails(quotationCode)
+  //       .subscribe({
+  //         next: (res: any) => {
+  //           this.quotationDetails = res;
+  //           log.debug("Quotation details", this.quotationDetails);
+
+  //           // Check if this is the only product - prevent deletion
+  //           if (this.quotationDetails.quotationProducts && this.quotationDetails.quotationProducts.length === 1) {
+  //             log.debug("Delete not allowed - quotation only has one product");
+  //             this.globalMessagingService.displayErrorMessage('Error', ' quotation must have at least one product.');
+  //             return;
+  //           }
+
+  //           // Find the matching product to get quotationProductCode
+  //           const matchingProduct = this.quotationDetails.quotationProducts.find((qp: any) => {
+  //             return Number(qp.productCode) === Number(productCode);
+  //           });
+
+  //           if (!matchingProduct) {
+  //             log.debug("No matching product found for productCode:", productCode);
+  //             this.globalMessagingService.displayErrorMessage('Error', 'Product not found in quotation');
+  //             return;
+  //           }
+
+  //           const quotationProductCode = matchingProduct.code;
+  //           log.debug("Found quotationProductCode:", quotationProductCode);
+
+  //           this.quotationService.deleteQuotationProduct(quotationCode, quotationProductCode)
+  //             .subscribe({
+  //               next: (response) => {
+  //                 // Proceed only if delete was successful
+  //                 // this.productDetails = this.productDetails.filter(
+  //                 //   p => p.productCode.code || p.productCode !== this.productToDelete.productCode.code || this.productToDelete.productCode
+  //                 // );
+  //                 this.productDetails = this.productDetails.filter(p => {
+  //                   const code = p.productCode?.code ?? p.productCode; // pick nested code or direct code
+  //                   const deleteCode = this.productToDelete.productCode?.code ?? this.productToDelete.productCode;
+  //                   return code !== deleteCode;
+  //                 });
+
+
+  //                 sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+
+  //                 // Update quotationPayload in sessionStorage
+  //                 const quotationPayloadStr = sessionStorage.getItem('quotationPayload');
+  //                 if (quotationPayloadStr) {
+  //                   const quotationPayload = JSON.parse(quotationPayloadStr);
+  //                   if (quotationPayload && quotationPayload.quotationProducts) {
+
+  //                     quotationPayload.quotationProducts = quotationPayload.quotationProducts.filter(
+  //                       (qp: any) => Number(qp.productCode) !== Number(productCode)
+  //                     );
+  //                     sessionStorage.setItem('quotationPayload', JSON.stringify(quotationPayload));
+  //                     log.debug('Updated quotationPayload in sessionStorage after product deletion:', productCode);
+  //                   }
+  //                 }
+
+  //                 // Remove related clauses from allClausesMap
+  //                 const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+  //                 // delete allClausesMap[this.productToDelete.productCode.code || this.productToDelete.productCode];
+  //                 delete allClausesMap[this.productToDelete.productCode?.code || this.productToDelete.productCode];
+
+  //                 sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+  //                 log.debug('Updated allClausesMap in sessionStorage after product deletion:', this.productToDelete.productCode.code);
+
+  //                 // Restore deleted product to dropdown
+  //                 // this.ProductDescriptionArray.push({
+  //                 //   code: this.productToDelete.productCode.code || this.productToDelete.productCode,
+  //                 //   description: this.productToDelete.productCode.description || this.productToDelete.productName
+  //                 // });
+  //                 this.ProductDescriptionArray.push({
+  //                   code: this.productToDelete.productCode?.code || this.productToDelete.productCode,
+  //                   description: this.productToDelete.productCode?.description || this.productToDelete.productName
+  //                 });
+
+  //                 // Persist updated dropdown list again
+  //                 sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+
+  //                 // Handle active product switching
+  //                 if (this.productCode === this.productToDelete.productCode?.code || this.productToDelete.productCode) {
+  //                   const nextProduct = this.productDetails[0];
+  //                   if (nextProduct) {
+  //                     this.getProductClause({ code: nextProduct.productCode?.code || this.productCode });
+  //                     this.productCode = nextProduct.productCode?.code || this.productCode;
+  //                   } else {
+  //                     this.productCode = null;
+  //                     this.sessionClauses = [];
+  //                     this.productClause = [];
+  //                     this.nonMandatoryProductClause = [];
+  //                     this.clausesModified = false;
+  //                   }
+  //                 }
+
+  //                 if (!this.productDetails.length) {
+  //                   this.columns = [];
+  //                 }
+  //                 this.fetchQuotationDetails(this.quotationCode)
+  //                 this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
+  //                 this.productToDelete = null;
+  //               },
+  //               error: (err) => {
+  //                 console.error('Error deleting product:', err);
+  //                 this.globalMessagingService.displayErrorMessage('error', 'Failed to delete product. Please try again.');
+  //               }
+  //             });
+  //         },
+  //         error: (error: HttpErrorResponse) => {
+  //           log.debug("Error log", error.error.message);
+
+  //           this.globalMessagingService.displayErrorMessage(
+  //             'Error',
+  //             error.error.message
+  //           );
+  //         },
+
+  //       })
+  //   } else {
+  //     this.productDetails = this.productDetails.filter(p => {
+  //       const code = p.productCode?.code ?? p.productCode; // pick nested code or direct code
+  //       const deleteCode = this.productToDelete.productCode?.code ?? this.productToDelete.productCode;
+  //       return code !== deleteCode;
+  //     });
+
+
+  //     sessionStorage.setItem('productFormDetails', JSON.stringify(this.productDetails));
+
+  //     // Update quotationPayload in sessionStorage
+  //     const quotationPayloadStr = sessionStorage.getItem('quotationPayload');
+  //     if (quotationPayloadStr) {
+  //       const quotationPayload = JSON.parse(quotationPayloadStr);
+  //       if (quotationPayload && quotationPayload.quotationProducts) {
+
+  //         quotationPayload.quotationProducts = quotationPayload.quotationProducts.filter(
+  //           (qp: any) => Number(qp.productCode) !== Number(productCode)
+  //         );
+  //         sessionStorage.setItem('quotationPayload', JSON.stringify(quotationPayload));
+  //         log.debug('Updated quotationPayload in sessionStorage after product deletion:', productCode);
+  //       }
+  //     }
+
+  //     // Remove related clauses from allClausesMap
+  //     const allClausesMap = JSON.parse(sessionStorage.getItem("allClausesMap") || "{}");
+  //     // delete allClausesMap[this.productToDelete.productCode.code || this.productToDelete.productCode];
+  //     delete allClausesMap[this.productToDelete.productCode?.code || this.productToDelete.productCode];
+
+  //     sessionStorage.setItem("allClausesMap", JSON.stringify(allClausesMap));
+  //     log.debug('Updated allClausesMap in sessionStorage after product deletion:', this.productToDelete.productCode.code);
+
+  //     // Restore deleted product to dropdown
+  //     // this.ProductDescriptionArray.push({
+  //     //   code: this.productToDelete.productCode.code || this.productToDelete.productCode,
+  //     //   description: this.productToDelete.productCode.description || this.productToDelete.productName
+  //     // });
+  //     this.ProductDescriptionArray.push({
+  //       code: this.productToDelete.productCode?.code || this.productToDelete.productCode,
+  //       description: this.productToDelete.productCode?.description || this.productToDelete.productName
+  //     });
+
+  //     // Persist updated dropdown list again
+  //     sessionStorage.setItem('availableProducts', JSON.stringify(this.ProductDescriptionArray));
+
+  //     // Handle active product switching
+  //     if (this.productCode === this.productToDelete.productCode?.code || this.productToDelete.productCode) {
+  //       const nextProduct = this.productDetails[0];
+  //       if (nextProduct) {
+  //         this.getProductClause({ code: nextProduct.productCode?.code || this.productCode });
+  //         this.productCode = nextProduct.productCode?.code || this.productCode;
+  //       } else {
+  //         this.productCode = null;
+  //         this.sessionClauses = [];
+  //         this.productClause = [];
+  //         this.nonMandatoryProductClause = [];
+  //         this.clausesModified = false;
+  //       }
+  //     }
+
+  //     if (!this.productDetails.length) {
+  //       this.columns = [];
+  //     }
+  //     this.globalMessagingService.displaySuccessMessage('success', 'Product deleted successfully');
+  //     this.productToDelete = null;
+  //   }
+
+
+
+  // }
 
 
   updateCoverTo(product: any) {

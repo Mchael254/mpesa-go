@@ -1,6 +1,6 @@
 <div class="mx-4 mt-3">
     <p class="screenTitle"> {{'gis.quotation.quotation_risk_detail' | translate}} </p>
-    <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+    <app-stepper [currentStep]="2" [stepperData]="steps" [disableNavigation]="true"></app-stepper>
     <p *ngIf="ticketStatus" class=" mx-4 text-primary ps-5" style="font-weight: 500;">Ticket status:<span
             style="color: black;">{{ticketStatus |sentenceCase}}
         </span>

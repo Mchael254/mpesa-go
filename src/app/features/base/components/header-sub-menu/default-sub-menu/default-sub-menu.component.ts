@@ -89,63 +89,63 @@ export class DefaultSubMenuComponent implements OnInit {
     this.entityService.searchTermObject.set({ ...searchFormValue, fromSearchScreen: true });
     this.navLink('/home/entity/list');
   }
-onSearch(): void {
-  if (!this.idSearchTerm || this.idSearchTerm.trim() === '') {
-    return;
+  onSearch(): void {
+    if (!this.idSearchTerm || this.idSearchTerm.trim() === '') {
+      return;
+    }
+
+    this.quotationService.searchQuotation(this.idSearchTerm).subscribe({
+      next: (res: any) => {
+        log.debug('[QuotationDetailsComponent] Search response:', res);
+        const results = res?._embedded || [];
+        this.searchResults = results.slice(0, 2);
+        this.showResults = true;
+        this.idSearchTerm = '';
+        this.saveRecentSearches(this.searchResults);
+      },
+      error: (err) => {
+        console.error('[QuotationDetailsComponent] Quotation search error:', err);
+        this.searchResults = [];
+        this.showResults = true;
+      }
+    });
   }
 
-  this.quotationService.searchQuotation(this.idSearchTerm).subscribe({
-    next: (res: any) => {
-      log.debug('[QuotationDetailsComponent] Search response:', res);
-      const results = res?._embedded || []; 
-      this.searchResults= results.slice(0,2);
-      this.showResults = true;
-      this.idSearchTerm = '';
-      this.saveRecentSearches(this.searchResults);
-    },
-    error: (err) => {
-      console.error('[QuotationDetailsComponent] Quotation search error:', err);
-      this.searchResults = [];
-      this.showResults = true;
-    }
-  });
-}
+  saveRecentSearches(results: any[]): void {
+    const stored = JSON.parse(sessionStorage.getItem('recentQuotations') || '[]');
 
-saveRecentSearches(results: any[]): void {
-  const stored = JSON.parse(sessionStorage.getItem('recentQuotations') || '[]');
+    // Merge new + old, but avoid duplicates by quotationNumber
+    const merged = [...results, ...stored].reduce((acc: any[], curr: any) => {
+      if (!acc.find(q => q.quotationNumber === curr.quotationNumber)) {
+        acc.push(curr);
+      }
+      return acc;
+    }, []);
 
-  // Merge new + old, but avoid duplicates by quotationNumber
-  const merged = [...results, ...stored].reduce((acc: any[], curr: any) => {
-    if (!acc.find(q => q.quotationNumber === curr.quotationNumber)) {
-      acc.push(curr);
-    }
-    return acc;
-  }, []);
+    // Limit stored recent searches (optional: top 5)
+    sessionStorage.setItem('recentQuotations', JSON.stringify(merged.slice(0, 5)));
 
-  // Limit stored recent searches (optional: top 5)
-  sessionStorage.setItem('recentQuotations', JSON.stringify(merged.slice(0, 5)));
+    this.recentSearches = merged.slice(0, 5); // update local variable for UI
+  }
 
-  this.recentSearches = merged.slice(0, 5); // update local variable for UI
-}
+  showRecentSearches(): void {
+    const stored = JSON.parse(sessionStorage.getItem('recentQuotations') || '[]');
+    this.recentSearches = stored.slice(0, 2); // ✅ show only top 2
+    this.showResults = false; // hide live search results
+    this.showRecents = true;
+  }
 
-showRecentSearches(): void {
-  const stored = JSON.parse(sessionStorage.getItem('recentQuotations') || '[]');
-  this.recentSearches = stored.slice(0, 2); // ✅ show only top 2
-  this.showResults = false; // hide live search results
-  this.showRecents = true;
-}
+  onSelectQuotation(item: any): void {
+    this.idSearchTerm = '';
+    this.searchResults = [];
+    this.showResults = false;
+    this.showRecents = false;
 
-onSelectQuotation(item: any): void {
-  this.idSearchTerm = '';
-  this.searchResults = [];
-  this.showResults = false;
-  this.showRecents = false;
+    sessionStorage.setItem('selectedQuotation', JSON.stringify(item));
 
-  sessionStorage.setItem('selectedQuotation', JSON.stringify(item));
 
-  
-  this.router.navigate(['/home/gis/quotation/quotation-summary']);
-}
+    this.router.navigate(['/home/gis/quotation/quotation-summary']);
+  }
 
 
 
@@ -158,5 +158,14 @@ onSelectQuotation(item: any): void {
     }
     this.utilService.clearSessionStorageData()
   }
-
+  clearQuickQuoteSessionStorage() {
+    this.utilService.clearSessionStorageData()
+    this.utilService.clearNormalQuoteSessionStorage()
+    this.navLink('/home/gis/quotation/quick-quote')
+  }
+  clearDetailedQuoteSessionStorage() {
+    this.utilService.clearSessionStorageData()
+    this.utilService.clearNormalQuoteSessionStorage()
+    this.navLink('/home/gis/quotation/quotation-details')
+  }
 }

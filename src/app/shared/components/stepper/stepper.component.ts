@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 import { Step } from '../../data/steps';
 import { StepperService } from '../../services/stepper/stepper.service';
 
@@ -7,7 +7,7 @@ import { StepperService } from '../../services/stepper/stepper.service';
   templateUrl: './stepper.component.html',
   styleUrls: ['./stepper.component.css'],
   encapsulation: ViewEncapsulation.None,
-  standalone : false
+  standalone: false
 })
 export class StepperComponent {
   @Input() stepperData: Step[];
@@ -16,6 +16,8 @@ export class StepperComponent {
   @Input() stepType: string = 'link';
   @Input() orientation: string = 'HORIZONTAL'
   @Input() disabled: boolean = false;
+  @Input() disableNavigation = false;
+
   @Output() stepChange = new EventEmitter<number>();  // EventEmitter to re-emit step changes
 
 
@@ -23,9 +25,13 @@ export class StepperComponent {
   constructor(private stepperService: StepperService) { }
 
 
+  // onStepChange(step: number) {
+  //   if (this.disabled ?? this.disableNavigation) return;
+  //   this.stepChange.emit(step);  // Re-emit the step number
+  // }
   onStepChange(step: number) {
-    if (this.disabled) return;
-    this.stepChange.emit(step);  // Re-emit the step number
+    if (this.disableNavigation || (!this.disableNavigation && this.disabled)) return;
+    this.stepChange.emit(step);
   }
 
 }

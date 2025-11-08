@@ -314,6 +314,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
   previewVisible = false;
   pdfSrc: SafeResourceUrl | null = null;
   reportDetails: any;
+  ticketStatus: string
 
 
   constructor(
@@ -352,6 +353,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       showFilter: false,
       showSorting: false,
     };
+    this.ticketStatus = sessionStorage.getItem('ticketStatus');
 
   }
 
@@ -872,7 +874,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     // If product exists only in FormArray, remove it locally
     if (existsInFormArray && !existsInQuotationObject) {
       log.debug("Product exists only in FormArray, removing locally...");
-      
+
       // Remove from UI state
       this.previousSelected = this.previousSelected.filter(value => value.code !== deletedCode);
       this.removeProductCoverTypes(product.value.code);
@@ -889,7 +891,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
 
       this.globalMessagingService.displaySuccessMessage('Success', 'Product removed successfully');
       log.debug("Product removed from FormArray and cover types cleared");
-      
+
       // Clear the stored references after successful local deletion
       this.productToDelete = null;
       this.productIndexToDelete = null;
@@ -1048,7 +1050,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
       error: (error: any) => {
         log.error("Failed to delete quotation product:", error);
         this.globalMessagingService.displayErrorMessage('Error', 'Unable to delete product. Please try again later');
-        
+
         // Clear the stored references on error
         this.productToDelete = null;
         this.productIndexToDelete = null;
@@ -3162,15 +3164,15 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
         else if (selectedMethod === 'sms') {
           const message = this.buildQuotationMessage(reportPayload, clientName);
           const smsPayload: SmsDto = {
-             scheduledDate: null,
-             smsMessages: [
-                  {
-               message: message,
-               sendDate: new Date().toISOString(),
-               systemCode: 0,
-               telephoneNumber: smsNumber
-                   }
-                         ]
+            scheduledDate: null,
+            smsMessages: [
+              {
+                message: message,
+                sendDate: new Date().toISOString(),
+                systemCode: 0,
+                telephoneNumber: smsNumber
+              }
+            ]
           };
           return this.notificationService.sendSms(smsPayload);
         }
@@ -3214,7 +3216,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
     this.onCheckboxChange(fakeEvent as any, product);
   }
 
-    buildQuotationMessage(data: any, clientName: string): string {
+  buildQuotationMessage(data: any, clientName: string): string {
     let message = `Dear ${clientName}, find your attached quotation.\n\n`;
 
     data.products.forEach((product: any) => {
