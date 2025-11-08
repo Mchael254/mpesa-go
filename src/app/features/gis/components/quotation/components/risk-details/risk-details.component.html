@@ -67,9 +67,21 @@
                             </ng-container>
 
                             <!-- Default columns added dynamically -->
-                            <ng-container *ngSwitchDefault>
+                            <!-- <ng-container *ngSwitchDefault>
                                 {{ risk[col.field] }}
+                            </ng-container> -->
+                            <ng-container *ngSwitchDefault>
+
+                                <ng-container
+                                    *ngIf="col.field === 'value'|| col.field === 'SumInsured' || col.field === 'Value'; else defaultCell">
+                                    <div class="text-end"> {{ risk[col.field] | currency: currencyObj?.prefix :
+                                        'symbol' : '1.2-2' }}
+                                    </div>
+                                </ng-container>
                             </ng-container>
+                            <ng-template #defaultCell>
+                                {{ risk[col.field] }}
+                            </ng-template>
 
                         </ng-container>
                     </td>
@@ -357,13 +369,14 @@
                                             <ng-container *ngIf="field.name === 'conveyanceType'">
                                                 <p-dropdown formControlName="conveyanceType"
                                                     [options]="conveyannceTypes" placeholder="" [filter]="true"
-                                                    optionLabel="label">
+                                                    optionLabel="label" optionValue="value">
                                                 </p-dropdown>
                                             </ng-container>
                                             <!-- NCD Level -->
                                             <ng-container *ngIf="ncdStatusSelected && field.name === 'ncdLevel'">
                                                 <p-dropdown formControlName="ncdLevel" [options]="ncdLevels"
-                                                    placeholder="" [filter]="true" optionLabel="label">
+                                                    placeholder="" [filter]="true" optionLabel="label"
+                                                    optionValue="value">
                                                 </p-dropdown>
                                             </ng-container>
                                             <!-- TERRITORIES -->
@@ -398,8 +411,7 @@
 
                                             <!-- number -->
                                             <input *ngIf="field.type === 'number'" type="number" class="form-control"
-                                                [formControlName]="field.name"
-                                                [attr.placeholder]="field.label | translate" />
+                                                [formControlName]="field.name" />
 
                                             <!-- currency -->
                                             <input *ngIf="field.type === 'currency'" type="text" class="form-control"
@@ -468,8 +480,6 @@
         </div>
     </div>
 </div>
-
-
 <!-- SCHEDULE DETAILS CARD -->
 <div class="card  mb-3">
     <div class="card-body my-4 mx-4">
@@ -504,9 +514,11 @@
                     <!-- Header -->
                     <ng-template pTemplate="header" let-columns>
                         <tr>
-                            <th *ngFor="let col of columns" class="flexible-header">
+                            <th *ngFor="let col of columns" class="flexible-header"
+                                [ngClass]="{'text-center': col.field === 'actions'}">
                                 {{ col.header }}
                             </th>
+
                         </tr>
                     </ng-template>
 
@@ -522,7 +534,8 @@
                                     <!-- Default columns added dynamically) -->
                                     <ng-container *ngSwitchDefault>
 
-                                        <ng-container *ngIf="col.field === 'value'; else defaultCell">
+                                        <ng-container
+                                            *ngIf="col.field === 'value'|| col.field === 'SumInsured' || col.field === 'Value'; else defaultCell">
                                             <div class="text-end"> {{ row[col.field] | currency: currencyObj?.prefix :
                                                 'symbol' : '1.2-2' }}
                                             </div>
@@ -536,20 +549,22 @@
 
                                     <!-- Actions -->
                                     <ng-container *ngSwitchCase="'actions'">
-                                        <button pButton pRipple type="button"
-                                            class="p-button-text p-button-sm p-button-info custom-button" tooltip="Edit"
-                                            (click)="editOtherDetails(tab);fetchLimitationOfUse();">
+                                        <div class="text-center">
+                                            <button pButton pRipple type="button"
+                                                class="p-button-text p-button-sm p-button-info custom-button"
+                                                tooltip="Edit" (click)="editOtherDetails(tab);fetchLimitationOfUse();">
 
-                                            {{ 'gis.quotation.edit' | translate }}
-                                        </button>
+                                                {{ 'gis.quotation.edit' | translate }}
+                                            </button>
 
-                                        <button pButton pRipple type="button"
-                                            class="p-button-text p-button-sm custom-button" data-bs-toggle="modal"
-                                            data-bs-target="#deleteSchedule" tooltip="Delete"
-                                            (click)="getLevelName(tab.levelNumber)">
+                                            <button pButton pRipple type="button"
+                                                class="p-button-text p-button-sm custom-button" data-bs-toggle="modal"
+                                                data-bs-target="#deleteSchedule" tooltip="Delete"
+                                                (click)="getLevelName(tab.levelNumber)">
 
-                                            {{ 'gis.quotation.delete' | translate }}
-                                        </button>
+                                                {{ 'gis.quotation.delete' | translate }}
+                                            </button>
+                                        </div>
                                     </ng-container>
 
 
@@ -1035,8 +1050,10 @@
                                                 id="scheduleLabel">{{'gis.quotation.premium' | translate}}:</label>
                                             <div class="col-7">
                                                 <input type="text" id="scheduleInput" style="width:300px"
-                                                    class="form-control form-control-sm mb-1" currencyMask
-                                                    [options]="currencyObj" formControlName="premiumAmount">
+                                                    class="form-control form-control-sm mb-1 readonly-input"
+                                                    currencyMask [options]="currencyObj" formControlName="premiumAmount"
+                                                    readonly>
+
                                             </div>
                                         </div>
                                     </div>
@@ -1463,157 +1480,7 @@
 
             </div>
 
-            <!-- 
-            <div class="d-flex justify-content-between align-items-end m-0">
 
-                <div class="d-flex justify-content-between px-1" style="width:75%">
-                    <div>
-                        <button class="btn btn-sm"
-                            [ngClass]="{'no-border-bottom': riskActiveTab === 'riskClauses', 'text-primary border-0': riskActiveTab !== 'riskClauses'}"
-                            (click)="setRiskTab('riskClauses')"> {{'gis.quotation.risk_clauses' | translate}}
-                        </button>
-                    </div>
-                    <div>
-                        <button class="btn btn-sm"
-                            [ngClass]="{'no-border-bottom': riskActiveTab === 'riskLimits', 'text-primary border-0': riskActiveTab !== 'riskLimits'}"
-                            (click)="setRiskTab('riskLimits')"> {{'gis.quotation.limits_of_liability' | translate}}
-                        </button>
-                    </div>
-                    <div>
-                        <button class="btn btn-sm"
-                            [ngClass]="{'no-border-bottom': riskActiveTab === 'riskPerils', 'text-primary border-0': riskActiveTab !== 'riskPerils'}"
-                            (click)="setRiskTab('riskPerils')"> {{'gis.quotation.perils' | translate}}
-                        </button>
-                    </div>
-                    
-                    <div pTooltip="{{ isCommissionsButtonDisabled ? ('gis.quotation.agent_source_required_for_commissions' | translate) : '' }}"
-                        tooltipPosition="top" class="d-inline-block" style="cursor: pointer">
-                        <button class="btn btn-sm" [ngClass]="{
-                                'no-border-bottom': riskActiveTab === 'commissions' && !isCommissionsButtonDisabled, 
-                                'text-primary border-0': riskActiveTab !== 'commissions' && !isCommissionsButtonDisabled,
-                                'text-muted': isCommissionsButtonDisabled
-                            }" [disabled]="isCommissionsButtonDisabled"
-                            (click)="!isCommissionsButtonDisabled && setRiskTab('commissions')">
-                            {{ 'gis.quotation.commissions' | translate }}
-                        </button>
-                    </div>
-
-                    
-
-                    <div>
-                        <button class="btn btn-sm"
-                            [ngClass]="{'no-border-bottom': riskActiveTab === 'riskExcesses', 'text-primary border-0': riskActiveTab !== 'riskExcesses'}"
-                            (click)="setRiskTab('riskExcesses')"> {{'gis.quotation.excesses' | translate}}
-                        </button>
-                    </div>
-                    <div>
-                        <button class="btn btn-sm"
-                            [ngClass]="{'no-border-bottom': riskActiveTab === 'riskTaxes', 'text-primary border-0': riskActiveTab !== 'riskTaxes'}"
-                            (click)="setRiskTab('riskTaxes'); loadTaxDetails();getProductTaxes();"> Taxes
-                        </button>
-                    </div>
-
-                </div>
-
-                
-                <div class="d-flex align-items-center ms-2 mb-1">
-
-                    
-                    <div *ngIf="riskActiveTab === 'riskClauses'">
-                        <button class="btn btn-primary btn-sm mb-1" (click)="openClauseModal()">
-
-                            {{'gis.quotation.add_risk_clause' | translate}}
-                        </button>
-                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
-                            [ngClass]="{ 'pi-caret-up': showClauses, 'pi-caret-down': !showClauses }"
-                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                            (click)="toggleClauseColumns(iconTrigger)">
-                        </i>
-                    </div>
-
-                    
-                    <div *ngIf="riskActiveTab === 'riskLimits'">
-                        <button class="btn btn-primary btn-sm mb-1" (click)="openLimitModal()">
-
-                            {{'gis.quotation.add_risk_limit' | translate}}
-                        </button>
-                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
-                            [ngClass]="{ 'pi-caret-up': showLimitsOfLiability, 'pi-caret-down': !showLimitsOfLiability }"
-                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                            (click)="toggleLimitsOfLiabilityColumns(iconTrigger)">
-                        </i>
-                    </div>
-
-                    
-                    <div *ngIf="riskActiveTab === 'riskPerils'">
-                        <button class="btn btn-primary btn-sm mb-1" (click)="openChoosePerilsModal()">
-
-                            {{'gis.quotation.add_perils' | translate}}
-                        </button>
-
-                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
-                            [ngClass]="{ 'pi-caret-up': showExcesses, 'pi-caret-down': !showExcesses }"
-                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                            (click)="togglePerilColumns(iconTrigger)">
-                        </i>
-                    </div>
-
-                 
-                    <div *ngIf="riskActiveTab === 'riskExcesses'">
-                        <button class="btn btn-primary btn-sm mb-1" (click)="openExcessModal()">
-
-                            {{'gis.quotation.add_risk_excess' | translate}}
-                        </button>
-                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
-                            [ngClass]="{ 'pi-caret-up': showExcesses, 'pi-caret-down': !showExcesses }"
-                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                            (click)="toggleExcessesColumns(iconTrigger)">
-                        </i>
-                    </div>
-
-                   
-                    <div *ngIf="riskActiveTab === 'riskTaxes'">
-                        <button class="btn btn-primary btn-sm mb-1" type="button" (click)="handleAddTaxClick()">
-
-                            {{'gis.quotation.add_tax' | translate}}
-                        </button>
-
-                        <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
-                            [ngClass]="{ 'pi-caret-up': showExcesses, 'pi-caret-down': !showExcesses }"
-                            style="font-size: 15px; cursor: pointer; margin-left: 8px; padding: 4px 6px;"
-                            (click)="toggleTaxesColumns(iconTrigger)">
-                        </i>
-                    </div>
-
-                 
-
-                    
-                    <div *ngIf="riskActiveTab === 'commissions'">
-                        <button class="btn btn-outline-primary btn-sm mb-1 me-2" (click)="updateRiskCommissions()"
-                            [disabled]="isCommissionsButtonDisabled || !hasCommissionChanges()"
-                            [ngClass]="{'btn-outline-secondary': isCommissionsButtonDisabled || !hasCommissionChanges()}">
-                            {{ 'gis.quotation.save_changes' | translate }}
-                        </button>
-
-                        <button class="btn btn-primary btn-sm mb-1" [disabled]="isCommissionsButtonDisabled"
-                            [ngClass]="{'btn-secondary': isCommissionsButtonDisabled}"
-                            (click)="!isCommissionsButtonDisabled && openCommissionsModal()">
-                            {{'gis.quotation.add_commission' | translate}}
-                        </button>
-                        <i #iconTrigger class="pi border rounded-1 p-1" [ngClass]="{ 
-                                'pi-caret-up': showCommissions, 
-                                'pi-caret-down': !showCommissions,
-                                'border-black text-black': !isCommissionsButtonDisabled,
-                                'border-secondary text-muted': isCommissionsButtonDisabled
-                            }" [style.cursor]="isCommissionsButtonDisabled ? 'not-allowed' : 'pointer'"
-                            style="font-size: 15px; margin-left: 8px; padding: 4px 6px;"
-                            (click)="!isCommissionsButtonDisabled && toggleCommissionsColumns(iconTrigger)">
-                        </i>
-
-                    </div>
-
-                </div>
-            </div> -->
         </div>
 
 
