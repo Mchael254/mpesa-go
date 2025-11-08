@@ -1,3 +1,4 @@
+import { receipt } from './../banking-dashboard/banking-dashboard.component';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,14 +10,15 @@ import { BankingProcessService } from '../../services/banking-process.service';
 import { PaymentModesDTO } from '../../data/auth-requisition-dto';
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
+import {StaffDto } from '../../../../features/entities/data/StaffDto';
+import {StaffService} from '../../../../features/entities/services/staff/staff.service';
 import {
+  DeAssignDTO,
   ReceiptDTO,
   ReceiptsToBankRequest,
 } from '../../data/banking-process-dto';
 import * as bootstrap from 'bootstrap';
 import { AuthService } from '../../../../shared/services/auth.service';
-import { StaffService } from 'src/app/features/entities/services/staff/staff.service';
-import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 const log = new Logger('NewBankingProcessComponent');
 /**
  * @Component NewBankingProcessComponent
@@ -61,6 +63,10 @@ export class NewBankingProcessComponent implements OnInit {
   userSelectDialogVisible: boolean = false;
   /**controls visibility of create batches btn,it should be hidden if payment mode selected is cheque */
   isCashSelected: boolean = false;
+  /**controls the visibility of assign buttons */
+  reAssign:boolean=false;
+  /**it controls the visibility of deposit button which should only be visible if the payment mode is cheque */
+  paymentMode:string;
   /** Holds the user object selected from the second dialog to display in the first dialog's input. */
   selectedUserForAssignment:  StaffDto | null = null;
 
@@ -71,7 +77,6 @@ export class NewBankingProcessComponent implements OnInit {
   /** Stores the configuration for all available columns in the receipts table. */
   columns: any[];
   /** Stores the configuration for the columns that are currently visible in the table. */
-  selectedColumns: any[] = [];
   allColumns: any[] = [];
   // --- Session and User Data ---
   /** The default organization for the logged-in user, retrieved from session storage. */
@@ -81,6 +86,7 @@ export class NewBankingProcessComponent implements OnInit {
   /** Information about the currently logged-in user. */
   loggedInUser: any;
    staffPageSize = 5;
+   selectedRctObj:ReceiptDTO;
   /**
    * @constructor
    * @param translate Service for handling internationalization (i18n).
@@ -255,15 +261,15 @@ this.fetchActiveUsers(0, this.staffPageSize);
     }
     if (formData?.paymentMethod === 'CASH') {
       // If CASH is selected, filter out the 'actions' column
-      this.selectedColumns = this.allColumns.filter(
-        (col) => col.field !== 'actions'
-      );
+      //this.selectedColumns = this.allColumns.filter(
+      //   (col) => col.field !== 'actions'
+      // );
 
       this.isCashSelected = true;
     } else {
       this.isCashSelected = false;
       // For any other payment mode, show all columns
-      this.selectedColumns = [...this.allColumns];
+      //this.selectedColumns = [...this.allColumns];
     }
     this.fetchReceipts();
   }
@@ -285,29 +291,22 @@ this.fetchActiveUsers(0, this.staffPageSize);
         this.filteredReceipts = this.receiptData;
         this.displayTable = true;
         this.totalRecord = this.filteredReceipts.length;
+        this.paymentMode= this.rctsRetrievalForm.get('paymentMethod')?.value;
       },
       error: (err) => {
         this.handleApiError(err);
       },
     });
   }
-
-  /**
+/**
    * @description Opens the main assignment dialog.
    * Checks if receipts have been selected first.
    */
   openAssignModal(): void {
-    // if (!this.selectedReceipts || this.selectedReceipts.length === 0) {
-    //   this.globalMessagingService.displayErrorMessage(
-    //     '',
-    //     'Please select at least one receipt to assign.'
-    //   );
-    //   return;
-    // }
     this.assignDialogVisible = true;
+    this.reAssign=false;
   }
-
-  /**
+ /**
    * @description Closes the main assignment dialog and resets the form and selections.
    */
   closeAssignModal(): void {
@@ -344,7 +343,7 @@ this.fetchActiveUsers(0, this.staffPageSize);
     this.userSelectDialogVisible = false;
   }
   /**
-   * @description Called when the "Select User" button in the second dialog is clicked.
+   * @description Called when the "save" button in the second dialog is clicked.
    * It transfers the selected user to the main form and closes the selection dialog.
    */
   confirmUserSelection(): void {
@@ -357,6 +356,14 @@ this.fetchActiveUsers(0, this.staffPageSize);
       this.closeUserSelectDialog();
     }
   }
+  /**
+   * @description this method prepares the request body for assignUser method and calls it
+   * the assignUser method sends the request to assign a batch of receipts or a single receipt for 
+   * assignment and creation of batch
+   * a successfull response results to updating the receipts to bank table by re-calling the fetchReceipts()
+   * otherwise we display the error
+   * @returns if the usersForm is invalid we stop the execution others continue
+   */ 
   onAssignSubmit(): void {
     this.usersForm.markAllAsTouched();
     if (this.usersForm.invalid) {
@@ -373,21 +380,14 @@ this.fetchActiveUsers(0, this.staffPageSize);
     this.bankingService.assignUser(requestBody).subscribe({
       next: (response) => {
         this.selectedReceipts = [];
-        if (rctsRetrievalForm?.paymentMethod === 'CASH') {
-          this.router.navigate(['/home/fms/process-batch']);
-        } else {
-          this.fetchReceipts();
-        }
-
-        const backendResponse =
-          response?.msg || response?.error || response?.status;
+         this.fetchReceipts();
         this.globalMessagingService.displaySuccessMessage('', response.msg);
       },
       error: (err) => {
         this.handleApiError(err);
       },
     });
-    this.closeAssignModal();
+   this.closeAssignModal();
   }
 
   /**
@@ -413,24 +413,81 @@ this.fetchActiveUsers(0, this.staffPageSize);
       }
     })
   }
-  // fetchActiveUsers(): any {
-  //   this.bankingService.getActiveUsers().subscribe({
-  //     next: (response) => {
-  //       this.users = response.content;
-  //       this.filteredUsers = this.users;
-  //     },
-  //     error: (err) => {
-  //       this.handleApiError(err);
-  //     },
-  //   });
-  // }
+  /**
+   * @description this method takes one argument once the de-assign button is clicked per row and 
+   * prepares the request body containing an array of receipts or a single receipt and calls deAssignRct endpoint
+   * @param receipt  it stores the receipt object that contains the required receipt Number for deassigning 
+   */
+deAssign(receipt:any):void{
+ const body={
+receiptNumbers:[receipt.receiptNo]
+}
+this.deAssignRct(body);
+}
+/**
+ * 
+ * @param body the request body expects a an array of receipt number or single receipt number
+ * it calls the deAssign method and if there is a response we refresh the receipts to bank to
+ *ensure the assigned to field is upated to unassigned
+ */
+deAssignRct(body:DeAssignDTO):void{
+ 
+  this.bankingService.deAssign(body).subscribe({
+    next:(response)=>{
+     this.globalMessagingService.displaySuccessMessage('',response.msg);
+     this.fetchReceipts();
+    },
+    error:(err)=>{
+       this.handleApiError(err);
+    }
+  })
+}
+/**
+   * @description Opens the main assignment dialog.
+   * it sers reAssign flag to true so as to call reAssignUser() once the Assign button is clicked
+   * rather than calling  onAssignSubmit() to does assigning
+   */
+openReAssignModal(receipt:any){
+  this.selectedRctObj = receipt;
+ this.assignDialogVisible = true; 
+ this.reAssign=true;
 
+}
+/**
+ * 
+ * @description it calls the reAssign() to post the request body,if successfull we recall fetchReceipts() 
+ * to show the newly re-assigned receipts
+ */
+reAssignUser():void{
+ this.usersForm.markAllAsTouched();
+    if (this.usersForm.invalid) {
+      return;
+    }
+    const formData = this.usersForm.value;
+    const requestBody = {
+      fromUserId:this.selectedRctObj.batchAssignmentUserId,
+      toUserId: formData.user,
+      receiptNumbers: [this.selectedRctObj.receiptNo]
+    };
+    this.bankingService.reAssignUser(requestBody).subscribe({
+      next:(response)=>{
+this.globalMessagingService.displaySuccessMessage('',response.msg);
+      },
+      error:(err)=>{
+        this.handleApiError(err);
+      }
+    });
+     this.closeAssignModal();
+}
   /**
    * @description Navigates the user to the next step in the banking process (Create Batches).
    */
   navigateToBatch(): void {
     this.displayTable = true;
     this.router.navigate(['/home/fms/process-batch']);
+  }
+  navigateToDashboard():void{
+     this.router.navigate(['/home/fms/banking-dashboard']);
   }
   /**
    * @description A centralized helper method to handle and display API errors.
