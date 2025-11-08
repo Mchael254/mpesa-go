@@ -13,7 +13,11 @@
       },
       {
         label: this.translate.instant('base.base-fms.banking'),
-        url: '/home/fms/',
+        url: '/home/fms/new-banking-process',
+      },
+      {
+        label: this.translate.instant('fms.banking.processBatch'),
+        url: '',
       }
      
     ]"
@@ -21,7 +25,7 @@
       </app-dynamic-breadcrumb>
     </div>
   </div>
-  <app-steper [currentStep]="2" [stepperData]="steps"></app-steper>
+  <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
   <div class="card">
     <div class="card-body">
       <p-table

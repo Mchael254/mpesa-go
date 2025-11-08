@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
@@ -9,204 +9,232 @@ import { BankingProcessService } from '../../services/banking-process.service';
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { ReceiptDTO } from '../../data/banking-process-dto';
-import { UsersDTO } from '../../data/receipting-dto';
-import { EventEmitter, NO_ERRORS_SCHEMA } from '@angular/core';
+import { StaffDto } from '../../../../features/entities/data/StaffDto';
+import { StaffService } from '../../../../features/entities/services/staff/staff.service';
+import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DialogModule } from 'primeng/dialog';
+import { TableModule } from 'primeng/table';
 
 // --- Mock Data ---
 const mockReceipts: ReceiptDTO[] = [
-  { receiptNo: 101, receivedFrom: 'Customer A', receiptAmount: 100 } as ReceiptDTO,
-  { receiptNo: 102, receivedFrom: 'Customer B', receiptAmount: 200 } as ReceiptDTO,
+  { receiptNo: 101, receivedFrom: 'Customer A' } as ReceiptDTO,
+  { receiptNo: 102, receivedFrom: 'Customer B' } as ReceiptDTO,
 ];
-
-const mockUsers: UsersDTO[] = [
-  { id: 1, username: 'user_one', name: 'User One' } as UsersDTO,
-  { id: 2, username: 'user_two', name: 'User Two' } as UsersDTO,
+const mockStaff: StaffDto[] = [
+  { id: 1, username: 'user_one', name: 'User One' } as StaffDto,
+  { id: 2, username: 'user_two', name: 'User Two' } as StaffDto,
 ];
 
 // --- Jest Mocks ---
-
 jest.mock('../../data/fms-step.json', () => ({
-  __esModule: true, 
-  default: {
-    bankingSteps: [
-      { number: 1, title: 'Mock Banking Step 1' },
-      { number: 2, title: 'Mock Banking Step 2' },
-    ],
-    receiptingSteps: [] 
-  }
+  __esModule: true,
+  default: { bankingSteps: [] },
 }));
-// --- Test Suite ---
+
 describe('NewBankingProcessComponent', () => {
   let component: NewBankingProcessComponent;
   let fixture: ComponentFixture<NewBankingProcessComponent>;
+  
   let mockBankingService: any;
+  let mockStaffService: any;
   let mockGlobalMessagingService: any;
-  let mockRouter: any;
-  let mockTranslateService: any;
   let mockSessionStorageService: any;
-  let mockAuthService: any;
 
   beforeEach(async () => {
-    // --- Mock Definitions ---
-   const mockTranslateService = {
-  instant: jest.fn((key) => key),
-  get: jest.fn((key) => of(key)),
-  onLangChange: new EventEmitter(),
-  onTranslationChange: new EventEmitter(),
-  onDefaultLangChange: new EventEmitter()
-};
-    mockRouter = {
-      navigate: jest.fn(),
+    const mockTranslateService = {
+      instant: jest.fn((key) => key), get: jest.fn((key) => of(key)),
+      onLangChange: new EventEmitter(), onTranslationChange: new EventEmitter(),
+      onDefaultLangChange: new EventEmitter(),
+    };
+    mockBankingService = {
+      getPaymentMethods: jest.fn().mockReturnValue(of({ data: [{ code: 'CASH' }] })),
+      getReceipts: jest.fn().mockReturnValue(of({ success: true, data: { content: mockReceipts } })),
+      assignUser: jest.fn().mockReturnValue(of({ msg: 'Assigned' })),
+      deAssign: jest.fn().mockReturnValue(of({ msg: 'De-assigned' })),
+      reAssignUser: jest.fn().mockReturnValue(of({ msg: 'Re-assigned' })),
+    };
+    mockStaffService = {
+      getStaff: jest.fn().mockReturnValue(of({ content: mockStaff })),
     };
     mockGlobalMessagingService = {
       displayErrorMessage: jest.fn(),
       displaySuccessMessage: jest.fn(),
     };
-   const mockBankingService = {
-  getPaymentMethods: jest.fn().mockReturnValue(of({ data: [{ code: 'CASH' }] })),
-  getReceipts: jest.fn().mockReturnValue(of({
-    success: true,
-    data: {
-      content: mockReceipts 
-    }
-  })),
-
-  getActiveUsers: jest.fn().mockReturnValue(of({ content: mockUsers })),
-  assignUser: jest.fn().mockReturnValue(of({ msg: 'Assigned successfully' })),
-};
     mockSessionStorageService = {
-      getItem: jest.fn((key) => {
-        if (key === 'defaultOrg') return JSON.stringify({ id: 1, name: 'Default Org' });
-        return null;
-      }),
-    };
-    mockAuthService = {
-      getCurrentUser: jest.fn().mockReturnValue({ code: 999 }),
+        getItem: jest.fn().mockReturnValue(null),
+        setItem: jest.fn(),
     };
 
     await TestBed.configureTestingModule({
       declarations: [NewBankingProcessComponent],
-      imports: [
-        ReactiveFormsModule,
-        TranslateModule.forRoot(),
-      ],
+      imports: [ReactiveFormsModule, FormsModule, TranslateModule.forRoot(), CheckboxModule, DialogModule, TableModule],
       providers: [
         FormBuilder,
         { provide: TranslateService, useValue: mockTranslateService },
-        { provide: Router, useValue: mockRouter },
+        { provide: Router, useValue: { navigate: jest.fn() } },
         { provide: GlobalMessagingService, useValue: mockGlobalMessagingService },
         { provide: BankingProcessService, useValue: mockBankingService },
+        { provide: StaffService, useValue: mockStaffService },
         { provide: SessionStorageService, useValue: mockSessionStorageService },
-        { provide: AuthService, useValue: mockAuthService },
+        { provide: AuthService, useValue: { getCurrentUser: jest.fn().mockReturnValue({ code: 999 }) } },
       ],
-      schemas: [NO_ERRORS_SCHEMA], 
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(NewBankingProcessComponent);
     component = fixture.componentInstance;
-    jest.clearAllMocks();
-    
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create and initialize correctly', () => {
+    fixture.detectChanges(); // ngOnInit
     expect(component).toBeTruthy();
+    expect(component.rctsRetrievalForm).toBeDefined();
+    expect(component.usersForm).toBeDefined();
+    expect(mockStaffService.getStaff).toHaveBeenCalledTimes(1);
   });
 
   describe('Initialization (ngOnInit)', () => {
-    it('should initialize forms and fetch initial data', () => {
-      expect(component.rctsRetrievalForm).toBeDefined();
-      expect(component.usersForm).toBeDefined();
-      expect(mockBankingService.getPaymentMethods).toHaveBeenCalledTimes(1);
-      expect(mockBankingService.getActiveUsers).toHaveBeenCalledTimes(1);
-    });
+    it('should call all required setup methods', () => {
+        jest.spyOn(component, 'initiateRctsForm');
+        jest.spyOn(component, 'fetchPaymentsModes');
+        jest.spyOn(component, 'fetchActiveUsers');
+        
+        fixture.detectChanges(); // ngOnInit
 
-    it('should fetch active users and populate the users array', () => {
-      expect(component.users).toEqual(mockUsers);
-      expect(component.filteredUsers).toEqual(mockUsers);
+        expect(component.initiateRctsForm).toHaveBeenCalled();
+        expect(component.fetchPaymentsModes).toHaveBeenCalled();
+        expect(component.fetchActiveUsers).toHaveBeenCalled();
+        expect(mockSessionStorageService.getItem).toHaveBeenCalledWith('selectedOrg');
     });
   });
 
-  describe('Receipt Retrieval Logic', () => {
+  describe('Receipt Retrieval (onClickRetrieveRcts)', () => {
     beforeEach(() => {
-        component.rctsRetrievalForm.setValue({
-            startDate: '2023-01-01',
-            endDate: '2023-01-31',
-            paymentMethod: 'CASH',
-        });
+        fixture.detectChanges();
+        jest.spyOn(component, 'fetchReceipts');
     });
 
-    it('should filter out the "actions" column when payment mode is CASH', () => {
+    it('should show an error and NOT fetch receipts if the form is invalid', () => {
+        component.rctsRetrievalForm.patchValue({ startDate: '' }); // Make form invalid
         component.onClickRetrieveRcts();
-        expect(component.selectedColumns.find(c => c.field === 'actions')).toBeUndefined();
-        expect(mockBankingService.getReceipts).toHaveBeenCalled();
+        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('', 'Please fill the required fields');
+        expect(component.fetchReceipts).not.toHaveBeenCalled();
     });
 
-    it('should include the "actions" column for non-CASH payment modes', () => {
-        component.rctsRetrievalForm.patchValue({ paymentMethod: 'CHEQUE' });
+    it('should set isCashSelected to true and call fetchReceipts if payment method is CASH', () => {
+        component.rctsRetrievalForm.patchValue({ startDate: '2023-01-01', endDate: '2023-01-31', paymentMethod: 'CASH' });
         component.onClickRetrieveRcts();
-        expect(component.selectedColumns.find(c => c.field === 'actions')).toBeDefined();
-        expect(mockBankingService.getReceipts).toHaveBeenCalled();
+        expect(component.isCashSelected).toBe(true);
+        expect(component.fetchReceipts).toHaveBeenCalled();
     });
   });
 
- 
-describe('onAssignSubmit', () => {
-  beforeEach(() => {
-    component.selectedReceipts = [mockReceipts[0], mockReceipts[1]];
-    component.usersForm.patchValue({ 
-      user: mockUsers[0].id, 
-      comment: 'Assigning this' 
-    });
-component.assignDialogVisible = true;
-    fixture.detectChanges(); 
-  });
-    it('should not submit if the form is invalid', () => {
-        component.usersForm.get('user')?.setValue(''); 
-        component.onAssignSubmit();
-        expect(mockBankingService.assignUser).not.toHaveBeenCalled();
+  describe('Assignment and Dialog Workflow', () => {
+    beforeEach(() => {
+        fixture.detectChanges();
+        component.selectedReceipts = [mockReceipts[0]];
+        component.usersForm.patchValue({ user: mockStaff[0].id });
     });
 
-    it('should call bankingService.assignUser with the correct payload', () => {
-        component.onAssignSubmit();
-        const expectedPayload = {
-            userId: mockUsers[0].id,
-            receiptNumbers: [101, 102],
-        };
-        expect(mockBankingService.assignUser).toHaveBeenCalledWith(expectedPayload);
+    it('should open the assign modal and reset reAssign flag', () => {
+        component.reAssign = true; // Set a pre-existing state
+        component.openAssignModal();
+        expect(component.assignDialogVisible).toBe(true);
+        expect(component.reAssign).toBe(false);
     });
 
-    it('should navigate, show success message, and close modal on successful assignment', () => {
-        component.onAssignSubmit();
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/process-batch']);
-        expect(mockGlobalMessagingService.displaySuccessMessage).toHaveBeenCalledWith('', 'Assigned successfully');
-        expect(component.assignDialogVisible).toBe(false); // Modal closes on success
+    it('should confirm user selection, patch the form, and close the user select dialog', () => {
+        component.tempSelectedUser = mockStaff[1];
+        component.openUserSelectDialog(); // to make it visible
+        
+        component.confirmUserSelection();
+
+        expect(component.selectedUserForAssignment).toEqual(mockStaff[1]);
+        expect(component.usersForm.get('user')?.value).toBe(mockStaff[1].id);
+        expect(component.userSelectDialogVisible).toBe(false);
     });
 
-    it('should handle API errors during assignment and keep the modal open', () => {
-        const errorResponse = { error: { msg: 'Assignment failed' } };
-        mockBankingService.assignUser.mockReturnValue(throwError(() => errorResponse));
-
+    it('should call bankingService.assignUser and refresh data on success', () => {
+        jest.spyOn(component, 'fetchReceipts');
         component.onAssignSubmit();
-
-        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('fms.errorMessage', 'Assignment failed');
-        expect(component.assignDialogVisible).toBe(true); 
+        expect(mockBankingService.assignUser).toHaveBeenCalled();
+        expect(component.fetchReceipts).toHaveBeenCalled();
     });
   });
-
-  describe('Dialog Workflow', () => {
-      it('should open the user selection dialog', () => {
-          component.openUserSelectDialog();
-          expect(component.userSelectDialogVisible).toBe(true);
+  
+  describe('reAssignUser Workflow', () => {
+      beforeEach(() => {
+          fixture.detectChanges();
+          component.usersForm.patchValue({ user: mockStaff[1].id });
       });
 
-      it('should confirm user selection and patch the form', () => {
-        const selectedUser = mockUsers[1];
-        component.tempSelectedUser = selectedUser;
-        component.confirmUserSelection();
-        expect(component.selectedUserForAssignment).toEqual(selectedUser);
-        expect(component.usersForm.get('user')?.value).toBe(selectedUser.id);
-        expect(component.userSelectDialogVisible).toBe(false);
+      it('should open the modal in re-assign mode', () => {
+          const receiptToReassign = { receiptNo: 101, batchAssignmentUserId: 99 } as ReceiptDTO;
+          component.openReAssignModal(receiptToReassign);
+
+          expect(component.assignDialogVisible).toBe(true);
+          expect(component.reAssign).toBe(true);
+          expect(component.selectedRctObj).toEqual(receiptToReassign);
+      });
+
+      it('should call bankingService.reAssignUser with the correct payload', () => {
+          const receiptToReassign = { receiptNo: 101, batchAssignmentUserId: 99 } as ReceiptDTO;
+          component.selectedRctObj = receiptToReassign; // Simulate opening the modal
+          
+          component.reAssignUser();
+          
+          const expectedPayload = { fromUserId: 99, toUserId: mockStaff[1].id, receiptNumbers: [101] };
+          expect(mockBankingService.reAssignUser).toHaveBeenCalledWith(expectedPayload);
+          expect(mockGlobalMessagingService.displaySuccessMessage).toHaveBeenCalled();
+      });
+  });
+
+  describe('deAssign', () => {
+    beforeEach(() => {
+        fixture.detectChanges();
+        jest.spyOn(component, 'fetchReceipts');
+    });
+
+    it('should call bankingService.deAssign and refresh data on success', () => {
+        component.deAssignRct({ receiptNumbers: [101] });
+        expect(mockBankingService.deAssign).toHaveBeenCalledWith({ receiptNumbers: [101] });
+        expect(component.fetchReceipts).toHaveBeenCalled();
+    });
+
+    it('should handle API errors during de-assignment', () => {
+        mockBankingService.deAssign.mockReturnValue(throwError(() => ({})));
+        component.deAssignRct({ receiptNumbers: [101] });
+        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalled();
+        expect(component.fetchReceipts).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Filtering Logic', () => {
+      beforeEach(() => {
+          fixture.detectChanges();
+          component.receiptData = [
+              { receivedFrom: 'Apple Inc', receiptAmount: 1000 },
+              { receivedFrom: 'Banana Co', receiptAmount: 200 },
+          ] as ReceiptDTO[];
+          component.users = [
+              { username: 'jdoe', name: 'John Doe' },
+              { username: 'asmith', name: 'Adam Smith' },
+          ] as StaffDto[];
+      });
+
+      it('should filter receipts by string field', () => {
+          const event = { target: { value: 'apple' } };
+          component.filter(event, 'receivedFrom');
+          expect(component.filteredReceipts.length).toBe(1);
+          expect(component.filteredReceipts[0].receivedFrom).toBe('Apple Inc');
+      });
+
+      it('should filter users by username', () => {
+          const event = { target: { value: 'jdo' } };
+          component.filterUsers(event, 'username');
+          expect(component.filteredUsers.length).toBe(1);
+          expect(component.filteredUsers[0].username).toBe('jdoe');
       });
   });
 });

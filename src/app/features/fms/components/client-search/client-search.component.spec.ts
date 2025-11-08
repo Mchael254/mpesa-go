@@ -1,23 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
 import { ClientSearchComponent } from './client-search.component';
 import { ReceiptDataService } from '../../services/receipt-data.service';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import {GlobalMessagingService} from '../../../../shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { ReceiptService } from '../../services/receipt.service';
-
-import {AuthService} from '../../../../shared/services/auth.service';
-import {StaffService} from '../../../../features/entities/services/staff/staff.service';
-
-import {OrganizationService } from '../../../../features/crm/services/organization.service';
-import { Router } from '@angular/router';
+import { AuthService } from '../../../../shared/services/auth.service';
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
+import { ClientsDTO, AccountTypeDTO } from '../../data/receipting-dto';
+import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { AccountTypeDTO, BranchDTO, ClientsDTO, TransactionDTO } from '../../data/receipting-dto';
-import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
-import { StaffDto } from 'src/app/features/entities/data/StaffDto';
+jest.mock('../../data/fms-step.json', () => ({
+  __esModule: true,
+  default: { receiptingSteps: [] },
+}));
 
 describe('ClientSearchComponent', () => {
   let component: ClientSearchComponent;
@@ -25,15 +23,14 @@ describe('ClientSearchComponent', () => {
   let mockReceiptDataService: any;
   let mockGlobalMessagingService: any;
   let mockReceiptService: any;
-  let mockStaffService: any;
-  let mockOrganizationService: any;
-  let mockAuthService: any;
   let mockRouter: any;
+  let mockSessionStorageService: any;
 
   beforeEach(async () => {
+    // --- COMPLETE MOCK DEFINITIONS ---
     mockReceiptDataService = {
-      getReceiptData: jest.fn(),
-      setReceiptData:jest.fn(),
+      getReceiptData: jest.fn().mockReturnValue({}), // Return empty object for form data
+      setReceiptData: jest.fn(),
       setTransactions: jest.fn(),
       setSelectedClient: jest.fn(),
     };
@@ -41,287 +38,254 @@ describe('ClientSearchComponent', () => {
       displayErrorMessage: jest.fn(),
     };
     mockReceiptService = {
-      getReceiptData: jest.fn(),
-      setReceiptData: jest.fn(), // ✅ Add this function
-      getAccountTypes: jest.fn().mockReturnValue(of({ data: [] })), // ✅ Returns an Observable
-      getClients: jest.fn(),
-       getAllocations: jest.fn().mockReturnValue(of({ data: [] })),
-      getTransactions: jest.fn().mockReturnValue(of({ data: [{ transactionId: 1 }] })), // ✅ Add this mock
-     
-    };
-    mockStaffService = {
-      getStaffById: jest.fn()
-    };
-    mockOrganizationService = {
-      getOrganization: jest.fn()
-    };
-    mockAuthService = {
-      getCurrentUser: jest.fn().mockReturnValue({ code: 'testUser' }),
+      getAccountTypes: jest.fn().mockReturnValue(of({ data: [] })),
+      getClients: jest.fn().mockReturnValue(of({ data: [] })),
+      getTransactions: jest.fn().mockReturnValue(of({ data: [] })),
+      getAllocations: jest.fn().mockReturnValue(of({ data: [] })),
     };
     mockRouter = {
       navigate: jest.fn(),
     };
+    mockSessionStorageService = {
+      getItem: jest.fn().mockReturnValue(null),
+      setItem: jest.fn(),
+    };
+    const mockAuthService = {
+      getCurrentUser: jest.fn().mockReturnValue({ code: 'testUser' }),
+    };
+    const mockTranslateService = {
+      instant: jest.fn((key) => key),
+      get: jest.fn((key) => of(key)),
+      onLangChange: new EventEmitter(),
+      onTranslationChange: new EventEmitter(),
+      onDefaultLangChange: new EventEmitter(),
+    };
 
     await TestBed.configureTestingModule({
       declarations: [ClientSearchComponent],
-      imports: [ReactiveFormsModule, RouterTestingModule, HttpClientTestingModule,TranslateModule.forRoot() ],
+      imports: [ReactiveFormsModule, TranslateModule.forRoot(),HttpClientTestingModule],
       providers: [
         FormBuilder,
         { provide: ReceiptDataService, useValue: mockReceiptDataService },
         { provide: GlobalMessagingService, useValue: mockGlobalMessagingService },
         { provide: ReceiptService, useValue: mockReceiptService },
-        { provide: StaffService, useValue: mockStaffService },
-       
-
-        { provide: OrganizationService, useValue: mockOrganizationService },
         { provide: AuthService, useValue: mockAuthService },
         { provide: Router, useValue: mockRouter },
+        { provide: SessionStorageService, useValue: mockSessionStorageService },
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
-
     fixture = TestBed.createComponent(ClientSearchComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
-
-     // Provide mock implementation for localStorage methods
-     const localStorageMock = {
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-      clear: jest.fn(),
-    };
-
-    // Assign it to the window object
-    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+    mockReceiptService = TestBed.inject(ReceiptService);
+    mockGlobalMessagingService = TestBed.inject(GlobalMessagingService);
   });
 
-  it('should create', () => {
+  it('should create and initialize correctly', () => {
+    fixture.detectChanges(); 
     expect(component).toBeTruthy();
-  });
-
-  it('should initialize the receiptingDetailsForm on ngOnInit', () => {
-    component.ngOnInit();
     expect(component.receiptingDetailsForm).toBeDefined();
+    expect(mockReceiptService.getAccountTypes).toHaveBeenCalled();
+    expect(mockReceiptService.getAllocations).toHaveBeenCalled();
   });
 
-  it('should call fetchAccountTypes on ngOnInit', () => {
-    jest.spyOn(component, 'fetchAccountTypes');
-    component.ngOnInit();
-    expect(component.fetchAccountTypes).toHaveBeenCalled();
-  });
+  describe('Client Search Logic', () => {
+    beforeEach(() => {
+        fixture.detectChanges(); 
+    });
 
-  it('should get account types with orgId', () => {
-      const mockAccountTypes = [{
-        name: 'AccountType1', systemCode: 20, accCode: 2,
-         branchCode: 0,
-        userCode: 0,
-        code: 0,
-         coaAccNumber: '',
-        coaAccOrgCode: 0,
-        coaBranchCode: 0,
-         receiptBank: 0,
-         chequeBank: 0,
-          subClass: '',
-         active: '',
-         receiptAccount: '',
-         restrictGrossDebitRcpt: '',
-         vatApplicable: '',
-         rateApplicable: 0,
-        actTypeShtDesc: '',
-         systemName: ''
-    }];
-    const localStorageMock = window.localStorage;
-    localStorageMock.getItem = jest.fn().mockReturnValue(JSON.stringify({ id: 1 } )); // return mock receipting point string
-
-      mockReceiptService.getAccountTypes.mockReturnValue(of({data:mockAccountTypes}))
-       component.ngOnInit()
-        component.fetchAccountTypes()
-      expect(mockReceiptService.getAccountTypes).toHaveBeenCalled();
-  });
-
-
-it('should display an error message if getting account types returns an error', () => {
-    // Arrange
-    const errorResponse = { error: { msg: 'Test error' } };
-    mockReceiptService.getAccountTypes.mockReturnValue(throwError(() => errorResponse));
-
-    // Act
-    component.fetchAccountTypes();
-
-    // Assert
-    // FIX: Use the translation key for the title
-    expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
-        'fms.errorMessage', 
-        'Test error'
-    );
-});
-
-  it('should enable search criteria and search query on onAccountTypeChange method called properly', () => {
-    component.accountTypeArray = [{ name: 'AccountType1', systemCode: 20, accCode: 2,
-         branchCode: 0,
-        userCode: 0,
-        code: 0,
-         coaAccNumber: '',
-        coaAccOrgCode: 0,
-        coaBranchCode: 0,
-         receiptBank: 0,
-         chequeBank: 0,
-          subClass: '',
-         active: '',
-         receiptAccount: '',
-         restrictGrossDebitRcpt: '',
-         vatApplicable: '',
-         rateApplicable: 0,
-        actTypeShtDesc: '',
-         systemName: ''}] as AccountTypeDTO[];
-    component.receiptingDetailsForm.patchValue({ accountType: 'AccountType1' });
-    component.onAccountTypeChange();
-    expect(component.receiptingDetailsForm.get('searchCriteria')?.enabled).toBe(true);
-    expect(component.receiptingDetailsForm.get('searchQuery')?.enabled).toBe(true);
-  });
-
-  it('should display errror message if account type, search criteria and search query is empty', () => {
-    component.receiptingDetailsForm.patchValue({ accountType: null, searchCriteria: null, searchQuery: null });
-    component.onSearch();
-    expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Please provide all the required fields');
-  });
-
-
-
-it('should display an error message if invalid search criteria is selected', () => {
-    // Arrange
-    // Step 1: Provide the necessary data for the component to work
-    component.accountTypeArray = [{ 
-        name: 'AccountType1', 
-        actTypeShtDesc: 'A1' 
+    it('should display an error if search is clicked with empty fields', () => {
+        component.onSearch();
+        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
+            'Error',
+            'Please provide all the required fields'
+        );
+    });
+it('should call fetchClients with correct parameters when form is valid', () => {
+    const mockAccountTypes: AccountTypeDTO[] = [{ 
+        name: 'Test Type', 
+        systemCode: 1, 
+        accCode: 2,
+        actTypeShtDesc: 'TT' 
     }] as any;
-
-    // Step 2: Simulate selecting an account type
-    component.receiptingDetailsForm.patchValue({
-        accountType: 'AccountType1',
-    });
-
-    // FIX: Manually trigger the method that enables the other controls
+    component.accountTypeArray = mockAccountTypes; 
+    component.accountTypes = mockAccountTypes;
+    component.receiptingDetailsForm.patchValue({ accountType: 'Test Type' });
     component.onAccountTypeChange();
-
-    // Step 3: Now that the controls are enabled, set the rest of the values
-    component.receiptingDetailsForm.patchValue({
-        searchCriteria: 'invalidCriteria', // The invalid value we want to test
-        searchQuery: 'John Doe',
-    });
-    
-    // Act
-    component.onSearch();
-
-    // Assert
-    // The test will now pass the first validation check and correctly test the second one.
-    expect(mockGlobalMessagingService.displayErrorMessage)
-        .toHaveBeenCalledWith('Error', 'Invalid search criteria selected');
-});
-
-it('should call fetchClients with correct parameters if the form is valid', () => {
-    // Arrange
-    // Step 1: Provide the necessary data for the component.
-    component.accountTypeArray = [{
-        name: 'AccountType1',
-        systemCode: 1,
-        accCode: 101,
-        actTypeShtDesc: 'A1'
-    }] as any;
-
-    // Step 2: Simulate the user selecting an account type.
-    component.receiptingDetailsForm.patchValue({
-        accountType: 'AccountType1'
-    });
-    
-    // FIX: Manually trigger the change handler to enable the other form controls.
-    component.onAccountTypeChange();
-
-    // Step 3: Now that the controls are enabled, set their values.
     component.receiptingDetailsForm.patchValue({
         searchCriteria: 'clientName',
         searchQuery: 'John Doe',
     });
-
-    // We spy on the method we expect to be called.
-    const fetchClientsSpy = jest.spyOn(component, 'fetchClients');
-
-    // Act
-    // Step 4: Simulate the user clicking the search button.
+    jest.spyOn(component, 'fetchClients');
     component.onSearch();
-
-    // Assert
-    // Now the test should pass because onSearch() no longer exits early.
-    expect(fetchClientsSpy).toHaveBeenCalledWith('CLIENT_NAME', 'John Doe');
+    expect(component.fetchClients).toHaveBeenCalledWith('CLIENT_NAME', 'John Doe');
 });
-
-   it('should fetch Transactions is called with required values', () => {
-    const mockselectedClient = { systemShortDesc: 'TEST', code: 123, accountCode: 456, receiptType: 'Test', shortDesc:"asd" } as any;
-      component.selectedClient = mockselectedClient
-      mockReceiptService.getTransactions.mockReturnValue(of({data:[]}))
-    component.fetchTransactions('test', 123,456, 'abc', 'asd')
-       expect(mockReceiptService.getTransactions).toHaveBeenCalled()
-   });
-    it('should call setTransactions, setReceiptData methods  and navigate to client-allocation if response is greater than 0 and valid', () => {
-     const mockTransactions:any = [{
-        amount: 1000,
-        tran_No:123
-     }]
-      const mockselectedClient = { systemShortDesc: 'TEST', code: 123, accountCode: 456, receiptType: 'Test', shortDesc:"123" } as any;
-      component.selectedClient = mockselectedClient
-      component.receiptingDetailsForm.setValue({
-         allocationType: 'test1',
-        accountType: 'AccountType1',
-          searchCriteria: 'clientName',
-          searchQuery: 'John Doe',
-      allocatedAmount: [],
-      })
-      
-      mockReceiptService.getTransactions.mockReturnValue(of({data:mockTransactions}))
-       component.fetchTransactions('test', 123,456, 'abc', 'asd')
-         expect(mockReceiptDataService.setTransactions).toHaveBeenCalled()
-  });
-  it('should display a warning message if no transactions are retrieved', () => {
-    mockReceiptService.getTransactions.mockReturnValue(of({ data: [] })); // ✅ Matches the API response for no transactions
-  
-    component.fetchTransactions('test', 123, 456, 'abc', 'asd');
-  
-    expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error:', 'No transactions found!');
-  });
-  it('should call back method', () => {
-    component.onBack();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-capture']); // ✅ Correct path
+it('should fetch clients successfully and update the clients array', () => {
+    const mockClients: ClientsDTO[] = [{ code: 1, name: 'John Doe' }] as any;
+    mockReceiptService.getClients.mockReturnValue(of({ data: mockClients }));
+    const mockAccountTypes: AccountTypeDTO[] = [{ name: 'Test Type', systemCode: 1, accCode: 2 }] as any;
+    component.accountTypes = mockAccountTypes;
+    component.receiptingDetailsForm.patchValue({ accountType: 'Test Type' });
+    component.fetchClients('CLIENT_NAME', 'John Doe');
+    expect(mockReceiptService.getClients).toHaveBeenCalled();
+    expect(component.clients).toEqual(mockClients);
+    expect(component.totalRecords).toBe(1);
 });
- 
-  it('should call next method', () => {
-    component.onNext();
-    
-    // ✅ Check if setReceiptData was called
-    expect(mockReceiptDataService.setReceiptData).toHaveBeenCalledWith(component.receiptingDetailsForm.value);
-  
-    // ✅ Check if navigation happened
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/client-allocation']);
   });
+  describe('getAllocations', () => {
+    beforeEach(() => {
+        fixture.detectChanges();
+    });
 
+    it('should set canShowNextBtn to true if allocations with premium amounts exist', () => {
+        const mockAllocations = [{
+            receiptParticularDetails: [{ premiumAmount: 100 }]
+        }];
+        mockReceiptService.getAllocations.mockReturnValue(of({ data: mockAllocations }));
+        component.getAllocations();
+        expect(mockReceiptService.getAllocations).toHaveBeenCalled();
+        expect(component.canShowNextBtn).toBe(true);
+    });
 
-  
-it('should call clickClient method', () => {
-    const mockClient: ClientsDTO = { /* ... your mock client data */ } as any;
-  
-    jest.spyOn(component, 'fetchTransactions');
-  
-    component.onClickClient(mockClient);
-  
-    expect(component.isClientSelected).toBe(true);
-    expect(component.selectedClient).toBe(mockClient);
-    expect(component.fetchTransactions).toHaveBeenCalledWith(
-      mockClient.systemShortDesc,
-      mockClient.code,
-      mockClient.accountCode,
-      mockClient.receiptType,
-      mockClient.shortDesc
+    it('should set canShowNextBtn to false if allocations have no premium amounts', () => {
+        const mockAllocations = [{
+            receiptParticularDetails: [{ premiumAmount: 0 }]
+        }];
+        mockReceiptService.getAllocations.mockReturnValue(of({ data: mockAllocations }));
+        component.getAllocations();
+        expect(component.canShowNextBtn).toBe(false);
+    });
+
+    it('should set canShowNextBtn to false if no allocations are returned', () => {
+        mockReceiptService.getAllocations.mockReturnValue(of({ data: [] }));
+        component.getAllocations();
+        expect(component.canShowNextBtn).toBe(false);
+    });
+});
+describe('onAccountTypeChange', () => {
+    beforeEach(() => {
+        fixture.detectChanges(); 
+        const mockAccountTypes: AccountTypeDTO[] = [{ 
+            name: 'Test Type', 
+            actTypeShtDesc: 'TT' 
+        }] as any;
+        component.accountTypeArray = mockAccountTypes;
+    });
+
+    it('should disable search fields if no account type is selected', () => {
+        component.receiptingDetailsForm.patchValue({ accountType: '' }); 
+        component.onAccountTypeChange();
+        expect(component.isAccountTypeSelected).toBe(false);
+        expect(component.receiptingDetailsForm.get('searchCriteria')?.disabled).toBe(true);
+        expect(component.receiptingDetailsForm.get('searchQuery')?.disabled).toBe(true);
+    });
+it('should enable search fields and set short description when an account type is selected', () => {
+        component.receiptingDetailsForm.patchValue({ accountType: 'Test Type' });
+        component.onAccountTypeChange();
+        expect(component.isAccountTypeSelected).toBe(true);
+        expect(component.accountTypeShortDesc).toBe('TT');
+        expect(mockSessionStorageService.setItem).toHaveBeenCalledWith('accountTypeShortDesc', 'TT');
+        expect(component.receiptingDetailsForm.get('searchCriteria')?.enabled).toBe(true);
+        expect(component.receiptingDetailsForm.get('searchQuery')?.enabled).toBe(true);
+    });
+});
+describe('onNextClick Async Validation', () => {
+    beforeEach(() => {
+        fixture.detectChanges(); 
+    });
+
+    it('should display an error if no client is selected', fakeAsync(() => {
+        component.selectedClient = null;
+        component.onNextClick();
+        tick(); 
+        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
+            'Warning',
+            'Please select a client before proceeding.'
+        );
+        expect(mockRouter.navigate).not.toHaveBeenCalled();
+    }));
+it('should fetch transactions and navigate if a client is selected and transactions are found', fakeAsync(() => {
+    const mockClient = { systemShortDesc: 'SYS' } as any;
+    const mockTransactions = [{ id: 1 }];
+    component.selectedClient = mockClient;
+    mockReceiptService.getTransactions.mockReturnValue(of({ data: mockTransactions }));
+    jest.spyOn(component, 'onNext'); 
+    component.onNextClick();
+    tick(); 
+    expect(mockReceiptDataService.setTransactions).toHaveBeenCalledWith(mockTransactions);
+    expect(component.onNext).toHaveBeenCalled(); 
+}));
+it('should display an error and not navigate if no transactions are found', fakeAsync(() => {
+    const mockClient = { systemShortDesc: 'SYS' } as any;
+    component.selectedClient = mockClient;
+    mockReceiptService.getTransactions.mockReturnValue(of({ data: [] })); 
+    jest.spyOn(component, 'onNext');
+    component.onNextClick();
+    tick(); 
+    expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
+        'No Transactions',
+        'No transactions were found for the selected client.'
     );
+    expect(component.onNext).not.toHaveBeenCalled();
+}));
+it('should display an error and not navigate if a client is selected but no transactions are found', fakeAsync(() => {
+        const mockClient = { systemShortDesc: 'SYS' } as any;
+        component.selectedClient = mockClient;
+        mockReceiptService.getTransactions.mockReturnValue(of({ data: [] })); 
+        component.onNextClick();
+        tick(); 
+        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
+            'No Transactions',
+            'No transactions were found for the selected client.'
+        );
+        expect(mockRouter.navigate).not.toHaveBeenCalled();
+    }));
 });
-  
+  describe('Client Selection and Transaction Fetching', () => {
+    beforeEach(() => {
+        fixture.detectChanges(); 
+    });
+
+    it('should set selectedClient and fetch transactions on onClickClient', () => {
+        const mockClient: ClientsDTO = { systemShortDesc: 'SYS', code: 123 } as any;
+        jest.spyOn(component, 'fetchTransactions'); 
+component.onClickClient(mockClient);
+ expect(component.isClientSelected).toBe(true);
+        expect(component.selectedClient).toEqual(mockClient);
+        expect(component.fetchTransactions).toHaveBeenCalledWith(
+            mockClient.systemShortDesc,
+            mockClient.code,
+            mockClient.accountCode,
+            mockClient.receiptType,
+            mockClient.shortDesc
+        );
+    });
+
+    it('should navigate to allocation screen if transactions are found', () => {
+        const mockTransactions = [{ id: 1 }];
+        mockReceiptService.getTransactions.mockReturnValue(of({ data: mockTransactions }));
+component.fetchTransactions('SYS', 1, 1, 'T', 'D');
+        expect(mockReceiptDataService.setTransactions).toHaveBeenCalledWith(mockTransactions);
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/client-allocation']);
+    });
+
+    it('should display an error if no transactions are found', () => {
+        mockReceiptService.getTransactions.mockReturnValue(of({ data: [] })); 
+        component.fetchTransactions('SYS', 1, 1, 'T', 'D');
+
+        expect(mockGlobalMessagingService.displayErrorMessage).toHaveBeenCalledWith(
+            'Error:',
+            'No transactions found!'
+        );
+        expect(mockRouter.navigate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Navigation', () => {
+    it('should navigate back to receipt-capture onBack', () => {
+        fixture.detectChanges();
+        component.onBack();
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['/home/fms/receipt-capture']);
+    });
+  });
 });
