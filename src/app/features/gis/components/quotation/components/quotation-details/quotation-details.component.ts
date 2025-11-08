@@ -356,10 +356,15 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getuser();
     this.getAgents();
+    
+    // Initialize client form control with the client code from session storage if exists
+    const storedClientCode = sessionStorage.getItem('SelectedClientCode');
+    const initialClientValue = storedClientCode ? JSON.parse(storedClientCode) : '';
+    
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
       phone: ['', this.newClient ? [Validators.required] : []],
-      client: ['', [Validators.minLength(2)]],
+      client: [initialClientValue, [Validators.minLength(2)]],
       paymentFrequency: [this.paymentFrequencies[0].value, Validators.required],
       // marketer: ['']
     });
@@ -419,6 +424,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   ngAfterViewInit() {
     this.modals['chooseClientReassign'] = new bootstrap.Modal(this.chooseClientReassignModal.nativeElement);
     this.modals['reassignProduct'] = new bootstrap.Modal(this.reassignProductModalElement.nativeElement);
+    this.modals['createClient'] = new bootstrap.Modal(this.createClientModalElement.nativeElement);
   }
 
   openModals(modalName: string) {
@@ -427,6 +433,91 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   closeModals(modalName: string) {
     this.modals[modalName]?.hide();
+  }
+
+  closeCreateClientModal() {
+    this.closeModals('createClient');
+  }
+
+  onClientSaved(event: any) {
+    log.debug('Client saved event received:', event);
+    
+    // Retrieve newClientCode from session storage
+    const newClientCode = JSON.parse(sessionStorage.getItem('newClientCode'));
+    
+    if (newClientCode) {
+      // Close the modal
+      this.closeCreateClientModal();
+      
+      // Call the endpoint to search for the client using the ID
+      this.clientService.getClientById(newClientCode).subscribe({
+        next: (client: any) => {
+          log.debug('[QuotationDetailsComponent] Client fetched after creation =>', client);
+          
+          if (client) {
+            const firstName = client.firstName || '';
+            const lastName = client.lastName || '';
+            const clientName = [firstName, lastName]
+              .filter(Boolean)
+              .join(' ')
+              .trim() || 
+              client.shortDescription || 
+              `Client-${client.id}`;
+            
+            const clientCode = client.id || client.clientCode;
+            
+            // Shift the form from new to existing since the client already exists in the db
+            this.setClientType('existing');
+            
+            // Update component state
+            this.selectedClientCode = clientCode;
+            this.selectedClientName = clientName;
+            
+            // Ensure client search modal stays closed
+            this.showClientSearchModal = false;
+            
+            // Patch the client name to the form under the Client input field
+            this.quotationForm.patchValue({
+              client: clientName
+            });
+            
+            // Update session storage
+            sessionStorage.setItem('SelectedClientName', clientName);
+            sessionStorage.setItem('SelectedClientCode', JSON.stringify(clientCode));
+            sessionStorage.setItem('SelectedClientDetails', JSON.stringify(client));
+            
+            // Clear the newClientCode from session storage to prevent re-triggering
+            sessionStorage.removeItem('newClientCode');
+            
+            // Remove focus from any active element to prevent triggering click events
+            if (document.activeElement instanceof HTMLElement) {
+              document.activeElement.blur();
+            }
+            
+            // Show success message
+            this.globalMessagingService.displaySuccessMessage(
+              'Success', 
+              `Client ${clientName} created and selected successfully`
+            );
+            
+            log.debug('[QuotationDetailsComponent] Client details updated:', {
+              clientCode,
+              clientName,
+              selectedClientType: this.selectedClientType
+            });
+          }
+        },
+        error: (error) => {
+          log.error('[QuotationDetailsComponent] Error fetching client after creation:', error);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Client created but failed to retrieve details. Please select the client manually.'
+          );
+          // Still close the modal even on error
+          this.closeCreateClientModal();
+        }
+      });
+    }
   }
 
 
@@ -561,17 +652,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   openCreateClientModal() {
     this.setClientType('new');
-
-    if (this.createClientModalElement) {
-      const modalElement = this.createClientModalElement.nativeElement;
-      const modal = new bootstrap.Modal(modalElement);
-      modal.show();
-    }
+    this.openModals('createClient');
   }
 
   handleSaveClient(eventData: any) {
     log.debug('Event received from Client search comp', eventData);
-    sessionStorage.setItem("SelectedClientDetails", eventData);
+    sessionStorage.setItem("SelectedClientDetails", JSON.stringify(eventData));
 
     const clientCode = eventData.id;
     this.selectedClientCode = clientCode;
@@ -580,6 +666,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         ? `${eventData.firstName} ${eventData.lastName}`
         : eventData.firstName || eventData.lastName || '';
     sessionStorage.setItem("SelectedClientName", this.selectedClientName);
+    sessionStorage.setItem("SelectedClientCode", JSON.stringify(clientCode));
     this.quotationForm.controls['client'].setValue(this.selectedClientCode);
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
