@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { SessionStorageService } from '../../services/session-storage/session-storage.service';
 import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 
@@ -18,6 +18,9 @@ import { Table } from 'primeng/table';
 import { AuthService } from '../../services/auth.service';
 import { BankService } from '../../services/setups/bank/bank.service';
 import { Logger } from '../../services/logger/logger.service';
+import { ClaimsService } from '../../../features/gis/components/claim/services/claims.service';
+import { switchMap } from 'rxjs';
+import { GroupedUser } from 'src/app/features/gis/components/quotation/data/quotationsDTO';
 
 const log = new Logger('QuotationLandingScreenComponent');
 
@@ -28,6 +31,11 @@ const log = new Logger('QuotationLandingScreenComponent');
   standalone: false
 })
 export class QuotationLandingScreenComponent implements OnInit, OnChanges {
+  @ViewChild('dt') table!: Table;
+  @ViewChild('closeReassignButton') closeReassignButton: any;
+  @ViewChild('reassignQuotationModal') reassignQuotationModalElement!: ElementRef;
+  @ViewChild('chooseUserReassignModal') chooseUserReassignModal!: ElementRef;
+  @ViewChild('reassignTable') reassignTable!: any;
 
   @Input() LMS_IND: any[];
   @Input() LMS_GRP: GroupQuotationsListDTO[];
@@ -145,6 +153,24 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     PENSION: false
   };
   showTabs = false;
+  users: any;
+  selectedUser: any;
+  globalSearch: string = '';
+  fullNameSearch: string = '';
+  noUserChosen: boolean = false;
+  reassignComment: string = '';
+  comment: boolean = false;
+
+  // Additional properties for two-modal reassignment approach
+  departmentSelected: boolean = false;
+  userToReassignQuotation: any;
+  reassignQuotationComment: string = '';
+  noCommentLeft: boolean = false;
+  groupUsers: any[] = [];
+  selectedGroupUserId!: number;
+  private modals: { [key: string]: any } = {};
+  groupLeaderName: string = '';
+
 
 
   constructor(
@@ -160,6 +186,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     public cdr: ChangeDetectorRef,
     public authService: AuthService,
     public bankService: BankService,
+    public claimsService: ClaimsService,
   ) {
     this.menuItems = [];
 
@@ -180,8 +207,21 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     this.fetchGISQuotations();
     this.getUser();
     this.fetchCurrencies();
+  }
 
+  ngAfterViewInit() {
+    if (this.reassignQuotationModalElement && this.chooseUserReassignModal) {
+      this.modals['reassignQuotation'] = new (window as any).bootstrap.Modal(this.reassignQuotationModalElement.nativeElement);
+      this.modals['chooseUserReassign'] = new (window as any).bootstrap.Modal(this.chooseUserReassignModal.nativeElement);
+    }
+  }
 
+  openModals(modalName: string) {
+    this.modals[modalName]?.show();
+  }
+
+  closeModals(modalName: string) {
+    this.modals[modalName]?.hide();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -1280,6 +1320,18 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   reassignQuote(quotation: any): void {
     console.log('Reassign quote:', quotation);
 
+    // Validate required data before proceeding
+    if (!quotation.quotationNumber || !quotation.quotationCode) {
+      console.error('Invalid quotation data:', { quotationNumber: quotation.quotationNumber, quotationCode: quotation.quotationCode });
+      this.globalMessagingService.displayErrorMessage('Error', 'Invalid quotation data. Please try again.');
+      return;
+    }
+
+    // Store the selected quotation for use in reassignQuotation method
+    this.selectedQuotation = quotation;
+
+    // Open the reassign modal
+    this.openReassignQuotationModal();
   }
 
   applyGlobalFilter(event: Event) {
@@ -1288,6 +1340,214 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       this.quotationTable.filterGlobal(filterValue, 'contains');
     }
   }
+
+  getUsers() {
+    this.claimsService.getUsers().subscribe({
+      next: (res => {
+        this.users = res;
+        this.users = this.users.content;
+        log.debug('users>>>', this.users)
+
+      }),
+      error: (error => {
+        log.debug('error', error)
+        this.globalMessagingService.displayErrorMessage('Error', 'failed to feth users')
+      })
+    })
+  }
+
+  filterGlobal(event: any): void {
+    const value = event.target.value;
+    this.globalSearch = value;
+    this.table.filterGlobal(value, 'contains');
+  }
+
+  filterByFullName(event: any): void {
+    const value = event.target.value;
+    this.table.filter(value, 'name', 'contains');
+  }
+
+  onUserSelect(): void {
+    if (this.selectedUser) {
+      log.debug("Selected user>>>", this.selectedUser);
+      this.globalSearch = this.selectedUser.id;
+      this.fullNameSearch = this.selectedUser.name;
+      this.fetchGroupedUserDetails(this.selectedUser);
+    }
+  }
+
+  onUserUnselect(): void {
+    this.selectedUser = null;
+    this.globalSearch = '';
+    this.fullNameSearch = '';
+  }
+
+  fetchGroupedUserDetails(selectedUser: any) {
+    const groupedUserId = selectedUser.id;
+    this.quotationService.getGroupedUserDetails(groupedUserId)
+      .subscribe({
+        next: (res: GroupedUser[]) => {
+          this.groupUsers = res;
+
+          // Find the team leader
+          const groupLeader = res.find(user => user.isTeamLeader === "Y");
+          if (groupLeader) {
+            this.selectedGroupUserId = groupLeader.id;
+            this.groupLeaderName = groupLeader.userDetails.name;
+          }
+        },
+        error: (error) => {
+          console.error("Error fetching group users", error);
+        }
+      });
+  }
+
+  /**
+   * Common validation for reassignment
+   * @returns true if validation passes, false otherwise
+   */
+  private validateReassignment(): boolean {
+    if (!this.userToReassignQuotation) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false;
+      }, 3000);
+      return false;
+    }
+
+    if (!this.reassignQuotationComment) {
+      this.noCommentLeft = true;
+      setTimeout(() => {
+        this.noCommentLeft = false;
+      }, 3000);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Common cleanup after successful reassignment
+   */
+  private cleanupAfterReassignment(): void {
+    this.closeReassignQuotationModal();
+    this.onUserUnselect();
+    this.fetchGISQuotations();
+  }
+
+  /**
+   * Main reassignment method for quotations
+   */
+  reassignQuotation() {
+    if (!this.validateReassignment()) {
+      return;
+    }
+
+    // Get quotation code from the selected quotation
+    if (!this.selectedQuotation || !this.selectedQuotation.quotationCode) {
+      log.warn('No quotation selected for reassignment');
+      this.globalMessagingService.displayWarningMessage('Warning', 'No quotation selected');
+      return;
+    }
+
+    const quotationCode = this.selectedQuotation.quotationCode;
+
+    log.debug('Selected Quotation:', this.selectedQuotation);
+    log.debug('Quotation Code:', quotationCode);
+    log.debug('Quotation Number:', this.selectedQuotation.quotationNumber);
+    log.debug('Reassigning to user:', this.userToReassignQuotation);
+    log.debug('Comment:', this.reassignQuotationComment);
+
+    // Call getTaskById service to get the taskId 
+    this.quotationService.getTaskById(quotationCode.toString()).pipe(
+      switchMap((response) => {
+        log.debug('Task details from getTaskById:', response);
+
+        // Extract taskId from response
+        const taskId = response?.taskId;
+        const newAssignee = this.userToReassignQuotation;
+
+        if (!taskId) {
+          throw new Error('Task ID not found in response');
+        }
+
+        log.debug('Extracted taskId:', taskId);
+        log.debug('New assignee:', newAssignee);
+
+        // Call reassignTicket service with the extracted taskId
+        return this.quotationService.reassignTicket(taskId, newAssignee, this.reassignQuotationComment);
+      }),
+      untilDestroyed(this)
+    ).subscribe({
+      next: (reassignResponse) => {
+        log.debug('Quotation reassigned successfully:', reassignResponse);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Quotation reassigned successfully');
+        this.cleanupAfterReassignment();
+        this.fetchGISQuotations();
+      },
+      error: (error) => {
+        log.error('Error during reassignment:', error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Failed to reassign quotation');
+      }
+    });
+  }
+
+  closeModal(): void {
+    // Try using the close button if it exists
+    if (this.closeReassignButton?.nativeElement) {
+      this.closeReassignButton.nativeElement.click();
+    } else {
+      // Fallback: Use Bootstrap modal API to close the modal
+      const modalElement = document.getElementById('reassignQuotation');
+      if (modalElement) {
+        const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+          modal.hide();
+        }
+      }
+    }
+  }
+
+  openReassignQuotationModal() {
+    this.getUsers();
+    this.openModals('reassignQuotation');
+  }
+
+  closeReassignQuotationModal() {
+    this.userToReassignQuotation = null;
+    this.reassignQuotationComment = '';
+    this.selectedUser = null;
+    this.selectedQuotation = null;
+    this.noUserChosen = false;
+    this.noCommentLeft = false;
+    this.closeModals('reassignQuotation');
+  }
+
+  openChooseUserReassignModal() {
+    this.closeModals('reassignQuotation');
+    this.openModals('chooseUserReassign');
+  }
+
+  closeChooseUserReassignModal(): void {
+    this.selectedUser = null;
+    this.noUserChosen = false;
+    this.closeModals('chooseUserReassign');
+  }
+
+  selectUser() {
+    if (!this.selectedUser) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false;
+      }, 3000);
+      return;
+    }
+
+    this.userToReassignQuotation = this.selectedUser.name;
+    this.closeModals('chooseUserReassign');
+    this.openModals('reassignQuotation');
+  }
+
 
   //  getuser(): void {
   //   this.user = this.authService.getCurrentUserName();
