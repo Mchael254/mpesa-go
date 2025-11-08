@@ -1,8 +1,9 @@
 <div class="mx-4 mt-3">
   <p class="title">Quotations:Quotation Summary</p>
 
-  <app-stepper [currentStep]="3" [stepperData]="steps" [disabled]="viewQuoteFlag"></app-stepper>
-  <p *ngIf="ticketStatus" class=" mx-4 text-primary ps-5" style="font-weight: 500;">Ticket status:<span
+  <app-stepper [currentStep]="3" [stepperData]="steps" [disableNavigation]="true"
+    [disabled]="viewQuoteFlag"></app-stepper>
+  <p *ngIf="ticketStatus" class="text-primary ps-5" style="font-weight: 500;">Ticket status:<span
       style="color: black;">{{ticketStatus
       |sentenceCase}}
     </span>
@@ -961,8 +962,34 @@
 
                               <!-- Data Rows -->
                               <tr [pEditableRow]="rowData">
+                                <!-- <td *ngFor="let col of riskClausesColumns" [hidden]="!col.visible">
+                                  {{ getCellValue(rowData, col.field) | sentenceCase }}
+                                </td> -->
                                 <td *ngFor="let col of riskClausesColumns" [hidden]="!col.visible">
-                                  {{ getCellValue(rowData, col.field)| truncate:5 | sentenceCase }}
+                                  <ng-container [ngSwitch]="col.field">
+
+                                    <!-- Short Description -->
+                                    <ng-container *ngSwitchCase="'clauseShortDescription'">
+                                      {{ rowData.clauseShortDescription }}
+                                    </ng-container>
+
+
+
+                                    <!-- Wording -->
+                                    <ng-container *ngSwitchCase="'clause'">
+                                      <div class="clause-wrapper">
+                                        {{ rowData.clause | sentenceCase }}
+                                        <div class="hover-card">
+                                          {{ rowData.clause | sentenceCase }}
+                                        </div>
+                                      </div>
+                                    </ng-container>
+                                    <!-- Default -->
+                                    <ng-container *ngSwitchDefault>
+                                      {{ rowData[col.field] }}
+                                    </ng-container>
+
+                                  </ng-container>
                                 </td>
                               </tr>
 
@@ -1041,7 +1068,7 @@
                             <!-- Body -->
                             <ng-template pTemplate="body" let-rowData>
                               <tr>
-                                <td *ngFor="let col of scheduleColumns" [hidden]="!col.visible">
+                                <td *ngFor="let col of scheduleColumns" [hidden]="!col.visible" class="flexible-header">
                                   <ng-container [ngSwitch]="col.field">
 
                                     <!-- Currency fields -->
@@ -2152,9 +2179,9 @@
             <button class="btn btn-outline-primary me-2" *ngIf="showViewDocumentsButton" (click)="fetchReports()">
               View documents
             </button>
-            <button class="btn btn-primary" *ngIf="showConfirmButton" data-bs-toggle="modal"
+            <button class="btn btn-primary" *ngIf="showVerifyButton" data-bs-toggle="modal"
               data-bs-target="#clientConsentModal">
-              Confirm
+              Provide consent
             </button>
           </div>
 
@@ -2169,6 +2196,11 @@
           </button>
 
 
+        </div>
+        <div *ngIf="showConfirmButton" class="d-flex gap-2 flex-wrap">
+          <button type="button" class="btn btn-primary" [disabled]="afterRejectQuote" (click)="confirmQuote()">
+            Confirm
+          </button>
         </div>
       </div>
 
@@ -2244,6 +2276,7 @@
                     </div>
                   </div>
                 </div>
+
 
                 <div *ngIf="otpGenerated" class="row mt-3">
                   <div class="col-sm-9">

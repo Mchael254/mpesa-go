@@ -92,6 +92,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ) {
     this.selectedCovers = JSON.parse(sessionStorage.getItem('selectedCovers'))
+    this.ticketStatus = sessionStorage.getItem('ticketStatus');
 
   }
 
@@ -126,6 +127,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(untilDestroyed(this)).subscribe((response: any) => {
         log.debug("Quotation details>>>", response)
         this.quotationDetails = response
+        const ticketStatus = response.processFlowResponseDto.taskName
+        this.ticketStatus = ticketStatus
+        log.debug("Ticket status:", ticketStatus)
+        sessionStorage.setItem('ticketStatus', ticketStatus);
         const quotationProducts = this.quotationDetails.quotationProducts
         this.flattenQuotationProducts(quotationProducts)
         this.totalSumInsured = this.quotationDetails.premium

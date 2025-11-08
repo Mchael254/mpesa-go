@@ -323,12 +323,12 @@ export class QuotationsService {
     return this.api.DELETE<scheduleDetails>(`v2/schedule-details?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
-  makeReady(quotationCode, user) {
-    return this.api.POST(`v1/quotation/make-ready/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  makeReady(quotationCode) {
+    return this.api.POST(`v2/quotation/make-ready?${quotationCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
   confirmQuotation(quotationCode, user) {
-    return this.api.POST(`v1/quotation/confirm/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.POST(`v2/quotation/confirm?quotationCode=${quotationCode}&user=${user}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
   authoriseQuotation(quotationCode, user) {
@@ -627,7 +627,7 @@ export class QuotationsService {
       .set('quotationCode', quotationCode.toString())
 
     return this.api.POST(
-      `v2/quotation-exceptions/make-ready?${params.toString()}`, null,
+      `v2/quotation/make-ready?${params.toString()}`, null,
       API_CONFIG.GIS_QUOTATIONS_BASE_URL
     );
   }
@@ -1021,8 +1021,8 @@ export class QuotationsService {
     );
   }
 
-  getQuotationPerils(riskCode: string | number): Observable<any> {
-    return this.api.GET<any>(`v2/quotation-excesses?riskCode=${riskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  getQuotationPerils(subclassCode: number, riskCode: string | number): Observable<any> {
+    return this.api.GET<any>(`v2/quotation-risk-excesses/subclass-section-perils?subclassCode=${subclassCode}&riskCode=${riskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
 
@@ -1359,6 +1359,20 @@ export class QuotationsService {
     ).pipe(
       retry(1),
       catchError(this.errorHandl)
+    );
+  }
+  changeTicketStatus(ticketPayload: any) {
+    return this.api.POST<any>(
+      `/v1/process-flow/move-to-task`,
+      JSON.stringify(ticketPayload),
+      API_CONFIG.GIS_TICKETING_SERVICE
+    );
+  }
+  undoMakeReady(quotationCode: number) {
+    return this.api.POST<any>(
+      `v2/quotation/undo-make-ready?quotationCode=${quotationCode}`,
+      null,
+      API_CONFIG.GIS_QUOTATIONS_BASE_URL
     );
   }
 

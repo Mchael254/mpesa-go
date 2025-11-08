@@ -2,8 +2,9 @@
   <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
   </app-dynamic-breadcrumb>
 </div>
-<app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
-<p *ngIf="ticketStatus" class=" mx-4 text-primary ps-5" style="font-weight: 500;">Ticket status:<span
+<app-stepper [currentStep]="2" [stepperData]="steps" [disableNavigation]="true"></app-stepper>
+
+<p *ngIf="ticketStatus" class="  text-primary ps-5" style="font-weight: 500;">Ticket status:<span
     style="color: black;">{{ticketStatus
     |sentenceCase}}
   </span>
