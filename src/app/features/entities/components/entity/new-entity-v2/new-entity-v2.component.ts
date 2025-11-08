@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { BreadCrumbItem } from "../../../../../shared/data/common/BreadCrumbItem";
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { Logger, UtilService } from "../../../../../shared/services";
@@ -67,6 +67,8 @@ const log = new Logger('NewEntityV2Component');
   styleUrls: ['./new-entity-v2.component.css']
 })
 export class NewEntityV2Component implements OnInit, OnChanges {
+
+  @Output() clientSaved = new EventEmitter<any>();
 
   entityBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -989,14 +991,40 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     this.clientService.saveClientDetails2(client).subscribe({
       next: (response) => {
         log.info(`client saved >>> `, response);
-        this.uploadImage(this.profilePicture, response.partyId);
+        const clientCode = response.clientCode;
+        sessionStorage.setItem('newClientCode', JSON.stringify(clientCode))
+        
+        // Upload profile picture only if it exists
+        if (this.profilePicture) {
+          this.uploadImage(this.profilePicture, response.partyId);
+        }
+        
         this.entityName = response.firstName + ' ' + response.lastName;
         this.entityCode = response.clientCode;
-        sessionStorage.setItem('newClientCode', JSON.stringify(this.entityCode))
+        sessionStorage.setItem('newClientCode', JSON.stringify(this.entityCode));
+        
+        // Upload documents to DMS
         this.uploadDocumentToDms();
+        
+        // Emit event to close the modal in the parent component
+        this.clientSaved.emit({
+          success: true,
+          clientCode: clientCode,
+          clientName: this.entityName
+        });
+        
+        // Show success message
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          `Client ${this.entityName} created successfully`
+        );
       },
       error: (error) => {
         log.info(`could not save`, error);
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          error?.error?.message || 'Failed to save client'
+        );
       }
     })
   }

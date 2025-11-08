@@ -354,7 +354,10 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         }
       });
-    } else {
+    }
+    
+    // Handle case when quotation code is not found
+    if (!quotationCode) {
       log.warn('No quotation code found in session storage');
       console.warn('No quotation code found in session storage');
       this.globalMessagingService.displayWarningMessage('Warning', 'No quotation code found');
