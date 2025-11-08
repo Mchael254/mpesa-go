@@ -6,7 +6,6 @@ export interface ReceiptsToBankRequest {
   includeBatched?: string;
   bctCode?: number;
   brhCode?: number;
-  
 }
 export interface ReceiptDTO {
   receiptNo: number;
@@ -25,8 +24,23 @@ export interface ReceiptDTO {
   capturedByUser: string;
   userEmail: string;
   allocationStatus: string;
+  batchAssignmentId: null;
+  batchAssignmentDate: any;
+  batchAssignmentRefNo: any;
+  totalAllocatedKnown: number;
+  totalAllocatedUnknown: number;
+  batchAssignmentUserName: string | null;
+  batchAssignmentUserId:number | null;
 }
-export interface assignUserRctsDTO{
+export interface assignUserRctsDTO {
   userId: number;
-  receiptNumbers:number[];
+  receiptNumbers: number[];
+}
+export interface DeAssignDTO {
+  receiptNumbers: number[];
+}
+export interface ReAssignUserDTO{
+    fromUserId: number;
+  toUserId: number;
+  receiptNumbers: number[]
 }
