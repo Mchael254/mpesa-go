@@ -338,20 +338,12 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
           this.globalMessagingService.displaySuccessMessage('Success', 'Quotation reassigned successfully');
           this.closeReassignButton.nativeElement.click();
           this.onUserUnselect();
+          this.router.navigate(['/home/gis/quotation/quotation-management']);
         },
         error: (error) => {
-          // temporaty fix because the response returns text
-          if (error.status === 200 && error.error?.text?.includes('Task reassigned')) {
-            log.debug('Ticket reassigned (text response):', error.error.text);
-            this.globalMessagingService.displaySuccessMessage('Success', 'Quotation reassigned successfully');
-            this.closeReassignButton.nativeElement.click();
-            this.onUserUnselect();
-            this.router.navigate(['/home/gis/quotation/quotation-management']);
-          } else {
-            log.error('Error during reassignment:', error);
-            console.error('Error during reassignment:', error);
-            this.globalMessagingService.displayErrorMessage('Error', 'Failed to reassign quotation');
-          }
+          log.error('Error during reassignment:', error);
+          console.error('Error during reassignment:', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to reassign quotation');
         }
       });
     }

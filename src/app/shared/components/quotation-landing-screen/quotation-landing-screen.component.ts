@@ -18,9 +18,10 @@ import { Table } from 'primeng/table';
 import { AuthService } from '../../services/auth.service';
 import { BankService } from '../../services/setups/bank/bank.service';
 import { Logger } from '../../services/logger/logger.service';
-import { ClaimsService } from '../../../features/gis/components/claim/services/claims.service';
+import { ClaimsService } from 'src/app/features/gis/components/claim/services/claims.service';
 import { switchMap } from 'rxjs';
 import { GroupedUser } from 'src/app/features/gis/components/quotation/data/quotationsDTO';
+
 
 const log = new Logger('QuotationLandingScreenComponent');
 
@@ -1342,7 +1343,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
   getUsers() {
-    this.claimsService.getUsers().subscribe({
+    this.claimsService.getUsers(0, 1000).subscribe({
       next: (res => {
         this.users = res;
         this.users = this.users.content;
@@ -1359,12 +1360,13 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   filterGlobal(event: any): void {
     const value = event.target.value;
     this.globalSearch = value;
-    this.table.filterGlobal(value, 'contains');
+    this.reassignTable.filterGlobal(value, 'contains');
   }
+
 
   filterByFullName(event: any): void {
     const value = event.target.value;
-    this.table.filter(value, 'name', 'contains');
+    this.reassignTable.filter(value, 'name', 'contains');
   }
 
   onUserSelect(): void {
@@ -1453,10 +1455,8 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     const quotationCode = this.selectedQuotation.quotationCode;
 
     log.debug('Selected Quotation:', this.selectedQuotation);
-    log.debug('Quotation Code:', quotationCode);
-    log.debug('Quotation Number:', this.selectedQuotation.quotationNumber);
-    log.debug('Reassigning to user:', this.userToReassignQuotation);
-    log.debug('Comment:', this.reassignQuotationComment);
+    log.debug('Quotation to Code:', quotationCode);
+
 
     // Call getTaskById service to get the taskId 
     this.quotationService.getTaskById(quotationCode.toString()).pipe(
