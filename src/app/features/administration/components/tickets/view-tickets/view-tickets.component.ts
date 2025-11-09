@@ -919,8 +919,8 @@ export class ViewTicketsComponent implements OnInit {
       this.router.navigate(['/home/gis/quotation/quotation-details']);
       break;
 
-    case 'Authorize':
-    case 'Confirm Quote':
+    case 'Confirm Quotation':
+    case 'Authorize Quotation' : 
       this.router.navigate(['/home/gis/quotation/quotation-summary']);
       break;
 

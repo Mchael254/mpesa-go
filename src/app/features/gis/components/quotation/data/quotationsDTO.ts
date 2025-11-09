@@ -989,7 +989,6 @@ export interface QuotationDTO {
 }
 
 export interface ShareQuoteDTO {
-  selectedMethod: 'email' | 'sms' | 'whatsapp';
   email?: string;
   smsNumber?: string;
   whatsappNumber?: string;
