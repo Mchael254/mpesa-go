@@ -943,6 +943,36 @@ export class ViewTicketsComponent implements OnInit {
       });
   }
 
+
+  processTicket(ticket: any): void {
+  const ticketName = ticket.ticketName?.trim();
+  log.debug("Ticket chosen", ticket);
+
+  // Save the whole ticket in session storage
+  sessionStorage.setItem('activeTicket', JSON.stringify(ticket));
+
+  switch (ticketName) {
+    case 'Quotation Data Entry':
+      this.router.navigate(['/home/gis/quotation/quotation-details']);
+      break;
+
+    case 'Authorize Quotation':
+    case 'Confirm Quotation':
+      this.router.navigate(['/home/gis/quotation/quotation-summary']);
+      break;
+
+    case 'Authorize Exceptions':
+      sessionStorage.setItem('showExceptions', 'true');
+      this.router.navigate(['/home/gis/quotation/quotation-summary']);
+      break;
+
+    default:
+      console.warn('Unknown ticket type:', ticketName);
+      break;
+  }
+}
+
+
   openReassignTicketModal() {
     // Only open if tickets are selected
     if (this.selectedSpringTickets.length === 0) {
