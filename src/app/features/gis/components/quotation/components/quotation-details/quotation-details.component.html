@@ -1,6 +1,6 @@
 <div class="mx-4 mt-3">
   <p class="title">{{ 'gis.quotation.quote_details_title' | translate }} </p>
-  <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+  <app-stepper [currentStep]="1" [stepperData]="steps" [disableNavigation]="true"></app-stepper>
   <p class="text-primary ps-5" style="font-weight: 500;">Ticket status:<span style="color: black;">{{ticketStatus
       |sentenceCase}}
     </span>
@@ -44,9 +44,10 @@
                       <ng-container *ngIf="field.name === 'client' && !newClient">
                         <div class="position-relative" style="cursor: pointer;">
                           <input type="text" class="form-control form-control-sm pe-5" id="quote-input"
-                            [value]="selectedClientName" formControlName="client" [readonly]="isRevisionMode"
+                            [(ngModel)]="selectedClientName" [ngModelOptions]="{standalone: true}" [readonly]="isRevisionMode"
                             autocomplete="off" (click)="!isRevisionMode && (showClientSearchModal = true)"
                             style="cursor: pointer;" />
+                          <input type="hidden" formControlName="client" />
                           <i class="pi pi-search position-absolute"
                             style="top: 50%; right: 12px; transform: translateY(-50%); color: #00529B; pointer-events: none;"></i>
                         </div>
@@ -1374,21 +1375,11 @@
             X
           </button>
         </div>
-        <app-new-entity-v2></app-new-entity-v2>
+        <app-new-entity-v2 (clientSaved)="onClientSaved($event)"></app-new-entity-v2>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeCreateClientModal()">Close</button>
+        </div>
 
-
-        <!-- <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
-              <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary" style="text-decoration: none;">{{
-                'gis.quotation.cancel' | translate
-                }}
-              </button>
-              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
-                (click)="rejectQuotation(quotationDetails.code)">{{
-                'gis.quotation.save_changes' |
-                translate
-                }}
-              </button>
-            </div> -->
       </div>
     </div>
   </div>

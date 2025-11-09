@@ -2,15 +2,17 @@
   <div class="container-fluid">
     <div class="stepper" [class.disabled]="disabled">
       <ng-container *ngFor="let step of stepperData; let i = index">
-        <div class="step" (click)="!disabled && navigateToPage(step.link)">
+        <div class="step" (click)="!disableNavigation && !disabled && navigateToPage(step.link)">
           <div class="circle" [ngClass]="getStepClasses(i+1)">
             <div>{{ step.number }}</div>
           </div>
           <div class="title step-link">{{ step.title }}</div>
         </div>
-        <!-- Add connecting line after each step except the last one -->
+
+        <!-- Connector line -->
         <div *ngIf="i < stepperData.length - 1" class="connector"></div>
       </ng-container>
+
     </div>
   </div>
 </section>

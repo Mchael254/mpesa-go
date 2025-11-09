@@ -10,8 +10,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { MenuItem } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
-import { Subject, throwError } from 'rxjs';
-import { catchError, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { Observable, of, Subject, throwError } from 'rxjs';
+import { catchError, filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { IntermediaryService } from "../../../../../entities/services/intermediary/intermediary.service";
 import { ProductService } from "../../../../services/product/product.service";
 import { AuthService } from "../../../../../../shared/services/auth.service";
@@ -48,8 +48,11 @@ import { riskClauses } from '../../../setups/data/gisDTO';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NotificationService } from '../../services/notification/notification.service';
 import { NgxCurrencyConfig } from 'ngx-currency';
+
 import { Modal } from 'bootstrap';
 import { left } from '@popperjs/core';
+import { DmsDocument, RiskDmsDocument } from 'src/app/shared/data/common/dmsDocument';
+import { DmsService } from 'src/app/shared/services/dms/dms.service';
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
 
@@ -83,6 +86,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('riskClausesTable') riskClausesTable: any;
   @ViewChild('clientConsentModal') clientConsentModalElement!: ElementRef;
   @ViewChild('viewDocumentsModal') viewDocumentsModal!: ElementRef;
+  @ViewChild('addRiskDocumentModal') addRiskDocModalRef!: ElementRef;
 
   @Input() modalTitle: string = 'Action required';
   @Input() modalSubtitle: string = 'Required details missing.';
@@ -164,7 +168,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   source: string;
   quickQuoteData: any;
   expiryDate: string;
-  selectedRisk: any;
+  selectedRisk: RiskInformation;
   fetchedQuoteNum: string;
   viewQuoteFlag: boolean;
   revisedQuotationNumber: string;
@@ -235,6 +239,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   showAuthorizeButton = true;
   showViewDocumentsButton = false;
   showConfirmButton = false;
+  showVerifyButton = false;
 
 
 
@@ -282,15 +287,31 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   quotationFormDetails: any;
   quotationAuthorized: boolean;
   fileUrl: SafeResourceUrl;
+  quickQuoteQuotation: boolean;
   showCreateClientTip = false;
   riskCommissions: any[] = [];
   showCommissionColumnModal = false;
   commissionColumns: { field: string; header: string; visible: boolean }[] = [];
-  ticketStatus: string
-  confirmQuote: boolean = false;
+  ticketStatus: string;
+  // confirmQuote: boolean = false;
   ticketData:any;
-  
+  zoomRiskDocLevel = 1;
+  showRiskDocColumnModal = false;
+  showRiskDoc: boolean = true;
 
+  riskDocColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
+  selectedFile: File | null = null;
+  isDragging = false;
+  uploading = false;
+  errorMessage = '';
+  successMessage = '';
+  loggedInUser: string;
+
+  riskDocuments: DmsDocument[];
+  selectedRiskDoc: DmsDocument;
+  previewRiskDoc: { name: string; mimeType: string; dataUrl: string } | null = null;
+  ticketPayload: any;
+  authorizedQuoteFlag: boolean = false;
 
 
   constructor(
@@ -311,8 +332,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     public claimsService: ClaimsService,
     public utilService: UtilService,
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
     
+    private dmsService: DmsService,
 
 
   ) {
@@ -327,7 +349,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       { label: 'Monthly', value: 'M' },
       { label: 'One-off', value: 'O' }
     ];
+    // this.authorizedQuoteFlag = JSON.parse(sessionStorage.getItem('authorizedQuoteFlag'));
     this.ticketStatus = sessionStorage.getItem('ticketStatus');
+    this.showVerifyButton = JSON.parse(sessionStorage.getItem('showVerifyButton'));
+    this.showViewDocumentsButton = JSON.parse(sessionStorage.getItem('showViewDocumentsButton'));
+    this.showConfirmButton = JSON.parse(sessionStorage.getItem('showConfirmButton'));
+    this.otpGenerated = JSON.parse(sessionStorage.getItem('otpGenerated'));
+    this.changeToPolicyButtons = JSON.parse(sessionStorage.getItem('changeToPolicyButtons'));
+    this.showAuthorizeButton = JSON.parse(sessionStorage.getItem('showAuthorizeButton'));
 
   }
 
@@ -391,8 +420,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
    
 
-
-
     if (this.quotationCodeString) {
       this.quotationCode = Number(this.quotationCodeString);
       log.debug("second code", this.quotationCode)
@@ -405,7 +432,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         const ticketStatus = response.processFlowResponseDto.taskName
         log.debug("Ticket status:", ticketStatus)
         this.ticketStatus = ticketStatus
-
         sessionStorage.setItem('ticketStatus', ticketStatus);
 
         if ('Rejected' === response.status) {
@@ -419,14 +445,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     if (this.quotationAuthorized) {
       this.showAuthorizeButton = false;
-      this.showViewDocumentsButton = true;
-      this.showConfirmButton = true;
+      // this.showViewDocumentsButton = true;
+      // this.showVerifyButton = true;
     } else {
       this.showAuthorizeButton = true;
-      this.showViewDocumentsButton = false;
-      this.showConfirmButton = false;
+      // this.showViewDocumentsButton = false;
+      // this.showVerifyButton = false;
     }
-
 
 
     this.clientDetails = JSON.parse(
@@ -460,11 +485,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.getUsers();
 
 
-
-
-    // this.createInsurersForm();
-    // this.fetchInsurers();
-
     log.debug("MORE DETAILS TEST", this.quotationDetails)
 
     this.limitAmount = Number(sessionStorage.getItem('limitAmount'));
@@ -476,10 +496,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     // this.getDocumentTypes();
 
     this.hasUnderwriterRights();
-
-
-
-
 
     // Add this to your existing ngOnInit
     const modal = document.getElementById('addExternalClaimExperienceModal');
@@ -537,15 +553,15 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     const ticketJson = sessionStorage.getItem('activeTicket');
 
-    if(ticketJson){
+    if (ticketJson) {
       this.ticketData = JSON.parse(ticketJson);
       const quotationCode = this.ticketData.quotationCode;
-      if(quotationCode){
-      this.quotationCode=quotationCode
+      if (quotationCode) {
+        this.quotationCode = quotationCode
       }
       this.getQuotationDetails(quotationCode);
 
-      
+
     }
 
      this.patchQuotationData();
@@ -668,8 +684,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.quotationAuthorized = JSON.parse(sessionStorage.getItem('quotationHasBeenAuthorzed'))
         if (this.quotationAuthorized) {
           this.showAuthorizeButton = false;
-          this.showViewDocumentsButton = true;
-          this.showConfirmButton = true;
+          // this.showViewDocumentsButton = true;
+          // this.showVerifyButton = true;
         }
         // this.getExceptions(this.quotationView.code);
         if (!this.moreDetails) {
@@ -945,6 +961,33 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
 
   }
+  fetchTicketPayload(): Observable<any> {
+    if (this.quotationCode) {
+      return this.quotationService.getTaskById(this.quotationCode).pipe(
+        map((ticketData) => {
+          log.debug('Ticket details:', ticketData);
+          return {
+            processDefinitionId: ticketData.processDefinitionId,
+            processInstanceId: ticketData.processInstanceId,
+            previousActivityId: ticketData.processDefinitionKey,
+            processAttributeRequestDto: {
+              quotationNumber: this.quotationNumber,
+              quotationCode: this.quotationCode,
+              processId: ticketData.taskId,
+              ticketTo: 'Quotation Data Entry'
+            }
+          };
+        }),
+        catchError((error) => {
+          log.error('Error during reassignment:', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch ticket');
+          return throwError(() => error);
+        })
+      );
+    } else {
+      return of(null);
+    }
+  }
 
 
   /**
@@ -952,10 +995,71 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
    * @method editDetails
    * @return {void}
    */
+  // editQuotationDetails() {
+  //   const action = "E";
+  //   sessionStorage.setItem("quotationAction", action);
+  //   this.fetchTicketPayload().subscribe(res => {
+  //     console.log('Ticket Payload:', res);
+  //     this.ticketPayload = res
+  //   });
+
+  //   this.quotationService.changeTicketStatus(this.ticketPayload).subscribe(
+  //     {
+  //       next: (res) => {
+  //         log.debug("RESPONSE AFTER CHANGING TICKET STATUS:", res)
+  //         this.makeQuotationReady = !this.makeQuotationReady;
+  //         this.authoriseQuotation = !this.authoriseQuotation;
+  //         this.getQuotationDetails(this.quotationCode);
+  //         this.messageService.displaySuccessMessage('Success', 'Quotation Made Ready, Authorise to proceed')
+  //       },
+  //       error: (e) => {
+  //         log.debug(e)
+  //         this.messageService.displayErrorMessage('error', 'Failed to make ready')
+  //       }
+  //     }
+  //   )
+  //   // this.router.navigate(['/home/gis/quotation/quotation-details']);
+  // }
   editQuotationDetails() {
     const action = "E";
     sessionStorage.setItem("quotationAction", action);
-    this.router.navigate(['/home/gis/quotation/quotation-details']);
+    log.debug('qUOTATIONcODE', this.quotationCode)
+    this.quotationService.undoMakeReady(this.quotationCode).subscribe(
+      {
+        next: (res) => {
+          log.debug("RESPONSE AFTER UNDO MAKE READY:", res)
+          const ticketStatus = res._embedded.taskName
+          log.debug("Ticket status:", ticketStatus)
+          this.ticketStatus = ticketStatus
+          sessionStorage.setItem('ticketStatus', ticketStatus);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully undone make ready.')
+          this.router.navigate(['/home/gis/quotation/quotation-details']);
+        },
+        error: (e) => {
+          log.debug(e)
+          this.globalMessagingService.displayErrorMessage('error', 'Failed to make ready')
+        }
+      }
+    )
+    // this.fetchTicketPayload().pipe(
+    //   switchMap((payload) => {
+    //     this.ticketPayload = payload;
+    //     return this.quotationService.undoMakeReady(this.quotationCode);
+    //   })
+    // ).subscribe({
+    //   next: (response) => {
+    //     log.debug("RESPONSE AFTER Undoing make ready:", response);
+    //     this.makeQuotationReady = !this.makeQuotationReady;
+    //     this.authoriseQuotation = !this.authoriseQuotation;
+    //     this.getQuotationDetails(this.quotationCode);
+    //     // this.router.navigate(['/home/gis/quotation/quotation-details']);
+
+    //   },
+    //   error: (err) => {
+    //     log.error(err);
+    //     this.messageService.displayErrorMessage('Error', 'Failed to make ready');
+    //   }
+    // });
   }
 
   /**
@@ -1034,7 +1138,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   makeReady() {
-    this.quotationService.makeReady(this.quotationCode, this.user).subscribe(
+    this.quotationService.makeReady(this.quotationCode).subscribe(
       {
         next: (res) => {
           this.makeQuotationReady = !this.makeQuotationReady;
@@ -1067,14 +1171,25 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     )
   }
 
-  confirm() {
+  confirmQuote() {
     this.quotationService.confirmQuotation(this.quotationCode, this.user).subscribe(
       {
         next: (res) => {
           this.authoriseQuotation = !this.authoriseQuotation;
           this.confirmQuotation = !this.confirmQuotation;
           this.getQuotationDetails(this.quotationCode);
-          this.messageService.displaySuccessMessage('Success', 'Quotation Authorization Confirmed')
+          this.globalMessagingService.displaySuccessMessage('Success', 'Quotation  Confirmed')
+          this.changeToPolicyButtons = true
+          sessionStorage.setItem('changeToPolicyButtons', JSON.stringify(this.changeToPolicyButtons))
+          if (this.changeToPolicyButtons) {
+            this.showViewDocumentsButton = false
+            this.showVerifyButton = false
+            this.showConfirmButton = false
+            sessionStorage.setItem('showViewDocumentsButton', JSON.stringify(this.showViewDocumentsButton))
+            sessionStorage.setItem('showVerifyButton', JSON.stringify(this.showVerifyButton))
+            sessionStorage.setItem('showConfirmButton', JSON.stringify(this.showConfirmButton))
+
+          }
         },
         error: (e) => {
           log.debug(e.message)
@@ -1361,6 +1476,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     log.debug("Matching product ", matchingProduct);
 
     if (matchingProduct) {
+      this.riskDetails = matchingProduct.riskInformation
       this.handleRowClick(matchingProduct.riskInformation[0])
       this.isRiskCollapsibleOpen = true
       this.taxDetails = matchingProduct.taxInformation;
@@ -1449,8 +1565,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.quotationService.getRiskClauses(riskCode)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe({
-        next: (res) => {
-          this.riskClauses = res;
+        next: (res: any) => {
+          this.riskClauses = res._embedded || [];
           log.debug("RISK CLAUSES", this.riskClauses);
 
           if (this.riskClauses.length) {
@@ -1475,93 +1591,93 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.fileInput.nativeElement.click();
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      for (let i = 0; i < input.files.length; i++) {
-        const file = input.files[i];
-        // Read the file as a data URL
-        const reader = new FileReader();
-        reader.onload = () => {
-          // Convert the file to Base64 string
-          const base64String = reader.result?.toString().split(',')[1];
+  // onFileSelected(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files && input.files.length > 0) {
+  //     for (let i = 0; i < input.files.length; i++) {
+  //       const file = input.files[i];
+  //       // Read the file as a data URL
+  //       const reader = new FileReader();
+  //       reader.onload = () => {
+  //         // Convert the file to Base64 string
+  //         const base64String = reader.result?.toString().split(',')[1];
 
-          // Add the file to your files array with additional properties
-          this.files.push({
-            file,
-            name: file.name,
-            selected: false,
-            documentType: this.selectedDocumentType,
-            base64: base64String
-          });
-          log.debug("File:", this.clientDetails)
-          let payload = {
-            agentCode: "",
-            agentName: "",
-            brokerCode: "",
-            brokerName: "",
-            brokerType: "",
-            cbpCode: "",
-            cbpName: "",
-            claimNo: "",
-            claimantNo: "",
-            clientCode: this.clientDetails.id,
-            clientFullname: this.clientDetails.firstName + this.clientDetails.lastName,
-            clientName: this.clientDetails.firstName,
-            dateReceived: "",
-            department: "",
-            deptName: "",
-            docData: "",
-            docDescription: "",
-            docId: "",
-            docReceivedDate: "",
-            docRefNo: "",
-            docRemark: "",
-            docType: this.selectedDocumentType,
-            document: base64String,
-            documentName: file.name,
-            documentType: this.selectedDocumentType,
-            endorsementNo: "",
-            fileName: file.name,
-            folderId: "",
-            memberName: "",
-            memberNo: "",
-            module: "",
-            originalFileName: "",
-            paymentType: "",
-            policyNo: "",
-            policyNumber: "",
-            processName: "",
-            proposalNo: "",
-            providerCode: "",
-            providerName: "",
-            qouteCode: "",
-            rdCode: "",
-            referenceNo: "",
-            riskID: "",
-            spCode: "",
-            spName: "",
-            subject: "",
-            transNo: "",
-            transType: "",
-            userName: "",
-            username: "",
-            valuerDate: "",
-            valuerName: "",
-            voucherNo: ""
-          }
-          this.quotationService.postDocuments(payload).subscribe({
-            next: (res) => {
-              this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
-            }
-          })
-        };
-        // Read the file as data URL
-        reader.readAsDataURL(file);
-        // this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType });
-      }
-    }
-  }
+  //         // Add the file to your files array with additional properties
+  //         this.files.push({
+  //           file,
+  //           name: file.name,
+  //           selected: false,
+  //           documentType: this.selectedDocumentType,
+  //           base64: base64String
+  //         });
+  //         log.debug("File:", this.clientDetails)
+  //         let payload = {
+  //           agentCode: "",
+  //           agentName: "",
+  //           brokerCode: "",
+  //           brokerName: "",
+  //           brokerType: "",
+  //           cbpCode: "",
+  //           cbpName: "",
+  //           claimNo: "",
+  //           claimantNo: "",
+  //           clientCode: this.clientDetails.id,
+  //           clientFullname: this.clientDetails.firstName + this.clientDetails.lastName,
+  //           clientName: this.clientDetails.firstName,
+  //           dateReceived: "",
+  //           department: "",
+  //           deptName: "",
+  //           docData: "",
+  //           docDescription: "",
+  //           docId: "",
+  //           docReceivedDate: "",
+  //           docRefNo: "",
+  //           docRemark: "",
+  //           docType: this.selectedDocumentType,
+  //           document: base64String,
+  //           documentName: file.name,
+  //           documentType: this.selectedDocumentType,
+  //           endorsementNo: "",
+  //           fileName: file.name,
+  //           folderId: "",
+  //           memberName: "",
+  //           memberNo: "",
+  //           module: "",
+  //           originalFileName: "",
+  //           paymentType: "",
+  //           policyNo: "",
+  //           policyNumber: "",
+  //           processName: "",
+  //           proposalNo: "",
+  //           providerCode: "",
+  //           providerName: "",
+  //           qouteCode: "",
+  //           rdCode: "",
+  //           referenceNo: "",
+  //           riskID: "",
+  //           spCode: "",
+  //           spName: "",
+  //           subject: "",
+  //           transNo: "",
+  //           transType: "",
+  //           userName: "",
+  //           username: "",
+  //           valuerDate: "",
+  //           valuerName: "",
+  //           voucherNo: ""
+  //         }
+  //         this.quotationService.postDocuments(payload).subscribe({
+  //           next: (res) => {
+  //             this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
+  //           }
+  //         })
+  //       };
+  //       // Read the file as data URL
+  //       reader.readAsDataURL(file);
+  //       // this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType });
+  //     }
+  //   }
+  // }
 
   downloadFile(fileItem: FileItem): void {
     const url = window.URL.createObjectURL(fileItem.file);
@@ -1595,7 +1711,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   fetchInsurers() {
     this.quotationService.getInsurers().subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.insurersList = res.content; // Ensure you're accessing the `content` array
         log.debug("INSURERS", this.insurersList);
       }
@@ -1962,9 +2078,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
 
-
-
-
   //reassign
   openReassignQuotationModal() {
     this.openModals('reassignQuotation');
@@ -2073,7 +2186,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       comment: this.reassignQuotationComment
     }
 
-    // Get quotation code from session storage or component property
     const quotationCode = this.quotationCode;
 
     if (quotationCode) {
@@ -2081,52 +2193,34 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.quotationService.getTaskById(quotationCode).pipe(
         switchMap((response) => {
           log.debug('Task details from getTaskById:', response);
-          console.log('Task details from getTaskById:', response);
 
           // Extract taskId from response
           const taskId = response?.taskId;
           const newAssignee = this.clientToReassignQuotation.name;
+          const comment = this.reassignQuotationComment;
 
           if (!taskId) {
             throw new Error('Task ID not found in response');
           }
 
-          log.debug('Extracted taskId:', taskId);
-          console.log('Extracted taskId:', taskId);
-          log.debug('New assignee:', newAssignee);
-          console.log('New assignee:', newAssignee);
-
-          // Call reassignTicket service with the extracted taskId
-          return this.quotationService.reassignTicket(taskId, newAssignee);
+          return this.quotationService.reassignTicket(taskId, newAssignee, comment);
         })
       ).subscribe({
         next: (reassignResponse) => {
           log.debug('Ticket reassigned successfully:', reassignResponse);
-          console.log('Ticket reassigned successfully:', reassignResponse);
           this.globalMessagingService.displaySuccessMessage('Success', 'Quotation reassigned successfully');
           this.closeReassignQuotationModal();
           this.onUserUnselect();
           this.reassignQuotationComment = null;
+          this.router.navigate(['/home/gis/quotation/quotation-management']);
         },
         error: (error) => {
-          // temporary fix because the response returns text
-          if (error.status === 200 && error.error?.text?.includes('Task reassigned')) {
-            log.debug('Ticket reassigned (text response):', error.error.text);
-            this.globalMessagingService.displaySuccessMessage('Success', 'Quotation reassigned successfully');
-            this.closeReassignQuotationModal();
-            this.onUserUnselect();
-            this.reassignQuotationComment = null;
-            this.router.navigate(['/home/gis/quotation/quotation-management']);
-          } else {
-            log.error('Error during reassignment:', error);
-            console.error('Error during reassignment:', error);
-            this.globalMessagingService.displayErrorMessage('Error', 'Failed to reassign quotation');
-          }
+          log.error('Error during reassignment:', error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to reassign quotation');
         }
       });
     } else {
       log.warn('No quotation code found');
-      console.warn('No quotation code found');
       this.globalMessagingService.displayWarningMessage('Warning', 'No quotation code found');
     }
 
@@ -2163,7 +2257,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
 
     this.quotationService.updateQuotationStatus(this.quotationCode, status, reasonCancelled).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.globalMessagingService.displaySuccessMessage('success', 'quote rejected successfully')
         log.debug(response);
         this.afterRejectQuote = true;
@@ -2208,7 +2302,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   getExceptions(quotationCode: number) {
     this.quotationService.generateExceptions(quotationCode).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         log.debug('exceptions', res);
         this.exceptionsData = res._embedded;
         log.debug('exceptionData', this.exceptionsData);
@@ -2226,7 +2320,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   getLimitsofLiability(subClassCode: number, quotationProductCode: number, scheduleType: 'L' | 'E') {
     this.quotationService.getRiskLimitsOfLiability(subClassCode, quotationProductCode, scheduleType)
       .subscribe({
-        next: (res) => {
+        next: (res: any) => {
           log.debug(`limits of liability (${scheduleType})`, res);
 
           if (scheduleType === 'L') {
@@ -2296,7 +2390,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.quotationService
         .authoriseExceptions(selected)
         .subscribe({
-          next: (res) => {
+          next: (res: any) => {
             if (res.status === 'SUCCESS') {
               this.globalMessagingService.displaySuccessMessage(
                 'Success',
@@ -2411,22 +2505,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
 
-  onDragStart(event: MouseEvent): void {
-    this.dragging = true;
-    this.dragOffset.x = event.clientX - parseInt(this.columnModalPosition.left, 10);
-    this.dragOffset.y = event.clientY - parseInt(this.columnModalPosition.top, 10);
-  }
 
-  onDragMove(event: MouseEvent): void {
-    if (this.dragging) {
-      this.columnModalPosition.top = `${event.clientY - this.dragOffset.y}px`;
-      this.columnModalPosition.left = `${event.clientX - this.dragOffset.x}px`;
-    }
-  }
-
-  onDragEnd(): void {
-    this.dragging = false;
-  }
 
 
   toggleClauses(iconElement: HTMLElement): void {
@@ -2607,19 +2686,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }));
   }
 
-
-
-
-
-
-  sentenceCase(text: string): string {
-    return text
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, (str) => str.toUpperCase());
-  }
-
-
-
   setColumnsFromTaxesDetails(sample: TaxDetails) {
     const defaultVisibleFields = [
       'rateDescription',
@@ -2731,9 +2797,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   setColumnsFromRiskClausesDetails(sample: riskClauses) {
     const defaultVisibleFields = [
-      'clauseCode',
+      'clauseShortDescription',
       'clause',
-      'shortDescription'
+
     ];
 
     const excludedFields = [
@@ -2758,43 +2824,78 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }));
   }
 
+  // setColumnsFromScheduleDetails(sample: any) {
+  //   const defaultVisibleFields = ['sectionShortDescription',
+  //     'make',
+  //     'cubicCapacity',
+  //     'yearOfManufacture',
+  //     'carryCapacity',
+  //     'value',
+  //     'bodyType'
+
+
+
+
+
+
+  //   ];
+
+  //   const excludedFields = [
+
+  //   ];
+
+
+  //   let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
+
+
+  //   keys = keys.sort((a, b) => {
+  //     if (a === 'productName') return -1;
+  //     if (b === 'productName') return 1;
+  //     return 0;
+  //   });
+
+
+  //   this.scheduleColumns = keys.map(key => ({
+  //     field: key,
+  //     header: this.sentenceCase(key),
+  //     visible: defaultVisibleFields.includes(key),
+  //   }));
+  // }
   setColumnsFromScheduleDetails(sample: any) {
-    const defaultVisibleFields = ['sectionShortDescription',
-      'make',
-      'cubicCapacity',
-      'yearOfManufacture',
-      'carryCapacity',
-      'value',
-      'bodyType'
+    if (!sample) {
+      this.scheduleColumns = [];
+      return;
+    }
 
-
-
-
-
+    const excludedFields: string[] = [
 
     ];
 
-    const excludedFields = [
-
-    ];
-
-
+    // Step 1: Get all keys from the sample
     let keys = Object.keys(sample).filter(key => !excludedFields.includes(key));
 
-
+    // Step 2: Sort keys so important ones (like productName) appear first if needed
     keys = keys.sort((a, b) => {
       if (a === 'productName') return -1;
       if (b === 'productName') return 1;
       return 0;
     });
 
+    // Step 3: Choose which fields to show by default — for example:
+    // - show all non-null or non-empty fields from the sample
+    // - or show only the first few
+    const defaultVisibleFields = keys.filter(
+      key => sample[key] !== null && sample[key] !== '' && sample[key] !== undefined
+    ).slice(0, 7); // show first 7 non-empty fields
 
+    // Step 4: Map into column definitions
     this.scheduleColumns = keys.map(key => ({
       field: key,
       header: this.sentenceCase(key),
       visible: defaultVisibleFields.includes(key),
     }));
   }
+
   setColumnsFromPerilDetails(sample: any) {
     const defaultVisibleFields = ['sectionShortDescription',
       'description',
@@ -3021,6 +3122,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           );
 
           sessionStorage.setItem(`quotationAuthorized_${quotationCode}`, 'true');
+          if (res) {
+            this.viewQuoteFlag = true
+            sessionStorage.setItem(`viewQuoteFlag`, JSON.stringify(this.viewQuoteFlag));
+
+          }
 
 
           // Step 2: Update Status
@@ -3038,7 +3144,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
                 this.showAuthorizeButton = false;
                 this.showViewDocumentsButton = true;
-                this.showConfirmButton = true;
+                this.showVerifyButton = true;
+
+                sessionStorage.setItem('showAuthorizeButton', JSON.stringify(this.showAuthorizeButton))
+                sessionStorage.setItem('showViewDocumentsButton', JSON.stringify(this.showViewDocumentsButton))
+                sessionStorage.setItem('showVerifyButton', JSON.stringify(this.showVerifyButton))
+
               },
               error: (err: HttpErrorResponse) => {
                 log.error('Error updating quotation status', err);
@@ -3070,10 +3181,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             'This quotation is already authorized.'
           );
           this.quotationAuthorized = true;
-          sessionStorage.setItem(`quotationAuthorized_${quotationCode}`, 'true');
           this.showAuthorizeButton = false;
           this.showViewDocumentsButton = true;
-          this.showConfirmButton = true;
+          this.showVerifyButton = true;
+          sessionStorage.setItem('showAuthorizeButton', JSON.stringify(this.showAuthorizeButton))
+          sessionStorage.setItem('showViewDocumentsButton', JSON.stringify(this.showViewDocumentsButton))
+          sessionStorage.setItem('showVerifyButton', JSON.stringify(this.showVerifyButton))
+
         } else {
           this.globalMessagingService.displayErrorMessage(
             'Error',
@@ -3112,6 +3226,10 @@ generateOTP() {
         this.otpResponse = res._embedded;
         this.otpGenerated = true;
         this.cdr.detectChanges();
+        sessionStorage.setItem('otpGenerated', JSON.stringify(this.otpGenerated))
+
+        log.debug("otp generated:", this.otpGenerated)
+
       },
       error: (error) => {
         console.error("Error generating OTP:", error.error?.message || error);
@@ -3246,14 +3364,20 @@ onShareMethodChange(method: ShareMethod) {
                 { once: true } // remove listener automatically
               );
 
-              // modal.hide();
+              modal.hide();
             }
-            this.confirmQuote = true
             this.otpGenerated = false
-            this.changeToPolicyButtons = true
-            if (this.changeToPolicyButtons) {
+            sessionStorage.setItem('otpGenerated', JSON.stringify(this.otpGenerated))
+
+            this.showConfirmButton = true
+            if (this.showConfirmButton) {
               this.showViewDocumentsButton = false
-              this.showConfirmButton = false
+              this.showVerifyButton = false
+
+              sessionStorage.setItem('showConfirmButton', JSON.stringify(this.showConfirmButton))
+              sessionStorage.setItem('showViewDocumentsButton', JSON.stringify(this.showViewDocumentsButton))
+              sessionStorage.setItem('showVerifyButton', JSON.stringify(this.showVerifyButton))
+
             }
           }
         },
@@ -3829,10 +3953,10 @@ onShareMethodChange(method: ShareMethod) {
           if (this.riskCommissions.length) {
             this.setColumnsFromCommissions(this.riskCommissions[0]);
           }
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            res?.message || 'Commissions loaded successfully.'
-          );
+          // this.globalMessagingService.displaySuccessMessage(
+          //   'Success',
+          //   res?.message || 'Commissions loaded successfully.'
+          // );
         } else {
           this.globalMessagingService.displayErrorMessage(
             'Error',
@@ -3910,9 +4034,346 @@ onShareMethodChange(method: ShareMethod) {
     if (this.viewQuoteFlag) return true;
     if (this.ticketStatus === 'AUTHORIZED') return true;
 
-
-
     return false;
+  }
+  onDragStart(event: MouseEvent): void {
+    this.dragging = true;
+    this.dragOffset.x = event.clientX - parseInt(this.columnModalPosition.left, 10);
+    this.dragOffset.y = event.clientY - parseInt(this.columnModalPosition.top, 10);
+  }
+
+  onDragMove(event: MouseEvent): void {
+    if (this.dragging) {
+      this.columnModalPosition.top = `${event.clientY - this.dragOffset.y}px`;
+      this.columnModalPosition.left = `${event.clientX - this.dragOffset.x}px`;
+    }
+  }
+
+  onDragEnd(): void {
+    this.dragging = false;
+  }
+  toggleClientCard(iconElement: HTMLElement): void {
+    this.showRiskDoc = true;
+
+    const parentOffset = iconElement.offsetParent as HTMLElement;
+
+    const top = iconElement.offsetTop + 30;
+    const left = iconElement.offsetLeft - 260;
+
+    this.columnModalPosition = {
+      top: `${top}px`,
+      left: `${left}px`
+    };
+
+    this.showRiskDocColumnModal = true;
+  }
+
+  setRiskDocColumns(doc: any) {
+    const excludedFields = [
+    ];
+    const defaultVisibleClientDocFields = ['name', 'docType', 'dateCreated', 'modifiedBy', 'actions'];
+
+    const keys = Object.keys(doc).filter(key => !excludedFields.includes(key));
+
+    // Separate default fields and the rest
+    const defaultFields = defaultVisibleClientDocFields.filter(f => keys.includes(f));
+    const otherFields = keys.filter(k => !defaultVisibleClientDocFields.includes(k));
+
+    // Strictly order = defaults first, then others
+    const orderedKeys = [...defaultFields, ...otherFields];
+
+    this.riskDocColumns = orderedKeys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleClientDocFields.includes(key),
+      truncate: defaultVisibleClientDocFields.includes(key),
+      filterable: true,
+      sortable: true
+    }));
+
+    this.riskDocColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false });
+    log.debug("Client doc Columns", this.riskDocColumns)
+    // Restore from sessionStorage if exists
+    const saved = sessionStorage.getItem('clientDocColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.riskDocColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
+  }
+
+
+  sentenceCase(text: string): string {
+    return text
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (str) => str.toUpperCase());
+  }
+  fetchRiskDoc(riskId: any) {
+    log.debug("Selected Risk code:", riskId)
+    this.dmsService.fetchRiskDocs(riskId)
+      .subscribe({
+        next: (res: DmsDocument[]) => {
+          log.debug('Response after fetching clients DOCS:', res)
+          this.riskDocuments = res
+          if (this.riskDocuments && this.riskDocuments.length > 0) {
+            this.setRiskDocColumns(this.riskDocuments[0]);
+          }
+        },
+        error: (err: any) => {
+          const backendMsg = err.error?.message || err.message || 'An unexpected error occurred'; console.error("OTP Verification Error:", backendMsg);
+          this.globalMessagingService.displayErrorMessage("Error", backendMsg);
+        }
+      });
+  }
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    this.validateAndSetFile(file);
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = false;
+
+    if (event.dataTransfer?.files) {
+      const file = event.dataTransfer.files[0];
+      this.validateAndSetFile(file);
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = false;
+  }
+
+  validateAndSetFile(file: File): void {
+    // Reset messages
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    // Check if file exists
+    if (!file) {
+      return;
+    }
+
+    // Check file size (10MB = 10 * 1024 * 1024 bytes)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      this.errorMessage = 'File size exceeds the maximum limit of 10MB';
+      return;
+    }
+
+    // Check file type (optional - you can customize accepted types)
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+      'image/jpeg',
+      'image/png'
+    ];
+
+
+    if (!allowedTypes.includes(file.type)) {
+      this.errorMessage =
+        'Please upload a valid document type (PDF, DOC, DOCX, TXT, PNG, JPG, JPEG)';
+      return;
+    }
+
+    this.selectedFile = file;
+  }
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+  getFileIcon(fileName: string): string {
+    const ext = fileName.split('.').pop()?.toLowerCase();
+
+    switch (ext) {
+      case 'pdf':
+        return 'pi pi-file-pdf';
+      case 'doc':
+      case 'docx':
+        return 'pi pi-file-word';
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return 'pi pi-image';
+      case 'txt':
+      case 'log':
+        return 'pi pi-file';
+      default:
+        return 'pi pi-file'; // fallback
+    }
+  }
+  removeFile(): void {
+    this.selectedFile = null;
+    this.errorMessage = '';
+
+    ;
+  }
+  addRiskDocuments(selectedFile: any) {
+    log.debug("Selected risk", this.selectedRisk)
+    const selectedRiskCode = this.selectedRisk.code
+    const file = selectedFile
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      // Convert to base64 string (remove prefix like "data:application/pdf;base64,")
+      const base64String = (reader.result as string).split(',')[1];
+      const clientName = (this.clientDetails?.firstName ?? '') + ' ' + (this.clientDetails?.lastName ?? '')
+      let riskDocPayload: RiskDmsDocument = {
+
+        docType: file.type,
+        docData: base64String,
+        originalFileName: file.name,
+        riskID: selectedRiskCode.toLocaleString(),
+
+      }
+
+      this.dmsService.uploadRiskDocs(riskDocPayload).subscribe({
+        next: (res: any) => {
+          log.info(`document uploaded successfully!`, res);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
+          this.fetchRiskDoc(this.selectedRisk?.code)
+          const modal = bootstrap.Modal.getInstance(this.addRiskDocModalRef.nativeElement);
+          modal.hide();
+        },
+        error: (err) => {
+          log.info(`upload failed!`, err)
+        }
+      });
+    }
+    reader.readAsDataURL(file);
+  }
+  saveRiskDoc() {
+    this.selectedFile && this.addRiskDocuments(this.selectedFile);
+
+  }
+
+  onPreviewRiskDoc(event: any) {
+    this.selectedRiskDoc = event;
+    log.info("Selected client doc", this.selectedRiskDoc)
+    this.fetchDocById(this.selectedRiskDoc)
+  }
+  fetchDocById(selectedRiskDoc: DmsDocument) {
+    const docId = selectedRiskDoc.id
+
+    this.dmsService.getDocumentById(docId).subscribe({
+      next: (res: any) => {
+        log.info(`Selected Document details`, res);
+        // Construct the preview-friendly object
+        this.previewRiskDoc = {
+          name: res.docName,
+          mimeType: res.docMimetype,
+          dataUrl: `data:${res.docMimetype};base64,${res.byteData}`
+        };
+
+        const modal = new bootstrap.Modal(document.getElementById('previewDocModal'));
+        modal.show();
+      },
+      error: (err) => {
+        log.info(`upload failed!`, err)
+      }
+    });
+  }
+  private documentBlobs: { [id: string]: Blob } = {};
+
+  onDownloadRiskDoc(event: any) {
+    this.selectedRiskDoc = event;
+    log.info("Selected client doc", this.selectedRiskDoc);
+
+    const docId = this.selectedRiskDoc.id;
+
+    // If we already have it cached, download directly
+    if (this.documentBlobs[docId]) {
+      this.downloadRiskDocument(docId, this.selectedRiskDoc.actualName);
+      return;
+    }
+
+    // Otherwise, fetch from backend
+    this.dmsService.getDocumentById(docId).subscribe({
+      next: (res: any) => {
+        log.info(`Selected Document details`, res);
+
+        if (!res || res.empty || !res.byteData) {
+          log.warn("Document data is empty or invalid");
+          return;
+        }
+
+        const byteCharacters = atob(res.byteData);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+
+        const blob = new Blob([byteArray], { type: res.docMimetype });
+        this.documentBlobs[docId] = blob; // cache it
+
+        this.downloadRiskDocument(docId, res.docName);
+      },
+      error: (err) => {
+        log.error(`Download failed!`, err);
+      },
+    });
+  }
+
+  downloadRiskDocument(docId: string, fileName?: string) {
+    const blob = this.documentBlobs[docId];
+    if (!blob) {
+      log.warn("No cached blob found for document:", docId);
+      return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName || 'document';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    log.info("Document downloaded:", fileName);
+  }
+
+  onDeleteRiskDoc(event: any) {
+    this.selectedRiskDoc = event;
+    log.info("Selected risk doc", this.selectedRiskDoc);
+
+
+  }
+  deleteRiskDoc() {
+    const docId = this.selectedRiskDoc.id;
+
+    this.dmsService.deleteDocumentById(docId).subscribe({
+      next: (res: any) => {
+        log.info(`Response after deleting  Document details`, res);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Document deleted successfully');
+        // Remove the deleted doc from the clientDocuments array
+        const index = this.riskDocuments.findIndex(doc => doc.id === this.selectedRiskDoc.id);
+        if (index !== -1) {
+          this.riskDocuments.splice(index, 1);
+        }
+        this.selectedRiskDoc = null
+
+      },
+      error: (err) => {
+        log.error(`Download failed!`, err);
+      },
+    });
   }
 
 }

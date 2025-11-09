@@ -323,12 +323,12 @@ export class QuotationsService {
     return this.api.DELETE<scheduleDetails>(`v2/schedule-details?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
-  makeReady(quotationCode, user) {
-    return this.api.POST(`v1/quotation/make-ready/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+  makeReady(quotationCode) {
+    return this.api.POST(`v2/quotation/make-ready?${quotationCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
   confirmQuotation(quotationCode, user) {
-    return this.api.POST(`v1/quotation/confirm/${quotationCode}?user=${user}`, API_CONFIG.GIS_QUOTATION_BASE_URL)
+    return this.api.POST(`v2/quotation/confirm?quotationCode=${quotationCode}&user=${user}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
 
   authoriseQuotation(quotationCode, user) {
@@ -627,7 +627,7 @@ export class QuotationsService {
       .set('quotationCode', quotationCode.toString())
 
     return this.api.POST(
-      `v2/quotation-exceptions/make-ready?${params.toString()}`, null,
+      `v2/quotation/make-ready?${params.toString()}`, null,
       API_CONFIG.GIS_QUOTATIONS_BASE_URL
     );
   }
@@ -1008,9 +1008,9 @@ export class QuotationsService {
   }
 
   //perils
-  getSubclassSectionPeril(subclassCode: number, pageNumber: number = 0, pageSize: number = 20): Observable<any> {
+  getSubclassSectionPeril(subclassCode: number, pageNo: number = 1, pageSize: number = 20): Observable<any> {
 
-    return this.api.GET<any[]>(`/v2/subclass-section-perils?subclassCode=${subclassCode}&pageNumber=${pageNumber}&pageSize=${pageSize}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+    return this.api.GET<any[]>(`api/v1/subclass-section-perils/${subclassCode}?pageNo=${pageNo}&pageSize=${pageSize}`, API_CONFIG.GIS_SETUPS_BASE_URL);
 
   }
 
@@ -1021,8 +1021,8 @@ export class QuotationsService {
     );
   }
 
-  getQuotationPerils(riskCode: string | number): Observable<any> {
-    return this.api.GET<any>(`v2/quotation-excesses?riskCode=${riskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
+  getQuotationPerils(subclassCode: number, riskCode: string | number): Observable<any> {
+    return this.api.GET<any>(`v2/quotation-risk-excesses/subclass-section-perils?subclassCode=${subclassCode}&riskCode=${riskCode}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
 
 
@@ -1033,12 +1033,6 @@ export class QuotationsService {
   deleteSubclassSectionPeril(id: string | number): Observable<any> {
     return this.api.DELETE<any>(`v2/quotation-risk-excesses/${id}`, API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
-
-
-
-  // reviseQuotation(quotCode: number, newQuote: string = "N"): Observable<any> {
-  //   return this.api.POST<any[]>(`v2/revise?quotCode=${quotCode}&newQuote=${newQuote}`, null, API_CONFIG.GIS_QUOTATION_BASE_URL,);
-  // }
 
   updateQuotationComment(payload: QuotationComment): Observable<any> {
     return this.api.PUT<any>(`v2/quotation/comment`, JSON.stringify(payload), API_CONFIG.GIS_QUOTATION_BASE_URL);
@@ -1082,7 +1076,7 @@ export class QuotationsService {
 
   //revisions
   getQuotationRevision(quotationCode: number): Observable<any> {
-    const url = `/v1/quotation/revisions?parentQuotationCode=${quotationCode}`;
+    const url = `v2/quotation/revisions?parentQuotationCode=${quotationCode}`;
     return this.api.GET<any[]>(url, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
@@ -1311,7 +1305,7 @@ export class QuotationsService {
       pageNo: 0,
       pageSize: 10,
       sortField: 'createdDate',
-      sortOrder: 'desc'
+      sortOrder: 'asc'
     };
 
     return this.api.GET<any>(
@@ -1329,13 +1323,34 @@ export class QuotationsService {
 
   }
 
-  reassignTicket(taskId: string, newAssignee: string) {
+  reassignTicket(taskId: string, newAssignee: string, comment?: string) {
+    const payload = {
+      taskId,
+      newAssignee,
+      comment
+    };
+
     return this.api.PUT<any>(
-      `v1/tickets/reassign?taskId=${taskId}&newAssignee=${newAssignee}`,
-      null,
+      `v1/tickets/reassign`,
+      payload,
       API_CONFIG.GIS_TICKETING_SERVICE
     );
   }
+
+  reassignMultipleTickets(taskIds: string[], newAssignee: string, comment?: string) {
+    const payload = {
+      taskIds,
+      newAssignee,
+      comment
+    };
+
+    return this.api.PUT<any>(
+      `v1/tickets/assign-multiple`,
+      payload,
+      API_CONFIG.GIS_TICKETING_SERVICE
+    );
+  }
+
 
   getTaskById(quotationCode: string) {
     return this.api.GET<any>(
@@ -1344,6 +1359,20 @@ export class QuotationsService {
     ).pipe(
       retry(1),
       catchError(this.errorHandl)
+    );
+  }
+  changeTicketStatus(ticketPayload: any) {
+    return this.api.POST<any>(
+      `/v1/process-flow/move-to-task`,
+      JSON.stringify(ticketPayload),
+      API_CONFIG.GIS_TICKETING_SERVICE
+    );
+  }
+  undoMakeReady(quotationCode: number) {
+    return this.api.POST<any>(
+      `v2/quotation/undo-make-ready?quotationCode=${quotationCode}`,
+      null,
+      API_CONFIG.GIS_QUOTATIONS_BASE_URL
     );
   }
 

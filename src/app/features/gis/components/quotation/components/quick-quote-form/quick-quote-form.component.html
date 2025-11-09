@@ -2,13 +2,17 @@
   <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
   </app-dynamic-breadcrumb>
 </div>
-<app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
-
+<app-stepper [currentStep]="1" [stepperData]="steps" [disableNavigation]="true"></app-stepper>
+<p *ngIf="ticketStatus" class="  text-primary ps-5" style="font-weight: 500;">Ticket status:<span
+    style="color: black;">{{ticketStatus
+    |sentenceCase}}
+  </span>
+</p>
 <div class="card mx-4 mb-2" style=" position: relative; border: none; border-radius: 5px;">
   <div class="card-body  my-4 ms-4 ">
     <p class="subtitle ">Let’s start your quote</p>
     <p class="tagline ">Select a product to start your quote</p>
-   
+
     <form [formGroup]="quickQuoteForm">
 
       <input #searchBox type="text" class="form-control search-input mx-auto mb-4" placeholder="Search for a product..."
@@ -19,7 +23,7 @@
           <div class="product-scroll-container">
             <div class="row mb-4 justify-content-start">
               <div class="col-md-2 col-6 mb-3" *ngFor="let product of filteredProducts">
-               
+
                 <div class="card products-card position-relative mx-4"
                   style="width: 143px; height: 193px; cursor: pointer;" (click)="toggleProductSelection(product)"
                   [class.selected-card]="isProductSelected(product)">
@@ -66,7 +70,7 @@
 
                   <ng-container [ngSwitch]="field.type">
                     <ng-container *ngSwitchCase="'select'">
-                  
+
                     </ng-container>
                     <ng-container *ngSwitchCase="'date'">
                       <ng-container *ngIf="field.name === 'effectiveDate'">
@@ -126,7 +130,8 @@
 
                 <i class="fa-solid fa-trash-can"
                   style="font-size:17px; color:#EE3945; cursor: pointer; margin-right: 8px;" title="Delete product"
-                  data-bs-toggle="modal" data-bs-target="#deleteProduct" (click)="$event.stopPropagation()">
+                  data-bs-toggle="modal" data-bs-target="#deleteProduct"
+                  (click)="prepareProductForDeletion(productGroup, i); $event.stopPropagation()">
                 </i>
               </div>
             </div>
@@ -170,7 +175,7 @@
                         }}
                       </button>
                       <button type="button" class="btn btn-primary px-5" data-bs-dismiss="modal"
-                        (click)="deleteProduct(productGroup, i)">
+                        (click)="deleteProduct()">
                         {{ 'gis.quotation.delete'| translate }}
                       </button>
                     </div>
@@ -351,7 +356,7 @@
     <!-- Card Body -->
     <div *ngIf="expandedComparisonStates[i]" class="card-body collapsible-body">
       <div *ngFor="let risk of product.riskLevelPremiums; let j = index">
-       
+
         <p class="mb-3 mx-4 m-0 d-flex align-items-center" (click)="toggleCoverType(i, j)" style="cursor: pointer;">
           <i class="fa me-2" [ngClass]="expandedCoverTypeIndexes[i] === j ? 'fa-chevron-up' : 'fa-chevron-down'">
           </i>

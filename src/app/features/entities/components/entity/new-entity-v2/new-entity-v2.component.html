@@ -18,14 +18,9 @@
                         {{ field.label?.[language] | titlecase }}
                         <span *ngIf="field.mandatory" class="text-danger">*</span>
                       </label>
-                      <select
-                        [formControlName]="field.fieldId"
-                        [id]="field.fieldId"
-                        class="form-select"
-                        aria-label="Default select example"
-                        (change)="processSelectOption($event, field.fieldId)"
-                        (click)="fetchSelectOptions('', field.fieldId)"
-                      >
+                      <select [formControlName]="field.fieldId" [id]="field.fieldId" class="form-select"
+                        aria-label="Default select example" (change)="processSelectOption($event, field.fieldId)"
+                        (click)="fetchSelectOptions('', field.fieldId)">
                         <option value="">- Select {{ field.label?.[language] | titlecase }} -</option>
                         <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [value]="option">
                           {{ option | titlecase }}
@@ -66,19 +61,14 @@
                     </div>
                     <div class="col-sm-12 text-primary">
 
-                      <img
-                        *ngIf="photoPreviewUrl !== '' && photoPreviewUrl"
-                        [src]="photoPreviewUrl"
-                        class="img-thumbnail"
-                        alt="image preview"
-                        id="profile-photo"
-                        style="width: 100px; height: 100px; border-radius: 100%; margin-right: 10px"
-                      >
+                      <img *ngIf="photoPreviewUrl !== '' && photoPreviewUrl" [src]="photoPreviewUrl"
+                        class="img-thumbnail" alt="image preview" id="profile-photo"
+                        style="width: 100px; height: 100px; border-radius: 100%; margin-right: 10px">
 
                       <label class="btn btn-outline-primary btn-sm d-inline-flex align-items-center">
                         <i class="fa-solid fa-cloud-arrow-up"></i>
                         <span *ngIf="!photoPreviewUrl">{{ ('entities.uploadImage' | translate) | titlecase }}</span>
-                        <span *ngIf="photoPreviewUrl">{{ ('entities.edit' | translate)  | titlecase }}</span>
+                        <span *ngIf="photoPreviewUrl">{{ ('entities.edit' | translate) | titlecase }}</span>
                         <input type="file" hidden (change)="onFileSelected($event, photo, 'profile')">
                       </label>
                       <span class="border-end border-primary border-3"></span> &nbsp;
@@ -96,7 +86,8 @@
 
           <!--client documents-->
           <div class="row" *ngIf="uploadGroupSections?.docs?.length > 0">
-            <h6 class="mb-4 ms-md-5 mt-3 text-primary">{{ uploadGroupSections?.docField[0]?.label[language] | titlecase }}</h6>
+            <h6 class="mb-4 ms-md-5 mt-3 text-primary">{{ uploadGroupSections?.docField[0]?.label[language] | titlecase
+              }}</h6>
 
             <ng-container *ngFor="let doc of uploadGroupSections?.docs">
               <div class="col-sm-6">
@@ -105,17 +96,15 @@
                     <p class="text-muted">{{ doc.requiredDocumentName | titlecase }}</p>
                   </div>
                   <div class="col-sm-8 mb-4 col-6">
-                    <label
-                      class="btn btn-primary btn-sm d-inline-flex align-items-center"
-                      [ngClass]="{ 'disabled': !!doc.file }"
-                      [style.pointerEvents]="!!doc.file ? 'none' : 'auto'"
-                    >
+                    <label class="btn btn-primary btn-sm d-inline-flex align-items-center"
+                      [ngClass]="{ 'disabled': !!doc.file }" [style.pointerEvents]="!!doc.file ? 'none' : 'auto'">
                       Choose file
                       <input type="file" hidden (change)="onFileSelected($event, doc, 'doc')" [disabled]="!!doc.file">
                     </label>
                     <span *ngIf="doc.file?.name">
                       {{ doc.file?.name }}
-                      <button id="deleteDocBtn" type="button" class="btn text-danger fs-4 border-0 bg-transparent" (click)="deleteDocument(doc)">&times;</button>
+                      <button id="deleteDocBtn" type="button" class="btn text-danger fs-4 border-0 bg-transparent"
+                        (click)="deleteDocument(doc)">&times;</button>
                     </span>
                   </div>
                 </div>
@@ -139,7 +128,6 @@
       </div>
     </div>
   </div>
-
 
   <!--<form [formGroup]="entityForm">
 
@@ -518,7 +506,7 @@
   </form>-->
 
   <form [formGroup]="entityForm">
-    <ng-container *ngIf="isPatchingFormValues" >
+    <ng-container *ngIf="isPatchingFormValues">
       <div class="lead text-center alert alert-primary">
         {{'entities.populatedByDocument' | translate}}
         <div class="spinner-grow text-primary" role="status">
@@ -536,9 +524,9 @@
               </h5>
             </div>
             <div class="col-sm-2 text-end">
-          <span class="p-2 me-5 caret" (click)="toggleCollapse(group.groupId)">
-            <i class="fa fa-caret-down text-primary"></i>
-          </span>
+              <span class="p-2 me-5 caret" (click)="toggleCollapse(group.groupId)">
+                <i class="fa fa-caret-down text-primary"></i>
+              </span>
             </div>
           </div>
 
@@ -548,14 +536,16 @@
             <ng-container *ngIf="group.subGroup?.length > 0; else noSubGroup">
               <ng-container *ngFor="let subGroup of group.subGroup">
                 <!-- Subgroup header (if any) -->
-                <ng-container *ngIf="subGroup.label && (subGroup.presentationType || group.presentationType) === PresentationType.fields && group.presentationType !== privacyPolicyPresentationType">
+                <ng-container
+                  *ngIf="subGroup.label && (subGroup.presentationType || group.presentationType) === PresentationType.fields && group.presentationType !== privacyPolicyPresentationType">
                   <h5 class="text-dark mb-3 pe-md-5 me-md-4 ms-md-5">
                     {{ subGroup.label?.[language] | titlecase }}
                   </h5>
                 </ng-container>
 
                 <!-- Inline fields for subGroup (presentationType precedence: subGroup -> group) -->
-                <div *ngIf="(subGroup.presentationType || group.presentationType) === PresentationType.fields && group.presentationType !== privacyPolicyPresentationType">
+                <div
+                  *ngIf="(subGroup.presentationType || group.presentationType) === PresentationType.fields && group.presentationType !== privacyPolicyPresentationType">
                   <div class="row">
                     <ng-container *ngFor="let field of (subGroup.fields || [])">
                       <div class="col-sm-12 col-md-6 col-lg-4 mb-3" *ngIf="field.isVisible !== false">
@@ -570,23 +560,18 @@
                 </div>
 
                 <!-- Table columns for this subgroup -->
-                <div *ngIf="(subGroup.presentationType || group.presentationType) === PresentationType.fields_and_table_columns">
-                  <app-dynamic-setup-table
-                    [tableTitle]="group?.subGroup?.length == 1 ? '' : subGroup.label?.[language]"
-                    [addButtonText]="subGroup.addButtonTextLabel?.[language]"
-                    [formFields]="subGroup.fields"
-                    [subGroupId]="subGroup.subGroupId"
-                    (saveDetailsData)="fetchSavedDetails($event)"
+                <div
+                  *ngIf="(subGroup.presentationType || group.presentationType) === PresentationType.fields_and_table_columns">
+                  <app-dynamic-setup-table [tableTitle]="group?.subGroup?.length == 1 ? '' : subGroup.label?.[language]"
+                    [addButtonText]="subGroup.addButtonTextLabel?.[language]" [formFields]="subGroup.fields"
+                    [subGroupId]="subGroup.subGroupId" (saveDetailsData)="fetchSavedDetails($event)"
                     [selectedAddressCountry]="selectedAddressCountry"
-                    [isPreviewMode]="isPreviewMode"
-                  ></app-dynamic-setup-table>
+                    [isPreviewMode]="isPreviewMode"></app-dynamic-setup-table>
                 </div>
 
                 <div *ngIf="group.presentationType === privacyPolicyPresentationType">
-                  <app-privacy-policy
-                    [otpFormFields]="subGroup.fields"
-                    [verifyButtonText]="subGroup?.addButtonTextLabel?.[language]"
-                  ></app-privacy-policy>
+                  <app-privacy-policy [otpFormFields]="subGroup.fields"
+                    [verifyButtonText]="subGroup?.addButtonTextLabel?.[language]"></app-privacy-policy>
                 </div>
 
               </ng-container>
@@ -609,16 +594,11 @@
               </div>
 
               <div *ngIf="(group.presentationType || 'fields') === PresentationType.fields_and_table_columns">
-                <app-dynamic-setup-table
-                  [tableTitle]="group.label?.[language]"
-                  [addButtonText]="group.addButtonTextLabel?.[language]"
-                  [formFields]="group.fields"
-                  [subGroupId]="group.groupId"
-                  (saveDetailsData)="fetchSavedDetails($event)"
-                  [selectedAddressCountry]="selectedAddressCountry"
-                  [isPreviewMode]="isPreviewMode"
-                  [emptyTableMessage]="'No record found!'"
-                ></app-dynamic-setup-table>
+                <app-dynamic-setup-table [tableTitle]="group.label?.[language]"
+                  [addButtonText]="group.addButtonTextLabel?.[language]" [formFields]="group.fields"
+                  [subGroupId]="group.groupId" (saveDetailsData)="fetchSavedDetails($event)"
+                  [selectedAddressCountry]="selectedAddressCountry" [isPreviewMode]="isPreviewMode"
+                  [emptyTableMessage]="'No record found!'"></app-dynamic-setup-table>
               </div>
             </ng-template>
 
@@ -648,7 +628,7 @@
 
 </div>
 <ng-template #renderFields let-field="field" let-groupId="groupId" let-groupForm="groupForm">
-  <div  [formGroup]="groupForm" *ngIf="groupForm">
+  <div [formGroup]="groupForm" *ngIf="groupForm">
     <ng-container *ngIf="field.type === FieldType.text || field.type === FieldType.email">
       <label class="form-label" [for]="field.fieldId">
         {{ getDynamicLabel(field, language) | titlecase }}
@@ -656,15 +636,9 @@
       </label>
 
       <!-- special handling for idNumber-like fields preserved if present -->
-      <input
-        [type]="field.type"
-        [formControlName]="field.fieldId"
-        [placeholder]="field.placeholder?.[language] || ''"
-        [id]="field.fieldId"
-        class="form-control"
-        [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"
-
-      />
+      <input [type]="field.type" [formControlName]="field.fieldId" [placeholder]="field.placeholder?.[language] || ''"
+        [id]="field.fieldId" class="form-control"
+        [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched" />
     </ng-container>
 
     <!--TEL-->
@@ -673,21 +647,12 @@
         {{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
       </label>
-      <ngx-intl-tel-input
-        [cssClass]="'form-control form-control-md mb-1'"
-        [id]="field.fieldId"
-        [preferredCountries]=""
-        [enableAutoCountrySelect]="true"
-        [enablePlaceholder]="true"
-        [customPlaceholder]="field.placeholder[language] || ''"
-        [searchCountryFlag]="true"
-        [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]"
-        [selectFirstCountry]="false"
-        [selectedCountryISO]="countryISO"
-        [phoneValidation]="true"
-        [separateDialCode]="true"
-        [numberFormat]="PhoneNumberFormat.National"
-        [formControlName]="field.fieldId"
+      <ngx-intl-tel-input [cssClass]="'form-control form-control-md mb-1'" [id]="field.fieldId" [preferredCountries]=""
+        [enableAutoCountrySelect]="true" [enablePlaceholder]="true"
+        [customPlaceholder]="field.placeholder[language] || ''" [searchCountryFlag]="true"
+        [searchCountryField]="[SearchCountryField.Iso2, SearchCountryField.Name]" [selectFirstCountry]="false"
+        [selectedCountryISO]="countryISO" [phoneValidation]="true" [separateDialCode]="true"
+        [numberFormat]="PhoneNumberFormat.National" [formControlName]="field.fieldId"
         [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"
         [style]="{ width: '100%' }">
       </ngx-intl-tel-input>
@@ -699,9 +664,7 @@
         {{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
       </label>
-      <textarea
-        [formControlName]="field.fieldId"
-        class="form-control"
+      <textarea [formControlName]="field.fieldId" class="form-control"
         [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"
         [placeholder]="field.placeholder?.[language] || ''">
       </textarea>
@@ -713,12 +676,8 @@
         {{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
       </label>
-      <input
-        type="date"
-        [formControlName]="field.fieldId"
-        class="form-control"
-        [max]="getMaxDateValidation(field)"
-        [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"/>
+      <input type="date" [formControlName]="field.fieldId" class="form-control" [max]="getMaxDateValidation(field)"
+        [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched" />
     </ng-container>
 
     <!-- NUMBER -->
@@ -727,11 +686,8 @@
         {{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
       </label>
-      <input
-        type="number"
-        [formControlName]="field.fieldId"
-        class="form-control"
-        [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"/>
+      <input type="number" [formControlName]="field.fieldId" class="form-control"
+        [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched" />
     </ng-container>
 
     <!-- SELECT -->
@@ -740,13 +696,10 @@
         {{ field.label?.[language] | titlecase }}
         <span *ngIf="field.mandatory" class="text-danger">*</span>
       </label>
-      <select
-        class="form-select"
+      <select class="form-select"
         [class.is-invalid]="groupForm.get(field.fieldId)?.invalid && groupForm.get(field.fieldId)?.touched"
-        [formControlName]="field.fieldId"
-        (change)="processSelectOption($event, field.fieldId)"
-        (click)="fetchSelectOptions(groupId, field.fieldId)"
-      >
+        [formControlName]="field.fieldId" (change)="processSelectOption($event, field.fieldId)"
+        (click)="fetchSelectOptions(groupId, field.fieldId)">
         <option [ngValue]="null">{{ field.placeholder[language] || '' }}</option>
         <option *ngFor="let option of (!isPreviewMode ? field.options : [])" [ngValue]="option">
           {{ option.label ? option.label : option | titlecase }}
@@ -762,11 +715,7 @@
       </label>
       <div class="form-check" [id]="field.fieldId">
         <div *ngFor="let option of (!isPreviewMode ? field.options : [])">
-          <input
-            class="form-check-input"
-            type="radio"
-            [value]="option"
-            [formControlName]="field.fieldId">
+          <input class="form-check-input" type="radio" [value]="option" [formControlName]="field.fieldId">
           <label class="form-check-label">
             {{ option }}
           </label>
@@ -781,11 +730,7 @@
       </label>
       <div class="form-check">
         <div *ngFor="let option of (!isPreviewMode ? field.options : [])">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            [formControlName]="field.fieldId"
-            id="{{field.fieldId}}">
+          <input class="form-check-input" type="checkbox" [formControlName]="field.fieldId" id="{{field.fieldId}}">
           <label class="form-check-label">{{ option }}</label>
         </div>
       </div>
@@ -796,23 +741,11 @@
         <span *ngIf="field.mandatory" class="text-danger">*</span>
       </label>
       <div class="input-group mb-3">
-        <input
-          type="text"
-          class="form-control"
-          [formControlName]="field.fieldId"
-          id="{{ field.fieldId }}"
-          value="{{ selectedTableRecord?.accountName }}"
-          [placeholder]="field.placeholder?.[language] || ''"
-          readonly
-        />
-        <button
-          class="btn btn-outline-primary"
-          type="button"
-          id="button-addon"
-          style="border-color: #dee2e6; border-left: none;"
-          (click)="openTableSelectModal(field.label?.[language])"
-          [disabled]="isPreviewMode || field.disabled"
-        >
+        <input type="text" class="form-control" [formControlName]="field.fieldId" id="{{ field.fieldId }}"
+          value="{{ selectedTableRecord?.accountName }}" [placeholder]="field.placeholder?.[language] || ''" readonly />
+        <button class="btn btn-outline-primary" type="button" id="button-addon"
+          style="border-color: #dee2e6; border-left: none;" (click)="openTableSelectModal(field.label?.[language])"
+          [disabled]="isPreviewMode || field.disabled">
           <i class="fa-solid fa-angle-double-down"></i>
         </button>
       </div>
@@ -829,48 +762,24 @@
 </ng-template>
 
 <!--Multi select modal-->
-<div
-  class="modal fade"
-  #tableSelectModal
-  id="tableSelectModal"
-  tabindex="-1"
-  aria-labelledby="exampleModalLabel"
->
+<div class="modal fade" #tableSelectModal id="tableSelectModal" tabindex="-1" aria-labelledby="exampleModalLabel">
   <div class="modal-dialog modal-lg modal-dialog-centered align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
         <h5 class="modal-title text-primary" id="exampleModalLabel"> {{ tableSelectFieldId | titlecase }} </h5>
-        <button
-          type="button"
-          class="btn-close"
-          (click)="closeTableSelectModal()"
-        ></button>
+        <button type="button" class="btn-close" (click)="closeTableSelectModal()"></button>
       </div>
       <div class="modal-body">
-        <p-table
-          #dt2
-          [paginator]="true"
-          [rows]="pageSize || 10"
-          [totalRecords]="filteredGlAccounts.length"
-          [value]="filteredGlAccounts"
-          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-          responsiveLayout="stack"
-          scrollHeight="400px"
-          [scrollable]="true"
-          [resizableColumns]="true"
-          selectionMode="single"
-          [(selection)]="selectedTableRecord"
-          [globalFilterFields]="['label']"
-          (onRowSelect)="onTableDetailsSelect($event)"
-          (onLazyLoad)="lazyLoadGlAccount($event)"
-          [lazy]="true"
-        >
+        <p-table #dt2 [paginator]="true" [rows]="pageSize || 10" [totalRecords]="filteredGlAccounts.length"
+          [value]="filteredGlAccounts" [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]" responsiveLayout="stack"
+          scrollHeight="400px" [scrollable]="true" [resizableColumns]="true" selectionMode="single"
+          [(selection)]="selectedTableRecord" [globalFilterFields]="['label']"
+          (onRowSelect)="onTableDetailsSelect($event)" (onLazyLoad)="lazyLoadGlAccount($event)" [lazy]="true">
 
           <ng-template pTemplate="header">
             <tr>
               <ng-container *ngFor="let col of columns">
-                <th *ngIf="col.visible"
-                    [pSortableColumn]="col.field">
+                <th *ngIf="col.visible" [pSortableColumn]="col.field">
                   {{ col.header | titlecase }}
                   <p-sortIcon [field]="col.field"></p-sortIcon>
                 </th>
@@ -878,20 +787,12 @@
             </tr>
             <tr>
               <th>
-                <input
-                  type="text"
-                  class="form-control w-75"
-                  (keyup.enter)="filter()"
-                  (input)="inputAccountNumber($event)"
-                />
+                <input type="text" class="form-control w-75" (keyup.enter)="filter()"
+                  (input)="inputAccountNumber($event)" />
               </th>
               <th>
-                <input
-                  type="text"
-                  class="form-control w-75"
-                  (keyup.enter)="filter()"
-                  (input)="inputAccountName($event)"
-                />
+                <input type="text" class="form-control w-75" (keyup.enter)="filter()"
+                  (input)="inputAccountName($event)" />
               </th>
             </tr>
           </ng-template>
@@ -912,6 +813,18 @@
           </ng-template>
         </p-table>
       </div>
+      <!-- <div class="d-flex flex-row-reverse gap-3 align-items-center rounded-3 my-3 p-0">
+              <button type="button" data-bs-dismiss="modal" class="btn btn-outline-primary" style="text-decoration: none;">{{
+                'gis.quotation.cancel' | translate
+                }}
+              </button>
+              <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+                (click)="rejectQuotation(quotationDetails.code)">{{
+                'gis.quotation.save_changes' |
+                translate
+                }}
+              </button>
+            </div> -->
     </div>
   </div>
 </div>

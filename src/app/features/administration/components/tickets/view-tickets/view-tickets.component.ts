@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
 import { NewTicketDto, TicketModuleDTO, TicketsDTO, TicketTypesDTO } from "../../../data/ticketsDTO";
 import { AuthService } from "../../../../../shared/services/auth.service";
 import { catchError } from "rxjs/internal/operators/catchError";
@@ -23,6 +23,10 @@ import { PoliciesService } from "../../../../gis/services/policies/policies.serv
 import { AuthorizePolicyModalComponent } from "../authorize-policy-modal/authorize-policy-modal.component";
 import { PolicyDetailsDTO } from "../../../data/policy-details-dto";
 import { QuotationsService } from 'src/app/features/gis/components/quotation/services/quotations/quotations.service';
+import * as bootstrap from 'bootstrap';
+import { GroupedUser } from 'src/app/features/gis/components/quotation/data/quotationsDTO';
+import { ClaimsService } from 'src/app/features/gis/components/claim/services/claims.service';
+
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -32,6 +36,11 @@ const log = new Logger('ViewTicketsComponent');
 })
 export class ViewTicketsComponent implements OnInit {
   @ViewChild('dt') dt: Table | undefined;
+  @ViewChild('reassignTable') reassignTable!: any;
+  @ViewChild(AuthorizePolicyModalComponent) authorizePolicyComponent: AuthorizePolicyModalComponent;
+  @ViewChild('reassignTicketModal') reassignTicketModalElement!: ElementRef;
+  @ViewChild('chooseClientReassignModal') chooseClientReassignModal!: ElementRef;
+
   public filteredTickets: NewTicketDto[] = [];
   private allTickets: NewTicketDto[] = [];
   selectedTickets: NewTicketDto[] = [];
@@ -40,6 +49,7 @@ export class ViewTicketsComponent implements OnInit {
   selectedSpringTickets: TicketsDTO[] = [];
   public filteredSpringTickets: TicketsDTO[] = [];
   private allSpringTickets: TicketsDTO[] = [];
+  private modals: { [key: string]: bootstrap.Modal } = {};
 
   pageSize: 10;
   ticketModules: TicketModuleDTO[] = [];
@@ -73,6 +83,20 @@ export class ViewTicketsComponent implements OnInit {
   filterPayload: any[] = [];
   policyDetails: PolicyDetailsDTO;
 
+  departmentSelected: boolean = false;
+  userToReassignTicket: any;
+  reassignComment: string = '';
+  globalSearch: string = '';
+  selectedUser: any;
+  users: any;
+  fullNameSearch: string = '';
+  noUserChosen: boolean = false;
+  groupUsers: GroupedUser[] = [];
+  selectedGroupUserId!: number;
+  groupLeaderName: string = '';
+  reassignTicketComment: string;
+  noCommentleft: boolean = false;
+
   globalFilterFields = [
     'createdOn',
     'ticketName',
@@ -89,7 +113,7 @@ export class ViewTicketsComponent implements OnInit {
   });
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   private filterKey: string = '';
-  @ViewChild(AuthorizePolicyModalComponent) authorizePolicyComponent: AuthorizePolicyModalComponent;
+
 
   constructor(
     private authService: AuthService,
@@ -104,6 +128,7 @@ export class ViewTicketsComponent implements OnInit {
     private fb: FormBuilder,
     private policiesService: PoliciesService,
     private quotationService: QuotationsService,
+    public claimsService: ClaimsService,
   ) {
 
   }
@@ -133,16 +158,25 @@ export class ViewTicketsComponent implements OnInit {
         });
     }
     const queryParams = this.router.parseUrl(this.router.url).queryParams;
-    /*if (Object.keys(queryParams).length > 0) {
-      // Remove query parameters
-      const navigationExtras: NavigationExtras = {
-        queryParams: {}  // Empty object to clear all query parameters
-      };
-      // Navigate to the same route without query parameters
-      this.router.navigate([], navigationExtras);
-    }*/
     this.localStorageService.removeItem('policyDetails');
+
   }
+
+  ngAfterViewInit() {
+    this.modals['reassignTicket'] = new bootstrap.Modal(this.reassignTicketModalElement.nativeElement);
+    this.modals['chooseClientReassign'] = new bootstrap.Modal(this.chooseClientReassignModal.nativeElement);
+  }
+
+
+  openModals(modalName: string) {
+    this.modals[modalName]?.show();
+  }
+
+  closeModals(modalName: string) {
+    this.modals[modalName]?.hide();
+
+  }
+
 
   getAllTicketsFromCubeJs() {
     this.spinner.show();
@@ -239,7 +273,7 @@ export class ViewTicketsComponent implements OnInit {
     pageIndex: number,
     pageSize: number,
     sort: string = 'createdDate',
-    sortOrder: string = 'desc'
+    sortOrder: string = 'asc'
   ) {
     this.spinner.show();
 
@@ -308,65 +342,6 @@ export class ViewTicketsComponent implements OnInit {
         );
     }
   }
-
-
-  /*lazyLoadTickets(event: LazyLoadEvent | TableLazyLoadEvent) {
-    const ticketFilter: any = this.ticketsService.ticketFilterObject();
-
-    if (!ticketFilter?.fromDashboardScreen) {
-      const pageIndex = event.first / event.rows;
-      const queryColumn = event.sortField;
-      const sortDirection = event.sortOrder === -1 ? 'DESCENDING' : 'ASCENDING';
-      const pageSize = event.rows;
-
-      // Determine sortItem based on queryColumn and sortDirection
-      let sortItem = '';
-      if (queryColumn === 'agentName' || queryColumn === 'clientName') {
-        sortItem = sortDirection;
-      }
-
-      // Remove agentName and clientName from the parameters if they are empty
-      const params: any = {
-        pageIndex,
-        pageSize,
-        sort: queryColumn === 'agentName' || queryColumn === 'clientName' ? '' : queryColumn,
-        query: '',
-        queryColumn: '',
-        agentName: queryColumn === 'agentName' ? event.multiSortMeta : '',
-        clientName: queryColumn === 'clientName' ? event.multiSortMeta : '',
-        sortItem: sortItem
-      };
-
-      this.getAllTickets(pageIndex,
-        pageSize,
-        params.sort,
-        params.query,
-        params.queryColumn,
-        params.agentName,
-        params.clientName,
-        params.sortItem)
-        .pipe(untilDestroyed(this))
-        .subscribe(
-          (data: Pagination<TicketsDTO>) => {
-            this.springTickets = data;
-            this.cdr.detectChanges();
-            this.ticketsService.setCurrentTickets(this.springTickets.content);
-            this.spinner.hide();
-
-            // Extracting all the code values from the tickets
-            const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
-
-            // Passing the code values to the getCodeValue method
-            const result = codeValues.map(code => this.getTicketCode(code));
-
-          },
-          error => {
-            this.spinner.hide();
-          }
-        );
-    }
-  }*/
-
 
 
   /**
@@ -633,14 +608,15 @@ export class ViewTicketsComponent implements OnInit {
     return true
   }
 
+  // For multiple tickets 
   processReassignTask() {
     if (this.checkSelectedTickets()) {
-      this.toggleReassignModal(true)
+      this.openReassignTicketModal();
     }
   }
 
   handleAction(event: void) {
-    this.toggleReassignModal(false); // Close the modal after performing the action
+    this.toggleReassignModal(false); 
   }
 
   reassignSubmitted(event) {
@@ -649,6 +625,45 @@ export class ViewTicketsComponent implements OnInit {
       this.toggleReassignModal(false);
       log.info('Reassign dto received: ', event);
     }
+  }
+
+  /**
+   * Common validation for reassignment
+   * @returns true if validation passes, false otherwise
+   */
+  private validateReassignment(): boolean {
+    if (!this.userToReassignTicket) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false;
+      }, 3000);
+      return false;
+    }
+
+    if (!this.reassignTicketComment) {
+      this.noCommentleft = true;
+      setTimeout(() => {
+        this.noCommentleft = false;
+      }, 3000);
+      return false;
+    }
+
+    if (this.selectedSpringTickets.length === 0) {
+      this.globalMessagingService.displayWarningMessage('Warning', 'No tickets selected');
+      this.closeReassignTicketModal();
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Common cleanup after successful reassignment
+   */
+  private cleanupAfterReassignment(): void {
+    this.selectedSpringTickets = [];
+    this.dt?.reset();
+    this.closeReassignTicketModal();
   }
 
   createSortForm() {
@@ -907,7 +922,29 @@ export class ViewTicketsComponent implements OnInit {
     this.router.navigate([`home/administration/document-dispatch`]);
   }
 
-   processTicket(ticket: any): void {
+  //reassign ticket
+  fetchGroupedUserDetails(selectedUser: any) {
+    const groupedUserId = selectedUser.id;
+    this.quotationService.getGroupedUserDetails(groupedUserId)
+      .subscribe({
+        next: (res: GroupedUser[]) => {
+          this.groupUsers = res;
+
+          // Find the team leader
+          const groupLeader = res.find(user => user.isTeamLeader === "Y");
+          if (groupLeader) {
+            this.selectedGroupUserId = groupLeader.id;
+            this.groupLeaderName = groupLeader.userDetails.name;
+          }
+        },
+        error: (error) => {
+          console.error("Error fetching group users", error);
+        }
+      });
+  }
+
+
+  processTicket(ticket: any): void {
   const ticketName = ticket.ticketName?.trim();
   log.debug("Ticket chosen", ticket);
 
@@ -919,8 +956,8 @@ export class ViewTicketsComponent implements OnInit {
       this.router.navigate(['/home/gis/quotation/quotation-details']);
       break;
 
+    case 'Authorize Quotation':
     case 'Confirm Quotation':
-    case 'Authorize Quotation' : 
       this.router.navigate(['/home/gis/quotation/quotation-summary']);
       break;
 
@@ -934,6 +971,179 @@ export class ViewTicketsComponent implements OnInit {
       break;
   }
 }
+
+
+  openReassignTicketModal() {
+    // Only open if tickets are selected
+    if (this.selectedSpringTickets.length === 0) {
+      this.globalMessagingService.displayErrorMessage('Warning', 'Please select at least one ticket to reassign');
+      return;
+    }
+    this.openModals('reassignTicket');
+  }
+
+  closeReassignTicketModal() {
+    this.closeModals('reassignTicket');
+    // Reset all properties
+    this.reassignComment = null;
+    this.reassignTicketComment = null;
+    this.userToReassignTicket = null;
+    this.selectedUser = null;
+    this.departmentSelected = false;
+    this.selectedGroupUserId = null;
+    this.groupUsers = [];
+    this.noUserChosen = false;
+    this.noCommentleft = false;
+  }
+
+  openChooseClientReassignModal() {
+    this.getUsers();
+    this.openModals('chooseClientReassign');
+    this.closeReassignTicketModal();
+  }
+
+  closeChooseClientReassignModal(): void {
+    this.closeModals('chooseClientReassign');
+    // Reset user selection
+    this.onUserUnselect();
+    this.selectedUser = null;
+    this.globalSearch = '';
+    this.fullNameSearch = '';
+    this.noUserChosen = false;
+  }
+
+  getUsers() {
+    this.claimsService.getUsers(0, 1000).subscribe({
+      next: (res => {
+        this.users = res;
+        this.users = this.users.content;
+        log.debug('users>>>', this.users)
+
+      }),
+      error: (error => {
+        log.debug('error', error)
+        this.globalMessagingService.displayErrorMessage('Error', 'failed to feth users')
+      })
+    })
+  }
+
+
+  //search member to reassign
+  filterGlobal(event: any): void {
+    const value = event.target.value;
+    this.globalSearch = value;
+    this.reassignTable.filterGlobal(value, 'contains');
+  }
+
+
+  filterByFullName(event: any): void {
+    const value = event.target.value;
+    this.reassignTable.filter(value, 'name', 'contains');
+  }
+  onUserSelect(): void {
+    if (this.selectedUser) {
+      log.debug("Selected user>>>", this.selectedUser);
+      this.globalSearch = this.selectedUser.id;
+      this.fullNameSearch = this.selectedUser.name;
+      this.fetchGroupedUserDetails(this.selectedUser)
+
+    }
+  }
+
+  onUserUnselect(): void {
+    this.selectedUser = null;
+    this.globalSearch = '';
+    this.fullNameSearch = '';
+  }
+  selectClient() {
+    if (!this.selectedUser) {
+      this.noUserChosen = true;
+      setTimeout(() => {
+        this.noUserChosen = false
+      }, 3000);
+      return;
+    }
+
+    this.userToReassignTicket = this.selectedUser.name;
+    if (this.selectedUser.userType == "G") {
+      this.departmentSelected = true;
+      this.fetchGroupedUserDetails(this.selectedUser);
+    }
+    this.closeChooseClientReassignModal();
+    this.openModals('reassignTicket');
+
+  }
+
+  /**
+   * Reassign single ticket using table action button
+   * @param ticket - The ticket to reassign
+   */
+  reassignSingleTicket(ticket: TicketsDTO) {
+    this.selectedSpringTickets = [ticket];
+    this.openReassignTicketModal();
+  }
+
+  /**
+   * Main reassignment method - handles both single and multiple tickets
+   */
+  reassignTicket() {
+    if (!this.validateReassignment()) {
+      return;
+    }
+
+    // Extract selected ticket codes
+    const selectedTicketIds = this.selectedSpringTickets.map(ticket => ticket['ticketCode']);
+    const isSingleTicket = selectedTicketIds.length === 1;
+
+    log.debug('Selected Ticket IDs:', selectedTicketIds);
+    log.debug('Number of tickets selected:', selectedTicketIds.length);
+    log.debug('Reassigning to user:', this.userToReassignTicket);
+    log.debug('Comment:', this.reassignTicketComment);
+
+    this.spinner.show();
+
+    // Choose the appropriate service method based on ticket count
+    const reassignObservable = isSingleTicket
+      ? this.quotationService.reassignTicket(selectedTicketIds[0], this.userToReassignTicket, this.reassignTicketComment)
+      : this.quotationService.reassignMultipleTickets(selectedTicketIds, this.userToReassignTicket, this.reassignTicketComment);
+
+    // Execute reassignment
+    reassignObservable
+      .pipe(
+        untilDestroyed(this),
+        catchError(error => {
+          this.spinner.hide();
+          log.error('Error reassigning ticket(s):', error);
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            `Failed to reassign ${isSingleTicket ? 'ticket' : 'tickets'}`
+          );
+          return throwError(error);
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          log.debug('Reassign response:', response);
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            `${isSingleTicket ? 'Ticket' : 'Tickets'} reassigned successfully`
+          );
+
+          // Clean up and refresh tickets
+          this.cleanupAfterReassignment();
+          
+          // Reload tickets to reflect the reassignment
+          this.dt?.reset();
+          this.spinner.hide();
+        },
+        error: (error) => {
+          this.spinner.hide();
+          log.error('Error in reassignment subscription:', error);
+        }
+      });
+  }
+
+
 
 }
 

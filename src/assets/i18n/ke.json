@@ -92,7 +92,7 @@
     "policy_id": "Kitambulisho cha Sera",
     "quot_id": "Kitambulisho cha Nukuu",
     "view_quotations": "Tazama Nukuu",
-    "new_quick_quote":"Nukuu mpya ya haraka",
+    "new_quick_quote": "Nukuu mpya ya haraka",
     "sun": "Jua",
     "mon": "Jumatatu",
     "tue": "Jumanne",
@@ -2583,9 +2583,13 @@
       "filter": "kichujio",
       "receiptManagement": "usimamizi wa risiti"
     },
-     "banking": {
+    "banking": {
       "bankingProcess": "Mchakato wa Benki",
       "newBankingProcess": "Mchakato Mpya wa Benki",
+      "processBatch": "Chakata Kundi",
+      "deposit": "Amana",
+      "reAssign": "Kukabidhi Upya",
+      "deAssign": "Ondoa Uteuzi",
       "slipNumber": "Nambari ya slip",
       "date": "Tarehe",
       "amount": "Kiasi",
