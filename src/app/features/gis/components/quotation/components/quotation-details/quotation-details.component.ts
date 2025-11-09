@@ -220,6 +220,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   ticketStatus: string
   quickQuoteFlag: boolean = false;
   ticketData:any;
+  public quotationSourceFlag: string | null = null;
+
 
 
 
@@ -250,47 +252,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     // this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
     this.quotationAction = sessionStorage.getItem('quotationAction')
     this.quotationCode = Number(sessionStorage.getItem('quotationCode'))
-
-    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
-    if (!reusedQuotation) {
-      log.debug('[QuotationDetailsComponent] No reusedQuotation found in session storage');
-      return;
-    }
-
-
-
-    const data = JSON.parse(reusedQuotation);
-    const quotationCode = data._embedded.newQuotationCode;
-    if (quotationCode) {
-      this.quotationCode = quotationCode
-    }
-
-    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
-    if (revisedQuotation) {
-      const data = JSON.parse(revisedQuotation);
-      const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
-      if (quotationCode) {
-        this.quotationCode = quotationCode;
-      }
-    }
-
-    const ticketJson = sessionStorage.getItem('activeTicket');
-     log.debug("ticket data", ticketJson)
-
-    if(ticketJson){
-      this.ticketData = JSON.parse(ticketJson);
-      const quotationCode = this.ticketData.quotationCode;
-      if(quotationCode){
-      this.quotationCode=quotationCode
-      }
-
-     
-      
-
-      
-    }
-
-
 
 
 
@@ -346,6 +307,54 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     ]
     this.selectedClient = JSON.parse(sessionStorage.getItem('client'))
     log.debug("product Form details", this.productDetails)
+
+
+    const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+    if (reusedQuotation) {
+      const data = JSON.parse(reusedQuotation);
+      const quotationCode = data._embedded.newQuotationCode;
+    if (quotationCode) {
+      this.quotationCode = quotationCode
+      this.fetchQuotationDetails(quotationCode);
+      this.quotationSourceFlag = 'ticket';
+    }
+    }
+
+
+
+   
+
+    const revisedQuotation = sessionStorage.getItem('revisedQuotation');
+    if (revisedQuotation) {
+      const data = JSON.parse(revisedQuotation);
+      const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
+      if (quotationCode) {
+        this.quotationCode = quotationCode;
+        this.fetchQuotationDetails(quotationCode);
+        this.quotationSourceFlag = 'ticket';
+      }
+    }
+
+    const ticketJson = sessionStorage.getItem('activeTicket');
+     log.debug("ticket data", ticketJson)
+
+    if(ticketJson){
+      this.ticketData = JSON.parse(ticketJson);
+      const quotationCode = this.ticketData.quotationCode;
+      if(quotationCode){
+      this.quotationCode=quotationCode
+      this.fetchQuotationDetails(quotationCode);
+      this.quotationSourceFlag = 'ticket';
+      }
+
+     
+      
+
+      
+    }
+
+
+
     
 
   }
@@ -399,6 +408,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.loadPersistedClauses();
     this.getUsers();
 
+    
+
 
 
 
@@ -425,6 +436,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   closeModals(modalName: string) {
     this.modals[modalName]?.hide();
   }
+
+  
 
 
 
@@ -530,8 +543,24 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
         log.debug(this.quotationForm.value, 'Final Form Value');
 
+      
+      if (this.quotationSourceFlag === 'revised') {
+        log.debug('Patching revised quotation data...');
         this.patchRevisedQuotationData();
+      } else if (this.quotationSourceFlag === 'reused') {
+        log.debug('Patching reused quotation data...');
         this.patchReusedQuotationData();
+      } else if (this.quotationSourceFlag === 'ticket'){
+        log.debug('patching ticket data')
+        this.patchReusedQuotationData();
+      }
+
+      if (this.quotationSourceFlag) {
+      log.debug(`Clearing quotation source flag (${this.quotationSourceFlag}) after patching.`);
+      this.quotationSourceFlag = null;
+      }
+    
+   
       },
       error: (err) => {
         log.error(err, 'Failed to load risk fields');

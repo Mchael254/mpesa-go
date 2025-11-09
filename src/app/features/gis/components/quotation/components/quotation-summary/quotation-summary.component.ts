@@ -254,7 +254,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   activeConsentTab: string = 'otp';
   shareMethods: { label: string; value: ShareMethod; disabled: boolean; tooltip?: string }[] = [
     { label: 'Email', value: 'email', disabled: false },
-    { label: 'SMS', value: 'sms', disabled: true, tooltip: 'SMS sharing coming soon' },
+    { label: 'SMS', value: 'sms', disabled: false },
     { label: 'WhatsApp', value: 'whatsapp', disabled: true, tooltip: 'WhatsApp sharing coming soon' }
   ];
   shareForm!: FormGroup;
@@ -289,6 +289,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   ticketStatus: string
   confirmQuote: boolean = false;
   ticketData:any;
+  
 
 
 
@@ -310,6 +311,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     public claimsService: ClaimsService,
     public utilService: UtilService,
     private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
+    
 
 
   ) {
@@ -338,12 +341,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   public showInternalClaims = false;
   public showExternalClaims = false;
   private ngUnsubscribe = new Subject();
-  public cdr: ChangeDetectorRef;
+  
 
 
 
   shareQuoteData: ShareQuoteDTO = {
-    selectedMethod: 'email',
+    selectedMethod: 'sms',
     email: '',
     smsNumber: '',
     whatsappNumber: '',
@@ -383,10 +386,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
 
-    // 1️⃣ Patch immediate UI from session (for instant rendering)
+  
 
 
-    this.patchQuotationData();
+   
 
 
 
@@ -494,7 +497,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.shareForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      otp: ['']
+      otp: [''],
+      smsNumber: [''],
 
     });
     this.viewDocForm = this.fb.group({
@@ -543,6 +547,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
       
     }
+
+     this.patchQuotationData();
+
+     console.log('Share Methods:', this.shareMethods);
   }
 
   ngAfterViewInit() {
@@ -3079,36 +3087,106 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
 
-  generateOTP() {
-    this.shareForm.markAllAsTouched();
-    this.shareForm.updateValueAndValidity();
+generateOTP() {
+  this.shareForm.markAllAsTouched();
+  this.shareForm.updateValueAndValidity();
 
+  log.debug("Client name:", this.clientName);
+
+  // Handle EMAIL OTP
+  if (this.shareQuoteData.selectedMethod === 'email') {
     const emailCtrl = this.shareForm.get('email');
     if (!emailCtrl || emailCtrl.invalid) {
       return;
     }
 
-    log.debug("Client name:", this.clientName);
-
-    const otpPayload = {
+    const emailPayload = {
       email: emailCtrl.value,
       subject: "Action Required: Verify Your Consent with OTP",
-      body: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent:`, // OTP appended by backend
+      body: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent:`,
     };
 
-    this.quotationService.generateOTP(otpPayload).subscribe({
+    this.quotationService.generateOTP(emailPayload).subscribe({
       next: (res: any) => {
-        this.globalMessagingService.displaySuccessMessage("Succes", "Successfully generated OTP")
-
+        this.globalMessagingService.displaySuccessMessage("Success", "OTP sent to your email successfully");
         this.otpResponse = res._embedded;
         this.otpGenerated = true;
-
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error("Error generating OTP:", error.error?.message || error);
+        this.globalMessagingService.displayErrorMessage("Error", "Failed to send OTP via email");
+      }
+    });
+  } 
+  // Handle SMS OTP
+  else if (this.shareQuoteData.selectedMethod === 'sms') {
+    const smsCtrl = this.shareForm.get('smsNumber');
+    if (!smsCtrl || smsCtrl.invalid) {
+      return;
+    }
+
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const smsPayload = {
+      scheduledDate: null,
+      smsMessages: [
+        {
+          message: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent: ${otp}`,
+          sendDate: new Date().toISOString(),
+          systemCode: 0,
+          telephoneNumber: smsCtrl.value
+        }
+      ]
+    };
+
+    
+    this.notificationService.sendSms(smsPayload).subscribe({
+      next: (res: any) => {
+        this.globalMessagingService.displaySuccessMessage("Success", "OTP sent to your phone successfully");
+        this.otpResponse = { otp: otp, ...res };
+        this.otpGenerated = true;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error("Error sending SMS OTP:", error.error?.message || error);
+        this.globalMessagingService.displayErrorMessage("Error", "Failed to send OTP via SMS");
       }
     });
   }
+}
+
+onShareMethodChange(method: ShareMethod) {
+
+  this.shareQuoteData.selectedMethod = method;
+   console.log('Clicked method:', method);
+  this.otpGenerated = false;
+   this.cdr.detectChanges();
+  
+  
+  this.shareForm.get('email')?.clearValidators();
+  this.shareForm.get('smsNumber')?.clearValidators();
+  this.shareForm.get('email')?.setValue('');
+  this.shareForm.get('smsNumber')?.setValue('');
+  this.shareForm.get('otp')?.setValue('');
+  
+  // Add validators based on method
+  if (method === 'email') {
+    this.shareForm.get('email')?.setValidators([ Validators.email]);
+  } else if (method === 'sms') {
+    this.shareForm.get('smsNumber')?.setValidators([
+      Validators.pattern(/^(\+254|0)[17]\d{8}$/) 
+    ]);
+  }
+  
+  
+  this.shareForm.get('email')?.updateValueAndValidity();
+  this.shareForm.get('smsNumber')?.updateValueAndValidity();
+}
+
+
+
 
   // verifyOTP() {
   //   const userIdentifier = this.otpResponse.userIdentifier
