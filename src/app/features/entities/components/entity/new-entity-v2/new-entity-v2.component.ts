@@ -1,27 +1,27 @@
-import {ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {Logger, UtilService} from "../../../../../shared/services";
-import {RegexErrorMessages} from "../../../data/field-error.model";
-import {MaritalStatusService} from "../../../../../shared/services/setups/marital-status/marital-status.service";
-import {MaritalStatus} from "../../../../../shared/data/common/marital-status.model";
-import {PaymentModesService} from "../../../../../shared/services/setups/payment-modes/payment-modes.service";
-import {PaymentModesDto} from "../../../../../shared/data/common/payment-modes-dto";
-import {BankBranchDTO, BankDTO, CurrencyDTO} from "../../../../../shared/data/common/bank-dto";
-import {BankService} from "../../../../../shared/services/setups/bank/bank.service";
-import {CountryDto, PostalCodesDTO, StateDto, TownDto} from "../../../../../shared/data/common/countryDto";
-import {CountryService} from "../../../../../shared/services/setups/country/country.service";
-import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
-import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
-import {RequiredDocumentDTO} from "../../../../crm/data/required-document";
-import {RequiredDocumentsService} from "../../../../crm/services/required-documents.service";
-import {ClientTypeService} from "../../../../../shared/services/setups/client-type/client-type.service";
-import { ClientTitlesDto, ClientTypeDTO} from "../../../data/ClientDTO";
-import {EntityService} from "../../../services/entity/entity.service";
-import {PartyTypeDto} from "../../../data/partyTypeDto";
-import {ClientService} from "../../../services/client/client.service";
-import {IdentityModeDTO} from "../../../data/entityDto";
-import {CurrencyService} from "../../../../../shared/services/setups/currency/currency.service";
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { BreadCrumbItem } from "../../../../../shared/data/common/BreadCrumbItem";
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
+import { Logger, UtilService } from "../../../../../shared/services";
+import { RegexErrorMessages } from "../../../data/field-error.model";
+import { MaritalStatusService } from "../../../../../shared/services/setups/marital-status/marital-status.service";
+import { MaritalStatus } from "../../../../../shared/data/common/marital-status.model";
+import { PaymentModesService } from "../../../../../shared/services/setups/payment-modes/payment-modes.service";
+import { PaymentModesDto } from "../../../../../shared/data/common/payment-modes-dto";
+import { BankBranchDTO, BankDTO, CurrencyDTO } from "../../../../../shared/data/common/bank-dto";
+import { BankService } from "../../../../../shared/services/setups/bank/bank.service";
+import { CountryDto, PostalCodesDTO, StateDto, TownDto } from "../../../../../shared/data/common/countryDto";
+import { CountryService } from "../../../../../shared/services/setups/country/country.service";
+import { GlobalMessagingService } from "../../../../../shared/services/messaging/global-messaging.service";
+import { CountryISO, PhoneNumberFormat, SearchCountryField } from "ngx-intl-tel-input";
+import { RequiredDocumentDTO } from "../../../../crm/data/required-document";
+import { RequiredDocumentsService } from "../../../../crm/services/required-documents.service";
+import { ClientTypeService } from "../../../../../shared/services/setups/client-type/client-type.service";
+import { ClientTitlesDto, ClientTypeDTO } from "../../../data/ClientDTO";
+import { EntityService } from "../../../services/entity/entity.service";
+import { PartyTypeDto } from "../../../data/partyTypeDto";
+import { ClientService } from "../../../services/client/client.service";
+import { IdentityModeDTO } from "../../../data/entityDto";
+import { CurrencyService } from "../../../../../shared/services/setups/currency/currency.service";
 import {
   Branch,
   ContactDetails,
@@ -30,8 +30,8 @@ import {
   Payee,
   WealthAmlDTO
 } from "../../../data/accountDTO";
-import {DmsService} from "../../../../../shared/services/dms/dms.service";
-import {DmsDocument} from "../../../../../shared/data/common/dmsDocument";
+import { DmsService } from "../../../../../shared/services/dms/dms.service";
+import { DmsDocument } from "../../../../../shared/data/common/dmsDocument";
 import {
   DynamicScreensSetupService
 } from "../../../../../shared/services/setups/dynamic-screen-config/dynamic-screens-setup.service";
@@ -40,9 +40,9 @@ import {
   DynamicScreenSetupDto, FieldType,
   FormGroupsDto, PresentationType, SubModulesDto
 } from "../../../../../shared/data/common/dynamic-screens-dto";
-import {IntermediaryService} from "../../../services/intermediary/intermediary.service";
-import {AccountsEnum} from "../../../data/enums/accounts-enum";
-import {AccountService} from "../../../services/account/account.service";
+import { IntermediaryService } from "../../../services/intermediary/intermediary.service";
+import { AccountsEnum } from "../../../data/enums/accounts-enum";
+import { AccountService } from "../../../services/account/account.service";
 import {
   AccountTypeDTO,
   AddressV2DTO,
@@ -51,13 +51,13 @@ import {
   IntermediaryRefereeDTO,
   PaymentDetailsDTO, WealthAmlDetailsDTO
 } from "../../../data/AgentDTO";
-import {AuthService} from "../../../../../shared/services/auth.service";
-import {Pagination} from "../../../../../shared/data/common/pagination";
-import {LazyLoadEvent} from "primeng/api";
-import {TableLazyLoadEvent} from "primeng/table";
-import {GenericResponse} from "../../../../fms/data/receipting-dto";
-import {GLAccountDTO} from "../../../../fms/data/receipt-management-dto";
-import {ReceiptManagementService} from "../../../../fms/services/receipt-management.service";
+import { AuthService } from "../../../../../shared/services/auth.service";
+import { Pagination } from "../../../../../shared/data/common/pagination";
+import { LazyLoadEvent } from "primeng/api";
+import { TableLazyLoadEvent } from "primeng/table";
+import { GenericResponse } from "../../../../fms/data/receipting-dto";
+import { GLAccountDTO } from "../../../../fms/data/receipt-management-dto";
+import { ReceiptManagementService } from "../../../../fms/services/receipt-management.service";
 
 const log = new Logger('NewEntityV2Component');
 
@@ -67,6 +67,8 @@ const log = new Logger('NewEntityV2Component');
   styleUrls: ['./new-entity-v2.component.css']
 })
 export class NewEntityV2Component implements OnInit, OnChanges {
+
+  @Output() clientSaved = new EventEmitter<any>();
 
   entityBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -184,9 +186,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     accountName: string;
     accountNumber: string;
   } = {
-    accountName: '',
-    accountNumber: '',
-  };
+      accountName: '',
+      accountNumber: '',
+    };
   filteredGlAccounts: GLAccountDTO[] = [];
   columns: any = [
     { field: 'accountNumber', header: 'ID', visible: true },
@@ -290,7 +292,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       });
   }
 
-  createEntityForm():void {
+  createEntityForm(): void {
     this.entityForm = this.fb.group({
       fields: this.fb.array([])
     });
@@ -419,7 +421,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       if (field.type === 'select') {
         this.uploadGroupSections.selects.push(field);
       } else if (field.type === 'multiple_document_uploads') {
-       this.uploadGroupSections.docField.push(field);
+        this.uploadGroupSections.docField.push(field);
       } else if (field.type === 'file') {
         this.uploadGroupSections.photo.push(field);
       }
@@ -448,7 +450,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param groups
    * @param fields
    */
-  orderFormGroup(groups: FormGroupsDto[], fields: ConfigFormFieldsDto[]) : void {
+  orderFormGroup(groups: FormGroupsDto[], fields: ConfigFormFieldsDto[]): void {
     const formGroupSections: any[] = groups?.sort(
       (a: { order: number; }, b: { order: number; }) => a.order - b.order
     );
@@ -466,99 +468,99 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param fields
    * @param formGroupSections
    */
- /* assignFieldsToGroupByGroupId(fields: ConfigFormFieldsDto[], formGroupSections: any[]): void {
-    const visibleFormFields = this.getFilteredFields2(fields);
-    // const visibleFormFields = this.getFilteredFields(fields);
-    // check the group from formGroupSections if it has subGroups.length < 0
-    // check if subGroup has presentationType === 'fields'
-    /!*if (formGroupSections) {
-      formGroupSections.forEach(section => {
-        if (section.subGroup.length > 0) {
-          section.subGroup.forEach(subGroup => {
-            if (subGroup.presentationType === 'fields') {
-              log.info(`subGroup presentationType >>> `, subGroup.subGroupId, section.groupId);
-              const field = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
-              log.info(`fields for fields`, field)
-            } else {
-              log.info(`this is a table`, subGroup.subGroupId)
-              const trial = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
-              log.info(`fields for table`, trial)
-            }
-          })
-        }
-        else {
-          log.info(`this is when subGroup.length === 0`, section.groupId);
-        //   show fields where formGroupingId === section.groupId
-          const field = fields.filter(field => field.formGroupingId === section.groupId);
-          log.info(`fields for no subgroup`, field)
-        }
-      })
-    }*!/
-
-    for (const section of formGroupSections) {
-      const { subGroup = [], groupId } = section;
-      formGroupSections.forEach(section => {
-        section.fields = [];
-      });
-
-      if (!subGroup.length) {
-        const sectionFields = fields.filter(f => f.formGroupingId === groupId);
-        log.info("subGroup is empty for groupId:", groupId);
-        log.info("fields for no subgroup", sectionFields);
-        section.fields.push(sectionFields);
-        this.createFieldsByPresentationType(groupId, sectionFields)
-        continue;
-      }
-
-      for (const sg of subGroup) {
-        const { subGroupId, presentationType } = sg;
-        const subGroupFields = fields.filter(f => f.formSubGroupingId === subGroupId);
-
-        if (presentationType === "fields") {
-          log.info("subGroup presentationType 'fields':", subGroupId, groupId);
-          log.info("fields for fields", subGroupFields);
-          section.fields.push(subGroupFields);
-          this.createFieldsByPresentationType(subGroupId, subGroupFields)
-        } else {
-          log.info("subGroup presentationType 'table':", subGroupId);
-          log.info("fields for table", subGroupFields);
-          this.trialFields = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
-          this.tablePayload = sg;
-
-          const payload = {
-            ...sg,
-            fields: subGroupFields
-          };
-          this.tablePayloads.push(payload);
-
-            log.info("subgroup info", sg, payload)
-        }
-      }
-    }
-    formGroupSections.forEach(section => {
-      section.fields = [];
-    });
-
-    visibleFormFields.forEach(field => {
-      const section = formGroupSections.find(s => s.groupId === field.formGroupingId);
-      if (section) {
-        section.fields.push(field);
-      }
-    });
-
-    this.formGroupSections = formGroupSections;
-    log.info(`form group sections >>> `, this.formGroupSections);
-    // this.addFieldsToSections(formGroupSections);
-
-    /!*this.wealthAmlFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_individual_aml_details');
-    this.corporateContactDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_contact_person_details');
-    this.corporateAddressDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_branch_details');
-    this.corporateFinancialDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_payee_details');
-    this.corporateWealthAmlFormFieldsDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_aml_details');
-    this.corporateWealthCR12DetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_cr12_details');
-    this.corporateWealthOwnershipDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_ownership_details');
-    this.privacyPolicyFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_privacy_policy');*!/
-  }*/
+  /* assignFieldsToGroupByGroupId(fields: ConfigFormFieldsDto[], formGroupSections: any[]): void {
+     const visibleFormFields = this.getFilteredFields2(fields);
+     // const visibleFormFields = this.getFilteredFields(fields);
+     // check the group from formGroupSections if it has subGroups.length < 0
+     // check if subGroup has presentationType === 'fields'
+     /!*if (formGroupSections) {
+       formGroupSections.forEach(section => {
+         if (section.subGroup.length > 0) {
+           section.subGroup.forEach(subGroup => {
+             if (subGroup.presentationType === 'fields') {
+               log.info(`subGroup presentationType >>> `, subGroup.subGroupId, section.groupId);
+               const field = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
+               log.info(`fields for fields`, field)
+             } else {
+               log.info(`this is a table`, subGroup.subGroupId)
+               const trial = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
+               log.info(`fields for table`, trial)
+             }
+           })
+         }
+         else {
+           log.info(`this is when subGroup.length === 0`, section.groupId);
+         //   show fields where formGroupingId === section.groupId
+           const field = fields.filter(field => field.formGroupingId === section.groupId);
+           log.info(`fields for no subgroup`, field)
+         }
+       })
+     }*!/
+ 
+     for (const section of formGroupSections) {
+       const { subGroup = [], groupId } = section;
+       formGroupSections.forEach(section => {
+         section.fields = [];
+       });
+ 
+       if (!subGroup.length) {
+         const sectionFields = fields.filter(f => f.formGroupingId === groupId);
+         log.info("subGroup is empty for groupId:", groupId);
+         log.info("fields for no subgroup", sectionFields);
+         section.fields.push(sectionFields);
+         this.createFieldsByPresentationType(groupId, sectionFields)
+         continue;
+       }
+ 
+       for (const sg of subGroup) {
+         const { subGroupId, presentationType } = sg;
+         const subGroupFields = fields.filter(f => f.formSubGroupingId === subGroupId);
+ 
+         if (presentationType === "fields") {
+           log.info("subGroup presentationType 'fields':", subGroupId, groupId);
+           log.info("fields for fields", subGroupFields);
+           section.fields.push(subGroupFields);
+           this.createFieldsByPresentationType(subGroupId, subGroupFields)
+         } else {
+           log.info("subGroup presentationType 'table':", subGroupId);
+           log.info("fields for table", subGroupFields);
+           this.trialFields = fields.filter(field => field.formSubGroupingId === subGroup.subGroupId);
+           this.tablePayload = sg;
+ 
+           const payload = {
+             ...sg,
+             fields: subGroupFields
+           };
+           this.tablePayloads.push(payload);
+ 
+             log.info("subgroup info", sg, payload)
+         }
+       }
+     }
+     formGroupSections.forEach(section => {
+       section.fields = [];
+     });
+ 
+     visibleFormFields.forEach(field => {
+       const section = formGroupSections.find(s => s.groupId === field.formGroupingId);
+       if (section) {
+         section.fields.push(field);
+       }
+     });
+ 
+     this.formGroupSections = formGroupSections;
+     log.info(`form group sections >>> `, this.formGroupSections);
+     // this.addFieldsToSections(formGroupSections);
+ 
+     /!*this.wealthAmlFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_individual_aml_details');
+     this.corporateContactDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_contact_person_details');
+     this.corporateAddressDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_branch_details');
+     this.corporateFinancialDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_payee_details');
+     this.corporateWealthAmlFormFieldsDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_aml_details');
+     this.corporateWealthCR12DetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_cr12_details');
+     this.corporateWealthOwnershipDetailsFormField = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_ownership_details');
+     this.privacyPolicyFormFields = fields.filter(field => field.formSubGroupingId === 'cnt_corporate_privacy_policy');*!/
+   }*/
 
   assignFieldsToGroupByGroupId(fields: ConfigFormFieldsDto[], formGroupSections: any[]): void {
     // Filter fields according to preview / upload form logic
@@ -626,8 +628,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
             (subGroup.fields || []).forEach((field: any) => {
               if (!groupForm.contains(field.fieldId)) {
                 const control = field.mandatory
-                  ? this.fb.control({value: '', disabled: field.disabled || false}, Validators.required)
-                  : this.fb.control({value: '', disabled: field.disabled || false});
+                  ? this.fb.control({ value: '', disabled: field.disabled || false }, Validators.required)
+                  : this.fb.control({ value: '', disabled: field.disabled || false });
                 groupForm.addControl(field.fieldId, control);
 
                 // Apply dynamic validators for fields with conditions
@@ -660,8 +662,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           (group.fields || []).forEach((field: any) => {
             if (!groupForm.contains(field.fieldId)) {
               const control = field.mandatory
-                ? this.fb.control({value: '', disabled: field.disabled || false}, Validators.required)
-                : this.fb.control({value: '', disabled: field.disabled || false});
+                ? this.fb.control({ value: '', disabled: field.disabled || false }, Validators.required)
+                : this.fb.control({ value: '', disabled: field.disabled || false });
               groupForm.addControl(field.fieldId, control);
 
               // Apply dynamic validators for fields with conditions
@@ -749,7 +751,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * filter out fields with no data
    * create payload for prime identity (primeIdentityPayload)
    */
-  saveDetails() : void {
+  saveDetails(): void {
     // this.uploadDocumentToDms();
 
     const formValues = this.entityForm.getRawValue();
@@ -989,13 +991,40 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     this.clientService.saveClientDetails2(client).subscribe({
       next: (response) => {
         log.info(`client saved >>> `, response);
-        this.uploadImage(this.profilePicture, response.partyId);
+        const clientCode = response.clientCode;
+        sessionStorage.setItem('newClientCode', JSON.stringify(clientCode))
+
+        // Upload profile picture only if it exists
+        if (this.profilePicture) {
+          this.uploadImage(this.profilePicture, response.partyId);
+        }
+
         this.entityName = response.firstName + ' ' + response.lastName;
         this.entityCode = response.clientCode;
+        sessionStorage.setItem('newClientCode', JSON.stringify(this.entityCode));
+
+        // Upload documents to DMS
         this.uploadDocumentToDms();
+
+        // Emit event to close the modal in the parent component
+        this.clientSaved.emit({
+          success: true,
+          clientCode: clientCode,
+          clientName: this.entityName
+        });
+
+        // Show success message
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          `Client ${this.entityName} created successfully`
+        );
       },
       error: (error) => {
         log.info(`could not save`, error);
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          error?.error?.message || 'Failed to save client'
+        );
       }
     })
   }
@@ -1076,7 +1105,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       paymentTerms: payloadObject.paymentTerms,
       taxAuthorityCode: payloadObject.taxAuthorityCode,
       vatApplicable: payloadObject.vatApplicability.toUpperCase(),
-    // paymentMode not there
+      // paymentMode not there
     }
 
     const agent: AgentV2DTO = {
@@ -1099,7 +1128,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       withEffectToDate: payloadObject?.wet
 
     }
-    log.info(`agentDto >>> `, agent );
+    log.info(`agentDto >>> `, agent);
     this.intermediaryService.saveAgentDetailsV2(agent).subscribe({
       next: (response) => {
         log.info(`agent saved >>> `, response);
@@ -1136,7 +1165,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
 
     // Add entity name and code to each document payload
     const documentsWithEntityInfo = this.filesToUpload.map(doc => {
-      const updatedDoc = {...doc};
+      const updatedDoc = { ...doc };
 
       switch (this.role?.partyTypeShtDesc) {
         case PartyType.intermediary:
@@ -1185,7 +1214,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param event
    * @param fieldId
    */
-  processSelectOption(event: any, fieldId: string) : void {
+  processSelectOption(event: any, fieldId: string): void {
     if (this.isPreviewMode === true) {
       return;
     }
@@ -1259,7 +1288,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         this.role = this.roles.find(partyType => partyType.partyTypeName.toLowerCase() === formValues.role.toLowerCase());
         if (formValues.category && formValues.role) this.fetchFormFields(formValues.category, formValues.role);
 
-        this.idType = this.category ==='corporate' ? 'CERT_OF_INCOP_NUMBER' : 'NATIONAL_ID';
+        this.idType = this.category === 'corporate' ? 'CERT_OF_INCOP_NUMBER' : 'NATIONAL_ID';
         this.isCategorySelected = formValues.category ? true : false;
         this.shouldUploadProfilePhoto = true;
         break;
@@ -1277,7 +1306,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         this.refreshVisibility();
         break;
       default:
-          log.info(`no fieldId found`)
+        log.info(`no fieldId found`)
     }
   }
 
@@ -1286,11 +1315,11 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * fetched list of required documents based on entity/client type
    * @param formValues
    */
-  fetchRequiredDocuments(formValues) : void {
+  fetchRequiredDocuments(formValues): void {
     const selectedOrgOrClientOrAccType = formValues.organizationType || formValues.clientType || formValues.accountTypeIndividual;
     if (formValues.category && formValues.role && selectedOrgOrClientOrAccType && this.isCategorySelected) {
       const accountType: PartyTypeDto = this.roles.filter(
-        (r:PartyTypeDto) => r.partyTypeName.toLowerCase() === formValues.role.toLowerCase())[0];
+        (r: PartyTypeDto) => r.partyTypeName.toLowerCase() === formValues.role.toLowerCase())[0];
 
       const category: string = formValues.category;
 
@@ -1648,7 +1677,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * get the index of the selected field using fieldId
    * create an array of strings from marital object and assign to options of the marital status formField
    */
-  fetchMaritalStatuses(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
+  fetchMaritalStatuses(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.maritalStatuses.length > 0)) {
       this.maritalStatusService.getMaritalStatus().subscribe({
         next: (data: MaritalStatus[]) => {
@@ -1672,7 +1701,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * get the index of the selected field using fieldId
    * create an array of strings from paymentModes object and assign to options of the paymentModes formField
    */
-  fetchPaymentModes(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
+  fetchPaymentModes(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.paymentModes.length > 0)) {
       this.paymentModesService.getPaymentModes().subscribe({
         next: (data: PaymentModesDto[]) => {
@@ -1695,8 +1724,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * get the index of the selected field using fieldId
    * create an array of strings from banks object and assign to options of the banks formField
    */
-  fetchBanks(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
-    if(!(this.banks.length > 0)) {
+  fetchBanks(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
+    if (!(this.banks.length > 0)) {
       const countryId: number = this.selectedAddressCountry?.id;
       this.bankService.getBanks(countryId).subscribe({
         next: (data: BankDTO[]) => {
@@ -1722,8 +1751,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param fieldIndex
    * @param subGroupIndex
    */
-  fetchBankBranches(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
-    if(!(this.bankBranches.length > 0)) {
+  fetchBankBranches(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
+    if (!(this.bankBranches.length > 0)) {
       const bankId: number = this.selectedBank?.id;
       this.bankBranches = [];
       log.info(`selected bank >>> `, this.selectedBank)
@@ -1751,9 +1780,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param fieldIndex
    * @param subGroupIndex
    */
-  fetchCountries(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
+  fetchCountries(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
     log.info(`fetchCountries >>> `, sectionIndex, fieldIndex, this.formGroupSections);
-    if(!(this.countries.length > 0)) {
+    if (!(this.countries.length > 0)) {
       this.countryService.getCountries().subscribe({
         next: (data: CountryDto[]) => {
           this.countries = data;
@@ -1779,7 +1808,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param fieldIndex
    * @param subGroupIndex
    */
-  fetchStatesByCountryCode(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
+  fetchStatesByCountryCode(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (this.selectedAddressCountry) {
       this.countryService.getMainCityStatesByCountry(this.selectedAddressCountry?.id).subscribe({
         next: (data: StateDto[]) => {
@@ -1805,7 +1834,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param fieldIndex
    * @param subGroupIndex
    */
-  fetchTownsByStateCode(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
+  fetchTownsByStateCode(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (this.selectedState) {
       this.countryService.getTownsByMainCityState(this.selectedState?.id).subscribe({
         next: (data: TownDto[]) => {
@@ -1831,7 +1860,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param fieldIndex
    * @param subGroupIndex
    */
-  fetchPostalCodeByTownCode(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
+  fetchPostalCodeByTownCode(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (this.selectedTown) {
       this.countryService.getPostalCodes(this.selectedTown?.id).subscribe({
         next: (data: PostalCodesDTO[]) => {
@@ -1857,7 +1886,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param fieldIndex
    * @param subGroupIndex
    */
-  fetchIdTypes(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
+  fetchIdTypes(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.idTypes.length > 0)) {
       this.entityService.getIdentityType().subscribe({
         next: (data: IdentityModeDTO[]) => {
@@ -1881,7 +1910,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param fieldIndex
    * @param subGroupIndex
    */
-  fetchCurrencies(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
+  fetchCurrencies(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
     if (!(this.currencies.length > 0)) {
       this.currencyService.getCurrencies().subscribe({
         next: (data: CurrencyDTO[]) => {
@@ -1904,8 +1933,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    * @param fieldIndex
    * @param subGroupIndex
    */
-  fetchClientTitles(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1): void {
-    if(!(this.clientTitles.length > 0)) {
+  fetchClientTitles(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
+    if (!(this.clientTitles.length > 0)) {
       this.clientService.getClientTitles().subscribe({
         next: (data: ClientTitlesDto[]) => {
           this.clientTitles = data;
@@ -2002,7 +2031,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
         this.fetchClientTypes()
         break;
       case 'agent':
-          //
+        //
         break;
     }
   }
@@ -2013,22 +2042,22 @@ export class NewEntityV2Component implements OnInit, OnChanges {
    */
   fetchClientTypes(): void {
     // if(!(this.clientTypes.length > 0)) {
-      this.clientTypeService.getClientTypes().subscribe({
-        next: (data: ClientTypeDTO[]) => {
-          this.clientTypes = data;
-          const clientTypesArr: string[] = data.map((clientType: ClientTypeDTO) => clientType.clientTypeName);
-          log.info(`clientTypesArr>>> `, clientTypesArr);
-          const index: number = this.uploadGroupSections.selects.findIndex(field => field.fieldId === "organizationType" || field.fieldId === "clientType");
-          this.uploadGroupSections.selects[index].options = clientTypesArr;
-        },
-        error: err => {
-          log.error(`could not fetch `, err);
-        }
-      });
+    this.clientTypeService.getClientTypes().subscribe({
+      next: (data: ClientTypeDTO[]) => {
+        this.clientTypes = data;
+        const clientTypesArr: string[] = data.map((clientType: ClientTypeDTO) => clientType.clientTypeName);
+        log.info(`clientTypesArr>>> `, clientTypesArr);
+        const index: number = this.uploadGroupSections.selects.findIndex(field => field.fieldId === "organizationType" || field.fieldId === "clientType");
+        this.uploadGroupSections.selects[index].options = clientTypesArr;
+      },
+      error: err => {
+        log.error(`could not fetch `, err);
+      }
+    });
     // }
   }
 
-  fetchPremiumFrequencies(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1) {
+  fetchPremiumFrequencies(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1) {
     this.accountService.getPremiumFrequencies().subscribe({
       next: (data: AccountsEnum[]) => {
         this.premiumFrequenciesData = data;
@@ -2045,7 +2074,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     })
   }
 
-  fetchPreferredCommunicationChannels(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1) {
+  fetchPreferredCommunicationChannels(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1) {
     this.accountService.getPreferredCommunicationChannels().subscribe({
       next: (data: AccountsEnum[]) => {
         this.communicationChannelsData = data;
@@ -2079,7 +2108,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
     }
   }
 
-  fetchClientBranches(sectionIndex:number, fieldIndex: number, subGroupIndex: number = -1) {
+  fetchClientBranches(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1) {
     this.clientsService.getCLientBranches().subscribe({
       next: (data: AccountsEnum[]) => {
         this.clientBranchData = data;
@@ -2192,7 +2221,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
             break;
         }
       },
-      error: (err) => {}
+      error: (err) => { }
     })
   }
 

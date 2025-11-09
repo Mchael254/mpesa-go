@@ -1,20 +1,17 @@
 [
-
-    {
-      "number": 1,
-      "title": "Quotation Details",
-      "link": "/home/gis/quotation/quotation-details"
-    },
-  
-    {
-      "number": 2,
-      "title": "Risk-section details",
-      "link": "/home/gis/quotation/risk-center"
-    },
-    {
-        "number": 3,
-        "title": "Quotation summary",
-        "link": "/home/gis/quotation/quotation-summary"
-      }
-   
+  {
+    "number": 1,
+    "title": "Quotation Details",
+    "link": "/home/gis/quotation/quotation-details"
+  },
+  {
+    "number": 2,
+    "title": "Risk-section details",
+    "link": "/home/gis/quotation/risk-center"
+  },
+  {
+    "number": 3,
+    "title": "Quotation summary",
+    "link": "/home/gis/quotation/quotation-summary"
+  }
 ]

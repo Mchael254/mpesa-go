@@ -1,50 +1,20 @@
 <div class="row">
-  <!--<div class="col-12">
-    <form [formGroup]="sortingForm" style="background: none; display: contents">
-      <div class="row col-6 pb-2" style="padding-left: 0; padding-right: 0;">
-        <div class="col-lg-3 col-sm-6">
-          <label>From</label><br>
-          <input type="date" formControlName="fromDate" (change)="sortTickets()">
-        </div>
-        <div class="col-lg-3 col-sm-6">
-          <label>To</label><br>
-          <input type="date" formControlName="toDate" (change)="sortTickets()">
-        </div>
-        <div class="col-lg-3 col-sm-6">
-          <label>Type</label><br>
-          <select formControlName="ticketTypes" id="type" (change)="sortTickets()">
-            <option value="" disabled selected>Select option</option>
-            <option value="">All</option>
-            <option *ngFor="let ticketTypes of ticketTypesData" value="{{ ticketTypes.shortDescription }}">{{ ticketTypes.description }}
-            </option>
-          </select>
-        </div>
-        <div class="col-lg-3 col-sm-6">
-          <label>Module</label><br>
-          &lt;!&ndash;          <select formControlName="ticketModules" id="module" [(ngModel)]="selectedModule" (change)="searchModule($event)">&ndash;&gt;
-          <select formControlName="ticketModules" id="module" (change)="sortTickets()">
-            <option value="" selected>Select option</option>
-            <option value="">All</option>
-            <option *ngFor="let ticketModule of ticketModules"
-                    [ngValue]="ticketModule.shortDescription"
-            >
-              {{ ticketModule.description }}
-            </option>
-          </select>
-        </div>
-      </div>
-    </form>
-  </div>-->
+
 </div>
 
 
 <div class="d-flex my-4 mx-4">
   <!--  <button class="btn btn-success" (click)="generateAuthorizeOtp()" style="margin-right: 1rem;">Authorize</button>-->
-  <button class="btn btn-primary border-radius-none" (click)="processReassignTask()" id="btn-reassign-task"
+  <button class="btn btn-primary border-radius-none" 
+    (click)="processReassignTask()" 
+    id="btn-reassign-task"
+    [disabled]="selectedSpringTickets.length === 0"
     style="margin-right: 1rem;">
     {{'mngt_wrkflw.tickets.reassign' | translate }}
   </button>
-  <button class="btn btn-success" (click)="authorizePolicy()"
+  <button class="btn btn-success" 
+    (click)="authorizePolicy()"
+    [disabled]="selectedSpringTickets.length === 0"
     style="margin-right: 1rem;">{{'mngt_wrkflw.tickets.authorize' | translate }}</button>
   <button class="btn btn-outline-primary" (click)="goToDispatch()">{{'base.dispatch' | translate | titlecase }}</button>
 </div>
@@ -86,202 +56,6 @@
 </div>
 
 <div class="my-4 mx-4">
-  <!--<div class="card">
-    <div class="card-body" style="position: relative;">
-
-      <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
-
-      <p-table #dt
-      [value]="filteredTickets"
-      [(selection)]="selectedTickets"
-      [tableStyle]="{ 'min-width': '50rem' }"
-      [paginator]="true"
-      [rows]="10"
-      [totalRecords]="filteredTickets.length"
-               [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-    >
-        <ng-template pTemplate="header">
-          <tr>
-            <th class="head">
-              Select All
-            </th>
-            <th class="head" pSortableColumn="createdOn">
-              Created On <p-sortIcon field="createdOn"></p-sortIcon>
-            </th>
-            <th class="head" pSortableColumn="ticketName">
-              Ticket Name <p-sortIcon field="ticketName"></p-sortIcon>
-            </th>
-            <th class="head" pSortableColumn="refNo">
-              Ref No. <p-sortIcon field="refNo"></p-sortIcon>
-            </th>
-            <th class="head" pSortableColumn="clientName">
-              Client <p-sortIcon field="clientName"></p-sortIcon>
-            </th>
-            <th class="head" pSortableColumn="intermediaryName">
-              Intermediary <p-sortIcon field="intermediaryName"></p-sortIcon>
-            </th>
-            <th class="head" pSortableColumn="ticketFrom">
-              Ticket From <p-sortIcon field="ticketFrom"></p-sortIcon>
-            </th>
-            <th class="head" pSortableColumn="ticketAssignee">
-              Ticket Assignee <p-sortIcon field="ticketAssignee"></p-sortIcon>
-            </th>
-            <th></th>
-          </tr>
-            <tr>
-              <th class="head">
-                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-              </th>
-              <th>
-                <p-columnFilter type="text" field="createdOn"></p-columnFilter>
-              </th>
-              <th>
-                <p-columnFilter type="text" field="ticketName"></p-columnFilter>
-              </th>
-              <th>
-                <p-columnFilter type="text" field="refNo"></p-columnFilter>
-              </th>
-              <th>
-                <p-columnFilter type="text" field="clientName"></p-columnFilter>
-              </th>
-              <th>
-                <p-columnFilter type="text" field="intermediaryName"></p-columnFilter>
-              </th>
-              <th>
-                <p-columnFilter type="text" field="ticketFrom"></p-columnFilter>
-              </th>
-              <th>
-                <p-columnFilter type="text" field="ticketAssignee"></p-columnFilter>
-              </th>
-              <th>
-              </th>
-
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-ticket>
-            <tr>
-              <td class="body">
-                <p-tableCheckbox [value]="ticket"></p-tableCheckbox>
-              </td>
-              <td class="body">{{ticket.createdOn | date: 'shortDate'}}</td>
-              <td class="body" style="cursor:pointer;">{{ ticket.ticketName }}</td>
-              <td class="body">{{ ticket.refNo }}</td>
-              <td class="body">{{ ticket.clientName }}</td>
-              <td class="body">{{ ticket.intermediaryName }}</td>
-              <td class="body">{{ ticket.ticketFrom }}</td>
-              <td class="body">{{ ticket.ticketAssignee }}</td>
-              <td class="body ticket-button" (click)="goToTicketDetails(ticket)">
-                 <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
-                 &lt;!&ndash; Details &ndash;&gt;
-                </td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="9">No tickets found.</td>
-          </tr>
-        </ng-template>
-    </p-table>
-      &lt;!&ndash; <p-table
-        #ticketsTable
-        [value]="filteredTickets"
-        [(selection)]="selectedTickets"
-        dataKey="ticketID"
-        [rows]="pageSize"
-        [showCurrentPageReport]="true"
-        [rowsPerPageOptions]="[5,10,25,50]"
-        [paginator]="true"
-        [rowHover]="true"
-        [resizableColumns]="true"
-        [totalRecords]="filteredTickets.length"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-        [globalFilterFields]="globalFilterFields"
-        [tableStyle]="{'min-width':'75rem'}"
-        styleClass="p-datatable-sm"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th class="head">
-              Select All
-            </th>
-            <th class="head" pSortableColumn="createdOn">
-              Created On <p-sortIcon field="createdOn"></p-sortIcon>
-            </th>
-            <th class="head" pSortableColumn="ticketName">
-              Ticket Name <p-sortIcon field="ticketName"></p-sortIcon>
-            </th>
-            <th class="head" pSortableColumn="refNo">
-              Ref No. <p-sortIcon field="refNo"></p-sortIcon>
-            </th>
-            <th class="head" pSortableColumn="clientName">
-              Client <p-sortIcon field="clientName"></p-sortIcon>
-            </th>
-            <th class="head" pSortableColumn="intermediaryName">
-              Intermediary <p-sortIcon field="intermediaryName"></p-sortIcon>
-            </th>
-            <th class="head" pSortableColumn="ticketFrom">
-              Ticket From <p-sortIcon field="ticketFrom"></p-sortIcon>
-            </th>
-            <th class="head" pSortableColumn="ticketAssignee">
-              Ticket Assignee <p-sortIcon field="ticketAssignee"></p-sortIcon>
-            </th>
-            <th class="head">
-              Ticket ID
-            </th>
-          </tr>
-          <tr>
-            <th class="head">
-              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-            </th>
-            <th>
-              <p-columnFilter type="text" field="createdOn"></p-columnFilter>
-            </th>
-            <th>
-              <p-columnFilter type="text" field="ticketName"></p-columnFilter>
-            </th>
-            <th>
-              <p-columnFilter type="text" field="refNo"></p-columnFilter>
-            </th>
-            <th>
-              <p-columnFilter type="text" field="clientName"></p-columnFilter>
-            </th>
-            <th>
-              <p-columnFilter type="text" field="intermediaryName"></p-columnFilter>
-            </th>
-            <th>
-              <p-columnFilter type="text" field="ticketFrom"></p-columnFilter>
-            </th>
-            <th>
-              <p-columnFilter type="text" field="ticketAssignee"></p-columnFilter>
-            </th>
-            <th>
-              <p-columnFilter type="text" field="ticketID"></p-columnFilter>
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-ticket>
-          <tr>
-            <td class="body">
-              <p-tableCheckbox [value]="ticket"></p-tableCheckbox>
-            </td>
-            <td class="body">{{ticket.createdOn | date: 'shortDate'}}</td>
-            <td class="body" style="cursor:pointer;">{{ ticket.ticketName }}</td>
-            <td class="body">{{ ticket.refNo }}</td>
-            <td class="body">{{ ticket.clientName }}</td>
-            <td class="body">{{ ticket.intermediaryName }}</td>
-            <td class="body">{{ ticket.ticketFrom }}</td>
-            <td class="body">{{ ticket.ticketAssignee }}</td>
-            <td class="body">{{ ticket.ticketID }}</td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="8">No tickets found.</td>
-          </tr>
-        </ng-template>
-      </p-table> &ndash;&gt;
-    </div>
-  </div>-->
 
   <div class="card">
     <div class="card-body" style="position: relative;">
@@ -357,6 +131,7 @@
               <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('assignee');"
                 (input)="getInputs($event, 'assignee')">
             </th>
+            <th></th>
 
 
           </tr>
@@ -394,13 +169,12 @@
                 <!-- Display first 3 actions as text links -->
                 <!-- Process Action -->
                 <button type="button"
-                  class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1"
-                  (click)="processTicket(ticket)">
+                  class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1" (click)="processTicket(ticket)">
                   Process
                 </button>
 
                 <!-- Reassign Action -->
-                <button type="button"
+                <button type="button" (click)="reassignSingleTicket(ticket)"
                   class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1">
                   Reassign
                 </button>
@@ -421,6 +195,138 @@
     </div>
   </div>
 
+</div>
+
+<!-- Reassign ticket Modal 1 -->
+<div class="modal fade " id="reassignTicket" #reassignTicketModal tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="min-width:200px">
+    <div class="modal-content ps-4 pt-2 pb-5 pe-4">
+      <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0">
+        <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+          Reassign tasks
+        </p>
+        <button type="button" (click)="closeReassignTicketModal()" class="btn p-0 text-danger fw-bold"
+          style="border: none;">X</button>
+      </div>
+
+      <div *ngIf="departmentSelected" class="w-75 mb-2 mt-2">
+        <p class="quote-label">Group User</p>
+        <input pInputText type="select" class="form-control form-control-sm" id="quote-input"
+          [(ngModel)]="userToReassignTicket">
+      </div>
+
+      <div class="w-75 mb-2 mt-2">
+        <p class="quote-label">{{ userToReassignTicket ? 'Default User' : 'User' }}</p>
+
+
+        <div *ngIf="!departmentSelected"
+          class="form-control form-control-sm d-flex align-items-center justify-content-between" id="quote-input"
+          style="cursor: pointer;" (click)="openChooseClientReassignModal()">
+          <span cl>{{ userToReassignTicket}}</span>
+          <i class="pi pi-chevron-down me-2" style="color: #00529B;font-size: 14px;"></i>
+        </div>
+
+        <p-dropdown *ngIf="departmentSelected" [options]="groupUsers" optionLabel="userDetails.name" optionValue="id"
+          [(ngModel)]="selectedGroupUserId" placeholder="" class=" form-control-sm ">
+        </p-dropdown>
+
+
+      </div>
+
+      <div class="w-75 mb-3">
+        <p class="quote-label">Comments</p>
+        <textarea name="reassignProduct" class="form-control" style="height: 70px"
+          [(ngModel)]="reassignTicketComment"></textarea>
+      </div>
+
+      <small class="text-danger block" [class.invisible]="!noCommentleft">
+        Please leave a comment before reassigning
+      </small>
+
+      <small class="text-danger block" [class.invisible]="!noUserChosen">
+        Please select a person to reassign before continuing
+      </small>
+
+      <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
+        <button type="button" class="btn" 
+          [disabled]="!userToReassignTicket || !reassignTicketComment"
+          [style.background-color]="(!userToReassignTicket || !reassignTicketComment) ? '#cccccc' : '#00529B'"
+          style="color:white;text-decoration: none;"
+          (click)="reassignTicket()">{{
+          'gis.quotation.reassign' | translate }}
+        </button>
+        <button type="button" (click)="closeReassignTicketModal()" class="btn btn-outline-primary"
+          style="text-decoration: none;">{{'gis.quotation.cancel' | translate}}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Reassign ticket Modal 2 -->
+<div class="modal fade " id="chooseClientReassingModal" #chooseClientReassignModal tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="min-width:200px">
+    <div class="modal-content ps-4 pt-2 pb-5 pe-4">
+
+      <div class="d-flex justify-content-between align-items-center rounded-3 mb-2 p-0">
+        <p class="modal-title" style="color: #00529B; font-weight:600; font-size:20px;">
+          Reassign task
+        </p>
+        <button type="button" (click)="closeChooseClientReassignModal()" class="btn p-0 text-danger fw-bold"
+          style="border: none;">X</button>
+      </div>
+
+      <div class="row mt-2">
+        <p-table #reassignTable [value]="users" [rows]="3" [paginator]="true" [rowsPerPageOptions]="[5, 10, 20, 50]"
+          [globalFilterFields]="['id', 'name']" selectionMode="single" [(selection)]="selectedUser"
+          styleClass="p-datatable-striped" (onRowSelect)="onUserSelect()" (onRowUnselect)="onUserUnselect()">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>User ID</th>
+              <th>Full Name</th>
+            </tr>
+            <tr styleClass="p-striped">
+              <th>
+                <input type="text" [(ngModel)]="globalSearch" (input)="filterGlobal($event)" 
+                       class="form-control form-control-sm" 
+                       style="border-radius: 4px; border: 1px solid #ced4da; padding: 0.375rem 0.75rem;">
+              </th>
+              <th>
+                <input type="text" [(ngModel)]="fullNameSearch" (input)="filterByFullName($event)" 
+                       class="form-control form-control-sm" 
+                       style="border-radius: 4px; border: 1px solid #ced4da; padding: 0.375rem 0.75rem;">
+              </th>
+            </tr>
+
+          </ng-template>
+          <ng-template pTemplate="body" let-user>
+            <tr [pSelectableRow]="user">
+              <td>{{ user.id }}</td>
+              <td>{{ user.name }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <small class="text-danger block" [class.invisible]="!noUserChosen">
+        Please select a person to reassign before continuing
+      </small>
+
+      <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
+        <button type="button" class="btn" style="background-color: #00529B;color:white;text-decoration: none;"
+          (click)="selectClient()">{{
+          'gis.quotation.save' | translate }}
+        </button>
+        <button type="button" (click)="closeChooseClientReassignModal()" class="btn btn-outline-primary"
+          style="text-decoration: none;">{{
+          'gis.quotation.cancel' | translate
+          }}
+        </button>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <app-reassign-ticket-modal [reassignModalVisible]="showReassignTicketsModal" [selectedTickets]="selectedSpringTickets"
