@@ -11,7 +11,8 @@ import {
   DynamicScreenSetupDto,
   FormGroupsDto,
   FormSubGroupsDto,
-  PresentationType, SaveAction
+  PresentationType,
+  SaveAction
 } from "../../../../../../shared/data/common/dynamic-screens-dto";
 import {AddressModel, Branch, ClientDTO} from "../../../../data/ClientDTO";
 import {CountryISO, PhoneNumberFormat, SearchCountryField} from "ngx-intl-tel-input";
@@ -37,7 +38,7 @@ export class AddressComponent implements OnInit {
   selectedBranch: Branch;
 
 
-  countries: CountryDto[];
+  countries: CountryDto[] = [];
   clientCountry: CountryDto;
   countries$: Observable<CountryDto[]>;
 
@@ -184,7 +185,7 @@ export class AddressComponent implements OnInit {
         overview_branch_details_name: br.branchName,
         overview_country: br.countryName,
         overview_county: br.stateName,
-        overview_city: br.stateName,
+        overview_city: br.townName,
         overview_physical_address: br.physicalAddress,
         overview_postal_address: br.postalAddress,
         overview_postal_code: br.postalCode,
@@ -251,13 +252,27 @@ export class AddressComponent implements OnInit {
     this.formFields = fields;
     this.createEditForm(fields, saveAction);
     this.editButton.nativeElement.click();
-    log.info('subgroup >>> ', subgroup);
   }
 
 
   createEditForm(fields: ConfigFormFieldsDto[], saveAction?: SaveAction): void {
-    this.fetchCountries();
+
+    if (this.countries.length === 0) {
+      this.fetchCountries();
+    } else {
+      let stateId: number;
+
+      if (this.saveAction === SaveAction.SAVE_BRANCH || SaveAction.EDIT_BRANCH) {
+        stateId = this.selectedBranch.stateId;
+      } else if (this.saveAction === SaveAction.EDIT_ADDRESS_DETAILS) {
+        stateId = this.clientDetails.address.stateId;
+      }
+      log.info('stateId ', stateId);
+      this.fetchTowns(stateId);
+    }
+
     this.editForm = this.entityUtilService.createEditForm(fields);
+
     if (
       saveAction === SaveAction.EDIT_ADDRESS_DETAILS ||
       saveAction === SaveAction.EDIT_BRANCH
@@ -282,9 +297,15 @@ export class AddressComponent implements OnInit {
   fetchStates(countryId: number): void {
     this.countryService.getMainCityStatesByCountry(countryId).subscribe({
       next:(states) => {
+        let stateId: number;
+        if (this.saveAction === SaveAction.EDIT_BRANCH || this.saveAction === SaveAction.SAVE_BRANCH) {
+          stateId = this.selectedBranch?.stateId;
+        } else {
+          stateId = this.addressDetails?.stateId;
+        }
         this.states = states;
-        this.clientState = states.find(state => state.id === this.addressDetails?.stateId);
-        this.fetchTowns(this.addressDetails?.stateId);
+        this.clientState = states.find(state => state.id === stateId);
+        this.fetchTowns(stateId);
       },
       error: (err) => {
         this.states = [];
@@ -296,8 +317,14 @@ export class AddressComponent implements OnInit {
   fetchTowns(stateId: number): void {
     this.countryService.getTownsByMainCityState(stateId).subscribe({
       next:(towns) => {
+        let townId: number;
+        if (this.saveAction === SaveAction.EDIT_BRANCH || this.saveAction === SaveAction.SAVE_BRANCH) {
+          townId = this.selectedBranch?.townId
+        } else {
+          townId = this.addressDetails?.townId;
+        }
         this.towns = towns;
-        this.clientTown = towns.find(town => town.id === this.addressDetails?.townId);
+        this.clientTown = towns.find(town => town.id === townId);
         this.fetchPostalCodes(this.clientTown?.id);
       },
       error: (err) => {
@@ -338,15 +365,17 @@ export class AddressComponent implements OnInit {
 
     let patchDropdowns = {};
     if (this.saveAction === SaveAction.EDIT_ADDRESS_DETAILS) {
+      const address: AddressModel = this.clientDetails.address;
+      log.info('address details >>> ', address)
       patchDropdowns = {
         overview_country: this.clientDetails.address.countryId,
-        overview_head_office_country: this.clientDetails.address.countryId,
-        overview_head_office_county: this.clientDetails.address.stateId,
+        overview_head_office_country: address.countryId,
+        overview_head_office_county: address.stateId,
         overview_county: this.clientDetails.address.stateId,
         overview_city: this.clientDetails.address.townId,
-        overview_head_office_city: this.clientDetails.address.townId,
+        overview_head_office_city: address.townId,
         overview_postal_code: this.clientDetails.address.postalCode,
-        overview_head_office_postal_code: this.clientDetails.address.postalCode,
+        overview_head_office_postal_code: address.postalCode,
       };
     } else if (this.saveAction === SaveAction.EDIT_BRANCH) {
       patchDropdowns = {
@@ -365,7 +394,6 @@ export class AddressComponent implements OnInit {
     }
 
     this.editForm?.patchValue(patchData);
-    log.info('patchFormValues ->', this.editForm.value);
   }
 
   saveDetails() {
@@ -419,26 +447,29 @@ export class AddressComponent implements OnInit {
       next: data => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
         this.clientDetails = data;
+        this.branchDetails = data.branches;
         this.prepareDataDisplay();
+        this.closeButton.nativeElement.click();
       },
       error: err => {
         const errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.closeButton.nativeElement.click();
       }
     });
   }
 
-  prepareEditBranchForm(data: any, saveAction: SaveAction) {
-    log.info('selected row ', data)
-    this.saveAction = saveAction;
+  prepareEditBranchForm(data: any) {
+    this.saveAction = Object.keys(data.row).length > 0 ? SaveAction.EDIT_BRANCH : SaveAction.SAVE_BRANCH;
     const fields =  this.tableHeaders.map(field => ({...field})) ;
     const row = data.row;
-    this.selectedBranch = this.branchDetails.find(branch => branch.code = row.branchAddressId);
+    this.selectedBranch = this.branchDetails.find(branch => branch.code === row.branchAddressId);
     this.selectedSubgroup = data.subGroup;
+    log.info('selectedBranch', this.selectedBranch, row.branchAddressId);
 
     this.formFields = this.entityUtilService.addDataToFormFields(fields, row);
 
-    this.createEditForm(this.formFields, saveAction);
+    this.createEditForm(this.formFields, this.saveAction);
     this.editButton.nativeElement.click();
   }
 
@@ -449,6 +480,7 @@ export class AddressComponent implements OnInit {
       ...this.selectedBranch,
       countryId: formValues.overview_country,
       stateId: formValues.overview_county,
+      townId: formValues.overview_city,
       physicalAddress: formValues.overview_physical_address,
       postalAddress: formValues.overview_postal_address,
       postalCode: formValues.overview_postal_code,
