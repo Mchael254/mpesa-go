@@ -312,12 +312,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
     const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+    log.debug("Reused quotation in details screen", reusedQuotation)
     if (reusedQuotation) {
       const data = JSON.parse(reusedQuotation);
       const quotationCode = data._embedded.newQuotationCode;
     if (quotationCode) {
       this.quotationCode = quotationCode
-      this.fetchQuotationDetails(quotationCode);
+      // this.fetchQuotationDetails(quotationCode);
       this.quotationSourceFlag = 'reused';
     }
     }
@@ -332,7 +333,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
       if (quotationCode) {
         this.quotationCode = quotationCode;
-        this.fetchQuotationDetails(quotationCode);
+        // this.fetchQuotationDetails(quotationCode);
          this.quotationSourceFlag = 'revised';
       }
     }
@@ -345,7 +346,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       const quotationCode = this.ticketData.quotationCode;
       if(quotationCode){
       this.quotationCode=quotationCode
-      this.fetchQuotationDetails(quotationCode);
+      // this.fetchQuotationDetails(quotationCode);
       this.quotationSourceFlag = 'ticket';
       }
 
@@ -636,21 +637,26 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         log.debug(this.quotationForm.value, 'Final Form Value');
 
       
-      if (this.quotationSourceFlag === 'revised') {
-        log.debug('Patching revised quotation data...');
-        this.patchRevisedQuotationData();
-      } else if (this.quotationSourceFlag === 'reused') {
-        log.debug('Patching reused quotation data...');
-        this.patchReusedQuotationData();
-      } else if (this.quotationSourceFlag === 'ticket'){
-        log.debug('patching ticket data')
-        this.patchReusedQuotationData();
-      }
+      // if (this.quotationSourceFlag === 'revised') {
+      //   log.debug('Patching revised quotation data...');
+      //   this.patchRevisedQuotationData();
+      // } else if (this.quotationSourceFlag === 'reused') {
+      //   log.debug('Patching reused quotation data...');
+      //   this.patchReusedQuotationData();
+      // } else if (this.quotationSourceFlag === 'ticket'){
+      //   log.debug('patching ticket data')
+      //   this.patchReusedQuotationData();
+      // }
 
-      if (this.quotationSourceFlag) {
-      log.debug(`Clearing quotation source flag (${this.quotationSourceFlag}) after patching.`);
-      this.quotationSourceFlag = null;
-      }
+      // if (this.quotationSourceFlag) {
+      // log.debug(`Clearing quotation source flag (${this.quotationSourceFlag}) after patching.`);
+      // this.quotationSourceFlag = null;
+      // }
+
+       if (this.quotationCode) {
+        this.fetchQuotationDetails(this.quotationCode);
+       }
+      
     
    
       },
@@ -718,28 +724,41 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   filterByAddHeading(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.addProductClausesTable.filter(input.value, 'heading', 'contains');
-  }
+  }   
+
+
   fetchQuotationDetails(quotationCode: number) {
-    log.debug("Quotation Number tot use:", quotationCode)
-    this.quotationService.getQuotationDetails(quotationCode)
-      .subscribe({
-        next: (res: any) => {
-          this.quotationDetails = res;
-          log.debug("Quotation details-risk details", this.quotationDetails);
+  log.debug("Quotation Number to use:", quotationCode)
+  this.quotationService.getQuotationDetails(quotationCode)
+    .subscribe({
+      next: (res: any) => {
+        this.quotationDetails = res;
+        log.debug("Quotation details-risk details", this.quotationDetails);
 
+        
+        if (this.quotationSourceFlag === 'revised') {
+          log.debug('Patching revised quotation data...');
+          this.patchRevisedQuotationData();
+        } else if (this.quotationSourceFlag === 'reused' || this.quotationSourceFlag === 'ticket') {
+          log.debug('Patching reused/ticket quotation data...');
+          this.patchReusedQuotationData();
+        }
 
-        },
-        error: (error: HttpErrorResponse) => {
-          log.debug("Error log", error.error.message);
-
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
-        },
-
-      })
-  }
+        // Clear flag after patching
+        if (this.quotationSourceFlag) {
+          log.debug(`Clearing quotation source flag (${this.quotationSourceFlag}) after patching.`);
+          this.quotationSourceFlag = null;
+        }
+      },
+      error: (error: HttpErrorResponse) => {
+        log.debug("Error log", error.error.message);
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          error.error.message
+        );
+      },
+    })
+}
 
   //product clauses
   toggleProductClausesopen() {
@@ -3176,10 +3195,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
       log.debug("AGENT OBJECT TO PATCH =>", agentObject);
 
+       const sourceObject = data.sourceCode 
+      ? this.quotationSources?.find(s => String(s.code) === String(data.sourceCode))
+      : null;
+
+    log.debug("SOURCE OBJECT TO PATCH =>", sourceObject);
+
 
       if (this.quotationForm) {
         this.quotationForm.patchValue({
-          source: data.source || '',
+          source: sourceObject || data.source,
           quotationType: data.clientType || 'I',
           branch: data.branchCode || '',
           currency: data.currency || '',
@@ -3202,40 +3227,58 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         log.debug("⚠️ No agent object found to patch");
       }
 
+if (data.clientCode) {
+  log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
 
-      if (data.clientCode) {
-        log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
+  this.clientService.getClientById(data.clientCode).subscribe({
+    next: (client: any) => {
+      log.debug('[QuotationDetailsComponent] Client fetched for reused quotation =>', client);
 
-        this.clientService.getClientById(data.clientCode).subscribe({
-          next: (client: any) => {
-            log.debug('[QuotationDetailsComponent] Client fetched for revision =>', client);
+      if (client) {
+        const clientName = [client.firstName, client.lastName]
+          .filter(Boolean)
+          .join(' ')
+          .trim() ||
+          client.lastName ||
+          'Unknown Client';
 
-            if (client) {
-
-              const clientName = [client.firstName, client.lastName]
-                .filter(Boolean)
-                .join(' ')
-                .trim() ||
-                client.lastName ||
-
-                'Unknown Client';
-
-              this.quotationForm.patchValue({
-                client: clientName
-              });
-
-
-
-              log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
-            } else {
-              log.debug('[QuotationDetailsComponent] No client found for clientCode =>', data.clientCode);
-            }
-          },
-          error: (error: any) => {
-            log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
-          }
+        // ✅ Update BOTH the form control AND the display variable
+        this.selectedClientName = clientName;
+        this.selectedClientCode = data.clientCode;
+        
+        // Patch the hidden form control with the client code
+        this.quotationForm.patchValue({
+          client: data.clientCode  // ✅ Use clientCode, not clientName
         });
+
+        // ✅ Also update session storage
+        sessionStorage.setItem('SelectedClientName', clientName);
+        sessionStorage.setItem('SelectedClientCode', JSON.stringify(data.clientCode));
+
+        log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
+      } else {
+        log.debug('[QuotationDetailsComponent] No client found for clientCode =>', data.clientCode);
       }
+    },
+    error: (error: any) => {
+      log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
+    }
+  });
+} else {
+  // ✅ If clientCode exists in quotationDetails but no need to fetch
+  // (data already has clientName), patch directly
+  if (data.clientName) {
+    this.selectedClientName = data.clientName;
+    this.selectedClientCode = data.clientCode;
+    
+    this.quotationForm.patchValue({
+      client: data.clientCode
+    });
+    
+    sessionStorage.setItem('SelectedClientName', data.clientName);
+    sessionStorage.setItem('SelectedClientCode', JSON.stringify(data.clientCode));
+  }
+}
 
 
       // ✅ Optional: patch dropdown selections for UI
@@ -3326,8 +3369,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
       log.debug("AGENT OBJECT TO PATCH =>", agentObject);
 
+       const sourceObject = data.sourceCode 
+      ? this.quotationSources?.find(s => String(s.code) === String(data.sourceCode))
+      : null;
+
+    log.debug("SOURCE OBJECT TO PATCH =>", sourceObject);
+
       this.quotationForm.patchValue({
-        source: data.source || null,
+        source: sourceObject || data.source,
         quotationType: data.clientType || 'I',
         branch: data.branchCode || '',
         currency: data.currency || '',
@@ -3347,37 +3396,58 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         log.debug("⚠️ No agent object found to patch");
       }
 
-      // ✅ Fetch and patch client
       if (data.clientCode) {
-        log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
+  log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
 
-        this.clientService.getClientById(data.clientCode).subscribe({
-          next: (client: any) => {
-            log.debug('[QuotationDetailsComponent] Client fetched for revision =>', client);
+  this.clientService.getClientById(data.clientCode).subscribe({
+    next: (client: any) => {
+      log.debug('[QuotationDetailsComponent] Client fetched for reused quotation =>', client);
 
-            if (client) {
-              const clientName = [client.firstName, client.lastName]
-                .filter(Boolean)
-                .join(' ')
-                .trim() ||
-                client.lastName ||
-                'Unknown Client';
+      if (client) {
+        const clientName = [client.firstName, client.lastName]
+          .filter(Boolean)
+          .join(' ')
+          .trim() ||
+          client.lastName ||
+          'Unknown Client';
 
-              this.quotationForm.patchValue({
-                client: clientName
-              });
+        // ✅ Update BOTH the form control AND the display variable
+        this.selectedClientName = clientName;
+        this.selectedClientCode = data.clientCode;
+        
+        // Patch the hidden form control with the client code
+        this.quotationForm.patchValue({
+          client: data.clientCode  // ✅ Use clientCode, not clientName
+        });
 
-              log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
-            } else {
-              log.debug('[QuotationDetailsComponent] No client found for clientCode =>', data.clientCode);
-            }
-          },
-          error: (error: any) => {
-            log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
-          }
-        }); // ✅ Close subscribe here
-      } // ✅ Close if (data.clientCode) here
+        // ✅ Also update session storage
+        sessionStorage.setItem('SelectedClientName', clientName);
+        sessionStorage.setItem('SelectedClientCode', JSON.stringify(data.clientCode));
 
+        log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
+      } else {
+        log.debug('[QuotationDetailsComponent] No client found for clientCode =>', data.clientCode);
+      }
+    },
+    error: (error: any) => {
+      log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
+    }
+  });
+} else {
+  // ✅ If clientCode exists in quotationDetails but no need to fetch
+  // (data already has clientName), patch directly
+  if (data.clientName) {
+    this.selectedClientName = data.clientName;
+    this.selectedClientCode = data.clientCode;
+    
+    this.quotationForm.patchValue({
+      client: data.clientCode
+    });
+    
+    sessionStorage.setItem('SelectedClientName', data.clientName);
+    sessionStorage.setItem('SelectedClientCode', JSON.stringify(data.clientCode));
+  }
+}
       // ✅ These should be OUTSIDE the client fetch block
       this.quotationForm.get('client')?.disable({ emitEvent: false });
       this.quotationForm.get('agent')?.disable({ emitEvent: false });

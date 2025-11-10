@@ -375,7 +375,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   shareQuoteData: ShareQuoteDTO = {
-    selectedMethod: 'sms',
+    selectedMethod: 'email',
     email: '',
     smsNumber: '',
     whatsappNumber: '',
