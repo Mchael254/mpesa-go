@@ -153,10 +153,10 @@
             <td class="body">{{ ticket.clientName }}</td>
             <td class="body">{{ ticket.agentName }}</td>
             <td class="body">
-              PMUTUA
+              {{ticket.createdBy}}
             </td>
             <td class="body">
-              {{ ticket.ticketTo === 'JMMUSYOKI' ? 'WADUVAGA' : ticket.ticketTo }}
+              {{ ticket.ticketTo }}
             </td>
             <!-- <td class="body ticket-button" (click)="goToTicketDetails(ticket)">
               <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
