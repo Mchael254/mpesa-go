@@ -2610,7 +2610,8 @@
       "retrievedReceipts": "Risiti zilizorudishwa",
       "assign": "Panga",
       "goToDashboard": "Nenda kwenye dashibodi",
-      "createBatches": "Unda makundi"
+      "createBatches": "Unda makundi",
+      "AttachDepositSlip": "Ambatanisha risiti ya amana"
     }
   },
   "campaignMngmt": {

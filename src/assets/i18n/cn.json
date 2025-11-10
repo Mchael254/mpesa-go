@@ -2598,7 +2598,8 @@
       "retrievedReceipts": "已检索收据",
       "assign": "分配",
       "goToDashboard": "前往仪表板",
-      "createBatches": "创建批次"
+      "createBatches": "创建批次",
+      "AttachDepositSlip": "附上存款单"
     }
   },
   "campaignMngmt": {
