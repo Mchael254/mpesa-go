@@ -15,7 +15,26 @@
   transform: translateY(-50%);
   color: #6c757d;
 }
+.file-dropzone {
+  border: 2px dashed #ced4da; 
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease-in-out;
+  cursor: pointer; 
+}
 
+.file-dropzone:hover {
+  background-color: #e9ecef; 
+}
 
-
-
+/* Style for the 'Click to upload' text */
+.cursor-pointer {
+    cursor: pointer;
+}
+/* Style for the uploaded file rows */
+.uploaded-files-list .file-name {
+  font-weight: 500;
+  color: #495057;
+}
+.uploaded-files-list .btn-link {
+    text-decoration: none;
+}

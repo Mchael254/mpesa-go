@@ -2616,7 +2616,8 @@
       "retrievedReceipts": "Abgerufene Belege",
       "assign": "Zuweisen",
       "goToDashboard": "Zum Dashboard",
-      "createBatches": "Chargen erstellen"
+      "createBatches": "Chargen erstellen",
+      "AttachDepositSlip": "Einzahlungsbeleg anhängen"
     }
   },
   "campaignMngmt": {

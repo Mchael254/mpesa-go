@@ -3314,7 +3314,8 @@
       "retrievedReceipts": "Retrieved receipts",
       "assign": "Assign",
       "goToDashboard": "Go to dashboard",
-      "createBatches": "Create batches"
+      "createBatches": "Create batches",
+      "AttachDepositSlip":"Attach Deposit Slip"
     },
     "receipt_authorization": {
       "title": "Receipt Authorization",

@@ -13,10 +13,10 @@
       },
       {
         label: this.translate.instant('base.base-fms.banking'),
-        url: '/home/fms/new-banking-process',
+        url: '/home/fms/',
       },
       {
-        label: this.translate.instant('fms.banking.processBatch'),
+        label: this.translate.instant('fms.banking.newBankingProcess'),
         url: '',
       }
      
@@ -487,9 +487,10 @@
           </h5>
           <button
             type="button"
-            class="close"
+            class="btn-close"
             data-dismiss="modal"
             aria-label="Close"
+            (click)="closeDepositModal()"
           >
             <span aria-hidden="true">&times;</span>
           </button>
@@ -541,6 +542,7 @@
                     class="form-control"
                     id="amount"
                     formControlName="amount"
+                    readonly
                   />
                 </div>
               </div>
@@ -555,6 +557,63 @@
                     id="remarks"
                     formControlName="remarks"
                   />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <h6 class="fw-normal mb-2">
+                    {{ "fms.banking.AttachDepositSlip" | translate }}
+                  </h6>
+                  <!-- custom file dropzone -->
+                  <div
+                    class="file-dropzone border-dashed text-center p-4 rounded"
+                    (click)="fileInput.click()"
+                  >
+                    <i
+                      class="pi pi-upload text-primary mb-2"
+                      style="font-size: 2rem"
+                    ></i>
+                    <p class="mb-1">
+                      <span class="text-primary fw-bold cursor-pointer"
+                        >Click to upload</span
+                      >
+                      or drag file here
+                    </p>
+                    <small class="text-muted">PDF, JPG, PNG (Max 5MB)</small>
+                    <!-- Hidden file input that we trigger programmatically -->
+                    <input
+                      type="file"
+                      #fileInput
+                      class="d-none"
+                      (change)="onFileSelected($event)"
+                      multiple
+                    />
+                  </div>
+                  <!-- List of Uploaded Files -->
+                  <div
+                    class="uploaded-files-list mt-3"
+                    *ngIf="uploadedFiles.length > 0"
+                  >
+                    <div
+                      *ngFor="let file of uploadedFiles; let i = index"
+                      class="d-flex align-items-center justify-content-between p-2 mb-2 bg-light rounded"
+                    >
+                      <div class="d-flex align-items-center">
+                        <i
+                          class="pi pi-file-pdf text-danger me-2"
+                          style="font-size: 1.5rem"
+                        ></i>
+                        <span class="file-name">{{ file.name }}</span>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-link text-danger"
+                        (click)="removeFile(i)"
+                      >
+                        <i class="pi pi-trash"></i>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

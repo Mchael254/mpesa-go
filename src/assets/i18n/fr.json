@@ -3148,7 +3148,8 @@
       "retrievedReceipts": "Reçus récupérés",
       "assign": "Assigner",
       "goToDashboard": "Aller au tableau de bord",
-      "createBatches": "Créer des lots"
+      "createBatches": "Créer des lots",
+      "AttachDepositSlip": "Joindre le bordereau de dépôt"
     }
   },
   "campaignMngmt": {

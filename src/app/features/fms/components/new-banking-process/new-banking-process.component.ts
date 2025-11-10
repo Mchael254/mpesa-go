@@ -95,6 +95,8 @@ export class NewBankingProcessComponent implements OnInit {
    sortBy:string='accNumber';
    direction:string='asc';
    glAccounts:GLAccountDTO[]=[];
+   /** Stores the list of files selected by the user. */
+  uploadedFiles: File[] = [];
   /**
    * @constructor
    * @param translate Service for handling internationalization (i18n).
@@ -491,6 +493,7 @@ reAssignUser():void{
     this.bankingService.reAssignUser(requestBody).subscribe({
       next:(response)=>{
 this.globalMessagingService.displaySuccessMessage('',response.msg);
+ this.fetchReceipts();
       },
       error:(err)=>{
         this.handleApiError(err);
@@ -504,7 +507,11 @@ openDepositModal(receipt:any):void{
     modalEl.show();
   }
   this.selectedRctObj = receipt;
+  this.depositForm.patchValue({amount:this.selectedRctObj.receiptAmount});
+   this.uploadedFiles = []; // Clear previous files when opening
 }
+
+
 closeDepositModal(){
   const modal = document.getElementById('depositModal');
   if(modal){
@@ -514,6 +521,28 @@ closeDepositModal(){
   }
   }
 }
+  /**
+   * Triggered when files are selected via the hidden input.
+   * @param event The file input change event.
+   */
+  onFileSelected(event: any): void {
+    if (event.target.files && event.target.files.length > 0) {
+      // Add the newly selected files to our array
+      for (let i = 0; i < event.target.files.length; i++) {
+        this.uploadedFiles.push(event.target.files[i]);
+      }
+    }
+  // Reset the input value to allow selecting the same file again
+    event.target.value = ''; 
+  }
+   /**
+   * Removes a file from the uploadedFiles array by its index.
+   * @param index The index of the file to remove.
+   */
+  removeFile(index: number): void {
+    this.uploadedFiles.splice(index, 1);
+  }
+
 fetchGlAccounts():void{
   this.receiptManagementService.getGlAccounts(this.page,this.size,this.sortBy,this.direction).subscribe({
     next:(response)=>{
