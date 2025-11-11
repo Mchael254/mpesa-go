@@ -508,7 +508,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       cc: ['', Validators.email],
       bcc: ['', Validators.email],
       subject: [''],
-      wording: ['']
+      wording: [''],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      smsMessage: ['', [Validators.required, Validators.minLength(1)]]
     });
     const currencyDelimiter = sessionStorage.getItem('currencyDelimiter');
     const currencySymbol = sessionStorage.getItem('currencySymbol')
@@ -3602,9 +3604,86 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   async sendReportViaEmail() {
     this.viewDocForm.markAllAsTouched();
-    this.viewDocForm.updateValueAndValidity()
-    if (!this.selectedReports || this.selectedReports.length === 0) return;
+    this.viewDocForm.updateValueAndValidity();
+    
+    if (!this.selectedReports || this.selectedReports.length === 0) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one report to send');
+      return;
+    }
 
+    // Check if SMS tab is active (index 0)
+    if (this.activeIndex === 0) {
+      // Send via SMS
+      this.sendReportViaSMS();
+    } else {
+      // Send via Email (index 1)
+      this.sendReportViaEmailMethod();
+    }
+  }
+
+  /**
+   * Send reports via SMS
+   */
+  async sendReportViaSMS() {
+    const phoneNumberControl = this.viewDocForm.get('phoneNumber');
+
+    if (!phoneNumberControl) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Form controls not initialized');
+      return;
+    }
+
+    // Validate phone number (exactly 10 digits)
+    if (phoneNumberControl.invalid) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please enter a valid 10-digit phone number');
+      return;
+    }
+
+    const rawPhoneNumber = phoneNumberControl.value;
+    
+    // Generate SMS message template automatically
+    const message = this.getSMSMessageTemplate();
+
+    // Format phone number to 254 format
+    let formattedPhoneNumber: string;
+    try {
+      formattedPhoneNumber = this.formatPhoneNumber(rawPhoneNumber);
+    } catch (error) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Invalid phone number format');
+      return;
+    }
+
+    log.debug('Raw phone number:', rawPhoneNumber);
+    log.debug('Formatted phone number:', formattedPhoneNumber);
+    log.debug('Message:', message);
+
+    this.spinner.show();
+
+    this.quotationService.sendNormalQuotationSms(message, formattedPhoneNumber).subscribe({
+      next: (response: any) => {
+        this.spinner.hide();
+        log.debug('SMS sent successfully:', response);
+        this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
+        
+        // Close the modal
+        const modalEl = this.viewDocumentsModal.nativeElement;
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) {
+          modal.hide();
+        }
+      },
+      error: (error: any) => {
+        this.spinner.hide();
+        log.error('Error sending SMS:', error);
+        const errorMessage = error?.error?.message || error?.message || 'Failed to send SMS';
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
+    });
+  }
+
+  /**
+   * Send reports via Email
+   */
+  async sendReportViaEmailMethod() {
     const viewDocForm = this.viewDocForm.value;
     log.debug("Selected reports:", this.selectedReports)
     log.debug("Report blobs", this.reportBlobs)
@@ -4372,6 +4451,200 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       error: (err) => {
         log.error(`Download failed!`, err);
       },
+    });
+  }
+
+  /**
+   * Get product type from quotation details
+   */
+  getProductType(): string {
+    if (!this.quotationView?.quotationProducts || this.quotationView.quotationProducts.length === 0) {
+      return 'Insurance';
+    }
+    return this.quotationView.quotationProducts
+      .map(p => p.productName || p.productCode)
+      .join(', ');
+  }
+
+  /**
+   * Get total sum insured from all risks
+   */
+  getTotalSumInsured(): number {
+    if (!this.quotationView?.quotationProducts) {
+      return 0;
+    }
+
+    return this.quotationView.quotationProducts.reduce((total: number, product: any) => {
+      if (!product.riskInformation) return total;
+      return total + product.riskInformation.reduce((sum: number, risk: any) => {
+        return sum + (risk.value || 0);
+      }, 0);
+    }, 0);
+  }
+
+  /**
+   * Get total premium from quotation
+   */
+  getTotalPremium(): number {
+    if (!this.quotationView?.quotationProducts) {
+      return 0;
+    }
+
+    return this.quotationView.quotationProducts.reduce((total: number, product: any) => {
+      if (!product.riskInformation) return total;
+      return total + product.riskInformation.reduce((sum: number, risk: any) => {
+        return sum + (risk.premium || 0);
+      }, 0);
+    }, 0);
+  }
+
+  /**
+   * Get insurer name from session storage store_ details
+   */
+  getInsurerName(): string {
+    try {
+      const storeDetailsRaw = sessionStorage.getItem('store_');
+      if (storeDetailsRaw) {
+        const storeDetails = JSON.parse(storeDetailsRaw);
+        // Use API_TENANT_ID as the insurer name
+        if (storeDetails.API_TENANT_ID) {
+          return storeDetails.API_TENANT_ID;
+        }
+      }
+    } catch (error) {
+      log.error('Error parsing store details from session storage', error);
+    }
+    // Fallback to stored insurerName or default
+    return sessionStorage.getItem('insurerName') || 'Turnkey Insurance';
+  }
+
+  /**
+   * Get customer name from session storage client details
+   */
+  getCustomerName(): string {
+    try {
+      const clientDetailsRaw = sessionStorage.getItem('SelectedClientDetails');
+      if (clientDetailsRaw) {
+        const clientDetails = JSON.parse(clientDetailsRaw);
+        // Use firstName and lastName if available, otherwise use clientFullName
+        if (clientDetails.firstName && clientDetails.lastName) {
+          return `${clientDetails.firstName} ${clientDetails.lastName}`.trim();
+        } else if (clientDetails.clientFullName && clientDetails.clientFullName !== 'null null') {
+          return clientDetails.clientFullName;
+        } else if (clientDetails.lastName) {
+          return clientDetails.lastName;
+        }
+      }
+    } catch (error) {
+      log.error('Error parsing client details from session storage', error);
+    }
+    return 'Customer';
+  }
+
+  /**
+   * Handle tab change event
+   */
+  onTabChange(event: any): void {
+    // Update active index to track current tab
+    this.activeIndex = event.index;
+  }
+
+  /**
+   * Get SMS message template with dynamic content
+   */
+  getSMSMessageTemplate(): string {
+    const customerName = this.getCustomerName();
+    const message = `Dear ${customerName},
+    Your insurance quotation #${this.fetchedQuoteNum} for ${this.getProductType()} is ready. Valid until ${this.expiryDate}.
+    Sum insured: KES ${this.getTotalSumInsured().toFixed(2)} Premium: KES ${this.getTotalPremium().toFixed(2)}
+    For the full quote, please contact us. ${this.getInsurerName()}`;
+
+    return message;
+  }
+
+  /**
+   * Format phone number to international format (254XXXXXXXXX)
+   * @param phoneNumber - The phone number to format
+   * @returns Formatted phone number with 254 prefix
+   */
+  formatPhoneNumber(phoneNumber: string): string {
+    const cleaned = phoneNumber.replace(/\D/g, '');
+    
+    // If already starts with 254, return as is
+    if (cleaned.startsWith('254')) {
+      return cleaned;
+    }
+
+    if (!cleaned.match(/^(01|07)/)) {
+      throw new Error("Invalid phone number format");
+    }
+
+    // Convert to 254 format by removing leading 0 and adding 254
+    return '254' + cleaned.substring(1);
+  }
+
+  sendQuotationSms() {
+    // Mark form as touched to show validation errors
+    this.viewDocForm.markAllAsTouched();
+    
+    // Check if the SMS form fields are valid
+    const phoneNumberControl = this.viewDocForm.get('phoneNumber');
+    const smsMessageControl = this.viewDocForm.get('smsMessage');
+
+    if (!phoneNumberControl || !smsMessageControl) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Form controls not initialized');
+      return;
+    }
+
+    // Validate phone number (exactly 10 digits)
+    if (phoneNumberControl.invalid) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please enter a valid 10-digit phone number');
+      return;
+    }
+
+    // Validate message content
+    if (smsMessageControl.invalid || !smsMessageControl.value?.trim()) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please enter a message to send');
+      return;
+    }
+
+    const rawPhoneNumber = phoneNumberControl.value;
+    const message = smsMessageControl.value;
+
+    // Format phone number to 254 format
+    let formattedPhoneNumber: string;
+    try {
+      formattedPhoneNumber = this.formatPhoneNumber(rawPhoneNumber);
+    } catch (error) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Invalid phone number format');
+      return;
+    }
+
+    log.debug('Raw phone number:', rawPhoneNumber);
+    log.debug('Formatted phone number:', formattedPhoneNumber);
+    log.debug('Message:', message);
+
+    this.spinner.show();
+
+    this.quotationService.sendNormalQuotationSms(message, formattedPhoneNumber).subscribe({
+      next: (response: any) => {
+        this.spinner.hide();
+        log.debug('SMS sent successfully:', response);
+        this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
+        
+        // Optionally close the modal
+        const modalEl = this.viewDocumentsModal.nativeElement;
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) {
+          modal.hide();
+        }
+      },
+      error: (error: any) => {
+        this.spinner.hide();
+        log.error('Error sending SMS:', error);
+        const errorMessage = error?.error?.message || error?.message || 'Failed to send SMS';
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+      }
     });
   }
 

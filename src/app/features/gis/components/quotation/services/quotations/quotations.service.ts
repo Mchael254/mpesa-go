@@ -1361,6 +1361,7 @@ export class QuotationsService {
       catchError(this.errorHandl)
     );
   }
+
   changeTicketStatus(ticketPayload: any) {
     return this.api.POST<any>(
       `/v1/process-flow/move-to-task`,
@@ -1368,6 +1369,7 @@ export class QuotationsService {
       API_CONFIG.GIS_TICKETING_SERVICE
     );
   }
+
   undoMakeReady(quotationCode: number) {
     return this.api.POST<any>(
       `v2/quotation/undo-make-ready?quotationCode=${quotationCode}`,
@@ -1375,6 +1377,27 @@ export class QuotationsService {
       API_CONFIG.GIS_QUOTATIONS_BASE_URL
     );
   }
+
+  sendNormalQuotationSms(message: string, phoneNumber: string, sendDate?: string | null) {
+    const payload = {
+      scheduledDate: null,
+      smsMessages: [
+        {
+          message,
+          sendDate: sendDate || new Date().toISOString(),
+          systemCode: 0,
+          telephoneNumber: phoneNumber
+        }
+      ]
+    };
+
+    return this.http.post(
+      `/${this.notificationUrl}/api/v2/sms/send`,
+      JSON.stringify(payload),
+      this.httpOptions
+    );
+  }
+
 
 
 
