@@ -1150,8 +1150,8 @@ export class QuotationsService {
   }
 
 
-  generateOTP(payload: OtpPayload) {
-    return this.api.POST<any>(`v2/otp/generate-and-send`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
+  generateOTP(payload: OtpPayload,method: 'SMS' | 'EMAIL' | 'WHATSAPP') {
+    return this.api.POST<any>(`v2/otp/generate-and-send?method=${method}`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     );

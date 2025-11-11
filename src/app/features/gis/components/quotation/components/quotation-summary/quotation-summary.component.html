@@ -145,13 +145,15 @@
             <div class="col-md-4 d-flex">
               <p class="label w-50">Sum Insured</p>
               <p class="content w-50">
-                {{ quotationView?.sumInsured | number }}
+                {{ quotationView?.sumInsured | currency: currencyObj?.prefix :
+                'symbol' : '1.2-2'}}
               </p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Marketer Comm.</p>
               <p class="content w-50">
-                {{ quotationView?.marketerCommissionAmount | number }}
+                {{ quotationView?.marketerCommissionAmount | currency: currencyObj?.prefix :
+                'symbol' : '1.2-2' }}
               </p>
             </div>
           </div>
@@ -159,7 +161,8 @@
           <div class="row mb-2">
             <div class="col-md-4 d-flex">
               <p class="label w-50">Comm amt.</p>
-              <p class="content w-50">{{ quotationView?.commissionAmount }}</p>
+              <p class="content w-50">{{ quotationView?.commissionAmount | currency: currencyObj?.prefix :
+                'symbol' : '1.2-2' }}</p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Comments</p>
@@ -800,7 +803,7 @@
                         </li>
                         <li class="nav-item">
                           <a class="nav-link " [class.active]="activeRiskDetailsTab === 'documents'"
-                            (click)="activeRiskDetailsTab = 'documents'">
+                            (click)="activeRiskDetailsTab = 'documents'; onDocumetTabSelect(selectedRisk)">
                             Documents
                           </a>
                         </li>

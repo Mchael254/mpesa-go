@@ -214,8 +214,7 @@
                                             <!-- INSURED -->
                                             <ng-container *ngIf="field.name === 'insureds' && clientsData?.length">
                                                 <p-dropdown formControlName="insureds" [options]="clientsData"
-                                                    optionLabel="clientFullName" optionValue="id"
-                                                    placeholder="Select Insured" [filter]="true"
+                                                    optionLabel="clientFullName" optionValue="id" [filter]="true"
                                                     filterBy="clientFullName">
 
                                                 </p-dropdown>

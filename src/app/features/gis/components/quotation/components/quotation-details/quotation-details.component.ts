@@ -22,7 +22,7 @@ import { IntermediaryService } from "../../../../../entities/services/intermedia
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { forkJoin, mergeMap } from 'rxjs';
-import { GroupedUser, ProductDetails, ProductDTO, QuotationDetails, QuotationList, QuotationSource, UserDetail } from '../../data/quotationsDTO';
+import { GroupedUser, ProductDetails, ProductDTO, QuotationDetails, QuotationList, QuotationSource, SystemDetails, UserDetail } from '../../data/quotationsDTO';
 import { ProductClauseDTO, Products } from '../../../setups/data/gisDTO';
 import { CountryISO, PhoneNumberFormat, SearchCountryField, } from 'ngx-intl-tel-input';
 import { ClaimsService } from '../../../claim/services/claims.service';
@@ -219,10 +219,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   isRevisionMode = false;
   ticketStatus: string
   quickQuoteFlag: boolean = false;
-  ticketData:any;
+  ticketData: any;
   public quotationSourceFlag: string | null = null;
   isTicketQuotation: boolean = false;
   productToDelete: any = null;
+  systemsAssigned: SystemDetails[] = [];
+  gisSystem: string;
 
 
 
@@ -250,8 +252,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   ) {
     this.ticketStatus = sessionStorage.getItem('ticketStatus');
     this.quickQuoteFlag = JSON.parse(sessionStorage.getItem('quickQuoteFlag'));
-
+    this.systemsAssigned = JSON.parse(sessionStorage.getItem('systemsAssigned'))
+    const gisAssigned = this.systemsAssigned.find(system => system.shortDesc === 'GIS');
+    this.gisSystem = gisAssigned.shortDesc
     // this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
+    this.selectedClientCode = Number(sessionStorage.getItem('selectedClientId'))
+    log.debug("Client code stored on session stotage:", this.selectedClientCode)
     this.quotationAction = sessionStorage.getItem('quotationAction')
     if (this.quotationAction === 'E') {
       this.quickQuoteFlag = true
@@ -312,14 +318,15 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
     const reusedQuotation = sessionStorage.getItem('reusedQuotation');
+    log.debug("Reused quotation in details screen", reusedQuotation)
     if (reusedQuotation) {
       const data = JSON.parse(reusedQuotation);
       const quotationCode = data._embedded.newQuotationCode;
-    if (quotationCode) {
-      this.quotationCode = quotationCode
-      this.fetchQuotationDetails(quotationCode);
-      this.quotationSourceFlag = 'reused';
-    }
+      if (quotationCode) {
+        this.quotationCode = quotationCode
+        // this.fetchQuotationDetails(quotationCode);
+        this.quotationSourceFlag = 'reused';
+      }
     }
 
 
@@ -332,27 +339,27 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       const quotationCode = data._embedded?.newQuotationCode || data.quotationCode;
       if (quotationCode) {
         this.quotationCode = quotationCode;
-        this.fetchQuotationDetails(quotationCode);
-         this.quotationSourceFlag = 'revised';
+        // this.fetchQuotationDetails(quotationCode);
+        this.quotationSourceFlag = 'revised';
       }
     }
 
     const ticketJson = sessionStorage.getItem('activeTicket');
-     log.debug("ticket data", ticketJson)
+    log.debug("ticket data", ticketJson)
 
-    if(ticketJson){
+    if (ticketJson) {
       this.ticketData = JSON.parse(ticketJson);
       const quotationCode = this.ticketData.quotationCode;
-      if(quotationCode){
-      this.quotationCode=quotationCode
-      this.fetchQuotationDetails(quotationCode);
-      this.quotationSourceFlag = 'ticket';
+      if (quotationCode) {
+        this.quotationCode = quotationCode
+        // this.fetchQuotationDetails(quotationCode);
+        this.quotationSourceFlag = 'ticket';
       }
 
-     
-      
 
-      
+
+
+
     }
 
 
@@ -365,11 +372,11 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getuser();
     this.getAgents();
-    
+
     // Initialize client form control with the client code from session storage if exists
     const storedClientCode = sessionStorage.getItem('SelectedClientCode');
     const initialClientValue = storedClientCode ? JSON.parse(storedClientCode) : '';
-    
+
     this.quotationForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern)]],
       phone: ['', this.newClient ? [Validators.required] : []],
@@ -416,7 +423,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.loadPersistedClauses();
     this.getUsers();
 
-    
+
 
 
 
@@ -452,65 +459,65 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
   onClientSaved(event: any) {
     log.debug('Client saved event received:', event);
-    
+
     // Retrieve newClientCode from session storage
     const newClientCode = JSON.parse(sessionStorage.getItem('newClientCode'));
-    
+
     if (newClientCode) {
       // Close the modal
       this.closeCreateClientModal();
-      
+
       // Call the endpoint to search for the client using the ID
       this.clientService.getClientById(newClientCode).subscribe({
         next: (client: any) => {
           log.debug('[QuotationDetailsComponent] Client fetched after creation =>', client);
-          
+
           if (client) {
             const firstName = client.firstName || '';
             const lastName = client.lastName || '';
             const clientName = [firstName, lastName]
               .filter(Boolean)
               .join(' ')
-              .trim() || 
-              client.shortDescription || 
+              .trim() ||
+              client.shortDescription ||
               `Client-${client.id}`;
-            
+
             const clientCode = client.id || client.clientCode;
-            
+
             // Shift the form from new to existing since the client already exists in the db
             this.setClientType('existing');
-            
+
             // Update component state
             this.selectedClientCode = clientCode;
             this.selectedClientName = clientName;
-            
+
             // Ensure client search modal stays closed
             this.showClientSearchModal = false;
-            
+
             // Patch the client name to the form under the Client input field
             this.quotationForm.patchValue({
               client: clientName
             });
-            
+
             // Update session storage
             sessionStorage.setItem('SelectedClientName', clientName);
             sessionStorage.setItem('SelectedClientCode', JSON.stringify(clientCode));
             sessionStorage.setItem('SelectedClientDetails', JSON.stringify(client));
-            
+
             // Clear the newClientCode from session storage to prevent re-triggering
             sessionStorage.removeItem('newClientCode');
-            
+
             // Remove focus from any active element to prevent triggering click events
             if (document.activeElement instanceof HTMLElement) {
               document.activeElement.blur();
             }
-            
+
             // Show success message
             this.globalMessagingService.displaySuccessMessage(
-              'Success', 
+              'Success',
               `Client ${clientName} created and selected successfully`
             );
-            
+
             log.debug('[QuotationDetailsComponent] Client details updated:', {
               clientCode,
               clientName,
@@ -635,24 +642,29 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
         log.debug(this.quotationForm.value, 'Final Form Value');
 
-      
-      if (this.quotationSourceFlag === 'revised') {
-        log.debug('Patching revised quotation data...');
-        this.patchRevisedQuotationData();
-      } else if (this.quotationSourceFlag === 'reused') {
-        log.debug('Patching reused quotation data...');
-        this.patchReusedQuotationData();
-      } else if (this.quotationSourceFlag === 'ticket'){
-        log.debug('patching ticket data')
-        this.patchReusedQuotationData();
-      }
 
-      if (this.quotationSourceFlag) {
-      log.debug(`Clearing quotation source flag (${this.quotationSourceFlag}) after patching.`);
-      this.quotationSourceFlag = null;
-      }
-    
-   
+        // if (this.quotationSourceFlag === 'revised') {
+        //   log.debug('Patching revised quotation data...');
+        //   this.patchRevisedQuotationData();
+        // } else if (this.quotationSourceFlag === 'reused') {
+        //   log.debug('Patching reused quotation data...');
+        //   this.patchReusedQuotationData();
+        // } else if (this.quotationSourceFlag === 'ticket'){
+        //   log.debug('patching ticket data')
+        //   this.patchReusedQuotationData();
+        // }
+
+        // if (this.quotationSourceFlag) {
+        // log.debug(`Clearing quotation source flag (${this.quotationSourceFlag}) after patching.`);
+        // this.quotationSourceFlag = null;
+        // }
+
+        if (this.quotationCode) {
+          this.fetchQuotationDetails(this.quotationCode);
+        }
+
+
+
       },
       error: (err) => {
         log.error(err, 'Failed to load risk fields');
@@ -719,8 +731,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     this.addProductClausesTable.filter(input.value, 'heading', 'contains');
   }
+
+
   fetchQuotationDetails(quotationCode: number) {
-    log.debug("Quotation Number tot use:", quotationCode)
+    log.debug("Quotation Number to use:", quotationCode)
     this.quotationService.getQuotationDetails(quotationCode)
       .subscribe({
         next: (res: any) => {
@@ -728,16 +742,27 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           log.debug("Quotation details-risk details", this.quotationDetails);
 
 
+          if (this.quotationSourceFlag === 'revised') {
+            log.debug('Patching revised quotation data...');
+            this.patchRevisedQuotationData();
+          } else if (this.quotationSourceFlag === 'reused' || this.quotationSourceFlag === 'ticket') {
+            log.debug('Patching reused/ticket quotation data...');
+            this.patchReusedQuotationData();
+          }
+
+          // Clear flag after patching
+          if (this.quotationSourceFlag) {
+            log.debug(`Clearing quotation source flag (${this.quotationSourceFlag}) after patching.`);
+            this.quotationSourceFlag = null;
+          }
         },
         error: (error: HttpErrorResponse) => {
           log.debug("Error log", error.error.message);
-
           this.globalMessagingService.displayErrorMessage(
             'Error',
             error.error.message
           );
         },
-
       })
   }
 
@@ -1441,7 +1466,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
         quotationProducts: this.productDetails.map((value) => {
           const existingProduct = this.quotationDetails?.quotationProducts?.find(
-            (p) => Number(p.productCode) == Number(value.productCode)
+            (p) => Number(p.productCode) == Number(value.productCode.code) || Number(value.productCode)
           );
           log.debug('existing product:', existingProduct)
 
@@ -1450,7 +1475,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             quotationCode: this.quotationCode,
             wef: this.formatDate(value.coverFrom),
             wet: this.formatDate(value.coverTo),
-            productCode: value.productCode,
+            productCode: value.productCode.code || value.productCode,
             productName: value.productCode.description
           };
         })
@@ -3176,10 +3201,16 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
       log.debug("AGENT OBJECT TO PATCH =>", agentObject);
 
+      const sourceObject = data.sourceCode
+        ? this.quotationSources?.find(s => String(s.code) === String(data.sourceCode))
+        : null;
+
+      log.debug("SOURCE OBJECT TO PATCH =>", sourceObject);
+
 
       if (this.quotationForm) {
         this.quotationForm.patchValue({
-          source: data.source || '',
+          source: sourceObject || data.source,
           quotationType: data.clientType || 'I',
           branch: data.branchCode || '',
           currency: data.currency || '',
@@ -3202,29 +3233,33 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         log.debug("⚠️ No agent object found to patch");
       }
 
-
       if (data.clientCode) {
         log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
 
         this.clientService.getClientById(data.clientCode).subscribe({
           next: (client: any) => {
-            log.debug('[QuotationDetailsComponent] Client fetched for revision =>', client);
+            log.debug('[QuotationDetailsComponent] Client fetched for reused quotation =>', client);
 
             if (client) {
-
               const clientName = [client.firstName, client.lastName]
                 .filter(Boolean)
                 .join(' ')
                 .trim() ||
                 client.lastName ||
-
                 'Unknown Client';
 
+              // ✅ Update BOTH the form control AND the display variable
+              this.selectedClientName = clientName;
+              this.selectedClientCode = data.clientCode;
+
+              // Patch the hidden form control with the client code
               this.quotationForm.patchValue({
-                client: clientName
+                client: data.clientCode  // ✅ Use clientCode, not clientName
               });
 
-
+              // ✅ Also update session storage
+              sessionStorage.setItem('SelectedClientName', clientName);
+              sessionStorage.setItem('SelectedClientCode', JSON.stringify(data.clientCode));
 
               log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
             } else {
@@ -3235,6 +3270,20 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
             log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
           }
         });
+      } else {
+        // ✅ If clientCode exists in quotationDetails but no need to fetch
+        // (data already has clientName), patch directly
+        if (data.clientName) {
+          this.selectedClientName = data.clientName;
+          this.selectedClientCode = data.clientCode;
+
+          this.quotationForm.patchValue({
+            client: data.clientCode
+          });
+
+          sessionStorage.setItem('SelectedClientName', data.clientName);
+          sessionStorage.setItem('SelectedClientCode', JSON.stringify(data.clientCode));
+        }
       }
 
 
@@ -3326,8 +3375,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
       log.debug("AGENT OBJECT TO PATCH =>", agentObject);
 
+      const sourceObject = data.sourceCode
+        ? this.quotationSources?.find(s => String(s.code) === String(data.sourceCode))
+        : null;
+
+      log.debug("SOURCE OBJECT TO PATCH =>", sourceObject);
+
       this.quotationForm.patchValue({
-        source: data.source || null,
+        source: sourceObject || data.source,
         quotationType: data.clientType || 'I',
         branch: data.branchCode || '',
         currency: data.currency || '',
@@ -3347,13 +3402,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         log.debug("⚠️ No agent object found to patch");
       }
 
-      // ✅ Fetch and patch client
       if (data.clientCode) {
         log.debug('[QuotationDetailsComponent] Fetching client using clientCode =>', data.clientCode);
 
         this.clientService.getClientById(data.clientCode).subscribe({
           next: (client: any) => {
-            log.debug('[QuotationDetailsComponent] Client fetched for revision =>', client);
+            log.debug('[QuotationDetailsComponent] Client fetched for reused quotation =>', client);
 
             if (client) {
               const clientName = [client.firstName, client.lastName]
@@ -3363,9 +3417,18 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
                 client.lastName ||
                 'Unknown Client';
 
+              // ✅ Update BOTH the form control AND the display variable
+              this.selectedClientName = clientName;
+              this.selectedClientCode = data.clientCode;
+
+              // Patch the hidden form control with the client code
               this.quotationForm.patchValue({
-                client: clientName
+                client: data.clientCode  // ✅ Use clientCode, not clientName
               });
+
+              // ✅ Also update session storage
+              sessionStorage.setItem('SelectedClientName', clientName);
+              sessionStorage.setItem('SelectedClientCode', JSON.stringify(data.clientCode));
 
               log.debug('[QuotationDetailsComponent] Patched client name =>', clientName);
             } else {
@@ -3375,9 +3438,22 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           error: (error: any) => {
             log.debug('[QuotationDetailsComponent] Client fetch failed =>', error);
           }
-        }); // ✅ Close subscribe here
-      } // ✅ Close if (data.clientCode) here
+        });
+      } else {
+        // ✅ If clientCode exists in quotationDetails but no need to fetch
+        // (data already has clientName), patch directly
+        if (data.clientName) {
+          this.selectedClientName = data.clientName;
+          this.selectedClientCode = data.clientCode;
 
+          this.quotationForm.patchValue({
+            client: data.clientCode
+          });
+
+          sessionStorage.setItem('SelectedClientName', data.clientName);
+          sessionStorage.setItem('SelectedClientCode', JSON.stringify(data.clientCode));
+        }
+      }
       // ✅ These should be OUTSIDE the client fetch block
       this.quotationForm.get('client')?.disable({ emitEvent: false });
       this.quotationForm.get('agent')?.disable({ emitEvent: false });
