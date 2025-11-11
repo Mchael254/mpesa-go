@@ -99,7 +99,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   steps = quoteStepsData;
   quotationCode: any
   quotationNumber: any;
-  quotationDetails: any
+  quotationDetails: QuotationDetails
   quotationView: QuotationDetails
   moreDetails: any
   clientDetails: any
@@ -3603,6 +3603,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   async sendReportViaEmail() {
+    log.debug("Quotation details when sending reports via email:", this.quotationDetails)
+    const clientCode = this.quotationDetails?.clientCode
+    const agentCode = this.quotationDetails.agentCode
     this.viewDocForm.markAllAsTouched();
     this.viewDocForm.updateValueAndValidity();
     
@@ -3712,8 +3715,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     const payload: EmailDto = {
       code: null,
       address: [viewDocForm.to],
-      ccAddress: viewDocForm.cc,
-      bccAddress: viewDocForm.bcc,
+      ccAddress: [viewDocForm.cc],
+      bccAddress: [viewDocForm.bcc],
       subject: viewDocForm.subject,
       message: viewDocForm.wording,
       status: 'D',
@@ -3723,8 +3726,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       systemCode: 0,
       attachments: filteredAttachments,
       sendOn: new Date().toISOString(),
-      clientCode: 0,
-      agentCode: 0
+      clientCode: clientCode || null,
+      agentCode: agentCode || null
     };
 
     this.notificationService.sendEmail(payload).subscribe({
