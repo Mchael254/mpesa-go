@@ -145,13 +145,15 @@
             <div class="col-md-4 d-flex">
               <p class="label w-50">Sum Insured</p>
               <p class="content w-50">
-                {{ quotationView?.sumInsured | number }}
+                {{ quotationView?.sumInsured | currency: currencyObj?.prefix :
+                'symbol' : '1.2-2'}}
               </p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Marketer Comm.</p>
               <p class="content w-50">
-                {{ quotationView?.marketerCommissionAmount | number }}
+                {{ quotationView?.marketerCommissionAmount | currency: currencyObj?.prefix :
+                'symbol' : '1.2-2' }}
               </p>
             </div>
           </div>
@@ -159,7 +161,8 @@
           <div class="row mb-2">
             <div class="col-md-4 d-flex">
               <p class="label w-50">Comm amt.</p>
-              <p class="content w-50">{{ quotationView?.commissionAmount }}</p>
+              <p class="content w-50">{{ quotationView?.commissionAmount | currency: currencyObj?.prefix :
+                'symbol' : '1.2-2' }}</p>
             </div>
             <div class="col-md-4 d-flex">
               <p class="label w-50">Comments</p>
@@ -800,7 +803,7 @@
                         </li>
                         <li class="nav-item">
                           <a class="nav-link " [class.active]="activeRiskDetailsTab === 'documents'"
-                            (click)="activeRiskDetailsTab = 'documents'">
+                            (click)="activeRiskDetailsTab = 'documents'; onDocumetTabSelect(selectedRisk)">
                             Documents
                           </a>
                         </li>
@@ -2245,74 +2248,80 @@
           <div class="tab-content mt-3 mb-4">
             <!-- OTP content -->
             <div class="tab-pane fade show active" *ngIf="activeConsentTab === 'otp'">
-  
-<!-- Share method selection -->
-<div class="method-options mt-2">
-  <div class="method-option" *ngFor="let method of shareMethods"
-    (click)="!method.disabled && onShareMethodChange(method.value)"
-    [class.selected]="shareQuoteData.selectedMethod  === method.value" [class.disabled]="method.disabled">
-    <i class="far fa-circle" *ngIf="shareQuoteData.selectedMethod  !== method.value"></i>
-    <i class="fas fa-dot-circle" *ngIf="shareQuoteData.selectedMethod   === method.value"></i>
-    <span class="ps-2">{{ method.label }}</span>
-    <span class="custom-tooltip" *ngIf="method.disabled">{{ method.tooltip }}</span>
-  </div>
-</div>
-<form [formGroup]="shareForm">
-  <!-- Email input (shown when email is selected) -->
-  <div *ngIf="shareQuoteData.selectedMethod  === 'email'" class="row mt-2">
-    <label for="email" class="label quote-label">Email address<span class="required"></span></label>
-    <div class="row">
-      <div class="col-sm-9">
-        <input id="email" type="email" formControlName="email" class="form-control form-control-sm"
-          placeholder="Enter email address" (blur)="shareForm.get('email')?.markAsTouched()" />
-        <div *ngIf="shareForm.get('email')?.touched && shareForm.get('email')?.invalid"
-          class="text-danger mt-1">
-          <small *ngIf="shareForm.get('email')?.errors?.['required']">Email is required.</small>
-          <small *ngIf="shareForm.get('email')?.errors?.['email']">Please enter a valid email
-            address.</small>
-        </div>
-      </div>
-      <div class="col-sm-3">
-        <button type="button" class="btn btn-outline-primary btn-sm fw-bold" (click)="generateOTP()">Send
-          OTP</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- SMS input (shown when SMS is selected) -->
-  <div *ngIf="shareQuoteData.selectedMethod  === 'sms'" class="row mt-2">
-    <label for="smsNumber" class="label quote-label">Phone Number<span class="required"></span></label>
-    <div class="row">
-      <div class="col-sm-9">
-        <input id="smsNumber" type="tel" formControlName="smsNumber" class="form-control form-control-sm"
-          placeholder="0712345678 or +254712345678" (blur)="shareForm.get('smsNumber')?.markAsTouched()" />
-        <div *ngIf="shareForm.get('smsNumber')?.touched && shareForm.get('smsNumber')?.invalid"
-          class="text-danger mt-1">
-          <small *ngIf="shareForm.get('smsNumber')?.errors?.['required']">Phone number is required.</small>
-          <small *ngIf="shareForm.get('smsNumber')?.errors?.['pattern']">Please enter a  phone number.</small>
-        </div>
-      </div>
-      <div class="col-sm-3">
-        <button type="button" class="btn btn-outline-primary btn-sm fw-bold" (click)="generateOTP()">Send
-          OTP</button>
-      </div>
-    </div>
-  </div>
+              <!-- Share method selection -->
+              <div class="method-options mt-2">
+                <div class="method-option" *ngFor="let method of shareMethods"
+                  (click)="!method.disabled && onShareMethodChange(method.value)"
+                  [class.selected]="shareQuoteData.selectedMethod  === method.value" [class.disabled]="method.disabled">
+                  <i class="far fa-circle" *ngIf="shareQuoteData.selectedMethod  !== method.value"></i>
+                  <i class="fas fa-dot-circle" *ngIf="shareQuoteData.selectedMethod   === method.value"></i>
+                  <span class="ps-2">{{ method.label }}</span>
+                  <span class="custom-tooltip" *ngIf="method.disabled">{{ method.tooltip }}</span>
+                </div>
+              </div>
+              <form [formGroup]="shareForm">
+                <!-- Email input (shown when email is selected) -->
+                <div *ngIf="shareQuoteData.selectedMethod  === 'email'" class="row mt-2">
+                  <label for="email" class="label quote-label">Email address<span class="required"></span></label>
+                  <div class="row">
+                    <div class="col-sm-9">
+                      <input id="email" type="email" formControlName="email" class="form-control form-control-sm"
+                        placeholder="Enter email address" (blur)="shareForm.get('email')?.markAsTouched()" />
+                      <div *ngIf="shareForm.get('email')?.touched && shareForm.get('email')?.invalid"
+                        class="text-danger mt-1">
+                        <small *ngIf="shareForm.get('email')?.errors?.['required']">Email is required.</small>
+                        <small *ngIf="shareForm.get('email')?.errors?.['email']">Please enter a valid email
+                          address.</small>
+                      </div>
+                    </div>
+                    <div class="col-sm-3">
+                      <button type="button" class="btn btn-outline-primary btn-sm fw-bold" (click)="generateOTP()">Send
+                        OTP</button>
+                    </div>
+                  </div>
+                </div>
 
-  <!-- OTP input (shown after OTP is generated) -->
-  <div *ngIf="otpGenerated" class="row mt-3">
-    <div class="col-sm-9">
-      <label for="otp" class="label quote-label">Enter OTP<span class="required"></span></label>
-      <input id="otp" type="text" formControlName="otp" class="form-control form-control-sm" maxlength="6" />
-      <div *ngIf="shareForm.get('otp')?.touched && shareForm.get('otp')?.invalid"
-        class="text-danger mt-1">
-        <small *ngIf="shareForm.get('otp')?.errors?.['required']">OTP is required.</small>
-        <small *ngIf="shareForm.get('otp')?.errors?.['minlength'] || shareForm.get('otp')?.errors?.['maxlength']">OTP must be 6 digits.</small>
-      </div>
-    </div>
-    <div class="col-sm-3"></div>
-  </div>
-</form>
+                <!-- SMS input (shown when SMS is selected) -->
+                <div *ngIf="shareQuoteData.selectedMethod  === 'sms'" class="row mt-2">
+                  <label for="smsNumber" class="label quote-label">Phone Number<span class="required"></span></label>
+                  <div class="row">
+                    <div class="col-sm-9">
+                      <input id="smsNumber" type="tel" formControlName="smsNumber" class="form-control form-control-sm"
+                        placeholder="0712345678 or +254712345678"
+                        (blur)="shareForm.get('smsNumber')?.markAsTouched()" />
+                      <div *ngIf="shareForm.get('smsNumber')?.touched && shareForm.get('smsNumber')?.invalid"
+                        class="text-danger mt-1">
+                        <small *ngIf="shareForm.get('smsNumber')?.errors?.['required']">Phone number is
+                          required.</small>
+                        <small *ngIf="shareForm.get('smsNumber')?.errors?.['pattern']">Please enter a phone
+                          number.</small>
+                      </div>
+                    </div>
+                    <div class="col-sm-3">
+                      <button type="button" class="btn btn-outline-primary btn-sm fw-bold" (click)="generateOTP()">Send
+                        OTP</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- OTP input (shown after OTP is generated) -->
+                <div *ngIf="otpGenerated" class="row mt-3">
+                  <div class="col-sm-9">
+                    <label for="otp" class="label quote-label">Enter OTP<span class="required"></span></label>
+                    <input id="otp" type="text" formControlName="otp" class="form-control form-control-sm"
+                      maxlength="6" />
+                    <div *ngIf="shareForm.get('otp')?.touched && shareForm.get('otp')?.invalid"
+                      class="text-danger mt-1">
+                      <small *ngIf="shareForm.get('otp')?.errors?.['required']">OTP is required.</small>
+                      <small
+                        *ngIf="shareForm.get('otp')?.errors?.['minlength'] || shareForm.get('otp')?.errors?.['maxlength']">OTP
+                        must be 6 digits.</small>
+                    </div>
+                  </div>
+                  <div class="col-sm-3"></div>
+                </div>
+              </form>
             </div>
 
             <!-- Upload tab placeholder -->

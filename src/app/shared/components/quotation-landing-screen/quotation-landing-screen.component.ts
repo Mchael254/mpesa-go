@@ -1034,9 +1034,10 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       .subscribe({
         next: (response: any) => {
           log.debug("Response for revise", response)
-
+          const quotationCode = response._embedded.newQuotationCode
           sessionStorage.setItem('revisedQuotation', JSON.stringify(response));
           sessionStorage.setItem('isRevision', 'true');
+          sessionStorage.setItem('quotationCode', quotationCode)
 
           // Navigate to quotation summary
           this.router.navigate(['/home/gis/quotation/quotation-summary']);
@@ -1674,6 +1675,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
           // Filter core systems
           const coreSystems = systems.filter(s => s.isCoreSystem === 'Y');
           this.systemsAssigned = coreSystems;
+          sessionStorage.setItem('systemsAssigned', JSON.stringify(this.systemsAssigned))
 
           // Extract shortDesc values for easier checking
           const assignedSystems = coreSystems.map(s => s.shortDesc);
