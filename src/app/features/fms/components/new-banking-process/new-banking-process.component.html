@@ -491,9 +491,7 @@
             data-dismiss="modal"
             aria-label="Close"
             (click)="closeDepositModal()"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
+          ></button>
         </div>
         <div class="modal-body">
           <form [formGroup]="depositForm">
@@ -569,10 +567,7 @@
                     class="file-dropzone border-dashed text-center p-4 rounded"
                     (click)="fileInput.click()"
                   >
-                    <i
-                      class="pi pi-upload text-primary mb-2"
-                      style="font-size: 2rem"
-                    ></i>
+                    <i class="pi pi-upload mb-2" style="font-size: 2rem"></i>
                     <p class="mb-1">
                       <span class="text-primary fw-bold cursor-pointer"
                         >Click to upload</span
@@ -586,16 +581,12 @@
                       #fileInput
                       class="d-none"
                       (change)="onFileSelected($event)"
-                      multiple
+                      [disabled]="maximumFiles"
                     />
                   </div>
                   <!-- List of Uploaded Files -->
-                  <div
-                    class="uploaded-files-list mt-3"
-                    *ngIf="uploadedFiles.length > 0"
-                  >
+                  <div class="uploaded-files-list mt-3" *ngIf="uploadedFile">
                     <div
-                      *ngFor="let file of uploadedFiles; let i = index"
                       class="d-flex align-items-center justify-content-between p-2 mb-2 bg-light rounded"
                     >
                       <div class="d-flex align-items-center">
@@ -603,17 +594,27 @@
                           class="pi pi-file-pdf text-danger me-2"
                           style="font-size: 1.5rem"
                         ></i>
-                        <span class="file-name">{{ file.name }}</span>
+                        <span class="file-name">{{ uploadedFile.name }}</span>
                       </div>
                       <button
                         type="button"
                         class="btn btn-sm btn-link text-danger"
-                        (click)="removeFile(i)"
+                        (click)="removeFile()"
                       >
                         <i class="pi pi-trash"></i>
                       </button>
+                      <div class="d-flex justify-content-end">
+                        <button
+                          type="button"
+                          class="btn btn-primary btn-sm"
+                          (click)="postFile()"
+                        >
+                          {{ "fms.receipting.postFile" | translate }}
+                        </button>
+                      </div>
                     </div>
                   </div>
+                  <!-- end of uploaded file div -->
                 </div>
               </div>
             </div>
