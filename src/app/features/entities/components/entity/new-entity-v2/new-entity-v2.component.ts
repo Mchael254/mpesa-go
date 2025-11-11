@@ -69,6 +69,8 @@ const log = new Logger('NewEntityV2Component');
 export class NewEntityV2Component implements OnInit, OnChanges {
 
   @Output() clientSaved = new EventEmitter<any>();
+  @Input() system: string;
+
 
   entityBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -2502,6 +2504,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
             modeOfIdentityId: null,
             wef: data.withEffectFromDate,
             wet: data.withEffectToDate,
+            system: this.system
           },
           cnt_individual_contact_details: {
             telNumber: data.phoneNumber,
@@ -2525,7 +2528,8 @@ export class NewEntityV2Component implements OnInit, OnChanges {
             entityName: data.firstName + " " + data.lastName,
             pinNumber: data.pinNumber,
             wef: data.withEffectFromDate,
-            wet: data.withEffectToDate
+            wet: data.withEffectToDate,
+            system: this.system
           },
           cnt_corporate_contact_details: {
             email: data.emailAddress,
