@@ -1344,9 +1344,10 @@ export interface GroupedUser {
   id: number;
 }
 export interface OtpPayload {
-  email: string,
-  subject: string,
-  body: string
+  identifier: string;
+  subject: string;
+  body: string;
+
 }
 export interface OtpResponse {
   id: number;
@@ -1355,6 +1356,9 @@ export interface OtpResponse {
   generationTime: string;
   expiryTime: string;
   verified: number;
+  _embedded?: {
+    userIdentifier?: string;
+  };
 }
 export interface ReportResponse {
   code: number;
