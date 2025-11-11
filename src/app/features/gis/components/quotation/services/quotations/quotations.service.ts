@@ -364,11 +364,12 @@ export class QuotationsService {
   }
 
   sendEmail(data: EmailDto): Observable<any> {
-    return this.http.post<any>(`/${this.notificationUrl}/email/send`, JSON.stringify(data), this.httpOptions)
+    return this.http.post<any>(`/${this.notificationUrl}api/v2/email/send`, JSON.stringify(data), this.httpOptions)
   }
 
   sendSms(data) {
-    return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data), this.httpOptions)
+    return this.http.post(`/${this.notificationUrl}/api/v2/sms/send`, JSON.stringify(data), this.httpOptions)
+
   }
 
   getUserProfile() {
@@ -1150,7 +1151,7 @@ export class QuotationsService {
   }
 
 
-  generateOTP(payload: OtpPayload,method: 'SMS' | 'EMAIL' | 'WHATSAPP') {
+  generateOTP(payload: OtpPayload, method: 'SMS' | 'EMAIL' | 'WHATSAPP') {
     return this.api.POST<any>(`v2/otp/generate-and-send?method=${method}`, payload, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
@@ -1300,13 +1301,46 @@ export class QuotationsService {
     return this.api.GET<Observable<any>>(`users/${userId}/systems`, API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL)
   }
 
-  getAllTickets(): Observable<any> {
-    const params = {
-      pageNo: 0,
-      pageSize: 10,
-      sortField: 'createdDate',
-      sortOrder: 'asc'
+  // getAllTickets(): Observable<any> {
+  //   const params = {
+  //     pageNo: 0,
+  //     pageSize: 10,
+  //     sortField: 'createdDate',
+  //     sortOrder: 'desc'
+  //   };
+
+  //   return this.api.GET<any>(
+  //     'v1/tickets',
+  //     API_CONFIG.GIS_TICKETING_SERVICE,
+  //     params
+  //   );
+  // }
+  getAllTickets(
+    pageNo: number = 0,
+    pageSize: number = 100,
+    sortField: string = 'createdDate',
+    sortOrder: string = 'desc',
+    ticketName?: string,
+    referenceNo?: string,
+    client?: string,
+    ticketAssignee?: string,
+    intermediary?: string,
+    dateFrom?: string,
+  ): Observable<any> {
+    const params: any = {
+      pageNo,
+      pageSize,
+      sortField,
+      sortOrder
     };
+
+    // Add optional filters if they are provided
+    if (ticketName) params.ticketName = ticketName;
+    if (referenceNo) params.referenceNo = referenceNo;
+    if (client) params.client = client;
+    if (ticketAssignee) params.ticketAssignee = ticketAssignee;
+    if (intermediary) params.intermediary = intermediary;
+    if (dateFrom) params.dateFrom = dateFrom;
 
     return this.api.GET<any>(
       'v1/tickets',
@@ -1314,6 +1348,8 @@ export class QuotationsService {
       params
     );
   }
+
+
   fetchExceptions(systemModule: string = 'Q', quotationCode: Number) {
 
     return this.api.GET<Observable<any>>(`v1/gis-exceptions?systemModule=${systemModule}&quotationCode=${quotationCode}`, API_CONFIG.GIS_COMMONS_SERVICE).pipe(

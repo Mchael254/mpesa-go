@@ -5,16 +5,11 @@
 
 <div class="d-flex my-4 mx-4">
   <!--  <button class="btn btn-success" (click)="generateAuthorizeOtp()" style="margin-right: 1rem;">Authorize</button>-->
-  <button class="btn btn-primary border-radius-none" 
-    (click)="processReassignTask()" 
-    id="btn-reassign-task"
-    [disabled]="selectedSpringTickets.length === 0"
-    style="margin-right: 1rem;">
+  <button class="btn btn-primary border-radius-none" (click)="processReassignTask()" id="btn-reassign-task"
+    [disabled]="selectedSpringTickets.length === 0" style="margin-right: 1rem;">
     {{'mngt_wrkflw.tickets.reassign' | translate }}
   </button>
-  <button class="btn btn-success" 
-    (click)="authorizePolicy()"
-    [disabled]="selectedSpringTickets.length === 0"
+  <button class="btn btn-success" (click)="authorizePolicy()" [disabled]="selectedSpringTickets.length === 0"
     style="margin-right: 1rem;">{{'mngt_wrkflw.tickets.authorize' | translate }}</button>
   <button class="btn btn-outline-primary" (click)="goToDispatch()">{{'base.dispatch' | translate | titlecase }}</button>
 </div>
@@ -66,8 +61,8 @@
       <p-table #dt (onLazyLoad)="lazyLoadTickets($event)" [lazy]="true" [value]="springTickets.content"
         [(selection)]="selectedSpringTickets" [tableStyle]="{ 'min-width': '50rem' }" [paginator]="true" [rows]="10"
         [rowHover]="true" [autoLayout]="true" [totalRecords]="springTickets.totalElements"
-        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]" currentPageReportTemplate="{first} - {last} of {totalRecords}"
-        [scrollable]="true" scrollHeight="400px" responsiveLayout="scroll" [resizableColumns]="true"
+        [rowsPerPageOptions]="[ 10, 20, 30, 50, 100]" currentPageReportTemplate="{first} - {last} of {totalRecords}"
+        [scrollable]="true" responsiveLayout="scroll" [resizableColumns]="true"
         [globalFilterFields]="globalFilterFields">
         <ng-template pTemplate="header">
           <tr>
@@ -99,7 +94,7 @@
               Actions
             </th>
           </tr>
-          <tr>
+          <!-- <tr>
             <th class="head">
               <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
             </th>
@@ -134,7 +129,85 @@
             <th></th>
 
 
+          </tr> -->
+          <tr class=" filter-row mb-5 mt-5">
+
+            <td class="head">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </td>
+
+            <td style="background-color: #ffffff;">
+              <p-calendar name="selectedDateFrom" [(ngModel)]="selectedDateFrom" [dateFormat]="dateFormat"
+                [showIcon]="true" [showButtonBar]="true" [minDate]="minDate"
+                (onSelect)="onCreatedDateInputChange($event)" (onClear)="onCreatedDateInputChange(null)" appendTo="body"
+                (keyup.enter)="applyFilter()" styleClass="calendar-input w-100">
+              </p-calendar>
+
+            </td>
+            <td class="me-1" style="background-color: #ffffff;">
+              <input type="text" class="form-control" style="width: 100%;" (keyup.enter)="applyFilter();"
+                #ticketNameFilter (input)="inputTicketName($event)"
+                (input)="dt.filterGlobal(ticketNameFilter.value, 'contains')">
+            </td>
+            <td class="me-1" style="background-color: #ffffff;">
+              <input type="text" class="form-control" style="width: 100%;" (keyup.enter)="applyFilter();"
+                #referenceNoFilter (input)="inputReferenceNo($event)"
+                (input)="dt.filterGlobal(referenceNoFilter.value, 'contains')">
+            </td>
+            <!-- client search -->
+            <td class="me-1" style="background-color: #ffffff;">
+              <div class="position-relative">
+                <input type="text" id="quote-input" class="form-select form-control custom-select" style="width: 100%;"
+                  [value]="displayClientName" (click)="openClientSearchModal()" readonly
+                  (keyup.enter)="applyFilter();" />
+
+                <!-- Clear button with X icon - only shows when there's a value -->
+                <button *ngIf="displayClientName" class="btn btn-sm position-absolute clear-btn"
+                  style="right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; z-index: 5;"
+                  (click)="clearClientName()">
+                  <i class="pi pi-times"></i>
+                </button>
+
+                <!-- Client Search Modal Component -->
+                <!-- <app-client-search-modal (onClickSaveClient)="onClientSelected($event)"
+                            *ngIf="isClientSearchModalVisible"></app-client-search-modal> -->
+                <app-client-search-modal *ngIf="isClientSearchModalVisible"
+                  (onClickSaveClient)="onClientSelected($event)" (modalClosed)="isClientSearchModalVisible = false">
+                </app-client-search-modal>
+              </div>
+            </td>
+
+            <!-- agent filter -->
+            <td style="background-color: #ffffff;">
+              <div class="position-relative">
+                <input type="text" id="quote-input" class="form-select form-control custom-select" style="width: 100%;"
+                  [value]="displayAgentName" data-bs-toggle="modal" data-bs-target="#agentSearchModal" readonly
+                  (keyup.enter)="applyFilter();" (click)="openAgentSearchModal()" />
+
+                <!-- Clear button with X icon - only shows when there's a value -->
+                <button *ngIf="displayAgentName" class="btn btn-sm position-absolute clear-btn"
+                  style="right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; z-index: 5;"
+                  (click)="clearAgentName()">
+                  <i class="pi pi-times"></i>
+                </button>
+
+                <!-- Agent Search Modal Component -->
+                <app-agent-search-modal (agentSelected)="onAgentSelected($event)"></app-agent-search-modal>
+              </div>
+            </td>
+
+            <td class="me-1" style="background-color: #ffffff;">
+
+            </td>
+            <td class="me-1" style="background-color: #ffffff;">
+              <input type="text" class="form-control" style="width: 100%;" (keyup.enter)="applyFilter();"
+                #ticketToFilter (input)="inputTicketTo($event)"
+                (input)="dt.filterGlobal(ticketToFilter.value, 'contains')">
+            </td>
+
+            <td></td>
           </tr>
+
         </ng-template>
         <ng-template pTemplate="body" let-ticket>
           <tr>
@@ -169,7 +242,8 @@
                 <!-- Display first 3 actions as text links -->
                 <!-- Process Action -->
                 <button type="button"
-                  class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1" (click)="processTicket(ticket)">
+                  class="text-decoration-none text-primary small fw-medium action-link border-0 bg-transparent p-1"
+                  (click)="processTicket(ticket)">
                   Process
                 </button>
 
@@ -248,11 +322,9 @@
       </small>
 
       <div class="w-full d-flex flex-row-reverse gap-4 mt-5">
-        <button type="button" class="btn" 
-          [disabled]="!userToReassignTicket || !reassignTicketComment"
+        <button type="button" class="btn" [disabled]="!userToReassignTicket || !reassignTicketComment"
           [style.background-color]="(!userToReassignTicket || !reassignTicketComment) ? '#cccccc' : '#00529B'"
-          style="color:white;text-decoration: none;"
-          (click)="reassignTicket()">{{
+          style="color:white;text-decoration: none;" (click)="reassignTicket()">{{
           'gis.quotation.reassign' | translate }}
         </button>
         <button type="button" (click)="closeReassignTicketModal()" class="btn btn-outline-primary"
@@ -288,14 +360,14 @@
             </tr>
             <tr styleClass="p-striped">
               <th>
-                <input type="text" [(ngModel)]="globalSearch" (input)="filterGlobal($event)" 
-                       class="form-control form-control-sm" 
-                       style="border-radius: 4px; border: 1px solid #ced4da; padding: 0.375rem 0.75rem;">
+                <input type="text" [(ngModel)]="globalSearch" (input)="filterGlobal($event)"
+                  class="form-control form-control-sm"
+                  style="border-radius: 4px; border: 1px solid #ced4da; padding: 0.375rem 0.75rem;">
               </th>
               <th>
-                <input type="text" [(ngModel)]="fullNameSearch" (input)="filterByFullName($event)" 
-                       class="form-control form-control-sm" 
-                       style="border-radius: 4px; border: 1px solid #ced4da; padding: 0.375rem 0.75rem;">
+                <input type="text" [(ngModel)]="fullNameSearch" (input)="filterByFullName($event)"
+                  class="form-control form-control-sm"
+                  style="border-radius: 4px; border: 1px solid #ced4da; padding: 0.375rem 0.75rem;">
               </th>
             </tr>
 
