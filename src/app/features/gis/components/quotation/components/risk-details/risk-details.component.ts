@@ -5522,6 +5522,13 @@ export class RiskDetailsComponent {
         sortable: true
       }));
 
+    // Ensure agentDto is always first
+    const agentDtoIndex = this.commissionsColumns.findIndex(col => col.field === 'agentDto');
+    if (agentDtoIndex > 0) {
+      const agentDtoColumn = this.commissionsColumns.splice(agentDtoIndex, 1)[0];
+      this.commissionsColumns.unshift(agentDtoColumn);
+    }
+
     this.commissionsColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false, sortable: false });
 
     // Restore from sessionStorage 
@@ -5537,8 +5544,8 @@ export class RiskDetailsComponent {
     log.debug("commissionsColumns", this.commissionsColumns);
   }
 
-  defaultVisibleCommissionsFields = ['group', 'agentDto', 'accountType', 'setupRate', 'usedRate', 'commissionAmount', 'withHoldingRate',
-    'withHoldingTax', 'discType', 'discRate'];
+  defaultVisibleCommissionsFields = ['agentDto','group', 'accountType', 'setupRate', 'usedRate', 'commissionAmount', 'withHoldingTaxRate',
+    'withHoldingTax', 'discountType', 'discountRate'];
 
   /**
   * Checks if a commission field should be read-only (non-editable)
