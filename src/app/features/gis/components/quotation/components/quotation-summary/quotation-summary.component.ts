@@ -3608,7 +3608,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     const agentCode = this.quotationDetails.agentCode
     this.viewDocForm.markAllAsTouched();
     this.viewDocForm.updateValueAndValidity();
-    
+
     if (!this.selectedReports || this.selectedReports.length === 0) {
       this.globalMessagingService.displayErrorMessage('Error', 'Please select at least one report to send');
       return;
@@ -3642,7 +3642,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
 
     const rawPhoneNumber = phoneNumberControl.value;
-    
+
     // Generate SMS message template automatically
     const message = this.getSMSMessageTemplate();
 
@@ -3666,7 +3666,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.spinner.hide();
         log.debug('SMS sent successfully:', response);
         this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
-        
+
         // Close the modal
         const modalEl = this.viewDocumentsModal.nativeElement;
         const modal = bootstrap.Modal.getInstance(modalEl);
@@ -3688,6 +3688,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
    */
   async sendReportViaEmailMethod() {
     const viewDocForm = this.viewDocForm.value;
+    log.debug("Quotation details when sending reports via email:", this.quotationDetails)
+    const clientCode = this.quotationDetails?.clientCode
+    const agentCode = this.quotationDetails.agentCode
     log.debug("Selected reports:", this.selectedReports)
     log.debug("Report blobs", this.reportBlobs)
     const attachments = await Promise.all(
@@ -4572,7 +4575,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
    */
   formatPhoneNumber(phoneNumber: string): string {
     const cleaned = phoneNumber.replace(/\D/g, '');
-    
+
     // If already starts with 254, return as is
     if (cleaned.startsWith('254')) {
       return cleaned;
@@ -4589,7 +4592,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   sendQuotationSms() {
     // Mark form as touched to show validation errors
     this.viewDocForm.markAllAsTouched();
-    
+
     // Check if the SMS form fields are valid
     const phoneNumberControl = this.viewDocForm.get('phoneNumber');
     const smsMessageControl = this.viewDocForm.get('smsMessage');
@@ -4634,7 +4637,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.spinner.hide();
         log.debug('SMS sent successfully:', response);
         this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
-        
+
         // Optionally close the modal
         const modalEl = this.viewDocumentsModal.nativeElement;
         const modal = bootstrap.Modal.getInstance(modalEl);
