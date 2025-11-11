@@ -494,39 +494,87 @@ export class QuotationReportComponent {
 
     ;
   }
+  // addClientDocuments(selectedFile: any) {
+  //   const file = selectedFile
+  //   const reader = new FileReader();
+  //   log.debug("Client code:", this.clientCode)
+  //   log.debug("Client name:", this.clientDetails)
+  //   reader.onload = () => {
+  //     // Convert to base64 string (remove prefix like "data:application/pdf;base64,")
+  //     const base64String = (reader.result as string).split(',')[1];
+  //     const clientName = (this.clientDetails?.firstName ?? '') + ' ' + (this.clientDetails?.lastName ?? '')
+  //     let clientDocPayload: DmsDocument = {
+  //       // actualName: selectedFile.name,
+  //       userName: this.loggedInUser,
+  //       docType: file.type,
+  //       docData: base64String,
+  //       originalFileName: file.name,
+  //       clientName: clientName,
+  //       clientCode: this.clientCode,
+  //     }
+
+  //     this.dmsService.saveClientDocs(clientDocPayload).subscribe({
+  //       next: (res: any) => {
+  //         log.info(`document uploaded successfully!`, res);
+  //         this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
+  //         this.fetchClientDoc(this.clientCode)
+  //         const modal = bootstrap.Modal.getInstance(this.addClientDocModalRef.nativeElement);
+  //         modal.hide();
+  //       },
+  //       error: (err) => {
+  //         log.info(`upload failed!`, err)
+  //       }
+  //     });
+  //   }
+  //   reader.readAsDataURL(file);
+  // }
   addClientDocuments(selectedFile: any) {
-    const file = selectedFile
+    const file = selectedFile;
     const reader = new FileReader();
 
+    // Check if client code exists
+    if (!this.clientCode) {
+      this.globalMessagingService.displayErrorMessage(
+        'Missing Client',
+        'Cannot upload document because client code is missing.'
+      );
+      log.warn('Client code is missing — skipping document upload.');
+      return;
+    }
+
     reader.onload = () => {
-      // Convert to base64 string (remove prefix like "data:application/pdf;base64,")
+      // Convert to base64 (remove prefix like "data:application/pdf;base64,")
       const base64String = (reader.result as string).split(',')[1];
-      const clientName = (this.clientDetails?.firstName ?? '') + ' ' + (this.clientDetails?.lastName ?? '')
-      let clientDocPayload: DmsDocument = {
-        // actualName: selectedFile.name,
+
+      const clientName = `${this.clientDetails?.firstName ?? ''} ${this.clientDetails?.lastName ?? ''}`.trim();
+
+      const clientDocPayload: DmsDocument = {
         userName: this.loggedInUser,
         docType: file.type,
         docData: base64String,
         originalFileName: file.name,
-        clientName: clientName,
+        clientName,
         clientCode: this.clientCode,
-      }
+      };
 
       this.dmsService.saveClientDocs(clientDocPayload).subscribe({
         next: (res: any) => {
-          log.info(`document uploaded successfully!`, res);
+          log.info('Document uploaded successfully!', res);
           this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
-          this.fetchClientDoc(this.clientCode)
+          this.fetchClientDoc(this.clientCode);
           const modal = bootstrap.Modal.getInstance(this.addClientDocModalRef.nativeElement);
-          modal.hide();
+          modal?.hide();
         },
         error: (err) => {
-          log.info(`upload failed!`, err)
-        }
+          log.error('Document upload failed!', err);
+          this.globalMessagingService.displayErrorMessage('Error', 'Document upload failed. Please try again.');
+        },
       });
-    }
+    };
+
     reader.readAsDataURL(file);
   }
+
   saveClientDoc() {
     this.selectedFile && this.addClientDocuments(this.selectedFile);
 
