@@ -294,7 +294,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   commissionColumns: { field: string; header: string; visible: boolean }[] = [];
   ticketStatus: string;
   // confirmQuote: boolean = false;
-  ticketData:any;
+  ticketData: any;
   zoomRiskDocLevel = 1;
   showRiskDocColumnModal = false;
   showRiskDoc: boolean = true;
@@ -333,7 +333,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     public utilService: UtilService,
     private notificationService: NotificationService,
     private cdr: ChangeDetectorRef,
-    
+
     private dmsService: DmsService,
 
 
@@ -370,7 +370,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   public showInternalClaims = false;
   public showExternalClaims = false;
   private ngUnsubscribe = new Subject();
-  
+
 
 
 
@@ -410,16 +410,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.moreDetails = sessionStorage.getItem('quotationFormDetails');
 
 
-
-
-
-
-
-  
-
-
-   
-
     if (this.quotationCodeString) {
       this.quotationCode = Number(this.quotationCodeString);
       log.debug("second code", this.quotationCode)
@@ -429,15 +419,17 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         log.debug("Quotation details>>>", response)
         this.quotationDetails = response
         sessionStorage.setItem('quotationDetails', JSON.stringify(this.quotationDetails))
-        const ticketStatus = response.processFlowResponseDto.taskName
+        const ticketStatus = response?.processFlowResponseDto?.taskName
         log.debug("Ticket status:", ticketStatus)
         this.ticketStatus = ticketStatus
-        sessionStorage.setItem('ticketStatus', ticketStatus);
+        ticketStatus && sessionStorage.setItem('ticketStatus', ticketStatus);
 
         if ('Rejected' === response.status) {
           this.afterRejectQuote = true
         }
       });
+    this.getQuotationDetails(this.quotationCode);
+
 
     // Retrieve authorization flag specific to this quotation
     const authorizedFlag = sessionStorage.getItem(`quotationAuthorized_${this.quotationCode}`);
@@ -472,12 +464,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
 
     // Load quotation details first
-    this.getquotationDetails();
+    // this.getquotationDetails();
 
     // Then load introducers and set the name
     this.setIntroducerNameFromService();
 
-    this.quotationCode && this.getQuotationDetails(this.quotationCode);
+    // this.quotationCode && this.getQuotationDetails(this.quotationCode);
     this.getuser();
     this.getRiskDetails();
 
@@ -497,13 +489,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     this.hasUnderwriterRights();
 
-    // Add this to your existing ngOnInit
-    const modal = document.getElementById('addExternalClaimExperienceModal');
-    if (modal) {
-      modal.addEventListener('hidden.bs.modal', () => {
-        this.clearForm();
-      });
-    }
+
 
 
     log.debug('QuotationView', this.quotationView)
@@ -564,9 +550,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     }
 
-     this.patchQuotationData();
+    //  this.patchQuotationData();
 
-     console.log('Share Methods:', this.shareMethods);
+    console.log('Share Methods:', this.shareMethods);
   }
 
   ngAfterViewInit() {
@@ -673,10 +659,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         if (this.quotationView?.source?.description === 'Agent' && this.quotationView?.clientType === 'I') {
           this.getCommissions();
         }
-        const ticketStatus = res.processFlowResponseDto.taskName
+        const ticketStatus = res?.processFlowResponseDto?.taskName
         log.debug("Ticket status:", ticketStatus)
         this.ticketStatus = ticketStatus
-        sessionStorage.setItem('ticketStatus', ticketStatus);
+        ticketStatus && sessionStorage.setItem('ticketStatus', ticketStatus);
         this.premiumAmount = res.premium
         this.fetchedQuoteNum = this.quotationView.quotationNo;
         this.user = this.quotationView.preparedBy;
@@ -2287,8 +2273,27 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   navigateToRiskCenter() {
-    this.router.navigate(['/home/gis/quotation/risk-center']).then(r => {
-    });
+    const action = "E";
+    sessionStorage.setItem("quotationAction", action);
+    log.debug('qUOTATIONcODE', this.quotationCode)
+    this.quotationService.undoMakeReady(this.quotationCode).subscribe(
+      {
+        next: (res) => {
+          log.debug("RESPONSE AFTER UNDO MAKE READY:", res)
+          const ticketStatus = res._embedded.taskName
+          log.debug("Ticket status:", ticketStatus)
+          this.ticketStatus = ticketStatus
+          sessionStorage.setItem('ticketStatus', ticketStatus);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully undone make ready.')
+          this.router.navigate(['/home/gis/quotation/risk-center']).then(r => {
+          });
+        },
+        error: (e) => {
+          log.debug(e)
+          this.globalMessagingService.displayErrorMessage('error', 'Failed to make ready')
+        }
+      })
+
 
   }
 
@@ -3201,93 +3206,94 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
 
-generateOTP() {
-  this.shareForm.markAllAsTouched();
-  this.shareForm.updateValueAndValidity();
+  generateOTP() {
+    this.shareForm.markAllAsTouched();
+    this.shareForm.updateValueAndValidity();
 
-  log.debug("Client name:", this.clientName);
+    log.debug("Client name:", this.clientName);
 
-  const methodValue = this.shareQuoteData.selectedMethod?.toUpperCase();
+    const methodValue = this.shareQuoteData.selectedMethod?.toUpperCase();
 
-if (methodValue !== 'EMAIL' && methodValue !== 'SMS' && methodValue !== 'WHATSAPP') {
-  this.globalMessagingService.displayErrorMessage("Error", "Please select a valid sending method");
-  return;
-}
-
-const selectedMethod: 'EMAIL' | 'SMS' | 'WHATSAPP' = methodValue;
-
-
-  let identifierValue = '';
-
-  if (selectedMethod === 'EMAIL') {
-    const emailCtrl = this.shareForm.get('email');
-    if (!emailCtrl || emailCtrl.invalid) return;
-    identifierValue = emailCtrl.value;
-  } else if (selectedMethod === 'SMS' || selectedMethod === 'WHATSAPP') {
-    const smsCtrl = this.shareForm.get('smsNumber');
-    if (!smsCtrl || smsCtrl.invalid) return;
-    identifierValue = smsCtrl.value;
-  }
-
-  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate OTP code
-
-  const payload = {
-    identifier: identifierValue,
-    subject: "Action Required: Verify Your Consent with OTP",
-    body: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent: ${otp}`
-  };
-
-  this.quotationService.generateOTP(payload, selectedMethod).subscribe({
-    next: (res: any) => {
-      this.globalMessagingService.displaySuccessMessage(
-        "Success",
-        `OTP sent successfully via ${selectedMethod}`
-      );
-      this.otpResponse = { otp: otp, ...res };
-      this.otpGenerated = true;
-      this.cdr.detectChanges();
-      sessionStorage.setItem('otpGenerated', JSON.stringify(this.otpGenerated));
-
-      log.debug("otp generated:", this.otpGenerated);
-      log.debug("Otp response",this.otpResponse)
-    },
-    error: (error) => {
-      console.error("Error generating OTP:", error.error?.message || error);
-      this.globalMessagingService.displayErrorMessage(
-        "Error",
-        `Failed to send OTP via ${selectedMethod}`
-      );
+    if (methodValue !== 'EMAIL' && methodValue !== 'SMS' && methodValue !== 'WHATSAPP') {
+      this.globalMessagingService.displayErrorMessage("Error", "Please select a valid sending method");
+      return;
     }
-  });
-}
 
-onShareMethodChange(method: ShareMethod) {
+    const selectedMethod: 'EMAIL' | 'SMS' | 'WHATSAPP' = methodValue;
 
-  this.shareQuoteData.selectedMethod = method;
-   console.log('Clicked method:', method);
-  this.otpGenerated = false;
-   this.cdr.detectChanges();
-  
-  
-  this.shareForm.get('email')?.clearValidators();
-  this.shareForm.get('smsNumber')?.clearValidators();
-  this.shareForm.get('email')?.setValue('');
-  this.shareForm.get('smsNumber')?.setValue('');
-  this.shareForm.get('otp')?.setValue('');
-  
-  // Add validators based on method
-  if (method === 'email') {
-    this.shareForm.get('email')?.setValidators([ Validators.email]);
-  } else if (method === 'sms') {
-    this.shareForm.get('smsNumber')?.setValidators([
-      Validators.pattern(/^(\+254|0)[17]\d{8}$/) 
-    ]);
+
+    let identifierValue = '';
+
+    if (selectedMethod === 'EMAIL') {
+      const emailCtrl = this.shareForm.get('email');
+      if (!emailCtrl || emailCtrl.invalid) return;
+      identifierValue = emailCtrl.value;
+    } else if (selectedMethod === 'SMS' || selectedMethod === 'WHATSAPP') {
+      const smsCtrl = this.shareForm.get('smsNumber');
+      if (!smsCtrl || smsCtrl.invalid) return;
+      identifierValue = smsCtrl.value;
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate OTP code
+
+    const payload = {
+      identifier: identifierValue,
+      subject: "Action Required: Verify Your Consent with OTP",
+      body: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent: ${otp}`
+    };
+
+    this.quotationService.generateOTP(payload, selectedMethod).subscribe({
+      next: (res: any) => {
+        this.globalMessagingService.displaySuccessMessage(
+          "Success",
+          `OTP sent successfully via ${selectedMethod}`
+        );
+        this.otpResponse = { otp: otp, ...res };
+        this.otpGenerated = true;
+        this.cdr.detectChanges();
+        sessionStorage.setItem('otpGenerated', JSON.stringify(this.otpGenerated));
+
+        log.debug("otp generated:", this.otpGenerated);
+        log.debug("Otp response", this.otpResponse)
+      },
+      error: (error) => {
+        console.error("Error generating OTP:", error.error?.message || error);
+        this.globalMessagingService.displayErrorMessage(
+          "Error",
+          `Failed to send OTP via ${selectedMethod}`
+        );
+      }
+    });
   }
-  
-  
-  this.shareForm.get('email')?.updateValueAndValidity();
-  this.shareForm.get('smsNumber')?.updateValueAndValidity();
-}
+
+
+  onShareMethodChange(method: ShareMethod) {
+
+    this.shareQuoteData.selectedMethod = method;
+    console.log('Clicked method:', method);
+    this.otpGenerated = false;
+    this.cdr.detectChanges();
+
+
+    this.shareForm.get('email')?.clearValidators();
+    this.shareForm.get('smsNumber')?.clearValidators();
+    this.shareForm.get('email')?.setValue('');
+    this.shareForm.get('smsNumber')?.setValue('');
+    this.shareForm.get('otp')?.setValue('');
+
+    // Add validators based on method
+    if (method === 'email') {
+      this.shareForm.get('email')?.setValidators([Validators.email]);
+    } else if (method === 'sms') {
+      this.shareForm.get('smsNumber')?.setValidators([
+        Validators.pattern(/^(\+254|0)[17]\d{8}$/)
+      ]);
+    }
+
+
+    this.shareForm.get('email')?.updateValueAndValidity();
+    this.shareForm.get('smsNumber')?.updateValueAndValidity();
+  }
 
 
 
@@ -3627,6 +3633,8 @@ onShareMethodChange(method: ShareMethod) {
     const payload: EmailDto = {
       code: null,
       address: [viewDocForm.to],
+      ccAddress: viewDocForm.cc,
+      bccAddress: viewDocForm.bcc,
       subject: viewDocForm.subject,
       message: viewDocForm.wording,
       status: 'D',
@@ -4096,6 +4104,11 @@ onShareMethodChange(method: ShareMethod) {
       .replace(/([A-Z])/g, ' $1')
       .replace(/^./, (str) => str.toUpperCase());
   }
+  onDocumetTabSelect(selectedRisk: RiskInformation) {
+    log.debug("Selected risk-", selectedRisk)
+    const selectedRiskCode = selectedRisk.code
+    selectedRisk && this.fetchRiskDoc(selectedRiskCode)
+  }
   fetchRiskDoc(riskId: any) {
     log.debug("Selected Risk code:", riskId)
     this.dmsService.fetchRiskDocs(riskId)
@@ -4224,7 +4237,7 @@ onShareMethodChange(method: ShareMethod) {
         docType: file.type,
         docData: base64String,
         originalFileName: file.name,
-        riskID: selectedRiskCode.toLocaleString(),
+        riskID: selectedRiskCode.toString()
 
       }
 

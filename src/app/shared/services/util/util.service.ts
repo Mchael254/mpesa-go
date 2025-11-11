@@ -693,7 +693,8 @@ export class UtilService {
       'SESSION_TOKEN_EXPIRES_AT',
       'account_roles',
       'organizationDetails',
-      'store_'
+      'store_',
+      'systemsAssigned'
     ];
 
     Object.keys(sessionStorage).forEach(key => {
@@ -714,7 +715,8 @@ export class UtilService {
       'SESSION_TOKEN_EXPIRES_AT',
       'account_roles',
       'organizationDetails',
-      'store_'
+      'store_',
+      'systemsAssigned'
     ];
     // Remove all keys except the ones in keysToKeep
     Object.keys(sessionStorage).forEach(key => {

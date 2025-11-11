@@ -503,7 +503,7 @@ export class QuotationReportComponent {
       const base64String = (reader.result as string).split(',')[1];
       const clientName = (this.clientDetails?.firstName ?? '') + ' ' + (this.clientDetails?.lastName ?? '')
       let clientDocPayload: DmsDocument = {
-        actualName: selectedFile.name,
+        // actualName: selectedFile.name,
         userName: this.loggedInUser,
         docType: file.type,
         docData: base64String,
