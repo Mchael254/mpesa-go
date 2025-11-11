@@ -1,8 +1,8 @@
 export interface EmailDto {
   code?: number;
   address: string[];
-  ccAddress?: string,
-  bccAddress?: string,
+  ccAddress?: string[],
+  bccAddress?: string[],
   subject: string;
   message: string;
   status: string;
