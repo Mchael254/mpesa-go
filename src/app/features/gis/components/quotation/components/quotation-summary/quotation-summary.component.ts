@@ -3207,72 +3207,58 @@ generateOTP() {
 
   log.debug("Client name:", this.clientName);
 
-  // Handle EMAIL OTP
-  if (this.shareQuoteData.selectedMethod === 'email') {
+  const methodValue = this.shareQuoteData.selectedMethod?.toUpperCase();
+
+if (methodValue !== 'EMAIL' && methodValue !== 'SMS' && methodValue !== 'WHATSAPP') {
+  this.globalMessagingService.displayErrorMessage("Error", "Please select a valid sending method");
+  return;
+}
+
+const selectedMethod: 'EMAIL' | 'SMS' | 'WHATSAPP' = methodValue;
+
+
+  let identifierValue = '';
+
+  if (selectedMethod === 'EMAIL') {
     const emailCtrl = this.shareForm.get('email');
-    if (!emailCtrl || emailCtrl.invalid) {
-      return;
-    }
-
-    const emailPayload = {
-      email: emailCtrl.value,
-      subject: "Action Required: Verify Your Consent with OTP",
-      body: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent:`,
-    };
-
-    this.quotationService.generateOTP(emailPayload).subscribe({
-      next: (res: any) => {
-        this.globalMessagingService.displaySuccessMessage("Success", "OTP sent to your email successfully");
-        this.otpResponse = res._embedded;
-        this.otpGenerated = true;
-        this.cdr.detectChanges();
-        sessionStorage.setItem('otpGenerated', JSON.stringify(this.otpGenerated))
-
-        log.debug("otp generated:", this.otpGenerated)
-
-      },
-      error: (error) => {
-        console.error("Error generating OTP:", error.error?.message || error);
-        this.globalMessagingService.displayErrorMessage("Error", "Failed to send OTP via email");
-      }
-    });
-  } 
-  // Handle SMS OTP
-  else if (this.shareQuoteData.selectedMethod === 'sms') {
+    if (!emailCtrl || emailCtrl.invalid) return;
+    identifierValue = emailCtrl.value;
+  } else if (selectedMethod === 'SMS' || selectedMethod === 'WHATSAPP') {
     const smsCtrl = this.shareForm.get('smsNumber');
-    if (!smsCtrl || smsCtrl.invalid) {
-      return;
-    }
-
-    // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    const smsPayload = {
-      scheduledDate: null,
-      smsMessages: [
-        {
-          message: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent: ${otp}`,
-          sendDate: new Date().toISOString(),
-          systemCode: 0,
-          telephoneNumber: smsCtrl.value
-        }
-      ]
-    };
-
-    
-    this.notificationService.sendSms(smsPayload).subscribe({
-      next: (res: any) => {
-        this.globalMessagingService.displaySuccessMessage("Success", "OTP sent to your phone successfully");
-        this.otpResponse = { otp: otp, ...res };
-        this.otpGenerated = true;
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error("Error sending SMS OTP:", error.error?.message || error);
-        this.globalMessagingService.displayErrorMessage("Error", "Failed to send OTP via SMS");
-      }
-    });
+    if (!smsCtrl || smsCtrl.invalid) return;
+    identifierValue = smsCtrl.value;
   }
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate OTP code
+
+  const payload = {
+    identifier: identifierValue,
+    subject: "Action Required: Verify Your Consent with OTP",
+    body: `Dear ${this.clientName},\nPlease use the following One-Time Password (OTP) to verify your consent: ${otp}`
+  };
+
+  this.quotationService.generateOTP(payload, selectedMethod).subscribe({
+    next: (res: any) => {
+      this.globalMessagingService.displaySuccessMessage(
+        "Success",
+        `OTP sent successfully via ${selectedMethod}`
+      );
+      this.otpResponse = { otp: otp, ...res };
+      this.otpGenerated = true;
+      this.cdr.detectChanges();
+      sessionStorage.setItem('otpGenerated', JSON.stringify(this.otpGenerated));
+
+      log.debug("otp generated:", this.otpGenerated);
+      log.debug("Otp response",this.otpResponse)
+    },
+    error: (error) => {
+      console.error("Error generating OTP:", error.error?.message || error);
+      this.globalMessagingService.displayErrorMessage(
+        "Error",
+        `Failed to send OTP via ${selectedMethod}`
+      );
+    }
+  });
 }
 
 onShareMethodChange(method: ShareMethod) {
@@ -3339,7 +3325,7 @@ onShareMethodChange(method: ShareMethod) {
   }
   verifyOTP() {
 
-    const userIdentifier = this.otpResponse.userIdentifier
+    const userIdentifier = this.otpResponse?._embedded?.userIdentifier || this.otpResponse?.userIdentifier;
     const otp = this.shareForm.value.otp
     this.quotationService.verifyOTP(userIdentifier, otp)
       .subscribe({
