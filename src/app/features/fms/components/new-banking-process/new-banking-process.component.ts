@@ -21,6 +21,8 @@ import {
 import * as bootstrap from 'bootstrap';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { GLAccountDTO } from '../../data/receipt-management-dto';
+import { ReceiptService } from '../../services/receipt.service';
+import { ReceiptUploadRequest } from '../../data/receipting-dto';
 const log = new Logger('NewBankingProcessComponent');
 /**
  * @Component NewBankingProcessComponent
@@ -96,7 +98,9 @@ export class NewBankingProcessComponent implements OnInit {
    direction:string='asc';
    glAccounts:GLAccountDTO[]=[];
    /** Stores the list of files selected by the user. */
-  uploadedFiles: File[] = [];
+  uploadedFile: File | null =null;
+  /** A flag to disable the file input after one file is selected. */
+  maximumFiles:boolean=false;
   /**
    * @constructor
    * @param translate Service for handling internationalization (i18n).
@@ -116,7 +120,8 @@ export class NewBankingProcessComponent implements OnInit {
     private sessionStorage: SessionStorageService,
     private authService: AuthService,
     private staffService:StaffService,
-    private receiptManagementService:ReceiptManagementService
+    private receiptManagementService:ReceiptManagementService,
+    private receiptService:ReceiptService
   ) {}
   /**
    * @description Angular lifecycle hook that runs on component initialization.
@@ -508,7 +513,7 @@ openDepositModal(receipt:any):void{
   }
   this.selectedRctObj = receipt;
   this.depositForm.patchValue({amount:this.selectedRctObj.receiptAmount});
-   this.uploadedFiles = []; // Clear previous files when opening
+   this.uploadedFile = null; // Clear previous files when opening
 }
 
 
@@ -527,22 +532,64 @@ closeDepositModal(){
    */
   onFileSelected(event: any): void {
     if (event.target.files && event.target.files.length > 0) {
-      // Add the newly selected files to our array
-      for (let i = 0; i < event.target.files.length; i++) {
-        this.uploadedFiles.push(event.target.files[i]);
-      }
+      this.uploadedFile=event.target.files[0];
+      this.maximumFiles = true; // Disable the input
+     
+      
     }
-  // Reset the input value to allow selecting the same file again
-    event.target.value = ''; 
+  }
+     /**
+   * Removes the currently selected file.
+   */
+
+  removeFile(): void {
+    this.uploadedFile=null;
+    this.maximumFiles = false; // Re-enable the input
+   
   }
    /**
-   * Removes a file from the uploadedFiles array by its index.
-   * @param index The index of the file to remove.
+   * Reads the selected file as a Base64 string and then calls the service to post it.
    */
-  removeFile(index: number): void {
-    this.uploadedFiles.splice(index, 1);
+postFile(){
+  if(!this.uploadedFile){
+   return;
   }
+  const formValue=this.depositForm.value;
+  // if(!formValue.slipNumber){
+  //   this.globalMessagingService.displayErrorMessage('Error','please enter the slip Number first!');
+  //   return ;
+  // }
+    const fileReader =  new FileReader();
+  // this event happens AFTER the file is read
+fileReader.onloadend=()=>{
+      // The result includes the "data:[mime/type];base64," prefix
+const base64String = fileReader.result as string;
+//  pure Base64 data by removing the prefix
+    const pureBase64 = base64String.split(',')[1];
+//preparing the payload
 
+      const payload: ReceiptUploadRequest[]=[ {
+      docData: pureBase64,
+        docType: "RECEIPT", 
+        originalFileName: this.uploadedFile.name,
+ module: 'RECEIPTING',
+  filename: this.uploadedFile.name,
+  referenceNo: formValue.slipNumber,
+  docDescription:'',
+  amount: formValue.amount,
+  paymentMethod:null,
+  policyNumber:null
+      }];
+        this.receiptService.uploadFiles(payload).subscribe({
+        next: (response) => {
+ this.globalMessagingService.displaySuccessMessage('',response.msg || response.message || 'success');
+        },
+        error:(err)=>{
+          this.handleApiError(err);
+        }});
+}
+ //fileReader.readAsDataURL(this.uploadedFile);
+}
 fetchGlAccounts():void{
   this.receiptManagementService.getGlAccounts(this.page,this.size,this.sortBy,this.direction).subscribe({
     next:(response)=>{

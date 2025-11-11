@@ -578,11 +578,11 @@ export interface ReceiptUploadRequest {
   module: string;
   originalFileName: string;
   filename: string;
-  referenceNo: string;
-  docDescription: string;
-  amount: number;
-  paymentMethod: string;
-  policyNumber: string;
+  referenceNo?: string;
+  docDescription?: string;
+  amount?: number;
+  paymentMethod?: string;
+  policyNumber?: string;
 }
 export interface FileDescription {
   file: File;
