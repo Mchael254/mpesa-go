@@ -101,6 +101,10 @@ export class NewBankingProcessComponent implements OnInit {
   uploadedFile: File | null =null;
   /** A flag to disable the file input after one file is selected. */
   maximumFiles:boolean=false;
+  /** A flag to indicate when a file is being dragged over the dropzone for styling. */
+  isDragging: boolean = false;
+   //  max file size in bytes (5MB = 5 * 1024 * 1024 bytes)
+  private readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
   /**
    * @constructor
    * @param translate Service for handling internationalization (i18n).
@@ -526,16 +530,72 @@ closeDepositModal(){
   }
   }
 }
+ /**
+   * Central method to process and validate a selected file.
+   * @param file The File object to process.
+   */
+  private processFile(file: File): void {
+    if (file.size > this.MAX_FILE_SIZE) {
+      this.globalMessagingService.displayErrorMessage('File Too Large', `The selected file exceeds the 5MB size limit.`);
+      return; 
+    }
+
+    // If validation passes, update the component state
+    this.uploadedFile = file;
+    this.maximumFiles = true;
+  }
   /**
    * Triggered when files are selected via the hidden input.
    * @param event The file input change event.
    */
   onFileSelected(event: any): void {
     if (event.target.files && event.target.files.length > 0) {
-      this.uploadedFile=event.target.files[0];
-      this.maximumFiles = true; // Disable the input
+      this.processFile(event.target.files[0]);
      
       
+    }
+  }
+  
+  /**
+   * Handles the dragover event.
+   * Prevents the browser's default behavior to allow a drop.
+   * @param event The DragEvent.
+   */
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  /**
+   * Handles the dragleave event.
+   * Resets the dragging state.
+   * @param event The DragEvent.
+   */
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+  }
+
+  /**
+   * Handles the drop event.
+   * Prevents default browser action and processes the dropped file.
+   * @param event The DragEvent.
+   */
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+
+    if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
+      // Only proceed if a file is not already selected
+      if (!this.maximumFiles) {
+          this.processFile(event.dataTransfer.files[0]);
+      }
+      
+      // Clear the dataTransfer
+      event.dataTransfer.clearData();
     }
   }
      /**
@@ -550,15 +610,15 @@ closeDepositModal(){
    /**
    * Reads the selected file as a Base64 string and then calls the service to post it.
    */
-postFile(){
+postFile():void{
   if(!this.uploadedFile){
    return;
   }
   const formValue=this.depositForm.value;
-  // if(!formValue.slipNumber){
-  //   this.globalMessagingService.displayErrorMessage('Error','please enter the slip Number first!');
-  //   return ;
-  // }
+  if(!formValue.slipNumber){
+    this.globalMessagingService.displayErrorMessage('Error','please enter the slip Number first!');
+    return ;
+  }
     const fileReader =  new FileReader();
   // this event happens AFTER the file is read
 fileReader.onloadend=()=>{
@@ -567,8 +627,7 @@ const base64String = fileReader.result as string;
 //  pure Base64 data by removing the prefix
     const pureBase64 = base64String.split(',')[1];
 //preparing the payload
-
-      const payload: ReceiptUploadRequest[]=[ {
+const payload:ReceiptUploadRequest[]= [{
       docData: pureBase64,
         docType: "RECEIPT", 
         originalFileName: this.uploadedFile.name,
@@ -580,16 +639,20 @@ const base64String = fileReader.result as string;
   paymentMethod:null,
   policyNumber:null
       }];
-        this.receiptService.uploadFiles(payload).subscribe({
+      //The service call is called inside the onloadend callback
+ this.receiptService.uploadFiles(payload).subscribe({
         next: (response) => {
- this.globalMessagingService.displaySuccessMessage('',response.msg || response.message || 'success');
+ this.globalMessagingService.displaySuccessMessage('',response.uploadStatus);
+ this.uploadedFile=null;
+ this.maximumFiles = false;
         },
         error:(err)=>{
           this.handleApiError(err);
-        }});
-}
- //fileReader.readAsDataURL(this.uploadedFile);
-}
+        }}); 
+    }
+     // Start the asynchronous file reading process
+       fileReader.readAsDataURL(this.uploadedFile);
+ }
 fetchGlAccounts():void{
   this.receiptManagementService.getGlAccounts(this.page,this.size,this.sortBy,this.direction).subscribe({
     next:(response)=>{

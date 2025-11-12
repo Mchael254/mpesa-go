@@ -2617,7 +2617,16 @@
       "assign": "Zuweisen",
       "goToDashboard": "Zum Dashboard",
       "createBatches": "Chargen erstellen",
-      "AttachDepositSlip": "Einzahlungsbeleg anhängen"
+      "AttachDepositSlip": "Einzahlungsbeleg anhängen",
+      "depositDetails": "Einzahlungsdetails",
+      "clickToUpload": "Klicken, um hochzuladen",
+      "pdf": "PDF, JPG, PNG (Max. 5 MB)",
+      "found": "Gefunden",
+      "selectRecord": "Datensätze. Bitte wählen Sie einen Datensatz aus, um ihn zuzuweisen und Stapel zu erstellen",
+      "paymentRequired": "Zahlungsmethode ist erforderlich",
+      "dateTo": "Enddatum ist erforderlich",
+      "dateFrom": "Anfangsdatum ist erforderlich",
+      "orDrag": "oder Datei hierher ziehen"
     }
   },
   "campaignMngmt": {

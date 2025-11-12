@@ -2599,7 +2599,16 @@
       "assign": "分配",
       "goToDashboard": "前往仪表板",
       "createBatches": "创建批次",
-      "AttachDepositSlip": "附上存款单"
+      "AttachDepositSlip": "附上存款单",
+      "depositDetails": "存款详情",
+      "clickToUpload": "点击上传",
+      "pdf": "PDF、JPG、PNG（最大 5MB）",
+      "found": "已找到",
+      "selectRecord": "记录。请选择要分配并创建批次的记录",
+      "paymentRequired": "需要支付方式",
+      "dateTo": "结束日期是必填项",
+      "dateFrom": "开始日期是必填项",
+      "orDrag": "或将文件拖到此处"
     }
   },
   "campaignMngmt": {

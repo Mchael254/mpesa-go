@@ -2611,7 +2611,16 @@
       "assign": "Panga",
       "goToDashboard": "Nenda kwenye dashibodi",
       "createBatches": "Unda makundi",
-      "AttachDepositSlip": "Ambatanisha risiti ya amana"
+      "AttachDepositSlip": "Ambatanisha risiti ya amana",
+      "depositDetails": "Maelezo ya Amana",
+      "clickToUpload": "Bofya kupakia",
+      "pdf": "PDF, JPG, PNG (Ukubwa wa juu 5MB)",
+      "found": "Imeonekana",
+      "selectRecord": "rekodi. Tafadhali chagua rekodi ya kugawa na kuunda makundi",
+      "paymentRequired": "Njia ya malipo inahitajika",
+      "dateTo": "Tarehe ya mwisho inahitajika",
+      "dateFrom": "Tarehe ya kuanza inahitajika",
+      "orDrag": "au buruta faili hapa"
     }
   },
   "campaignMngmt": {

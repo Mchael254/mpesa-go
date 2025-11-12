@@ -3315,7 +3315,16 @@
       "assign": "Assign",
       "goToDashboard": "Go to dashboard",
       "createBatches": "Create batches",
-      "AttachDepositSlip":"Attach Deposit Slip"
+      "AttachDepositSlip":"Attach Deposit Slip",
+      "depositDetails":"Deposit details",
+      "clickToUpload":"Click to upload",
+      "pdf":"PDF, JPG, PNG (Max 5MB)",
+      "found":"Found",
+      "selectRecord":"records.Please select record to assign and create batches",
+      "paymentRequired":"Payment Method is required",
+      "dateTo":"Date to is required",
+      "dateFrom":"Date From is required",
+      "orDrag":"or drag file here"
     },
     "receipt_authorization": {
       "title": "Receipt Authorization",

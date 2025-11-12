@@ -3138,6 +3138,14 @@
       "amountBanked": "Monto depositado",
       "remarksComments": "Observaciones/Comentarios",
       "attachDepositSlip": "Adjuntar comprobante de depósito",
+      "depositDetails": "Detalles del depósito",
+      "clickToUpload": "Haga clic para subir",
+      "pdf": "PDF, JPG, PNG (Máx. 5 MB)",
+      "found": "Encontrado",
+      "selectRecord": "registros. Por favor seleccione un registro para asignar y crear lotes",
+      "paymentRequired": "Se requiere el método de pago",
+      "dateTo": "La fecha final es obligatoria",
+      "dateFrom": "La fecha de inicio es obligatoria",
       "status": "Estado",
       "retrieveReceipts": "Recuperar recibos",
       "fromDate": "Desde Fecha",
@@ -3150,7 +3158,8 @@
       "retrievedReceipts": "Recibos recuperados",
       "assign": "Asignar",
       "goToDashboard": "Ir al panel",
-      "createBatches": "Crear lotes"
+      "createBatches": "Crear lotes",
+      "orDrag": "o arrastre el archivo aquí"
     }
   },
   "campaignMngmt": {
