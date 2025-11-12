@@ -25,7 +25,10 @@
 .file-dropzone:hover {
   background-color: #e9ecef; 
 }
-
+.file-dropzone.drag-over {
+  border-color: #0d6efd; 
+  background-color: #e7f1ff; 
+}
 /* Style for the 'Click to upload' text */
 .cursor-pointer {
     cursor: pointer;
@@ -37,4 +40,11 @@
 }
 .uploaded-files-list .btn-link {
     text-decoration: none;
+}
+:host ::ng-deep .p-checkbox .p-checkbox-box.p-highlight {
+  border-color: #00529B; 
+  background: #00529B; 
+}
+:host ::ng-deep .p-dialog-header-icon{
+  color:#EE3945;
 }

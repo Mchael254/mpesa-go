@@ -16,7 +16,7 @@
         url: '/home/fms/',
       },
       {
-        label: this.translate.instant('fms.banking.newBankingProcess'),
+        label: this.translate.instant('fms.banking.retrieveReceipts'),
         url: '',
       }
      
@@ -135,7 +135,7 @@
         header="Header"
         [(visible)]="visible"
         [modal]="true"
-        [style]="{ width: '25rem' }"
+        [style]="{ width: '35rem' }"
       >
         <ng-template pTemplate="header">
           <div
@@ -158,6 +158,8 @@
         selectionMode="multiple"
         sortMode="single"
         [resizableColumns]="true"
+        [autoLayout]="true"
+        responsiveLayout="stack"
         [scrollable]="true"
         [(selection)]="selectedReceipts"
         [paginator]="true"
@@ -177,13 +179,14 @@
               </h5>
 
               <p class="fw-normal" *ngIf="filteredReceipts.length != 0">
-                Found {{ totalRecord }} records.Please select record to assign
-                and create batches
+                {{ "fms.banking.found" | translate }} {{ totalRecord }}
+                {{ "fms.banking.selectRecord" | translate }}
               </p>
             </div>
 
             <div class="justify-content-end">
               <button
+                type="button"
                 class="btn btn-primary"
                 (click)="openAssignModal()"
                 *ngIf="selectedReceipts.length > 0"
@@ -199,7 +202,7 @@
 
         <ng-template pTemplate="header">
           <tr>
-            <th><p-tableHeaderCheckbox /></th>
+            <th style="width: 0.5rem"><p-tableHeaderCheckbox /></th>
             <th *ngFor="let col of allColumns" [pSortableColumn]="col.field">
               {{ col.header | translate }}
               <p-sortIcon [field]="col.field"></p-sortIcon>
@@ -313,7 +316,7 @@
     header="Assign Task"
     [modal]="true"
     [(visible)]="assignDialogVisible"
-    [style]="{ width: '25rem' }"
+    [style]="{ width: '364px' }"
   >
     <form [formGroup]="usersForm">
       <!-- user selection input field -->
@@ -362,13 +365,13 @@
         <div class="d-flex flex-row gap-3">
           <button
             type="button"
-            class="btn btn-secondary"
+            class="btn btn-outline-primary"
             (click)="closeAssignModal()"
           >
             {{ "fms.receipt-management.cancel" | translate }}
           </button>
           <button
-            type="submit"
+            type="button"
             class="btn btn-primary"
             (click)="onAssignSubmit()"
             [disabled]="!selectedUserForAssignment"
@@ -377,7 +380,7 @@
             {{ "fms.banking.assign" | translate }}
           </button>
           <button
-            type="submit"
+            type="button"
             class="btn btn-primary"
             (click)="reAssignUser()"
             [disabled]="!selectedUserForAssignment"
@@ -396,7 +399,7 @@
     header="Assign Task"
     [(visible)]="userSelectDialogVisible"
     [modal]="true"
-    [style]="{ width: '450px' }"
+    [style]="{ width: '760px' }"
     [baseZIndex]="10001"
   >
     <p-table
@@ -453,7 +456,7 @@
       <div class="d-flex flex-row gap-3">
         <button
           type="button"
-          class="btn btn-secondary"
+          class="btn btn-outline-primary"
           (click)="closeUserSelectDialog()"
         >
           {{ "crm.cancel" | translate }}
@@ -483,7 +486,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title text-primary" id="exampleModalLabel">
-            Deposit details
+            {{ "fms.banking.depositDetails" | translate }}
           </h5>
           <button
             type="button"
@@ -566,15 +569,21 @@
                   <div
                     class="file-dropzone border-dashed text-center p-4 rounded"
                     (click)="fileInput.click()"
+                    (dragover)="onDragOver($event)"
+                    (dragleave)="onDragLeave($event)"
+                    (drop)="onDrop($event)"
+                    [class.drag-over]="isDragging"
                   >
                     <i class="pi pi-upload mb-2" style="font-size: 2rem"></i>
                     <p class="mb-1">
-                      <span class="text-primary fw-bold cursor-pointer"
-                        >Click to upload</span
-                      >
-                      or drag file here
+                      <span class="text-primary fw-bold cursor-pointer">{{
+                        "fms.banking.clickToUpload" | translate
+                      }}</span>
+                      {{ "fms.banking.orDrag" | translate }}
                     </p>
-                    <small class="text-muted">PDF, JPG, PNG (Max 5MB)</small>
+                    <small class="text-muted">{{
+                      "fms.banking.pdf" | translate
+                    }}</small>
                     <!-- Hidden file input that we trigger programmatically -->
                     <input
                       type="file"
@@ -614,21 +623,23 @@
                       </div>
                     </div>
                   </div>
-                  <!-- end of uploaded file div -->
+                  <!-- end of file UPLOAD  section -->
                 </div>
               </div>
             </div>
           </form>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer me-1 gap-3">
           <button
             type="button"
-            class="btn btn-secondary"
+            class="btn btn-outline-primary"
             (click)="closeDepositModal()"
           >
             {{ "fms.receipt-management.cancel" | translate }}
           </button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-primary">
+            {{ "crm.saveChanges" | translate }}
+          </button>
         </div>
       </div>
     </div>
