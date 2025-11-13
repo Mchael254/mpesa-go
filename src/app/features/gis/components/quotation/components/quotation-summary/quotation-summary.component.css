@@ -1044,3 +1044,11 @@ textarea {
   letter-spacing: 0%;
   color: #000000;
 }
+
+.flexible-header1 {
+
+  white-space: nowrap;
+  width: auto;
+  text-align: left;
+
+}

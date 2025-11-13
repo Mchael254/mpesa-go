@@ -36,7 +36,7 @@ const log = new Logger('QuotationReportComponent');
 })
 export class QuotationReportComponent {
   @ViewChild('addClientDocumentModal') addClientDocModalRef!: ElementRef;
-
+  @ViewChild('previewDocModal') previewDocModal!: ElementRef<HTMLDivElement>
   private modals: { [key: string]: bootstrap.Modal } = {};
 
 
@@ -72,6 +72,7 @@ export class QuotationReportComponent {
   clientDocuments: DmsDocument[];
   selectedClientDoc: DmsDocument;
   previewClientDoc: { name: string; mimeType: string; dataUrl: string } | null = null;
+  private documentBlobs: { [id: string]: Blob } = {};
 
   constructor(
     public quotationService: QuotationsService,
@@ -618,11 +619,31 @@ export class QuotationReportComponent {
           this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
           this.fetchClientDoc(this.clientCode);
           this.selectedFile = null
+          // setTimeout(() => {
+          //   try {
+          //     const modalElement = this.addClientDocModalRef.nativeElement;
+
+          //     let modalInstance = bootstrap.Modal.getInstance(modalElement);
+          //     if (!modalInstance) {
+          //       modalInstance = new bootstrap.Modal(modalElement);
+          //     }
+
+          //     (document.activeElement as HTMLElement)?.blur();
+          //     modalInstance.hide();
+
+          //     const backdrop = document.querySelector('.modal-backdrop.show');
+          //     if (backdrop) backdrop.remove();
+          //     document.body.classList.remove('modal-open');
+          //     document.body.style.removeProperty('padding-right');
+          //   } catch (err) {
+          //     log.error('Modal close error:', err);
+          //   }
+          // }, 500);
           setTimeout(() => {
             try {
-              const modalElement = this.addClientDocModalRef.nativeElement;
+              const modalElement = this.addClientDocModalRef?.nativeElement;
+              if (!modalElement) return;
 
-              // Ensure we always have a valid Bootstrap modal instance
               let modalInstance = bootstrap.Modal.getInstance(modalElement);
               if (!modalInstance) {
                 modalInstance = new bootstrap.Modal(modalElement);
@@ -631,11 +652,17 @@ export class QuotationReportComponent {
               (document.activeElement as HTMLElement)?.blur();
               modalInstance.hide();
 
-              // 🧼 Clean up stray Bootstrap artifacts (prevents the freeze)
-              const backdrop = document.querySelector('.modal-backdrop.show');
-              if (backdrop) backdrop.remove();
-              document.body.classList.remove('modal-open');
-              document.body.style.removeProperty('padding-right');
+              // 🧼 Conditional cleanup (only if no modals remain open)
+              setTimeout(() => {
+                const openModals = document.querySelectorAll('.modal.show');
+                if (openModals.length === 0) {
+                  const backdrop = document.querySelector('.modal-backdrop.show');
+                  if (backdrop) backdrop.remove();
+
+                  document.body.classList.remove('modal-open');
+                  document.body.style.removeProperty('padding-right');
+                }
+              }, 300);
             } catch (err) {
               log.error('Modal close error:', err);
             }
@@ -668,28 +695,48 @@ export class QuotationReportComponent {
     log.info("Selected client doc", this.selectedClientDoc)
     this.fetchDocById(this.selectedClientDoc)
   }
-  fetchDocById(selectedClientDoc: DmsDocument) {
-    const docId = selectedClientDoc.id
+  // fetchDocById(selectedClientDoc: DmsDocument) {
+  //   const docId = selectedClientDoc.id
 
-    this.quotationService.getDocumentById(docId).subscribe({
+  //   this.quotationService.getDocumentById(docId).subscribe({
+  //     next: (res: any) => {
+  //       log.info(`Selected Document details`, res);
+  //       const selectedDoc = res._embedded
+
+  //       // Construct the preview-friendly object
+  //       this.previewClientDoc = {
+  //         name: selectedDoc.docName,
+  //         mimeType: selectedDoc.docMimetype,
+  //         dataUrl: `data:${selectedDoc.docMimetype};base64,${selectedDoc.byteData}`
+  //       };
+  //       console.log('preview doc modal', document.getElementById('previewDocModal'));
+
+  //       const modal = new bootstrap.Modal(document.getElementById('previewDocModal'));
+  //       modal.show();
+  //     },
+  //     error: (err) => {
+  //       log.info(`upload failed!`, err)
+  //     }
+  //   });
+  // }
+  fetchDocById(selectedClientDoc: DmsDocument) {
+    this.quotationService.getDocumentById(selectedClientDoc.id).subscribe({
       next: (res: any) => {
-        log.info(`Selected Document details`, res);
-        // Construct the preview-friendly object
+        const selectedDoc = res._embedded;
         this.previewClientDoc = {
-          name: res.docName,
-          mimeType: res.docMimetype,
-          dataUrl: `data:${res.docMimetype};base64,${res.byteData}`
+          name: selectedDoc.docName,
+          mimeType: selectedDoc.docMimetype,
+          dataUrl: `data:${selectedDoc.docMimetype};base64,${selectedDoc.byteData}`
         };
 
-        const modal = new bootstrap.Modal(document.getElementById('previewDocModal'));
-        modal.show();
+        setTimeout(() => {
+          const modal = new bootstrap.Modal(this.previewDocModal.nativeElement);
+          modal.show();
+        }, 0);
       },
-      error: (err) => {
-        log.info(`upload failed!`, err)
-      }
+      error: (err) => log.info(`upload failed!`, err)
     });
   }
-  private documentBlobs: { [id: string]: Blob } = {};
 
   onDownloadClientDoc(event: any) {
     this.selectedClientDoc = event;
@@ -707,23 +754,24 @@ export class QuotationReportComponent {
     this.quotationService.getDocumentById(docId).subscribe({
       next: (res: any) => {
         log.info(`Selected Document details`, res);
+        const selectedDoc = res._embedded
 
-        if (!res || res.empty || !res.byteData) {
+        if (!selectedDoc || selectedDoc.empty || !selectedDoc.byteData) {
           log.warn("Document data is empty or invalid");
           return;
         }
 
-        const byteCharacters = atob(res.byteData);
+        const byteCharacters = atob(selectedDoc.byteData);
         const byteNumbers = new Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
           byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
         const byteArray = new Uint8Array(byteNumbers);
 
-        const blob = new Blob([byteArray], { type: res.docMimetype });
+        const blob = new Blob([byteArray], { type: selectedDoc.docMimetype });
         this.documentBlobs[docId] = blob; // cache it
 
-        this.downloadClientDocument(docId, res.docName);
+        this.downloadClientDocument(docId, selectedDoc.docName);
       },
       error: (err) => {
         log.error(`Download failed!`, err);
