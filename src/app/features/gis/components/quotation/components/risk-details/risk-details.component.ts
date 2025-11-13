@@ -86,6 +86,7 @@ export class RiskDetailsComponent {
 
 
 
+
   private modals: { [key: string]: bootstrap.Modal } = {};
 
   modalInstance: any;
@@ -1018,10 +1019,65 @@ export class RiskDetailsComponent {
 
   //   log.debug("Patched form with selectedRisk:", this.riskDetailsForm.value);
   // }
+  // private patchEditValues(): void {
+  //   if (!this.selectedRisk) return;
+
+  //   // Explicit field mapping
+  //   const explicitFields: Record<string, string> = {
+  //     coverType: 'coverTypeCode',
+  //     premiumBand: 'binderCode',
+  //     registrationNumber: 'propertyId',
+  //     riskDescription: 'itemDesc',
+  //     riskId: 'propertyId'
+  //   };
+
+  //   // Patch explicit fields
+  //   Object.keys(explicitFields).forEach(formControl => {
+  //     const riskKey = explicitFields[formControl];
+  //     if (this.selectedRisk[riskKey] !== undefined && this.riskDetailsForm.contains(formControl)) {
+  //       this.riskDetailsForm.get(formControl)?.setValue(this.selectedRisk[riskKey]);
+  //     }
+  //   });
+
+  //   // Patch value-related controls
+  //   const valueControls = ['value', 'sumInsured'];
+  //   valueControls.forEach(controlName => {
+  //     if (this.riskDetailsForm.contains(controlName)) {
+  //       this.riskDetailsForm.get(controlName)?.setValue(this.selectedRisk?.value);
+  //     }
+  //   });
+
+  //   // Flatten recursively, skipping certain keys
+  //   const flatten = (obj: any) => {
+  //     Object.keys(obj).forEach(key => {
+  //       const value = obj[key];
+
+  //       // Skip keys that would overwrite explicitly mapped fields
+  //       const excludedKeys = ['coverType', 'binderCode', 'propertyId', 'itemDesc', 'value'];
+  //       if (excludedKeys.includes(key)) return;
+
+  //       if (value && typeof value === 'object') {
+  //         if (Array.isArray(value) && value.length > 0) {
+  //           flatten(value[0]);
+  //         } else {
+  //           flatten(value);
+  //         }
+  //       } else {
+  //         if (this.riskDetailsForm.contains(key)) {
+  //           this.riskDetailsForm.get(key)?.setValue(value);
+  //         }
+  //       }
+  //     });
+  //   };
+
+  //   flatten(this.selectedRisk);
+
+  //   log.debug('Patched form with selectedRisk:', this.riskDetailsForm.value);
+  // }
   private patchEditValues(): void {
     if (!this.selectedRisk) return;
 
-    // Explicit field mapping
+    // Explicit field mapping between backend keys and form controls
     const explicitFields: Record<string, string> = {
       coverType: 'coverTypeCode',
       premiumBand: 'binderCode',
@@ -1030,7 +1086,7 @@ export class RiskDetailsComponent {
       riskId: 'propertyId'
     };
 
-    // Patch explicit fields
+    // Patch explicitly mapped fields
     Object.keys(explicitFields).forEach(formControl => {
       const riskKey = explicitFields[formControl];
       if (this.selectedRisk[riskKey] !== undefined && this.riskDetailsForm.contains(formControl)) {
@@ -1046,7 +1102,17 @@ export class RiskDetailsComponent {
       }
     });
 
-    // Flatten recursively, skipping certain keys
+    // Helper function to normalize date values
+    const normalizeDate = (value: any, key: string): any => {
+      const isDateField =
+        key.toLowerCase().includes('date') ||
+        key.toLowerCase().includes('coverfrom') ||
+        key.toLowerCase().includes('coverto');
+
+      return typeof value === 'string' && isDateField ? new Date(value) : value;
+    };
+
+    // Recursive flattening function
     const flatten = (obj: any) => {
       Object.keys(obj).forEach(key => {
         const value = obj[key];
@@ -1063,12 +1129,14 @@ export class RiskDetailsComponent {
           }
         } else {
           if (this.riskDetailsForm.contains(key)) {
-            this.riskDetailsForm.get(key)?.setValue(value);
+            const finalValue = normalizeDate(value, key);
+            this.riskDetailsForm.get(key)?.setValue(finalValue);
           }
         }
       });
     };
 
+    // Perform recursive patching
     flatten(this.selectedRisk);
 
     log.debug('Patched form with selectedRisk:', this.riskDetailsForm.value);
@@ -1833,7 +1901,6 @@ export class RiskDetailsComponent {
           this.quotationCode = quotationCode
           const quotationNo = data._embedded.quotationNo
           this.addProductClauses();
-          this.selectedFile = null;
 
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
           this.globalMessagingService.displaySuccessMessage('Success', 'Risk created succesfully');
@@ -1890,6 +1957,7 @@ export class RiskDetailsComponent {
           log.debug("Matched risk from quotation:", matchedRisk);
           this.selectedRisk = matchedRisk
           this.sectionDetails = this.selectedRisk.riskLimits;
+          this.selectedFile && this.addRiskDocuments(this.selectedFile)
 
           const currentQuotationRiskCode = matchedRisk.code
           this.quotationRiskCode = currentQuotationRiskCode
@@ -2142,7 +2210,7 @@ export class RiskDetailsComponent {
         productCode: this.selectedProductCode,
       },
       coverDays: null,
-      fp: this.riskDetailsForm.value.butCharge || 0
+      butCharge: this.riskDetailsForm.value.butCharge || 0
     };
 
     // let risk = {
@@ -3042,7 +3110,7 @@ export class RiskDetailsComponent {
           productCode: this.selectedProductCode,
         },
         coverDays: this.selectedRisk.coverDays,
-        fp: 0
+        butCharge: 0
       };
       return [riskPayload]
     }
@@ -5612,7 +5680,7 @@ export class RiskDetailsComponent {
     log.debug("commissionsColumns", this.commissionsColumns);
   }
 
-  defaultVisibleCommissionsFields = ['agentDto','group', 'accountType', 'setupRate', 'usedRate', 'commissionAmount', 'withHoldingTaxRate',
+  defaultVisibleCommissionsFields = ['agentDto', 'group', 'accountType', 'setupRate', 'usedRate', 'commissionAmount', 'withHoldingTaxRate',
     'withHoldingTax', 'discountType', 'discountRate'];
 
   /**
@@ -6217,7 +6285,7 @@ export class RiskDetailsComponent {
       quotationStatus: "Draft",
 
       products: quotationData.quotationProducts?.map(product => ({
-        code: product.productCode,
+        code: product.code,
         expiryPeriod: "Y",
         description: product.productName,
         withEffectFrom: product.wef,
@@ -6226,7 +6294,7 @@ export class RiskDetailsComponent {
         risks: product.riskInformation?.map(risk => ({
           code: risk.code.toString(),
           propertyId: risk.propertyId,
-          butCharge: risk.fp,
+          butCharge: risk.butCharge,
 
           binderDto: {
             code: risk.binderCode || 0,
@@ -6327,7 +6395,7 @@ export class RiskDetailsComponent {
             minPremium: 0,
             sumInsured: 0,
             premium: 0,
-            quotationProductCode: 0
+            quotationProductCode: product.code
           })) || []
         })) || []
       })) || [],
@@ -6364,38 +6432,78 @@ export class RiskDetailsComponent {
   //   };
 
   // }
-  prepareUpdatePremiumPayload(computeResponse: any): any {
-    const products = computeResponse.productLevelPremiums || [];
+  prepareUpdatePremiumPayload(computeResponse: any): any[] {
+    const products = computeResponse?.productLevelPremiums || [];
 
-    return {
-      premiumAmount: products.reduce((total, product) => {
-        const productPremium = product.riskLevelPremiums?.reduce(
-          (sum, risk) => sum + (risk.coverTypeDetails?.[0]?.computedPremium || 0),
-          0
-        ) || 0;
-        return total + productPremium;
-      }, 0),
+    return products.map((product: any) => {
+      const productPremium = product.riskLevelPremiums?.reduce(
+        (sum: number, risk: any) => sum + (risk.coverTypeDetails?.[0]?.computedPremium || 0),
+        0
+      ) || 0;
 
-      productPremiumDtos: products.map(product => ({
-        productCode: product.code,
-        description: product.description,
-        productPremium: product.riskLevelPremiums?.reduce(
-          (sum, risk) => sum + (risk.coverTypeDetails?.[0]?.computedPremium || 0),
-          0
-        ) || 0,
-        riskLevelPremiums: product.riskLevelPremiums?.map(risk => ({
-          code: risk.code,
-          premium: risk.coverTypeDetails?.[0]?.computedPremium || 0,
-          limitPremiumDtos: risk.coverTypeDetails?.[0]?.limitPremium?.map(limit => ({
-            sectCode: limit.sectCode,
-            premium: limit.premium
-          })) || []
-        })) || []
-      })),
+      return {
+        premiumAmount: productPremium,
+        productCode: product.productCode || 0,
+        quotProductCode: product.code || 0,
+        productPremium: productPremium,
 
-      taxes: [] // map from taxComputation if available
-    };
+        riskLevelPremiums: product.riskLevelPremiums?.map((risk: any) => {
+          const coverType = risk.coverTypeDetails?.[0] || {};
+
+          return {
+            code: risk.code || 0,
+            propertyId: risk.propertyId || '',
+            propertyDescription: risk.propertyDescription || '',
+            premium: coverType.computedPremium || 0,
+            minimumPremiumUsed: risk.minimumPremiumUsed || 'N',
+
+            coverTypeDetails: {
+              code: coverType.code || 0,
+              subclassCode: coverType.subclassCode || 0,
+              description: coverType.description || '',
+              coverTypeCode: coverType.coverTypeCode || 0,
+              minimumAnnualPremium: coverType.minimumAnnualPremium || 0,
+              minimumPremium: coverType.minimumPremium || 0,
+              coverTypeShortDescription: coverType.coverTypeShortDescription || '',
+              coverTypeDescription: coverType.coverTypeDescription || '',
+              limits: coverType.limits || [],
+              limitPremium: coverType.limitPremium?.map((limit: any) => ({
+                sectCode: limit.sectCode || 0,
+                premium: limit.premium || 0
+              })) || [],
+              taxComputation: coverType.taxComputation?.map((tax: any) => ({
+                code: tax.code || 0,
+                premium: tax.premium || 0,
+                description: tax.description || ''
+              })) || []
+            },
+
+            limitPremiumDtos: coverType.limitPremium?.map((limit: any) => ({
+              sectCode: limit.sectCode || 0,
+              premium: limit.premium || 0
+            })) || [],
+
+            taxComputation: coverType.taxComputation?.map((tax: any) => ({
+              code: tax.code || 0,
+              premium: tax.premium || 0,
+              description: tax.description || ''
+            })) || []
+          };
+        }) || [],
+
+        taxes:
+          product.taxes?.map((tax: any) => ({
+            code: tax.code || 0,
+            premium: tax.premium || 0,
+            description: tax.description || ''
+          })) ||
+          [] // from top-level taxComputation if available
+      };
+    });
   }
+
+
+
 
   private buildUpdatePremiumPayload(computeResponse: any): any {
     const product = computeResponse.productLevelPremiums?.[0];
@@ -7612,7 +7720,6 @@ export class RiskDetailsComponent {
     this.selectedFile = file;
     // this.selectedFile && this.uploadFile();
     this.onLogBookSelected(this.selectedFile)
-    this.addRiskDocuments(this.selectedFile)
   }
 
   // removeFile(): void {
@@ -7771,7 +7878,8 @@ export class RiskDetailsComponent {
     });
   }
   addRiskDocuments(selectedFile: any) {
-    log.debug("Selected risk", this.selectedRisk)
+    log.debug("Selected risk", this.quotationDetails)
+    log.debug("Selected file", this.selectedFile)
     const selectedRiskCode = this.selectedRisk.code
     const file = selectedFile
     const reader = new FileReader();
@@ -7789,7 +7897,7 @@ export class RiskDetailsComponent {
 
       }
 
-      this.dmsService.uploadRiskDocs(riskDocPayload).subscribe({
+      this.quotationService.uploadRiskDocs(riskDocPayload).subscribe({
         next: (res: any) => {
           log.info(`document uploaded successfully!`, res);
           // this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
@@ -8030,4 +8138,5 @@ export class RiskDetailsComponent {
     });
 
   }
+
 }

@@ -52,7 +52,6 @@ import { NgxCurrencyConfig } from 'ngx-currency';
 import { Modal } from 'bootstrap';
 import { left } from '@popperjs/core';
 import { DmsDocument, RiskDmsDocument } from 'src/app/shared/data/common/dmsDocument';
-import { DmsService } from 'src/app/shared/services/dms/dms.service';
 
 type ShareMethod = 'email' | 'sms' | 'whatsapp';
 
@@ -312,7 +311,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   previewRiskDoc: { name: string; mimeType: string; dataUrl: string } | null = null;
   ticketPayload: any;
   authorizedQuoteFlag: boolean = false;
-
+  activeQuoteTab: string = 'summary';
 
   constructor(
     public quotationService: QuotationsService,
@@ -334,7 +333,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     private notificationService: NotificationService,
     private cdr: ChangeDetectorRef,
 
-    private dmsService: DmsService,
 
 
   ) {
@@ -744,6 +742,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         // extract client-code and productCode
         this.prodCode = this.quotationView.quotationProducts[0].code;
         this.clientCode = this.quotationView?.clientCode;
+        sessionStorage.setItem('clientCode', this.clientCode)
 
         this.clientCode && this.loadClientDetails(this.clientCode);
         // this.getExternalClaimsExperience(this.clientCode);
@@ -1213,35 +1212,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Computes the premium for the current quotation and updates the quotation details.
-   * @method computePremium
-   * @return {void}
-   */
-  computePremium() {
-    this.quotationService.computePremium(this.computationDetails).subscribe({
-      next: (res) => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed');
-        this.premium = res;
-        log.debug("res.riskLevelPremiums >>>", res.riskLevelPremiums)
-        const totalTax = (res.riskLevelPremiums || [])
-          .map(risk =>
-            (risk.taxComputation || []).reduce(
-              (taxAcc, tax) => taxAcc + (tax.premium || 0),
-              0
-            )
-          )
-          .reduce((sum, taxSum) => sum + taxSum, 0);
-        this.premiumAmount = res.premiumAmount + totalTax
-        log.debug("premium", res);
-        this.updateQuotationPremmium();
-      },
-      error: (error: HttpErrorResponse) => {
-        log.info(error);
-        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-      }
-    })
-  }
+
 
   cancelQuotation() {
     sessionStorage.removeItem('clientFormData');
@@ -1902,47 +1873,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     return this.convertedDate
   }
 
-  updateQuotationPremmium() {
-    log.debug("Premium computation Response:", this.premium)
-    const selectedProduct = this.quotationView.quotationProducts[0];
-    log.debug("Selected product", selectedProduct)
 
-    // Transforming data into the expected payload format
-    const transformedPayload = {
-      premiumAmount: this.premiumAmount,
-      productCode: selectedProduct.productCode,
-      quotProductCode: selectedProduct.code.toString(),
-      productPremium: this.premiumAmount,
-      riskLevelPremiums: this.premium.riskLevelPremiums.map(risk => ({
-        code: risk.code,
-        premium: risk.premium,
-        limitPremiumDtos: risk.limitPremiumDtos.map(limit => ({
-          sectCode: limit.sectCode,
-          premium: limit.premium
-        }))
-      })),
-      taxes: [] // Assuming taxes are not available in the given input data
-    };
-    log.debug("Payload to be sent to updatePremium", transformedPayload)
-    this.quotationService
-      .updatePremium(this.quotationCode, transformedPayload)
-      .subscribe({
-        next: (response: any) => {
-          const result = response;
-          log.debug("RESPONSE AFTER UPDATING QUOTATION DETAILS:", result);
-          result && this.getQuotationDetails(this.quotationCode);
-
-        },
-        error: (error) => {
-          log.error("Failed to update details:", error);
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            error.error.message
-          );
-        }
-      });
-
-  }
 
   openRiskDeleteModal() {
     log.debug("Selected Risk", this.selectedRisk)
@@ -4196,7 +4127,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
   fetchRiskDoc(riskId: any) {
     log.debug("Selected Risk code:", riskId)
-    this.dmsService.fetchRiskDocs(riskId)
+    this.quotationService.fetchRiskDocs(riskId)
       .subscribe({
         next: (res: DmsDocument[]) => {
           log.debug('Response after fetching clients DOCS:', res)
@@ -4326,7 +4257,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
       }
 
-      this.dmsService.uploadRiskDocs(riskDocPayload).subscribe({
+      this.quotationService.uploadRiskDocs(riskDocPayload).subscribe({
         next: (res: any) => {
           log.info(`document uploaded successfully!`, res);
           this.globalMessagingService.displaySuccessMessage('Success', 'Document uploaded successfully');
@@ -4354,7 +4285,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   fetchDocById(selectedRiskDoc: DmsDocument) {
     const docId = selectedRiskDoc.id
 
-    this.dmsService.getDocumentById(docId).subscribe({
+    this.quotationService.getDocumentById(docId).subscribe({
       next: (res: any) => {
         log.info(`Selected Document details`, res);
         // Construct the preview-friendly object
@@ -4387,7 +4318,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     }
 
     // Otherwise, fetch from backend
-    this.dmsService.getDocumentById(docId).subscribe({
+    this.quotationService.getDocumentById(docId).subscribe({
       next: (res: any) => {
         log.info(`Selected Document details`, res);
 
@@ -4442,7 +4373,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   deleteRiskDoc() {
     const docId = this.selectedRiskDoc.id;
 
-    this.dmsService.deleteDocumentById(docId).subscribe({
+    this.quotationService.deleteDocumentById(docId).subscribe({
       next: (res: any) => {
         log.info(`Response after deleting  Document details`, res);
         this.globalMessagingService.displaySuccessMessage('Success', 'Document deleted successfully');
