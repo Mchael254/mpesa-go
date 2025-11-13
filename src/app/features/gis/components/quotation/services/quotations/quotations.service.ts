@@ -650,7 +650,7 @@ export class QuotationsService {
 
 
 
-  authoriseExceptions(exception: ExceptionPayload): Observable<any> {
+  authoriseExceptions(exception: ExceptionPayload[]): Observable<any> {
 
     return this.api.POST(
       `v2/quotation-exceptions/authorise`,
@@ -897,7 +897,7 @@ export class QuotationsService {
     return this.api.GET(`v2/quotation/convert-to-normal-quot?`, API_CONFIG.GIS_QUOTATION_BASE_URL, params);
   }
 
-  updateQuotePremium(quotationCode: number, payload: UpdatePremiumDto) {
+  updateQuotePremium(quotationCode: number, payload: PremiumPayloadDto[]) {
     return this.api.POST(
       `v2/quotation/update-premium/${quotationCode}`,
       payload,
@@ -1437,7 +1437,7 @@ export class QuotationsService {
 
   uploadRiskDocs(data: any): Observable<any> {
     return this.api.POST<any>(
-      `/v1/documents/valuation`,
+      `v1/documents/valuation`,
       JSON.stringify(data), API_CONFIG.GIS_COMMONS_SERVICE
     );
   }
@@ -1445,16 +1445,14 @@ export class QuotationsService {
     const params = new HttpParams()
       .set('riskId', `${riskId}`);
 
-    return this.api.GET<DmsDocument[]>(`documents/riskId?${params}`, API_CONFIG.GIS_COMMONS_SERVICE);
+    return this.api.GET<DmsDocument[]>(`v1/documents/riskId?${params}`, API_CONFIG.GIS_COMMONS_SERVICE);
   }
 
   deleteDocumentById(docId: string): Observable<SingleDmsDocument> {
     const params = new HttpParams()
       .set('docId', `${docId}`);
 
-    return this.api.GET<SingleDmsDocument>(`v1/documents/delete?${params}`, API_CONFIG.GIS_COMMONS_SERVICE, {
-      responseType: 'text' as 'json'
-    })
+    return this.api.GET<SingleDmsDocument>(`v1/documents/delete?${params}`, API_CONFIG.GIS_COMMONS_SERVICE)
   }
   getDocumentById(docId: string): Observable<SingleDmsDocument> {
 
@@ -1463,16 +1461,16 @@ export class QuotationsService {
 
     // url = this.getDmsUrl(urlEndpoint);
 
-    return this.api.GET<SingleDmsDocument>(`/v1/documents/docId?${params}`, API_CONFIG.GIS_COMMONS_SERVICE, {
-      responseType: 'text' as 'json'
-    })
+    return this.api.GET<SingleDmsDocument>(`v1/documents/docId?${params}`, API_CONFIG.GIS_COMMONS_SERVICE
+
+    )
   }
   fetchDocumentsByClientCode(clientCode: string): Observable<DmsDocument[]> {
 
     const params = new HttpParams()
       .set('clientCode', `${clientCode}`);
 
-    return this.api.GET<DmsDocument[]>(`/v1/documents?${params}`, API_CONFIG.GIS_COMMONS_SERVICE);
+    return this.api.GET<DmsDocument[]>(`v1/documents?${params}`, API_CONFIG.GIS_COMMONS_SERVICE);
   }
 
   saveClientDocs(data: any): Observable<any> {
