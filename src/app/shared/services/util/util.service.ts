@@ -900,7 +900,7 @@ export class UtilService {
     const id = item.id ?? item.code ?? item.key ?? item.iso ?? item.short_description ?? item.value ??
       item.name ?? item.description ?? Object.values(item)[0];
     const label = item.name ?? item.description ?? item.value ?? item.label ?? item.description ??
-      item.zipCode ?? item.clientTypeName ?? String(id);
+      item.zipCode ?? item.clientTypeName ?? item.channelName ?? String(id);
     // log.info("item", item, id, label);
 
     return { id, label, original: item };
