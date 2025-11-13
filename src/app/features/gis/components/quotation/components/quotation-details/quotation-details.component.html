@@ -1,7 +1,8 @@
 <div class="mx-4 mt-3">
   <p class="title">{{ 'gis.quotation.quote_details_title' | translate }} </p>
   <app-stepper [currentStep]="1" [stepperData]="steps" [disableNavigation]="true"></app-stepper>
-  <p class="text-primary ps-5" style="font-weight: 500;">Ticket status:<span style="color: black;">{{ticketStatus
+  <p *ngIf="ticketStatus" class="text-primary ps-5" style="font-weight: 500;">Ticket status:<span
+      style="color: black;">{{ticketStatus
       |sentenceCase}}
     </span>
   </p>

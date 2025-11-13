@@ -21,6 +21,8 @@ import { Logger, UtilService } from "../../../../../../shared/services";
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import {
+  ExceptionListDto,
+  ExceptionPayload,
   GroupedUser,
   IntroducerDto,
   LimitsOfLiability,
@@ -206,7 +208,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   schedulesData: { [key: string]: any[] } = {};
   availableScheduleLevels: string[] = [];
   exceptionsCollapsed: boolean = false;
-  exceptionsData: any;
+  exceptionsData: ExceptionListDto[] = [];
   error: string | null = null;
   exceptionErrorMessage: string | null = null;
   limitsRiskofLiability: any;
@@ -312,6 +314,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   ticketPayload: any;
   authorizedQuoteFlag: boolean = false;
   activeQuoteTab: string = 'summary';
+  private documentBlobs: { [id: string]: Blob } = {};
+  exceptionsColumns: { field: string; header: string; visible: boolean, filterable: boolean }[] = [];
+  selectedExceptions: ExceptionListDto[] = [];
 
   constructor(
     public quotationService: QuotationsService,
@@ -355,7 +360,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.otpGenerated = JSON.parse(sessionStorage.getItem('otpGenerated'));
     this.changeToPolicyButtons = JSON.parse(sessionStorage.getItem('changeToPolicyButtons'));
     this.showAuthorizeButton = JSON.parse(sessionStorage.getItem('showAuthorizeButton'));
-
+    const exceptionslist = JSON.parse(sessionStorage.getItem('exceptionsData'))
+    this.exceptionsData = exceptionslist
+    if (this.exceptionsData?.length > 0) {
+      this.setExceptionColumns(this.exceptionsData[0]);
+    }
   }
 
   public isCollapsibleOpen = false;
@@ -673,7 +682,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           // this.showViewDocumentsButton = true;
           // this.showVerifyButton = true;
         }
-        // this.getExceptions(this.quotationView.code);
+        this.getExceptions(this.quotationView.code);
         if (!this.moreDetails) {
           this.quotationDetails = this.quotationView;
           log.debug("MORE DETAILS TEST quotationView", this.quotationDetails)
@@ -2239,11 +2248,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
   getExceptions(quotationCode: number) {
-    this.quotationService.generateExceptions(quotationCode).subscribe({
+    this.quotationService.fetchExceptions('Q', quotationCode).subscribe({
       next: (res: any) => {
         log.debug('exceptions', res);
-        this.exceptionsData = res._embedded;
+        this.exceptionsData = res;
         log.debug('exceptionData', this.exceptionsData);
+        if (this.exceptionsData?.length > 0) {
+          this.setExceptionColumns(this.exceptionsData[0]);
+        }
       },
       error: (error) => {
         log.error('Error fetching exceptions:', error);
@@ -2300,116 +2312,195 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   //       }
   //     });
   // }
+
+  // worked
+  // authorizeSelectedExceptions(): void {
+  //   const selected = this.exceptionsData?.filter(ex => ex.selected);
+
+  //   if (!selected || selected.length === 0) {
+
+  //     this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
+  //     return;
+  //   }
+
+
+
+  //   if (this.hasUnderwriterRights()) {
+
+  //     log.debug('Quotation status:', this.quotationView.status);
+
+  //     if (this.quotationView.status === 'AUTHORISED') {
+  //       this.globalMessagingService.displayInfoMessage(
+  //         'Info',
+  //         'This quotation is already authorised'
+  //       );
+  //       return;
+  //     }
+
+  //     log.debug('Authorizing as underwriter:', selected);
+
+  //     this.quotationService
+  //       .authoriseExceptions(selected)
+  //       .subscribe({
+  //         next: (res: any) => {
+  //           if (res.status === 'SUCCESS') {
+  //             this.globalMessagingService.displaySuccessMessage(
+  //               'Success',
+  //               res.message || 'Exceptions authorised successfully'
+  //             );
+  //           } else {
+  //             this.globalMessagingService.displayErrorMessage(
+  //               'Authorization Error',
+  //               res.message || 'Could not authorise exceptions'
+  //             );
+  //           }
+  //         },
+  //         error: (err) => {
+  //           this.globalMessagingService.displayErrorMessage(
+  //             'Authorization Error',
+  //             'Could not authorise exceptions'
+  //           );
+  //           log.error(err);
+  //         }
+  //       })
+
+  //   }
+  //   // authorizeSelectedExceptions(): void {
+  //   //   const selected = this.exceptionsData?.filter(ex => ex.selected);
+
+  //   //   if (!selected || selected.length === 0) {
+
+  //   //     this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
+  //   //     return;
+  //   //   }
+
+
+
+  //   //   if (this.hasUnderwriterRights()) {
+
+  //   //     log.debug('Quotation status:', this.quotationView.status);
+
+  //   //     if (this.quotationView.status === 'AUTHORISED') {
+  //   //       this.globalMessagingService.displayInfoMessage(
+  //   //         'Info',
+  //   //         'This quotation is already authorised'
+  //   //       );
+  //   //       return;
+  //   //     }
+
+  //   //     log.debug('Authorizing as underwriter:', selected);
+
+  //   //     this.quotationService
+  //   //       .AuthoriseExceptions(this.quotationView.code, this.quotationView.preparedBy)
+  //   //       .subscribe({
+  //   //         next: (res) => {
+  //   //           if (res.status === 'SUCCESS') {
+  //   //             this.globalMessagingService.displaySuccessMessage(
+  //   //               'Success',
+  //   //               res.message || 'Exceptions authorised successfully'
+  //   //             );
+  //   //           } else {
+  //   //             this.globalMessagingService.displayErrorMessage(
+  //   //               'Authorization Error',
+  //   //               res.message || 'Could not authorise exceptions'
+  //   //             );
+  //   //           }
+  //   //         },
+  //   //         error: (err) => {
+  //   //           this.globalMessagingService.displayErrorMessage(
+  //   //             'Authorization Error',
+  //   //             'Could not authorise exceptions'
+  //   //           );
+  //   //           log.error(err);
+  //   //         }
+  //   //       });
+  //   //   }
+  //   //   else {
+  //   //     this.globalMessagingService.displayErrorMessage(
+  //   //       'Authorization Error',
+  //   //       'You do not have rights to authorize; please reassign.'
+  //   //     )
+  //   //   }
+  //   //   this.openChooseClientReassignModal();
+  //   // }
+  // }
   authorizeSelectedExceptions(): void {
-    const selected = this.exceptionsData?.filter(ex => ex.selected);
-
-    if (!selected || selected.length === 0) {
-
+    if (!this.selectedExceptions || this.selectedExceptions.length === 0) {
       this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
       return;
     }
 
-
-
-    if (this.hasUnderwriterRights()) {
-
-      log.debug('Quotation status:', this.quotationView.status);
-
-      if (this.quotationView.status === 'AUTHORISED') {
-        this.globalMessagingService.displayInfoMessage(
-          'Info',
-          'This quotation is already authorised'
-        );
-        return;
-      }
-
-      log.debug('Authorizing as underwriter:', selected);
-
-      this.quotationService
-        .authoriseExceptions(selected)
-        .subscribe({
-          next: (res: any) => {
-            if (res.status === 'SUCCESS') {
-              this.globalMessagingService.displaySuccessMessage(
-                'Success',
-                res.message || 'Exceptions authorised successfully'
-              );
-            } else {
-              this.globalMessagingService.displayErrorMessage(
-                'Authorization Error',
-                res.message || 'Could not authorise exceptions'
-              );
-            }
-          },
-          error: (err) => {
-            this.globalMessagingService.displayErrorMessage(
-              'Authorization Error',
-              'Could not authorise exceptions'
-            );
-            log.error(err);
-          }
-        })
-
+    if (!this.hasUnderwriterRights()) {
+      this.globalMessagingService.displayErrorMessage(
+        'Authorization Error',
+        'You do not have rights to authorize; please reassign.'
+      );
+      return;
     }
-    // authorizeSelectedExceptions(): void {
-    //   const selected = this.exceptionsData?.filter(ex => ex.selected);
 
-    //   if (!selected || selected.length === 0) {
+    if (this.quotationView.status === 'AUTHORISED') {
+      this.globalMessagingService.displayInfoMessage(
+        'Info',
+        'This quotation is already authorised'
+      );
+      return;
+    }
 
-    //     this.globalMessagingService.displayErrorMessage('Error', "Select an exception to continue");
-    //     return;
-    //   }
+    // Map to payload
+    const payload: ExceptionPayload[] = this.selectedExceptions.map(ex => ({
+      code: ex.code,
+      gisExceptionCode: ex.gisExceptionCode,
+      policyBatchNumber: ex.policyBatchNumber ? Number(ex.policyBatchNumber) : null,
+      policyNumber: ex.policyNumber || null,
+      exceptionBy: ex.exceptionBy,
+      isAuthorized: ex.isAuthorized || null,
+      authorizedBy: ex.authorizedBy || null,
+      authorizedDate: ex.authorizedDate || null,
+      riskCode: ex.riskCode ?? null,
+      transactionDate: ex.transactionDate,
+      transactionNumber: ex.transactionNumber,
+      transactionType: ex.transactionType || null,
+      agentCode: ex.agentCode,
+      agentShortDescription: ex.agentShortDescription,
+      setStandard: ex.setStandard ?? null,
+      usedStandard: ex.usedStandard ?? null,
+      description: ex.description,
+      systemModule: ex.systemModule,
+      decision: ex.decision || null,
+      quotationCode: ex.quotationCode,
+      quotationNumber: ex.quotationNumber || null,
+      sectionCode: ex.sectionCode ?? null,
+      reiCode: ex.reiCode ?? null,
+      claimNumber: ex.claimNumber || null,
+      mtranNumber: ex.mtranNumber ?? null,
+      accountBalance: ex.accountBalance ?? null
+    }));
 
 
-
-    //   if (this.hasUnderwriterRights()) {
-
-    //     log.debug('Quotation status:', this.quotationView.status);
-
-    //     if (this.quotationView.status === 'AUTHORISED') {
-    //       this.globalMessagingService.displayInfoMessage(
-    //         'Info',
-    //         'This quotation is already authorised'
-    //       );
-    //       return;
-    //     }
-
-    //     log.debug('Authorizing as underwriter:', selected);
-
-    //     this.quotationService
-    //       .AuthoriseExceptions(this.quotationView.code, this.quotationView.preparedBy)
-    //       .subscribe({
-    //         next: (res) => {
-    //           if (res.status === 'SUCCESS') {
-    //             this.globalMessagingService.displaySuccessMessage(
-    //               'Success',
-    //               res.message || 'Exceptions authorised successfully'
-    //             );
-    //           } else {
-    //             this.globalMessagingService.displayErrorMessage(
-    //               'Authorization Error',
-    //               res.message || 'Could not authorise exceptions'
-    //             );
-    //           }
-    //         },
-    //         error: (err) => {
-    //           this.globalMessagingService.displayErrorMessage(
-    //             'Authorization Error',
-    //             'Could not authorise exceptions'
-    //           );
-    //           log.error(err);
-    //         }
-    //       });
-    //   }
-    //   else {
-    //     this.globalMessagingService.displayErrorMessage(
-    //       'Authorization Error',
-    //       'You do not have rights to authorize; please reassign.'
-    //     )
-    //   }
-    //   this.openChooseClientReassignModal();
-    // }
+    this.quotationService.authoriseExceptions(payload).subscribe({
+      next: (res: any) => {
+        if (res.status === 'SUCCESS') {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            res.message || 'Exceptions authorised successfully'
+          );
+        } else {
+          this.globalMessagingService.displayErrorMessage(
+            'Authorization Error',
+            res.message || 'Could not authorise exceptions'
+          );
+        }
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage(
+          'Authorization Error',
+          'Could not authorise exceptions'
+        );
+        log.error(err);
+      }
+    })
   }
+
 
 
   hasUnderwriterRights(): boolean {
@@ -4129,9 +4220,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     log.debug("Selected Risk code:", riskId)
     this.quotationService.fetchRiskDocs(riskId)
       .subscribe({
-        next: (res: DmsDocument[]) => {
+        next: (res: any) => {
           log.debug('Response after fetching clients DOCS:', res)
-          this.riskDocuments = res
+          this.riskDocuments = res._embedded
           if (this.riskDocuments && this.riskDocuments.length > 0) {
             this.setRiskDocColumns(this.riskDocuments[0]);
           }
@@ -4284,15 +4375,17 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
   fetchDocById(selectedRiskDoc: DmsDocument) {
     const docId = selectedRiskDoc.id
+    log.debug('DocumentId:', docId)
 
     this.quotationService.getDocumentById(docId).subscribe({
       next: (res: any) => {
         log.info(`Selected Document details`, res);
+        const selectedDoc = res._embedded
         // Construct the preview-friendly object
         this.previewRiskDoc = {
-          name: res.docName,
-          mimeType: res.docMimetype,
-          dataUrl: `data:${res.docMimetype};base64,${res.byteData}`
+          name: selectedDoc.docName,
+          mimeType: selectedDoc.docMimetype,
+          dataUrl: `data:${selectedDoc.docMimetype};base64,${selectedDoc.byteData}`
         };
 
         const modal = new bootstrap.Modal(document.getElementById('previewDocModal'));
@@ -4303,7 +4396,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       }
     });
   }
-  private documentBlobs: { [id: string]: Blob } = {};
 
   onDownloadRiskDoc(event: any) {
     this.selectedRiskDoc = event;
@@ -4321,23 +4413,24 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.quotationService.getDocumentById(docId).subscribe({
       next: (res: any) => {
         log.info(`Selected Document details`, res);
+        const selectedDoc = res._embedded
 
-        if (!res || res.empty || !res.byteData) {
+        if (!selectedDoc || selectedDoc.empty || !selectedDoc.byteData) {
           log.warn("Document data is empty or invalid");
           return;
         }
 
-        const byteCharacters = atob(res.byteData);
+        const byteCharacters = atob(selectedDoc.byteData);
         const byteNumbers = new Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
           byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
         const byteArray = new Uint8Array(byteNumbers);
 
-        const blob = new Blob([byteArray], { type: res.docMimetype });
+        const blob = new Blob([byteArray], { type: selectedDoc.docMimetype });
         this.documentBlobs[docId] = blob; // cache it
 
-        this.downloadRiskDocument(docId, res.docName);
+        this.downloadRiskDocument(docId, selectedDoc.docName);
       },
       error: (err) => {
         log.error(`Download failed!`, err);
@@ -4583,6 +4676,41 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
       }
     });
+  }
+  setExceptionColumns(doc: any) {
+    const excludedFields = [
+    ];
+    const defaultVisibleExceptionFields = ['description', 'isAuthorized', 'setStandard', 'usedStandard', 'authorizedBy', 'authorizedDate'];
+
+    const keys = Object.keys(doc).filter(key => !excludedFields.includes(key));
+
+    // Separate default fields and the rest
+    const defaultFields = defaultVisibleExceptionFields.filter(f => keys.includes(f));
+    const otherFields = keys.filter(k => !defaultVisibleExceptionFields.includes(k));
+
+    // Strictly order = defaults first, then others
+    const orderedKeys = [...defaultFields, ...otherFields];
+
+    this.exceptionsColumns = orderedKeys.map(key => ({
+      field: key,
+      header: this.sentenceCase(key),
+      visible: defaultVisibleExceptionFields.includes(key),
+      truncate: defaultVisibleExceptionFields.includes(key),
+      filterable: true,
+      sortable: true
+    }));
+
+    // this.exceptionsDocColumns.push({ field: 'actions', header: 'Actions', visible: true, filterable: false });
+    log.debug("Client doc Columns", this.exceptionsColumns)
+    // Restore from sessionStorage if exists
+    const saved = sessionStorage.getItem('exceptionsDocColumns');
+    if (saved) {
+      const savedVisibility = JSON.parse(saved);
+      this.exceptionsColumns.forEach(col => {
+        const savedCol = savedVisibility.find((s: any) => s.field === col.field);
+        if (savedCol) col.visible = savedCol.visible;
+      });
+    }
   }
 
 }
