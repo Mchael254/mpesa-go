@@ -253,8 +253,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.ticketStatus = sessionStorage.getItem('ticketStatus');
     this.quickQuoteFlag = JSON.parse(sessionStorage.getItem('quickQuoteFlag'));
     this.systemsAssigned = JSON.parse(sessionStorage.getItem('systemsAssigned'))
-    const gisAssigned = this.systemsAssigned?.find(system => system.shortDesc === 'GIS');
-    this.gisSystem = gisAssigned?.shortDesc
+    const gisAssigned = this.systemsAssigned.find(system => system.shortDesc === 'GIS');
+    this.gisSystem = gisAssigned.shortDesc
     // this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
     this.selectedClientCode = Number(sessionStorage.getItem('selectedClientId'))
     log.debug("Client code stored on session stotage:", this.selectedClientCode)
@@ -344,35 +344,23 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       }
     }
 
-    // const ticketJson = sessionStorage.getItem('activeTicket');
-    // log.debug("ticket data", ticketJson)
+    const ticketJson = sessionStorage.getItem('activeTicket');
+    log.debug("ticket data", ticketJson)
 
-    // if (ticketJson) {
-    //   this.ticketData = JSON.parse(ticketJson);
-    //   const quotationCode = this.ticketData.quotationCode;
-    //   if (quotationCode) {
-    //     this.quotationCode = quotationCode
-    //     // this.fetchQuotationDetails(quotationCode);
-    //     this.quotationSourceFlag = 'ticket';
-    //   }
-
-
+    if (ticketJson) {
+      this.ticketData = JSON.parse(ticketJson);
+      const quotationCode = this.ticketData.quotationCode;
+      if (quotationCode) {
+        this.quotationCode = quotationCode
+        // this.fetchQuotationDetails(quotationCode);
+        this.quotationSourceFlag = 'ticket';
+      }
 
 
 
-    // }
 
-  const quotationCode = sessionStorage.getItem('activeQuotationCode');
-  log.debug("Retrieved quotation code from session:", quotationCode);
 
-  if (quotationCode) {
-    this.quotationCode = Number(quotationCode);
-    this.quotationSourceFlag = 'ticket';
-
-    
-  }
-
-    
+    }
 
 
 
