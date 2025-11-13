@@ -546,22 +546,36 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.getQuotationDetails(quotationCode);
     }
 
-    const ticketJson = sessionStorage.getItem('activeTicket');
+  const quotationCode = sessionStorage.getItem('activeQuotationCode');
 
-    if (ticketJson) {
-      this.ticketData = JSON.parse(ticketJson);
-      const quotationCode = this.ticketData.quotationCode;
-      if (quotationCode) {
-        this.quotationCode = quotationCode
-      }
-      this.getQuotationDetails(quotationCode);
+  if (quotationCode) {
+    this.quotationCode = quotationCode;
+    this.getQuotationDetails(quotationCode);
+  }
+
+  const confirmMode = sessionStorage.getItem('confirmMode') === 'true';
+  const viewOnly = sessionStorage.getItem('viewOnlyMode') === 'true';
 
 
-    }
+  if (confirmMode) {
+  
+    this.showAuthorizeButton = false;
+    this.showViewDocumentsButton = true;
+    this.showVerifyButton = true;
+    this.showConfirmButton = true;
+  } else if(viewOnly){
+    this.showAuthorizeButton = false;
+    this.showViewDocumentsButton = false;
+    this.showVerifyButton = false;
+    this.showConfirmButton =false;
+
+
+  }
 
     //  this.patchQuotationData();
 
     console.log('Share Methods:', this.shareMethods);
+
   }
 
   ngAfterViewInit() {
