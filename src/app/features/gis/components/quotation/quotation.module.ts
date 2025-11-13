@@ -45,8 +45,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { QuotationOtherDetailsComponent } from './components/quotation-other-details/quotation-other-details.component';
 import { QuotationReportComponent } from './components/quotation-report/quotation-report.component';
 import { QuotationManagementComponent } from './components/quotation-management/quotation-management.component';
-
-
+import { SidebarModule } from 'primeng/sidebar';
 
 
 
@@ -108,6 +107,7 @@ import { QuotationManagementComponent } from './components/quotation-management/
     BreadcrumbModule,
     OverlayPanelModule,
     MultiSelectModule,
+    SidebarModule
   ],
   providers: [DatePipe],
 
