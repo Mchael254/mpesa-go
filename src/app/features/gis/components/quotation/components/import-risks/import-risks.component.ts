@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { Router } from '@angular/router';
@@ -25,6 +25,11 @@ interface SystemField {
   styleUrls: ['./import-risks.component.css']
 })
 export class ImportRisksComponent {
+  @Input() selectedProduct!: any;
+
+
+
+
   steps = quoteStepsData;
   subclassList: any;
   quotationNum: any;
@@ -74,6 +79,16 @@ export class ImportRisksComponent {
     { key: 'SubclassCode', label: 'Subclass Code', required: true },
     { key: 'Town', label: 'Town', required: false }
   ];
+
+  dragging = false;
+  dragOffset = { x: 0, y: 0 };
+  selectedFile: File | null = null;
+  isDragging = false;
+  uploading = false;
+  errorMessage = '';
+  successMessage = '';
+  subclassSelected: boolean = false;
+
   constructor(
     public subclassService: SubclassesService,
     public router: Router,
@@ -86,6 +101,17 @@ export class ImportRisksComponent {
       subclass: [''],
       uploadFile: ['']
     });
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedProduct'] && this.selectedProduct) {
+      console.log("Selected Product-risk details:", this.selectedProduct);
+      const selectedProductCode = this.selectedProduct?.productCode
+      this.selectedProductCode = selectedProductCode
+      this.getProductSubclass(this.selectedProductCode);
+
+
+
+    }
   }
 
   ngOnInit(): void {
@@ -102,10 +128,9 @@ export class ImportRisksComponent {
     this.selectedCoverToDate = sessionStorage.getItem("selectedCoverToDate");
     log.debug("selectedCoverFromDate", this.selectedCoverFromDate);
     log.debug("selectedCoverToDate", this.selectedCoverToDate);
-    this.selectedProductCode = JSON.parse(sessionStorage.getItem("selectedProductCode"));
-    log.debug("selectedProductCode", this.selectedProductCode);
+    this.selectedProductCode = JSON.parse(sessionStorage.getItem("selectedProduct"));
+    log.debug("selectedProductCode-import risk", this.selectedProductCode);
 
-    this.getProductSubclass(this.selectedProductCode);
     // Initialize mapping with empty selections
     this.systemFields.forEach(field => {
       this.mapping[field.key] = '';
@@ -152,7 +177,7 @@ export class ImportRisksComponent {
     }];
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
-    XLSX.writeFile(workbook, 'template.xls');
+    XLSX.writeFile(workbook, 'Motor_upload_template.xls');
   }
 
   onFileChange(event: any): void {
@@ -389,6 +414,9 @@ export class ImportRisksComponent {
     // Retrieve the selected subclass code from the event
     this.selectedSubclassCode = event.value;
     log.debug('Selected Subclass Code:', this.selectedSubclassCode);
+    if (this.selectedSubclassCode) {
+      this.subclassSelected = true;
+    }
 
     // Optionally, you can call another method here to perform actions with the selected subclass code
     this.fetchRegexPatternForSelectedSubclass();
@@ -460,5 +488,101 @@ export class ImportRisksComponent {
           }
         })
       })
+  }
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    this.validateAndSetFile(file);
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = false;
+
+    if (event.dataTransfer?.files) {
+      const file = event.dataTransfer.files[0];
+      this.validateAndSetFile(file);
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = false;
+  }
+
+  validateAndSetFile(file: File): void {
+    // Reset messages
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    // Check if file exists
+    if (!file) {
+      return;
+    }
+
+    // Check file size (10MB = 10 * 1024 * 1024 bytes)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      this.errorMessage = 'File size exceeds the maximum limit of 10MB';
+      return;
+    }
+
+    // Check file type (optional - you can customize accepted types)
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+      'image/jpeg',
+      'image/png'
+    ];
+
+
+    if (!allowedTypes.includes(file.type)) {
+      this.errorMessage =
+        'Please upload a valid document type (PDF, DOC, DOCX, TXT, PNG, JPG, JPEG)';
+      return;
+    }
+
+    this.selectedFile = file;
+  }
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+  getFileIcon(fileName: string): string {
+    const ext = fileName.split('.').pop()?.toLowerCase();
+
+    switch (ext) {
+      case 'pdf':
+        return 'pi pi-file-pdf';
+      case 'doc':
+      case 'docx':
+        return 'pi pi-file-word';
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return 'pi pi-image';
+      case 'txt':
+      case 'log':
+        return 'pi pi-file';
+      default:
+        return 'pi pi-file'; // fallback
+    }
+  }
+  removeFile(): void {
+    this.selectedFile = null;
+    this.errorMessage = '';
+
+    ;
   }
 }

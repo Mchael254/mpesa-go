@@ -120,10 +120,14 @@
             <!-- ADD SECTION BUTTON ROW -->
             <div class="row mt-3" *ngIf="isClientCardDetailsOpen">
                 <div class="col-12 d-flex justify-content-end">
-                    <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                    <!-- <button id="openModalButtonAdd" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                         data-bs-target="#addClientDocumentModal">
                         Add document
+                    </button> -->
+                    <button id="openModalButtonAdd" class="btn btn-primary btn-sm" (click)="openAddClientDocModal()">
+                        Add document
                     </button>
+
 
                     <i #iconTrigger class="pi border border-black p-1 rounded-1 text-black"
                         [ngClass]="{ 'pi-caret-down': showClients, 'pi-caret-up': !showClients }"
