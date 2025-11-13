@@ -7,7 +7,7 @@ import {
   EditRisk,
   ExceptionPayload,
   OtpPayload,
-  premiumPayloadData,
+  PremiumPayloadDto,
   QuotationComment,
   quotationDTO, QuotationReportDto,
   quotationRisk,
@@ -39,6 +39,7 @@ import { QuotationsDTO, riskClause, riskPeril, UpdatePremiumDto } from 'src/app/
 import { ComputationPayloadDto, PremiumComputationRequest, ProductLevelPremium } from "../../data/premium-computation";
 import { QuotationDetailsRequestDto } from "../../data/quotation-details";
 import { EmailDto } from "../../../../../../shared/data/common/email-dto";
+import { DmsDocument, SingleDmsDocument } from 'src/app/shared/data/common/dmsDocument';
 
 @Injectable({
   providedIn: 'root'
@@ -851,7 +852,7 @@ export class QuotationsService {
     )
   }
 
-  updatePremium(quotationCode: any, data: premiumPayloadData) {
+  updatePremium(quotationCode: any, data: PremiumPayloadDto[]) {
 
     return this.api.POST(`v2/quotation/update-premium/${quotationCode}`, JSON.stringify(data), API_CONFIG.GIS_QUOTATION_BASE_URL,).pipe(
       retry(1),
@@ -1434,11 +1435,52 @@ export class QuotationsService {
     );
   }
 
+  uploadRiskDocs(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `/v1/documents/valuation`,
+      JSON.stringify(data), API_CONFIG.GIS_COMMONS_SERVICE
+    );
+  }
+  fetchRiskDocs(riskId: number): Observable<DmsDocument[]> {
+    const params = new HttpParams()
+      .set('riskId', `${riskId}`);
 
+    return this.api.GET<DmsDocument[]>(`documents/riskId?${params}`, API_CONFIG.GIS_COMMONS_SERVICE);
+  }
 
+  deleteDocumentById(docId: string): Observable<SingleDmsDocument> {
+    const params = new HttpParams()
+      .set('docId', `${docId}`);
 
+    return this.api.GET<SingleDmsDocument>(`v1/documents/delete?${params}`, API_CONFIG.GIS_COMMONS_SERVICE, {
+      responseType: 'text' as 'json'
+    })
+  }
+  getDocumentById(docId: string): Observable<SingleDmsDocument> {
 
+    const params = new HttpParams()
+      .set('docId', `${docId}`);
 
+    // url = this.getDmsUrl(urlEndpoint);
+
+    return this.api.GET<SingleDmsDocument>(`/v1/documents/docId?${params}`, API_CONFIG.GIS_COMMONS_SERVICE, {
+      responseType: 'text' as 'json'
+    })
+  }
+  fetchDocumentsByClientCode(clientCode: string): Observable<DmsDocument[]> {
+
+    const params = new HttpParams()
+      .set('clientCode', `${clientCode}`);
+
+    return this.api.GET<DmsDocument[]>(`/v1/documents?${params}`, API_CONFIG.GIS_COMMONS_SERVICE);
+  }
+
+  saveClientDocs(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `v1/documents`,
+      JSON.stringify(data), API_CONFIG.GIS_COMMONS_SERVICE
+    );
+  }
 
 }
 

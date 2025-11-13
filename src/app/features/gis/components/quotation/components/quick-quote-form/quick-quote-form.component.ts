@@ -2549,7 +2549,7 @@ export class QuickQuoteFormComponent implements OnInit, OnDestroy, AfterViewInit
           (cover.clauses ?? []).map(clause => clause.code)
         )
         )),
-        fp: 0,
+        butCharge: 0,
         subclassCode: risk.selectCoverType.subclassCode,
         binderCode: risk.binderCode,
         riskLimits: risk.selectCoverType.limitPremium.map((limit) => {

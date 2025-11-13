@@ -734,7 +734,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     );
   }
   process(quotation: QuotationList): void {
-    log.debug('View quote clicked:', quotation);
+    log.debug('Process quotation clicked:', quotation);
     this.processSelectedQuote(
       quotation.quotationCode,
       quotation.quotationNumber,
@@ -1039,6 +1039,9 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
           // sessionStorage.setItem('isRevision', 'true');
           sessionStorage.setItem('quotationCode', quotationCode)
 
+          const ticketStatus = response._embedded.processFlowResponseDto.taskName
+          sessionStorage.setItem('ticketStatus', ticketStatus);
+
           // Navigate to quotation summary
           this.router.navigate(['/home/gis/quotation/quotation-details']);
 
@@ -1063,6 +1066,12 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       .subscribe({
         next: (response: any) => {
           sessionStorage.setItem('reusedQuotation', JSON.stringify(response));
+          const quotationCode = response._embedded.newQuotationCode
+          sessionStorage.setItem('quotationCode', quotationCode);
+          const ticketStatus = response._embedded.processFlowResponseDto.taskName
+          sessionStorage.setItem('ticketStatus', ticketStatus);
+
+
           this.router.navigate(['/home/gis/quotation/quotation-details']);
 
         },

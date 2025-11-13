@@ -30,7 +30,7 @@ import {
   Excesses,
   LimitsOfLiability,
   PremiumComputationRequest,
-  premiumPayloadData,
+  PremiumPayloadDto,
   QuotationDetails,
   UserDetail
 } from '../../data/quotationsDTO'
@@ -258,7 +258,7 @@ export class CoverTypesComparisonComponent implements OnInit, OnDestroy, AfterVi
   limitsOfLiabilityList: LimitsOfLiability[] = [];
   excessesList: Excesses[] = []
   premiums: any;
-  updatePremiumPayload: premiumPayloadData;
+  updatePremiumPayload: PremiumPayloadDto[];
   quoteProductCode: any;
   sectionDetails: any;
   isReturnToQuickQuote: boolean;

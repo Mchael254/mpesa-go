@@ -12,10 +12,12 @@
     <div class="header mx-4 mt-2 mb-2">
       <ul class="nav">
         <li class="nav-item">
-          <a class="nav-link sub-title active" data-bs-toggle="tab" id="nav-summary-tab" aria-controls="nav-summary"
-            data-bs-target="#nav-summary">Quotation Summary</a>
+          <!-- <a class="nav-link sub-title active" data-bs-toggle="tab" id="nav-summary-tab" aria-controls="nav-summary"
+            data-bs-target="#nav-summary">Quotation Summary</a> -->
+          <a class="nav-link sub-title active" (click)="activeQuoteTab='summary'" id="nav-summary-tab"
+            data-bs-toggle="tab" aria-controls="nav-summary" data-bs-target="#nav-summary">Quotation summary</a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link sub-title" data-bs-toggle="tab" id="nav-quotation-other-details-tab"
             aria-controls="nav-quotation-other-details" data-bs-target="#nav-quotation-other-details">Quotation Other
             Details</a>
@@ -23,6 +25,19 @@
         <li class="nav-item">
           <a class="nav-link sub-title" data-bs-toggle="tab" id="nav-reports-tab" aria-controls="nav-authorization"
             data-bs-target="#nav-reports">Reports and documents</a>
+        </li> -->
+        <li class="nav-item">
+          <a class="nav-link sub-title" (click)="activeQuoteTab='otherDetails'" id="nav-quotation-other-details-tab"
+            data-bs-toggle="tab" aria-controls="nav-quotation-other-details"
+            data-bs-target="#nav-quotation-other-details">
+            Quotation other details
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link sub-title" (click)="activeQuoteTab='reports'" id="nav-reports-tab" data-bs-toggle="tab"
+            aria-controls="nav-authorization" data-bs-target="#nav-reports">
+            Reports and documents
+          </a>
         </li>
       </ul>
     </div>
@@ -2448,7 +2463,7 @@
                 <div class="row mb-3">
                   <div class="col-md-6">
                     <label class="quote-label">Phone Number <span class="text-danger">*</span></label>
-                    <input pInputText type="tel" class="form-control" formControlName="phoneNumber" 
+                    <input pInputText type="tel" class="form-control" formControlName="phoneNumber"
                       placeholder="e.g., 0712345678" maxlength="10" />
                     <div *ngIf="viewDocForm.get('phoneNumber')?.invalid && viewDocForm.get('phoneNumber')?.touched"
                       class="text-danger small">
@@ -2539,10 +2554,15 @@
     </div>
 
     <!-- quotation report  -->
-    <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-authorization-tab" tabindex="0">
+    <!-- <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-authorization-tab" tabindex="0">
       <app-quotation-report></app-quotation-report>
 
+    </div> -->
+    <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-authorization-tab" tabindex="0">
+      <app-quotation-report *ngIf="activeQuoteTab === 'reports'"></app-quotation-report>
     </div>
+
+
 
 
 
