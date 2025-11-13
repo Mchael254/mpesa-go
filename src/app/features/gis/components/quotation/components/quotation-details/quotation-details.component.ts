@@ -1404,7 +1404,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       log.debug("quotation payload to save", quotationPayload);
       this.createQuotation(quotationPayload)
     } else {
-      // Mark all fields as touched and validate the form
       this.quotationForm.markAllAsTouched();
       this.quotationForm.updateValueAndValidity();
       for (let controlsKey in this.quotationForm.controls) {
@@ -2399,6 +2398,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       console.error("❌ Modal with ID 'deleteProduct' not found in DOM.");
     }
   }
+
   deleteProduct() {
     log.debug('Product to delete', this.productToDelete);
 
@@ -2471,16 +2471,6 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         next: (res: any) => {
           this.quotationDetails = res;
           log.debug("Quotation details", this.quotationDetails);
-
-          // Prevent deletion if only one product
-          if (this.quotationDetails.quotationProducts?.length === 1) {
-            log.debug("Delete not allowed - quotation only has one product");
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              'Quotation must have at least one product.'
-            );
-            return;
-          }
 
           // Find matching product
           const matchingProduct = this.quotationDetails.quotationProducts.find(
@@ -2933,8 +2923,18 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("CREATE QUOTATION");
     this.quotationService.processQuotation(quotationPayload).subscribe(
       (data) => {
-        this.quotationNo = data;
         this.spinner.hide();
+        
+        // Check if the response contains an error (200 OK with error payload)
+        if (data?.status === 'ERROR') {
+          log.error('Quotation processing failed:', data);
+          const errorMessage = data.message || data.debugMessage || 'An unexpected error occurred while processing the quotation';
+          this.globalMessagingService.displayErrorMessage('Quotation Processing Failed', errorMessage);
+          return;
+        }
+        
+        // Success - proceed with normal flow
+        this.quotationNo = data;
         log.debug(this.quotationForm.value);
         log.debug(this.quotationNo, 'quotation number output');
         this.quotationCode = this.quotationNo._embedded.quotationCode;
@@ -2951,9 +2951,14 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.router.navigate(['/home/gis/quotation/risk-center']);
       },
       (error: HttpErrorResponse) => {
-        log.info(error);
+        log.error('HTTP error creating quotation:', error);
         this.spinner.hide();
-        this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        
+        // Extract error message from actual HTTP error response
+        const errorMessage = error.error?.message || error.error?.debugMessage || error.message || 'An unexpected error occurred while processing the quotation';
+        const errorTitle = error.error?.status === 'ERROR' ? 'Quotation Processing Failed' : 'Error';
+        
+        this.globalMessagingService.displayErrorMessage(errorTitle, errorMessage);
       }
     );
 
