@@ -1036,11 +1036,11 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
           log.debug("Response for revise", response)
           const quotationCode = response._embedded.newQuotationCode
           sessionStorage.setItem('revisedQuotation', JSON.stringify(response));
-          sessionStorage.setItem('isRevision', 'true');
+          // sessionStorage.setItem('isRevision', 'true');
           sessionStorage.setItem('quotationCode', quotationCode)
 
           // Navigate to quotation summary
-          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+          this.router.navigate(['/home/gis/quotation/quotation-details']);
 
         },
         error: (error) => {
