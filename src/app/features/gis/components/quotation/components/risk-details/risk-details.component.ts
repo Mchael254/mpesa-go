@@ -453,7 +453,7 @@ export class RiskDetailsComponent {
 
 
   ) {
-    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
+    this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteFlag'))
 
     this.quotationCode = sessionStorage.getItem('quotationCode');
     this.quotationNumber = sessionStorage.getItem('quotationNum');
@@ -2021,6 +2021,8 @@ export class RiskDetailsComponent {
 
   UpdateRiskDetail() {
     log.debug('UPDATE RISK-FORM', this.riskDetailsForm.value)
+    log.debug('SELECTED RISK', this.selectedRisk)
+    const scheduleDetails: any[] = (this.selectedRisk?.scheduleDetails ?? []) as any[];
     this.riskDetailsForm.get('insureds').setValue(this.insuredCode);
     this.selectedBinderCode = this.riskDetailsForm.value.premiumBand
     // validate inputs
@@ -2096,7 +2098,7 @@ export class RiskDetailsComponent {
           // this.quotationCode && this.fetchQuotationDetails(this.quotationCode);
           sessionStorage.setItem('riskFormDetails', JSON.stringify(this.riskDetailsForm.value));
 
-          if (this.quickQuoteConverted) {
+          if (this.quickQuoteConverted && scheduleDetails.length === 0) {
             this.createScheduleL1(this.quotationRiskCode)
           } else {
             this.updateSchedule()
@@ -6443,8 +6445,8 @@ export class RiskDetailsComponent {
 
       return {
         premiumAmount: productPremium,
-        productCode: product.productCode || 0,
-        quotProductCode: product.code || 0,
+        // productCode: product.productCode ,
+        quotProductCode: product.code,
         productPremium: productPremium,
 
         riskLevelPremiums: product.riskLevelPremiums?.map((risk: any) => {
@@ -8071,8 +8073,9 @@ export class RiskDetailsComponent {
         if (hasExceptions == 'Authorize Exception') {
           this.quotationService.fetchExceptions('Q', quotationCode).subscribe({
             next: (res: any) => {
-              this.exceptionsData = res._embedded;
+              this.exceptionsData = res
               log.debug('exceptionData', this.exceptionsData);
+              sessionStorage.setItem('exceptionsData', JSON.stringify(this.exceptionsData))
               this.router.navigate(['/home/gis/quotation/quotation-summary']);
               this.globalMessagingService.displaySuccessMessage(
                 'Success:',
