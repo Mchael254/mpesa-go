@@ -989,38 +989,57 @@ export class ViewTicketsComponent implements OnInit {
   }
 
 
-  processTicket(ticket: any): void {
-    const ticketName = ticket.ticketName?.trim();
-    log.debug("Ticket chosen", ticket);
+ processTicket(ticket: any): void {
 
-    // Save the whole ticket in session storage
-    sessionStorage.setItem('activeTicket', JSON.stringify(ticket));
+  const quotationCode = ticket.quotationCode;
+  
+  log.debug("Ticket chosen", ticket);
 
-    switch (ticketName) {
-      case 'Quotation Data Entry':
-        sessionStorage.setItem('ticketStatus', ticketName);
-        this.router.navigate(['/home/gis/quotation/quotation-details']);
-        break;
+  sessionStorage.setItem('activeQuotationCode', quotationCode);
 
-      case 'Authorize Quotation':
-      case 'Confirm Quotation':
-        sessionStorage.setItem('ticketStatus', ticketName);
+  
+  this.quotationService.getQuotationDetails(quotationCode).subscribe({
+    next: (response:any) => {
 
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
-        break;
+      log.debug("Response",response)
+      const taskName = response?.processFlowResponseDto?.taskName?.trim();
+      
+      log.debug("Task name from processFlowDto", taskName);
+      
+      
 
-      case 'Authorize Exceptions':
-        sessionStorage.setItem('ticketStatus', ticketName);
+      
+      switch (taskName) {
+        case 'Quotation Data Entry':
+          this.router.navigate(['/home/gis/quotation/quotation-details']);
+          break;
 
-        sessionStorage.setItem('showExceptions', 'true');
-        this.router.navigate(['/home/gis/quotation/quotation-summary']);
-        break;
+        case 'Authorize Quotation':
+         this.router.navigate(['/home/gis/quotation/quotation-summary']);
+          break;
 
-      default:
-        console.warn('Unknown ticket type:', ticketName);
-        break;
-    }
-  }
+        case 'Confirm Quotation':
+          sessionStorage.setItem('confirmMode', 'true');
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+          break;
+
+        case null:
+        case undefined:
+        case '':
+        
+          sessionStorage.setItem('viewOnlyMode', 'true');
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+          log.warn('No task name found (null) — defaulting to view-only summary screen.');
+          break;
+
+        default:
+          console.warn('Unknown task name from processFlowDto:', taskName);
+          break;
+      }
+    },
+   
+  });
+}
 
 
   openReassignTicketModal() {
