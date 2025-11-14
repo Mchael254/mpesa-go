@@ -309,8 +309,6 @@ export class FinancialComponent implements OnInit {
         this.editFinancialDetails();
         break;
       case SaveAction.EDIT_PAYEE:
-        this.addEditPayee();
-        break;
       case SaveAction.SAVE_PAYEE:
         this.addEditPayee();
         break;
@@ -329,7 +327,7 @@ export class FinancialComponent implements OnInit {
         ...this.paymentDetails,
         accountNumber: formValues.overview_banking_info_acc_no,
         bankBranchId: formValues.overview_banking_info_branch_name,
-        bankId: formValues.overview_banking_info_bank_name,
+        // bankId: formValues.overview_banking_info_bank_name,
         iban: formValues.overview_iban,
         preferredChannel: formValues.overview_pref_payment_method,
         swiftCode: formValues.overview_pref_swift_code,
@@ -338,8 +336,8 @@ export class FinancialComponent implements OnInit {
     } else if (category === UserCategory.INDIVIDUAL) {
       paymentDetails = {
         ...this.paymentDetails,
-        bankName: formValues.overview_bank_name,
-        bankBranchName: formValues.overview_branch_name,
+        // bankName: formValues.overview_bank_name,
+        bankBranchId: formValues.overview_branch_name,
         accountNumber: formValues.overview_acc_no,
         currency: formValues.overview_currency,
         currencyId: formValues.overview_currency,
@@ -356,6 +354,8 @@ export class FinancialComponent implements OnInit {
       paymentDetails
     };
 
+    log.info('paymentDetails', paymentDetails);
+
     this.updateClientSection(this.clientDetails.clientCode, client);
     this.closeButton.nativeElement.click();
   }
@@ -366,10 +366,12 @@ export class FinancialComponent implements OnInit {
         this.globalMessagingService.displaySuccessMessage('Success', 'Client details update successfully');
         this.clientDetails = data;
         this.prepareDataDisplay();
+        this.closeButton.nativeElement.click();
       },
       error: err => {
         const errorMessage = err?.error?.message ?? err.message;
         this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+        this.closeButton.nativeElement.click();
       }
     });
   }
