@@ -2923,18 +2923,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("CREATE QUOTATION");
     this.quotationService.processQuotation(quotationPayload).subscribe(
       (data) => {
-        this.spinner.hide();
-        
-        // Check if the response contains an error (200 OK with error payload)
-        if (data?.status === 'ERROR') {
-          log.error('Quotation processing failed:', data);
-          const errorMessage = data.message || data.debugMessage || 'An unexpected error occurred while processing the quotation';
-          this.globalMessagingService.displayErrorMessage('Quotation Processing Failed', errorMessage);
-          return;
-        }
-        
-        // Success - proceed with normal flow
         this.quotationNo = data;
+        this.spinner.hide();
         log.debug(this.quotationForm.value);
         log.debug(this.quotationNo, 'quotation number output');
         this.quotationCode = this.quotationNo._embedded.quotationCode;
@@ -2951,10 +2941,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.router.navigate(['/home/gis/quotation/risk-center']);
       },
       (error: HttpErrorResponse) => {
-        log.error('HTTP error creating quotation:', error);
+        log.error('Error creating quotation:', error);
         this.spinner.hide();
         
-        // Extract error message from actual HTTP error response
         const errorMessage = error.error?.message || error.error?.debugMessage || error.message || 'An unexpected error occurred while processing the quotation';
         const errorTitle = error.error?.status === 'ERROR' ? 'Quotation Processing Failed' : 'Error';
         
