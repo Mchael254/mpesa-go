@@ -8,6 +8,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
+import { PolicyElectronicDataDTO } from 'src/app/features/gis/data/quotations-dto';
 
 const log = new Logger('ImportRiskComponent');
 interface ColumnMapping {
@@ -88,6 +89,8 @@ export class ImportRisksComponent {
   errorMessage = '';
   successMessage = '';
   subclassSelected: boolean = false;
+  policyData: any;
+
 
   constructor(
     public subclassService: SubclassesService,
@@ -135,6 +138,8 @@ export class ImportRisksComponent {
     this.systemFields.forEach(field => {
       this.mapping[field.key] = '';
     });
+
+  
   }
 
   // getSubclass() {
@@ -144,10 +149,11 @@ export class ImportRisksComponent {
   // }
 
   finish() {
-    if (this.selectedRisks.length === 0) {
-      this.router.navigate(['/home/gis/quotation/risk-section-details']);
-      return;
-    }
+    // if (this.selectedRisks.length === 0) {
+    //   this.router.navigate(['/home/gis/quotation/risk-section-details']);
+    //   return;
+    // }
+  
 
     sessionStorage.setItem('selectedRisks', JSON.stringify(this.selectedRisks));
     log.debug('Selected risks stored:', this.selectedRisks);
@@ -201,8 +207,18 @@ export class ImportRisksComponent {
 
           this.userFileData = this.parseData(parsedData);
 
+           
+          // DEBUG: Check values
+        console.log('Headers:', this.userFileHeaders);
+        console.log('Data rows:', this.userFileData.length);
+        console.log('About to show modal...');
+        log.debug("userFileData",this.userFileData)
+          
+
           // Show mapping modal instead of automatically parsing
           this.showMappingModal = true;
+
+           console.log('showMappingModal is now:', this.showMappingModal);
 
           log.debug('File headers:', this.userFileHeaders);
           log.debug('File data sample:', this.userFileData.slice(0, 3));
@@ -262,12 +278,17 @@ export class ImportRisksComponent {
     });
 
     this.data = this.mappedData;
+    
     this.showMappingModal = false;
 
     // Reset selections when new data is loaded
     this.selectedRisks = [];
 
     log.debug('Mapped data:', this.mappedData);
+
+    this.fetchPolicies();
+
+  
   }
 
   onMappingCancelled(): void {
@@ -492,6 +513,7 @@ export class ImportRisksComponent {
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     this.validateAndSetFile(file);
+    
   }
 
   onDrop(event: DragEvent): void {
@@ -582,4 +604,255 @@ export class ImportRisksComponent {
 
     ;
   }
+fetchPolicies(): void {
+  // Transform mappedData to PolicyElectronicDataDTO format
+  const policyPayload: PolicyElectronicDataDTO[] = this.mappedData.map(row => ({
+    id: 0,
+    policyBatchNo: 0,
+    transactionType: "string",
+    agentClientId: row.ClientCode?.toString() || "string",
+    agentClientName: row.ClientName || "string",
+    agentClientSurname: "string",
+    withEffectFrom: row.WEF ? this.formatDate(row.WEF) : "string",
+    agentPolicyId: "string",
+    insuranceClass: "string",
+    coverType: row.CoverTypeShortDesc || "string",
+    withEffectTo: row.WET ? this.formatDate(row.WET) : "string",
+    transactionDateString: "string",
+    transactionNo: "string",
+    premium: parseFloat(row.RiskPremAmount) || 0,
+    taxes: 0,
+    propertyId: row.PropertyId || "string",
+    make: "string",
+    model: "string",
+    yearOfManufacture: 1073741824,
+    cubicCapacity: "string",
+    engineNumber: "string",
+    chassisNumber: "string",
+    sumInsured: 0,
+    sectionColumn1: 0,
+    sectionColumn3: 0,
+    sectionColumn2: 0,
+    propertyCode: 9007199254740991,
+    subclassCode: row.SubclassCode?.toString() || "string",
+    coverTypeCode: parseInt(row.CoverTypeCode) || 0,
+    coverTypeShortDesc: row.CoverTypeShortDesc || "string",
+    gisIpuPropertyId: "string",
+    transactOnlyCheck: "string",
+    sectionColumn4: 0,
+    transferred: "string",
+    gisClientCode: parseInt(row.ClientCode) || 0,
+    gisIpuCode: 0,
+    policyNumber: "string",
+    notTransferredReason: "string",
+    authorized: "string",
+    authorizationDate: "2025-11-13",
+    pdcTransferred: "string",
+    certificateNumber: "string",
+    clientTypeCode: 0,
+    agentCode: 0,
+    lotId: "string",
+    clientTypeShortDesc: "string",
+    quotationCode: this.quotationCode || 0,
+    quotationProductCode: 0,
+    binderCode: parseInt(row.BinderCode) || 0,
+    productCode: this.selectedProductCode || 0,
+    sectionColumn5: 0,
+    sectionColumn6: 0,
+    sectionColumn7: 0,
+    sectionColumn8: 0,
+    sectionColumn9: 0,
+    sectionColumn10: 0,
+    newClientFlag: "string",
+    sectionColumn1Rate: 0,
+    sectionColumn2Rate: 0,
+    sectionColumn3Rate: 0,
+    sectionColumn4Rate: 0,
+    sectionColumn5Rate: 0,
+    sectionColumn6Rate: 0,
+    sectionColumn7Rate: 0,
+    sectionColumn8Rate: 0,
+    sectionColumn9Rate: 0,
+    sectionColumn10Rate: 0,
+    proRataFlag: "string",
+    duplicatedFlag: "string",
+    formMNumber: "string",
+    cfValue: "string",
+    marineValue: 0,
+    sectionColumn11: 0,
+    sectionColumn12: 0,
+    sectionColumn13: 0,
+    sectionColumn14: 0,
+    sectionColumn15: 0,
+    sectionColumn16: 0,
+    sectionColumn17: 0,
+    sectionColumn18: 0,
+    sectionColumn19: 0,
+    sectionColumn20: 0,
+    sectionColumn11Rate: 0,
+    sectionColumn12Rate: 0,
+    sectionColumn13Rate: 0,
+    sectionColumn14Rate: 0,
+    sectionColumn15Rate: 0,
+    sectionColumn16Rate: 0,
+    sectionColumn17Rate: 0,
+    sectionColumn18Rate: 0,
+    sectionColumn19Rate: 0,
+    sectionColumn20Rate: 0,
+    color: "string",
+    engine: "string",
+    suspendCancelledFlag: "string",
+    dateSuspendCancelled: "2025-11-13",
+    policyCoverFrom: "2025-11-13",
+    policyCoverTo: "2025-11-13",
+    currency: "string",
+    policyCoinsuranceFlag: "string",
+    policyCoinsuranceLeaderFlag: "string",
+    policyCoinsurancePercentage: 0,
+    clientName: row.ClientName || "string",
+    clientShortDesc: "string",
+    nationalId: "string",
+    clientPin: "string",
+    postalAddress: "string",
+    postalTown: "string",
+    postalCode: "string",
+    clientTelephoneNumber: "string",
+    clientMobileNumber: "string",
+    clientCountry: "string",
+    policyRenewableFlag: "string",
+    policySumInsured: 0,
+    facultativePolicyFlag: "string",
+    branch: "string",
+    insuredName: "string",
+    insuredNationalId: "string",
+    insuredPin: "string",
+    insuredPostalAddress: "string",
+    insuredPostalTown: "string",
+    insuredPostalCode: "string",
+    insuredTelephoneNumber: "string",
+    insuredMobileNumber: "string",
+    policyRiskCoverFrom: "2025-11-13",
+    policyRiskCoverTo: "2025-11-13",
+    policyLoadedFlag: "string",
+    commissionRate: 0,
+    preparedBy: "string",
+    authorisedBy: "string",
+    stampDuty: 0,
+    trainingLevy: 0,
+    phf: 0,
+    commission: 0,
+    endorsementNumber: "string",
+    debitCreditNoteNumber: "string",
+    underwritingYear: 1073741824,
+    riskDescription: row.ItemDesc || "string",
+    temp: "string",
+    policyClientType: "string",
+    policyClientTitle: "string",
+    gisSubclassCode: 0,
+    postedDate: "2025-11-13",
+    loadedFlag: "string",
+    subclassShortDesc2: "string",
+    subclassShortDesc3: "string",
+    subclassShortDesc4: "string",
+    subclassShortDesc5: "string",
+    subclassShortDesc6: "string",
+    subclassPremium: 0,
+    subclassPremium2: 0,
+    subclassPremium3: 0,
+    subclassPremium4: 0,
+    subclassPremium5: 0,
+    subclassPremium6: 0,
+    totalPremium: 0,
+    totalSubclass: 0,
+    policyUnderwritingYear: 1073741824,
+    transactionDate: "2025-11-13",
+    transactionNumber: 0,
+    policyUnderwritingOnlyFlag: "string",
+    ipuRiskNote: "string",
+    insuredEmailAddress: "string",
+    clientDateOfBirth: "2025-11-13",
+    insuredDateOfBirth: "2025-11-13",
+    awrCode: 0,
+    awpCode: 0,
+    emailAddress: "string",
+    origin: "string",
+    pecCarryCapacity: "string",
+    bodyType: "string",
+    registrationNumber: "string",
+    branchShortDesc: "string",
+    livestockOwnerMark: "string",
+    livestockInsurerTag: "string",
+    livestockPurpose: "string",
+    livestockStockType: "string",
+    livestockBreed: "string",
+    livestockSex: "string",
+    livestockAge: 0,
+    livestockNumber: 0,
+    livestockValue: 0,
+    riskNote: "string",
+    carryingCapacity: 0,
+    driverEmail: "string",
+    driverName: "string",
+    driverTelephoneNumber: "string",
+    insuredIsDriverFlag: "string",
+    yearOfBuilt: 0,
+    vesselType: "string",
+    clause: "string",
+    category: "string",
+    conveyance: "string",
+    country: "string",
+    proformaInvoiceValue: 0,
+    proformaInvoiceNumber: "string",
+    proformaInvoiceDate: "2025-11-13",
+    portOfDestination: "string",
+    paymentDate: "2025-11-13",
+    certNo: "string",
+    tin: "string",
+    excess: "string",
+    subCategory: "string",
+    riskLocation: row.Location || "string",
+    riskTown: row.Town || "string",
+    territory: "string",
+    isNewRisk: "string",
+    partShipment: "string",
+    riskAddress: "string",
+    calcMaxExposure: "string",
+    maxExposureAmount: 0,
+    surveyRisk: "string",
+    certificateDate: "2025-11-13",
+    dischargePort: "string",
+    shipmentPercentage: 0,
+    landingStatus: "string",
+    scheduleBasicRate: 0,
+    scheduleCargoDescription: "string",
+    scheduleContainerizedFlag: "string",
+    scheduleCurrency: "string",
+    scheduleInvoicedValue: 0,
+    scheduleMarinePolicyType: "string",
+    scheduleNatureOfCargo: "string",
+    scheduleSailingFrom: "string",
+    scheduleSailingTo: "string",
+    scheduleVesselName: "string",
+    sectionColumn1BaseAmount: 0,
+    sectionColumn1BaseExchangeRate: 0,
+    sectionColumn1LoadingRate: 0
+  } as PolicyElectronicDataDTO));
+
+  log.debug('Policy Payload being sent:', policyPayload);
+
+  this.quotationService.postPolicyElectronicData(policyPayload).subscribe({
+    next: (data) => {
+      this.policyData = data;
+      log.debug('Policy data uploaded successfully:', data);
+      this.successMessage = 'Policies uploaded successfully!';
+      this.globalMessagingService.displaySuccessMessage('Success', 'Policies uploaded successfully!');
+    },
+    error: (err) => {
+      console.error('Failed to load policy data', err);
+      this.errorMessage = 'Failed to upload policies. Please try again.';
+      this.globalMessagingService.displayErrorMessage('Error', 'Failed to upload policies');
+    }
+  });
+}
+
 }

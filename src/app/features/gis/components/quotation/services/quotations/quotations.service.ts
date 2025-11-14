@@ -35,7 +35,7 @@ import { ExternalClaimExp } from '../../../policy/data/policy-dto';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { UtilService } from '../../../../../../shared/services';
 import { map } from "rxjs/operators";
-import { QuotationsDTO, riskClause, riskPeril, UpdatePremiumDto } from 'src/app/features/gis/data/quotations-dto';
+import { PolicyElectronicDataDTO, QuotationsDTO, riskClause, riskPeril, UpdatePremiumDto } from 'src/app/features/gis/data/quotations-dto';
 import { ComputationPayloadDto, PremiumComputationRequest, ProductLevelPremium } from "../../data/premium-computation";
 import { QuotationDetailsRequestDto } from "../../data/quotation-details";
 import { EmailDto } from "../../../../../../shared/data/common/email-dto";
@@ -1479,6 +1479,17 @@ export class QuotationsService {
       JSON.stringify(data), API_CONFIG.GIS_COMMONS_SERVICE
     );
   }
+
+  postPolicyElectronicData(payload:PolicyElectronicDataDTO[]): Observable<any> {
+  return this.api.POST<any>(
+    'v1/policy-electronic-data',
+    JSON.stringify(payload),
+    API_CONFIG.GIS_COMMONS_SERVICE
+  ).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  );
+}
 
 }
 
