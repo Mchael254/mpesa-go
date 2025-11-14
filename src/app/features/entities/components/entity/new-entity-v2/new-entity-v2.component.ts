@@ -45,7 +45,7 @@ import { AccountsEnum } from "../../../data/enums/accounts-enum";
 import { AccountService } from "../../../services/account/account.service";
 import {
   AccountTypeDTO,
-  AddressV2DTO,
+  AddressV2DTO, AgentDTO,
   AgentV2DTO,
   ContactDetailsV2DTO, Cr12DetailsDTO,
   IntermediaryRefereeDTO,
@@ -145,6 +145,7 @@ export class NewEntityV2Component implements OnInit, OnChanges {
   ownershipDetails: OwnerDetail[] = [];
   cr12Details: Cr12Detail[] = [];
   channelsData: ChannelsDTO[] = [];
+  relationshipManagersData: AgentDTO[] = [];
 
   shouldUploadProfilePhoto: boolean = false;
   isCategorySelected: boolean = false;
@@ -1641,6 +1642,9 @@ export class NewEntityV2Component implements OnInit, OnChanges {
       case 'cnt_individual_contact_details_branch':
         this.fetchClientBranches(sectionIndex, fieldIndex, subGroupIndex);
         break;
+      case 'relationsshipManager':
+        this.fetchRelationshipManagers(sectionIndex, fieldIndex, subGroupIndex);
+        break;
 
       default:
         log.warn(`No handler for field: ${fieldId}`);
@@ -2009,6 +2013,24 @@ export class NewEntityV2Component implements OnInit, OnChanges {
           const channelsStringArr = data.map((id: ChannelsDTO) => this.utilService.normalizeOption(id));
           this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, channelsStringArr);
           log.info(`channelsStringArr >>> `, channelsStringArr)
+        },
+        error: err => {
+          log.error(`could not fetch: `, err);
+        }
+      });
+    }
+  }
+
+  fetchRelationshipManagers(sectionIndex: number, fieldIndex: number, subGroupIndex: number = -1): void {
+    if (!(this.relationshipManagersData.length > 0)) {
+      this.intermediaryService.getAgents(null, 50, null, null, 10).subscribe({
+        next: (data: Pagination<AgentDTO>) => {
+          this.relationshipManagersData = data.content;
+          const relationshipManagerStringArr = data.content.map((agent: AgentDTO) =>
+            this.utilService.normalizeOption(agent)
+          );
+          this.updateFieldOptions(sectionIndex, fieldIndex, subGroupIndex, relationshipManagerStringArr);
+          log.info(`relationshipManagerStringArr >>> `, relationshipManagerStringArr);
         },
         error: err => {
           log.error(`could not fetch: `, err);
