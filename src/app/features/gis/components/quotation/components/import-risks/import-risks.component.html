@@ -52,8 +52,8 @@
           <p class="upload-subtext">Maximum file size 10MB</p>
         </div>
 
-        <input #fileInput type="file" (change)="onFileSelected($event)" accept=".csv,.xls,.xlsx" style="display: none;"
-          [disabled]="!selectedSubclassCode">
+        <input #fileInput type="file" (change)="onFileChange($event)"
+          accept=".pdf,.doc,.docx,.txt,.log,.jpg,.jpeg,.png" style="display: none;" [disabled]="!selectedSubclassCode">
         <div class="selected-file" *ngIf="selectedFile">
           <i [ngClass]="getFileIcon(selectedFile.name)" class="file-icon"></i>
           <span class="file-name">{{ selectedFile.name }}</span>
