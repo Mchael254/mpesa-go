@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Logger } from "../logger/logger.service";
 import { HttpParams } from "@angular/common/http";
 import { BehaviorSubject, Observable } from "rxjs";
-import { DmsDocument, SingleDmsDocument } from "../../data/common/dmsDocument";
+import { DmsDocument, ReceiptUploadRequest, SingleDmsDocument } from "../../data/common/dmsDocument";
 import { ParameterService } from "../system-parameters/parameter.service";
 import { ApiService } from "../api/api.service";
 import { API_CONFIG } from "../../../../environments/api_service_config";
@@ -207,5 +207,40 @@ export class DmsService {
     log.info('Dms Url Selected is: ', url, 'Endpoint is: ', urlEndpoint);
     return url.endsWith('/') ? url + urlEndpoint :  url + '/' + urlEndpoint;
   }*/
+  uploadRiskDocs(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `uploadValuationDocs`,
+      JSON.stringify(data), API_CONFIG.DMS_SERVICE
+    );
+  }
+  fetchRiskDocs(riskID: number): Observable<DmsDocument[]> {
+    const params = new HttpParams()
+      .set('riskID', `${riskID}`);
+    log.info('Fetching documents for Risk ID: ', `${riskID}`);
 
+    return this.api.GET<DmsDocument[]>(`getValuationDocs?${params}`, API_CONFIG.DMS_SERVICE);
+  }
+  //fms dms endpoints
+  uploadFiles(requests: ReceiptUploadRequest[]): Observable<any> {
+      const formattedRequests = requests.map((request) =>
+        JSON.stringify({
+          docType: request.docType,
+          docData: request.docData,
+          module: request.module,
+          originalFileName: request.originalFileName,
+          filename: request.filename,
+          referenceNo: request.referenceNo,
+          description: request.docDescription,
+          amount: request.amount,
+          paymentMethod: request.paymentMethod,
+          policyNumber: request.policyNumber,
+        })
+      );
+      const payload = formattedRequests.join(',');
+      return this.api.POST<any>(
+        `uploadAllFinanceDocument`,
+        payload,
+        API_CONFIG.DMS_SERVICE
+      );
+    }
 }

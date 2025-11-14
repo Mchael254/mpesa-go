@@ -1,3 +1,4 @@
+import { CommonMethodsService } from './../../services/common-methods.service';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { ReceiptDataService } from '../../services/receipt-data.service';
 import {
@@ -10,7 +11,6 @@ import {
   ReceiptNumberDTO,
   ReceiptParticularsDTO,
   ReceiptSaveDTO,
-  ReceiptUploadRequest,
   TransactionDTO,
 } from '../../data/receipting-dto';
 import {
@@ -27,17 +27,16 @@ import { filter } from 'rxjs';
 import * as bootstrap from 'bootstrap';
 import { Router } from '@angular/router';
 import { ReportsService } from '../../../../shared/services/reports/reports.service';
-
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { OrganizationDTO } from 'src/app/features/crm/data/organization-dto';
 import { DmsService } from '../../../../shared/services/dms/dms.service';
 import { FmsSetupService } from '../../services/fms-setup.service';
 import { TranslateService } from '@ngx-translate/core';
-
 import fmsStepsData from '../../data/fms-step.json';
 import { IntermediaryService } from '../../../../features/entities/services/intermediary/intermediary.service';
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
 import { ReceiptManagementService } from '../../services/receipt-management.service';
+import { ReceiptUploadRequest } from 'src/app/shared/data/common/dmsDocument';
 /**
  * `ClientAllocationComponent` is an Angular component responsible for managing client allocations
  * for receipts. It handles form inputs, allocation calculations, file uploads, and interactions
@@ -468,13 +467,14 @@ export class ClientAllocationComponent {
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
     private router: Router,
-    private dmsService: DmsService,
     private reportService: ReportsService,
     private sessionStorage: SessionStorageService,
     private fmsSetupService: FmsSetupService,
     public translate: TranslateService,
     private intermediaryService: IntermediaryService,
-    private receiptManagementService: ReceiptManagementService
+    private receiptManagementService: ReceiptManagementService,
+    private dmsService:DmsService,
+    private commonMethodsService:CommonMethodsService 
   ) {}
   /**
    * Angular lifecycle hook that initializes the component.
@@ -1068,16 +1068,7 @@ export class ClientAllocationComponent {
           this.getAllocations();
         },
         error: (err) => {
-          const customMessage = this.translate.instant('fms.errorMessage');
-          const backendError =
-            err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+          this.commonMethodsService.handleApiError(err);
         },
       });
   }
@@ -1110,16 +1101,7 @@ export class ClientAllocationComponent {
         },
         error: (err) => {
           this.isEmptyAllocationPosted = true;
-          const customMessage = this.translate.instant('fms.errorMessage');
-          const backendError =
-            err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+          this.commonMethodsService.handleApiError(err);
         },
       });
   }
@@ -1208,16 +1190,7 @@ export class ClientAllocationComponent {
           this.globalGetAllocation = this.getAllocation;
         },
         error: (err) => {
-          const customMessage = this.translate.instant('fms.errorMessage');
-          const backendError =
-            err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+           this.commonMethodsService.handleApiError(err);
         },
       });
   }
@@ -1283,16 +1256,7 @@ export class ClientAllocationComponent {
         }
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+         this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1486,7 +1450,7 @@ export class ClientAllocationComponent {
         }
       });
 
-      this.receiptService.uploadFiles(requests).subscribe({
+      this.dmsService.uploadFiles(requests).subscribe({
         next: (response) => {
           this.globalDocId = response.docId;
 
@@ -1517,16 +1481,7 @@ export class ClientAllocationComponent {
           this.fetchDocByDocId(this.globalDocId);
         },
         error: (err) => {
-          const customMessage = this.translate.instant('fms.errorMessage');
-          const backendError =
-            err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+           this.commonMethodsService.handleApiError(err);
         },
       });
     } catch (err) {
@@ -1561,16 +1516,7 @@ export class ClientAllocationComponent {
         );
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+         this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1657,16 +1603,7 @@ export class ClientAllocationComponent {
         }
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+         this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1683,16 +1620,7 @@ export class ClientAllocationComponent {
           this.parameterStatus = response.data;
         },
         error: (err) => {
-          const customMessage = this.translate.instant('fms.errorMessage');
-          const backendError =
-            err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+           this.commonMethodsService.handleApiError(err);
         },
       });
   }
@@ -1898,16 +1826,7 @@ export class ClientAllocationComponent {
         this.receiptDataService.clearReceiptData();
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -1932,16 +1851,7 @@ export class ClientAllocationComponent {
         this.patchFormControl();
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+         this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -2039,16 +1949,7 @@ export class ClientAllocationComponent {
             modal.hide();
           }
         }
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+       this.commonMethodsService.handleApiError(err);
         //route to receipt capture screen if receipt share fails
         this.router.navigate(['/home/fms/receipt-capture']);
       },
@@ -2074,16 +1975,7 @@ export class ClientAllocationComponent {
         );
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+         this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -2274,16 +2166,7 @@ export class ClientAllocationComponent {
         this.router.navigate(['/home/fms/receipt-preview']);
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+         this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -2435,16 +2318,7 @@ export class ClientAllocationComponent {
         }, 100);
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -2466,16 +2340,7 @@ export class ClientAllocationComponent {
       },
 
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+       this.commonMethodsService.handleApiError(err);
       },
     });
   }
