@@ -28,6 +28,7 @@ import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 
 import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 import { TranslateService } from '@ngx-translate/core';
+import { CommonMethodsService } from '../../services/common-methods.service';
 /**
  * @Component({
  *   selector: 'app-client-search',
@@ -150,7 +151,8 @@ export class ClientSearchComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     public translate: TranslateService,
-    private sessionStorage: SessionStorageService
+    private sessionStorage: SessionStorageService,
+    private commonMethodsService: CommonMethodsService
   ) {}
 
   /**
@@ -246,16 +248,7 @@ export class ClientSearchComponent implements OnInit {
           this.accountTypeArray = response.data;
         },
         error: (err) => {
-          const customMessage = this.translate.instant('fms.errorMessage');
-          const backendError =
-            err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+          this.commonMethodsService.handleApiError(err);
         },
       });
   }
@@ -332,8 +325,9 @@ export class ClientSearchComponent implements OnInit {
     // if (this.selectedClient.length < 0) {
     //   return; // Avoid unnecessary API call
     // }
-     if (!selectedClient) { // A much more logical check
-      return; 
+    if (!selectedClient) {
+      // A much more logical check
+      return;
     }
     this.receiptDataService.setReceiptData(this.receiptingDetailsForm.value);
 
@@ -394,16 +388,7 @@ export class ClientSearchComponent implements OnInit {
           }
         },
         error: (err) => {
-          const customMessage = this.translate.instant('fms.errorMessage');
-          const backendError =
-            err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+          this.commonMethodsService.handleApiError(err);
         },
       });
   }
@@ -439,16 +424,7 @@ export class ClientSearchComponent implements OnInit {
             }
           },
           error: (err) => {
-            const customMessage = this.translate.instant('fms.errorMessage');
-            const backendError =
-              err.error?.msg ||
-              err.error?.error ||
-              err.error?.status ||
-              err.statusText;
-            this.globalMessagingService.displayErrorMessage(
-              customMessage,
-              backendError
-            );
+            this.commonMethodsService.handleApiError(err);
           },
           complete: () => {
             this.loading = false;
@@ -528,16 +504,7 @@ export class ClientSearchComponent implements OnInit {
           }
         },
         error: (err) => {
-          const customMessage = this.translate.instant('fms.errorMessage');
-          const backendError =
-            err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText;
-          this.globalMessagingService.displayErrorMessage(
-            customMessage,
-            backendError
-          );
+          this.commonMethodsService.handleApiError(err);
         },
       });
   }

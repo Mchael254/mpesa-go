@@ -30,8 +30,9 @@ import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
 import { ReceiptService } from '../../services/receipt.service';
 import { Logger } from 'src/app/shared/services';
-const log= new Logger('ReceiptManagementComponent');
+const log = new Logger('ReceiptManagementComponent');
 import { YesNo } from '../shared/yes-no.component';
+import { CommonMethodsService } from '../../services/common-methods.service';
 @Component({
   selector: 'app-receipt-management',
   templateUrl: './receipt-management.component.html',
@@ -111,16 +112,15 @@ export class ReceiptManagementComponent implements OnInit {
   client: ClientDTO;
   agent: AgentDTO;
   receipt_no: string;
-  branchRctCode:string;
+  branchRctCode: string;
   whatsappSelected: boolean = true;
   shareMethod: string;
-
   selectedOrg: OrganizationDTO;
   /**
    * @property {OrganizationDTO} defaultOrg - The default organization.
    */
   defaultOrg: OrganizationDTO;
-  emailPattern:string;
+  emailPattern: string;
   //raiseBankCharge: string = 'no';
   constructor(
     private receiptManagementService: ReceiptManagementService,
@@ -132,7 +132,8 @@ export class ReceiptManagementComponent implements OnInit {
     private authService: AuthService,
     private intermediaryService: IntermediaryService,
     private clientService: ClientService,
-    private receiptService: ReceiptService
+    private receiptService: ReceiptService,
+    private commonMethodsService: CommonMethodsService
   ) {}
   /**
    * @ngOnInit Lifecycle hook.
@@ -226,17 +227,16 @@ export class ReceiptManagementComponent implements OnInit {
     });
 
     // Listen for changes to be truly reactive
-  
   }
   initializeRctSharingForm() {
-      this.emailPattern = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$';
+    this.emailPattern = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$';
     this.rctShareForm = this.fb.group({
       email: ['', [Validators.pattern(this.emailPattern), Validators.required]], // Not required initially
       phone: ['', [Validators.required, Validators.pattern(/^\d{12}$/)]], // Initially required with 12 digits for a phone
       name: ['', Validators.required],
       shareMethod: ['whatsapp', Validators.required], // Default to 'whatsapp'
     });
-      this.listenForShareMethodChanges();
+    this.listenForShareMethodChanges();
   }
   listenForShareMethodChanges(): void {
     // Get a reference to the shareMethod control
@@ -250,7 +250,10 @@ export class ReceiptManagementComponent implements OnInit {
         if (method === 'email') {
           // If email is selected:
           this.whatsappSelected = false;
-          emailControl.setValidators([Validators.required, Validators.pattern(this.emailPattern)]);
+          emailControl.setValidators([
+            Validators.required,
+            Validators.pattern(this.emailPattern),
+          ]);
           phoneControl.clearValidators(); // Remove validators from phone
         } else {
           // If whatsapp is selected:
@@ -315,17 +318,8 @@ export class ReceiptManagementComponent implements OnInit {
         this.unPrintedReceiptContent = response.data.content; // Stores just the content array
         this.filteredtabledata = this.unPrintedReceiptContent;
       },
-
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -540,15 +534,7 @@ export class ReceiptManagementComponent implements OnInit {
         this.totalRecords = this.filteredReceipts.length;
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          err.error?.msg ||
-            err.error?.error ||
-            err.error?.status ||
-            err.statusText
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -618,16 +604,7 @@ export class ReceiptManagementComponent implements OnInit {
         );
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -638,16 +615,7 @@ export class ReceiptManagementComponent implements OnInit {
         this.glAccountContent = response.data.content;
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -671,7 +639,7 @@ export class ReceiptManagementComponent implements OnInit {
   openReceiptShareModal(
     index: number,
     receipt_no: string,
-    branchRctCode:string,
+    branchRctCode: string,
     agent_code: number,
     account_code: number,
     printed: 'Y' | 'N'
@@ -679,7 +647,7 @@ export class ReceiptManagementComponent implements OnInit {
     this.agentCode = agent_code;
     this.accountCode = account_code;
     this.receipt_no = receipt_no;
-    this.branchRctCode  = branchRctCode;
+    this.branchRctCode = branchRctCode;
     this.printStatus = printed as YesNo;
     this.sessionStorage.setItem('agentCode', this.agentCode);
     this.sessionStorage.setItem('accountCode', this.accountCode);
@@ -722,46 +690,37 @@ export class ReceiptManagementComponent implements OnInit {
         this.patchFormControl();
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
   /**
- * A streamlined helper function to build the share data payload.
- * It assumes the form has already been validated.
- */
-private prepareShareData(): {
-  shareType: string;
-  recipientEmail: string | null;
-  recipientPhone: string | null;
-} {
-  // Use getRawValue() once to get a clean snapshot of all form values.
-  const formValues = this.rctShareForm.getRawValue();
+   * A streamlined helper function to build the share data payload.
+   * It assumes the form has already been validated.
+   */
+  private prepareShareData(): {
+    shareType: string;
+    recipientEmail: string | null;
+    recipientPhone: string | null;
+  } {
+    // Use getRawValue() once to get a clean snapshot of all form values.
+    const formValues = this.rctShareForm.getRawValue();
 
-  if (formValues.shareMethod === 'email') {
-    return {
-      shareType: formValues.shareMethod.toUpperCase(),
-      recipientEmail: formValues.email,
-      recipientPhone: null,
-    };
-  } else { // 'whatsapp'
-    return {
-      shareType: formValues.shareMethod.toUpperCase(),
-      recipientPhone: formValues.phone,
-      recipientEmail: null, // Ensure email is null for whatsapp
-    };
+    if (formValues.shareMethod === 'email') {
+      return {
+        shareType: formValues.shareMethod.toUpperCase(),
+        recipientEmail: formValues.email,
+        recipientPhone: null,
+      };
+    } else {
+      // 'whatsapp'
+      return {
+        shareType: formValues.shareMethod.toUpperCase(),
+        recipientPhone: formValues.phone,
+        recipientEmail: null, // Ensure email is null for whatsapp
+      };
+    }
   }
-}
-  
 
   /**
    *
@@ -773,24 +732,27 @@ private prepareShareData(): {
     //  Mark all fields as touched to show any validation errors in the UI
 
     this.rctShareForm.markAllAsTouched();
-  //  Check the form's overall validity.
-  if (this.rctShareForm.invalid) {
-    this.globalMessagingService.displayErrorMessage('Validation Error', 'Please correct the errors before sending.');
-    return; // Stop if the form is invalid
-  }
+    //  Check the form's overall validity.
+    if (this.rctShareForm.invalid) {
+      this.globalMessagingService.displayErrorMessage(
+        'Validation Error',
+        'Please correct the errors before sending.'
+      );
+      return; // Stop if the form is invalid
+    }
     //const shareData = this.rctShareForm.getRawValue();
-      const shareData = this.prepareShareData();
-   if (!shareData) {
+    const shareData = this.prepareShareData();
+    if (!shareData) {
       return; // Stop if data is invalid (e.g., no method selected)
     }
-  
+
     const body = {
       shareType: shareData.shareType,
       clientName: this.agent.name,
       recipientEmail: shareData?.recipientEmail,
       recipientPhone: shareData?.recipientPhone,
       receiptNumber: String(this.receipt_no),
-      branchReceiptCode:this.branchRctCode,
+      branchReceiptCode: this.branchRctCode,
       orgCode: String(this.defaultOrg?.id || this.selectedOrg?.id),
     };
     this.receiptManagementService.shareReceipt(body).subscribe({
@@ -820,16 +782,7 @@ private prepareShareData(): {
             modal.hide();
           }
         }
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -839,16 +792,7 @@ private prepareShareData(): {
         this.client = response;
       },
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -856,13 +800,16 @@ private prepareShareData(): {
     //  Mark all fields as touched to show any validation errors in the UI
     this.rctShareForm.markAllAsTouched();
     this.sessionStorage.setItem('receipting', 'N');
-      //  Check the form's overall validity.
-  if (this.rctShareForm.invalid) {
-    this.globalMessagingService.displayErrorMessage('Validation Error', 'Please correct the errors before sending.');
-    return; // Stop if the form is invalid
-  }
-       const shareData = this.prepareShareData();
-   if (!shareData) {
+    //  Check the form's overall validity.
+    if (this.rctShareForm.invalid) {
+      this.globalMessagingService.displayErrorMessage(
+        'Validation Error',
+        'Please correct the errors before sending.'
+      );
+      return; // Stop if the form is invalid
+    }
+    const shareData = this.prepareShareData();
+    if (!shareData) {
       return; // Stop if data is invalid (e.g., no method selected)
     }
     // Create a single, comprehensive object to store
@@ -894,16 +841,7 @@ private prepareShareData(): {
     this.receiptService.updateReceiptStatus(payload).subscribe({
       next: (response) => {},
       error: (err) => {
-        const customMessage = this.translate.instant('fms.errorMessage');
-        const backendError =
-          err.error?.msg ||
-          err.error?.error ||
-          err.error?.status ||
-          err.statusText;
-        this.globalMessagingService.displayErrorMessage(
-          customMessage,
-          backendError
-        );
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
