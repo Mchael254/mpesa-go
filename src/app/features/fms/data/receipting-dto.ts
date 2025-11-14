@@ -572,18 +572,6 @@ export interface printDTO {
   loadIndicator: string;
   authorizationStatus: string;
 }
-export interface ReceiptUploadRequest {
-  docType: string;
-  docData: string;
-  module: string;
-  originalFileName: string;
-  filename: string;
-  referenceNo?: string;
-  docDescription?: string;
-  amount?: number;
-  paymentMethod?: string;
-  policyNumber?: string;
-}
 export interface FileDescription {
   file: File;
   description: string;
