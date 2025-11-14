@@ -300,8 +300,8 @@ export class WealthAmlComponent implements OnInit {
       next: () => {
         const foundSubgroup = this.subGroups.find(sub => sub.subGroupId === subGroup.subGroupId);
         foundSubgroup.table.data = subGroup.table.data.filter(owner => (owner.ownershipIdCorporate || owner.ownershipIdCorporate) != ownershipId);
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully ownership record');
         this.getClientDetails(this.clientDetails.clientCode);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully ownership record');
       },
       error: err => {
         this.globalMessagingService.displayErrorMessage('Error', err.error?.errors[0]);
@@ -316,8 +316,8 @@ export class WealthAmlComponent implements OnInit {
         const foundSubgroup = this.subGroups.find(sub => sub.subGroupId === subGroup.subGroupId);
         foundSubgroup.table.data = subGroup.table.data.filter(aml => (aml.amlIdIndividual || aml.amlIdIndividual) != amlId);
         this.shouldShowCr12Details = false;
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted AML record');
         this.getClientDetails(this.clientDetails.clientCode);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted AML record');
       },
       error: err => {
         this.globalMessagingService.displayErrorMessage('Error', err.error?.errors[0]);
@@ -490,7 +490,7 @@ export class WealthAmlComponent implements OnInit {
           const parentCountry = this.countries?.find(country => country.name === record.overview_parent_country);
           const operatingCountry = this.countries?.find(country => country.name === record.overview_aml_operating_country);
           const sector = this.sectors?.find(s => s.name === record.overview_economic_sector);
-          // const fundsSource = this.sourcesOfFunds.find(f => f.name === record.overview_source_of_funds);
+          const fundsSource = this.sourcesOfFunds.find(f => f.name === record.overview_source_of_funds);
           log.info('path data', record, category);
 
 
@@ -502,7 +502,7 @@ export class WealthAmlComponent implements OnInit {
               overview_cert_reg_year: record.overview_cert_reg_year,
               overview_aml_operating_country: operatingCountry?.id,
               overview_parent_country: parentCountry?.id,
-              overview_fund_source: record.overview_fund_source,
+              overview_fund_source: fundsSource?.code,
               overview_economic_sector: sector?.id,
             }
           }  else if (category === UserCategory.INDIVIDUAL) {
@@ -640,10 +640,10 @@ export class WealthAmlComponent implements OnInit {
     if (category === UserCategory.CORPORATE) {
       wealthAml = {
         ...this.selectedWealthAmlRecord,
-        fundsSource: formValues.overview_fund_source,
-        sourceOfWealthId,
-        sectorId,
-        sector: formValues.overview_economic_sector,
+        // fundsSource: formValues.overview_fund_source,
+        sourceOfWealthId: formValues.overview_fund_source,
+        sectorId: formValues.overview_economic_sector,
+        // sector: formValues.overview_economic_sector,
         tradingName: formValues.overview_trading_name,
         registeredName: formValues.overview_registered_name,
         certificateRegistrationNumber: formValues.overview_cert_reg_no,
@@ -656,9 +656,9 @@ export class WealthAmlComponent implements OnInit {
     } else if (category === UserCategory.INDIVIDUAL) {
       wealthAml = {
         ...this.selectedWealthAmlRecord,
-        fundsSource: formValues.overview_fund_source,
-        sourceOfWealthId,
-        sectorId,
+        // fundsSource: formValues.overview_fund_source,
+        sourceOfWealthId: formValues.overview_fund_source,
+        sectorId: formValues.overview_economic_sector,
         employmentStatus: formValues.overview_employment_type,
         occupationId: formValues.overview_occupation ,
         insurancePurpose: formValues.overview_insurance_purpose,
