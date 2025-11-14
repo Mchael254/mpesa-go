@@ -558,6 +558,31 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
 
     }
+    
+
+    const quotationCode = sessionStorage.getItem('activeQuotationCode');
+    log.debug("Retrieved quotation code from session:", quotationCode);
+
+if (quotationCode) {
+this.quotationCode = quotationCode;
+this.getQuotationDetails(quotationCode);
+}
+
+const confirmMode = sessionStorage.getItem('confirmMode') === 'true';
+const viewOnly = sessionStorage.getItem('viewOnlyMode') === 'true';
+
+if (confirmMode) {
+this.showAuthorizeButton = false;
+this.showViewDocumentsButton = true;
+this.showVerifyButton = true;
+this.showConfirmButton = true;
+} else if(viewOnly){
+this.showAuthorizeButton = false;
+this.showViewDocumentsButton = false;
+this.showVerifyButton = false;
+this.showConfirmButton =false;
+
+}
 
     //  this.patchQuotationData();
 

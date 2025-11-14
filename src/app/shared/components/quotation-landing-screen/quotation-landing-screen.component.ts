@@ -768,16 +768,61 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
       log.error('Invalid quotation number:', quotationNumber);
     }
   }
-  processSelectedQuote(quotationCode: number, quotationNumber: string, clientCode: number): void {
-    if (quotationNumber && quotationNumber.trim() !== '') {
-      sessionStorage.setItem('quotationNum', quotationNumber);
-      sessionStorage.setItem('quotationCode', JSON.stringify(quotationCode));
-      this.viewQuoteFlag = false;
-      sessionStorage.setItem('viewQuoteFlag', JSON.stringify(this.viewQuoteFlag));
 
-      this.router.navigate(['/home/gis/quotation/quotation-summary']);
-    }
+  processSelectedQuote(quotationCode: number, quotationNumber: string, clientCode: number): void {
+  if (!quotationNumber || quotationNumber.trim() === '') {
+    console.warn('Quotation number is missing or empty.');
+    return;
   }
+
+  log.debug('Selected quotationCode:', quotationCode, 'QuotationNumber:', quotationNumber, 'ClientCode:', clientCode);
+
+  // Store basic info in sessionStorage
+  sessionStorage.setItem('quotationNum', quotationNumber);
+  sessionStorage.setItem('activeQuotationCode', JSON.stringify(quotationCode));
+  sessionStorage.setItem('clientCode', JSON.stringify(clientCode));
+
+  // Fetch the full quotation details
+  this.quotationService.getQuotationDetails(quotationCode).subscribe({
+    next: (response: any) => {
+      log.debug('Quotation details response:', response);
+
+      const taskName = response?.processFlowResponseDto?.taskName?.trim();
+      log.debug('Task name from processFlowResponseDto:', taskName);
+
+      switch (taskName) {
+        case 'Quotation Data Entry':
+          this.router.navigate(['/home/gis/quotation/quotation-details']);
+          break;
+
+        case 'Authorize Quotation':
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+          break;
+
+        case 'Confirm Quotation':
+          sessionStorage.setItem('confirmMode', 'true');
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+          break;
+
+        case null:
+        case undefined:
+        case '':
+          sessionStorage.setItem('viewOnlyMode', 'true');
+          this.router.navigate(['/home/gis/quotation/quotation-summary']);
+          log.warn('No task name found — defaulting to view-only summary screen.');
+          break;
+
+        default:
+          console.warn('Unknown task name from processFlowResponseDto:', taskName);
+          break;
+      }
+    },
+    error: (err) => {
+      console.error('Failed to fetch quotation details:', err);
+    }
+  });
+}
+
   onStatusSelected(selectedValue: any) {
 
     this.selectedStatus = selectedValue;
