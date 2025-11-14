@@ -47,25 +47,30 @@
         <ng-container *ngFor="let col of table?.cols">
           <th
             *ngIf="col.visible" [pSortableColumn]="col.field"
-            style="white-space: nowrap; min-width: 150px; text-align: left;"
+            class="overview-table"
           >
             {{ col?.label[language] | titlecase }}
             <p-sortIcon [field]="col.field"></p-sortIcon>
           </th>
         </ng-container>
-        <th></th>
+        <th>
+          {{ 'action' | titlecase }}
+        </th>
       </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-rowData>
       <tr (click)="onRowClick(rowData)">
         <ng-container *ngFor="let col of table.cols" >
-          <td *ngIf="col.visible" class="py-3">
+          <td
+            *ngIf="col.visible"
+            class="py-3 overview-table"
+          >
             <span *ngIf="col.fieldId !=='overview_wef' && col.fieldId !=='overview_wet'">{{ rowData[col.fieldId]  }}</span>
             <span *ngIf="col.fieldId === 'overview_wef' || col.fieldId === 'overview_wet'">{{ rowData[col.fieldId] | date }}</span>
           </td>
         </ng-container>
-        <td class="text-primary">
+        <td class="text-primary overview-table">
           <button
             class="btn btn-link text-primary"
             (click)="onEditButtonClick(rowData); $event.stopPropagation()"
