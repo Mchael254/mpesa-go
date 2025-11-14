@@ -1,0 +1,37 @@
+export interface BanksDto{
+     code: number;
+            number: string;
+            name: string;
+            ref: string;
+            bctBbrCode:number;
+            branchCode: number;
+            coaNo: string;
+            coaOrgCode:number;
+            dateOpened: Date;
+            minBalance: any;
+            currencyChequeNo: any;
+            chequePrinter: any;
+            chequeFile: any;
+            type: string;
+            eftFolder: any;
+            reconStartDate: Date;
+            currencyCode: string;
+            eftFile: any;
+            securityCodeRequired: any;
+            chequeTypeRequired: any;
+            restrictUser1: string;
+            userRestricted: string;
+            rtgsChequeRequired: string;
+            maxChequeLmt: any;
+            eftChequeRequired: string;
+            paymentMode: string;
+            defaultBank:string;
+            rtgsEft:string;
+            bankSlipReportNo: number;
+            restrictUser: string;
+            status: string;
+            dateFrom:Date;
+            dateTo: Date;
+            by: number;
+            mftFile: any;
+}

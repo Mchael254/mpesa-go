@@ -51,3 +51,6 @@
 :host ::ng-deep .p-dialog-title{
   color:#00529B;
 }
+.colHeaderWidth {
+  width: 2%;
+}
