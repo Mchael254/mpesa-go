@@ -356,11 +356,17 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         this.quotationSourceFlag = 'ticket';
       }
 
-
-
-
-
     }
+
+
+    const quotationCode = sessionStorage.getItem('activeQuotationCode');
+log.debug("Retrieved quotation code from session:", quotationCode);
+
+if (quotationCode) {
+this.quotationCode = Number(quotationCode);
+this.quotationSourceFlag = 'ticket';
+
+}
 
 
 
@@ -3497,6 +3503,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       log.debug("session clauses for revise", this.sessionClauses);
     }
   }
+
+
+  
 
 
 }
