@@ -12,10 +12,12 @@
     <div class="header mx-4 mt-2 mb-2">
       <ul class="nav">
         <li class="nav-item">
-          <a class="nav-link sub-title active" data-bs-toggle="tab" id="nav-summary-tab" aria-controls="nav-summary"
-            data-bs-target="#nav-summary">Quotation Summary</a>
+          <!-- <a class="nav-link sub-title active" data-bs-toggle="tab" id="nav-summary-tab" aria-controls="nav-summary"
+            data-bs-target="#nav-summary">Quotation Summary</a> -->
+          <a class="nav-link sub-title active" (click)="activeQuoteTab='summary'" id="nav-summary-tab"
+            data-bs-toggle="tab" aria-controls="nav-summary" data-bs-target="#nav-summary">Quotation summary</a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link sub-title" data-bs-toggle="tab" id="nav-quotation-other-details-tab"
             aria-controls="nav-quotation-other-details" data-bs-target="#nav-quotation-other-details">Quotation Other
             Details</a>
@@ -23,6 +25,19 @@
         <li class="nav-item">
           <a class="nav-link sub-title" data-bs-toggle="tab" id="nav-reports-tab" aria-controls="nav-authorization"
             data-bs-target="#nav-reports">Reports and documents</a>
+        </li> -->
+        <li class="nav-item">
+          <a class="nav-link sub-title" (click)="activeQuoteTab='otherDetails'" id="nav-quotation-other-details-tab"
+            data-bs-toggle="tab" aria-controls="nav-quotation-other-details"
+            data-bs-target="#nav-quotation-other-details">
+            Quotation other details
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link sub-title" (click)="activeQuoteTab='reports'" id="nav-reports-tab" data-bs-toggle="tab"
+            aria-controls="nav-authorization" data-bs-target="#nav-reports">
+            Reports and documents
+          </a>
         </li>
       </ul>
     </div>
@@ -1896,49 +1911,49 @@
 
           <!-- Exceptions Table -->
           <div *ngIf="!exceptionsCollapsed">
-            <p-table [value]="exceptionsData" [scrollable]="true" scrollHeight="200px" responsiveLayout="scroll"
+            <!-- <p-table [value]="exceptionsData" [scrollable]="true" scrollHeight="200px" responsiveLayout="scroll"
               [paginator]="exceptionsData?.length > 10" [rowsPerPageOptions]="[3, 5, 10]" [rows]="3"
               [tableStyle]="{ 'width': '100%' }">
               <ng-template pTemplate="header">
                 <tr>
-                  <th><p-checkbox name="selectAll" [(ngModel)]="selectAll" (onChange)="toggleAll()"
-                      [binary]="true"></p-checkbox></th>
-                  <th pSortableColumn="id">
+                  <th class="flexible-header1"><p-checkbox name="selectAll" [(ngModel)]="selectAll"
+                      (onChange)="toggleAll()" [binary]="true"></p-checkbox></th>
+                  <th class="flexible-header1" pSortableColumn="id">
                     ID
                     <p-sortIcon field="id"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="description">
+                  <th class="flexible-header1" pSortableColumn="description">
                     Description
                     <p-sortIcon field="description"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="remark">
+                  <th class="flexible-header1" pSortableColumn="remark">
                     Remarks
                     <p-sortIcon field="remark"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="authorized">
+                  <th class="flexible-header1" pSortableColumn="authorized">
                     Authorized
                     <p-sortIcon field="authorized"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="setStandard">
+                  <th class="flexible-header1" pSortableColumn="setStandard">
                     Set standard
                     <p-sortIcon field="setStandard"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="usedStandard">
+                  <th class="flexible-header1" pSortableColumn="usedStandard">
                     Used standard
                     <p-sortIcon field="usedStandard"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="authorizedBy">
+                  <th class="flexible-header1" pSortableColumn="authorizedBy">
                     Authorized by
                     <p-sortIcon field="authorizedBy"></p-sortIcon>
                   </th>
 
-                  <th pSortableColumn="authorizedDate">
+                  <th class="flexible-header1" pSortableColumn="authorizedDate">
                     <span style="white-space: nowrap;">
                       Authorized date
                       <p-sortIcon field="authorizedDate"></p-sortIcon>
@@ -1973,7 +1988,48 @@
                   </td>
                 </tr>
               </ng-template>
+            </p-table> -->
+            <p-table [value]="exceptionsData" [(selection)]="selectedExceptions" dataKey="code"
+              [paginator]="exceptionsData?.length > 10" [rows]="5" [scrollable]="true" responsiveLayout="scroll"
+              styleClass="p-datatable-striped" [rowHover]="true" [rowsPerPageOptions]="[5, 10,20]">
+
+              <!-- Table Header -->
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                  </th>
+                  <th *ngFor="let col of exceptionsColumns" [hidden]="!col.visible" [pSortableColumn]="col.field"
+                    class="flexible-header1">
+                    {{ col.header }}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                  </th>
+                </tr>
+              </ng-template>
+
+              <!-- Table Body -->
+              <ng-template pTemplate="body" let-exception>
+                <tr [pSelectableRow]="exception">
+                  <td>
+                    <p-tableCheckbox [value]="exception"></p-tableCheckbox>
+                  </td>
+                  <td *ngFor="let col of exceptionsColumns" [hidden]="!col.visible" class="flexible-header1">
+                    {{ getCellValue(exception, col.field) }}
+                  </td>
+                </tr>
+              </ng-template>
+
+              <!-- Empty Message -->
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td [attr.colspan]="exceptionsColumns.length + 1" class="text-center text-muted py-3">
+                    No exceptions available for this product.
+                  </td>
+                </tr>
+              </ng-template>
             </p-table>
+
+
           </div>
 
         </div>
@@ -2448,7 +2504,7 @@
                 <div class="row mb-3">
                   <div class="col-md-6">
                     <label class="quote-label">Phone Number <span class="text-danger">*</span></label>
-                    <input pInputText type="tel" class="form-control" formControlName="phoneNumber" 
+                    <input pInputText type="tel" class="form-control" formControlName="phoneNumber"
                       placeholder="e.g., 0712345678" maxlength="10" />
                     <div *ngIf="viewDocForm.get('phoneNumber')?.invalid && viewDocForm.get('phoneNumber')?.touched"
                       class="text-danger small">
@@ -2539,10 +2595,15 @@
     </div>
 
     <!-- quotation report  -->
-    <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-authorization-tab" tabindex="0">
+    <!-- <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-authorization-tab" tabindex="0">
       <app-quotation-report></app-quotation-report>
 
+    </div> -->
+    <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-authorization-tab" tabindex="0">
+      <app-quotation-report *ngIf="activeQuoteTab === 'reports'"></app-quotation-report>
     </div>
+
+
 
 
 

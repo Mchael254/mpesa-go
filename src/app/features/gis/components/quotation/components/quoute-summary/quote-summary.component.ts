@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { QuotationDetails, QuotationReportDto, ShareQuoteDTO } from '../../data/quotationsDTO';
+import { PremiumPayloadDto, QuotationDetails, QuotationReportDto, ShareQuoteDTO } from '../../data/quotationsDTO';
 
 import { QuotationsService } from "../../services/quotations/quotations.service";
 import { Logger, untilDestroyed, UtilService } from "../../../../../../shared/shared.module";
@@ -352,7 +352,7 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     }
-    
+
     // Handle case when quotation code is not found
     if (!quotationCode) {
       log.warn('No quotation code found in session storage');
@@ -379,25 +379,77 @@ export class QuoteSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
     const product = quotation?.quotationProducts?.[0];
     const riskInfo = product?.riskInformation?.[0];
 
-    const payload = {
-      premiumAmount: quotation?.premium ?? 0,
-      productCode: product?.productCode ?? 0,
-      quotProductCode: product?.code ?? 0,
-      productPremium: riskInfo?.annualPremium ?? 0,
-      riskLevelPremiums: riskInfo ? [{
-        code: riskInfo?.code ?? 0,
-        premium: riskInfo?.premium ?? 0,
-        limitPremiumDtos: riskInfo?.riskLimits?.map(limit => ({
-          sectCode: limit?.sectionCode ?? 0,
-          premium: limit?.premiumAmount ?? 0
+    // const payload = {
+    //   premiumAmount: quotation?.premium ?? 0,
+    //   productCode: product?.productCode ?? 0,
+    //   quotProductCode: product?.code ?? 0,
+    //   productPremium: riskInfo?.annualPremium ?? 0,
+    //   riskLevelPremiums: riskInfo ? [{
+    //     code: riskInfo?.code ?? 0,
+    //     premium: riskInfo?.premium ?? 0,
+    //     limitPremiumDtos: riskInfo?.riskLimits?.map(limit => ({
+    //       sectCode: limit?.sectionCode ?? 0,
+    //       premium: limit?.premiumAmount ?? 0
+    //     })) ?? []
+    //   }] : [],
+    //   taxes: quotation?.taxInformation?.map(tax => ({
+    //     code: tax?.code ?? 0,
+    //     premium: tax?.taxAmount ?? 0,
+    //     description: tax?.rateDescription ?? ''
+    //   })) ?? []
+    // };
+
+
+    const payload: PremiumPayloadDto[] = quotation?.quotationProducts?.map(product => {
+      return {
+        premiumAmount: product.premium ?? 0,
+        productCode: product.productCode ?? 0,
+        quotProductCode: product.code ?? 0,
+        productPremium: 0, // No risks, so default 0
+        riskLevelPremiums: product.riskInformation?.map(riskInfo => ({
+          code: riskInfo.code ?? 0,
+          propertyId: riskInfo.propertyId ?? '',
+          propertyDescription: riskInfo.itemDesc ?? '',
+          premium: riskInfo.premium ?? 0,
+          minimumPremiumUsed: "Y",
+          coverTypeDetails: {
+            code: riskInfo.coverTypeCode ?? 0,
+            subclassCode: riskInfo.subclassCode ?? 0,
+            description: riskInfo.subclass?.description ?? '',
+            coverTypeCode: riskInfo.coverTypeCode ?? 0,
+            minimumAnnualPremium: 0.1,
+            minimumPremium: 0.1,
+            coverTypeShortDescription: riskInfo.coverTypeShortDescription ?? '',
+            coverTypeDescription: riskInfo.coverTypeDescription ?? '',
+            limits: riskInfo.sectionsDetails ?? [],
+            limitPremium: riskInfo.riskLimits?.map(limit => ({
+              sectCode: limit.sectionCode ?? 0,
+              premium: limit.premiumAmount ?? 0.1
+            })) ?? [],
+            taxComputation: product.taxInformation?.map(tax => ({
+              code: tax.code ?? 0,
+              premium: tax.taxAmount ?? 0,
+              description: tax.rateDescription ?? ''
+            })) ?? []
+          },
+          limitPremiumDtos: riskInfo.riskLimits?.map(limit => ({
+            sectCode: limit.sectionCode ?? 0,
+            premium: limit.premiumAmount ?? 0.1
+          })) ?? [],
+          taxComputation: product.taxInformation?.map(tax => ({
+            code: tax.code ?? 0,
+            premium: tax.taxAmount ?? 0,
+            description: tax.rateDescription ?? ''
+          })) ?? []
+        })) ?? [],
+        taxes: product.taxInformation?.map(tax => ({
+          code: tax.code ?? 0,
+          premium: tax.taxAmount ?? 0,
+          description: tax.rateDescription ?? ''
         })) ?? []
-      }] : [],
-      taxes: quotation?.taxInformation?.map(tax => ({
-        code: tax?.code ?? 0,
-        premium: tax?.taxAmount ?? 0,
-        description: tax?.rateDescription ?? ''
-      })) ?? []
-    };
+      };
+    }) ?? [];
+
 
     this.quotationService.updateQuotePremium(quotationCode, payload)
       .pipe(

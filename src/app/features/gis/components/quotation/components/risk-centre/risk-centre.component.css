@@ -92,9 +92,28 @@
 .btn-greyed-out {
   opacity: 0.5;
   cursor: not-allowed;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 .btn-greyed-out[disabled] {
-  pointer-events: auto; 
+  pointer-events: auto;
+}
+
+#importRiskDrawerLabel {
+  font-family: Roboto;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #00529B;
+}
+
+.btn-close {
+  color: #EE3945;
+}
+
+.offcanvas {
+  transition: transform 0.5s ease-in-out;
+  /* 0.5s = half a second */
 }

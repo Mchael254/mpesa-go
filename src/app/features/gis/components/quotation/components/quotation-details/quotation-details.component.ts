@@ -266,7 +266,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
 
-    this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
+    // this.quotationCode && this.fetchQuotationDetails(this.quotationCode)
 
 
     this.storedQuotationFormDetails = JSON.parse(sessionStorage.getItem('quotationFormDetails'));
@@ -3348,10 +3348,12 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
   patchRevisedQuotationData() {
-    const isRevision = sessionStorage.getItem('isRevision') === 'true';
-    if (!isRevision) return;
+    // const isRevision = sessionStorage.getItem('isRevision') === 'true';
+    // if (!isRevision) return;
 
     this.isRevisionMode = true;
+
+   
 
     if (this.quotationDetails) {
       const data = this.quotationDetails;
@@ -3434,8 +3436,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           }
         });
       } else {
-        // ✅ If clientCode exists in quotationDetails but no need to fetch
-        // (data already has clientName), patch directly
+      
         if (data.clientName) {
           this.selectedClientName = data.clientName;
           this.selectedClientCode = data.clientCode;
@@ -3448,7 +3449,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           sessionStorage.setItem('SelectedClientCode', JSON.stringify(data.clientCode));
         }
       }
-      // ✅ These should be OUTSIDE the client fetch block
+      
       this.quotationForm.get('client')?.disable({ emitEvent: false });
       this.quotationForm.get('agent')?.disable({ emitEvent: false });
 
