@@ -1,5 +1,4 @@
 import { ReceiptManagementService } from './../../services/receipt-management.service';
-import { receipt } from './../banking-dashboard/banking-dashboard.component';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -22,7 +21,12 @@ import * as bootstrap from 'bootstrap';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { GLAccountDTO } from '../../data/receipt-management-dto';
 import { ReceiptService } from '../../services/receipt.service';
-import { ReceiptUploadRequest } from '../../data/receipting-dto';
+import { DmsService } from 'src/app/shared/services/dms/dms.service';
+import { ReceiptUploadRequest } from 'src/app/shared/data/common/dmsDocument';
+import { CommonMethodsService } from '../../services/common-methods.service';
+import { PaymentsService } from '../../services/payments.service';
+import { BranchDTO } from '../../data/receipting-dto';
+import { BanksDto } from '../../data/payments-dto';
 const log = new Logger('NewBankingProcessComponent');
 /**
  * @Component NewBankingProcessComponent
@@ -96,7 +100,7 @@ export class NewBankingProcessComponent implements OnInit {
   size: number = 50;
   sortBy: string = 'accNumber';
   direction: string = 'asc';
-  glAccounts: GLAccountDTO[] = [];
+  glAccounts: BanksDto[] = [];
   /** Stores the list of files selected by the user. */
   uploadedFile: File | null = null;
   /** A flag to disable the file input after one file is selected. */
@@ -105,6 +109,11 @@ export class NewBankingProcessComponent implements OnInit {
   isDragging: boolean = false;
   //  max file size in bytes (5MB = 5 * 1024 * 1024 bytes)
   private readonly max_file_size = 5 * 1024 * 1024;
+   selectedBranch: BranchDTO;
+   /**
+      * @property {BranchDTO} defaultBranch - The default branch.
+      */
+     defaultBranch: BranchDTO;
   /**
    * @constructor
    * @param translate Service for handling internationalization (i18n).
@@ -125,7 +134,10 @@ export class NewBankingProcessComponent implements OnInit {
     private authService: AuthService,
     private staffService: StaffService,
     private receiptManagementService: ReceiptManagementService,
-    private receiptService: ReceiptService
+    private dmsService:DmsService,
+    private commonMethodsService :CommonMethodsService,
+    private paymentsService:PaymentsService
+
   ) {}
   /**
    * @description Angular lifecycle hook that runs on component initialization.
@@ -149,8 +161,23 @@ export class NewBankingProcessComponent implements OnInit {
     } else if (this.defaultOrg) {
       this.selectedOrg = null;
     }
+    // Retrieve branch from localStorage or receiptDataService
+    let storedSelectedBranch = this.sessionStorage.getItem('selectedBranch');
+    let storedDefaultBranch = this.sessionStorage.getItem('defaultBranch');
+    this.selectedBranch = storedSelectedBranch
+      ? JSON.parse(storedSelectedBranch)
+      : null;
+    this.defaultBranch = storedDefaultBranch
+      ? JSON.parse(storedDefaultBranch)
+      : null;
+    // Ensure only one branch is active at a time
+    if (this.selectedBranch) {
+      this.defaultBranch = null;
+    } else if (this.defaultBranch) {
+      this.selectedBranch = null;
+    }
     this.loggedInUser = this.authService.getCurrentUser();
-    this.fetchGlAccounts();
+    this.fetchBankAccounts();
   }
   /**
    * @description Initializes the `rctsRetrievalForm` with required controls and validators.
@@ -271,7 +298,7 @@ export class NewBankingProcessComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.handleApiError(err);
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -324,7 +351,7 @@ export class NewBankingProcessComponent implements OnInit {
         this.paymentMode = this.rctsRetrievalForm.get('paymentMethod')?.value;
       },
       error: (err) => {
-        this.handleApiError(err);
+       this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -414,7 +441,7 @@ export class NewBankingProcessComponent implements OnInit {
         this.globalMessagingService.displaySuccessMessage('', response.msg);
       },
       error: (err) => {
-        this.handleApiError(err);
+       this.commonMethodsService.handleApiError(err);
       },
     });
     this.closeAssignModal();
@@ -447,7 +474,7 @@ export class NewBankingProcessComponent implements OnInit {
           this.filteredUsers = this.users;
         },
         error: (err) => {
-          this.handleApiError(err);
+         this.commonMethodsService.handleApiError(err);
         },
       });
   }
@@ -475,7 +502,7 @@ export class NewBankingProcessComponent implements OnInit {
         this.fetchReceipts();
       },
       error: (err) => {
-        this.handleApiError(err);
+        this.commonMethodsService.handleApiError(err);
       },
     });
   }
@@ -511,7 +538,7 @@ export class NewBankingProcessComponent implements OnInit {
         this.fetchReceipts();
       },
       error: (err) => {
-        this.handleApiError(err);
+       this.commonMethodsService.handleApiError(err);
       },
     });
     this.closeAssignModal();
@@ -524,9 +551,9 @@ export class NewBankingProcessComponent implements OnInit {
       modalEl.show();
     }
     this.selectedRctObj = receipt;
-    this.depositForm.patchValue({ amount: this.selectedRctObj.receiptAmount });
     this.uploadedFile = null; // Clear previous files when opening
-  }
+    this.depositForm.patchValue({ amount: this.selectedRctObj.receiptAmount });
+    }
 
   closeDepositModal() {
     const modal = document.getElementById('depositModal');
@@ -652,7 +679,7 @@ export class NewBankingProcessComponent implements OnInit {
         },
       ];
       //The service call is called inside the onloadend callback
-      this.receiptService.uploadFiles(payload).subscribe({
+      this.dmsService.uploadFiles(payload).subscribe({
         next: (response) => {
           this.globalMessagingService.displaySuccessMessage(
             '',
@@ -662,24 +689,25 @@ export class NewBankingProcessComponent implements OnInit {
           this.maximumFiles = false;
         },
         error: (err) => {
-          this.handleApiError(err);
+         this.commonMethodsService.handleApiError(err);
         },
       });
     };
     // Start the asynchronous file reading process
     fileReader.readAsDataURL(this.uploadedFile);
   }
-  fetchGlAccounts(): void {
-    this.receiptManagementService
-      .getGlAccounts(this.page, this.size, this.sortBy, this.direction)
-      .subscribe({
-        next: (response) => {
-          this.glAccounts = response.data.content;
-        },
-        error: (err) => {
-          this.handleApiError(err);
-        },
-      });
+/**
+ * @description a function to retrieve list of banks accounts for banking
+ */
+  fetchBankAccounts():void{
+    this.paymentsService.getPaymentsBankActs(this.loggedInUser.code,this.selectedOrg?.id || this.defaultOrg?.id,this.defaultBranch?.id || this.selectedBranch?.id).subscribe({
+      next:(response)=>{
+        this.glAccounts = response.data;
+      },
+      error:(err)=>{
+         this.commonMethodsService.handleApiError(err);
+      }
+    })
   }
   /**
    * @description Navigates the user to the next step in the banking process (Create Batches).
@@ -691,17 +719,5 @@ export class NewBankingProcessComponent implements OnInit {
   navigateToDashboard(): void {
     this.router.navigate(['/home/fms/banking-dashboard']);
   }
-  /**
-   * @description A centralized helper method to handle and display API errors.
-   * @param err The error object returned from an HttpClient call.
-   */
-  private handleApiError(err: any): void {
-    const customMessage = this.translate.instant('fms.errorMessage');
-    const backendError =
-      err.error?.msg || err.error?.error || err.error?.status || err.statusText;
-    this.globalMessagingService.displayErrorMessage(
-      customMessage,
-      backendError
-    );
-  }
+
 }
