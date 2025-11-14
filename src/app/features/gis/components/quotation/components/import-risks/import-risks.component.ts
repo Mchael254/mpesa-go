@@ -533,20 +533,17 @@ export class ImportRisksComponent {
 
     // Check file type (optional - you can customize accepted types)
     const allowedTypes = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain',
-      'image/jpeg',
-      'image/png'
+      'text/csv',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     ];
 
 
     if (!allowedTypes.includes(file.type)) {
-      this.errorMessage =
-        'Please upload a valid document type (PDF, DOC, DOCX, TXT, PNG, JPG, JPEG)';
+      this.errorMessage = 'Please upload a valid Excel file (CSV, XLS, XLSX)';
       return;
     }
+
 
     this.selectedFile = file;
   }
