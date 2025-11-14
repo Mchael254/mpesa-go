@@ -2594,6 +2594,10 @@
       "date": "Tarehe",
       "amount": "Kiasi",
       "bankAccount": "Akaunti ya benki",
+      "bankingSipNumber": "Nambari ya Risiti ya Benki",
+      "amountBanked": "Kiasi Kilichowekwa",
+      "remarksComments": "Maoni/Maelezo",
+      "attachDepositSlip": "Ambatanisha Risiti ya Amana",
       "status": "Hali",
       "retrieveReceipts": "Rudisha risiti",
       "fromDate": "Kutoka Tarehe",
@@ -2606,7 +2610,17 @@
       "retrievedReceipts": "Risiti zilizorudishwa",
       "assign": "Panga",
       "goToDashboard": "Nenda kwenye dashibodi",
-      "createBatches": "Unda makundi"
+      "createBatches": "Unda makundi",
+      "AttachDepositSlip": "Ambatanisha risiti ya amana",
+      "depositDetails": "Maelezo ya Amana",
+      "clickToUpload": "Bofya kupakia",
+      "pdf": "PDF, JPG, PNG (Ukubwa wa juu 5MB)",
+      "found": "Imeonekana",
+      "selectRecord": "rekodi. Tafadhali chagua rekodi ya kugawa na kuunda makundi",
+      "paymentRequired": "Njia ya malipo inahitajika",
+      "dateTo": "Tarehe ya mwisho inahitajika",
+      "dateFrom": "Tarehe ya kuanza inahitajika",
+      "orDrag": "au buruta faili hapa"
     }
   },
   "campaignMngmt": {

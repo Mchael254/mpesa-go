@@ -3132,6 +3132,10 @@
       "date": "Date",
       "amount": "Montant",
       "bankAccount": "Compte bancaire",
+      "bankingSipNumber": "Numéro du bordereau bancaire",
+      "amountBanked": "Montant déposé",
+      "remarksComments": "Remarques/Commentaires",
+      "attachDepositSlip": "Joindre le bordereau de dépôt",
       "status": "Statut",
       "retrieveReceipts": "Récupérer les reçus",
       "fromDate": "De la Date",
@@ -3144,7 +3148,17 @@
       "retrievedReceipts": "Reçus récupérés",
       "assign": "Assigner",
       "goToDashboard": "Aller au tableau de bord",
-      "createBatches": "Créer des lots"
+      "createBatches": "Créer des lots",
+      "AttachDepositSlip": "Joindre le bordereau de dépôt",
+      "depositDetails": "Détails du dépôt",
+      "clickToUpload": "Cliquez pour télécharger",
+      "pdf": "PDF, JPG, PNG (Max 5 Mo)",
+      "found": "Trouvé",
+      "selectRecord": "enregistrements. Veuillez sélectionner un enregistrement à attribuer et créer des lots",
+      "paymentRequired": "La méthode de paiement est requise",
+      "dateTo": "La date de fin est requise",
+      "dateFrom": "La date de début est requise",
+      "orDrag": "ou faites glisser le fichier ici"
     }
   },
   "campaignMngmt": {
