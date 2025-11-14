@@ -19,6 +19,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { QuotationDetails, QuotationProduct } from '../../data/quotationsDTO';
 import { RiskDetailsComponent } from '../risk-details/risk-details.component'
 import { NgxCurrencyConfig } from "ngx-currency";
+import { Offcanvas } from 'bootstrap';
 
 const log = new Logger('RiskCentreComponent');
 
@@ -31,6 +32,7 @@ export class RiskCentreComponent {
   @ViewChild('scrollContainer', { static: false }) scrollContainer!: ElementRef;
   @ViewChild(RiskDetailsComponent) RiskDetailsComponent!: RiskDetailsComponent;
   @ViewChild(RiskDetailsComponent) riskDetails!: RiskDetailsComponent;
+  @ViewChild('importRiskDrawer', { static: false }) importRiskDrawer!: ElementRef;
 
 
   steps = quoteStepsData;
@@ -45,7 +47,10 @@ export class RiskCentreComponent {
   ticketStatus: string
   premiums: { net: number; gross: number; };
   public currencyObj: NgxCurrencyConfig;
-
+  importRiskvisible: boolean = false;
+  private offcanvas!: Offcanvas;
+  showImportRiskDrawer: boolean = false;
+  private shouldOpenAfterRender = false;
   constructor(
     public subclassService: SubclassesService,
     public sharedService: SharedQuotationsService,
@@ -96,6 +101,32 @@ export class RiskCentreComponent {
     }
   }
 
+  openDrawer() {
+    // Step 1: Mark that we want to open the drawer after it renders
+    this.showImportRiskDrawer = true;
+    this.shouldOpenAfterRender = true;
+
+    // Trigger change detection so Angular renders the element
+    this.cdr.detectChanges();
+  }
+
+  ngAfterViewChecked() {
+    // Step 2: Once Angular finishes rendering and ViewChild becomes available
+    if (this.shouldOpenAfterRender && this.importRiskDrawer) {
+      this.shouldOpenAfterRender = false;
+      this.offcanvas = new Offcanvas(this.importRiskDrawer.nativeElement);
+      this.offcanvas.show();
+    }
+  }
+
+  closeDrawer() {
+    if (this.offcanvas) {
+      this.offcanvas.hide();
+    }
+
+    // Step 3: Wait for Bootstrap animation to complete before removing from DOM
+    setTimeout(() => (this.showImportRiskDrawer = false), 300);
+  }
   toggleSection() {
     this.isCollapsed = !this.isCollapsed;
   }
@@ -156,5 +187,12 @@ export class RiskCentreComponent {
   handlePremiumChange(updatedPremiums: any) {
     this.premiums = updatedPremiums;
   }
+  navigateToImportRisk() {
+    if (!this.passedProductList || this.passedProductList.length === 0) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please add a product first.');
+      return;
+    }
 
+
+  }
 }

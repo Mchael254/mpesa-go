@@ -1,36 +1,70 @@
-<div class="mx-4 mt-3">
-  <p class="title">Quotations:Client Details </p>
-  <app-stepper [currentStep]="3" [stepperData]="steps" [disableNavigation]="true"></app-stepper>
+<div class="">
 
   <div class="card">
     <div class="card-body">
-      <p class="title">Quotation Details</p>
-      <p>Quotation No: {{quotationNum}}</p>
 
       <div class="row mb-4">
         <div class="col-md-4">
-          <label for="" class="quote-label">Subclass</label>
+          <label for="" class="quote-label required mb-2">Subclass</label>
           <p-dropdown [options]="allMatchingSubclasses" optionLabel="description" optionValue="code"
-            formControlName="subclass" placeholder="Select Subclass" [style]="{'width':'100%', 'height':'32px'}"
-            [panelStyle]="{'width':'400px', 'max-height':'100%'}" appendTo="body"
-            styleClass="form-select-sm mb-1 compact-dropdown" id="quote-input" [filter]="true"
-            [filterBy]="'description'" (onChange)="onSubclassChange($event)" filterPlaceholder="Search subclass">
+            formControlName="subclass" [style]="{'width':'100%', 'height':'30px'}"
+            [panelStyle]="{'width':'400px', 'max-height':'100%'}" styleClass="form-control form-control-sm "
+            id="quote-input" [filter]="true" [filterBy]="'description'" (onChange)="onSubclassChange($event)">
           </p-dropdown>
         </div>
 
-        <div class="col-md-5 mt-3">
-          <label for="inputProfileImg" style="margin-right: 15px;margin-left: 20px;">Upload File</label>
+        <div class="col-md-5 mt-1">
+          <!-- <label for="inputProfileImg" style="margin-right: 15px;margin-left: 20px;">Download template</label>
           <input type="file" id="inputProfileImg" (change)="onFileChange($event)" formControlName="uploadFile" hidden />
           <label for="inputProfileImg" class="img_upload" style="margin-right: 15px;margin-top: 5px;">Choose
-            File</label>
+            File</label> -->
 
-          <button class="btn btn-outline-primary" (click)="exportTemplate()">Export template</button>
+          <!-- <button *ngIf="subclassSelected" class="btn btn--primary" (click)="exportTemplate()">Download
+            template</button> -->
+          <span pTooltip="Select a subclass to continue" tooltipPosition="top" [tooltipDisabled]="subclassSelected">
+            <!-- only disable tooltip when button is active -->
+
+            <button class="btn btn-primary btn-sm btn-greyed-out mt-4" [class.disabled]="!subclassSelected"
+              [disabled]="!subclassSelected" (click)="exportTemplate()">
+              Download template
+            </button>
+          </span>
+
+
 
         </div>
         <div class="col-md-3">
         </div>
       </div>
+      <!-- <div class="upload-area mt-2 mb-1" (click)="fileInput.click()" [class.dragover]="isDragging"
+        (drop)="onDrop($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"> -->
+      <div class="upload-area mt-2 mb-1" (click)="!selectedSubclassCode ? null : fileInput.click()"
+        [class.dragover]="isDragging" (drop)="selectedSubclassCode ? onDrop($event) : $event.preventDefault()"
+        (dragover)="selectedSubclassCode ? onDragOver($event) : $event.preventDefault()"
+        (dragleave)="selectedSubclassCode ? onDragLeave($event) : null" [class.disabled]="!selectedSubclassCode">
 
+        <div class="upload-content">
+          <i class="pi pi-upload upload-icon"></i>
+
+          <p class="upload-text">Click this area to upload Log
+            book</p>
+
+          <p class="upload-subtext">Maximum file size 10MB</p>
+        </div>
+
+        <input #fileInput type="file" (change)="onFileSelected($event)"
+          accept=".pdf,.doc,.docx,.txt,.log,.jpg,.jpeg,.png" style="display: none;" [disabled]="!selectedSubclassCode">
+        <div class="selected-file" *ngIf="selectedFile">
+          <i [ngClass]="getFileIcon(selectedFile.name)" class="file-icon"></i>
+          <span class="file-name">{{ selectedFile.name }}</span>
+
+          <button class="remove-btn" (click)="removeFile()" aria-label="Remove">
+            <i class="pi pi-trash"></i>
+          </button>
+        </div>
+
+
+      </div>
       <p class="title">Imported risks</p>
       <p-table [value]="data" [resizableColumns]="true" styleClass="p-datatable-sm" class='ui-datatable'
         [(selection)]="selectedRisks" (selectionChange)="onSelectionChange($event)"

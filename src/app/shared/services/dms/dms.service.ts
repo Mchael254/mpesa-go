@@ -207,17 +207,5 @@ export class DmsService {
     log.info('Dms Url Selected is: ', url, 'Endpoint is: ', urlEndpoint);
     return url.endsWith('/') ? url + urlEndpoint :  url + '/' + urlEndpoint;
   }*/
-  uploadRiskDocs(data: any): Observable<any> {
-    return this.api.POST<any>(
-      `uploadValuationDocs`,
-      JSON.stringify(data), API_CONFIG.DMS_SERVICE
-    );
-  }
-  fetchRiskDocs(riskID: number): Observable<DmsDocument[]> {
-    const params = new HttpParams()
-      .set('riskID', `${riskID}`);
-    log.info('Fetching documents for Risk ID: ', `${riskID}`);
 
-    return this.api.GET<DmsDocument[]>(`getValuationDocs?${params}`, API_CONFIG.DMS_SERVICE);
-  }
 }

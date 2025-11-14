@@ -250,7 +250,7 @@ export interface RiskInformation {
   clauseCodes: number[];
   subclass: Subclass;
   coverDays: number;
-  fp: number;
+  butCharge: number;
   quotationCode?: number
   quotationProductCode?: number
   scheduleDetails?: scheduleDetails;
@@ -642,25 +642,56 @@ export interface tax {
   premium: number;
 }
 
-export interface limitPremiumDto {
+export interface PremiumPayloadDto {
+  premiumAmount: number;
+  productCode: number;
+  quotProductCode: number;
+  productPremium: number;
+  riskLevelPremiums: RiskLevelPremiumDto[];
+  taxes: TaxComputationDto[];
+}
+
+/** Each risk level item */
+export interface RiskLevelPremiumDto {
+  code: number;
+  propertyId: string;
+  propertyDescription: string;
+  premium: number;
+  minimumPremiumUsed: string;
+  coverTypeDetails: CoverTypeDetailsDto;
+  limitPremiumDtos: LimitPremiumDto[];
+  taxComputation: TaxComputationDto[];
+}
+
+/** Detailed cover type info */
+export interface CoverTypeDetailsDto {
+  code: number;
+  subclassCode: number;
+  description: string;
+  coverTypeCode: number;
+  minimumAnnualPremium: number;
+  minimumPremium: number;
+  coverTypeShortDescription: string;
+  coverTypeDescription: string;
+  limits: any[];
+  limitPremium: LimitPremiumDto[];
+  taxComputation: TaxComputationDto[];
+}
+
+/** Limit premiums */
+export interface LimitPremiumDto {
   sectCode: number;
   premium: number;
-  sectionDescription: string;
 }
 
-export interface riskLevelPremiums {
-  code: string;
+/** Tax computation items */
+export interface TaxComputationDto {
+  code: number;
   premium: number;
-  limitPremiumDtos: limitPremiumDto[];
+  description: string;
 }
 
-export interface premiumPayloadData {
-  productPremium: number;
-  productCode: number;
-  quotProductCode: string;
-  taxes: tax[];
-  riskLevelPremiums: riskLevelPremiums[];
-}
+
 
 export interface ClientPhone {
   number: string;
@@ -1481,30 +1512,30 @@ export interface SystemDetails {
 export interface ExceptionPayload {
   code: number;
   gisExceptionCode: string;
-  policyBatchNumber: number;
-  policyNumber: string;
+  policyBatchNumber: number | null;
+  policyNumber: string | null;
   exceptionBy: string;
-  isAuthorized: string;
-  authorizedBy: string;
-  authorizedDate: string; // or Date if you parse it
-  riskCode: number;
-  transactionDate: string; // or Date
-  transactionNumber: number;
-  transactionType: string;
+  isAuthorized: string | null;
+  authorizedBy: string | null;
+  authorizedDate: string | null;
+  riskCode: number | null;
+  transactionDate: string;
+  transactionNumber: number | null;
+  transactionType: string | null;
   agentCode: number;
   agentShortDescription: string;
-  setStandard: number;
-  usedStandard: number;
+  setStandard: number | null;
+  usedStandard: number | null;
   description: string;
   systemModule: string;
-  decision: string;
+  decision: string | null;
   quotationCode: number;
-  quotationNumber: string;
-  sectionCode: number;
-  reiCode: number;
-  claimNumber: string;
-  mtranNumber: number;
-  accountBalance: number;
+  quotationNumber: string | null;
+  sectionCode: number | null;
+  reiCode: number | null;
+  claimNumber: string | null;
+  mtranNumber: number | null;
+  accountBalance: number | null;
 }
 export interface RiskLimitPayload {
   riskSections: RiskSection[];
@@ -1548,6 +1579,37 @@ export interface RiskSection {
   minimumPremiumRate: number;
   maxPremiumRate: number;
   sumInsuredRate: number;
+}
+
+export interface ExceptionListDto {
+  code: number;
+  gisExceptionCode: string;
+  policyBatchNumber?: string | null;
+  policyNumber?: string | null;
+  exceptionBy: string;
+  isAuthorized: string;
+  authorizedBy: string | null;
+  authorizedDate: string | null;
+  riskCode: number | null;
+  transactionDate: string; // or Date
+  transactionNumber: number;
+  transactionType: string | null;
+  agentCode: number;
+  agentShortDescription: string;
+  setStandard: number;
+  usedStandard: number;
+  description: string;
+  systemModule: string;
+  decision: string | null;
+  quotationCode: number;
+  quotationNumber: string | null;
+  sectionCode: number | null;
+  reiCode: number;
+  claimNumber: string | null;
+  mtranNumber: number;
+  accountBalance: number | null;
+  selected?: boolean;
+
 }
 
 
