@@ -225,6 +225,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
   productToDelete: any = null;
   systemsAssigned: SystemDetails[] = [];
   gisSystem: string;
+  newClientCreation: boolean = false;
 
 
 
@@ -253,8 +254,8 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     this.ticketStatus = sessionStorage.getItem('ticketStatus');
     this.quickQuoteFlag = JSON.parse(sessionStorage.getItem('quickQuoteFlag'));
     this.systemsAssigned = JSON.parse(sessionStorage.getItem('systemsAssigned'))
-    const gisAssigned = this.systemsAssigned.find(system => system.shortDesc === 'GIS');
-    this.gisSystem = gisAssigned.shortDesc
+    const gisAssigned = this.systemsAssigned?.find(system => system.shortDesc === 'GIS');
+    this.gisSystem = gisAssigned?.shortDesc
     // this.quickQuoteConverted = JSON.parse(sessionStorage.getItem('quickQuoteQuotation'))
     this.selectedClientCode = Number(sessionStorage.getItem('selectedClientId'))
     log.debug("Client code stored on session stotage:", this.selectedClientCode)
@@ -360,13 +361,13 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
 
     const quotationCode = sessionStorage.getItem('activeQuotationCode');
-log.debug("Retrieved quotation code from session:", quotationCode);
+    log.debug("Retrieved quotation code from session:", quotationCode);
 
-if (quotationCode) {
-this.quotationCode = Number(quotationCode);
-this.quotationSourceFlag = 'ticket';
+    if (quotationCode) {
+      this.quotationCode = Number(quotationCode);
+      this.quotationSourceFlag = 'ticket';
 
-}
+    }
 
 
 
@@ -690,6 +691,8 @@ this.quotationSourceFlag = 'ticket';
   }
 
   openCreateClientModal() {
+    this.newClientCreation = true
+
     this.setClientType('new');
     this.openModals('createClient');
   }
@@ -2949,10 +2952,10 @@ this.quotationSourceFlag = 'ticket';
       (error: HttpErrorResponse) => {
         log.error('Error creating quotation:', error);
         this.spinner.hide();
-        
+
         const errorMessage = error.error?.message || error.error?.debugMessage || error.message || 'An unexpected error occurred while processing the quotation';
         const errorTitle = error.error?.status === 'ERROR' ? 'Quotation Processing Failed' : 'Error';
-        
+
         this.globalMessagingService.displayErrorMessage(errorTitle, errorMessage);
       }
     );
@@ -3359,7 +3362,7 @@ this.quotationSourceFlag = 'ticket';
 
     this.isRevisionMode = true;
 
-   
+
 
     if (this.quotationDetails) {
       const data = this.quotationDetails;
@@ -3442,7 +3445,7 @@ this.quotationSourceFlag = 'ticket';
           }
         });
       } else {
-      
+
         if (data.clientName) {
           this.selectedClientName = data.clientName;
           this.selectedClientCode = data.clientCode;
@@ -3455,7 +3458,7 @@ this.quotationSourceFlag = 'ticket';
           sessionStorage.setItem('SelectedClientCode', JSON.stringify(data.clientCode));
         }
       }
-      
+
       this.quotationForm.get('client')?.disable({ emitEvent: false });
       this.quotationForm.get('agent')?.disable({ emitEvent: false });
 
@@ -3505,7 +3508,7 @@ this.quotationSourceFlag = 'ticket';
   }
 
 
-  
+
 
 
 }
