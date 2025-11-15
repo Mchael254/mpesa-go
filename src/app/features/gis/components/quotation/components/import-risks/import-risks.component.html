@@ -38,7 +38,8 @@
       </div>
       <!-- <div class="upload-area mt-2 mb-1" (click)="fileInput.click()" [class.dragover]="isDragging"
         (drop)="onDrop($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"> -->
-      <div class="upload-area mt-2 mb-1" (click)="!selectedSubclassCode ? null : fileInput.click()"
+
+      <div class="upload-area mt-2 mb-4" (click)="!selectedSubclassCode ? null : fileInput.click()"
         [class.dragover]="isDragging" (drop)="selectedSubclassCode ? onDrop($event) : $event.preventDefault()"
         (dragover)="selectedSubclassCode ? onDragOver($event) : $event.preventDefault()"
         (dragleave)="selectedSubclassCode ? onDragLeave($event) : null" [class.disabled]="!selectedSubclassCode">
@@ -46,14 +47,12 @@
         <div class="upload-content">
           <i class="pi pi-upload upload-icon"></i>
 
-          <p class="upload-text">Click this area to upload Log
-            book</p>
+          <p class="upload-text">Click this area to upload file</p>
 
           <p class="upload-subtext">Maximum file size 10MB</p>
         </div>
 
-        <input #fileInput type="file" (change)="onFileChange($event)"
-          accept=".pdf,.doc,.docx,.txt,.log,.jpg,.jpeg,.png" style="display: none;" [disabled]="!selectedSubclassCode">
+        <input #fileInput type="file" (change)="onFileSelected($event)" accept=".csv,.xls,.xlsx" style="display: none;">
         <div class="selected-file" *ngIf="selectedFile">
           <i [ngClass]="getFileIcon(selectedFile.name)" class="file-icon"></i>
           <span class="file-name">{{ selectedFile.name }}</span>
@@ -63,10 +62,158 @@
           </button>
         </div>
 
+      </div>
+      <div class="d-flex justify-content-between align-items-center ">
+
+        <!-- LEFT: Tabs -->
+        <ul class="nav nav-tabs" id="riskTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#allRisksTab" type="button"
+              (click)="activeTab = 'ALL'">
+              All risks
+            </button>
+          </li>
+
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#validTab" type="button"
+              (click)="activeTab = 'VALID'">
+              Valid
+            </button>
+          </li>
+
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviewTab" type="button"
+              (click)="activeTab = 'REVIEW'">
+              Needs review
+            </button>
+          </li>
+        </ul>
+
+        <!-- RIGHT: Buttons -->
+        <div>
+          <button *ngIf="activeTab === 'ALL'" class="btn btn-primary me-2" (click)="validateRisks()">
+            Validate
+          </button>
+
+          <button class="btn btn-primary" (click)="deleteRisks()">
+            Delete
+          </button>
+        </div>
 
       </div>
-      <p class="title">Imported risks</p>
-      <p-table [value]="data" [resizableColumns]="true" styleClass="p-datatable-sm" class='ui-datatable'
+
+      <div class="tab-content ">
+
+        <!-- ALL risks  TAB -->
+        <div class="tab-pane fade show active" id="allRisksTab" role="tabpanel">
+          <p-table [value]="allRisks" [resizableColumns]="true" [(selection)]="selectedAll"
+            (selectionChange)="onRiskSelectionChange($event)">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>
+                  <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th>Client Id</th>
+                <th>Client names</th>
+                <th>WEF</th>
+                <th>WET</th>
+                <th>Premium Band</th>
+                <th>Risk Id</th>
+                <th>Risk description</th>
+                <th>Cover</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-row>
+              <tr>
+                <td><p-tableCheckbox [value]="row"></p-tableCheckbox></td>
+                <td>{{ row.ClientCode }}</td>
+                <td>{{ row.ClientName }}</td>
+                <td>{{ row.WEF }}</td>
+                <td>{{ row.WET }}</td>
+                <td>{{ row.PremiumBind }}</td>
+                <td>{{ row.PropertyId }}</td>
+                <td>{{ row.ItemDesc }}</td>
+                <td>{{ row.CoverTypeShortDesc }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+
+        <!-- VALID TAB -->
+        <div class="tab-pane fade" id="validTab" role="tabpanel">
+          <p-table [value]="validRisks" [resizableColumns]="true" [(selection)]="selectedValid"
+            (selectionChange)="onRiskSelectionChange($event)">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                <th>Client Id</th>
+                <th>Client names</th>
+                <th>WEF</th>
+                <th>WET</th>
+                <th>Premium Band</th>
+                <th>Risk Id</th>
+                <th>Risk description</th>
+                <th>Cover</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-row>
+              <tr>
+                <td><p-tableCheckbox [value]="row"></p-tableCheckbox></td>
+                <td>{{ row.ClientCode }}</td>
+                <td>{{ row.ClientName }}</td>
+                <td>{{ row.WEF }}</td>
+                <td>{{ row.WET }}</td>
+                <td>{{ row.PremiumBind }}</td>
+                <td>{{ row.PropertyId }}</td>
+                <td>{{ row.ItemDesc }}</td>
+                <td>{{ row.CoverTypeShortDesc }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+
+        <!-- NEEDS REVIEW TAB -->
+        <div class="tab-pane fade" id="reviewTab" role="tabpanel">
+          <p-table [value]="needsReviewRisks" [resizableColumns]="true" [(selection)]="selectedReview"
+            (selectionChange)="onRiskSelectionChange($event)">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                <th>Client Id</th>
+                <th>Client names</th>
+                <th>WEF</th>
+                <th>WET</th>
+                <th>Premium Band</th>
+                <th>Risk Id</th>
+                <th>Risk description</th>
+                <th>Cover</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-row>
+              <tr>
+                <td><p-tableCheckbox [value]="row"></p-tableCheckbox></td>
+                <td>{{ row.ClientCode }}</td>
+                <td>{{ row.ClientName }}</td>
+                <td>{{ row.WEF }}</td>
+                <td>{{ row.WET }}</td>
+                <td>{{ row.PremiumBind }}</td>
+                <td>{{ row.PropertyId }}</td>
+                <td>{{ row.ItemDesc }}</td>
+                <td>{{ row.CoverTypeShortDesc }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+      </div>
+
+
+      <!-- <p-table [value]="data" [resizableColumns]="true" styleClass="p-datatable-sm" class='ui-datatable'
         [(selection)]="selectedRisks" (selectionChange)="onSelectionChange($event)"
         [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template pTemplate="header">
@@ -109,7 +256,7 @@
             <span>{{selectedCount}} of {{data.length}} risks selected</span>
           </div>
         </ng-template>
-      </p-table>
+      </p-table> -->
 
 
 

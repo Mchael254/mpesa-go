@@ -194,9 +194,11 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.fetchGISQuotations();
+
     this.session_service.clear_store();
     this.getParams();
-    this.getGroupQuotationsList();
+    // this.getGroupQuotationsList();
     // this.quotationSubMenuList = this.menuService.quotationSubMenuList();
 
     // if (this.activeIndex === 0) {
@@ -205,7 +207,6 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
     this.dynamicSideBarMenu(this.quotationSubMenuList[2]);
     this.initializeCurrency();
-    this.fetchGISQuotations();
     this.getUser();
     this.fetchCurrencies();
   }
@@ -214,6 +215,9 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
     if (this.reassignQuotationModalElement && this.chooseUserReassignModal) {
       this.modals['reassignQuotation'] = new (window as any).bootstrap.Modal(this.reassignQuotationModalElement.nativeElement);
       this.modals['chooseUserReassign'] = new (window as any).bootstrap.Modal(this.chooseUserReassignModal.nativeElement);
+    }
+    if (!this.showTabs && this.visibleTabs.GIS) {
+      this.cdr.detectChanges(); // forces p-table to recalc layout
     }
   }
 
@@ -226,9 +230,9 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['LMS_GRP']) {
-      this.getGroupQuotationsList();
-    }
+    // if (changes['LMS_GRP']) {
+    //   this.getGroupQuotationsList();
+    // }
   }
 
 
@@ -770,58 +774,58 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   }
 
   processSelectedQuote(quotationCode: number, quotationNumber: string, clientCode: number): void {
-  if (!quotationNumber || quotationNumber.trim() === '') {
-    console.warn('Quotation number is missing or empty.');
-    return;
-  }
-
-  log.debug('Selected quotationCode:', quotationCode, 'QuotationNumber:', quotationNumber, 'ClientCode:', clientCode);
-
-  // Store basic info in sessionStorage
-  sessionStorage.setItem('quotationNum', quotationNumber);
-  sessionStorage.setItem('activeQuotationCode', JSON.stringify(quotationCode));
-  sessionStorage.setItem('clientCode', JSON.stringify(clientCode));
-
-  // Fetch the full quotation details
-  this.quotationService.getQuotationDetails(quotationCode).subscribe({
-    next: (response: any) => {
-      log.debug('Quotation details response:', response);
-
-      const taskName = response?.processFlowResponseDto?.taskName?.trim();
-      log.debug('Task name from processFlowResponseDto:', taskName);
-
-      switch (taskName) {
-        case 'Quotation Data Entry':
-          this.router.navigate(['/home/gis/quotation/quotation-details']);
-          break;
-
-        case 'Authorize Quotation':
-          this.router.navigate(['/home/gis/quotation/quotation-summary']);
-          break;
-
-        case 'Confirm Quotation':
-          sessionStorage.setItem('confirmMode', 'true');
-          this.router.navigate(['/home/gis/quotation/quotation-summary']);
-          break;
-
-        case null:
-        case undefined:
-        case '':
-          sessionStorage.setItem('viewOnlyMode', 'true');
-          this.router.navigate(['/home/gis/quotation/quotation-summary']);
-          log.warn('No task name found — defaulting to view-only summary screen.');
-          break;
-
-        default:
-          console.warn('Unknown task name from processFlowResponseDto:', taskName);
-          break;
-      }
-    },
-    error: (err) => {
-      console.error('Failed to fetch quotation details:', err);
+    if (!quotationNumber || quotationNumber.trim() === '') {
+      console.warn('Quotation number is missing or empty.');
+      return;
     }
-  });
-}
+
+    log.debug('Selected quotationCode:', quotationCode, 'QuotationNumber:', quotationNumber, 'ClientCode:', clientCode);
+
+    // Store basic info in sessionStorage
+    sessionStorage.setItem('quotationNum', quotationNumber);
+    sessionStorage.setItem('activeQuotationCode', JSON.stringify(quotationCode));
+    sessionStorage.setItem('clientCode', JSON.stringify(clientCode));
+
+    // Fetch the full quotation details
+    this.quotationService.getQuotationDetails(quotationCode).subscribe({
+      next: (response: any) => {
+        log.debug('Quotation details response:', response);
+
+        const taskName = response?.processFlowResponseDto?.taskName?.trim();
+        log.debug('Task name from processFlowResponseDto:', taskName);
+
+        switch (taskName) {
+          case 'Quotation Data Entry':
+            this.router.navigate(['/home/gis/quotation/quotation-details']);
+            break;
+
+          case 'Authorize Quotation':
+            this.router.navigate(['/home/gis/quotation/quotation-summary']);
+            break;
+
+          case 'Confirm Quotation':
+            sessionStorage.setItem('confirmMode', 'true');
+            this.router.navigate(['/home/gis/quotation/quotation-summary']);
+            break;
+
+          case null:
+          case undefined:
+          case '':
+            sessionStorage.setItem('viewOnlyMode', 'true');
+            this.router.navigate(['/home/gis/quotation/quotation-summary']);
+            log.warn('No task name found — defaulting to view-only summary screen.');
+            break;
+
+          default:
+            console.warn('Unknown task name from processFlowResponseDto:', taskName);
+            break;
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch quotation details:', err);
+      }
+    });
+  }
 
   onStatusSelected(selectedValue: any) {
 
@@ -916,7 +920,9 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
           this.actionsCache.clear();
 
           log.debug("LIST OF GIS QUOTATIONS ", this.gisQuotationList);
-
+          setTimeout(() => {
+            this.quotationTable?.reset(); // forces table to re-render
+          }, 0);
         },
         error: (error) => {
           console.error("erro fetching quotations", error);

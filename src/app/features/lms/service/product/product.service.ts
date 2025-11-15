@@ -17,10 +17,10 @@ const log = new Logger('ProductService');
   providedIn: 'root',
 })
 export class ProductService {
-  private getListOfOrdProduct = toSignal(this.getListOfProduct());
+  // private getListOfOrdProduct = toSignal(this.getListOfProduct());
   // getListOfGroupProduct = toSignal(this.getListOfProduct('G'));
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   getProductByCode(code: number) {
     return this.api.GET(`products/${code}`).pipe(
@@ -74,7 +74,7 @@ export class ProductService {
         return _prod_cover_type;
       })
     );
-  } 
+  }
 
   getListOfProductTermByProductCode(
     prodCode: number,
