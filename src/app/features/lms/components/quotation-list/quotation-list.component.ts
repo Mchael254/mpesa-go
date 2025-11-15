@@ -4,11 +4,11 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize, map, switchMap } from 'rxjs';
 
 import { SESSION_KEY } from '../../util/session_storage_enum';
-import {QuotationService} from "../../service/quotation/quotation.service";
-import {ProductService} from "../../service/product/product.service";
-import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
-import {Logger} from "../../../../shared/services";
-import {TableDetail} from "../../../../shared/data/table-detail";
+import { QuotationService } from "../../service/quotation/quotation.service";
+import { ProductService } from "../../service/product/product.service";
+import { SessionStorageService } from "../../../../shared/services/session-storage/session-storage.service";
+import { Logger } from "../../../../shared/services";
+import { TableDetail } from "../../../../shared/data/table-detail";
 import { untilDestroyed } from 'src/app/shared/shared.module';
 import { GroupQuotationsListDTO } from '../../models';
 
@@ -37,24 +37,24 @@ export class QuotationListComponent implements OnInit, OnDestroy {
     private spinner: NgxSpinnerService,
     private cdr: ChangeDetectorRef
   ) {
-    this.getListOfWebQuote();
-    this.getGroupQuotationsList();
+    // this.getListOfWebQuote();
+    // this.getGroupQuotationsList();
   }
   ngOnInit(): void {
-    
+
   }
 
   ngOnDestroy(): void {
-      
+
   }
 
-  paginate(value) {
-    let pageObj = { ...value };
-    let page = 0;
-    page = Math.round(pageObj['first'] / pageObj['rows']);
-    if (pageObj['first'] === 0) page = 0;
-    this.getListOfWebQuote(page, pageObj['rows']);
-  }
+  // paginate(value) {
+  //   let pageObj = { ...value };
+  //   let page = 0;
+  //   page = Math.round(pageObj['first'] / pageObj['rows']);
+  //   if (pageObj['first'] === 0) page = 0;
+  //   this.getListOfWebQuote(page, pageObj['rows']);
+  // }
 
   getListOfWebQuote(page = 0, size = 10) {
     this.spinner.show('lms_ind_view');
@@ -193,15 +193,15 @@ export class QuotationListComponent implements OnInit, OnDestroy {
     logger.info('GO BACK');
   }
 
-    /**
-     * The function `getGroupQuotationsList` retrieves a list of group quotations and updates the
-     * component's `grpQuotationsList` property.
-     */
-    getGroupQuotationsList() {
-        this.quotation_service.getGroupQuotationsList().pipe(untilDestroyed(this))
-            .subscribe((res: GroupQuotationsListDTO[]) => {
-                this.grpQuotationsList = res;
-                this.cdr.detectChanges();
-            });
-    }
+  /**
+   * The function `getGroupQuotationsList` retrieves a list of group quotations and updates the
+   * component's `grpQuotationsList` property.
+   */
+  getGroupQuotationsList() {
+    this.quotation_service.getGroupQuotationsList().pipe(untilDestroyed(this))
+      .subscribe((res: GroupQuotationsListDTO[]) => {
+        this.grpQuotationsList = res;
+        this.cdr.detectChanges();
+      });
+  }
 }
