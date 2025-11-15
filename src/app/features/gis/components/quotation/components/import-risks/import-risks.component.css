@@ -284,3 +284,7 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.nav-item>.active {
+  color: var(--primary-color);
+}
