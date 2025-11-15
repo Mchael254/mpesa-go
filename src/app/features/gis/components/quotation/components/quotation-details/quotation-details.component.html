@@ -1376,7 +1376,9 @@
             X
           </button>
         </div>
-        <app-new-entity-v2 (clientSaved)="onClientSaved($event)" [system]="gisSystem"></app-new-entity-v2>
+        <div *ngIf="newClientCreation">
+          <app-new-entity-v2 (clientSaved)="onClientSaved($event)" [system]="gisSystem"></app-new-entity-v2>
+        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeCreateClientModal()">Close</button>
         </div>

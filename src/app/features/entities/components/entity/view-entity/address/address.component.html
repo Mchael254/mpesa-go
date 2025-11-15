@@ -62,7 +62,7 @@
         [table]="table"
         [language]="language"
         (deleteBtnClicked)="handleBranchDelete($event)"
-        (editBtnClicked)="prepareEditBranchForm($event, Save_Action.EDIT_BRANCH)"
+        (editBtnClicked)="prepareEditBranchForm($event)"
       >
       </app-overview-table>
     </ng-container>
@@ -120,6 +120,7 @@
                       class="form-select"
                       (change)="processSelectOption($event, field.fieldId)"
                     >
+                      <option value=""> -- </option>
                       <option *ngFor="let opt of field.options" [value]="opt.id ? opt.id : opt.value">
                         {{ opt.name || opt.description || opt.label | titlecase }}
                       </option>
