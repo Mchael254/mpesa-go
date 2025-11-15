@@ -89,7 +89,14 @@
   font-weight: 500;
   line-height: 24px;
   background-color: #BAD0E4;
+  white-space: nowrap;
   /* 150% */
+}
+
+::ng-deep .p-datatable .p-datatable-tbody>tr>td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 ::ng-deep .custom-subclause-table .p-datatable-thead>tr>th {

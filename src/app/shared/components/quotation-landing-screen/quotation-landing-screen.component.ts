@@ -196,7 +196,7 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.session_service.clear_store();
     this.getParams();
-    this.getGroupQuotationsList();
+    // this.getGroupQuotationsList();
     // this.quotationSubMenuList = this.menuService.quotationSubMenuList();
 
     // if (this.activeIndex === 0) {

@@ -1010,9 +1010,9 @@ export class QuotationsService {
   }
 
   //perils
-  getSubclassSectionPeril(subclassCode: number, pageNo: number = 1, pageSize: number = 20): Observable<any> {
+  getSubclassSectionPeril(subclassCode: number, pageNo: number = 0, pageSize: number = 20): Observable<any> {
 
-    return this.api.GET<any[]>(`api/v1/subclass-section-perils/${subclassCode}?pageNo=${pageNo}&pageSize=${pageSize}`, API_CONFIG.GIS_SETUPS_BASE_URL);
+    return this.api.GET<any[]>(`api/v1/subclass-section-perils/subclass/${subclassCode}?pageNo=${pageNo}&pageSize=${pageSize}`, API_CONFIG.GIS_SETUPS_BASE_URL);
 
   }
 
