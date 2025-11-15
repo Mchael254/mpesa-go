@@ -5288,7 +5288,10 @@ export class RiskDetailsComponent {
       this.selectedSubclassCode = savedSubclass;
     }
 
+    log.debug('subclass code',savedSubclass)
+
     const subclassCode = this.selectedSubclassCode;
+    log.debug('subclass code', this.selectedSubclassCode)
     if (!subclassCode) {
       this.addedPerils = [];
       this.perils = [];
@@ -5317,7 +5320,7 @@ export class RiskDetailsComponent {
       }
 
     } else {
-      this.quotationService.getSubclassSectionPeril(subclassCode, 1, 10)
+      this.quotationService.getSubclassSectionPeril(subclassCode, 0, 10)
         .subscribe({
           next: (data) => {
             this.perils = data?._embedded || [];
@@ -5350,7 +5353,7 @@ export class RiskDetailsComponent {
     new bootstrap.Modal(this.perilsModal.nativeElement).show();
 
     this.loadPerils();
-    this.loadQuotationPerils();
+    // this.loadQuotationPerils();
   }
 
   closePerilsModal() {
