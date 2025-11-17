@@ -288,3 +288,19 @@
 .nav-item>.active {
   color: var(--primary-color);
 }
+
+
+.text-button {
+  background: none;       /* remove background */
+  border: none;           /* remove border */
+  color: #00529b;         /* blue color */
+  cursor: pointer;        /* pointer on hover */
+  padding: 0;             /* remove extra padding */
+  font-size: 0.9rem;  
+  margin-right: 10px;   /* optional: adjust font size */
+}
+
+.text-button:disabled {
+  color: #a0a0a0;         /* gray when disabled */
+  cursor: not-allowed;
+}

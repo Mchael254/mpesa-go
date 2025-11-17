@@ -151,6 +151,10 @@ export class ImportRisksComponent {
     applicableLevel: string
   }[];
   selectedRisk: any;
+  isDeleting:boolean;
+  isBulkDeleting = false;
+  isSingleDeleting = false;
+
 
 
   constructor(
@@ -1040,9 +1044,9 @@ export class ImportRisksComponent {
   }
 
 
-  deleteRisks() {
-    // deletion logic
-  }
+  // deleteRisks() {
+  //   // deletion logic
+  // }
   async loadSelectedSubclassRiskFields(subclassCode: number): Promise<void> {
     const riskFieldDescription = `detailed-risk-subclass-form-${subclassCode}`;
 
@@ -1256,6 +1260,74 @@ export class ImportRisksComponent {
     flatten(this.selectedRisk);
 
     log.debug('Patched form with selectedRisk:', this.riskDetailsForm.value);
+  }deleteRisks(selectedRows: any[], type: 'single' | 'bulk') {
+  if (!selectedRows || !selectedRows.length) {
+    this.globalMessagingService.displayErrorMessage('Error', 'No risks selected to delete.');
+    if (type === 'single') this.isSingleDeleting = false;
+    else this.isBulkDeleting = false;
+    return;
   }
+
+  const ids = selectedRows.map(r => r.id); 
+  let completedCount = 0;
+
+  ids.forEach(id => {
+    this.quotationService.deleteRiskRecord(id).subscribe({
+      next: res => {
+        completedCount++;
+        if (completedCount === ids.length) {
+          this.selectedAll = [];
+          this.selectedValid = [];
+          this.selectedReview = [];
+          this.fetchUploadedRisks();
+
+          if (type === 'single') this.isSingleDeleting = false;
+          else this.isBulkDeleting = false;
+
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            `Record with Id ${id} deleted successfully.`
+          );
+        }
+      },
+      error: err => {
+        completedCount++;
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          `Failed to delete record ${id}. ${err.error?.message || 'Please try again.'}`
+        );
+
+        if (completedCount === ids.length) {
+          this.fetchUploadedRisks();
+
+          if (type === 'single') this.isSingleDeleting = false;
+          else this.isBulkDeleting = false;
+        }
+      }
+    });
+  });
+}
+
+deleteSingleRisk(row: any) {
+  if (this.isSingleDeleting) return;
+  this.isSingleDeleting = true;
+
+  this.deleteRisks([row], 'single');
+}
+
+deleteSelectedRisks() {
+  const selected = this.activeTab === 'ALL' ? this.selectedAll :
+                   this.activeTab === 'VALID' ? this.selectedValid : this.selectedReview;
+
+  if (!selected || selected.length === 0) return;
+  if (this.isBulkDeleting) return;
+
+  this.isBulkDeleting = true;
+
+  this.deleteRisks(selected, 'bulk');
+}
+
+
+
 }
 
