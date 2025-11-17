@@ -8106,6 +8106,8 @@ export class RiskDetailsComponent {
         log.debug("error", error)
         const apiError = error.error;
         const message =
+          apiError?.debugMessage ??
+          apiError?.message ??
           apiError?.errors?.[0] ??
           apiError?.developerMessage ??
           'Failed to send message';
