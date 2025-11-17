@@ -1060,7 +1060,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         error: (e) => {
           log.debug(e)
           const apiError = e.error;
-          const errorMessage = 
+          const errorMessage =
             apiError?.debugMessage ??
             apiError?.message ??
             apiError?.developerMessage ??
@@ -1182,22 +1182,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     )
   }
 
-  authorise() {
-    this.quotationService.authoriseQuotation(this.quotationCode, this.user).subscribe(
-      {
-        next: (res) => {
-          this.authoriseQuotation = !this.authoriseQuotation;
-          this.confirmQuotation = !this.confirmQuotation;
-          this.getQuotationDetails(this.quotationCode);
-          this.messageService.displaySuccessMessage('Success', 'Quotation Authorised, Confirm to proceed')
-        },
-        error: (e) => {
-          log.debug(e.message)
-          this.messageService.displayErrorMessage('error', e.error.message)
-        }
-      }
-    )
-  }
+
 
   confirmQuote() {
     this.quotationService.confirmQuotation(this.quotationCode, this.user).subscribe(
@@ -1206,6 +1191,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           this.authoriseQuotation = !this.authoriseQuotation;
           this.confirmQuotation = !this.confirmQuotation;
           this.getQuotationDetails(this.quotationCode);
+          if (res) {
+            this.viewQuoteFlag = true
+            sessionStorage.setItem(`viewQuoteFlag`, JSON.stringify(this.viewQuoteFlag));
+
+          }
           this.globalMessagingService.displaySuccessMessage('Success', 'Quotation  Confirmed')
           this.changeToPolicyButtons = true
           sessionStorage.setItem('changeToPolicyButtons', JSON.stringify(this.changeToPolicyButtons))

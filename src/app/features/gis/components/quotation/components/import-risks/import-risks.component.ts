@@ -4,11 +4,12 @@ import { SubclassesService } from '../../../setups/services/subclasses/subclasse
 import { Router } from '@angular/router';
 import { Logger } from '../../../../../../shared/services';
 import * as XLSX from 'xlsx';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 import { GlobalMessagingService } from "../../../../../../shared/services/messaging/global-messaging.service";
 import { PolicyElectronicDataDTO } from 'src/app/features/gis/data/quotations-dto';
+import { firstValueFrom } from 'rxjs';
 
 const log = new Logger('ImportRiskComponent');
 interface ColumnMapping {
@@ -99,6 +100,58 @@ export class ImportRisksComponent {
   selectedValid: any[] = [];
   selectedReview: any[] = [];
   activeTab: 'ALL' | 'VALID' | 'REVIEW' = 'ALL';
+  showImportedRiskTable: boolean = false
+  riskDetailsForm: FormGroup;
+  dynamicSubclassFormFields: {
+    type: string;
+    name: string;
+    max: number
+    min: number
+    isMandatory: string;
+    disabled: boolean;
+    readonly: boolean;
+    regexPattern: string;
+    placeholder: string;
+    label: string;
+    scheduleLevel: number
+    selectOptions?: { label: string; value: any }[]
+    applicableLevel: string
+  }[];
+  subclassFormContent: any
+  subclassFormData: {
+    options: any[];
+    type: string;
+    name: string;
+    max: number
+    min: number
+    isMandatory: string;
+    disabled: boolean;
+    readonly: boolean;
+    regexPattern: string;
+    placeholder: string;
+    label: string;
+    scheduleLevel: number
+    selectOptions?: { label: string; value: any }[];
+    applicableLevel: string
+  }[];
+  allSubclassFormData: {
+    options: any[];
+    type: string;
+    name: string;
+    max: number
+    min: number
+    isMandatory: string;
+    disabled: boolean;
+    readonly: boolean;
+    regexPattern: string;
+    placeholder: string;
+    label: string;
+    scheduleLevel: number
+    selectOptions?: { label: string; value: any }[];
+    applicableLevel: string
+  }[];
+  selectedRisk: any;
+
 
   constructor(
     public subclassService: SubclassesService,
@@ -148,7 +201,9 @@ export class ImportRisksComponent {
     this.systemFields.forEach(field => {
       this.mapping[field.key] = '';
     });
-
+    this.riskDetailsForm = new FormGroup({
+      subclass: new FormControl(null)
+    });
 
   }
 
@@ -453,6 +508,7 @@ export class ImportRisksComponent {
     log.debug('Selected Subclass Code:', this.selectedSubclassCode);
     if (this.selectedSubclassCode) {
       this.subclassSelected = true;
+      this.fetchUploadedRisks()
     }
 
     // Optionally, you can call another method here to perform actions with the selected subclass code
@@ -652,7 +708,7 @@ export class ImportRisksComponent {
       next: (data) => {
         this.policyData = data;
         log.debug('Policy data uploaded successfully:', data);
-        data && this.validateImportedRisk()
+        data && this.fetchUploadedRisks()
         this.successMessage = 'Policies uploaded successfully!';
         this.globalMessagingService.displaySuccessMessage('Success', 'Policies uploaded successfully!');
       },
@@ -898,26 +954,77 @@ export class ImportRisksComponent {
       sectionColumn1LoadingRate: 0
     }));
   }
-  fetchUploadedRisks() {
-    log.debug("Quotation code:", this.quotationCode)
-    this.quotationService.fetchUploadedRisk(this.quotationCode,).subscribe({
-      next: (data) => {
-        this.policyData = data;
-        log.debug('Imported risk data:', data);
+  // fetchUploadedRisks() {
+  //   log.debug("Quotation code:", this.quotationCode)
+  //   this.quotationService.fetchUploadedRisk(this.quotationCode,).subscribe({
+  //     next: (data) => {
+  //       this.allImportedRisks = data._embedded;
+  //       log.debug('Imported risk data:', data);
 
-      },
-      error: (err) => {
-        log.error('Failed to load imported risk data', err);
-        this.errorMessage = 'Failed to upload policies. Please try again.';
-        this.globalMessagingService.displayErrorMessage('Error', 'Failed to load imported risk data');
-      }
-    });
+  //     },
+  //     error: (err) => {
+  //       log.error('Failed to load imported risk data', err);
+  //       this.errorMessage = 'Failed to upload policies. Please try again.';
+  //       this.globalMessagingService.displayErrorMessage('Error', 'Failed to load imported risk data');
+  //     }
+  //   });
+  // }
+  fetchUploadedRisks() {
+    log.debug("Quotation code:", this.quotationCode);
+
+    // 1) Fetch ALL risks (without validated filter)
+    this.quotationService.fetchUploadedRisk(this.quotationCode)
+      .subscribe({
+        next: (data) => {
+          this.allRisks = data._embedded;
+          log.debug('All Imported Risks:', data);
+          this.showImportedRiskTable = true
+        },
+        error: (err) => {
+          this.handleRiskError(err);
+        }
+      });
+
+    // 2) Fetch VALIDATED risks
+    this.quotationService.fetchUploadedRisk(this.quotationCode, '', 'Y')
+      .subscribe({
+        next: (data) => {
+          this.validRisks = data._embedded;
+          log.debug('Validated Risks:', data);
+        },
+        error: (err) => {
+          this.handleRiskError(err);
+        }
+      });
+
+    // 3) Fetch NEEDS REVIEW risks (validated = false)
+    this.quotationService.fetchUploadedRisk(this.quotationCode, '', 'N')
+      .subscribe({
+        next: (data) => {
+          this.needsReviewRisks = data._embedded;
+          log.debug('Needs Review Risks:', data);
+        },
+        error: (err) => {
+          this.handleRiskError(err);
+        }
+      });
   }
+
+  private handleRiskError(err: any) {
+    log.error('Failed to load imported risk data', err);
+    this.errorMessage = 'Failed to upload policies. Please try again.';
+    this.globalMessagingService.displayErrorMessage(
+      'Error',
+      'Failed to load imported risk data'
+    );
+  }
+
   validateImportedRisk() {
-    this.quotationService.validateUploadedRisk(this.quotationCode,).subscribe({
-      next: (data) => {
+    this.quotationService.validateUploadedRisk(this.quotationCode).subscribe({
+      next: (data: string) => {
 
         log.debug('Validated Imported risk data:', data);
+        log.debug('Quotation Code:', this.quotationCode)
         data && this.fetchUploadedRisks()
 
       },
@@ -929,14 +1036,226 @@ export class ImportRisksComponent {
     });
   }
   onRiskSelectionChange(event: any) {
-    // Handle selection if needed
+    log.debug('Risk selected to be validated', event)
   }
-  validateRisks() {
-    // validation logic
-  }
+
 
   deleteRisks() {
     // deletion logic
+  }
+  async loadSelectedSubclassRiskFields(subclassCode: number): Promise<void> {
+    const riskFieldDescription = `detailed-risk-subclass-form-${subclassCode}`;
+
+    try {
+      const response = await firstValueFrom(this.quotationService.getFormFields(riskFieldDescription));
+      const fields = response?.[0]?.fields || [];
+      this.dynamicSubclassFormFields = fields
+      this.subclassFormContent = response;
+      sessionStorage.setItem('dynamicSubclassFormField', JSON.stringify(fields));
+      this.subclassFormData = fields.filter(field => Number(field.scheduleLevel) === 1);
+      this.allSubclassFormData = fields.filter(field => field.applicableLevel === 'S');
+
+      // Remove old dynamic controls
+      // Object.keys(this.riskDetailsForm.controls).forEach(controlName => {
+      //   const control = this.riskDetailsForm.get(controlName) as any;
+      //   if (control?.metadata?.dynamicSubclass) {
+      //     this.riskDetailsForm.removeControl(controlName);
+      //   }
+      // });
+      Object.keys(this.riskDetailsForm.controls).forEach(controlName => {
+        const control = this.riskDetailsForm.get(controlName) as any;
+
+        // Remove if it has dynamicSubclass metadata
+        if (control?.metadata?.dynamicSubclass) {
+          this.riskDetailsForm.removeControl(controlName);
+        }
+
+        // Additionally, remove 'butcharge' if not in edit mode
+        // if (!this.isEditMode && controlName === 'butCharge') {
+        //   this.riskDetailsForm.removeControl('butCharge');
+        // }
+      });
+
+
+
+      this.subclassFormData.forEach(field => {
+        if (!this.riskDetailsForm.get(field.name)) {
+          const validators = field.isMandatory === 'Y' ? [Validators.required] : [];
+          const control = new FormControl(this.getDefaultValue(field), validators);
+          (control as any).metadata = { dynamicSubclass: true };
+
+          // ✅ Add control to the form
+          this.riskDetailsForm.addControl(field.name, control);
+          log.debug(`Added new dynamicSubclass control: ${field.name}`);
+        }
+
+        // ✅ Handle default value logic (like ncdStatus)
+        if (field.name === 'ncdStatus') {
+          this.riskDetailsForm.get(field.name)?.setValue('N');
+        }
+        // if (!this.isEditMode && field.name === 'butCharge') {
+        //     this.riskDetailsForm.removeControl('butCharge');
+        //     this.subclassFormData = this.subclassFormData.filter(f => f.name !== 'butCharge');
+        //   }
+
+        if (field.options && field.options.length > 0) {
+          let optionsList = field.options;
+
+          // ✅ Parse JSON safely if options come as a string
+          if (typeof field.options === 'string') {
+            try {
+              optionsList = JSON.parse(field.options);
+            } catch {
+              optionsList = [];
+            }
+          }
+
+          // ✅ Use your helper to populate selectOptions
+          this.safePopulateSelectOptions(
+            this.subclassFormData,
+            field.name,
+            optionsList,
+            'description', // labelKey
+            'code'         // valueKey
+          );
+        }
+
+      });
+
+      log.debug(" risk details Value:", this.riskDetailsForm.value)
+
+      const coverFromStr = this.quotationDetails.coverFrom;
+      const coverToStr = this.quotationDetails.coverTo;
+
+      const coverFrom = new Date(coverFromStr + 'T00:00:00');
+      const coverTo = new Date(coverToStr + 'T00:00:00');
+
+      this.riskDetailsForm.patchValue({
+        coverFrom: coverFrom,
+        coverTo: coverTo
+      });
+
+      log.debug('Risk Details Value after patching:', this.riskDetailsForm.value);
+
+      if (this.riskDetailsForm.contains('coverDays')) {
+        const coverDays = this.getCoverDays(coverFrom, coverTo);
+        log.debug('Cover days:', coverDays);
+
+        this.riskDetailsForm.patchValue({ coverDays });
+      }
+
+
+
+
+
+      // if (this.isEditMode) {
+      //   this.patchEditValues();
+      // }
+
+    } catch (err) {
+      this.globalMessagingService.displayErrorMessage('Error', err.error?.message || 'Failed to load fields');
+      throw err; // important, so onSubclassSelected catch block runs
+    }
+  }
+  getDefaultValue(field: any): any {
+    if (field.type === 'date') {
+      return new Date();
+    }
+    return '';
+  }
+  safePopulateSelectOptions(formDataArray: any[], fieldName: string, options: any[], labelKey: string, valueKey: string) {
+    if (formDataArray && Array.isArray(formDataArray)) {
+      formDataArray.forEach(field => {
+        if (field.name === fieldName) {
+          field.selectOptions = options.map(opt => ({
+            label: opt[labelKey],
+            value: opt[valueKey]
+          }));
+        }
+      });
+      log.debug(`Populated selectOptions for '${fieldName}'`, formDataArray);
+    } else {
+      log.warn(`Cannot populate '${fieldName}', form data array is not ready`);
+    }
+  }
+  getCoverDays(coverFrom: string | Date, coverTo: string | Date): number {
+    const fromDate = new Date(coverFrom);
+    const toDate = new Date(coverTo);
+    log.debug("Cover from:", fromDate)
+    log.debug("Cover to:", toDate)
+
+    const diffInMs = toDate.getTime() - fromDate.getTime();
+
+    const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+    return diffInDays;
+  }
+  private patchEditValues(): void {
+    if (!this.selectedRisk) return;
+
+    // Explicit field mapping between backend keys and form controls
+    const explicitFields: Record<string, string> = {
+      coverType: 'coverTypeCode',
+      premiumBand: 'binderCode',
+      registrationNumber: 'propertyId',
+      riskDescription: 'itemDesc',
+      riskId: 'propertyId'
+    };
+
+    // Patch explicitly mapped fields
+    Object.keys(explicitFields).forEach(formControl => {
+      const riskKey = explicitFields[formControl];
+      if (this.selectedRisk[riskKey] !== undefined && this.riskDetailsForm.contains(formControl)) {
+        this.riskDetailsForm.get(formControl)?.setValue(this.selectedRisk[riskKey]);
+      }
+    });
+
+    // Patch value-related controls
+    const valueControls = ['value', 'sumInsured'];
+    valueControls.forEach(controlName => {
+      if (this.riskDetailsForm.contains(controlName)) {
+        this.riskDetailsForm.get(controlName)?.setValue(this.selectedRisk?.value);
+      }
+    });
+
+    // Helper function to normalize date values
+    const normalizeDate = (value: any, key: string): any => {
+      const isDateField =
+        key.toLowerCase().includes('date') ||
+        key.toLowerCase().includes('coverfrom') ||
+        key.toLowerCase().includes('coverto');
+
+      return typeof value === 'string' && isDateField ? new Date(value) : value;
+    };
+
+    // Recursive flattening function
+    const flatten = (obj: any) => {
+      Object.keys(obj).forEach(key => {
+        const value = obj[key];
+
+        // Skip keys that would overwrite explicitly mapped fields
+        const excludedKeys = ['coverType', 'binderCode', 'propertyId', 'itemDesc', 'value'];
+        if (excludedKeys.includes(key)) return;
+
+        if (value && typeof value === 'object') {
+          if (Array.isArray(value) && value.length > 0) {
+            flatten(value[0]);
+          } else {
+            flatten(value);
+          }
+        } else {
+          if (this.riskDetailsForm.contains(key)) {
+            const finalValue = normalizeDate(value, key);
+            this.riskDetailsForm.get(key)?.setValue(finalValue);
+          }
+        }
+      });
+    };
+
+    // Perform recursive patching
+    flatten(this.selectedRisk);
+
+    log.debug('Patched form with selectedRisk:', this.riskDetailsForm.value);
   }
 }
 
