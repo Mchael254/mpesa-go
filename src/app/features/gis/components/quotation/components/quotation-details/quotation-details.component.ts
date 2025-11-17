@@ -360,7 +360,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     }
 
 
-    const quotationCode = sessionStorage.getItem('activeQuotationCode');
+    const quotationCode = sessionStorage.getItem('quotationCode');
     log.debug("Retrieved quotation code from session:", quotationCode);
 
     if (quotationCode) {
