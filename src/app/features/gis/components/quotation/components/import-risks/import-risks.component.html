@@ -96,9 +96,13 @@
               Validate
             </button>
 
-            <button class="btn btn-primary" (click)="deleteRisks()">
-              Delete
-            </button>
+         <button class="btn btn-primary" 
+        [disabled]="isBulkDeleting"
+        (click)="deleteSelectedRisks()">
+  <i *ngIf="isBulkDeleting" class="pi pi-spin pi-spinner me-2"></i>
+  {{ isBulkDeleting ? 'Deleting...' : 'Delete' }}
+</button>
+
           </div>
 
         </div>
@@ -122,6 +126,7 @@
                   <th>Premium Band</th>
                   <th>Cover from</th>
                   <th>Cover to</th>
+                  <th style="width:120px; text-align:center;">Actions</th>
                 </tr>
               </ng-template>
 
@@ -135,6 +140,25 @@
                   <td>{{ row.binderCode }}</td>
                   <td>{{ row.withEffectFrom }}</td>
                   <td>{{ row.withEffectTo }}</td>
+        <!-- ACTION BUTTONS -->
+<td style="text-align:center;">
+  <!-- Edit button -->
+  <button 
+    class="text-button" 
+    >
+    Edit
+  </button>
+
+  <!-- Delete button -->
+  <button 
+    class="text-button" 
+    [disabled]="isSingleDeleting"
+    (click)="deleteSingleRisk(row)">
+    Delete
+  </button>
+</td>
+
+        
 
                 </tr>
               </ng-template>
@@ -172,14 +196,22 @@
                   <td>{{ row.ItemDesc }}</td>
                   <td>{{ row.CoverTypeShortDesc }}</td>
 
-                  <!-- Action buttons -->
-                  <td style="text-align:center;">
-                    <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-1">
-                    </button>
+               <td style="text-align:center;">
+  <!-- Edit button -->
+  <button 
+    class="text-button" 
+    >
+    Edit
+  </button>
 
-                    <button pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm p-1">
-                    </button>
-                  </td>
+  <!-- Delete button -->
+  <button 
+    class="text-button" 
+    [disabled]="isSingleDeleting"
+    (click)="deleteSingleRisk(row)">
+    Delete
+  </button>
+</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -218,14 +250,22 @@
                   <td>{{ row.ItemDesc }}</td>
                   <td>{{ row.CoverTypeShortDesc }}</td>
 
-                  <!-- ACTION BUTTONS -->
-                  <td style="text-align:center;">
-                    <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-1">
-                    </button>
+              <td style="text-align:center;">
+  <!-- Edit button -->
+  <button 
+    class="text-button" 
+    >
+    Edit
+  </button>
 
-                    <button pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm p-1">
-                    </button>
-                  </td>
+  <!-- Delete button -->
+  <button 
+    class="text-button" 
+    [disabled]="isSingleDeleting"
+    (click)="deleteSingleRisk(row)">
+    Delete
+  </button>
+</td>
                 </tr>
               </ng-template>
             </p-table>
