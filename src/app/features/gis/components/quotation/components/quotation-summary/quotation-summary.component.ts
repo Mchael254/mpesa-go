@@ -546,27 +546,27 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.getQuotationDetails(quotationCode);
     }
 
-    const ticketJson = sessionStorage.getItem('activeTicket');
+    // const ticketJson = sessionStorage.getItem('activeTicket');
 
-    if (ticketJson) {
-      this.ticketData = JSON.parse(ticketJson);
-      const quotationCode = this.ticketData.quotationCode;
-      if (quotationCode) {
-        this.quotationCode = quotationCode
-      }
-      this.getQuotationDetails(quotationCode);
-
-
-    }
+    // if (ticketJson) {
+    //   this.ticketData = JSON.parse(ticketJson);
+    //   const quotationCode = this.ticketData.quotationCode;
+    //   if (quotationCode) {
+    //     this.quotationCode = quotationCode
+    //   }
+    //   this.getQuotationDetails(quotationCode);
 
 
-    const quotationCode = sessionStorage.getItem('activeQuotationCode');
-    log.debug("Retrieved quotation code from session:", quotationCode);
+    // }
 
-    if (quotationCode) {
-      this.quotationCode = quotationCode;
-      this.getQuotationDetails(quotationCode);
-    }
+
+    // const quotationCode = sessionStorage.getItem('activeQuotationCode');
+    // log.debug("Retrieved quotation code from session:", quotationCode);
+
+    // if (quotationCode) {
+    //   this.quotationCode = quotationCode;
+    //   this.getQuotationDetails(quotationCode);
+    // }
 
     const confirmMode = sessionStorage.getItem('confirmMode') === 'true';
     const viewOnly = sessionStorage.getItem('viewOnlyMode') === 'true';
@@ -575,7 +575,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       this.showAuthorizeButton = false;
       this.showViewDocumentsButton = true;
       this.showVerifyButton = true;
-      this.showConfirmButton = true;
+      this.showConfirmButton = false;
+      this.viewQuoteFlag = true
     } else if (viewOnly) {
       this.showAuthorizeButton = false;
       this.showViewDocumentsButton = false;
@@ -3159,8 +3160,16 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     return !currentSchedule || currentSchedule.length === 0;
   }
 
+  // hasExceptionsData(): boolean {
+  //   return this.exceptionsData?.length > 0;
+  // }
   hasExceptionsData(): boolean {
-    return this.exceptionsData?.length > 0;
+    if (!this.exceptionsData || this.exceptionsData.length === 0) {
+      return false; // No data at all
+    }
+
+    // Return true if there's at least one record NOT authorized
+    return this.exceptionsData.some(e => (e.isAuthorized || '').toString().trim().toUpperCase() !== 'Y');
   }
 
   get authorizeButtonTooltip(): string {
