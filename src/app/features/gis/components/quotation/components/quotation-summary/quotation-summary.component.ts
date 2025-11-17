@@ -1059,7 +1059,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         },
         error: (e) => {
           log.debug(e)
-          this.globalMessagingService.displayErrorMessage('error', 'Failed to make ready')
+          const apiError = e.error;
+          const errorMessage = 
+            apiError?.debugMessage ??
+            apiError?.message ??
+            apiError?.developerMessage ??
+            'Failed to make ready';
+          this.globalMessagingService.displayErrorMessage('error', errorMessage)
         }
       }
     )
@@ -2511,28 +2517,22 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             res.message || 'Exceptions authorised successfully'
           );
 
-           const newStatus = 'Authorize Quotation';
+          const newStatus = 'Authorize Quotation';
+          this.quotationView.status = newStatus;
 
-           this.quotationView.status = newStatus;
+          sessionStorage.setItem(
+            `quotationStatus_${this.quotationCode}`,
+            newStatus
+          );
 
-           sessionStorage.setItem(
-          `quotationStatus_${this.quotationCode}`,
-          newStatus
-        );
+          this.showAuthorizeButton = true;
+          sessionStorage.setItem('showAuthorizeButton', 'true');
+          sessionStorage.setItem('authorizeButtonDisabled', 'false');
 
-        this.showAuthorizeButton = true;
-sessionStorage.setItem('showAuthorizeButton', 'true');
+          log.debug("[AUTH] Refreshing quotation details...");
 
-
-sessionStorage.setItem('authorizeButtonDisabled', 'false');
-
-
-        log.debug("[AUTH] Refreshing quotation details...");
-
-         this.getQuotationDetails(this.quotationCode);
-         this.getExceptions(this.quotationView.code);
-
-
+          this.getQuotationDetails(this.quotationCode);
+          this.getExceptions(this.quotationView.code);
 
         } else {
           this.globalMessagingService.displayErrorMessage(
@@ -3183,31 +3183,31 @@ sessionStorage.setItem('authorizeButtonDisabled', 'false');
   }
 
   get authorizeButtonDisabled(): boolean {
-  const hasPendingExceptions = this.exceptionsData?.some(ex => !ex.isAuthorized);
-  const schedulesEmpty = this.hasEmptySchedules();
+    const hasPendingExceptions = this.exceptionsData?.some(ex => !ex.isAuthorized);
+    const schedulesEmpty = this.hasEmptySchedules();
 
-  // Enable button if status is "Authorize Quotation" or there are no pending exceptions
-  if (this.quotationView?.status === 'Authorize Quotation') {
-    return false; // always enabled
+    // Enable button if status is "Authorize Quotation" or there are no pending exceptions
+    if (this.quotationView?.status === 'Authorize Quotation') {
+      return false; // always enabled
+    }
+
+    // Otherwise, disabled if there are pending exceptions or empty schedules
+    return hasPendingExceptions || schedulesEmpty;
   }
-
-  // Otherwise, disabled if there are pending exceptions or empty schedules
-  return hasPendingExceptions || schedulesEmpty;
-}
 
 
   authorizeQuote() {
     const quotationCode = this.quotationCode;
     const user = this.user;
 
-    if (!this.hasUnderwriterRights()) {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'This user does not have the rights to authorize a quote.'
-      );
-      this.router.navigate(['/quotation-management']);
-      return;
-    }
+    // if (!this.hasUnderwriterRights()) {
+    //   this.globalMessagingService.displayErrorMessage(
+    //     'Error',
+    //     'This user does not have the rights to authorize a quote.'
+    //   );
+    //   this.router.navigate(['/quotation-management']);
+    //   return;
+    // }
 
     // Step 1: Authorize
     this.quotationService.authorizeQuote(quotationCode, user).subscribe({
@@ -3288,7 +3288,7 @@ sessionStorage.setItem('authorizeButtonDisabled', 'false');
         } else {
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            err?.error?.message || 'Something went wrong.'
+            err?.error?.debugMessage || err?.error?.message || 'Something went wrong.'
           );
         }
       }
