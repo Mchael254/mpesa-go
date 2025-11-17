@@ -1493,7 +1493,7 @@ export class QuotationsService {
   fetchUploadedRisk(
     referenceCode: number,
     transferred?: string,
-    validated?: boolean
+    validated?: string
   ) {
     let params = new HttpParams()
       .set('systemModule', 'Q')
@@ -1520,13 +1520,30 @@ export class QuotationsService {
       .set('sourceCode', sourceCode)
       .set('sysModule', 'Q');
     return this.api
-      .GET<any>(`v1/load-details/check-duplicate-risks?${params}`, API_CONFIG.GIS_COMMONS_SERVICE)
+      .POST<any>(`v1/load-details/validate?${params}`, null, API_CONFIG.GIS_COMMONS_SERVICE)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
       );
 
   }
+  // validateUploadedRisk(sourceCode: number) {
+  //   let params = new HttpParams()
+  //     .set('sourceCode', sourceCode)
+  //     .set('sysModule', 'Q');
+
+  //   return this.api
+  //     .GET<string>(
+  //       `v1/load-details/check-duplicate-risks?${params}`,
+  //       API_CONFIG.GIS_COMMONS_SERVICE,
+  //       { responseType: 'text' as 'json' }
+  //     )
+  //     .pipe(
+  //       retry(1),
+  //       catchError(this.errorHandl)
+  //     );
+  // }
+
 }
 
 

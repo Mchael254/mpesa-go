@@ -63,204 +63,178 @@
         </div>
 
       </div>
-      <div class="d-flex justify-content-between align-items-center ">
+      <div *ngIf="showImportedRiskTable">
+        <div class="d-flex justify-content-between align-items-center ">
 
-        <!-- LEFT: Tabs -->
-        <ul class="nav nav-tabs" id="riskTabs" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#allRisksTab" type="button"
-              (click)="activeTab = 'ALL'">
-              All risks
+          <!-- LEFT: Tabs -->
+          <ul class="nav nav-tabs" id="riskTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#allRisksTab" type="button"
+                (click)="activeTab = 'ALL'">
+                All risks
+              </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#validTab" type="button"
+                (click)="activeTab = 'VALID'">
+                Valid
+              </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviewTab" type="button"
+                (click)="activeTab = 'REVIEW'">
+                Needs review
+              </button>
+            </li>
+          </ul>
+
+          <!-- RIGHT: Buttons -->
+          <div>
+            <button *ngIf="activeTab === 'ALL'" class="btn btn-primary me-2" (click)="validateImportedRisk()">
+              Validate
             </button>
-          </li>
 
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#validTab" type="button"
-              (click)="activeTab = 'VALID'">
-              Valid
+            <button class="btn btn-primary" (click)="deleteRisks()">
+              Delete
             </button>
-          </li>
-
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviewTab" type="button"
-              (click)="activeTab = 'REVIEW'">
-              Needs review
-            </button>
-          </li>
-        </ul>
-
-        <!-- RIGHT: Buttons -->
-        <div>
-          <button *ngIf="activeTab === 'ALL'" class="btn btn-primary me-2" (click)="validateRisks()">
-            Validate
-          </button>
-
-          <button class="btn btn-primary" (click)="deleteRisks()">
-            Delete
-          </button>
-        </div>
-
-      </div>
-
-      <div class="tab-content ">
-
-        <!-- ALL risks  TAB -->
-        <div class="tab-pane fade show active" id="allRisksTab" role="tabpanel">
-          <p-table [value]="allRisks" [resizableColumns]="true" [(selection)]="selectedAll"
-            (selectionChange)="onRiskSelectionChange($event)">
-            <ng-template pTemplate="header">
-              <tr>
-                <th>
-                  <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                </th>
-                <th>Client Id</th>
-                <th>Client names</th>
-                <th>WEF</th>
-                <th>WET</th>
-                <th>Premium Band</th>
-                <th>Risk Id</th>
-                <th>Risk description</th>
-                <th>Cover</th>
-              </tr>
-            </ng-template>
-
-            <ng-template pTemplate="body" let-row>
-              <tr>
-                <td><p-tableCheckbox [value]="row"></p-tableCheckbox></td>
-                <td>{{ row.ClientCode }}</td>
-                <td>{{ row.ClientName }}</td>
-                <td>{{ row.WEF }}</td>
-                <td>{{ row.WET }}</td>
-                <td>{{ row.PremiumBind }}</td>
-                <td>{{ row.PropertyId }}</td>
-                <td>{{ row.ItemDesc }}</td>
-                <td>{{ row.CoverTypeShortDesc }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
-
-
-        <!-- VALID TAB -->
-        <div class="tab-pane fade" id="validTab" role="tabpanel">
-          <p-table [value]="validRisks" [resizableColumns]="true" [(selection)]="selectedValid"
-            (selectionChange)="onRiskSelectionChange($event)">
-            <ng-template pTemplate="header">
-              <tr>
-                <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
-                <th>Client Id</th>
-                <th>Client names</th>
-                <th>WEF</th>
-                <th>WET</th>
-                <th>Premium Band</th>
-                <th>Risk Id</th>
-                <th>Risk description</th>
-                <th>Cover</th>
-              </tr>
-            </ng-template>
-
-            <ng-template pTemplate="body" let-row>
-              <tr>
-                <td><p-tableCheckbox [value]="row"></p-tableCheckbox></td>
-                <td>{{ row.ClientCode }}</td>
-                <td>{{ row.ClientName }}</td>
-                <td>{{ row.WEF }}</td>
-                <td>{{ row.WET }}</td>
-                <td>{{ row.PremiumBind }}</td>
-                <td>{{ row.PropertyId }}</td>
-                <td>{{ row.ItemDesc }}</td>
-                <td>{{ row.CoverTypeShortDesc }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
-
-
-        <!-- NEEDS REVIEW TAB -->
-        <div class="tab-pane fade" id="reviewTab" role="tabpanel">
-          <p-table [value]="needsReviewRisks" [resizableColumns]="true" [(selection)]="selectedReview"
-            (selectionChange)="onRiskSelectionChange($event)">
-            <ng-template pTemplate="header">
-              <tr>
-                <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
-                <th>Client Id</th>
-                <th>Client names</th>
-                <th>WEF</th>
-                <th>WET</th>
-                <th>Premium Band</th>
-                <th>Risk Id</th>
-                <th>Risk description</th>
-                <th>Cover</th>
-              </tr>
-            </ng-template>
-
-            <ng-template pTemplate="body" let-row>
-              <tr>
-                <td><p-tableCheckbox [value]="row"></p-tableCheckbox></td>
-                <td>{{ row.ClientCode }}</td>
-                <td>{{ row.ClientName }}</td>
-                <td>{{ row.WEF }}</td>
-                <td>{{ row.WET }}</td>
-                <td>{{ row.PremiumBind }}</td>
-                <td>{{ row.PropertyId }}</td>
-                <td>{{ row.ItemDesc }}</td>
-                <td>{{ row.CoverTypeShortDesc }}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
-
-      </div>
-
-
-      <!-- <p-table [value]="data" [resizableColumns]="true" styleClass="p-datatable-sm" class='ui-datatable'
-        [(selection)]="selectedRisks" (selectionChange)="onSelectionChange($event)"
-        [tableStyle]="{ 'min-width': '50rem' }">
-        <ng-template pTemplate="header">
-          <tr>
-            <th style="width: 3rem">
-              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-            </th>
-            <th>Client Id</th>
-            <th>Client names</th>
-            <th>WEF</th>
-            <th>WET</th>
-            <th>Premium Band</th>
-            <th>Risk Id</th>
-            <th>Risk description</th>
-            <th>Cover</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-row>
-          <tr>
-            <td>
-              <p-tableCheckbox [value]="row"></p-tableCheckbox>
-            </td>
-            <td>{{ row.ClientCode }}</td>
-            <td>{{ row.ClientName }}</td>
-            <td>{{ row.WEF }}</td>
-            <td>{{ row.WET }}</td>
-            <td>{{ row.PremiumBind }}</td>
-            <td>{{ row.PropertyId }}</td>
-            <td>{{ row.ItemDesc }}</td>
-            <td>{{ row.CoverTypeShortDesc }}</td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="9" style="padding:50px; text-align: center;" id="empty">No records found</td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="summary" *ngIf="data && data.length > 0">
-          <div class="d-flex justify-content-end">
-            <span>{{selectedCount}} of {{data.length}} risks selected</span>
           </div>
-        </ng-template>
-      </p-table> -->
+
+        </div>
+
+        <div class="tab-content ">
+
+          <!-- ALL risks  TAB -->
+          <div class="tab-pane fade show active" id="allRisksTab" role="tabpanel">
+            <p-table [value]="allRisks" [resizableColumns]="true" [(selection)]="selectedAll"
+              [paginator]="allRisks?.length > 10" [rowsPerPageOptions]="[10, 20, 100]" [rows]="10"
+              (selectionChange)="onRiskSelectionChange($event)">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                  </th>
+                  <th>Insured </th>
+                  <th>Risk ID</th>
+                  <th>Risk description</th>
+                  <th>Cover type</th>
+                  <th>Premium Band</th>
+                  <th>Cover from</th>
+                  <th>Cover to</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-row>
+                <tr>
+                  <td><p-tableCheckbox [value]="row"></p-tableCheckbox></td>
+                  <td>{{ row.insuredName | sentenceCase }}</td>
+                  <td>{{ row.propertyId | sentenceCase }}</td>
+                  <td>{{ row.riskDescription | sentenceCase }}</td>
+                  <td>{{ row.coverType | sentenceCase}}</td>
+                  <td>{{ row.binderCode }}</td>
+                  <td>{{ row.withEffectFrom }}</td>
+                  <td>{{ row.withEffectTo }}</td>
+
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
 
 
+          <!-- VALID TAB -->
+          <div class="tab-pane fade" id="validTab" role="tabpanel">
+            <p-table [value]="validRisks" [resizableColumns]="true" [(selection)]="selectedValid"
+              (selectionChange)="onRiskSelectionChange($event)">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                  <th>Insured</th>
+                  <th>Risk ID</th>
+                  <th>Risk Description</th>
+                  <th>Cover Type</th>
+                  <th>Premium Band</th>
+                  <th>Cover From</th>
+                  <th>Cover To</th>
+                  <th style="width:120px; text-align:center;">Actions</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-row>
+                <tr>
+                  <td><p-tableCheckbox [value]="row"></p-tableCheckbox></td>
+                  <td>{{ row.ClientCode }}</td>
+                  <td>{{ row.ClientName }}</td>
+                  <td>{{ row.WEF }}</td>
+                  <td>{{ row.WET }}</td>
+                  <td>{{ row.PremiumBind }}</td>
+                  <td>{{ row.PropertyId }}</td>
+                  <td>{{ row.ItemDesc }}</td>
+                  <td>{{ row.CoverTypeShortDesc }}</td>
+
+                  <!-- Action buttons -->
+                  <td style="text-align:center;">
+                    <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-1">
+                    </button>
+
+                    <button pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm p-1">
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+
+          </div>
 
 
+          <!-- NEEDS REVIEW TAB -->
+          <div class="tab-pane fade" id="reviewTab" role="tabpanel">
+            <p-table [value]="needsReviewRisks" [resizableColumns]="true" [(selection)]="selectedReview"
+              (selectionChange)="onRiskSelectionChange($event)">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                  <th>Insured</th>
+                  <th>Risk ID</th>
+                  <th>Risk Description</th>
+                  <th>Cover Type</th>
+                  <th>Premium Band</th>
+                  <th>Cover From</th>
+                  <th>Cover To</th>
+                  <th style="width:120px; text-align:center;">Actions</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-row>
+                <tr>
+                  <td><p-tableCheckbox [value]="row"></p-tableCheckbox></td>
+
+                  <td>{{ row.ClientCode }}</td>
+                  <td>{{ row.ClientName }}</td>
+                  <td>{{ row.WEF }}</td>
+                  <td>{{ row.WET }}</td>
+                  <td>{{ row.PremiumBind }}</td>
+                  <td>{{ row.PropertyId }}</td>
+                  <td>{{ row.ItemDesc }}</td>
+                  <td>{{ row.CoverTypeShortDesc }}</td>
+
+                  <!-- ACTION BUTTONS -->
+                  <td style="text-align:center;">
+                    <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-1">
+                    </button>
+
+                    <button pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm p-1">
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+
+          </div>
+
+        </div>
+
+      </div>
 
       <!-- Mapping Modal -->
       <div *ngIf="showMappingModal" class="modal-overlay">
@@ -327,5 +301,5 @@
 
     </div>
   </div>
-  <button class="btn btn-primary float-end mt-4" (click)="finish()">Finish</button>
+  <button *ngIf="activeTab === 'VALID'" class="btn btn-primary float-end mt-4">Save</button>
 </div>

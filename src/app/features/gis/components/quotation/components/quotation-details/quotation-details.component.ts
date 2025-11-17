@@ -1448,6 +1448,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
     log.debug("QuoteDetails:", this.quotationDetails)
     if (this.quotationForm.valid) {
       const quotationFormValues = this.quotationForm.getRawValue();
+
       const quotationPayload = {
         quotationNumber: this.quotationDetails?.quotationNo,
         quotationCode: this.quotationCode || null,
@@ -1473,8 +1474,10 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
         marketerAgentCode: quotationFormValues?.marketer?.id,
 
         quotationProducts: this.productDetails.map((value) => {
+          const incomingProductCode = Number(value.productCode?.code ?? value.productCode);
+
           const existingProduct = this.quotationDetails?.quotationProducts?.find(
-            (p) => Number(p.productCode) == Number(value.productCode.code) || Number(value.productCode)
+            (p) => Number(p.productCode) === incomingProductCode
           );
           log.debug('existing product:', existingProduct)
 
@@ -3205,60 +3208,60 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
       log.debug("AGENT OBJECT TO PATCH =>", agentObject);
 
       log.debug("ALL SOURCES =>", this.quotationSources);
-  
-      const findSource = (label: string) => 
-  this.quotationSources?.find(
-    s => s.description?.toLowerCase() === label.toLowerCase()
-  );
+
+      const findSource = (label: string) =>
+        this.quotationSources?.find(
+          s => s.description?.toLowerCase() === label.toLowerCase()
+        );
 
 
-let sourceObject: any = null;
+      let sourceObject: any = null;
 
-if (data.agentName && data.agentName.trim().toLowerCase() === 'direct') {
-  sourceObject = findSource('Walk in');
-}
-
-
-else if (data.agentName && data.agentName.trim() !== '') {
-  sourceObject = findSource('Agent');
-}
+      if (data.agentName && data.agentName.trim().toLowerCase() === 'direct') {
+        sourceObject = findSource('Walk in');
+      }
 
 
-else if (data.agentCode === 0) {
-  sourceObject = findSource('Walk in');
-}
+      else if (data.agentName && data.agentName.trim() !== '') {
+        sourceObject = findSource('Agent');
+      }
 
 
-else if (data.sourceCode) {
-  sourceObject = this.quotationSources?.find(
-    s => String(s.code) === String(data.sourceCode)
-  );
-}
-
-// 5️⃣ Default fallback → Walk in
-else {
-  sourceObject = findSource('Walk in');
-}
+      else if (data.agentCode === 0) {
+        sourceObject = findSource('Walk in');
+      }
 
 
+      else if (data.sourceCode) {
+        sourceObject = this.quotationSources?.find(
+          s => String(s.code) === String(data.sourceCode)
+        );
+      }
 
-log.debug("SOURCE OBJECT TO PATCH =>", sourceObject);
+      // 5️⃣ Default fallback → Walk in
+      else {
+        sourceObject = findSource('Walk in');
+      }
 
 
 
-      
+      log.debug("SOURCE OBJECT TO PATCH =>", sourceObject);
+
+
+
+
       const currencyOption = this.currency.find(
-    c => c.id === data.currencyCode || c.name === data.currency
-  );
+        c => c.id === data.currencyCode || c.name === data.currency
+      );
 
-  log.debug("currency",currencyOption)
+      log.debug("currency", currencyOption)
 
-const quotationTypeValue =
-  !sourceObject ? 'D' :          // if no source → Direct
-  data.agentCode === 0 ? 'D' : 'I';
+      const quotationTypeValue =
+        !sourceObject ? 'D' :          // if no source → Direct
+          data.agentCode === 0 ? 'D' : 'I';
 
 
-log.debug("QUOTATION TYPE TO PATCH =>", quotationTypeValue);
+      log.debug("QUOTATION TYPE TO PATCH =>", quotationTypeValue);
 
 
       if (this.quotationForm) {
@@ -3276,9 +3279,9 @@ log.debug("QUOTATION TYPE TO PATCH =>", quotationTypeValue);
           externalComments: data.comments || ''
         });
       }
-       
 
-    
+
+
 
 
       if (agentObject) {
@@ -3432,71 +3435,71 @@ log.debug("QUOTATION TYPE TO PATCH =>", quotationTypeValue);
 
       log.debug("AGENT OBJECT TO PATCH =>", agentObject);
 
-     
+
       log.debug("ALL SOURCES =>", this.quotationSources);
-  
-      const findSource = (label: string) => 
-  this.quotationSources?.find(
-    s => s.description?.toLowerCase() === label.toLowerCase()
-  );
+
+      const findSource = (label: string) =>
+        this.quotationSources?.find(
+          s => s.description?.toLowerCase() === label.toLowerCase()
+        );
 
 
-let sourceObject: any = null;
+      let sourceObject: any = null;
 
-if (data.agentName && data.agentName.trim().toLowerCase() === 'direct') {
-  sourceObject = findSource('Walk in');
-}
-
-
-else if (data.agentName && data.agentName.trim() !== '') {
-  sourceObject = findSource('Agent');
-}
+      if (data.agentName && data.agentName.trim().toLowerCase() === 'direct') {
+        sourceObject = findSource('Walk in');
+      }
 
 
-else if (data.agentCode === 0) {
-  sourceObject = findSource('Walk in');
-}
+      else if (data.agentName && data.agentName.trim() !== '') {
+        sourceObject = findSource('Agent');
+      }
 
 
-else if (data.sourceCode) {
-  sourceObject = this.quotationSources?.find(
-    s => String(s.code) === String(data.sourceCode)
-  );
-}
-
-// 5️⃣ Default fallback → Walk in
-else {
-  sourceObject = findSource('Walk in');
-}
+      else if (data.agentCode === 0) {
+        sourceObject = findSource('Walk in');
+      }
 
 
+      else if (data.sourceCode) {
+        sourceObject = this.quotationSources?.find(
+          s => String(s.code) === String(data.sourceCode)
+        );
+      }
 
-log.debug("SOURCE OBJECT TO PATCH =>", sourceObject);
+      // 5️⃣ Default fallback → Walk in
+      else {
+        sourceObject = findSource('Walk in');
+      }
 
 
 
-      
+      log.debug("SOURCE OBJECT TO PATCH =>", sourceObject);
+
+
+
+
       const currencyOption = this.currency.find(
-    c => c.id === data.currencyCode || c.name === data.currency
-  );
+        c => c.id === data.currencyCode || c.name === data.currency
+      );
 
-  log.debug("currency",currencyOption)
+      log.debug("currency", currencyOption)
 
-const quotationTypeValue =
-  !sourceObject ? 'D' :          // if no source → Direct
-  data.agentCode === 0 ? 'D' : 'I';
+      const quotationTypeValue =
+        !sourceObject ? 'D' :          // if no source → Direct
+          data.agentCode === 0 ? 'D' : 'I';
 
 
-log.debug("QUOTATION TYPE TO PATCH =>", quotationTypeValue);
+      log.debug("QUOTATION TYPE TO PATCH =>", quotationTypeValue);
 
 
 
 
       this.quotationForm.patchValue({
-        source: sourceObject ||'',
+        source: sourceObject || '',
         quotationType: quotationTypeValue || '',
         branch: data.branchCode || '',
-        currency:currencyOption || '',
+        currency: currencyOption || '',
         introducer: data.introducerCode || '',
         paymentFrequency: data.frequencyOfPayment || '',
         marketer: data.marketerAgentCode || '',
