@@ -3204,19 +3204,69 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
       log.debug("AGENT OBJECT TO PATCH =>", agentObject);
 
-      const sourceObject = data.sourceCode
-        ? this.quotationSources?.find(s => String(s.code) === String(data.sourceCode))
-        : null;
+      log.debug("ALL SOURCES =>", this.quotationSources);
+  
+      const findSource = (label: string) => 
+  this.quotationSources?.find(
+    s => s.description?.toLowerCase() === label.toLowerCase()
+  );
 
-      log.debug("SOURCE OBJECT TO PATCH =>", sourceObject);
+
+let sourceObject: any = null;
+
+if (data.agentName && data.agentName.trim().toLowerCase() === 'direct') {
+  sourceObject = findSource('Walk in');
+}
+
+
+else if (data.agentName && data.agentName.trim() !== '') {
+  sourceObject = findSource('Agent');
+}
+
+
+else if (data.agentCode === 0) {
+  sourceObject = findSource('Walk in');
+}
+
+
+else if (data.sourceCode) {
+  sourceObject = this.quotationSources?.find(
+    s => String(s.code) === String(data.sourceCode)
+  );
+}
+
+// 5️⃣ Default fallback → Walk in
+else {
+  sourceObject = findSource('Walk in');
+}
+
+
+
+log.debug("SOURCE OBJECT TO PATCH =>", sourceObject);
+
+
+
+      
+      const currencyOption = this.currency.find(
+    c => c.id === data.currencyCode || c.name === data.currency
+  );
+
+  log.debug("currency",currencyOption)
+
+const quotationTypeValue =
+  !sourceObject ? 'D' :          // if no source → Direct
+  data.agentCode === 0 ? 'D' : 'I';
+
+
+log.debug("QUOTATION TYPE TO PATCH =>", quotationTypeValue);
 
 
       if (this.quotationForm) {
         this.quotationForm.patchValue({
-          source: sourceObject || data.source,
-          quotationType: data.clientType || 'I',
+          source: sourceObject || '',
+          quotationType: quotationTypeValue || '',
           branch: data.branchCode || '',
-          currency: data.currency || '',
+          currency: currencyOption || '',
           introducer: data.introducerCode || '',
           paymentFrequency: data.frequencyOfPayment || '',
           marketer: data.marketerAgentCode || '',
@@ -3226,7 +3276,9 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
           externalComments: data.comments || ''
         });
       }
+       
 
+    
 
 
       if (agentObject) {
@@ -3380,17 +3432,71 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy {
 
       log.debug("AGENT OBJECT TO PATCH =>", agentObject);
 
-      const sourceObject = data.sourceCode
-        ? this.quotationSources?.find(s => String(s.code) === String(data.sourceCode))
-        : null;
+     
+      log.debug("ALL SOURCES =>", this.quotationSources);
+  
+      const findSource = (label: string) => 
+  this.quotationSources?.find(
+    s => s.description?.toLowerCase() === label.toLowerCase()
+  );
 
-      log.debug("SOURCE OBJECT TO PATCH =>", sourceObject);
+
+let sourceObject: any = null;
+
+if (data.agentName && data.agentName.trim().toLowerCase() === 'direct') {
+  sourceObject = findSource('Walk in');
+}
+
+
+else if (data.agentName && data.agentName.trim() !== '') {
+  sourceObject = findSource('Agent');
+}
+
+
+else if (data.agentCode === 0) {
+  sourceObject = findSource('Walk in');
+}
+
+
+else if (data.sourceCode) {
+  sourceObject = this.quotationSources?.find(
+    s => String(s.code) === String(data.sourceCode)
+  );
+}
+
+// 5️⃣ Default fallback → Walk in
+else {
+  sourceObject = findSource('Walk in');
+}
+
+
+
+log.debug("SOURCE OBJECT TO PATCH =>", sourceObject);
+
+
+
+      
+      const currencyOption = this.currency.find(
+    c => c.id === data.currencyCode || c.name === data.currency
+  );
+
+  log.debug("currency",currencyOption)
+
+const quotationTypeValue =
+  !sourceObject ? 'D' :          // if no source → Direct
+  data.agentCode === 0 ? 'D' : 'I';
+
+
+log.debug("QUOTATION TYPE TO PATCH =>", quotationTypeValue);
+
+
+
 
       this.quotationForm.patchValue({
-        source: sourceObject || data.source,
-        quotationType: data.clientType || 'I',
+        source: sourceObject ||'',
+        quotationType: quotationTypeValue || '',
         branch: data.branchCode || '',
-        currency: data.currency || '',
+        currency:currencyOption || '',
         introducer: data.introducerCode || '',
         paymentFrequency: data.frequencyOfPayment || '',
         marketer: data.marketerAgentCode || '',
