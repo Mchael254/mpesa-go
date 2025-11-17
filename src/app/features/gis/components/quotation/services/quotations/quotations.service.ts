@@ -1527,22 +1527,16 @@ export class QuotationsService {
       );
 
   }
-  // validateUploadedRisk(sourceCode: number) {
-  //   let params = new HttpParams()
-  //     .set('sourceCode', sourceCode)
-  //     .set('sysModule', 'Q');
-
-  //   return this.api
-  //     .GET<string>(
-  //       `v1/load-details/check-duplicate-risks?${params}`,
-  //       API_CONFIG.GIS_COMMONS_SERVICE,
-  //       { responseType: 'text' as 'json' }
-  //     )
-  //     .pipe(
-  //       retry(1),
-  //       catchError(this.errorHandl)
-  //     );
-  // }
+  updatedImportedRisk(id: number, payload: PolicyElectronicDataDTO) {
+    return this.api.PUT<any>(
+      `v1/policy-electronic-data/${id}`,
+      JSON.stringify(payload),
+      API_CONFIG.GIS_COMMONS_SERVICE
+    ).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    );
+  }
 
 
   deleteRiskRecord(id: number): Observable<any> {
