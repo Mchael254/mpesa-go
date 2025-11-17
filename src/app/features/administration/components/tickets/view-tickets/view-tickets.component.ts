@@ -26,6 +26,7 @@ import { QuotationsService } from 'src/app/features/gis/components/quotation/ser
 import * as bootstrap from 'bootstrap';
 import { GroupedUser } from 'src/app/features/gis/components/quotation/data/quotationsDTO';
 import { ClaimsService } from 'src/app/features/gis/components/claim/services/claims.service';
+import { UtilService } from 'src/app/shared/services';
 
 
 const log = new Logger('ViewTicketsComponent');
@@ -141,6 +142,8 @@ export class ViewTicketsComponent implements OnInit {
     private policiesService: PoliciesService,
     private quotationService: QuotationsService,
     public claimsService: ClaimsService,
+    private utilService: UtilService,
+
   ) {
 
   }
@@ -992,9 +995,13 @@ export class ViewTicketsComponent implements OnInit {
   processTicket(ticket: any): void {
     const ticketName = ticket.ticketName?.trim();
     log.debug("Ticket chosen", ticket);
-
+    this.utilService.clearSessionStorageData()
+    this.utilService.clearNormalQuoteSessionStorage()
     // Save the whole ticket in session storage
     sessionStorage.setItem('activeTicket', JSON.stringify(ticket));
+    const quotationCode = ticket.quotationCode
+    sessionStorage.setItem('quotationCode', quotationCode.toString());
+
 
     switch (ticketName) {
       case 'Quotation Data Entry':
@@ -1003,8 +1010,13 @@ export class ViewTicketsComponent implements OnInit {
         break;
 
       case 'Authorize Quotation':
+        sessionStorage.setItem('ticketStatus', ticketName);
+        this.router.navigate(['/home/gis/quotation/quotation-summary']);
+        break;
+
       case 'Confirm Quotation':
         sessionStorage.setItem('ticketStatus', ticketName);
+        sessionStorage.setItem('confirmMode', 'true');
 
         this.router.navigate(['/home/gis/quotation/quotation-summary']);
         break;

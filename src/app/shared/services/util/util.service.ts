@@ -694,7 +694,7 @@ export class UtilService {
       'account_roles',
       'organizationDetails',
       'store_',
-      'systemsAssigned'
+      'systemsAssigned', 'currencyDelimiter', 'currencySymbol'
     ];
 
     Object.keys(sessionStorage).forEach(key => {
@@ -716,7 +716,7 @@ export class UtilService {
       'account_roles',
       'organizationDetails',
       'store_',
-      'systemsAssigned'
+      'systemsAssigned', 'currencyDelimiter', 'currencySymbol'
     ];
     // Remove all keys except the ones in keysToKeep
     Object.keys(sessionStorage).forEach(key => {
