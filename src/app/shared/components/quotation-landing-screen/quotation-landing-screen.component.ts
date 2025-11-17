@@ -783,7 +783,9 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
     // Store basic info in sessionStorage
     sessionStorage.setItem('quotationNum', quotationNumber);
-    sessionStorage.setItem('activeQuotationCode', JSON.stringify(quotationCode));
+    // sessionStorage.setItem('activeQuotationCode', JSON.stringify(quotationCode));
+    sessionStorage.setItem('quotationCode', quotationCode.toString());
+
     sessionStorage.setItem('clientCode', JSON.stringify(clientCode));
 
     // Fetch the full quotation details
@@ -796,14 +798,20 @@ export class QuotationLandingScreenComponent implements OnInit, OnChanges {
 
         switch (taskName) {
           case 'Quotation Data Entry':
+            taskName && sessionStorage.setItem('ticketStatus', taskName);
+
             this.router.navigate(['/home/gis/quotation/quotation-details']);
             break;
 
           case 'Authorize Quotation':
+            taskName && sessionStorage.setItem('ticketStatus', taskName);
+
             this.router.navigate(['/home/gis/quotation/quotation-summary']);
             break;
 
           case 'Confirm Quotation':
+            taskName && sessionStorage.setItem('ticketStatus', taskName);
+
             sessionStorage.setItem('confirmMode', 'true');
             this.router.navigate(['/home/gis/quotation/quotation-summary']);
             break;
