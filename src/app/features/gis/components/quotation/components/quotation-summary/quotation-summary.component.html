@@ -196,15 +196,21 @@
               View Client Profile
             </a>
 
-
             <!-- <button class="btn btn-outline-primary custom-outline-btn" style="margin-right: 10px; margin-left: 20px"
-              (click)="editQuotationDetails()" [disabled]="viewQuoteFlag">
-              Edit details
-            </button> -->
-            <button class="btn btn-outline-primary custom-outline-btn" style="margin-right: 10px; margin-left: 20px"
               (click)="editQuotationDetails()" [disabled]="isEditDisabled()">
               Edit details
-            </button>
+            </button> -->
+            <span [pTooltip]="isEditDisabled() ? 'No further action — quotation already authorized.' : null"
+              tooltipPosition="top">
+              <button class="btn custom-outline-btn"
+                [ngClass]="isEditDisabled() ? 'btn-secondary' : 'btn-outline-primary'"
+                style="margin-right: 10px; margin-left: 20px" (click)="editQuotationDetails()"
+                [disabled]="isEditDisabled()">
+                Edit details
+              </button>
+            </span>
+
+
 
           </div>
         </div>
@@ -2011,7 +2017,11 @@
               <ng-template pTemplate="body" let-exception>
                 <tr [pSelectableRow]="exception">
                   <td>
-                    <p-tableCheckbox [value]="exception"></p-tableCheckbox>
+                    <p-tableCheckbox [value]="exception" [disabled]="exception.isAuthorized === 'Y'"
+                      [pTooltip]="exception.isAuthorized === 'Y' ? 'This exception has already been authorized' : null"
+                      tooltipPosition="top">
+                    </p-tableCheckbox>
+
                   </td>
                   <td *ngFor="let col of exceptionsColumns" [hidden]="!col.visible" class="flexible-header1">
                     {{ getCellValue(exception, col.field) }}
@@ -2206,7 +2216,8 @@
 
         <!-- Left-side buttons -->
         <div class="d-flex gap-2 flex-wrap">
-          <button
+
+          <!-- <button
             style="border: none; background: transparent; text-decoration: underline; cursor: pointer;color:#00529B"
             (click)="navigateToRiskCenter()" [disabled]="viewQuoteFlag">
             {{ 'gis.quotation.back' | translate }}
@@ -2215,12 +2226,47 @@
           <button type="button" class="btn btn-outline-primary" (click)="openReassignQuotationModal()"
             [disabled]="afterRejectQuote||viewQuoteFlag">
             {{ "gis.quotation.reassign" | translate }}
-          </button>
+          </button> -->
 
-          <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
+          <!-- <button type="button" class="btn btn-outline-primary" (click)="openRejectQuotationModal()"
             [disabled]="afterRejectQuote||viewQuoteFlag">
             {{ 'gis.quotation.reject' | translate }}
-          </button>
+          </button> -->
+          <!-- Back Button -->
+          <!-- Back Button -->
+          <span class="mt-2"
+            [pTooltip]="afterRejectQuote || viewQuoteFlag ? 'No further action — quotation already authorized.' : null"
+            tooltipPosition="top">
+            <button (click)="navigateToRiskCenter()" [disabled]="viewQuoteFlag"
+              [ngStyle]="viewQuoteFlag ? { color: '#6c757d', cursor: 'not-allowed', 'text-decoration': 'none' } : { color: '#00529B', cursor: 'pointer', 'text-decoration': 'underline' }"
+              style="border: none; background: transparent;">
+              {{ 'gis.quotation.back' | translate }}
+            </button>
+          </span>
+
+          <!-- Reassign Button -->
+          <span
+            [pTooltip]="afterRejectQuote || viewQuoteFlag ? 'No further action — quotation already authorized.' : null"
+            tooltipPosition="top">
+            <button type="button "
+              [ngClass]="afterRejectQuote || viewQuoteFlag ? 'btn btn-secondary' : 'btn btn-outline-primary'"
+              [disabled]="afterRejectQuote || viewQuoteFlag" (click)="openReassignQuotationModal()">
+              {{ "gis.quotation.reassign" | translate }}
+            </button>
+          </span>
+
+          <!-- Reject Button -->
+          <span
+            [pTooltip]="afterRejectQuote || viewQuoteFlag ? 'No further action — quotation already authorized.' : null"
+            tooltipPosition="top">
+            <button type="button"
+              [ngClass]="afterRejectQuote || viewQuoteFlag ? 'btn btn-secondary' : 'btn btn-outline-primary'"
+              [disabled]="afterRejectQuote || viewQuoteFlag" (click)="openRejectQuotationModal()">
+              {{ 'gis.quotation.reject' | translate }}
+            </button>
+          </span>
+
+
         </div>
 
 
