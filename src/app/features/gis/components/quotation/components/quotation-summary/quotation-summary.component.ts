@@ -2509,6 +2509,30 @@ this.showConfirmButton =false;
             'Success',
             res.message || 'Exceptions authorised successfully'
           );
+
+           const newStatus = 'Authorize Quotation';
+
+           this.quotationView.status = newStatus;
+
+           sessionStorage.setItem(
+          `quotationStatus_${this.quotationCode}`,
+          newStatus
+        );
+
+        this.showAuthorizeButton = true;
+sessionStorage.setItem('showAuthorizeButton', 'true');
+
+
+sessionStorage.setItem('authorizeButtonDisabled', 'false');
+
+
+        log.debug("[AUTH] Refreshing quotation details...");
+
+         this.getQuotationDetails(this.quotationCode);
+         this.getExceptions(this.quotationView.code);
+
+
+
         } else {
           this.globalMessagingService.displayErrorMessage(
             'Authorization Error',
@@ -3150,8 +3174,18 @@ this.showConfirmButton =false;
   }
 
   get authorizeButtonDisabled(): boolean {
-    return this.hasExceptionsData() || this.hasEmptySchedules();
+  const hasPendingExceptions = this.exceptionsData?.some(ex => !ex.isAuthorized);
+  const schedulesEmpty = this.hasEmptySchedules();
+
+  // Enable button if status is "Authorize Quotation" or there are no pending exceptions
+  if (this.quotationView?.status === 'Authorize Quotation') {
+    return false; // always enabled
   }
+
+  // Otherwise, disabled if there are pending exceptions or empty schedules
+  return hasPendingExceptions || schedulesEmpty;
+}
+
 
   authorizeQuote() {
     const quotationCode = this.quotationCode;
