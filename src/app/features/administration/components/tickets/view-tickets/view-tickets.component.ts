@@ -1009,7 +1009,7 @@ export class ViewTicketsComponent implements OnInit {
         this.router.navigate(['/home/gis/quotation/quotation-summary']);
         break;
 
-      case 'Authorize Exceptions':
+      case 'Authorize Exception':
         sessionStorage.setItem('ticketStatus', ticketName);
 
         sessionStorage.setItem('showExceptions', 'true');
