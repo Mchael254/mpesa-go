@@ -1544,6 +1544,17 @@ export class QuotationsService {
   //     );
   // }
 
+
+  deleteRiskRecord(id: number): Observable<any> {
+  return this.api.DELETE<any>(
+    `v1/policy-electronic-data/${id}`,
+    API_CONFIG.GIS_COMMONS_SERVICE
+  ).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  );
+}
+
 }
 
 
