@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Logger } from "../logger/logger.service";
-import { HttpParams } from "@angular/common/http";
-import { BehaviorSubject, Observable } from "rxjs";
-import { DmsDocument, ReceiptUploadRequest, SingleDmsDocument } from "../../data/common/dmsDocument";
-import { ParameterService } from "../system-parameters/parameter.service";
-import { ApiService } from "../api/api.service";
-import { API_CONFIG } from "../../../../environments/api_service_config";
+import { Logger } from '../logger/logger.service';
+import { HttpParams } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import {
+  DmsDocument,
+  ReceiptUploadRequest,
+  SingleDmsDocument,
+} from '../../data/common/dmsDocument';
+import { ParameterService } from '../system-parameters/parameter.service';
+import { ApiService } from '../api/api.service';
+import { API_CONFIG } from '../../../../environments/api_service_config';
 
 const log = new Logger('DmsService');
 
@@ -16,19 +20,19 @@ const dmsEndpoints = {
   getDocsByClaimNo: 'getClaimsDocsByClaimNo',
   getDocsByClaimantNo: 'getClaimantDocsByClaimantNo',
   getDocsByServiceProvCode: 'getSPDocsByAgentCode',
-  getDocsByClientCode: 'getClientDocsByClientCode'
-}
+  getDocsByClientCode: 'getClientDocsByClientCode',
+};
 
 /**
  * Service that fetches documents from DMS (Document Management System)
  */
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DmsService {
-
-  protected dmsUrlParameter: BehaviorSubject<string> = new BehaviorSubject<string>('null');
+  protected dmsUrlParameter: BehaviorSubject<string> =
+    new BehaviorSubject<string>('null');
   protected dmsApiUrl: string;
 
   dmsUrlParameter$ = this.dmsUrlParameter.asObservable();
@@ -40,8 +44,9 @@ export class DmsService {
   constructor(
     private parameterService: ParameterService,
 
-    private api: ApiService,) {
-    this.dmsUrlParameter$.subscribe(dmsUrl => this.dmsApiUrl = dmsUrl);
+    private api: ApiService
+  ) {
+    this.dmsUrlParameter$.subscribe((dmsUrl) => (this.dmsApiUrl = dmsUrl));
   }
 
   /**
@@ -53,13 +58,15 @@ export class DmsService {
     let url: string;
     let urlEndpoint = dmsEndpoints.getByDocId;
 
-    const params = new HttpParams()
-      .set('docId', `${docId}`);
+    const params = new HttpParams().set('docId', `${docId}`);
 
     // url = this.getDmsUrl(urlEndpoint);
 
     log.info('Fetching documents for document: ', `${docId}`);
-    return this.api.GET<SingleDmsDocument>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE)
+    return this.api.GET<SingleDmsDocument>(
+      `${urlEndpoint}?${params}`,
+      API_CONFIG.DMS_SERVICE
+    );
   }
 
   /**
@@ -68,14 +75,17 @@ export class DmsService {
    * @return Observable<DmsDocument>
    * */
   fetchDocumentsByQuotationNo(quotationNo: string): Observable<DmsDocument[]> {
-    let url: string, urlEndpoint = dmsEndpoints.getDocsByQuotationNo;
+    let url: string,
+      urlEndpoint = dmsEndpoints.getDocsByQuotationNo;
 
-    const params = new HttpParams()
-      .set('qouteCode', `${quotationNo}`);
+    const params = new HttpParams().set('qouteCode', `${quotationNo}`);
     // url = this.getDmsUrl(urlEndpoint);
 
     log.info('Fetching documents for quotation no: ', `${quotationNo}`);
-    return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
+    return this.api.GET<DmsDocument[]>(
+      `${urlEndpoint}?${params}`,
+      API_CONFIG.DMS_SERVICE
+    );
   }
 
   /**
@@ -84,15 +94,18 @@ export class DmsService {
    * @return Observable<DmsDocument>
    */
   fetchDocumentsByPolicyNo(policyNo: string): Observable<DmsDocument[]> {
-    let url: string, urlEndpoint = dmsEndpoints.getDocsByPolicyNo;
+    let url: string,
+      urlEndpoint = dmsEndpoints.getDocsByPolicyNo;
 
-    const params = new HttpParams()
-      .set('policyNo', `${policyNo}`);
+    const params = new HttpParams().set('policyNo', `${policyNo}`);
     log.info('Fetching documents for policy: ', `${policyNo}`);
 
     // url = this.getDmsUrl(urlEndpoint);
 
-    return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
+    return this.api.GET<DmsDocument[]>(
+      `${urlEndpoint}?${params}`,
+      API_CONFIG.DMS_SERVICE
+    );
   }
 
   /**
@@ -101,95 +114,113 @@ export class DmsService {
    * @return Observable<DmsDocument>
    */
   fetchDocumentsByClaimNo(claimNo: string): Observable<DmsDocument[]> {
-    let url: string, urlEndpoint = dmsEndpoints.getDocsByClaimNo;
+    let url: string,
+      urlEndpoint = dmsEndpoints.getDocsByClaimNo;
 
-    const params = new HttpParams()
-      .set('claimNo', `${claimNo}`);
+    const params = new HttpParams().set('claimNo', `${claimNo}`);
     log.info('Fetching documents for claim no: ', `${claimNo}`);
 
     // url = this.getDmsUrl(urlEndpoint);
 
-    return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
+    return this.api.GET<DmsDocument[]>(
+      `${urlEndpoint}?${params}`,
+      API_CONFIG.DMS_SERVICE
+    );
   }
 
   fetchDocumentsByClaimantNo(claimantNo: string): Observable<DmsDocument[]> {
     let urlEndpoint = dmsEndpoints.getDocsByClaimantNo;
 
-    const params = new HttpParams()
-      .set('claimantNo', `${claimantNo}`);
+    const params = new HttpParams().set('claimantNo', `${claimantNo}`);
     log.info('Fetching documents for claim no: ', `${claimantNo}`);
 
-    return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
+    return this.api.GET<DmsDocument[]>(
+      `${urlEndpoint}?${params}`,
+      API_CONFIG.DMS_SERVICE
+    );
   }
 
-  fetchDocumentsByServiceProviderCode(spCode: string): Observable<DmsDocument[]> {
+  fetchDocumentsByServiceProviderCode(
+    spCode: string
+  ): Observable<DmsDocument[]> {
     let urlEndpoint = dmsEndpoints.getDocsByServiceProvCode;
 
-    const params = new HttpParams()
-      .set('spCode', `${spCode}`);
+    const params = new HttpParams().set('spCode', `${spCode}`);
     log.info('Fetching documents for service provider no: ', `${spCode}`);
 
-    return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
+    return this.api.GET<DmsDocument[]>(
+      `${urlEndpoint}?${params}`,
+      API_CONFIG.DMS_SERVICE
+    );
   }
 
   fetchDocumentsByClientCode(clientCode: string): Observable<DmsDocument[]> {
     let urlEndpoint = dmsEndpoints.getDocsByClientCode;
 
-    const params = new HttpParams()
-      .set('clientCode', `${clientCode}`);
+    const params = new HttpParams().set('clientCode', `${clientCode}`);
     log.info('Fetching documents for client no: ', `${clientCode}`);
 
-    return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
+    return this.api.GET<DmsDocument[]>(
+      `${urlEndpoint}?${params}`,
+      API_CONFIG.DMS_SERVICE
+    );
   }
 
   fetchDispatchedDocumentsByBatchNo(batchNo: number): Observable<any> {
-    const params = new HttpParams()
-      .set('batchNo', `${batchNo}`);
+    const params = new HttpParams().set('batchNo', `${batchNo}`);
     log.info('Fetching dispatched documents for batch no: ', `${batchNo}`);
 
-    return this.api.GET<any>(`v2/document-dispatch?${params}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
+    return this.api.GET<any>(
+      `v2/document-dispatch?${params}`,
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
   }
 
   fetchDocumentsByAgentCode(agentCode: string): Observable<DmsDocument[]> {
-    const params = new HttpParams()
-      .set('agentCode', `${agentCode}`);
+    const params = new HttpParams().set('agentCode', `${agentCode}`);
     log.info('Fetching documents for agent no: ', `${agentCode}`);
 
-    return this.api.GET<DmsDocument[]>(`getAgentDocsByAgentCode?${params}`, API_CONFIG.DMS_SERVICE);
+    return this.api.GET<DmsDocument[]>(
+      `getAgentDocsByAgentCode?${params}`,
+      API_CONFIG.DMS_SERVICE
+    );
   }
 
   saveAgentDocs(data: any): Observable<any> {
     return this.api.POST<any>(
       `uploadAgentDocs`,
-      JSON.stringify(data), API_CONFIG.DMS_SERVICE
+      JSON.stringify(data),
+      API_CONFIG.DMS_SERVICE
     );
   }
 
   saveClientDocs(data: any): Observable<any> {
     return this.api.POST<any>(
       `uploadClientDocument`,
-      JSON.stringify(data), API_CONFIG.DMS_SERVICE
+      JSON.stringify(data),
+      API_CONFIG.DMS_SERVICE
     );
   }
 
   saveServiceProviderDocs(data: any): Observable<any> {
     return this.api.POST<any>(
       `uploadSPDocument`,
-      JSON.stringify(data), API_CONFIG.DMS_SERVICE
+      JSON.stringify(data),
+      API_CONFIG.DMS_SERVICE
     );
   }
 
-
-
-
   deleteDocumentById(docId: string): Observable<SingleDmsDocument> {
-    const params = new HttpParams()
-      .set('docId', `${docId}`);
+    const params = new HttpParams().set('docId', `${docId}`);
 
     log.info('Fetching documents for document: ', `${docId}`);
-    return this.api.GET<SingleDmsDocument>(`deleteDocsById?${params}`, API_CONFIG.DMS_SERVICE, {
-      responseType: 'text' as 'json'
-    })
+    return this.api.GET<SingleDmsDocument>(
+      `deleteDocsById?${params}`,
+      API_CONFIG.DMS_SERVICE,
+      {
+        responseType: 'text' as 'json',
+      }
+    );
   }
 
   /**
@@ -210,37 +241,30 @@ export class DmsService {
   uploadRiskDocs(data: any): Observable<any> {
     return this.api.POST<any>(
       `uploadValuationDocs`,
-      JSON.stringify(data), API_CONFIG.DMS_SERVICE
+      JSON.stringify(data),
+      API_CONFIG.DMS_SERVICE
     );
   }
   fetchRiskDocs(riskID: number): Observable<DmsDocument[]> {
-    const params = new HttpParams()
-      .set('riskID', `${riskID}`);
+    const params = new HttpParams().set('riskID', `${riskID}`);
     log.info('Fetching documents for Risk ID: ', `${riskID}`);
 
-    return this.api.GET<DmsDocument[]>(`getValuationDocs?${params}`, API_CONFIG.DMS_SERVICE);
+    return this.api.GET<DmsDocument[]>(
+      `getValuationDocs?${params}`,
+      API_CONFIG.DMS_SERVICE
+    );
   }
-  //fms dms endpoints
+  //fms uploadFile endpoints
   uploadFiles(requests: ReceiptUploadRequest[]): Observable<any> {
-      const formattedRequests = requests.map((request) =>
-        JSON.stringify({
-          docType: request.docType,
-          docData: request.docData,
-          module: request.module,
-          originalFileName: request.originalFileName,
-          filename: request.filename,
-          referenceNo: request.referenceNo,
-          description: request.docDescription,
-          amount: request.amount,
-          paymentMethod: request.paymentMethod,
-          policyNumber: request.policyNumber,
-        })
-      );
-      const payload = formattedRequests.join(',');
-      return this.api.POST<any>(
-        `uploadAllFinanceDocument`,
-        payload,
-        API_CONFIG.DMS_SERVICE
-      );
-    }
+    // const formattedRequests = requests.map((request) =>
+    //   JSON.stringify(requests=[])
+    // );
+    //const payload = formattedRequests.join(',');
+    const payload = requests.map((r)=>JSON.stringify(r)).join(',');
+    return this.api.POST<any>(
+      `uploadAllFinanceDocument`,
+      payload,
+      API_CONFIG.DMS_SERVICE
+    );
+  }
 }

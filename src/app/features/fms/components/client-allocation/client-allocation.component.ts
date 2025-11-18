@@ -1431,7 +1431,7 @@ export class ClientAllocationComponent {
         ) {
           allocation.receiptParticularDetails.forEach((detail) => {
             requests.push({
-              docType: 'RECEIPT',
+              docType: this.selectedFile.type,
               docData: this.base64Output, // No "data:" prefix here
               module: 'CB-RECEIPTS',
               originalFileName: this.selectedFile.name,
